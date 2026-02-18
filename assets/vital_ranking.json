@@ -1,0 +1,255 @@
+[
+    {
+        "id": "apple",
+        "names": [
+            "apple",
+            "pomme",
+            "pomme rouge",
+            "organic apple"
+        ],
+        "emoji": "🍎",
+        "family": "Rosaceae",
+        "vitality": {
+            "nova": 1,
+            "freshness": 95,
+            "label": "Brut · Vivant"
+        },
+        "specific": {
+            "mucus": "Dissolvant",
+            "hybrid": false,
+            "electric": true,
+            "label": "Électrique"
+        },
+        "scientific_defaults": {
+            "pral": -2.2,
+            "density": 90
+        }
+    },
+    {
+        "id": "key_lime",
+        "names": [
+            "key lime",
+            "citron vert",
+            "lime",
+            "citron"
+        ],
+        "emoji": "🍋",
+        "family": "Rutaceae",
+        "vitality": {
+            "nova": 1,
+            "freshness": 100,
+            "label": "Brut · Vivant"
+        },
+        "specific": {
+            "mucus": "Dissolvant",
+            "hybrid": false,
+            "electric": true,
+            "label": "Électrique / Astringent"
+        },
+        "scientific_defaults": {
+            "pral": -4.0,
+            "density": 85
+        }
+    },
+    {
+        "id": "carrot",
+        "names": [
+            "carrot",
+            "carotte",
+            "baby carrot"
+        ],
+        "emoji": "🥕",
+        "family": "Apiaceae",
+        "vitality": {
+            "nova": 1,
+            "freshness": 60,
+            "label": "Brut"
+        },
+        "specific": {
+            "mucus": "Neutre",
+            "hybrid": true,
+            "electric": false,
+            "label": "Hybride (Amidon)"
+        },
+        "scientific_defaults": {
+            "pral": -4.0,
+            "density": 80
+        },
+        "note": "Bien que saine scientifiquement, la carotte est considérée comme hybride et riche en amidon dans l'approche Sebi stricte."
+    },
+    {
+        "id": "avocado",
+        "names": [
+            "avocado",
+            "avocat",
+            "hass avocado"
+        ],
+        "emoji": "🥑",
+        "family": "Lauraceae",
+        "vitality": {
+            "nova": 1,
+            "freshness": 90,
+            "label": "Brut · Gras"
+        },
+        "specific": {
+            "mucus": "Neutre",
+            "hybrid": false,
+            "electric": true,
+            "label": "Électrique / Gras"
+        },
+        "scientific_defaults": {
+            "pral": -8.0,
+            "density": 95
+        }
+    },
+    {
+        "id": "quinoa",
+        "names": [
+            "quinoa",
+            "white quinoa",
+            "quinoa blanc"
+        ],
+        "emoji": "🥣",
+        "family": "Amaranthaceae",
+        "vitality": {
+            "nova": 1,
+            "freshness": 80,
+            "label": "Brut · Céréale"
+        },
+        "specific": {
+            "mucus": "Neutre",
+            "hybrid": false,
+            "electric": true,
+            "label": "Grain Alcalin"
+        },
+        "scientific_defaults": {
+            "pral": 0.5,
+            "density": 70
+        }
+    },
+    {
+        "id": "broccoli",
+        "names": [
+            "broccoli",
+            "brocoli"
+        ],
+        "emoji": "🥦",
+        "family": "Brassicaceae",
+        "vitality": {
+            "nova": 1,
+            "freshness": 85,
+            "label": "Brut"
+        },
+        "specific": {
+            "mucus": "Neutre",
+            "hybrid": true,
+            "electric": false,
+            "label": "Hybride"
+        },
+        "scientific_defaults": {
+            "pral": -1.2,
+            "density": 90
+        },
+        "note": "Considéré comme création humaine (hybride) par l'approche vitaliste stricte, mais excellent scientifiquement."
+    },
+    {
+        "id": "banana",
+        "names": [
+            "banana",
+            "banane",
+            "baby banana",
+            "burro banana"
+        ],
+        "emoji": "🍌",
+        "family": "Musaceae",
+        "vitality": {
+            "nova": 1,
+            "freshness": 90,
+            "label": "Brut · Vivant"
+        },
+        "specific": {
+            "mucus": "Dissolvant",
+            "hybrid": false,
+            "electric": true,
+            "label": "Électrique (Burro/Baby)"
+        },
+        "scientific_defaults": {
+            "pral": -6.0,
+            "density": 88
+        },
+        "note": "Dr. Sebi recommande spécifiquement les petites bananes (Burro/Baby). Les grandes (Cavendish) sont plus riches en amidon."
+    },
+    {
+        "id": "orange",
+        "names": [
+            "orange",
+            "orange douce"
+        ],
+        "emoji": "🍊",
+        "family": "Rutaceae",
+        "vitality": {
+            "nova": 1,
+            "freshness": 95,
+            "label": "Brut"
+        },
+        "specific": {
+            "mucus": "Dissolvant",
+            "hybrid": false,
+            "electric": true,
+            "label": "Électrique (Seville)"
+        },
+        "scientific_defaults": {
+            "pral": -3.0,
+            "density": 85
+        }
+    },
+    {
+        "id": "grape",
+        "names": [
+            "grape",
+            "raisin",
+            "raisin noir"
+        ],
+        "emoji": "🍇",
+        "family": "Vitaceae",
+        "vitality": {
+            "nova": 1,
+            "freshness": 95,
+            "label": "Brut"
+        },
+        "specific": {
+            "mucus": "Dissolvant",
+            "hybrid": false,
+            "electric": true,
+            "label": "Électrique (Avec pépins)"
+        },
+        "scientific_defaults": {
+            "pral": -4.0,
+            "density": 80
+        }
+    },
+    {
+        "id": "cucumber",
+        "names": [
+            "cucumber",
+            "concombre"
+        ],
+        "emoji": "🥒",
+        "family": "Cucurbitaceae",
+        "vitality": {
+            "nova": 1,
+            "freshness": 90,
+            "label": "Brut"
+        },
+        "specific": {
+            "mucus": "Neutre",
+            "hybrid": false,
+            "electric": true,
+            "label": "Électrique"
+        },
+        "scientific_defaults": {
+            "pral": -2.0,
+            "density": 95
+        }
+    }
+]
