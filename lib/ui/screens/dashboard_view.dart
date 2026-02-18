@@ -597,73 +597,93 @@ class _FoodCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final c = food.approved ? colors.accent : colors.error;
-    return GestureDetector(
-      onTap: () => showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        backgroundColor: Colors.transparent,
-        builder: (_) => FoodModal(food: food),
-      ),
-      child: Container(
+    return Dismissible(
+      key: Key(food.id + food.addedAt.toIso8601String()),
+      direction: DismissDirection.endToStart,
+      onDismissed: (_) {
+        context.read<MealProvider>().removeFood(food);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("${food.name} supprimé")),
+        );
+      },
+      background: Container(
         margin: const EdgeInsets.only(bottom: 10),
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 20),
         decoration: BoxDecoration(
-          color: colors.surface,
+          color: colors.error,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: c.withValues(alpha: 0.2)),
         ),
-        child: Row(
-          children: [
-            Container(
-              width: 76,
-              height: 76,
-              decoration: BoxDecoration(
-                color: c.withValues(alpha: 0.08),
-                borderRadius:
-                const BorderRadius.horizontal(left: Radius.circular(20)),
+        child: const Icon(Icons.delete, color: Colors.white),
+      ),
+      child: GestureDetector(
+        onTap: () => showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (_) => FoodModal(food: food),
+        ),
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 10),
+          decoration: BoxDecoration(
+            color: colors.surface,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: c.withValues(alpha: 0.2)),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 76,
+                height: 76,
+                decoration: BoxDecoration(
+                  color: c.withValues(alpha: 0.08),
+                  borderRadius:
+                  const BorderRadius.horizontal(left: Radius.circular(20)),
+                ),
+                child: Center(
+                    child:
+                    Text(food.emoji, style: const TextStyle(fontSize: 36))),
               ),
-              child: Center(
-                  child:
-                  Text(food.emoji, style: const TextStyle(fontSize: 36))),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(food.name,
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.w700, fontSize: 14),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis),
-                        ),
-                        Text(_fmt(food.addedAt),
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodySmall
-                                ?.copyWith(fontSize: 10)),
-                      ],
-                    ),
-                    const SizedBox(height: 5),
-                    Wrap(
-                      spacing: 5,
-                      children: [
-                        _Pill(food.scientific.label, food.scientific.color),
-                        _Pill("NOVA ${food.vitality.nova}", food.vitality.color),
-                        if (food.specific.electric)
-                          _Pill("⚡ Électrique", colors.accentSecondary),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    _MicroBar(value: food.vitality.freshness.toDouble(), color: c, colors: colors),
-                  ],
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(food.name,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w700, fontSize: 14),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis),
+                          ),
+                          Text(_fmt(food.addedAt),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(fontSize: 10)),
+                        ],
+                      ),
+                      const SizedBox(height: 5),
+                      Wrap(
+                        spacing: 5,
+                        children: [
+                          _Pill(food.scientific.label, food.scientific.color),
+                          _Pill("NOVA ${food.vitality.nova}", food.vitality.color),
+                          if (food.specific.electric)
+                            _Pill("⚡ Électrique", colors.accentSecondary),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      _MicroBar(value: food.vitality.freshness.toDouble(), color: c, colors: colors),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

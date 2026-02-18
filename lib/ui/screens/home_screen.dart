@@ -9,6 +9,7 @@ import 'package:vital_track/ui/screens/dashboard_view.dart';
 import 'package:vital_track/ui/screens/search_screen.dart';
 
 import 'package:vital_track/ui/screens/modes_screen.dart';
+import 'package:vital_track/ui/screens/favorites_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -25,6 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
     DashboardView(),
     SearchScreen(),
     SizedBox(), // Placeholder for 'Ajouter' which opens modal
+    FavoritesScreen(),
     ModesScreen(),
   ];
 
@@ -85,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
           setState(() => _currentIndex = index);
 
           // Trigger mode-screen mascot tip
-          if (index == 3) {
+          if (index == 4) {
             final mascot = context.read<MascotProvider>();
             Future.delayed(const Duration(milliseconds: 400), () {
               mascot.showRandomTip();

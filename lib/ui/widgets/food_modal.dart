@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vital_track/models/food.dart';
 import 'package:vital_track/providers/meal_provider.dart';
+import 'package:vital_track/providers/favorites_provider.dart';
 import 'package:vital_track/ui/theme.dart';
 import 'package:vital_track/ui/widgets/score_bar.dart';
 import 'package:vital_track/ui/widgets/pulse_ring.dart';
@@ -89,7 +90,21 @@ class _FoodModalState extends State<FoodModal> with SingleTickerProviderStateMix
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(food.name, style: Theme.of(context).textTheme.displayMedium?.copyWith(fontSize: 22)),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(child: Text(food.name, style: Theme.of(context).textTheme.displayMedium?.copyWith(fontSize: 22))),
+                          Consumer<FavoritesProvider>(
+                            builder: (context, favs, _) => IconButton(
+                              icon: Icon(
+                                favs.isFavorite(food) ? Icons.favorite : Icons.favorite_border,
+                                color: favs.isFavorite(food) ? Colors.redAccent : context.colors.iconMuted,
+                              ),
+                              onPressed: () => favs.toggleFavorite(food),
+                            ),
+                          ),
+                        ],
+                      ),
                       const SizedBox(height: 2),
                       Text("${food.family} · ${food.origin}", style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.7))),
                       const SizedBox(height: 8),

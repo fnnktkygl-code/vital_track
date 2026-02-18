@@ -33,9 +33,10 @@ class BottomNavBar extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _buildNavItem(context, 0, "🌿", "Accueil", colors),
-              _buildNavItem(context, 1, "🔍", "Aliments", colors),
+              _buildNavItem(context, 1, "🔍", "Chercher", colors),
               _buildNavItem(context, 2, "➕", "Ajouter", colors, accent: true),
-              _buildNavItem(context, 3, "📊", "Protocole", colors),
+              _buildNavItem(context, 3, "❤️", "Favoris", colors),
+              _buildNavItem(context, 4, "📊", "Modes", colors),
             ],
           ),
         ),
