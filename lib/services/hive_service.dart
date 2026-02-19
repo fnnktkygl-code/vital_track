@@ -19,8 +19,8 @@ class HiveService {
     if (!Hive.isAdapterRegistered(3)) Hive.registerAdapter(SpecificDataAdapter());
     
     // RAG Adapters
-    if (!Hive.isAdapterRegistered(4)) Hive.registerAdapter(KnowledgeTypeAdapter());
-    if (!Hive.isAdapterRegistered(5)) Hive.registerAdapter(KnowledgeSourceAdapter());
+    if (!Hive.isAdapterRegistered(5)) Hive.registerAdapter(KnowledgeTypeAdapter());
+    if (!Hive.isAdapterRegistered(6)) Hive.registerAdapter(KnowledgeSourceAdapter());
 
     await Hive.openBox<Food>(_mealBoxName);
     await Hive.openBox(settingsBoxName);

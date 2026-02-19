@@ -134,7 +134,9 @@ class _ScanScreenState extends State<ScanScreen>
     try {
       final XFile? img = await _picker.pickImage(
         source: ImageSource.camera,
-        imageQuality: 85,
+        maxWidth: 800,
+        maxHeight: 800,
+        imageQuality: 70,
       );
       if (img == null) return;
 
@@ -147,19 +149,21 @@ class _ScanScreenState extends State<ScanScreen>
       if (!mounted) return;
 
       if (data != null) {
-        final food = FoodMapper.fromAIJson(data);
-        if (food != null) {
-          await _hiveService.addToHistory(food);
+        final foods = FoodMapper.fromAIJsonList(data);
+        if (foods.isNotEmpty) {
+          for (final f in foods) {
+            await _hiveService.addToHistory(f);
+          }
 
-          // Generate floating labels from food tags/family
-          _labels = _buildLabels(food);
+          // Generate floating labels from first detected food
+          _labels = _buildLabels(foods.first);
           _labelAnim.forward(from: 0);
 
           // After labels animate in, show results
           await Future.delayed(const Duration(milliseconds: 1200));
           if (mounted) {
             setState(() => _isProcessing = false);
-            _showScanResults([food], confidence: 89);
+            _showScanResults(foods, confidence: 89);
           }
           return;
         }
@@ -174,8 +178,12 @@ class _ScanScreenState extends State<ScanScreen>
 
   // ── GALLERY ──────────────────────────────────────────────────────────────────
   Future<void> _pickGallery() async {
-    final XFile? img =
-    await _picker.pickImage(source: ImageSource.gallery, imageQuality: 85);
+    final XFile? img = await _picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 800,
+      maxHeight: 800,
+      imageQuality: 70,
+    );
     if (img == null) return;
 
     setState(() => _isProcessing = true);
@@ -184,10 +192,12 @@ class _ScanScreenState extends State<ScanScreen>
     setState(() => _isProcessing = false);
 
     if (data != null) {
-      final food = FoodMapper.fromAIJson(data);
-      if (food != null) {
-        await _hiveService.addToHistory(food);
-        _showScanResults([food], confidence: 87);
+      final foods = FoodMapper.fromAIJsonList(data);
+      if (foods.isNotEmpty) {
+        for (final f in foods) {
+          await _hiveService.addToHistory(f);
+        }
+        _showScanResults(foods, confidence: 87);
         return;
       }
     }

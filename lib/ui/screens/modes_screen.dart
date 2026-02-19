@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vital_track/providers/mode_provider.dart';
 import 'package:vital_track/providers/mascot_provider.dart';
+import 'package:vital_track/ui/theme.dart';
 
 import 'package:vital_track/ui/screens/profile_screen.dart';
 import 'package:vital_track/ui/screens/knowledge_admin_screen.dart';
@@ -27,14 +28,14 @@ class ModesScreen extends StatelessWidget {
                 children: [
                   IconButton(
                     icon: Icon(Icons.person_outline,
-                        color: Theme.of(context).colorScheme.onSurface),
+                        color: context.colors.icon),
                     onPressed: () => Navigator.push(context,
                         MaterialPageRoute(builder: (_) => const ProfileScreen())),
                     tooltip: "Profil",
                   ),
                   IconButton(
                     icon: Icon(Icons.library_books_outlined,
-                        color: Theme.of(context).colorScheme.onSurface),
+                        color: context.colors.icon),
                     onPressed: () => Navigator.push(
                         context,
                         MaterialPageRoute(

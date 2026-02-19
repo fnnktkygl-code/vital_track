@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
+import 'package:vital_track/models/knowledge_source.dart';
 import 'package:vital_track/services/ai_service.dart';
 import 'package:vital_track/services/knowledge_service.dart';
 import 'package:vital_track/services/hive_service.dart';
@@ -16,9 +18,17 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatMessage {
   final String id;
-  final String text;
+  String text;
   final bool isUser;
-  _ChatMessage({required this.text, required this.isUser}) : id = const Uuid().v4();
+  final List<KnowledgeSource> sources;
+  bool isStreaming;
+
+  _ChatMessage({
+    required this.text,
+    required this.isUser,
+    this.sources = const [],
+    this.isStreaming = false,
+  }) : id = const Uuid().v4();
 }
 
 class _ChatScreenState extends State<ChatScreen> {
@@ -27,19 +37,24 @@ class _ChatScreenState extends State<ChatScreen> {
   final KnowledgeService _knowledgeService = KnowledgeService(HiveService());
   final List<_ChatMessage> _messages = [];
   bool _isTyping = false;
+  StreamSubscription<String>? _streamSub;
 
   @override
   void initState() {
     super.initState();
-    _initKnowledge();
     _messages.add(_ChatMessage(
-      text: "Coo! I'm ready to help you with your Vitalist journey. Ask me anything about Dr. Sebi or Arnold Ehret's principles! 🦜",
+      text:
+          "Coo! I'm your Vitalist guide. Ask me about Dr. Sebi, Arnold Ehret, or Dr. Morse — I have their full teachings in my knowledge base! 🐦",
       isUser: false,
     ));
   }
 
-  Future<void> _initKnowledge() async {
-    // await _knowledgeService.init(); // Hive initialized in main/HiveService
+  @override
+  void dispose() {
+    _streamSub?.cancel();
+    _ctrl.dispose();
+    _scrollCtrl.dispose();
+    super.dispose();
   }
 
   void _scrollToBottom() {
@@ -47,7 +62,7 @@ class _ChatScreenState extends State<ChatScreen> {
       if (_scrollCtrl.hasClients) {
         _scrollCtrl.animateTo(
           _scrollCtrl.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 200),
           curve: Curves.easeOut,
         );
       }
@@ -56,34 +71,64 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Future<void> _sendMessage() async {
     final text = _ctrl.text.trim();
-    if (text.isEmpty) return;
+    if (text.isEmpty || _isTyping) return;
+
+    final contextSources = _knowledgeService.searchSources(text);
+    final profile = context.read<ProfileProvider>().profile;
+
+    final aiMsg = _ChatMessage(
+      text: '',
+      isUser: false,
+      sources: contextSources,
+      isStreaming: true,
+    );
 
     setState(() {
       _messages.add(_ChatMessage(text: text, isUser: true));
+      _messages.add(aiMsg);
       _isTyping = true;
       _ctrl.clear();
     });
     _scrollToBottom();
 
-    final contextSources = _knowledgeService.searchSources(text);
-    final profile = context.read<ProfileProvider>().profile;
-    final response = await AIService.chatWithMascot(text, profile, contextSources);
+    final stream =
+        AIService.chatWithMascotStream(text, profile, contextSources);
 
-    if (!mounted) return;
-    setState(() {
-      _isTyping = false;
-      _messages.add(_ChatMessage(
-        text: response ?? "Coo? Protocol error...",
-        isUser: false,
-      ));
-    });
-    _scrollToBottom();
+    _streamSub = stream.listen(
+      (chunk) {
+        if (!mounted) return;
+        setState(() {
+          aiMsg.text += chunk;
+        });
+        _scrollToBottom();
+      },
+      onDone: () {
+        if (!mounted) return;
+        setState(() {
+          aiMsg.isStreaming = false;
+          _isTyping = false;
+        });
+        _scrollToBottom();
+      },
+      onError: (_) {
+        if (!mounted) return;
+        setState(() {
+          if (aiMsg.text.isEmpty) {
+            aiMsg.text =
+                "Coo? I couldn't reach the cloud. Try again later! 🐦";
+          }
+          aiMsg.isStreaming = false;
+          _isTyping = false;
+        });
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
     return Scaffold(
+      backgroundColor: colors.surface,
       appBar: AppBar(
         title: const Text("Mascot Chat"),
         leading: IconButton(
@@ -96,24 +141,9 @@ class _ChatScreenState extends State<ChatScreen> {
           Expanded(
             child: ListView.builder(
               controller: _scrollCtrl,
-              padding: const EdgeInsets.all(16),
-              itemCount: _messages.length + (_isTyping ? 1 : 0),
-              itemBuilder: (ctx, i) {
-                if (i == _messages.length) {
-                  return Padding(
-                    padding: const EdgeInsets.only(left: 16, top: 8),
-                    child: Text(
-                      "🦜 En train d'écrire...",
-                      style: TextStyle(
-                        color: colors.textTertiary,
-                        fontStyle: FontStyle.italic,
-                        fontSize: 13,
-                      ),
-                    ),
-                  );
-                }
-                return _ChatBubble(msg: _messages[i]);
-              },
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              itemCount: _messages.length,
+              itemBuilder: (ctx, i) => _ChatBubble(msg: _messages[i]),
             ),
           ),
           _buildInput(colors),
@@ -139,8 +169,10 @@ class _ChatScreenState extends State<ChatScreen> {
               decoration: InputDecoration(
                 hintText: "Posez votre question...",
                 hintStyle: TextStyle(color: colors.textTertiary),
+                border: InputBorder.none,
               ),
               onSubmitted: (_) => _sendMessage(),
+              textInputAction: TextInputAction.send,
             ),
           ),
           const SizedBox(width: 12),
@@ -151,9 +183,7 @@ class _ChatScreenState extends State<ChatScreen> {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: _isTyping
-                    ? colors.surfaceSubtle
-                    : colors.accent,
+                color: _isTyping ? colors.surfaceSubtle : colors.accent,
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -169,41 +199,307 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 }
 
+// ── CHAT BUBBLE ──────────────────────────────────────────────────────────────
+
 class _ChatBubble extends StatelessWidget {
   final _ChatMessage msg;
   const _ChatBubble({required this.msg});
 
   @override
   Widget build(BuildContext context) {
-    final isUser = msg.isUser;
+    if (msg.isUser) {
+      return _buildUserBubble(context);
+    }
+    return _buildAiBubble(context);
+  }
+
+  Widget _buildUserBubble(BuildContext context) {
     final colors = context.colors;
     return Align(
-      alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
+      alignment: Alignment.centerRight,
       child: Container(
         constraints:
-        BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
-        margin: const EdgeInsets.symmetric(vertical: 6),
+            BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.78),
+        margin: const EdgeInsets.only(top: 16, bottom: 4),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: isUser ? colors.accent : colors.surfaceSubtle,
-          borderRadius: BorderRadius.only(
-            topLeft: const Radius.circular(18),
-            topRight: const Radius.circular(18),
-            bottomLeft: Radius.circular(isUser ? 18 : 4),
-            bottomRight: Radius.circular(isUser ? 4 : 18),
+          color: colors.accent,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+            bottomLeft: Radius.circular(20),
+            bottomRight: Radius.circular(4),
           ),
-          border: isUser
-              ? null
-              : Border.all(color: colors.border),
         ),
         child: Text(
           msg.text,
           style: TextStyle(
-            color: isUser ? colors.accentOnPrimary : colors.textPrimary,
+            color: colors.accentOnPrimary,
             fontSize: 15,
             height: 1.5,
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildAiBubble(BuildContext context) {
+    final colors = context.colors;
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(top: 8, bottom: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // AI avatar row
+          Row(
+            children: [
+              Container(
+                width: 28,
+                height: 28,
+                decoration: BoxDecoration(
+                  color: colors.accentSubtle,
+                  shape: BoxShape.circle,
+                ),
+                child: const Center(
+                    child: Text('🐦', style: TextStyle(fontSize: 14))),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'VitalTrack',
+                style: TextStyle(
+                  color: colors.textSecondary,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              if (msg.isStreaming) ...[
+                const SizedBox(width: 8),
+                SizedBox(
+                  width: 12,
+                  height: 12,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 1.5,
+                    color: colors.accent,
+                  ),
+                ),
+              ],
+            ],
+          ),
+          const SizedBox(height: 8),
+          // Full-width markdown content
+          Padding(
+            padding: const EdgeInsets.only(left: 36),
+            child: msg.text.isEmpty
+                ? Text('...', style: TextStyle(color: colors.textTertiary))
+                : _MarkdownBody(text: msg.text, colors: colors),
+          ),
+          // Source chips (shown after streaming completes)
+          if (!msg.isUser && msg.sources.isNotEmpty && !msg.isStreaming)
+            Padding(
+              padding: const EdgeInsets.only(left: 36, top: 10),
+              child: Wrap(
+                spacing: 6,
+                runSpacing: 4,
+                children: msg.sources.map((s) {
+                  final icon = switch (s.type) {
+                    KnowledgeType.pdf => Icons.picture_as_pdf,
+                    KnowledgeType.url => Icons.link,
+                    KnowledgeType.youtube => Icons.video_library,
+                    KnowledgeType.text => Icons.description,
+                  };
+                  return Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: colors.surfaceSubtle,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: colors.borderSubtle),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(icon, size: 12, color: colors.textTertiary),
+                        const SizedBox(width: 4),
+                        Text(
+                          s.title.length > 30
+                              ? '${s.title.substring(0, 30)}...'
+                              : s.title,
+                          style: TextStyle(
+                              color: colors.textTertiary, fontSize: 11),
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+// ── SIMPLE MARKDOWN RENDERER ─────────────────────────────────────────────────
+
+class _MarkdownBody extends StatelessWidget {
+  final String text;
+  final AppColors colors;
+  const _MarkdownBody({required this.text, required this.colors});
+
+  @override
+  Widget build(BuildContext context) {
+    final lines = text.split('\n');
+    final widgets = <Widget>[];
+
+    for (int i = 0; i < lines.length; i++) {
+      final line = lines[i];
+
+      if (line.trim().isEmpty) {
+        widgets.add(const SizedBox(height: 6));
+        continue;
+      }
+
+      // ### Header
+      if (line.trimLeft().startsWith('### ')) {
+        widgets.add(Padding(
+          padding: const EdgeInsets.only(top: 12, bottom: 4),
+          child: Text(
+            line.trimLeft().substring(4),
+            style: TextStyle(
+              color: colors.textPrimary,
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              height: 1.4,
+            ),
+          ),
+        ));
+        continue;
+      }
+
+      // ## Header
+      if (line.trimLeft().startsWith('## ')) {
+        widgets.add(Padding(
+          padding: const EdgeInsets.only(top: 14, bottom: 4),
+          child: Text(
+            line.trimLeft().substring(3),
+            style: TextStyle(
+              color: colors.textPrimary,
+              fontSize: 17,
+              fontWeight: FontWeight.w800,
+              height: 1.4,
+            ),
+          ),
+        ));
+        continue;
+      }
+
+      // Bullet point (- or *)
+      final bulletMatch = RegExp(r'^\s*[-*]\s+(.+)$').firstMatch(line);
+      if (bulletMatch != null) {
+        widgets.add(Padding(
+          padding: const EdgeInsets.only(left: 8, top: 2, bottom: 2),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('•  ',
+                  style: TextStyle(
+                      color: colors.accent,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14)),
+              Expanded(
+                  child: _buildRichText(bulletMatch.group(1)!, colors, 14.5)),
+            ],
+          ),
+        ));
+        continue;
+      }
+
+      // Numbered list (1. 2. 3.)
+      final numMatch = RegExp(r'^\s*(\d+)\.\s+(.+)$').firstMatch(line);
+      if (numMatch != null) {
+        widgets.add(Padding(
+          padding: const EdgeInsets.only(left: 4, top: 2, bottom: 2),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                width: 24,
+                child: Text(
+                  '${numMatch.group(1)}.',
+                  style: TextStyle(
+                      color: colors.accent,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 14.5),
+                ),
+              ),
+              Expanded(
+                  child: _buildRichText(numMatch.group(2)!, colors, 14.5)),
+            ],
+          ),
+        ));
+        continue;
+      }
+
+      // Regular paragraph
+      widgets.add(Padding(
+        padding: const EdgeInsets.symmetric(vertical: 2),
+        child: _buildRichText(line, colors, 14.5),
+      ));
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: widgets,
+    );
+  }
+
+  /// Parses inline **bold** and [Source Title] citations into RichText.
+  static Widget _buildRichText(
+      String text, AppColors colors, double fontSize) {
+    final spans = <TextSpan>[];
+    final pattern = RegExp(r'\*\*(.+?)\*\*|\[([^\]]+)\]');
+    int lastEnd = 0;
+
+    for (final match in pattern.allMatches(text)) {
+      if (match.start > lastEnd) {
+        spans.add(TextSpan(text: text.substring(lastEnd, match.start)));
+      }
+
+      if (match.group(1) != null) {
+        // **bold**
+        spans.add(TextSpan(
+          text: match.group(1),
+          style: const TextStyle(fontWeight: FontWeight.w700),
+        ));
+      } else if (match.group(2) != null) {
+        // [Citation]
+        spans.add(TextSpan(
+          text: '[${match.group(2)}]',
+          style: TextStyle(
+            color: colors.accent,
+            fontWeight: FontWeight.w600,
+            fontSize: fontSize - 1,
+          ),
+        ));
+      }
+
+      lastEnd = match.end;
+    }
+
+    if (lastEnd < text.length) {
+      spans.add(TextSpan(text: text.substring(lastEnd)));
+    }
+
+    return RichText(
+      text: TextSpan(
+        style: TextStyle(
+          color: colors.textPrimary,
+          fontSize: fontSize,
+          height: 1.6,
+        ),
+        children: spans.isEmpty ? [TextSpan(text: text)] : spans,
       ),
     );
   }

@@ -6,7 +6,9 @@ import 'package:vital_track/providers/scan_provider.dart';
 import 'package:vital_track/providers/mode_provider.dart';
 import 'package:vital_track/providers/mascot_provider.dart';
 import 'package:vital_track/providers/profile_provider.dart';
+import 'package:vital_track/providers/favorites_provider.dart';
 import 'package:vital_track/services/hive_service.dart';
+import 'package:vital_track/services/knowledge_service.dart';
 import 'package:vital_track/services/vital_rules_engine.dart';
 import 'package:vital_track/ui/screens/home_screen.dart';
 
@@ -28,6 +30,9 @@ void main() async {
 
   await VitalRulesEngine.loadRules();
 
+  // Seed default knowledge base on first launch
+  await KnowledgeService(hiveService).seedDefaultSources();
+
   runApp(VitalTrackApp(hiveService: hiveService));
 }
 
@@ -48,6 +53,7 @@ class VitalTrackApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ThemeProvider(hiveService)),
         ChangeNotifierProvider(create: (_) => ScanProvider()),
         ChangeNotifierProvider(create: (_) => ProfileProvider()),
+        ChangeNotifierProvider(create: (_) => FavoritesProvider()),
       ],
       child: Consumer<ThemeProvider>(
         builder: (ctx, themeProv, child) {

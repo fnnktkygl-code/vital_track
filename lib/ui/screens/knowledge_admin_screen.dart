@@ -85,7 +85,6 @@ class _KnowledgeAdminScreenState extends State<KnowledgeAdminScreen> {
         iconColor = Colors.red;
         break;
       case KnowledgeType.text:
-      default:
         icon = Icons.description;
         iconColor = colors.textSecondary;
         break;
@@ -171,6 +170,14 @@ class _KnowledgeAdminScreenState extends State<KnowledgeAdminScreen> {
               onTap: () {
                 Navigator.pop(ctx);
                 _pickPdf();
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.video_library),
+              title: const Text("Vidéo YouTube"),
+              onTap: () {
+                Navigator.pop(ctx);
+                _showAddYoutubeDialog();
               },
             ),
             ListTile(
@@ -273,6 +280,64 @@ class _KnowledgeAdminScreenState extends State<KnowledgeAdminScreen> {
     );
   }
   
+  void _showAddYoutubeDialog() {
+    final urlCtrl = TextEditingController();
+    final titleCtrl = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text("Ajouter une vidéo YouTube"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: titleCtrl,
+              decoration: const InputDecoration(labelText: "Titre"),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: urlCtrl,
+              decoration: const InputDecoration(
+                  labelText: "URL YouTube (https://youtube.com/...)"),
+              keyboardType: TextInputType.url,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text("Annuler")),
+          ElevatedButton(
+            onPressed: () async {
+              if (urlCtrl.text.isNotEmpty && titleCtrl.text.isNotEmpty) {
+                Navigator.pop(ctx);
+                setState(() => _isLoading = true);
+                try {
+                  await _service.addYoutubeSource(
+                      titleCtrl.text, urlCtrl.text);
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text("Vidéo YouTube ajoutée !")));
+                  }
+                } catch (e) {
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text("Erreur: $e"),
+                        backgroundColor: Colors.red));
+                  }
+                } finally {
+                  if (mounted) setState(() => _isLoading = false);
+                }
+              }
+            },
+            child: const Text("Ajouter"),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _showAddTextDialog() {
     final textCtrl = TextEditingController();
     final titleCtrl = TextEditingController();
