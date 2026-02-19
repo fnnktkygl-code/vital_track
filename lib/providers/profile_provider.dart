@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:vital_track/models/profile.dart';
 import 'package:vital_track/services/ai_service.dart';
 import 'package:vital_track/services/hive_service.dart';
 

@@ -4,6 +4,7 @@ import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:vital_track/models/profile.dart';
 import 'package:vital_track/models/knowledge_source.dart';
+import 'package:vital_track/services/hive_service.dart';
 import 'package:flutter/foundation.dart';
 
 class AIService {
