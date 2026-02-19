@@ -86,4 +86,12 @@ class HiveService {
   String? loadMode() {
     return settingsBox.get('mode');
   }
+
+  Future<void> saveApiKey(String key) async {
+    await settingsBox.put('gemini_api_key', key);
+  }
+
+  String? loadApiKey() {
+    return settingsBox.get('gemini_api_key');
+  }
 }

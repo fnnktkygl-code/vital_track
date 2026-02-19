@@ -285,7 +285,9 @@ class _SearchScreenState extends State<SearchScreen> {
                 Text(f.family,
                     style: TextStyle(color: colors.textTertiary, fontSize: 12)),
                 const SizedBox(height: 6),
-                Row(
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 4,
                   children: [
                     if (f.tags.contains("Expert Verified"))
                       Padding(
@@ -294,7 +296,6 @@ class _SearchScreenState extends State<SearchScreen> {
                             size: 14, color: colors.accent),
                       ),
                     _buildTag(f.scientific.label, f.scientific.color),
-                    const SizedBox(width: 6),
                     _buildTag(f.specific.label, f.specific.color),
                   ],
                 ),

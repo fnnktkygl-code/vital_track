@@ -7,33 +7,44 @@ import 'package:vital_track/models/knowledge_source.dart';
 import 'package:flutter/foundation.dart';
 
 class AIService {
-  static const String _apiKey = String.fromEnvironment(
-    'GEMINI_API_KEY',
-    defaultValue: '',
-  );
+  static String? _cachedKey;
+  static final HiveService _hiveService = HiveService();
 
-  // ── FOOD ANALYSIS MODEL ───────────────────────────────────────────────────
-  // Dedicated model for food scanning with JSON output
-  static final _scanModel = GenerativeModel(
-    model: 'gemini-2.0-flash',
-    apiKey: _apiKey,
-    systemInstruction: Content.system(_foodAnalysisPrompt),
-    generationConfig: GenerationConfig(
-      temperature: 0.1, // Very low — factual food classification
-      responseMimeType: 'application/json',
-    ),
-  );
+  static String _getApiKey() {
+    if (_cachedKey != null) return _cachedKey!;
+    
+    // 1. Check environment (build-time)
+    const envKey = String.fromEnvironment('GEMINI_API_KEY');
+    if (envKey.isNotEmpty) {
+      _cachedKey = envKey;
+      return envKey;
+    }
 
-  // ── CHAT MODEL ────────────────────────────────────────────────────────────
-  // Dedicated model for mascot chat with grounded RAG responses
-  static final _chatModel = GenerativeModel(
-    model: 'gemini-2.0-flash',
-    apiKey: _apiKey,
-    systemInstruction: Content.system(_chatSystemPrompt),
-    generationConfig: GenerationConfig(
-      temperature: 0.3, // Low — factual but conversational
-    ),
-  );
+    // 2. Check Hive (runtime)
+    final hiveKey = _hiveService.loadApiKey();
+    if (hiveKey != null && hiveKey.isNotEmpty) {
+      _cachedKey = hiveKey;
+      return hiveKey;
+    }
+
+    return '';
+  }
+
+  static GenerativeModel _getModel({bool isChat = false}) {
+    final key = _getApiKey();
+    return GenerativeModel(
+      model: 'gemini-2.0-flash',
+      apiKey: key,
+      systemInstruction: Content.system(isChat ? _chatSystemPrompt : _foodAnalysisPrompt),
+      generationConfig: GenerationConfig(
+        temperature: isChat ? 0.3 : 0.1,
+        responseMimeType: isChat ? 'text/plain' : 'application/json',
+      ),
+    );
+  }
+
+  // To allow clearing cache when user updates key
+  static void resetKeyCache() => _cachedKey = null;
 
   // ── SYSTEM PROMPTS (sent ONCE via systemInstruction, not per request) ─────
 
@@ -115,13 +126,13 @@ CORE BEHAVIOR:
 
   static Future<Map<String, dynamic>?> analyzeText(String query) async {
     debugPrint("AIService: Analyzing text: $query");
-    if (_apiKey.isEmpty) {
+    if (_getApiKey().isEmpty) {
       debugPrint("AIService Error: GEMINI_API_KEY not set.");
       return null;
     }
 
     try {
-      final response = await _scanModel.generateContent(
+      final response = await _getModel().generateContent(
         [Content.text("Analyze this food: $query")],
       );
       if (response.text == null) return null;
@@ -135,14 +146,14 @@ CORE BEHAVIOR:
 
   static Future<Map<String, dynamic>?> analyzeImage(XFile image) async {
     debugPrint("AIService: Analyzing image...");
-    if (_apiKey.isEmpty) {
+    if (_getApiKey().isEmpty) {
       debugPrint("AIService Error: GEMINI_API_KEY not set.");
       return null;
     }
 
     final bytes = await image.readAsBytes();
     try {
-      final response = await _scanModel.generateContent([
+      final response = await _getModel().generateContent([
         Content.multi([
           TextPart("Identify all foods/ingredients in this image."),
           DataPart('image/jpeg', bytes),
@@ -162,12 +173,12 @@ CORE BEHAVIOR:
 
   static Future<String?> chatWithMascot(
       String query, Profile profile, List<KnowledgeSource> contextSources) async {
-    if (_apiKey.isEmpty) return "Erreur : clé API manquante. Configurez GEMINI_API_KEY.";
+    if (_getApiKey().isEmpty) return "Erreur : clé API manquante. Configurez GEMINI_API_KEY.";
 
     final userPrompt = _buildChatPrompt(query, profile, contextSources);
 
     try {
-      final response = await _chatModel.generateContent(
+      final response = await _getModel(isChat: true).generateContent(
         [Content.text(userPrompt)],
       );
       return response.text;
@@ -180,7 +191,7 @@ CORE BEHAVIOR:
 
   static Stream<String> chatWithMascotStream(
       String query, Profile profile, List<KnowledgeSource> contextSources) async* {
-    if (_apiKey.isEmpty) {
+    if (_getApiKey().isEmpty) {
       yield "Erreur : clé API manquante. Configurez GEMINI_API_KEY.";
       return;
     }
@@ -188,7 +199,7 @@ CORE BEHAVIOR:
     final userPrompt = _buildChatPrompt(query, profile, contextSources);
 
     try {
-      final stream = _chatModel.generateContentStream(
+      final stream = _getModel(isChat: true).generateContentStream(
         [Content.text(userPrompt)],
       );
       await for (final chunk in stream) {

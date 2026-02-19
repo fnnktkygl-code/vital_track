@@ -1,15 +1,16 @@
-import 'dart:convert';
-import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:vital_track/models/profile.dart';
+import 'package:vital_track/services/ai_service.dart';
+import 'package:vital_track/services/hive_service.dart';
 
 class ProfileProvider with ChangeNotifier {
+  final HiveService _hiveService = HiveService();
   static const String _boxName = 'profileBox';
   static const String _key = 'userProfile';
   late Box _box;
 
   Profile _profile = const Profile();
   Profile get profile => _profile;
+
+  String get geminiApiKey => _hiveService.loadApiKey() ?? '';
 
   bool _isInitialized = false;
 
@@ -69,5 +70,11 @@ class ProfileProvider with ChangeNotifier {
       current.add(restriction);
     }
     await updateProfile(restrictions: current);
+  }
+
+  Future<void> updateApiKey(String key) async {
+    await _hiveService.saveApiKey(key);
+    AIService.resetKeyCache();
+    notifyListeners();
   }
 }

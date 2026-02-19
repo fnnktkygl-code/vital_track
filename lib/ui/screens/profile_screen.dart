@@ -96,12 +96,36 @@ class ProfileScreen extends StatelessWidget {
                 colors: colors,
                 onTap: () => profileProvider.toggleRestriction(r),
                 useSecondary: true,
-              );
-            }).toList(),
-          ),
-        ],
-      ),
-    );
+               );
+             }).toList(),
+           ),
+           const SizedBox(height: 24),
+ 
+           // ── API KEY ───────────────────────────────────────────────────────
+           _SectionLabel(label: "CONFIGURATION AI (GOOGLE GEMINI)", colors: colors),
+           const SizedBox(height: 12),
+           TextField(
+             controller: TextEditingController(text: profileProvider.geminiApiKey)
+               ..selection = TextSelection.fromPosition(
+                   TextPosition(offset: profileProvider.geminiApiKey.length)),
+             style: TextStyle(color: colors.textPrimary, fontSize: 13, fontFamily: 'monospace'),
+             obscureText: true,
+             decoration: InputDecoration(
+               hintText: "Collez votre clé API ici",
+               helperText: "Nécessaire pour le scan et le chat mascot.",
+               helperStyle: TextStyle(color: colors.textTertiary, fontSize: 11),
+               suffixIcon: Icon(Icons.vpn_key, color: colors.iconMuted, size: 18),
+             ),
+             onSubmitted: (val) => profileProvider.updateApiKey(val),
+           ),
+           const SizedBox(height: 12),
+           Text(
+             "Vous pouvez obtenir une clé gratuite sur aistudio.google.com",
+             style: TextStyle(color: colors.textTertiary, fontSize: 10, fontStyle: FontStyle.italic),
+           ),
+         ],
+       ),
+     );
   }
 }
 
