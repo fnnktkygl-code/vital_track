@@ -6,6 +6,7 @@ import 'package:vital_track/providers/mode_provider.dart';
 import 'package:vital_track/providers/mascot_provider.dart';
 import 'package:vital_track/ui/screens/knowledge_admin_screen.dart';
 import 'package:vital_track/ui/theme.dart';
+import 'package:vital_track/services/update_service.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -446,7 +447,101 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 const SizedBox(height: 28),
 
                 // ═══════════════════════════════════════════════════════════
-                // 7. ZONE DE DANGER
+                // 7. MASCOTTE
+                // ═══════════════════════════════════════════════════════════
+                _Section(
+                  icon: "🐦",
+                  title: "Mascotte",
+                  subtitle: "Pigeon coach IA",
+                  colors: colors,
+                ),
+                const SizedBox(height: 10),
+                Consumer<MascotProvider>(
+                  builder: (ctx, mascotProv, _) => _Card(
+                    colors: colors,
+                    child: Row(
+                      children: [
+                        Icon(mascotProv.isVisible ? Icons.visibility_rounded : Icons.visibility_off_rounded,
+                            color: colors.accent, size: 20),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("Afficher la mascotte",
+                                  style: TextStyle(color: colors.textPrimary, fontWeight: FontWeight.w600, fontSize: 14)),
+                              const SizedBox(height: 2),
+                              Text(mascotProv.isVisible ? "Active — affiche des conseils" : "Masquée & muette",
+                                  style: TextStyle(color: colors.textTertiary, fontSize: 12)),
+                            ],
+                          ),
+                        ),
+                        Switch.adaptive(
+                          value: mascotProv.isVisible,
+                          activeColor: colors.accent,
+                          onChanged: (_) => mascotProv.toggleVisibility(),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 28),
+
+                // ═══════════════════════════════════════════════════════════
+                // 8. MISES À JOUR
+                // ═══════════════════════════════════════════════════════════
+                _Section(
+                  icon: "🔄",
+                  title: "Mises à jour",
+                  subtitle: "Vérifiez les nouvelles versions",
+                  colors: colors,
+                ),
+                const SizedBox(height: 10),
+                _Card(
+                  colors: colors,
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () {
+                      UpdateService.checkForUpdates(context, forceShow: true);
+                    },
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: colors.accent.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Icon(Icons.system_update_rounded, color: colors.accent, size: 20),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("Vérifier les mises à jour",
+                                  style: TextStyle(
+                                      color: colors.textPrimary,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 14)),
+                              const SizedBox(height: 2),
+                              Text("Version actuelle : v1.0.1",
+                                  style: TextStyle(color: colors.textTertiary, fontSize: 12)),
+                            ],
+                          ),
+                        ),
+                        Icon(Icons.chevron_right_rounded, color: colors.textTertiary),
+                      ],
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 28),
+
+                // ═══════════════════════════════════════════════════════════
+                // 9. ZONE DE DANGER
                 // ═══════════════════════════════════════════════════════════
                 _Section(
                   icon: "⚠️",
