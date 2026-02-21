@@ -1,6 +1,6 @@
 {
     "version": "1.0.1",
     "buildNumber": 2,
-    "apkUrl": "https://fnnktkygl-code.github.io/vital_track/vital_track.apk",
-    "releaseNotes": "- Système de mise à jour automatique in-app 🚀\n- Toggle données démo dans les statistiques de jeûne\n- Correction de bugs d'affichage de la mascotte"
+    "apkUrl": "https://github.com/fnnktkygl-code/vital_track/releases/download/v1.0.1/vital_track.apk",
+    "releaseNotes": "- Système de mise à jour automatique in-app 🚀\n- Toggle données démo dans les statistiques de jeûne\n- Disclaimer santé au premier lancement\n- Clé API Gemini sécurisée (saisie utilisateur uniquement)"
 }

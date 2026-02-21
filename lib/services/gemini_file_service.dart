@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:mime/mime.dart';
+import 'package:vital_track/services/hive_service.dart';
 
 /// Represents a file uploaded to the Gemini File API.
 class GeminiFile {
@@ -48,10 +49,16 @@ class GeminiFile {
 
 /// Wraps the Gemini File API (REST) for uploading, listing, and deleting files.
 class GeminiFileService {
-  static const String _apiKey = String.fromEnvironment(
-    'GEMINI_API_KEY',
-    defaultValue: '',
-  );
+  static String _getApiKey() {
+    // 1. Check Hive (user-provided)
+    try {
+      final hiveKey = HiveService().loadApiKey();
+      if (hiveKey != null && hiveKey.isNotEmpty) return hiveKey;
+    } catch (_) {}
+    // 2. Check environment (build-time)
+    const envKey = String.fromEnvironment('GEMINI_API_KEY', defaultValue: '');
+    return envKey;
+  }
 
   static const String _baseUrl =
       'https://generativelanguage.googleapis.com/v1beta';
@@ -65,7 +72,7 @@ class GeminiFileService {
     required String displayName,
     String? mimeType,
   }) async {
-    if (_apiKey.isEmpty) {
+    if (_getApiKey().isEmpty) {
       throw Exception('GEMINI_API_KEY not set.');
     }
 
@@ -85,7 +92,7 @@ class GeminiFileService {
     // Step 1: Start resumable upload to get upload URI
     final startRequest = http.Request(
       'POST',
-      Uri.parse('$_uploadUrl?key=$_apiKey'),
+      Uri.parse('$_uploadUrl?key=${_getApiKey()}'),
     );
     startRequest.headers.addAll({
       'X-Goog-Upload-Protocol': 'resumable',
@@ -136,10 +143,10 @@ class GeminiFileService {
 
   /// Get the current status of an uploaded file.
   static Future<GeminiFile> getFile(String fileName) async {
-    if (_apiKey.isEmpty) throw Exception('GEMINI_API_KEY not set.');
+    if (_getApiKey().isEmpty) throw Exception('GEMINI_API_KEY not set.');
 
     final response = await http.get(
-      Uri.parse('$_baseUrl/$fileName?key=$_apiKey'),
+      Uri.parse('$_baseUrl/$fileName?key=${_getApiKey()}'),
     );
 
     if (response.statusCode != 200) {
@@ -173,10 +180,10 @@ class GeminiFileService {
 
   /// Delete an uploaded file from Google's servers.
   static Future<void> deleteFile(String fileName) async {
-    if (_apiKey.isEmpty) throw Exception('GEMINI_API_KEY not set.');
+    if (_getApiKey().isEmpty) throw Exception('GEMINI_API_KEY not set.');
 
     final response = await http.delete(
-      Uri.parse('$_baseUrl/$fileName?key=$_apiKey'),
+      Uri.parse('$_baseUrl/$fileName?key=${_getApiKey()}'),
     );
 
     if (response.statusCode != 200 && response.statusCode != 204) {
@@ -187,10 +194,10 @@ class GeminiFileService {
 
   /// List all files uploaded to the Gemini File API.
   static Future<List<GeminiFile>> listFiles() async {
-    if (_apiKey.isEmpty) throw Exception('GEMINI_API_KEY not set.');
+    if (_getApiKey().isEmpty) throw Exception('GEMINI_API_KEY not set.');
 
     final response = await http.get(
-      Uri.parse('$_baseUrl/files?key=$_apiKey'),
+      Uri.parse('$_baseUrl/files?key=${_getApiKey()}'),
     );
 
     if (response.statusCode != 200) {

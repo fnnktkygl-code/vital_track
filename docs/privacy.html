@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Politique de confidentialité — Vital Track</title>
+    <meta name="description" content="Politique de confidentialité de l'application Vital Track.">
+    <link rel="icon" type="image/png" href="screenshots/dashboard.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .privacy-content {
+            max-width: 780px;
+            margin: 0 auto;
+            padding: 120px 24px 80px;
+        }
+
+        .privacy-content h1 {
+            font-size: 2.2rem;
+            margin-bottom: 32px;
+        }
+
+        .privacy-content h2 {
+            font-size: 1.3rem;
+            margin: 36px 0 12px;
+            color: var(--accent);
+        }
+
+        .privacy-content p,
+        .privacy-content li {
+            color: var(--text-muted);
+            line-height: 1.7;
+            margin-bottom: 12px;
+        }
+
+        .privacy-content ul {
+            padding-left: 24px;
+        }
+
+        .privacy-content a {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+            font-size: 0.95rem;
+        }
+
+        .back-link:hover {
+            color: var(--accent);
+        }
+
+        .last-updated {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            margin-bottom: 32px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <div class="privacy-content">
+        <a href="index.html" class="back-link">← Retour à l'accueil</a>
+
+        <h1>Politique de confidentialité</h1>
+        <p class="last-updated">Dernière mise à jour : 21 février 2026</p>
+
+        <h2>1. Données collectées</h2>
+        <p>Vital Track stocke toutes vos données <strong>localement sur votre appareil</strong> via une base de données
+            Hive. Aucune donnée personnelle n'est envoyée à nos serveurs — nous n'en avons pas.</p>
+        <p>Les données stockées localement incluent :</p>
+        <ul>
+            <li>Votre nom d'utilisateur (pseudonyme, pas d'inscription requise)</li>
+            <li>Vos repas enregistrés et aliments recherchés</li>
+            <li>Vos sessions de jeûne et programmes</li>
+            <li>Vos sessions de respiration</li>
+            <li>Vos conversations avec le coach IA</li>
+            <li>Votre clé API Gemini (si fournie)</li>
+        </ul>
+
+        <h2>2. Utilisation de l'API Google Gemini</h2>
+        <p>Si vous utilisez les fonctionnalités d'IA (coach mascotte, analyse d'images, chat), vos requêtes sont
+            envoyées à l'<strong>API Google Gemini</strong>. Cela inclut :</p>
+        <ul>
+            <li>Le texte de vos questions / messages</li>
+            <li>Les images que vous soumettez pour analyse (photos de plats)</li>
+            <li>Le contexte de conversation nécessaire à la réponse</li>
+        </ul>
+        <p>Ces données sont soumises à la <a href="https://ai.google.dev/gemini-api/terms" target="_blank"
+                rel="noopener">politique de confidentialité de Google Gemini</a>. Vital Track ne contrôle pas le
+            traitement de ces données par Google.</p>
+        <p><strong>Votre clé API Gemini</strong> est stockée uniquement sur votre appareil et n'est jamais transmise à
+            des tiers autres que Google pour l'authentification API.</p>
+
+        <h2>3. Données de navigation (site web)</h2>
+        <p>Ce site web est hébergé sur GitHub Pages. GitHub peut collecter des informations techniques standard (adresse
+            IP, type de navigateur) conformément à sa propre <a
+                href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement"
+                target="_blank" rel="noopener">politique de confidentialité</a>.</p>
+        <p>Nous n'utilisons pas de cookies, trackers ou outils d'analyse tiers sur ce site.</p>
+
+        <h2>4. Partage de données</h2>
+        <p>Nous ne vendons, ne partageons et ne transmettons aucune donnée personnelle à des tiers. Les seuls échanges
+            de données se font entre votre appareil et l'API Google Gemini, à votre initiative.</p>
+
+        <h2>5. Sécurité</h2>
+        <p>Vos données sont stockées localement et ne transitent pas par un serveur central. La sécurité de vos données
+            dépend de la sécurité de votre appareil (code de verrouillage, chiffrement du stockage).</p>
+
+        <h2>6. Vos droits</h2>
+        <p>Vous pouvez à tout moment :</p>
+        <ul>
+            <li><strong>Supprimer</strong> toutes vos données en désinstallant l'application</li>
+            <li><strong>Consulter</strong> vos données via l'interface de l'application</li>
+            <li><strong>Révoquer</strong> l'accès IA en supprimant votre clé API Gemini dans les paramètres</li>
+        </ul>
+
+        <h2>7. Avertissement santé</h2>
+        <p>Cette application ne remplace pas un avis médical. Consultez un professionnel de santé avant de modifier
+            votre alimentation ou de pratiquer le jeûne. Les approches présentées (Dr. Sebi, Arnold Ehret, Dr. Morse,
+            Wim Hof) sont à titre informatif et éducatif uniquement.</p>
+
+        <h2>8. Contact</h2>
+        <p>Pour toute question relative à la confidentialité, vous pouvez ouvrir une issue sur le <a
+                href="https://github.com/fnnktkygl-code/vital_track" target="_blank" rel="noopener">dépôt GitHub</a> du
+            projet.</p>
+    </div>
+</body>
+
+</html>

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vital_track/services/update_service.dart';
+import 'package:vital_track/services/hive_service.dart';
 import 'package:vital_track/ui/theme.dart';
 import 'package:vital_track/ui/widgets/bottom_nav_bar.dart';
 import 'package:vital_track/ui/widgets/add_meal_sheet.dart';
@@ -45,6 +46,8 @@ class _HomeScreenState extends State<HomeScreen> {
     if (!_mascotInitialized) {
       _mascotInitialized = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
+        // Show health disclaimer on first launch
+        _showDisclaimerIfNeeded();
         // Check for updates
         UpdateService.checkForUpdates(context);
         
@@ -56,6 +59,49 @@ class _HomeScreenState extends State<HomeScreen> {
       final fp = context.read<FastingProvider>();
       fp.addListener(() => _onFastingUpdate(fp));
     }
+  }
+
+  void _showDisclaimerIfNeeded() {
+    final hive = HiveService();
+    final accepted = hive.settingsBox.get('disclaimer_accepted', defaultValue: false);
+    if (accepted == true) return;
+    if (!mounted) return;
+
+    final colors = VitalColors.of(context);
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: colors.surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Icon(Icons.health_and_safety, color: Colors.redAccent, size: 28),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text('Avertissement santé',
+                style: TextStyle(color: colors.textPrimary, fontWeight: FontWeight.bold, fontSize: 18)),
+            ),
+          ],
+        ),
+        content: Text(
+          'Cette application ne remplace pas un avis médical.\n\n'
+          'Consultez un professionnel de santé avant de modifier votre alimentation '
+          'ou de pratiquer le jeûne.\n\n'
+          'Les approches présentées sont à titre informatif et éducatif uniquement.',
+          style: TextStyle(color: colors.textSecondary, height: 1.45),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              hive.settingsBox.put('disclaimer_accepted', true);
+              Navigator.of(ctx).pop();
+            },
+            child: Text("J'ai compris", style: TextStyle(color: colors.accent, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
   }
 
   void _onFastingUpdate(FastingProvider fp) {

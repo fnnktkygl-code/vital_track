@@ -7,6 +7,19 @@
     <title>Vital Track — Jeûne, Respiration & Nutrition Vitaliste</title>
     <meta name="description"
         content="Vital Track : suivi de jeûne, respiration Wim Hof, nutrition alcaline. Inspiré par Dr. Sebi, Arnold Ehret, Dr. Morse et Wim Hof. Téléchargez l'APK Android.">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Vital Track — Jeûne, Respiration & Nutrition Vitaliste">
+    <meta property="og:description"
+        content="Suivez vos jeûnes, pratiquez la respiration Wim Hof, analysez chaque repas grâce à l'IA. Coach vitaliste inspiré par Dr. Sebi, Arnold Ehret, Dr. Morse et Wim Hof.">
+    <meta property="og:image" content="https://fnnktkygl-code.github.io/vital_track/screenshots/dashboard.png">
+    <meta property="og:url" content="https://fnnktkygl-code.github.io/vital_track/">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="screenshots/dashboard.png">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -63,14 +76,18 @@
                         <strong>Arnold Ehret</strong>, <strong>Dr. Morse</strong> et <strong>Wim Hof</strong>.
                     </p>
                     <div class="hero-actions">
-                        <a href="app/" class="btn-primary">
+                        <a href="app/" class="btn-primary"
+                            title="Version web — certaines fonctionnalités natives (caméra, scan) ne sont pas disponibles">
                             <i class="ri-global-line"></i> Essayer en ligne
                         </a>
-                        <a href="vital_track.apk" download class="btn-secondary">
+                        <a href="https://github.com/fnnktkygl-code/vital_track/releases/download/v1.0.1/vital_track.apk"
+                            download class="btn-secondary">
                             <i class="ri-android-line"></i> Télécharger l'APK
                         </a>
                         <span class="version-tag">v1.0.1</span>
                     </div>
+                    <p class="web-notice"><i class="ri-information-line"></i> La version web ne supporte pas la caméra
+                        ni le scan de code-barres.</p>
                     <div class="hero-trust">
                         <div class="trust-item"><i class="ri-shield-check-line"></i> Données locales</div>
                         <div class="trust-item"><i class="ri-wifi-off-line"></i> Fonctionne hors-ligne</div>
@@ -223,7 +240,8 @@
                             <li><strong>Profitez</strong> des mises à jour automatiques directement dans l'app !</li>
                         </ol>
                         <div class="cta-actions">
-                            <a href="vital_track.apk" download class="btn-primary btn-large">
+                            <a href="https://github.com/fnnktkygl-code/vital_track/releases/download/v1.0.1/vital_track.apk"
+                                download class="btn-primary btn-large">
                                 <i class="ri-download-cloud-2-line"></i> Obtenir Vital Track v1.0.1
                             </a>
                         </div>
@@ -236,6 +254,12 @@
     <!-- ═══════════ FOOTER ═══════════ -->
     <footer>
         <div class="container footer-content">
+            <div class="health-disclaimer">
+                <p><i class="ri-heart-pulse-line"></i> <strong>Avertissement santé :</strong> Cette application ne
+                    remplace pas un avis médical. Consultez un professionnel de santé avant de modifier votre
+                    alimentation ou de pratiquer le jeûne. Les approches présentées sont à titre informatif et éducatif
+                    uniquement.</p>
+            </div>
             <div class="footer-brand">
                 <span class="logo"><span class="logo-icon">🌿</span> Vital<span class="logo-accent">Track</span></span>
                 <p>Éveillez le potentiel régénérateur de votre corps.</p>
@@ -243,6 +267,8 @@
             <div class="footer-links">
                 <a href="https://github.com/fnnktkygl-code/vital_track" target="_blank" rel="noopener"><i
                         class="ri-github-fill"></i> GitHub</a>
+                <span class="footer-sep">·</span>
+                <a href="privacy.html"><i class="ri-shield-keyhole-line"></i> Politique de confidentialité</a>
             </div>
             <p class="copyright">&copy; 2026 Vital Track. Tous droits réservés.</p>
         </div>
