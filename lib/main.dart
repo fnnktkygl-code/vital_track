@@ -7,9 +7,12 @@ import 'package:vital_track/providers/mode_provider.dart';
 import 'package:vital_track/providers/mascot_provider.dart';
 import 'package:vital_track/providers/profile_provider.dart';
 import 'package:vital_track/providers/favorites_provider.dart';
+import 'package:vital_track/providers/fasting_provider.dart';
+import 'package:vital_track/providers/breathing_provider.dart';
 import 'package:vital_track/services/hive_service.dart';
 import 'package:vital_track/services/knowledge_service.dart';
 import 'package:vital_track/services/vital_rules_engine.dart';
+import 'package:vital_track/ui/widgets/mascot_widget.dart';
 import 'package:vital_track/ui/screens/home_screen.dart';
 
 void main() async {
@@ -31,7 +34,13 @@ void main() async {
   await VitalRulesEngine.loadRules();
 
   // Seed default knowledge base on first launch
-  await KnowledgeService(hiveService).seedDefaultSources();
+  final knowledgeService = KnowledgeService(hiveService);
+  await knowledgeService.seedDefaultSources();
+
+  // Re-upload expired Gemini files in background (non-blocking)
+  knowledgeService.refreshExpiredFiles().catchError((e) {
+    debugPrint("File refresh failed: $e");
+  });
 
   runApp(VitalTrackApp(hiveService: hiveService));
 }
@@ -39,6 +48,8 @@ void main() async {
 class VitalTrackApp extends StatelessWidget {
   final HiveService hiveService;
   const VitalTrackApp({super.key, required this.hiveService});
+
+  static final navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
@@ -54,13 +65,25 @@ class VitalTrackApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ScanProvider()),
         ChangeNotifierProvider(create: (_) => ProfileProvider()),
         ChangeNotifierProvider(create: (_) => FavoritesProvider()),
+        ChangeNotifierProvider(create: (_) => FastingProvider(hiveService)),
+        ChangeNotifierProvider(create: (_) => BreathingProvider(hiveService)),
       ],
       child: Consumer<ThemeProvider>(
         builder: (ctx, themeProv, child) {
           return MaterialApp(
             title: 'VitalTrack',
+            navigatorKey: navigatorKey,
             theme: themeProv.themeData,
             debugShowCheckedModeBanner: false,
+            builder: (context, child) {
+              return Stack(
+                children: [
+                  // ignore: use_null_aware_elements
+                  if (child != null) child,
+                  MascotOverlay(navigatorKey: navigatorKey),
+                ],
+              );
+            },
             home: const HomeScreen(),
           );
         },

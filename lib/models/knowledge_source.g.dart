@@ -24,13 +24,18 @@ class KnowledgeSourceAdapter extends TypeAdapter<KnowledgeSource> {
       sourceUrl: fields[4] as String?,
       addedDate: fields[5] as DateTime,
       chunks: (fields[6] as List).cast<String>(),
+      geminiFileUri: fields[7] as String?,
+      geminiFileName: fields[8] as String?,
+      uploadedAt: fields[9] as DateTime?,
+      localFilePath: fields[10] as String?,
+      uploadStatus: fields[11] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, KnowledgeSource obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(12)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -44,7 +49,17 @@ class KnowledgeSourceAdapter extends TypeAdapter<KnowledgeSource> {
       ..writeByte(5)
       ..write(obj.addedDate)
       ..writeByte(6)
-      ..write(obj.chunks);
+      ..write(obj.chunks)
+      ..writeByte(7)
+      ..write(obj.geminiFileUri)
+      ..writeByte(8)
+      ..write(obj.geminiFileName)
+      ..writeByte(9)
+      ..write(obj.uploadedAt)
+      ..writeByte(10)
+      ..write(obj.localFilePath)
+      ..writeByte(11)
+      ..write(obj.uploadStatus);
   }
 
   @override
@@ -73,6 +88,10 @@ class KnowledgeTypeAdapter extends TypeAdapter<KnowledgeType> {
         return KnowledgeType.url;
       case 3:
         return KnowledgeType.youtube;
+      case 4:
+        return KnowledgeType.image;
+      case 5:
+        return KnowledgeType.video;
       default:
         return KnowledgeType.text;
     }
@@ -92,6 +111,12 @@ class KnowledgeTypeAdapter extends TypeAdapter<KnowledgeType> {
         break;
       case KnowledgeType.youtube:
         writer.writeByte(3);
+        break;
+      case KnowledgeType.image:
+        writer.writeByte(4);
+        break;
+      case KnowledgeType.video:
+        writer.writeByte(5);
         break;
     }
   }

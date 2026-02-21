@@ -1,255 +1,8018 @@
 [
-    {
-        "id": "apple",
-        "names": [
-            "apple",
-            "pomme",
-            "pomme rouge",
-            "organic apple"
-        ],
-        "emoji": "🍎",
-        "family": "Rosaceae",
-        "vitality": {
-            "nova": 1,
-            "freshness": 95,
-            "label": "Brut · Vivant"
-        },
-        "specific": {
-            "mucus": "Dissolvant",
-            "hybrid": false,
-            "electric": true,
-            "label": "Électrique"
-        },
-        "scientific_defaults": {
-            "pral": -2.2,
-            "density": 90
-        }
+  {
+    "id": "apple",
+    "names": [
+      "apple",
+      "pomme"
+    ],
+    "emoji": "🍎",
+    "family": "Rosaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 95,
+      "label": "Brut · Vivant"
     },
-    {
-        "id": "key_lime",
-        "names": [
-            "key lime",
-            "citron vert",
-            "lime",
-            "citron"
-        ],
-        "emoji": "🍋",
-        "family": "Rutaceae",
-        "vitality": {
-            "nova": 1,
-            "freshness": 100,
-            "label": "Brut · Vivant"
-        },
-        "specific": {
-            "mucus": "Dissolvant",
-            "hybrid": false,
-            "electric": true,
-            "label": "Électrique / Astringent"
-        },
-        "scientific_defaults": {
-            "pral": -4.0,
-            "density": 85
-        }
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
     },
-    {
-        "id": "carrot",
-        "names": [
-            "carrot",
-            "carotte",
-            "baby carrot"
-        ],
-        "emoji": "🥕",
-        "family": "Apiaceae",
-        "vitality": {
-            "nova": 1,
-            "freshness": 60,
-            "label": "Brut"
-        },
-        "specific": {
-            "mucus": "Neutre",
-            "hybrid": true,
-            "electric": false,
-            "label": "Hybride (Amidon)"
-        },
-        "scientific_defaults": {
-            "pral": -4.0,
-            "density": 80
-        },
-        "note": "Bien que saine scientifiquement, la carotte est considérée comme hybride et riche en amidon dans l'approche Sebi stricte."
-    },
-    {
-        "id": "avocado",
-        "names": [
-            "avocado",
-            "avocat",
-            "hass avocado"
-        ],
-        "emoji": "🥑",
-        "family": "Lauraceae",
-        "vitality": {
-            "nova": 1,
-            "freshness": 90,
-            "label": "Brut · Gras"
-        },
-        "specific": {
-            "mucus": "Neutre",
-            "hybrid": false,
-            "electric": true,
-            "label": "Électrique / Gras"
-        },
-        "scientific_defaults": {
-            "pral": -8.0,
-            "density": 95
-        }
-    },
-    {
-        "id": "quinoa",
-        "names": [
-            "quinoa",
-            "white quinoa",
-            "quinoa blanc"
-        ],
-        "emoji": "🥣",
-        "family": "Amaranthaceae",
-        "vitality": {
-            "nova": 1,
-            "freshness": 80,
-            "label": "Brut · Céréale"
-        },
-        "specific": {
-            "mucus": "Neutre",
-            "hybrid": false,
-            "electric": true,
-            "label": "Grain Alcalin"
-        },
-        "scientific_defaults": {
-            "pral": 0.5,
-            "density": 70
-        }
-    },
-    {
-        "id": "broccoli",
-        "names": [
-            "broccoli",
-            "brocoli"
-        ],
-        "emoji": "🥦",
-        "family": "Brassicaceae",
-        "vitality": {
-            "nova": 1,
-            "freshness": 85,
-            "label": "Brut"
-        },
-        "specific": {
-            "mucus": "Neutre",
-            "hybrid": true,
-            "electric": false,
-            "label": "Hybride"
-        },
-        "scientific_defaults": {
-            "pral": -1.2,
-            "density": 90
-        },
-        "note": "Considéré comme création humaine (hybride) par l'approche vitaliste stricte, mais excellent scientifiquement."
-    },
-    {
-        "id": "banana",
-        "names": [
-            "banana",
-            "banane",
-            "baby banana",
-            "burro banana"
-        ],
-        "emoji": "🍌",
-        "family": "Musaceae",
-        "vitality": {
-            "nova": 1,
-            "freshness": 90,
-            "label": "Brut · Vivant"
-        },
-        "specific": {
-            "mucus": "Dissolvant",
-            "hybrid": false,
-            "electric": true,
-            "label": "Électrique (Burro/Baby)"
-        },
-        "scientific_defaults": {
-            "pral": -6.0,
-            "density": 88
-        },
-        "note": "Dr. Sebi recommande spécifiquement les petites bananes (Burro/Baby). Les grandes (Cavendish) sont plus riches en amidon."
-    },
-    {
-        "id": "orange",
-        "names": [
-            "orange",
-            "orange douce"
-        ],
-        "emoji": "🍊",
-        "family": "Rutaceae",
-        "vitality": {
-            "nova": 1,
-            "freshness": 95,
-            "label": "Brut"
-        },
-        "specific": {
-            "mucus": "Dissolvant",
-            "hybrid": false,
-            "electric": true,
-            "label": "Électrique (Seville)"
-        },
-        "scientific_defaults": {
-            "pral": -3.0,
-            "density": 85
-        }
-    },
-    {
-        "id": "grape",
-        "names": [
-            "grape",
-            "raisin",
-            "raisin noir"
-        ],
-        "emoji": "🍇",
-        "family": "Vitaceae",
-        "vitality": {
-            "nova": 1,
-            "freshness": 95,
-            "label": "Brut"
-        },
-        "specific": {
-            "mucus": "Dissolvant",
-            "hybrid": false,
-            "electric": true,
-            "label": "Électrique (Avec pépins)"
-        },
-        "scientific_defaults": {
-            "pral": -4.0,
-            "density": 80
-        }
-    },
-    {
-        "id": "cucumber",
-        "names": [
-            "cucumber",
-            "concombre"
-        ],
-        "emoji": "🥒",
-        "family": "Cucurbitaceae",
-        "vitality": {
-            "nova": 1,
-            "freshness": 90,
-            "label": "Brut"
-        },
-        "specific": {
-            "mucus": "Neutre",
-            "hybrid": false,
-            "electric": true,
-            "label": "Électrique"
-        },
-        "scientific_defaults": {
-            "pral": -2.0,
-            "density": 95
-        }
+    "scientific_defaults": {
+      "pral": -2.2,
+      "density": 90
     }
+  },
+  {
+    "id": "key_lime",
+    "names": [
+      "key lime",
+      "citron vert",
+      "lime",
+      "citron"
+    ],
+    "emoji": "🍋",
+    "family": "Rutaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 100,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique / Astringent"
+    },
+    "scientific_defaults": {
+      "pral": -4.0,
+      "density": 85
+    }
+  },
+  {
+    "id": "banana_burro",
+    "names": [
+      "burro banana",
+      "baby banana",
+      "banane burro",
+      "banane baby"
+    ],
+    "emoji": "🍌",
+    "family": "Musaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 90,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique (Burro/Baby)"
+    },
+    "scientific_defaults": {
+      "pral": -6.0,
+      "density": 88
+    },
+    "note": "Dr. Sebi recommande les Burro/Baby uniquement — PAS les Cavendish."
+  },
+  {
+    "id": "cantaloupe",
+    "names": [
+      "cantaloupe",
+      "cantaloup",
+      "melon cantaloup"
+    ],
+    "emoji": "🍈",
+    "family": "Cucurbitaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 95,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -3.0,
+      "density": 90
+    }
+  },
+  {
+    "id": "cherry",
+    "names": [
+      "cherry",
+      "cerise",
+      "cerises"
+    ],
+    "emoji": "🍒",
+    "family": "Rosaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 95,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -2.0,
+      "density": 82
+    }
+  },
+  {
+    "id": "currant",
+    "names": [
+      "currant",
+      "groseille",
+      "cassis"
+    ],
+    "emoji": "🫐",
+    "family": "Grossulariaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 90,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -2.5,
+      "density": 80
+    }
+  },
+  {
+    "id": "date",
+    "names": [
+      "date",
+      "datte",
+      "dattes"
+    ],
+    "emoji": "🌴",
+    "family": "Arecaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 75,
+      "label": "Brut · Séché"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -5.0,
+      "density": 70
+    }
+  },
+  {
+    "id": "fig",
+    "names": [
+      "fig",
+      "figue",
+      "figues"
+    ],
+    "emoji": "🫒",
+    "family": "Moraceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 85,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -3.5,
+      "density": 78
+    }
+  },
+  {
+    "id": "grape",
+    "names": [
+      "grape",
+      "raisin",
+      "raisin noir"
+    ],
+    "emoji": "🍇",
+    "family": "Vitaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 95,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique (Avec pépins)"
+    },
+    "scientific_defaults": {
+      "pral": -4.0,
+      "density": 80
+    },
+    "note": "Uniquement les raisins avec pépins."
+  },
+  {
+    "id": "mango",
+    "names": [
+      "mango",
+      "mangue"
+    ],
+    "emoji": "🥭",
+    "family": "Anacardiaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 95,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -2.5,
+      "density": 88
+    }
+  },
+  {
+    "id": "melon",
+    "names": [
+      "melon",
+      "pastèque",
+      "watermelon"
+    ],
+    "emoji": "🍉",
+    "family": "Cucurbitaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 95,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique (Avec pépins)"
+    },
+    "scientific_defaults": {
+      "pral": -2.0,
+      "density": 92
+    },
+    "note": "Uniquement variétés avec pépins."
+  },
+  {
+    "id": "orange_seville",
+    "names": [
+      "seville orange",
+      "orange amère",
+      "orange seville"
+    ],
+    "emoji": "🍊",
+    "family": "Rutaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 95,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique (Seville)"
+    },
+    "scientific_defaults": {
+      "pral": -3.0,
+      "density": 85
+    },
+    "note": "Uniquement Seville ou orange amère."
+  },
+  {
+    "id": "papaya",
+    "names": [
+      "papaya",
+      "papaye"
+    ],
+    "emoji": "🍈",
+    "family": "Caricaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 95,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -3.0,
+      "density": 90
+    }
+  },
+  {
+    "id": "peach",
+    "names": [
+      "peach",
+      "pêche"
+    ],
+    "emoji": "🍑",
+    "family": "Rosaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 90,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -2.5,
+      "density": 82
+    }
+  },
+  {
+    "id": "pear",
+    "names": [
+      "pear",
+      "poire"
+    ],
+    "emoji": "🍐",
+    "family": "Rosaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 90,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -2.0,
+      "density": 80
+    }
+  },
+  {
+    "id": "plum",
+    "names": [
+      "plum",
+      "prune",
+      "prunes"
+    ],
+    "emoji": "🫐",
+    "family": "Rosaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 90,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -2.5,
+      "density": 78
+    }
+  },
+  {
+    "id": "raisin_seeded",
+    "names": [
+      "raisin sec",
+      "raisins secs"
+    ],
+    "emoji": "🍇",
+    "family": "Vitaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 70,
+      "label": "Brut · Séché"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique (Avec pépins)"
+    },
+    "scientific_defaults": {
+      "pral": -4.0,
+      "density": 65
+    }
+  },
+  {
+    "id": "soursop",
+    "names": [
+      "soursop",
+      "corossol"
+    ],
+    "emoji": "🍈",
+    "family": "Annonaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 95,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -3.0,
+      "density": 88
+    }
+  },
+  {
+    "id": "tamarind",
+    "names": [
+      "tamarind",
+      "tamarin"
+    ],
+    "emoji": "🌰",
+    "family": "Fabaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 80,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -2.0,
+      "density": 72
+    }
+  },
+  {
+    "id": "coconut",
+    "names": [
+      "coconut",
+      "noix de coco",
+      "coco"
+    ],
+    "emoji": "🥥",
+    "family": "Arecaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 90,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -1.0,
+      "density": 75
+    },
+    "note": "Soft Jelly Coconut uniquement."
+  },
+  {
+    "id": "berries",
+    "names": [
+      "berries",
+      "baies",
+      "framboise",
+      "mûre",
+      "myrtille",
+      "blueberry",
+      "strawberry",
+      "blackberry",
+      "raspberry"
+    ],
+    "emoji": "🫐",
+    "family": "Rosaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 95,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -2.0,
+      "density": 88
+    },
+    "note": "Toutes les baies sauf cranberries."
+  },
+  {
+    "id": "amaranth_greens",
+    "names": [
+      "amaranth greens",
+      "feuilles d'amarante",
+      "amarante feuille"
+    ],
+    "emoji": "🥬",
+    "family": "Amaranthaceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 95,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -3.0,
+      "density": 92
+    }
+  },
+  {
+    "id": "avocado",
+    "names": [
+      "avocado",
+      "avocat"
+    ],
+    "emoji": "🥑",
+    "family": "Lauraceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 90,
+      "label": "Brut · Gras"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique / Gras"
+    },
+    "scientific_defaults": {
+      "pral": -8.0,
+      "density": 95
+    }
+  },
+  {
+    "id": "bell_pepper",
+    "names": [
+      "bell pepper",
+      "poivron",
+      "poivrons"
+    ],
+    "emoji": "🫑",
+    "family": "Solanaceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 90,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -2.0,
+      "density": 85
+    }
+  },
+  {
+    "id": "chayote",
+    "names": [
+      "chayote",
+      "christophine",
+      "chouchou"
+    ],
+    "emoji": "🥒",
+    "family": "Cucurbitaceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 90,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -2.0,
+      "density": 80
+    }
+  },
+  {
+    "id": "cucumber",
+    "names": [
+      "cucumber",
+      "concombre"
+    ],
+    "emoji": "🥒",
+    "family": "Cucurbitaceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 90,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -2.0,
+      "density": 95
+    }
+  },
+  {
+    "id": "dandelion",
+    "names": [
+      "dandelion greens",
+      "pissenlit",
+      "feuilles de pissenlit"
+    ],
+    "emoji": "🌿",
+    "family": "Asteraceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 95,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -4.0,
+      "density": 92
+    }
+  },
+  {
+    "id": "chickpea",
+    "names": [
+      "chickpea",
+      "pois chiche",
+      "garbanzo"
+    ],
+    "emoji": "🫘",
+    "family": "Fabaceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 80,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -1.0,
+      "density": 75
+    }
+  },
+  {
+    "id": "kale",
+    "names": [
+      "kale",
+      "chou frisé",
+      "chou kale"
+    ],
+    "emoji": "🥬",
+    "family": "Brassicaceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 95,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -4.0,
+      "density": 95
+    }
+  },
+  {
+    "id": "lettuce",
+    "names": [
+      "lettuce",
+      "laitue",
+      "salade"
+    ],
+    "emoji": "🥬",
+    "family": "Asteraceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 90,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -1.5,
+      "density": 90
+    },
+    "note": "Toutes sauf Iceberg."
+  },
+  {
+    "id": "mushrooms",
+    "names": [
+      "mushrooms",
+      "champignons",
+      "champignon"
+    ],
+    "emoji": "🍄",
+    "family": "Fungi",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 85,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -1.0,
+      "density": 80
+    },
+    "note": "Sauf Shiitake."
+  },
+  {
+    "id": "nopales",
+    "names": [
+      "nopales",
+      "nopal",
+      "cactus mexicain",
+      "figuier de barbarie"
+    ],
+    "emoji": "🌵",
+    "family": "Cactaceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 90,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -3.0,
+      "density": 88
+    }
+  },
+  {
+    "id": "okra",
+    "names": [
+      "okra",
+      "gombo"
+    ],
+    "emoji": "🌿",
+    "family": "Malvaceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 90,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -2.0,
+      "density": 85
+    }
+  },
+  {
+    "id": "olives",
+    "names": [
+      "olives",
+      "olive"
+    ],
+    "emoji": "🫒",
+    "family": "Oleaceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 80,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -2.0,
+      "density": 78
+    }
+  },
+  {
+    "id": "onion",
+    "names": [
+      "onion",
+      "oignon",
+      "oignons"
+    ],
+    "emoji": "🧅",
+    "family": "Amaryllidaceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 85,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -1.5,
+      "density": 82
+    }
+  },
+  {
+    "id": "purslane",
+    "names": [
+      "purslane",
+      "pourpier"
+    ],
+    "emoji": "🌿",
+    "family": "Portulacaceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 95,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -3.0,
+      "density": 90
+    }
+  },
+  {
+    "id": "sea_vegetables",
+    "names": [
+      "sea vegetables",
+      "algues",
+      "wakame",
+      "dulse",
+      "nori",
+      "kelp",
+      "arame",
+      "hijiki"
+    ],
+    "emoji": "🌊",
+    "family": "Algae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 85,
+      "label": "Brut · Minéral"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique / Minéral"
+    },
+    "scientific_defaults": {
+      "pral": -5.0,
+      "density": 98
+    }
+  },
+  {
+    "id": "squash",
+    "names": [
+      "squash",
+      "courge",
+      "courgette",
+      "butternut"
+    ],
+    "emoji": "🎃",
+    "family": "Cucurbitaceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 85,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -2.0,
+      "density": 82
+    }
+  },
+  {
+    "id": "tomato",
+    "names": [
+      "cherry tomato",
+      "plum tomato",
+      "tomate cerise",
+      "tomate"
+    ],
+    "emoji": "🍅",
+    "family": "Solanaceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 90,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique (Cerise/Prune)"
+    },
+    "scientific_defaults": {
+      "pral": -2.5,
+      "density": 88
+    },
+    "note": "Cherry et plum uniquement."
+  },
+  {
+    "id": "turnip_greens",
+    "names": [
+      "turnip greens",
+      "feuilles de navet"
+    ],
+    "emoji": "🥬",
+    "family": "Brassicaceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 90,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -3.0,
+      "density": 88
+    }
+  },
+  {
+    "id": "watercress",
+    "names": [
+      "watercress",
+      "cresson"
+    ],
+    "emoji": "🌿",
+    "family": "Brassicaceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 95,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -3.5,
+      "density": 95
+    }
+  },
+  {
+    "id": "arugula",
+    "names": [
+      "wild arugula",
+      "roquette",
+      "arugula"
+    ],
+    "emoji": "🥬",
+    "family": "Brassicaceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 95,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -2.5,
+      "density": 90
+    }
+  },
+  {
+    "id": "zucchini",
+    "names": [
+      "zucchini",
+      "courgette"
+    ],
+    "emoji": "🥒",
+    "family": "Cucurbitaceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 90,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -2.0,
+      "density": 85
+    }
+  },
+  {
+    "id": "izote",
+    "names": [
+      "izote",
+      "cactus flower",
+      "fleur de cactus",
+      "yucca flower",
+      "fleur de yucca"
+    ],
+    "emoji": "🌸",
+    "family": "Asparagaceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 90,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -2.5,
+      "density": 85
+    },
+    "note": "Fleur et feuille de yucca/cactus — Central American staple."
+  },
+  {
+    "id": "amaranth_grain",
+    "names": [
+      "amaranth",
+      "amarante"
+    ],
+    "emoji": "🌾",
+    "family": "Amaranthaceae",
+    "category": "Céréales",
+    "vitality": {
+      "nova": 1,
+      "freshness": 85,
+      "label": "Grain ancestral"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Grain Alcalin"
+    },
+    "scientific_defaults": {
+      "pral": -0.8,
+      "density": 91
+    }
+  },
+  {
+    "id": "fonio",
+    "names": [
+      "fonio"
+    ],
+    "emoji": "🌾",
+    "family": "Poaceae",
+    "category": "Céréales",
+    "vitality": {
+      "nova": 1,
+      "freshness": 85,
+      "label": "Grain ancestral"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Grain Alcalin"
+    },
+    "scientific_defaults": {
+      "pral": -0.5,
+      "density": 85
+    }
+  },
+  {
+    "id": "kamut",
+    "names": [
+      "kamut"
+    ],
+    "emoji": "🌾",
+    "family": "Poaceae",
+    "category": "Céréales",
+    "vitality": {
+      "nova": 1,
+      "freshness": 80,
+      "label": "Grain ancestral"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Grain Alcalin"
+    },
+    "scientific_defaults": {
+      "pral": -0.3,
+      "density": 78
+    }
+  },
+  {
+    "id": "quinoa",
+    "names": [
+      "quinoa",
+      "quinoa blanc"
+    ],
+    "emoji": "🥣",
+    "family": "Amaranthaceae",
+    "category": "Céréales",
+    "vitality": {
+      "nova": 1,
+      "freshness": 80,
+      "label": "Brut · Céréale"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Grain Alcalin"
+    },
+    "scientific_defaults": {
+      "pral": 0.5,
+      "density": 70
+    }
+  },
+  {
+    "id": "rye",
+    "names": [
+      "rye",
+      "seigle"
+    ],
+    "emoji": "🌾",
+    "family": "Poaceae",
+    "category": "Céréales",
+    "vitality": {
+      "nova": 1,
+      "freshness": 78,
+      "label": "Grain ancestral"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Grain Alcalin"
+    },
+    "scientific_defaults": {
+      "pral": -0.5,
+      "density": 75
+    }
+  },
+  {
+    "id": "spelt",
+    "names": [
+      "spelt",
+      "épeautre"
+    ],
+    "emoji": "🌾",
+    "family": "Poaceae",
+    "category": "Céréales",
+    "vitality": {
+      "nova": 1,
+      "freshness": 78,
+      "label": "Grain ancestral"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Grain Alcalin"
+    },
+    "scientific_defaults": {
+      "pral": -0.3,
+      "density": 76
+    }
+  },
+  {
+    "id": "teff",
+    "names": [
+      "teff"
+    ],
+    "emoji": "🌾",
+    "family": "Poaceae",
+    "category": "Céréales",
+    "vitality": {
+      "nova": 1,
+      "freshness": 85,
+      "label": "Grain ancestral"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Grain Alcalin"
+    },
+    "scientific_defaults": {
+      "pral": -0.5,
+      "density": 88
+    }
+  },
+  {
+    "id": "wild_rice",
+    "names": [
+      "wild rice",
+      "riz sauvage"
+    ],
+    "emoji": "🍚",
+    "family": "Poaceae",
+    "category": "Céréales",
+    "vitality": {
+      "nova": 1,
+      "freshness": 82,
+      "label": "Grain ancestral"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Grain Alcalin"
+    },
+    "scientific_defaults": {
+      "pral": -0.5,
+      "density": 80
+    }
+  },
+  {
+    "id": "brazil_nuts",
+    "names": [
+      "brazil nuts",
+      "noix du brésil"
+    ],
+    "emoji": "🌰",
+    "family": "Lecythidaceae",
+    "category": "Noix & Graines",
+    "vitality": {
+      "nova": 1,
+      "freshness": 80,
+      "label": "Brut · Gras"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique / Gras"
+    },
+    "scientific_defaults": {
+      "pral": -2.0,
+      "density": 75
+    }
+  },
+  {
+    "id": "hemp_seeds",
+    "names": [
+      "hemp seeds",
+      "graines de chanvre",
+      "chanvre"
+    ],
+    "emoji": "🌱",
+    "family": "Cannabaceae",
+    "category": "Noix & Graines",
+    "vitality": {
+      "nova": 1,
+      "freshness": 85,
+      "label": "Brut · Gras"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique / Gras"
+    },
+    "scientific_defaults": {
+      "pral": -1.5,
+      "density": 82
+    }
+  },
+  {
+    "id": "sesame",
+    "names": [
+      "sesame",
+      "sésame",
+      "tahini",
+      "graines de sésame"
+    ],
+    "emoji": "🌱",
+    "family": "Pedaliaceae",
+    "category": "Noix & Graines",
+    "vitality": {
+      "nova": 1,
+      "freshness": 80,
+      "label": "Brut · Gras"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique / Gras"
+    },
+    "scientific_defaults": {
+      "pral": -1.0,
+      "density": 78
+    }
+  },
+  {
+    "id": "walnuts",
+    "names": [
+      "walnuts",
+      "noix",
+      "cerneaux de noix"
+    ],
+    "emoji": "🌰",
+    "family": "Juglandaceae",
+    "category": "Noix & Graines",
+    "vitality": {
+      "nova": 1,
+      "freshness": 80,
+      "label": "Brut · Gras"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique / Gras"
+    },
+    "scientific_defaults": {
+      "pral": -2.0,
+      "density": 80
+    }
+  },
+  {
+    "id": "olive_oil",
+    "names": [
+      "olive oil",
+      "huile d'olive"
+    ],
+    "emoji": "🫒",
+    "family": "Oleaceae",
+    "category": "Huiles",
+    "vitality": {
+      "nova": 1,
+      "freshness": 75,
+      "label": "Pressé à froid"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique / Gras"
+    },
+    "scientific_defaults": {
+      "pral": -1.0,
+      "density": 70
+    }
+  },
+  {
+    "id": "coconut_oil",
+    "names": [
+      "coconut oil",
+      "huile de coco"
+    ],
+    "emoji": "🥥",
+    "family": "Arecaceae",
+    "category": "Huiles",
+    "vitality": {
+      "nova": 1,
+      "freshness": 75,
+      "label": "Pressé à froid"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique / Gras"
+    },
+    "scientific_defaults": {
+      "pral": -0.5,
+      "density": 68
+    }
+  },
+  {
+    "id": "sesame_oil",
+    "names": [
+      "sesame oil",
+      "huile de sésame"
+    ],
+    "emoji": "🌱",
+    "family": "Pedaliaceae",
+    "category": "Huiles",
+    "vitality": {
+      "nova": 1,
+      "freshness": 75,
+      "label": "Pressé à froid"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique / Gras"
+    },
+    "scientific_defaults": {
+      "pral": -0.5,
+      "density": 68
+    }
+  },
+  {
+    "id": "hemp_oil",
+    "names": [
+      "hemp seed oil",
+      "huile de chanvre"
+    ],
+    "emoji": "🌱",
+    "family": "Cannabaceae",
+    "category": "Huiles",
+    "vitality": {
+      "nova": 1,
+      "freshness": 75,
+      "label": "Pressé à froid"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique / Gras"
+    },
+    "scientific_defaults": {
+      "pral": -0.5,
+      "density": 70
+    }
+  },
+  {
+    "id": "avocado_oil",
+    "names": [
+      "avocado oil",
+      "huile d'avocat"
+    ],
+    "emoji": "🥑",
+    "family": "Lauraceae",
+    "category": "Huiles",
+    "vitality": {
+      "nova": 1,
+      "freshness": 75,
+      "label": "Pressé à froid"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique / Gras"
+    },
+    "scientific_defaults": {
+      "pral": -1.0,
+      "density": 70
+    }
+  },
+  {
+    "id": "grapeseed_oil",
+    "names": [
+      "grape seed oil",
+      "huile de pépins de raisin"
+    ],
+    "emoji": "🍇",
+    "family": "Vitaceae",
+    "category": "Huiles",
+    "vitality": {
+      "nova": 1,
+      "freshness": 75,
+      "label": "Pressé à froid"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique / Gras"
+    },
+    "scientific_defaults": {
+      "pral": -0.5,
+      "density": 68
+    }
+  },
+  {
+    "id": "agave",
+    "names": [
+      "agave",
+      "sirop d'agave"
+    ],
+    "emoji": "🌵",
+    "family": "Asparagaceae",
+    "category": "Sucrants",
+    "vitality": {
+      "nova": 2,
+      "freshness": 65,
+      "label": "Transformé · Naturel"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Approuvé (modération)"
+    },
+    "scientific_defaults": {
+      "pral": -0.5,
+      "density": 55
+    }
+  },
+  {
+    "id": "date_sugar",
+    "names": [
+      "date sugar",
+      "sucre de datte"
+    ],
+    "emoji": "🌴",
+    "family": "Arecaceae",
+    "category": "Sucrants",
+    "vitality": {
+      "nova": 1,
+      "freshness": 70,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -1.0,
+      "density": 60
+    }
+  },
+  {
+    "id": "sea_moss",
+    "names": [
+      "sea moss",
+      "irish moss",
+      "mousse de mer",
+      "chondrus crispus",
+      "gracilaria",
+      "gel de sea moss"
+    ],
+    "emoji": "🌊",
+    "family": "Gigartinaceae",
+    "category": "Algues & Minéraux",
+    "vitality": {
+      "nova": 1,
+      "freshness": 90,
+      "label": "Brut · Minéral · Vivant"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique / 92 Minéraux"
+    },
+    "scientific_defaults": {
+      "pral": -6.0,
+      "density": 100
+    },
+    "note": "Pierre angulaire du système Dr. Sebi. 92 des 102 minéraux du corps. Source: Chondrus crispus (Atlantique) ou Gracilaria (Mer des Caraïbes). Sebian Sea Moss: récolté à la main au Honduras."
+  },
+  {
+    "id": "bladderwrack",
+    "names": [
+      "bladderwrack",
+      "varech vésiculeux",
+      "fucus",
+      "fucus vesiculosus"
+    ],
+    "emoji": "🌿",
+    "family": "Fucaceae",
+    "category": "Algues & Minéraux",
+    "vitality": {
+      "nova": 1,
+      "freshness": 88,
+      "label": "Brut · Minéral"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique / Iode / Thyroïde"
+    },
+    "scientific_defaults": {
+      "pral": -5.5,
+      "density": 97
+    },
+    "note": "Toujours associé au sea moss dans le Bromide Plus. Riche en iode naturel — supporte la thyroïde. Renforce l'effet minéral du sea moss."
+  },
+  {
+    "id": "burdock_root",
+    "names": [
+      "burdock root",
+      "racine de bardane",
+      "bardane"
+    ],
+    "emoji": "🌿",
+    "family": "Asteraceae",
+    "category": "Herbes & Thés",
+    "vitality": {
+      "nova": 1,
+      "freshness": 85,
+      "label": "Brut · Racine"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Purificateur Sanguin"
+    },
+    "scientific_defaults": {
+      "pral": -3.5,
+      "density": 88
+    },
+    "note": "Purificateur sanguin profond. Composant clé du Bio Ferro. Nettoie le foie et le sang des toxines lourdes."
+  },
+  {
+    "id": "chamomile",
+    "names": [
+      "chamomile",
+      "camomille",
+      "camomille allemande"
+    ],
+    "emoji": "🌼",
+    "family": "Asteraceae",
+    "category": "Herbes & Thés",
+    "vitality": {
+      "nova": 1,
+      "freshness": 80,
+      "label": "Séché · Infusion"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Calmant / Alcalin"
+    },
+    "scientific_defaults": {
+      "pral": -3.0,
+      "density": 78
+    }
+  },
+  {
+    "id": "elderberry",
+    "names": [
+      "elderberry",
+      "elderflower",
+      "sureau",
+      "baies de sureau",
+      "fleur de sureau"
+    ],
+    "emoji": "🫐",
+    "family": "Adoxaceae",
+    "category": "Herbes & Thés",
+    "vitality": {
+      "nova": 1,
+      "freshness": 82,
+      "label": "Brut · Baie"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Immunomodulateur"
+    },
+    "scientific_defaults": {
+      "pral": -4.0,
+      "density": 85
+    }
+  },
+  {
+    "id": "fennel",
+    "names": [
+      "fennel",
+      "fenouil",
+      "graines de fenouil"
+    ],
+    "emoji": "🌿",
+    "family": "Apiaceae",
+    "category": "Herbes & Thés",
+    "vitality": {
+      "nova": 1,
+      "freshness": 85,
+      "label": "Brut · Graine"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Digestif / Alcalin"
+    },
+    "scientific_defaults": {
+      "pral": -2.5,
+      "density": 82
+    }
+  },
+  {
+    "id": "ginger",
+    "names": [
+      "ginger",
+      "gingembre",
+      "racine de gingembre"
+    ],
+    "emoji": "🫚",
+    "family": "Zingiberaceae",
+    "category": "Herbes & Thés",
+    "vitality": {
+      "nova": 1,
+      "freshness": 88,
+      "label": "Brut · Racine"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Anti-Mucus / Thermogénique"
+    },
+    "scientific_defaults": {
+      "pral": -3.0,
+      "density": 90
+    },
+    "note": "Puissant dissolvant de mucus. Stimule la circulation. Approuvé par Dr. Sebi comme plante chauffante électrique."
+  },
+  {
+    "id": "red_raspberry_leaf",
+    "names": [
+      "red raspberry leaf",
+      "feuille de framboisier",
+      "raspberry leaf"
+    ],
+    "emoji": "🌿",
+    "family": "Rosaceae",
+    "category": "Herbes & Thés",
+    "vitality": {
+      "nova": 1,
+      "freshness": 80,
+      "label": "Séché · Infusion"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Utérin / Hormonal"
+    },
+    "scientific_defaults": {
+      "pral": -3.5,
+      "density": 82
+    }
+  },
+  {
+    "id": "sarsaparilla",
+    "names": [
+      "sarsaparilla",
+      "salsepareille",
+      "smilax"
+    ],
+    "emoji": "🌿",
+    "family": "Smilacaceae",
+    "category": "Herbes & Thés",
+    "vitality": {
+      "nova": 1,
+      "freshness": 85,
+      "label": "Brut · Racine"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Purificateur / Bio Ferro"
+    },
+    "scientific_defaults": {
+      "pral": -4.0,
+      "density": 88
+    },
+    "note": "Composant clé du Bio Ferro. Lie et expulse les métaux lourds. Purificateur sanguin profond riche en minéraux biodisponibles."
+  },
+  {
+    "id": "tila",
+    "names": [
+      "tila",
+      "tilleul",
+      "linden flower",
+      "fleur de tilleul"
+    ],
+    "emoji": "🌸",
+    "family": "Malvaceae",
+    "category": "Herbes & Thés",
+    "vitality": {
+      "nova": 1,
+      "freshness": 78,
+      "label": "Séché · Infusion"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Calmant / Nerveux"
+    },
+    "scientific_defaults": {
+      "pral": -2.5,
+      "density": 75
+    }
+  },
+  {
+    "id": "achiote",
+    "names": [
+      "achiote",
+      "annatto",
+      "roucou"
+    ],
+    "emoji": "🌶",
+    "family": "Bixaceae",
+    "category": "Épices & Assaisonnements",
+    "vitality": {
+      "nova": 1,
+      "freshness": 80,
+      "label": "Brut · Graine"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -2.0,
+      "density": 78
+    }
+  },
+  {
+    "id": "basil",
+    "names": [
+      "basil",
+      "basilic",
+      "sweet basil"
+    ],
+    "emoji": "🌿",
+    "family": "Lamiaceae",
+    "category": "Épices & Assaisonnements",
+    "vitality": {
+      "nova": 1,
+      "freshness": 90,
+      "label": "Brut · Feuille"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -2.5,
+      "density": 88
+    }
+  },
+  {
+    "id": "bay_leaf",
+    "names": [
+      "bay leaf",
+      "laurier",
+      "feuille de laurier"
+    ],
+    "emoji": "🌿",
+    "family": "Lauraceae",
+    "category": "Épices & Assaisonnements",
+    "vitality": {
+      "nova": 1,
+      "freshness": 78,
+      "label": "Brut · Séché"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -2.0,
+      "density": 75
+    }
+  },
+  {
+    "id": "cayenne",
+    "names": [
+      "cayenne",
+      "poivre de cayenne",
+      "african bird pepper",
+      "piment oiseau",
+      "piment fort"
+    ],
+    "emoji": "🌶",
+    "family": "Solanaceae",
+    "category": "Épices & Assaisonnements",
+    "vitality": {
+      "nova": 1,
+      "freshness": 85,
+      "label": "Brut · Piquant"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Thermogénique / Dissolvant"
+    },
+    "scientific_defaults": {
+      "pral": -3.0,
+      "density": 88
+    },
+    "note": "Seul piment épicé approuvé. Stimule la circulation et dissout le mucus. African Bird Pepper = variété naturelle non-hybride."
+  },
+  {
+    "id": "cilantro",
+    "names": [
+      "cilantro",
+      "coriandre feuille",
+      "coriander leaves",
+      "persil arabe"
+    ],
+    "emoji": "🌿",
+    "family": "Apiaceae",
+    "category": "Épices & Assaisonnements",
+    "vitality": {
+      "nova": 1,
+      "freshness": 92,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -3.0,
+      "density": 90
+    }
+  },
+  {
+    "id": "coriander",
+    "names": [
+      "coriander seed",
+      "coriandre graine",
+      "coriandre"
+    ],
+    "emoji": "🌱",
+    "family": "Apiaceae",
+    "category": "Épices & Assaisonnements",
+    "vitality": {
+      "nova": 1,
+      "freshness": 80,
+      "label": "Brut · Graine"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -2.0,
+      "density": 78
+    }
+  },
+  {
+    "id": "cumin",
+    "names": [
+      "cumin",
+      "cumin graines"
+    ],
+    "emoji": "🌱",
+    "family": "Apiaceae",
+    "category": "Épices & Assaisonnements",
+    "vitality": {
+      "nova": 1,
+      "freshness": 82,
+      "label": "Brut · Graine"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -2.5,
+      "density": 80
+    }
+  },
+  {
+    "id": "dill",
+    "names": [
+      "dill",
+      "aneth"
+    ],
+    "emoji": "🌿",
+    "family": "Apiaceae",
+    "category": "Épices & Assaisonnements",
+    "vitality": {
+      "nova": 1,
+      "freshness": 85,
+      "label": "Brut · Feuille"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -2.0,
+      "density": 83
+    }
+  },
+  {
+    "id": "habanero",
+    "names": [
+      "habanero",
+      "habanero pepper",
+      "piment habanero"
+    ],
+    "emoji": "🌶",
+    "family": "Solanaceae",
+    "category": "Épices & Assaisonnements",
+    "vitality": {
+      "nova": 1,
+      "freshness": 85,
+      "label": "Brut · Piquant"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Thermogénique / Fort"
+    },
+    "scientific_defaults": {
+      "pral": -3.5,
+      "density": 87
+    }
+  },
+  {
+    "id": "oregano",
+    "names": [
+      "oregano",
+      "origan"
+    ],
+    "emoji": "🌿",
+    "family": "Lamiaceae",
+    "category": "Épices & Assaisonnements",
+    "vitality": {
+      "nova": 1,
+      "freshness": 80,
+      "label": "Brut · Séché"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique / Antimicrobien"
+    },
+    "scientific_defaults": {
+      "pral": -2.5,
+      "density": 82
+    }
+  },
+  {
+    "id": "sage",
+    "names": [
+      "sage",
+      "sauge"
+    ],
+    "emoji": "🌿",
+    "family": "Lamiaceae",
+    "category": "Épices & Assaisonnements",
+    "vitality": {
+      "nova": 1,
+      "freshness": 80,
+      "label": "Brut · Feuille"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -2.0,
+      "density": 80
+    }
+  },
+  {
+    "id": "savory",
+    "names": [
+      "savory",
+      "sarriette"
+    ],
+    "emoji": "🌿",
+    "family": "Lamiaceae",
+    "category": "Épices & Assaisonnements",
+    "vitality": {
+      "nova": 1,
+      "freshness": 78,
+      "label": "Brut · Feuille"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -2.0,
+      "density": 77
+    }
+  },
+  {
+    "id": "sea_salt",
+    "names": [
+      "sea salt",
+      "sel marin",
+      "sel de mer",
+      "pure sea salt"
+    ],
+    "emoji": "🧂",
+    "family": "Mineral",
+    "category": "Épices & Assaisonnements",
+    "vitality": {
+      "nova": 1,
+      "freshness": 100,
+      "label": "Minéral Pur"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique / Minéral"
+    },
+    "scientific_defaults": {
+      "pral": 0.0,
+      "density": 100
+    },
+    "note": "Uniquement sel marin pur non raffiné. Le sel de table iodé (NaCl synthétique) est interdit."
+  },
+  {
+    "id": "tarragon",
+    "names": [
+      "tarragon",
+      "estragon"
+    ],
+    "emoji": "🌿",
+    "family": "Asteraceae",
+    "category": "Épices & Assaisonnements",
+    "vitality": {
+      "nova": 1,
+      "freshness": 82,
+      "label": "Brut · Feuille"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique"
+    },
+    "scientific_defaults": {
+      "pral": -2.5,
+      "density": 80
+    }
+  },
+  {
+    "id": "thyme",
+    "names": [
+      "thyme",
+      "thym"
+    ],
+    "emoji": "🌿",
+    "family": "Lamiaceae",
+    "category": "Épices & Assaisonnements",
+    "vitality": {
+      "nova": 1,
+      "freshness": 85,
+      "label": "Brut · Feuille"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique / Respiratoire"
+    },
+    "scientific_defaults": {
+      "pral": -3.0,
+      "density": 83
+    }
+  },
+  {
+    "id": "carrot",
+    "names": [
+      "carrot",
+      "carotte"
+    ],
+    "emoji": "🥕",
+    "family": "Apiaceae",
+    "category": "À éviter",
+    "vitality": {
+      "nova": 1,
+      "freshness": 60,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Hybride (Amidon)"
+    },
+    "scientific_defaults": {
+      "pral": -4.0,
+      "density": 80
+    },
+    "note": "Hybride riche en amidon selon Dr. Sebi."
+  },
+  {
+    "id": "garlic",
+    "names": [
+      "garlic",
+      "ail"
+    ],
+    "emoji": "🧄",
+    "family": "Amaryllidaceae",
+    "category": "À éviter",
+    "vitality": {
+      "nova": 1,
+      "freshness": 70,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Hybride"
+    },
+    "scientific_defaults": {
+      "pral": -1.0,
+      "density": 75
+    },
+    "note": "Considéré comme hybride (croisement oignon × poireau) par Dr. Sebi."
+  },
+  {
+    "id": "beet",
+    "names": [
+      "beet",
+      "betterave"
+    ],
+    "emoji": "🫒",
+    "family": "Amaranthaceae",
+    "category": "À éviter",
+    "vitality": {
+      "nova": 1,
+      "freshness": 75,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Hybride (Amidon)"
+    },
+    "scientific_defaults": {
+      "pral": -3.0,
+      "density": 78
+    }
+  },
+  {
+    "id": "celery",
+    "names": [
+      "celery",
+      "céleri"
+    ],
+    "emoji": "🥬",
+    "family": "Apiaceae",
+    "category": "À éviter",
+    "vitality": {
+      "nova": 1,
+      "freshness": 80,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Hybride"
+    },
+    "scientific_defaults": {
+      "pral": -2.0,
+      "density": 82
+    }
+  },
+  {
+    "id": "cauliflower",
+    "names": [
+      "cauliflower",
+      "chou-fleur"
+    ],
+    "emoji": "🥦",
+    "family": "Brassicaceae",
+    "category": "À éviter",
+    "vitality": {
+      "nova": 1,
+      "freshness": 80,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Hybride"
+    },
+    "scientific_defaults": {
+      "pral": -1.5,
+      "density": 80
+    }
+  },
+  {
+    "id": "broccoli",
+    "names": [
+      "broccoli",
+      "brocoli"
+    ],
+    "emoji": "🥦",
+    "family": "Brassicaceae",
+    "category": "À éviter",
+    "vitality": {
+      "nova": 1,
+      "freshness": 85,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Hybride"
+    },
+    "scientific_defaults": {
+      "pral": -1.2,
+      "density": 90
+    },
+    "note": "Hybride créé par l'homme, interdit selon Dr. Sebi."
+  },
+  {
+    "id": "corn",
+    "names": [
+      "corn",
+      "maïs"
+    ],
+    "emoji": "🌽",
+    "family": "Poaceae",
+    "category": "À éviter",
+    "vitality": {
+      "nova": 1,
+      "freshness": 60,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Hybride (Amidon)"
+    },
+    "scientific_defaults": {
+      "pral": -1.0,
+      "density": 65
+    }
+  },
+  {
+    "id": "potato",
+    "names": [
+      "potato",
+      "pomme de terre",
+      "patate"
+    ],
+    "emoji": "🥔",
+    "family": "Solanaceae",
+    "category": "À éviter",
+    "vitality": {
+      "nova": 1,
+      "freshness": 55,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Hybride (Amidon)"
+    },
+    "scientific_defaults": {
+      "pral": -4.0,
+      "density": 60
+    }
+  },
+  {
+    "id": "cabbage",
+    "names": [
+      "cabbage",
+      "chou"
+    ],
+    "emoji": "🥬",
+    "family": "Brassicaceae",
+    "category": "À éviter",
+    "vitality": {
+      "nova": 1,
+      "freshness": 80,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Hybride"
+    },
+    "scientific_defaults": {
+      "pral": -2.0,
+      "density": 78
+    }
+  },
+  {
+    "id": "spinach",
+    "names": [
+      "spinach",
+      "épinards",
+      "épinard"
+    ],
+    "emoji": "🥬",
+    "family": "Amaranthaceae",
+    "category": "À éviter",
+    "vitality": {
+      "nova": 1,
+      "freshness": 85,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Hybride (Acide Oxalique)"
+    },
+    "scientific_defaults": {
+      "pral": -2.5,
+      "density": 85
+    },
+    "note": "Riche en acide oxalique inorganique. Bloque l'absorption du fer. pH acide malgré apparence verte."
+  },
+  {
+    "id": "lemon",
+    "names": [
+      "lemon",
+      "citron jaune"
+    ],
+    "emoji": "🍋",
+    "family": "Rutaceae",
+    "category": "À éviter",
+    "vitality": {
+      "nova": 1,
+      "freshness": 70,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Hybride Citrus"
+    },
+    "scientific_defaults": {
+      "pral": -2.6,
+      "density": 75
+    },
+    "note": "Considéré comme hybride par Dr. Sebi — utiliser Key Lime (citron vert avec pépins) à la place."
+  },
+  {
+    "id": "grapefruit",
+    "names": [
+      "grapefruit",
+      "pamplemousse"
+    ],
+    "emoji": "🍊",
+    "family": "Rutaceae",
+    "category": "À éviter",
+    "vitality": {
+      "nova": 1,
+      "freshness": 75,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Hybride (Pomelo × Orange)"
+    },
+    "scientific_defaults": {
+      "pral": -2.5,
+      "density": 78
+    },
+    "note": "Hybride naturel de pomelo et d'orange douce. Non approuvé par Dr. Sebi."
+  },
+  {
+    "id": "cavendish_banana",
+    "names": [
+      "cavendish banana",
+      "banane cavendish",
+      "banane jaune",
+      "banana"
+    ],
+    "emoji": "🍌",
+    "family": "Musaceae",
+    "category": "À éviter",
+    "vitality": {
+      "nova": 1,
+      "freshness": 55,
+      "label": "Hybride Industriel"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Hybride (Amidon modifié)"
+    },
+    "scientific_defaults": {
+      "pral": -5.5,
+      "density": 55
+    },
+    "note": "La banane Cavendish (banane commerciale standard) est un hybride conçu pour la conservation. Amidon modifié. Utiliser Burro ou Baby banana uniquement."
+  },
+  {
+    "id": "pineapple",
+    "names": [
+      "pineapple",
+      "ananas"
+    ],
+    "emoji": "🍍",
+    "family": "Bromeliaceae",
+    "category": "À éviter",
+    "vitality": {
+      "nova": 1,
+      "freshness": 60,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Non approuvé"
+    },
+    "scientific_defaults": {
+      "pral": -2.7,
+      "density": 70
+    },
+    "note": "Absent de la liste Dr. Sebi. Très acide, cultivé intensivement. Non recommandé."
+  },
+  {
+    "id": "aloe_vera",
+    "names": [
+      "aloe vera",
+      "aloe",
+      "aloé vera"
+    ],
+    "emoji": "🌿",
+    "family": "Asphodelaceae",
+    "category": "À éviter",
+    "vitality": {
+      "nova": 1,
+      "freshness": 60,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Hybride Aloe"
+    },
+    "scientific_defaults": {
+      "pral": -1.5,
+      "density": 65
+    },
+    "note": "La variété Aloe vera commerciale est un hybride du genre Aloe. Non approuvé par Dr. Sebi."
+  },
+  {
+    "id": "peppermint",
+    "names": [
+      "peppermint",
+      "menthe poivrée",
+      "menthe"
+    ],
+    "emoji": "🌿",
+    "family": "Lamiaceae",
+    "category": "À éviter",
+    "vitality": {
+      "nova": 1,
+      "freshness": 70,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Hybride (Menthe)"
+    },
+    "scientific_defaults": {
+      "pral": -2.0,
+      "density": 72
+    },
+    "note": "Hybride de watermint et spearmint. Non approuvé. Utiliser fennel ou chamomile à la place."
+  },
+  {
+    "id": "sweet_potato",
+    "names": [
+      "sweet potato",
+      "patate douce",
+      "igname douce"
+    ],
+    "emoji": "🍠",
+    "family": "Convolvulaceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 85,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique / Alcalin"
+    },
+    "scientific_defaults": {
+      "pral": -9.6,
+      "density": 82
+    },
+    "note": "Approuvé par Dr. Sebi. Riche en potassium, vitamine A (bêta-carotène naturel) et fibres. PRAL très alcalin (-9.6). Distinct de la pomme de terre blanche (non approuvée)."
+  },
+  {
+    "id": "peanuts",
+    "names": [
+      "peanuts",
+      "cacahuètes",
+      "arachides"
+    ],
+    "emoji": "🥜",
+    "family": "Fabaceae",
+    "category": "À éviter",
+    "vitality": {
+      "nova": 1,
+      "freshness": 55,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Légumineuse / Acide"
+    },
+    "scientific_defaults": {
+      "pral": 8.3,
+      "density": 60
+    },
+    "note": "Légumineuse (pas une noix). Fortement acide. Souvent contaminé par aflatoxines. Non approuvé."
+  },
+  {
+    "id": "almonds",
+    "names": [
+      "almonds",
+      "amandes"
+    ],
+    "emoji": "🌰",
+    "family": "Rosaceae",
+    "category": "À éviter",
+    "vitality": {
+      "nova": 1,
+      "freshness": 60,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Hybride"
+    },
+    "scientific_defaults": {
+      "pral": 4.3,
+      "density": 65
+    },
+    "note": "Considéré comme hybride par Dr. Sebi. Très PRAL acide malgré réputation santé. Non approuvé."
+  },
+  {
+    "id": "cashews",
+    "names": [
+      "cashews",
+      "noix de cajou",
+      "cajou"
+    ],
+    "emoji": "🌰",
+    "family": "Anacardiaceae",
+    "category": "À éviter",
+    "vitality": {
+      "nova": 1,
+      "freshness": 55,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Acide / Anacardiacée"
+    },
+    "scientific_defaults": {
+      "pral": 4.0,
+      "density": 62
+    },
+    "note": "Famille de l'herbe à puce (poison ivy). Toujours traité thermiquement (toxique cru). Non approuvé."
+  },
+  {
+    "id": "tofu",
+    "names": [
+      "tofu",
+      "soja",
+      "soy",
+      "soja tofu"
+    ],
+    "emoji": "🧊",
+    "family": "Fabaceae",
+    "category": "À éviter",
+    "vitality": {
+      "nova": 3,
+      "freshness": 30,
+      "label": "Ultra-Transformé"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Hybride / Œstrogénique"
+    },
+    "scientific_defaults": {
+      "pral": 3.5,
+      "density": 35
+    },
+    "note": "Soja = l'une des plantes les plus hybridées. Œstrogénique. Vole le fer du corps. Non approuvé."
+  },
+  {
+    "id": "soy_milk",
+    "names": [
+      "soy milk",
+      "lait de soja",
+      "lait végétal soja"
+    ],
+    "emoji": "🥛",
+    "family": "Fabaceae",
+    "category": "À éviter",
+    "vitality": {
+      "nova": 4,
+      "freshness": 20,
+      "label": "Ultra-Transformé"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Hybride / Transformé"
+    },
+    "scientific_defaults": {
+      "pral": 2.0,
+      "density": 25
+    },
+    "note": "Dérivé du soja hybridé. Contient des anti-nutriments et des phytoœstrogènes. Non approuvé."
+  },
+  {
+    "id": "dairy_milk",
+    "names": [
+      "milk",
+      "lait",
+      "lait de vache",
+      "dairy",
+      "laitage"
+    ],
+    "emoji": "🥛",
+    "family": "Animal",
+    "category": "À éviter",
+    "vitality": {
+      "nova": 1,
+      "freshness": 25,
+      "label": "Produit Animal"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Animal / Mucus ++"
+    },
+    "scientific_defaults": {
+      "pral": 1.1,
+      "density": 20
+    },
+    "note": "Conçu pour faire passer un veau de 65 kg à 500 kg. Calcium inorganique non bioassimilable. Dépose dans les articulations → arthrite. Non approuvé."
+  },
+  {
+    "id": "eggs",
+    "names": [
+      "eggs",
+      "oeufs",
+      "oeuf"
+    ],
+    "emoji": "🥚",
+    "family": "Animal",
+    "category": "À éviter",
+    "vitality": {
+      "nova": 1,
+      "freshness": 20,
+      "label": "Produit Animal"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Animal / Acide"
+    },
+    "scientific_defaults": {
+      "pral": 8.0,
+      "density": 20
+    },
+    "note": "Fortement acide (PRAL +8). Produit animal exclu à 100% du système Dr. Sebi."
+  },
+  {
+    "id": "wheat",
+    "names": [
+      "wheat",
+      "blé",
+      "farine de blé",
+      "gluten",
+      "pain blanc",
+      "farine"
+    ],
+    "emoji": "🌾",
+    "family": "Poaceae",
+    "category": "À éviter",
+    "vitality": {
+      "nova": 1,
+      "freshness": 40,
+      "label": "Hybride Industriel"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Hybride (Gluten Modifié)"
+    },
+    "scientific_defaults": {
+      "pral": 2.0,
+      "density": 40
+    },
+    "note": "Blé moderne = hybride intensif depuis les années 1970. Gluten modifié inflammatoire. Amidon glycémique élevé. Utiliser épeautre, seigle ou kamut à la place."
+  },
+  {
+    "id": "white_rice",
+    "names": [
+      "white rice",
+      "riz blanc",
+      "riz"
+    ],
+    "emoji": "🍚",
+    "family": "Poaceae",
+    "category": "À éviter",
+    "vitality": {
+      "nova": 3,
+      "freshness": 30,
+      "label": "Raffiné"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Raffiné / Amidon"
+    },
+    "scientific_defaults": {
+      "pral": 1.7,
+      "density": 35
+    },
+    "note": "Raffiné — toutes les fibres et minéraux retirés. Amidon pur = mucus. Utiliser riz sauvage à la place."
+  },
+  {
+    "id": "oats",
+    "names": [
+      "oats",
+      "avoine",
+      "flocons d'avoine",
+      "porridge"
+    ],
+    "emoji": "🥣",
+    "family": "Poaceae",
+    "category": "À éviter",
+    "vitality": {
+      "nova": 1,
+      "freshness": 50,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Non Approuvé"
+    },
+    "scientific_defaults": {
+      "pral": 3.2,
+      "density": 55
+    },
+    "note": "Non sur la liste Dr. Sebi. Acide. Contient de l'avenine (forme de gluten). Non approuvé."
+  },
+  {
+    "id": "millet",
+    "names": [
+      "millet",
+      "mil"
+    ],
+    "emoji": "🌾",
+    "family": "Poaceae",
+    "category": "À éviter",
+    "vitality": {
+      "nova": 1,
+      "freshness": 60,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Non Approuvé"
+    },
+    "scientific_defaults": {
+      "pral": 1.5,
+      "density": 60
+    },
+    "note": "Absent de la liste Dr. Sebi malgré sa popularité dans les régimes naturels."
+  },
+  {
+    "id": "barley",
+    "names": [
+      "barley",
+      "orge"
+    ],
+    "emoji": "🌾",
+    "family": "Poaceae",
+    "category": "À éviter",
+    "vitality": {
+      "nova": 1,
+      "freshness": 55,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Non Approuvé"
+    },
+    "scientific_defaults": {
+      "pral": 3.0,
+      "density": 58
+    }
+  },
+  {
+    "id": "white_sugar",
+    "names": [
+      "white sugar",
+      "sucre blanc",
+      "sucre raffiné",
+      "sucre",
+      "brown sugar",
+      "sucre roux"
+    ],
+    "emoji": "🍬",
+    "family": "Processed",
+    "category": "À éviter",
+    "vitality": {
+      "nova": 4,
+      "freshness": 0,
+      "label": "Ultra-Transformé"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Acide / Inerte"
+    },
+    "scientific_defaults": {
+      "pral": 0.1,
+      "density": 0
+    },
+    "note": "Chimiquement extrait, blanchi avec des os d'animaux. Aliment mort sans aucune valeur nutritive. Principal carburant des cellules cancéreuses selon Sebi."
+  },
+  {
+    "id": "coffee",
+    "names": [
+      "coffee",
+      "café",
+      "café noir",
+      "expresso"
+    ],
+    "emoji": "☕",
+    "family": "Rubiaceae",
+    "category": "À éviter",
+    "vitality": {
+      "nova": 2,
+      "freshness": 20,
+      "label": "Transformé"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Acide / Stimulant"
+    },
+    "scientific_defaults": {
+      "pral": -1.0,
+      "density": 15
+    },
+    "note": "Fortement acide. Drogue addictive. Épuise les glandes surrénales. Bloque l'absorption de fer. Non approuvé."
+  },
+  {
+    "id": "alcohol",
+    "names": [
+      "alcohol",
+      "alcool",
+      "vin",
+      "bière",
+      "whisky",
+      "vodka"
+    ],
+    "emoji": "🍷",
+    "family": "Processed",
+    "category": "À éviter",
+    "vitality": {
+      "nova": 4,
+      "freshness": 0,
+      "label": "Ultra-Transformé"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Toxique / Acide"
+    },
+    "scientific_defaults": {
+      "pral": -0.5,
+      "density": 0
+    },
+    "note": "Acide fermenté. Détruit le foie, les reins et la membrane muqueuse. Non approuvé."
+  },
+  {
+    "id": "black_pepper",
+    "names": [
+      "black pepper",
+      "poivre noir",
+      "poivre"
+    ],
+    "emoji": "🫙",
+    "family": "Piperaceae",
+    "category": "À éviter",
+    "vitality": {
+      "nova": 1,
+      "freshness": 60,
+      "label": "Brut · Séché"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Non Approuvé"
+    },
+    "scientific_defaults": {
+      "pral": -0.5,
+      "density": 65
+    },
+    "note": "Absent de la liste Dr. Sebi. Irritant gastrique. Utiliser cayenne ou habanero à la place."
+  },
+  {
+    "id": "vinegar",
+    "names": [
+      "vinegar",
+      "vinaigre",
+      "apple cider vinegar",
+      "vinaigre de cidre"
+    ],
+    "emoji": "🫙",
+    "family": "Processed",
+    "category": "À éviter",
+    "vitality": {
+      "nova": 3,
+      "freshness": 10,
+      "label": "Fermenté / Acide"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Acide Fermenté"
+    },
+    "scientific_defaults": {
+      "pral": -1.5,
+      "density": 10
+    },
+    "note": "Même le vinaigre de cidre de pomme (très populaire) est interdit. Acide fermenté. Irrite la membrane muqueuse."
+  },
+  {
+    "id": "beef_ground",
+    "names": [
+      "beef ground",
+      "bœuf haché",
+      "steak haché"
+    ],
+    "emoji": "🥩",
+    "family": "Bovidae",
+    "category": "Viandes & Charcuterie",
+    "vitality": {
+      "nova": 1,
+      "freshness": 15,
+      "label": "Cru · Animal"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Animal / Très Acide"
+    },
+    "scientific_defaults": {
+      "pral": 7.8,
+      "density": 12
+    },
+    "source": "USDA FoodData Central",
+    "note": "PRAL +7.8 — fortement acide. Riche en graisses saturées. Absent de tout système naturel de santé."
+  },
+  {
+    "id": "beef_steak",
+    "names": [
+      "beef steak",
+      "steak",
+      "entrecôte",
+      "bœuf"
+    ],
+    "emoji": "🥩",
+    "family": "Bovidae",
+    "category": "Viandes & Charcuterie",
+    "vitality": {
+      "nova": 1,
+      "freshness": 15,
+      "label": "Cru · Animal"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Animal / Très Acide"
+    },
+    "scientific_defaults": {
+      "pral": 8.2,
+      "density": 12
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "beef_liver",
+    "names": [
+      "beef liver",
+      "foie de bœuf",
+      "foie"
+    ],
+    "emoji": "🫀",
+    "family": "Bovidae",
+    "category": "Viandes & Charcuterie",
+    "vitality": {
+      "nova": 1,
+      "freshness": 18,
+      "label": "Cru · Abat"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Animal / Acide"
+    },
+    "scientific_defaults": {
+      "pral": 10.9,
+      "density": 25
+    },
+    "source": "USDA FoodData Central",
+    "note": "PRAL +10.9 — très acide. Riche en vitamine A (risque toxicité). Non recommandé."
+  },
+  {
+    "id": "pork_chop",
+    "names": [
+      "pork",
+      "porc",
+      "côte de porc",
+      "viande de porc"
+    ],
+    "emoji": "🥩",
+    "family": "Suidae",
+    "category": "Viandes & Charcuterie",
+    "vitality": {
+      "nova": 1,
+      "freshness": 15,
+      "label": "Cru · Animal"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Animal / Acide"
+    },
+    "scientific_defaults": {
+      "pral": 7.9,
+      "density": 12
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "pork_bacon",
+    "names": [
+      "bacon",
+      "lardons",
+      "poitrine fumée"
+    ],
+    "emoji": "🥓",
+    "family": "Suidae",
+    "category": "Viandes & Charcuterie",
+    "vitality": {
+      "nova": 4,
+      "freshness": 5,
+      "label": "Ultra-Transformé · Fumé"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Transformé / Très Acide"
+    },
+    "scientific_defaults": {
+      "pral": 14.6,
+      "density": 5
+    },
+    "source": "USDA FoodData Central",
+    "note": "PRAL +14.6 — ultra-acide. Nitrites, sel, graisses saturées. NOVA 4."
+  },
+  {
+    "id": "ham",
+    "names": [
+      "ham",
+      "jambon",
+      "jambon cuit",
+      "jambon blanc"
+    ],
+    "emoji": "🍖",
+    "family": "Suidae",
+    "category": "Viandes & Charcuterie",
+    "vitality": {
+      "nova": 4,
+      "freshness": 8,
+      "label": "Transformé · Charcuterie"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Charcuterie / Acide"
+    },
+    "scientific_defaults": {
+      "pral": 10.2,
+      "density": 8
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "sausage",
+    "names": [
+      "sausage",
+      "saucisse",
+      "saucisson",
+      "chorizo",
+      "merguez"
+    ],
+    "emoji": "🌭",
+    "family": "Suidae",
+    "category": "Viandes & Charcuterie",
+    "vitality": {
+      "nova": 4,
+      "freshness": 5,
+      "label": "Ultra-Transformé"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Charcuterie / Ultra-Acide"
+    },
+    "scientific_defaults": {
+      "pral": 12.1,
+      "density": 5
+    },
+    "source": "USDA FoodData Central",
+    "note": "NOVA 4. Additifs, conservateurs, nitrates. Classé cancérigène groupe 1 (OMS)."
+  },
+  {
+    "id": "lamb",
+    "names": [
+      "lamb",
+      "agneau",
+      "mouton"
+    ],
+    "emoji": "🥩",
+    "family": "Bovidae",
+    "category": "Viandes & Charcuterie",
+    "vitality": {
+      "nova": 1,
+      "freshness": 15,
+      "label": "Cru · Animal"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Animal / Acide"
+    },
+    "scientific_defaults": {
+      "pral": 7.6,
+      "density": 12
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "veal",
+    "names": [
+      "veal",
+      "veau"
+    ],
+    "emoji": "🥩",
+    "family": "Bovidae",
+    "category": "Viandes & Charcuterie",
+    "vitality": {
+      "nova": 1,
+      "freshness": 15,
+      "label": "Cru · Animal"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Animal / Acide"
+    },
+    "scientific_defaults": {
+      "pral": 8.1,
+      "density": 12
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "hot_dog",
+    "names": [
+      "hot dog",
+      "frankfurter",
+      "knack"
+    ],
+    "emoji": "🌭",
+    "family": "Processed",
+    "category": "Viandes & Charcuterie",
+    "vitality": {
+      "nova": 4,
+      "freshness": 3,
+      "label": "Ultra-Transformé"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Ultra-Transformé / Acide"
+    },
+    "scientific_defaults": {
+      "pral": 7.4,
+      "density": 3
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "salami",
+    "names": [
+      "salami",
+      "saucisson sec"
+    ],
+    "emoji": "🥓",
+    "family": "Suidae",
+    "category": "Viandes & Charcuterie",
+    "vitality": {
+      "nova": 4,
+      "freshness": 4,
+      "label": "Ultra-Transformé · Charcuterie"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Charcuterie / Ultra-Acide"
+    },
+    "scientific_defaults": {
+      "pral": 15.2,
+      "density": 4
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "prosciutto",
+    "names": [
+      "prosciutto",
+      "jambon serrano",
+      "jambon de parme",
+      "jambon cru"
+    ],
+    "emoji": "🍖",
+    "family": "Suidae",
+    "category": "Viandes & Charcuterie",
+    "vitality": {
+      "nova": 3,
+      "freshness": 7,
+      "label": "Transformé · Séché"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Charcuterie Affinée"
+    },
+    "scientific_defaults": {
+      "pral": 10.8,
+      "density": 7
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "beef_jerky",
+    "names": [
+      "beef jerky",
+      "viande séchée"
+    ],
+    "emoji": "🥩",
+    "family": "Bovidae",
+    "category": "Viandes & Charcuterie",
+    "vitality": {
+      "nova": 4,
+      "freshness": 6,
+      "label": "Ultra-Transformé · Séché"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Transformé / Ultra-Acide"
+    },
+    "scientific_defaults": {
+      "pral": 18.5,
+      "density": 5
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "chicken_breast",
+    "names": [
+      "chicken breast",
+      "poitrine de poulet",
+      "blanc de poulet",
+      "poulet"
+    ],
+    "emoji": "🍗",
+    "family": "Phasianidae",
+    "category": "Volailles",
+    "vitality": {
+      "nova": 1,
+      "freshness": 18,
+      "label": "Cru · Animal"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Animal / Acide"
+    },
+    "scientific_defaults": {
+      "pral": 8.7,
+      "density": 15
+    },
+    "source": "USDA FoodData Central",
+    "note": "PRAL +8.7. Protéine animale — acid-forming. Absent du système Dr. Sebi."
+  },
+  {
+    "id": "chicken_thigh",
+    "names": [
+      "chicken thigh",
+      "cuisse de poulet",
+      "poulet"
+    ],
+    "emoji": "🍗",
+    "family": "Phasianidae",
+    "category": "Volailles",
+    "vitality": {
+      "nova": 1,
+      "freshness": 16,
+      "label": "Cru · Animal"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Animal / Acide"
+    },
+    "scientific_defaults": {
+      "pral": 7.4,
+      "density": 14
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "turkey",
+    "names": [
+      "turkey",
+      "dinde",
+      "escalope de dinde"
+    ],
+    "emoji": "🦃",
+    "family": "Phasianidae",
+    "category": "Volailles",
+    "vitality": {
+      "nova": 1,
+      "freshness": 18,
+      "label": "Cru · Animal"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Animal / Acide"
+    },
+    "scientific_defaults": {
+      "pral": 9.9,
+      "density": 15
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "duck",
+    "names": [
+      "duck",
+      "canard",
+      "magret de canard"
+    ],
+    "emoji": "🦆",
+    "family": "Anatidae",
+    "category": "Volailles",
+    "vitality": {
+      "nova": 1,
+      "freshness": 15,
+      "label": "Cru · Animal"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Animal / Acide"
+    },
+    "scientific_defaults": {
+      "pral": 7.2,
+      "density": 14
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "chicken_nuggets",
+    "names": [
+      "chicken nuggets",
+      "nuggets de poulet",
+      "nuggets"
+    ],
+    "emoji": "🍗",
+    "family": "Processed",
+    "category": "Volailles",
+    "vitality": {
+      "nova": 4,
+      "freshness": 3,
+      "label": "Ultra-Transformé"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Ultra-Transformé / Acide"
+    },
+    "scientific_defaults": {
+      "pral": 6.8,
+      "density": 3
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "rotisserie_chicken",
+    "names": [
+      "rotisserie chicken",
+      "poulet rôti"
+    ],
+    "emoji": "🍗",
+    "family": "Phasianidae",
+    "category": "Volailles",
+    "vitality": {
+      "nova": 2,
+      "freshness": 15,
+      "label": "Cuit · Animal"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Animal / Acide"
+    },
+    "scientific_defaults": {
+      "pral": 8.2,
+      "density": 14
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "salmon",
+    "names": [
+      "salmon",
+      "saumon",
+      "saumon atlantique"
+    ],
+    "emoji": "🐟",
+    "family": "Salmonidae",
+    "category": "Poissons & Fruits de mer",
+    "vitality": {
+      "nova": 1,
+      "freshness": 22,
+      "label": "Cru · Poisson"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Animal / Acide"
+    },
+    "scientific_defaults": {
+      "pral": 9.4,
+      "density": 25
+    },
+    "source": "USDA FoodData Central",
+    "note": "PRAL +9.4. Riche en oméga-3 mais protéine animale acide. Hors liste Dr. Sebi."
+  },
+  {
+    "id": "tuna",
+    "names": [
+      "tuna",
+      "thon",
+      "thon rouge",
+      "thon albacore"
+    ],
+    "emoji": "🐟",
+    "family": "Scombridae",
+    "category": "Poissons & Fruits de mer",
+    "vitality": {
+      "nova": 1,
+      "freshness": 20,
+      "label": "Cru · Poisson"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Animal / Acide"
+    },
+    "scientific_defaults": {
+      "pral": 7.9,
+      "density": 22
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "tuna_canned",
+    "names": [
+      "canned tuna",
+      "thon en boîte"
+    ],
+    "emoji": "🥫",
+    "family": "Scombridae",
+    "category": "Poissons & Fruits de mer",
+    "vitality": {
+      "nova": 3,
+      "freshness": 15,
+      "label": "Transformé · Conserve"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Transformé / Acide"
+    },
+    "scientific_defaults": {
+      "pral": 8.3,
+      "density": 15
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "cod",
+    "names": [
+      "cod",
+      "cabillaud",
+      "morue"
+    ],
+    "emoji": "🐟",
+    "family": "Gadidae",
+    "category": "Poissons & Fruits de mer",
+    "vitality": {
+      "nova": 1,
+      "freshness": 22,
+      "label": "Cru · Poisson"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Animal / Acide"
+    },
+    "scientific_defaults": {
+      "pral": 6.8,
+      "density": 20
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "sardines",
+    "names": [
+      "sardines",
+      "sardine"
+    ],
+    "emoji": "🐟",
+    "family": "Clupeidae",
+    "category": "Poissons & Fruits de mer",
+    "vitality": {
+      "nova": 1,
+      "freshness": 22,
+      "label": "Cru · Poisson"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Animal / Acide"
+    },
+    "scientific_defaults": {
+      "pral": 8.1,
+      "density": 25
+    },
+    "source": "USDA FoodData Central",
+    "note": "Riches en calcium et oméga-3 mais calcium inorganique selon Sebi."
+  },
+  {
+    "id": "sardines_canned",
+    "names": [
+      "sardines en boîte",
+      "sardines conserve"
+    ],
+    "emoji": "🥫",
+    "family": "Clupeidae",
+    "category": "Poissons & Fruits de mer",
+    "vitality": {
+      "nova": 3,
+      "freshness": 14,
+      "label": "Transformé · Conserve"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Transformé / Acide"
+    },
+    "scientific_defaults": {
+      "pral": 7.6,
+      "density": 14
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "mackerel",
+    "names": [
+      "mackerel",
+      "maquereau"
+    ],
+    "emoji": "🐟",
+    "family": "Scombridae",
+    "category": "Poissons & Fruits de mer",
+    "vitality": {
+      "nova": 1,
+      "freshness": 22,
+      "label": "Cru · Poisson"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Animal / Acide"
+    },
+    "scientific_defaults": {
+      "pral": 8.6,
+      "density": 23
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "shrimp",
+    "names": [
+      "shrimp",
+      "crevettes",
+      "prawn"
+    ],
+    "emoji": "🦐",
+    "family": "Penaeidae",
+    "category": "Poissons & Fruits de mer",
+    "vitality": {
+      "nova": 1,
+      "freshness": 20,
+      "label": "Cru · Crustacé"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Animal / Acide"
+    },
+    "scientific_defaults": {
+      "pral": 7.1,
+      "density": 18
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "lobster",
+    "names": [
+      "lobster",
+      "homard",
+      "langouste"
+    ],
+    "emoji": "🦞",
+    "family": "Nephropidae",
+    "category": "Poissons & Fruits de mer",
+    "vitality": {
+      "nova": 1,
+      "freshness": 20,
+      "label": "Cru · Crustacé"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Animal / Acide"
+    },
+    "scientific_defaults": {
+      "pral": 6.9,
+      "density": 18
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "oyster",
+    "names": [
+      "oyster",
+      "huître",
+      "huîtres"
+    ],
+    "emoji": "🦪",
+    "family": "Ostreidae",
+    "category": "Poissons & Fruits de mer",
+    "vitality": {
+      "nova": 1,
+      "freshness": 22,
+      "label": "Cru · Mollusque"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Animal / Légèrement Acide"
+    },
+    "scientific_defaults": {
+      "pral": 3.4,
+      "density": 25
+    },
+    "source": "USDA FoodData Central",
+    "note": "PRAL +3.4 — relativement bas parmi les animaux. Riche en zinc (inorganique selon Sebi)."
+  },
+  {
+    "id": "clams",
+    "names": [
+      "clams",
+      "palourdes",
+      "coques",
+      "moules"
+    ],
+    "emoji": "🐚",
+    "family": "Veneridae",
+    "category": "Poissons & Fruits de mer",
+    "vitality": {
+      "nova": 1,
+      "freshness": 22,
+      "label": "Cru · Mollusque"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Animal / Acide"
+    },
+    "scientific_defaults": {
+      "pral": 4.6,
+      "density": 20
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "tilapia",
+    "names": [
+      "tilapia"
+    ],
+    "emoji": "🐟",
+    "family": "Cichlidae",
+    "category": "Poissons & Fruits de mer",
+    "vitality": {
+      "nova": 1,
+      "freshness": 18,
+      "label": "Cru · Poisson"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Animal / Acide"
+    },
+    "scientific_defaults": {
+      "pral": 6.2,
+      "density": 18
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "fish_sticks",
+    "names": [
+      "fish sticks",
+      "bâtonnets de poisson",
+      "fish fingers"
+    ],
+    "emoji": "🍟",
+    "family": "Processed",
+    "category": "Poissons & Fruits de mer",
+    "vitality": {
+      "nova": 4,
+      "freshness": 5,
+      "label": "Ultra-Transformé"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Ultra-Transformé / Acide"
+    },
+    "scientific_defaults": {
+      "pral": 4.5,
+      "density": 5
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "cheese_cheddar",
+    "names": [
+      "cheddar",
+      "fromage cheddar"
+    ],
+    "emoji": "🧀",
+    "family": "Bovidae",
+    "category": "Produits Laitiers",
+    "vitality": {
+      "nova": 1,
+      "freshness": 18,
+      "label": "Produit Animal"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Laitier / Très Acide"
+    },
+    "scientific_defaults": {
+      "pral": 8.7,
+      "density": 12
+    },
+    "source": "USDA FoodData Central",
+    "note": "PRAL +8.7. Calcium inorganique non bioassimilable selon Dr. Sebi. Mucus-formant."
+  },
+  {
+    "id": "cheese_brie",
+    "names": [
+      "brie",
+      "camembert",
+      "fromage à pâte molle"
+    ],
+    "emoji": "🧀",
+    "family": "Bovidae",
+    "category": "Produits Laitiers",
+    "vitality": {
+      "nova": 1,
+      "freshness": 16,
+      "label": "Produit Animal"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Laitier / Acide"
+    },
+    "scientific_defaults": {
+      "pral": 6.5,
+      "density": 11
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "cheese_parmesan",
+    "names": [
+      "parmesan",
+      "parmigiano reggiano",
+      "fromage râpé"
+    ],
+    "emoji": "🧀",
+    "family": "Bovidae",
+    "category": "Produits Laitiers",
+    "vitality": {
+      "nova": 1,
+      "freshness": 15,
+      "label": "Produit Animal · Affiné"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Laitier / Très Acide"
+    },
+    "scientific_defaults": {
+      "pral": 11.3,
+      "density": 10
+    },
+    "source": "USDA FoodData Central",
+    "note": "PRAL +11.3 — parmi les aliments les plus acides par gramme."
+  },
+  {
+    "id": "cheese_mozzarella",
+    "names": [
+      "mozzarella",
+      "mozzarelle"
+    ],
+    "emoji": "🧀",
+    "family": "Bovidae",
+    "category": "Produits Laitiers",
+    "vitality": {
+      "nova": 1,
+      "freshness": 18,
+      "label": "Produit Animal"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Laitier / Acide"
+    },
+    "scientific_defaults": {
+      "pral": 5.4,
+      "density": 12
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "cheese_cream",
+    "names": [
+      "cream cheese",
+      "fromage frais",
+      "philadelphia"
+    ],
+    "emoji": "🧀",
+    "family": "Bovidae",
+    "category": "Produits Laitiers",
+    "vitality": {
+      "nova": 3,
+      "freshness": 12,
+      "label": "Transformé · Laitier"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Laitier / Acide"
+    },
+    "scientific_defaults": {
+      "pral": 4.2,
+      "density": 10
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "yogurt_plain",
+    "names": [
+      "plain yogurt",
+      "yaourt nature",
+      "yogourt"
+    ],
+    "emoji": "🥛",
+    "family": "Bovidae",
+    "category": "Produits Laitiers",
+    "vitality": {
+      "nova": 1,
+      "freshness": 22,
+      "label": "Produit Animal · Fermenté"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Laitier / Légèrement Acide"
+    },
+    "scientific_defaults": {
+      "pral": 1.5,
+      "density": 18
+    },
+    "source": "USDA FoodData Central",
+    "note": "PRAL +1.5 — moins acide que le fromage mais toujours mucus-formant selon Dr. Sebi."
+  },
+  {
+    "id": "yogurt_greek",
+    "names": [
+      "greek yogurt",
+      "yaourt grec",
+      "fromage blanc"
+    ],
+    "emoji": "🥛",
+    "family": "Bovidae",
+    "category": "Produits Laitiers",
+    "vitality": {
+      "nova": 1,
+      "freshness": 20,
+      "label": "Produit Animal · Fermenté"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Laitier / Acide"
+    },
+    "scientific_defaults": {
+      "pral": 3.5,
+      "density": 18
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "butter",
+    "names": [
+      "butter",
+      "beurre"
+    ],
+    "emoji": "🧈",
+    "family": "Bovidae",
+    "category": "Produits Laitiers",
+    "vitality": {
+      "nova": 1,
+      "freshness": 10,
+      "label": "Produit Animal · Gras"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Laitier / Acide"
+    },
+    "scientific_defaults": {
+      "pral": 0.6,
+      "density": 8
+    },
+    "source": "USDA FoodData Central",
+    "note": "Presque 100% matière grasse. PRAL faible mais fortement mucus-formant."
+  },
+  {
+    "id": "cream",
+    "names": [
+      "cream",
+      "crème fraîche",
+      "heavy cream",
+      "double cream"
+    ],
+    "emoji": "🥛",
+    "family": "Bovidae",
+    "category": "Produits Laitiers",
+    "vitality": {
+      "nova": 1,
+      "freshness": 12,
+      "label": "Produit Animal · Gras"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Laitier / Acide"
+    },
+    "scientific_defaults": {
+      "pral": 0.5,
+      "density": 8
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "ice_cream",
+    "names": [
+      "ice cream",
+      "glace",
+      "crème glacée"
+    ],
+    "emoji": "🍦",
+    "family": "Bovidae",
+    "category": "Produits Laitiers",
+    "vitality": {
+      "nova": 4,
+      "freshness": 8,
+      "label": "Ultra-Transformé · Sucré"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Ultra-Transformé / Acide"
+    },
+    "scientific_defaults": {
+      "pral": 0.6,
+      "density": 5
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "whey_protein",
+    "names": [
+      "whey protein",
+      "protéine de lactosérum",
+      "protéine en poudre"
+    ],
+    "emoji": "💪",
+    "family": "Bovidae",
+    "category": "Produits Laitiers",
+    "vitality": {
+      "nova": 4,
+      "freshness": 5,
+      "label": "Ultra-Transformé"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Isolat / Très Acide"
+    },
+    "scientific_defaults": {
+      "pral": 26.8,
+      "density": 5
+    },
+    "source": "USDA FoodData Central",
+    "note": "PRAL estimé très élevé. Concentré de protéines animales. Fortement acide."
+  },
+  {
+    "id": "egg_white",
+    "names": [
+      "egg white",
+      "blanc d'œuf"
+    ],
+    "emoji": "🥚",
+    "family": "Phasianidae",
+    "category": "Œufs",
+    "vitality": {
+      "nova": 1,
+      "freshness": 18,
+      "label": "Produit Animal"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Animal / Très Acide"
+    },
+    "scientific_defaults": {
+      "pral": 11.0,
+      "density": 15
+    },
+    "source": "USDA FoodData Central",
+    "note": "PRAL +11.0 — blanc d'œuf parmi les aliments les plus acides. Pur albumine."
+  },
+  {
+    "id": "egg_yolk",
+    "names": [
+      "egg yolk",
+      "jaune d'œuf"
+    ],
+    "emoji": "🥚",
+    "family": "Phasianidae",
+    "category": "Œufs",
+    "vitality": {
+      "nova": 1,
+      "freshness": 20,
+      "label": "Produit Animal"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Animal / Acide"
+    },
+    "scientific_defaults": {
+      "pral": 4.5,
+      "density": 18
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "whole_egg",
+    "names": [
+      "whole egg",
+      "œuf entier",
+      "oeuf"
+    ],
+    "emoji": "🥚",
+    "family": "Phasianidae",
+    "category": "Œufs",
+    "vitality": {
+      "nova": 1,
+      "freshness": 20,
+      "label": "Produit Animal"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Animal / Acide"
+    },
+    "scientific_defaults": {
+      "pral": 8.0,
+      "density": 16
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "lentils_red",
+    "names": [
+      "red lentils",
+      "lentilles corail",
+      "lentilles rouges"
+    ],
+    "emoji": "🫘",
+    "family": "Fabaceae",
+    "category": "Légumineuses",
+    "vitality": {
+      "nova": 1,
+      "freshness": 65,
+      "label": "Brut · Légumineuse"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Légumineuse / Légèrement Acide"
+    },
+    "scientific_defaults": {
+      "pral": 1.3,
+      "density": 58
+    },
+    "source": "USDA FoodData Central",
+    "note": "Absent de la liste Dr. Sebi mais PRAL faible. Riche en protéines végétales et fer."
+  },
+  {
+    "id": "lentils_green",
+    "names": [
+      "green lentils",
+      "lentilles vertes",
+      "lentilles du Puy"
+    ],
+    "emoji": "🫘",
+    "family": "Fabaceae",
+    "category": "Légumineuses",
+    "vitality": {
+      "nova": 1,
+      "freshness": 65,
+      "label": "Brut · Légumineuse"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Légumineuse / Neutre"
+    },
+    "scientific_defaults": {
+      "pral": 1.0,
+      "density": 60
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "black_beans",
+    "names": [
+      "black beans",
+      "haricots noirs"
+    ],
+    "emoji": "🫘",
+    "family": "Fabaceae",
+    "category": "Légumineuses",
+    "vitality": {
+      "nova": 1,
+      "freshness": 62,
+      "label": "Brut · Légumineuse"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Légumineuse / Légèrement Acide"
+    },
+    "scientific_defaults": {
+      "pral": 1.6,
+      "density": 58
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "kidney_beans",
+    "names": [
+      "kidney beans",
+      "haricots rouges",
+      "haricots"
+    ],
+    "emoji": "🫘",
+    "family": "Fabaceae",
+    "category": "Légumineuses",
+    "vitality": {
+      "nova": 1,
+      "freshness": 62,
+      "label": "Brut · Légumineuse"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Légumineuse / Légèrement Acide"
+    },
+    "scientific_defaults": {
+      "pral": 1.8,
+      "density": 58
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "white_beans",
+    "names": [
+      "white beans",
+      "haricots blancs",
+      "cannellini"
+    ],
+    "emoji": "🫘",
+    "family": "Fabaceae",
+    "category": "Légumineuses",
+    "vitality": {
+      "nova": 1,
+      "freshness": 62,
+      "label": "Brut · Légumineuse"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Légumineuse / Neutre"
+    },
+    "scientific_defaults": {
+      "pral": 0.9,
+      "density": 58
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "edamame",
+    "names": [
+      "edamame",
+      "fèves de soja vertes"
+    ],
+    "emoji": "🫘",
+    "family": "Fabaceae",
+    "category": "Légumineuses",
+    "vitality": {
+      "nova": 1,
+      "freshness": 60,
+      "label": "Brut · Légumineuse"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Hybride / Soja"
+    },
+    "scientific_defaults": {
+      "pral": 3.6,
+      "density": 45
+    },
+    "source": "USDA FoodData Central",
+    "note": "Soja hybridé. Non approuvé Dr. Sebi. Phytoœstrogènes."
+  },
+  {
+    "id": "green_peas",
+    "names": [
+      "green peas",
+      "petits pois",
+      "pois"
+    ],
+    "emoji": "🫛",
+    "family": "Fabaceae",
+    "category": "Légumineuses",
+    "vitality": {
+      "nova": 1,
+      "freshness": 72,
+      "label": "Brut · Légumineuse"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Légumineuse / Légèrement Alcalin"
+    },
+    "scientific_defaults": {
+      "pral": -1.8,
+      "density": 65
+    },
+    "source": "USDA FoodData Central",
+    "note": "PRAL légèrement négatif. Absent de la liste Dr. Sebi mais alcalin."
+  },
+  {
+    "id": "mung_beans",
+    "names": [
+      "mung beans",
+      "haricots mungo",
+      "soja vert"
+    ],
+    "emoji": "🫘",
+    "family": "Fabaceae",
+    "category": "Légumineuses",
+    "vitality": {
+      "nova": 1,
+      "freshness": 65,
+      "label": "Brut · Légumineuse"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Légumineuse / Légèrement Acide"
+    },
+    "scientific_defaults": {
+      "pral": 1.2,
+      "density": 60
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "fava_beans",
+    "names": [
+      "fava beans",
+      "fèves",
+      "broad beans"
+    ],
+    "emoji": "🫘",
+    "family": "Fabaceae",
+    "category": "Légumineuses",
+    "vitality": {
+      "nova": 1,
+      "freshness": 68,
+      "label": "Brut · Légumineuse"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Légumineuse / Légèrement Acide"
+    },
+    "scientific_defaults": {
+      "pral": 0.7,
+      "density": 62
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "split_peas",
+    "names": [
+      "split peas",
+      "pois cassés"
+    ],
+    "emoji": "🫘",
+    "family": "Fabaceae",
+    "category": "Légumineuses",
+    "vitality": {
+      "nova": 1,
+      "freshness": 62,
+      "label": "Brut · Séché"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Légumineuse / Légèrement Acide"
+    },
+    "scientific_defaults": {
+      "pral": 1.4,
+      "density": 58
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "lychee",
+    "names": [
+      "lychee",
+      "litchi",
+      "litchis"
+    ],
+    "emoji": "🍈",
+    "family": "Sapindaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 88,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Non Classifié Dr. Sebi"
+    },
+    "scientific_defaults": {
+      "pral": -1.5,
+      "density": 80
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "passion_fruit",
+    "names": [
+      "passion fruit",
+      "fruit de la passion",
+      "maracuja"
+    ],
+    "emoji": "🌺",
+    "family": "Passifloraceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 90,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": false,
+      "label": "Alcalin"
+    },
+    "scientific_defaults": {
+      "pral": -2.8,
+      "density": 85
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "guava",
+    "names": [
+      "guava",
+      "goyave"
+    ],
+    "emoji": "🍈",
+    "family": "Myrtaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 90,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": false,
+      "label": "Alcalin"
+    },
+    "scientific_defaults": {
+      "pral": -3.2,
+      "density": 88
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "jackfruit",
+    "names": [
+      "jackfruit",
+      "jacque",
+      "fruit du jacquier"
+    ],
+    "emoji": "🍈",
+    "family": "Moraceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 85,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Alcalin / Amidon naturel"
+    },
+    "scientific_defaults": {
+      "pral": -0.8,
+      "density": 78
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "starfruit",
+    "names": [
+      "starfruit",
+      "carambole"
+    ],
+    "emoji": "⭐",
+    "family": "Oxalidaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 88,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": false,
+      "label": "Alcalin"
+    },
+    "scientific_defaults": {
+      "pral": -2.1,
+      "density": 82
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "dragon_fruit",
+    "names": [
+      "dragon fruit",
+      "pitaya",
+      "fruit du dragon"
+    ],
+    "emoji": "🐲",
+    "family": "Cactaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 90,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Alcalin"
+    },
+    "scientific_defaults": {
+      "pral": -1.8,
+      "density": 85
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "pomegranate",
+    "names": [
+      "pomegranate",
+      "grenade",
+      "grenades"
+    ],
+    "emoji": "🍎",
+    "family": "Lythraceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 88,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": false,
+      "label": "Antioxydant puissant"
+    },
+    "scientific_defaults": {
+      "pral": -3.0,
+      "density": 88
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "persimmon",
+    "names": [
+      "persimmon",
+      "kaki",
+      "plaqueminier"
+    ],
+    "emoji": "🟠",
+    "family": "Ebenaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 85,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Alcalin"
+    },
+    "scientific_defaults": {
+      "pral": -2.5,
+      "density": 82
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "apricot",
+    "names": [
+      "apricot",
+      "abricot",
+      "abricots"
+    ],
+    "emoji": "🍑",
+    "family": "Rosaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 88,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": false,
+      "label": "Alcalin"
+    },
+    "scientific_defaults": {
+      "pral": -4.8,
+      "density": 80
+    },
+    "source": "USDA FoodData Central",
+    "note": "Très riche en potassium. Excellent PRAL alcalin."
+  },
+  {
+    "id": "kiwi",
+    "names": [
+      "kiwi",
+      "kiwifruit"
+    ],
+    "emoji": "🥝",
+    "family": "Actinidiaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 90,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": false,
+      "label": "Alcalin / Vitamine C"
+    },
+    "scientific_defaults": {
+      "pral": -4.1,
+      "density": 88
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "watermelon_seedless",
+    "names": [
+      "seedless watermelon",
+      "pastèque sans pépins"
+    ],
+    "emoji": "🍉",
+    "family": "Cucurbitaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 55,
+      "label": "Brut · Hybride"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Hybride (sans pépins)"
+    },
+    "scientific_defaults": {
+      "pral": -1.8,
+      "density": 50
+    },
+    "source": "USDA FoodData Central",
+    "note": "Hybride sans pépins — non approuvé Dr. Sebi. Utiliser pastèque avec pépins."
+  },
+  {
+    "id": "cranberry",
+    "names": [
+      "cranberry",
+      "canneberge"
+    ],
+    "emoji": "🫐",
+    "family": "Ericaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 65,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Trop Acide / Non Approuvé"
+    },
+    "scientific_defaults": {
+      "pral": -1.9,
+      "density": 60
+    },
+    "source": "USDA FoodData Central",
+    "note": "Explicitement exclu par Dr. Sebi — trop acide, souvent cultivé sous forme hybride."
+  },
+  {
+    "id": "raspberry",
+    "names": [
+      "raspberry",
+      "framboises"
+    ],
+    "emoji": "🫐",
+    "family": "Rosaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 92,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": false,
+      "label": "Électrique (inclus dans Berries)"
+    },
+    "scientific_defaults": {
+      "pral": -2.8,
+      "density": 90
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "blackberry",
+    "names": [
+      "blackberry",
+      "mûres",
+      "mûre sauvage"
+    ],
+    "emoji": "🫐",
+    "family": "Rosaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 92,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": false,
+      "label": "Électrique (inclus dans Berries)"
+    },
+    "scientific_defaults": {
+      "pral": -2.1,
+      "density": 88
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "blueberry",
+    "names": [
+      "blueberry",
+      "myrtilles",
+      "bleuets"
+    ],
+    "emoji": "🫐",
+    "family": "Ericaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 92,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": false,
+      "label": "Électrique (inclus dans Berries)"
+    },
+    "scientific_defaults": {
+      "pral": -1.5,
+      "density": 90
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "strawberry",
+    "names": [
+      "strawberry",
+      "fraises",
+      "fraise"
+    ],
+    "emoji": "🍓",
+    "family": "Rosaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 90,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": false,
+      "label": "Électrique (inclus dans Berries)"
+    },
+    "scientific_defaults": {
+      "pral": -2.2,
+      "density": 88
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "sweet_corn_fresh",
+    "names": [
+      "sweet corn fresh",
+      "maïs sucré frais",
+      "épi de maïs"
+    ],
+    "emoji": "🌽",
+    "family": "Poaceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 55,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Hybride (Sucre Modifié)"
+    },
+    "scientific_defaults": {
+      "pral": -1.7,
+      "density": 55
+    },
+    "source": "USDA FoodData Central",
+    "note": "Maïs sucré = hybride. Non approuvé Dr. Sebi. Différent du maïs dent jaune industriel."
+  },
+  {
+    "id": "shiitake",
+    "names": [
+      "shiitake",
+      "champignon shiitaké"
+    ],
+    "emoji": "🍄",
+    "family": "Marasmiaceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 75,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Exclu par Dr. Sebi"
+    },
+    "scientific_defaults": {
+      "pral": 2.2,
+      "density": 65
+    },
+    "source": "USDA FoodData Central",
+    "note": "Explicitement exclu de la liste Dr. Sebi parmi les champignons approuvés."
+  },
+  {
+    "id": "portobello",
+    "names": [
+      "portobello mushroom",
+      "champignon portobello"
+    ],
+    "emoji": "🍄",
+    "family": "Agaricaceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 80,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Champignon Alcalin"
+    },
+    "scientific_defaults": {
+      "pral": -1.4,
+      "density": 75
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "oyster_mushroom",
+    "names": [
+      "oyster mushroom",
+      "pleurote",
+      "champignon pleurote"
+    ],
+    "emoji": "🍄",
+    "family": "Pleurotaceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 82,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Champignon Approuvé"
+    },
+    "scientific_defaults": {
+      "pral": -1.8,
+      "density": 78
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "asparagus",
+    "names": [
+      "asparagus",
+      "asperge",
+      "asperges"
+    ],
+    "emoji": "🌿",
+    "family": "Asparagaceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 82,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Alcalin / Non classifié Dr. Sebi"
+    },
+    "scientific_defaults": {
+      "pral": -0.4,
+      "density": 80
+    },
+    "source": "USDA FoodData Central",
+    "note": "Absent liste Dr. Sebi. Faible en amidon, alcalin. Riche en folate."
+  },
+  {
+    "id": "pumpkin",
+    "names": [
+      "pumpkin",
+      "citrouille",
+      "potiron"
+    ],
+    "emoji": "🎃",
+    "family": "Cucurbitaceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 82,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Alcalin"
+    },
+    "scientific_defaults": {
+      "pral": -5.6,
+      "density": 80
+    },
+    "source": "USDA FoodData Central",
+    "note": "PRAL très alcalin. Proche du squash approuvé. Non explicitement listé par Dr. Sebi."
+  },
+  {
+    "id": "eggplant",
+    "names": [
+      "eggplant",
+      "aubergine"
+    ],
+    "emoji": "🍆",
+    "family": "Solanaceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 80,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Alcalin / Non classifié"
+    },
+    "scientific_defaults": {
+      "pral": -3.4,
+      "density": 78
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "artichoke",
+    "names": [
+      "artichoke",
+      "artichaut"
+    ],
+    "emoji": "🌸",
+    "family": "Asteraceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 82,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Alcalin / Non classifié"
+    },
+    "scientific_defaults": {
+      "pral": -4.9,
+      "density": 80
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "leek",
+    "names": [
+      "leek",
+      "poireau"
+    ],
+    "emoji": "🌿",
+    "family": "Amaryllidaceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 80,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Alcalin / Non classifié"
+    },
+    "scientific_defaults": {
+      "pral": -3.5,
+      "density": 78
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "radish",
+    "names": [
+      "radish",
+      "radis",
+      "raphanus sativus"
+    ],
+    "emoji": "🫛",
+    "family": "Brassicaceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 85,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Alcalin"
+    },
+    "scientific_defaults": {
+      "pral": -3.7,
+      "density": 82
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "fennel_bulb",
+    "names": [
+      "fennel bulb",
+      "fenouil",
+      "bulbe de fenouil"
+    ],
+    "emoji": "🌿",
+    "family": "Apiaceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 85,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": false,
+      "label": "Alcalin / Approuvé (bulbe)"
+    },
+    "scientific_defaults": {
+      "pral": -4.2,
+      "density": 85
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "bok_choy",
+    "names": [
+      "bok choy",
+      "pak choi",
+      "choy sum",
+      "chou chinois"
+    ],
+    "emoji": "🥬",
+    "family": "Brassicaceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 88,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Alcalin"
+    },
+    "scientific_defaults": {
+      "pral": -5.5,
+      "density": 88
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "swiss_chard",
+    "names": [
+      "swiss chard",
+      "bette",
+      "blette",
+      "bettes"
+    ],
+    "emoji": "🥬",
+    "family": "Amaranthaceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 88,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Alcalin"
+    },
+    "scientific_defaults": {
+      "pral": -7.1,
+      "density": 88
+    },
+    "source": "USDA FoodData Central",
+    "note": "Très alcalin (PRAL -7.1). Absent de la liste Dr. Sebi car contient de l'acide oxalique (moins que épinards)."
+  },
+  {
+    "id": "collard_greens",
+    "names": [
+      "collard greens",
+      "chou collard",
+      "chou vert"
+    ],
+    "emoji": "🥬",
+    "family": "Brassicaceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 88,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": false,
+      "label": "Alcalin / Minéral"
+    },
+    "scientific_defaults": {
+      "pral": -5.9,
+      "density": 90
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "parsley",
+    "names": [
+      "parsley",
+      "persil",
+      "persil plat",
+      "persil frisé"
+    ],
+    "emoji": "🌿",
+    "family": "Apiaceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 92,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": false,
+      "label": "Alcalin / Minéral"
+    },
+    "scientific_defaults": {
+      "pral": -5.5,
+      "density": 92
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "chives",
+    "names": [
+      "chives",
+      "ciboulette"
+    ],
+    "emoji": "🌿",
+    "family": "Amaryllidaceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 85,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Alcalin"
+    },
+    "scientific_defaults": {
+      "pral": -4.2,
+      "density": 85
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "green_onion",
+    "names": [
+      "green onion",
+      "spring onion",
+      "ciboulette d'oignon",
+      "oignon vert"
+    ],
+    "emoji": "🧅",
+    "family": "Amaryllidaceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 88,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Alcalin"
+    },
+    "scientific_defaults": {
+      "pral": -4.8,
+      "density": 85
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "iceberg_lettuce",
+    "names": [
+      "iceberg lettuce",
+      "laitue iceberg"
+    ],
+    "emoji": "🥬",
+    "family": "Asteraceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 40,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Exclu par Dr. Sebi"
+    },
+    "scientific_defaults": {
+      "pral": -0.2,
+      "density": 25
+    },
+    "source": "USDA FoodData Central",
+    "note": "Explicitement exclu par Dr. Sebi: eau + amidon, aucune valeur nutritive."
+  },
+  {
+    "id": "sweet_peas_pod",
+    "names": [
+      "sugar snap peas",
+      "mange-tout",
+      "pois gourmands"
+    ],
+    "emoji": "🫛",
+    "family": "Fabaceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 80,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Alcalin"
+    },
+    "scientific_defaults": {
+      "pral": -1.6,
+      "density": 78
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "pea_sprouts",
+    "names": [
+      "sprouts",
+      "pousses",
+      "germination",
+      "graines germées"
+    ],
+    "emoji": "🌱",
+    "family": "Various",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 95,
+      "label": "Brut · Vivant · Germé"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": false,
+      "label": "Vivant / Alcalin"
+    },
+    "scientific_defaults": {
+      "pral": -3.5,
+      "density": 95
+    },
+    "source": "USDA FoodData Central",
+    "note": "Graines germées = forme la plus bioactive. Enzymes actives. Absent liste Dr. Sebi mais proche philosophie."
+  },
+  {
+    "id": "microgreens",
+    "names": [
+      "microgreens",
+      "micropousses"
+    ],
+    "emoji": "🌱",
+    "family": "Various",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 98,
+      "label": "Brut · Vivant · Microgreens"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": false,
+      "label": "Ultra-Vivant"
+    },
+    "scientific_defaults": {
+      "pral": -3.8,
+      "density": 98
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "chia_seeds",
+    "names": [
+      "chia seeds",
+      "graines de chia",
+      "chia"
+    ],
+    "emoji": "🌱",
+    "family": "Lamiaceae",
+    "category": "Noix & Graines",
+    "vitality": {
+      "nova": 1,
+      "freshness": 85,
+      "label": "Brut · Gras"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Alcalin / Oméga-3"
+    },
+    "scientific_defaults": {
+      "pral": -1.8,
+      "density": 88
+    },
+    "source": "USDA FoodData Central",
+    "note": "Absent liste Dr. Sebi. Très riche en oméga-3 végétaux et calcium. PRAL négatif."
+  },
+  {
+    "id": "flaxseeds",
+    "names": [
+      "flaxseeds",
+      "graines de lin",
+      "lin"
+    ],
+    "emoji": "🌱",
+    "family": "Linaceae",
+    "category": "Noix & Graines",
+    "vitality": {
+      "nova": 1,
+      "freshness": 85,
+      "label": "Brut · Gras"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Alcalin / Oméga-3"
+    },
+    "scientific_defaults": {
+      "pral": -1.0,
+      "density": 85
+    },
+    "source": "USDA FoodData Central",
+    "note": "Absent liste Dr. Sebi. Riche en ALA (oméga-3) et lignanes."
+  },
+  {
+    "id": "sunflower_seeds",
+    "names": [
+      "sunflower seeds",
+      "graines de tournesol",
+      "tournesol"
+    ],
+    "emoji": "🌻",
+    "family": "Asteraceae",
+    "category": "Noix & Graines",
+    "vitality": {
+      "nova": 1,
+      "freshness": 78,
+      "label": "Brut · Gras"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Légèrement Acide"
+    },
+    "scientific_defaults": {
+      "pral": 2.1,
+      "density": 72
+    },
+    "source": "USDA FoodData Central",
+    "note": "PRAL +2.1 — légèrement acide. Non listé Dr. Sebi mais courant dans régimes naturels."
+  },
+  {
+    "id": "pumpkin_seeds",
+    "names": [
+      "pumpkin seeds",
+      "graines de citrouille",
+      "pepitas"
+    ],
+    "emoji": "🌱",
+    "family": "Cucurbitaceae",
+    "category": "Noix & Graines",
+    "vitality": {
+      "nova": 1,
+      "freshness": 80,
+      "label": "Brut · Gras"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Légèrement Acide"
+    },
+    "scientific_defaults": {
+      "pral": 2.6,
+      "density": 75
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "pine_nuts",
+    "names": [
+      "pine nuts",
+      "pignons de pin",
+      "pignons"
+    ],
+    "emoji": "🌰",
+    "family": "Pinaceae",
+    "category": "Noix & Graines",
+    "vitality": {
+      "nova": 1,
+      "freshness": 75,
+      "label": "Brut · Gras"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Légèrement Acide"
+    },
+    "scientific_defaults": {
+      "pral": 3.8,
+      "density": 70
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "macadamia",
+    "names": [
+      "macadamia nuts",
+      "noix de macadamia"
+    ],
+    "emoji": "🌰",
+    "family": "Proteaceae",
+    "category": "Noix & Graines",
+    "vitality": {
+      "nova": 1,
+      "freshness": 78,
+      "label": "Brut · Gras"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Légèrement Acide"
+    },
+    "scientific_defaults": {
+      "pral": 2.2,
+      "density": 72
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "pecan",
+    "names": [
+      "pecan",
+      "noix de pécan",
+      "pacanes"
+    ],
+    "emoji": "🌰",
+    "family": "Juglandaceae",
+    "category": "Noix & Graines",
+    "vitality": {
+      "nova": 1,
+      "freshness": 78,
+      "label": "Brut · Gras"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Légèrement Acide"
+    },
+    "scientific_defaults": {
+      "pral": 3.5,
+      "density": 72
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "pistachios",
+    "names": [
+      "pistachios",
+      "pistaches"
+    ],
+    "emoji": "🌰",
+    "family": "Anacardiaceae",
+    "category": "Noix & Graines",
+    "vitality": {
+      "nova": 1,
+      "freshness": 75,
+      "label": "Brut · Gras"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Légèrement Acide"
+    },
+    "scientific_defaults": {
+      "pral": 1.8,
+      "density": 70
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "flaxseed_oil",
+    "names": [
+      "flaxseed oil",
+      "huile de lin",
+      "linseed oil"
+    ],
+    "emoji": "🌱",
+    "family": "Linaceae",
+    "category": "Huiles",
+    "vitality": {
+      "nova": 1,
+      "freshness": 72,
+      "label": "Pressé à froid"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Oméga-3 / Non listé Sebi"
+    },
+    "scientific_defaults": {
+      "pral": -0.2,
+      "density": 68
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "walnut_oil",
+    "names": [
+      "walnut oil",
+      "huile de noix"
+    ],
+    "emoji": "🌰",
+    "family": "Juglandaceae",
+    "category": "Huiles",
+    "vitality": {
+      "nova": 1,
+      "freshness": 72,
+      "label": "Pressé à froid"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Oméga-3 / Non listé Sebi"
+    },
+    "scientific_defaults": {
+      "pral": -0.3,
+      "density": 68
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "canola_oil",
+    "names": [
+      "canola oil",
+      "huile de colza",
+      "huile de canola"
+    ],
+    "emoji": "🫙",
+    "family": "Brassicaceae",
+    "category": "Huiles",
+    "vitality": {
+      "nova": 4,
+      "freshness": 20,
+      "label": "Raffiné · Industriel"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Hybride / Raffiné"
+    },
+    "scientific_defaults": {
+      "pral": 0.0,
+      "density": 15
+    },
+    "source": "USDA FoodData Central",
+    "note": "Colza hybridé. Extraction chimique industrielle (hexane). Interdit par Dr. Sebi."
+  },
+  {
+    "id": "vegetable_oil",
+    "names": [
+      "vegetable oil",
+      "huile végétale",
+      "huile de friture"
+    ],
+    "emoji": "🫙",
+    "family": "Processed",
+    "category": "Huiles",
+    "vitality": {
+      "nova": 4,
+      "freshness": 10,
+      "label": "Raffiné · Industriel"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Mélange Hybride Raffiné"
+    },
+    "scientific_defaults": {
+      "pral": 0.0,
+      "density": 10
+    },
+    "source": "USDA FoodData Central",
+    "note": "Mélange d'huiles hybrides raffinées. Extraction chimique. Interdit par Dr. Sebi."
+  },
+  {
+    "id": "palm_oil",
+    "names": [
+      "palm oil",
+      "huile de palme"
+    ],
+    "emoji": "🌴",
+    "family": "Arecaceae",
+    "category": "Huiles",
+    "vitality": {
+      "nova": 3,
+      "freshness": 20,
+      "label": "Semi-Transformé"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Saturé / Non recommandé"
+    },
+    "scientific_defaults": {
+      "pral": 0.0,
+      "density": 18
+    },
+    "source": "USDA FoodData Central",
+    "note": "Saturé. Impact écologique majeur. Non listé par Dr. Sebi."
+  },
+  {
+    "id": "sunflower_oil_refined",
+    "names": [
+      "sunflower oil",
+      "huile de tournesol"
+    ],
+    "emoji": "🌻",
+    "family": "Asteraceae",
+    "category": "Huiles",
+    "vitality": {
+      "nova": 3,
+      "freshness": 22,
+      "label": "Raffiné"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Oméga-6 / Raffiné"
+    },
+    "scientific_defaults": {
+      "pral": 0.0,
+      "density": 20
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "butter_ghee",
+    "names": [
+      "ghee",
+      "beurre clarifié",
+      "ghee indien"
+    ],
+    "emoji": "🧈",
+    "family": "Bovidae",
+    "category": "Huiles",
+    "vitality": {
+      "nova": 2,
+      "freshness": 12,
+      "label": "Produit Animal · Clarifié"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Animal / Saturé"
+    },
+    "scientific_defaults": {
+      "pral": 0.3,
+      "density": 10
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "spring_water",
+    "names": [
+      "spring water",
+      "eau de source",
+      "eau minérale"
+    ],
+    "emoji": "💧",
+    "family": "Mineral",
+    "category": "Boissons",
+    "vitality": {
+      "nova": 1,
+      "freshness": 100,
+      "label": "Eau Vivante · Minérale"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique / Eau Approuvée"
+    },
+    "scientific_defaults": {
+      "pral": -5.0,
+      "density": 100
+    },
+    "source": "USDA FoodData Central",
+    "note": "La seule eau approuvée par Dr. Sebi. Doit contenir des minéraux naturels de la terre."
+  },
+  {
+    "id": "tap_water",
+    "names": [
+      "tap water",
+      "eau du robinet",
+      "eau de ville"
+    ],
+    "emoji": "🚰",
+    "family": "Municipal",
+    "category": "Boissons",
+    "vitality": {
+      "nova": 1,
+      "freshness": 30,
+      "label": "Traitée · Fluorée"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Non Approuvée (Chlore/Fluor)"
+    },
+    "scientific_defaults": {
+      "pral": 0.0,
+      "density": 30
+    },
+    "source": "USDA FoodData Central",
+    "note": "Chlore, fluor, résidus pharmaceutiques. Non approuvée par Dr. Sebi."
+  },
+  {
+    "id": "distilled_water",
+    "names": [
+      "distilled water",
+      "eau distillée"
+    ],
+    "emoji": "💧",
+    "family": "Processed",
+    "category": "Boissons",
+    "vitality": {
+      "nova": 1,
+      "freshness": 25,
+      "label": "Morte · Déminéralisée"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Eau Morte (0 Minéraux)"
+    },
+    "scientific_defaults": {
+      "pral": 0.0,
+      "density": 5
+    },
+    "source": "USDA FoodData Central",
+    "note": "Eau morte selon Dr. Sebi — tous les minéraux retirés. 'Dead water.'"
+  },
+  {
+    "id": "sparkling_water",
+    "names": [
+      "sparkling water",
+      "eau gazeuse",
+      "eau pétillante"
+    ],
+    "emoji": "💧",
+    "family": "Mineral",
+    "category": "Boissons",
+    "vitality": {
+      "nova": 1,
+      "freshness": 70,
+      "label": "Eau Minérale Gazeuse"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Acceptable (CO2)"
+    },
+    "scientific_defaults": {
+      "pral": -3.0,
+      "density": 70
+    },
+    "source": "USDA FoodData Central",
+    "note": "Eau minérale gazeuse naturelle acceptable. Éviter l'eau gazeuse artificiellement carbonatée."
+  },
+  {
+    "id": "coconut_water",
+    "names": [
+      "coconut water",
+      "eau de coco"
+    ],
+    "emoji": "🥥",
+    "family": "Arecaceae",
+    "category": "Boissons",
+    "vitality": {
+      "nova": 1,
+      "freshness": 90,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique / Hydratant"
+    },
+    "scientific_defaults": {
+      "pral": -6.8,
+      "density": 90
+    },
+    "source": "USDA FoodData Central",
+    "note": "Excellente source de potassium et d'électrolytes naturels. Proche philosophie Dr. Sebi."
+  },
+  {
+    "id": "green_tea",
+    "names": [
+      "green tea",
+      "thé vert",
+      "matcha"
+    ],
+    "emoji": "🍵",
+    "family": "Theaceae",
+    "category": "Boissons",
+    "vitality": {
+      "nova": 1,
+      "freshness": 45,
+      "label": "Infusion · Caféine"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Légèrement Acide / Caféine"
+    },
+    "scientific_defaults": {
+      "pral": -0.5,
+      "density": 42
+    },
+    "source": "USDA FoodData Central",
+    "note": "Non approuvé Dr. Sebi — contient caféine. Moins nocif que café mais acidifiant."
+  },
+  {
+    "id": "black_tea",
+    "names": [
+      "black tea",
+      "thé noir",
+      "english tea"
+    ],
+    "emoji": "🍵",
+    "family": "Theaceae",
+    "category": "Boissons",
+    "vitality": {
+      "nova": 2,
+      "freshness": 35,
+      "label": "Infusion · Oxydé · Caféine"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Acide / Caféine"
+    },
+    "scientific_defaults": {
+      "pral": -0.3,
+      "density": 32
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "orange_juice",
+    "names": [
+      "orange juice",
+      "jus d'orange",
+      "jus oranges"
+    ],
+    "emoji": "🍊",
+    "family": "Rutaceae",
+    "category": "Boissons",
+    "vitality": {
+      "nova": 3,
+      "freshness": 45,
+      "label": "Transformé · Pasteurisé"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Pasteurisé / Hybride"
+    },
+    "scientific_defaults": {
+      "pral": -2.9,
+      "density": 40
+    },
+    "source": "USDA FoodData Central",
+    "note": "Jus pasteurisé = mort nutritionnellement. Orange Cavendish = hybride. Utiliser orange Seville fraîche."
+  },
+  {
+    "id": "apple_juice",
+    "names": [
+      "apple juice",
+      "jus de pomme"
+    ],
+    "emoji": "🍎",
+    "family": "Rosaceae",
+    "category": "Boissons",
+    "vitality": {
+      "nova": 3,
+      "freshness": 40,
+      "label": "Transformé · Pasteurisé"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Pasteurisé / Sucre rapide"
+    },
+    "scientific_defaults": {
+      "pral": -2.2,
+      "density": 35
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "soda_cola",
+    "names": [
+      "cola",
+      "coca-cola",
+      "pepsi",
+      "soda",
+      "boisson sucrée gazeuse"
+    ],
+    "emoji": "🥤",
+    "family": "Processed",
+    "category": "Boissons",
+    "vitality": {
+      "nova": 4,
+      "freshness": 0,
+      "label": "Ultra-Transformé · Sucré"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Ultra-Acide / pH 2.5"
+    },
+    "scientific_defaults": {
+      "pral": -0.1,
+      "density": 0
+    },
+    "source": "USDA FoodData Central",
+    "note": "pH 2.5-3.5 — extrêmement acide. Phosphorique + sucre + caféine. Corrode l'émail dentaire."
+  },
+  {
+    "id": "energy_drink",
+    "names": [
+      "energy drink",
+      "boisson énergisante",
+      "redbull",
+      "monster"
+    ],
+    "emoji": "⚡",
+    "family": "Processed",
+    "category": "Boissons",
+    "vitality": {
+      "nova": 4,
+      "freshness": 0,
+      "label": "Ultra-Transformé"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Ultra-Acide / Stimulant"
+    },
+    "scientific_defaults": {
+      "pral": -0.2,
+      "density": 0
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "fruit_juice_industrial",
+    "names": [
+      "industrial fruit juice",
+      "jus de fruits industriel",
+      "nectar"
+    ],
+    "emoji": "🧃",
+    "family": "Processed",
+    "category": "Boissons",
+    "vitality": {
+      "nova": 4,
+      "freshness": 10,
+      "label": "Ultra-Transformé · Sucre ajouté"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Ultra-Transformé"
+    },
+    "scientific_defaults": {
+      "pral": -1.5,
+      "density": 8
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "kombucha",
+    "names": [
+      "kombucha",
+      "kombucha thé fermenté"
+    ],
+    "emoji": "🫙",
+    "family": "Fermented",
+    "category": "Boissons",
+    "vitality": {
+      "nova": 2,
+      "freshness": 55,
+      "label": "Fermenté · Vivant"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Fermenté / Variable"
+    },
+    "scientific_defaults": {
+      "pral": -1.2,
+      "density": 50
+    },
+    "source": "USDA FoodData Central",
+    "note": "Non listé Dr. Sebi. Fermenté (alcool trace), acidifiant selon fermentation. Populaire mais variable."
+  },
+  {
+    "id": "herbal_infusion",
+    "names": [
+      "herbal tea",
+      "tisane",
+      "infusion"
+    ],
+    "emoji": "🌿",
+    "family": "Various",
+    "category": "Boissons",
+    "vitality": {
+      "nova": 1,
+      "freshness": 80,
+      "label": "Infusion · Naturelle"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique / Approuvé si liste Sebi"
+    },
+    "scientific_defaults": {
+      "pral": -3.0,
+      "density": 78
+    },
+    "source": "USDA FoodData Central",
+    "note": "Tisanes approuvées: burdock, camomille, sureau, fenouil, gingembre, framboisier, salsepareille, tila."
+  },
+  {
+    "id": "oat_milk",
+    "names": [
+      "oat milk",
+      "lait d'avoine"
+    ],
+    "emoji": "🥛",
+    "family": "Poaceae",
+    "category": "Boissons",
+    "vitality": {
+      "nova": 4,
+      "freshness": 20,
+      "label": "Ultra-Transformé"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Hybride / Amidon"
+    },
+    "scientific_defaults": {
+      "pral": -0.5,
+      "density": 18
+    },
+    "source": "USDA FoodData Central",
+    "note": "Avoine hybridée + transformation industrielle. Non approuvé Dr. Sebi."
+  },
+  {
+    "id": "almond_milk",
+    "names": [
+      "almond milk",
+      "lait d'amande"
+    ],
+    "emoji": "🥛",
+    "family": "Rosaceae",
+    "category": "Boissons",
+    "vitality": {
+      "nova": 4,
+      "freshness": 18,
+      "label": "Ultra-Transformé"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Hybride / Transformé"
+    },
+    "scientific_defaults": {
+      "pral": -1.2,
+      "density": 15
+    },
+    "source": "USDA FoodData Central",
+    "note": "Amande hybride + émulsifiants + additifs. Non approuvé Dr. Sebi."
+  },
+  {
+    "id": "rice_milk",
+    "names": [
+      "rice milk",
+      "lait de riz"
+    ],
+    "emoji": "🥛",
+    "family": "Poaceae",
+    "category": "Boissons",
+    "vitality": {
+      "nova": 4,
+      "freshness": 15,
+      "label": "Ultra-Transformé"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Riz blanc / Transformé"
+    },
+    "scientific_defaults": {
+      "pral": 0.5,
+      "density": 12
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "white_bread",
+    "names": [
+      "white bread",
+      "pain blanc",
+      "baguette",
+      "pain de mie"
+    ],
+    "emoji": "🍞",
+    "family": "Processed",
+    "category": "Pain & Boulangerie",
+    "vitality": {
+      "nova": 4,
+      "freshness": 15,
+      "label": "Ultra-Transformé"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Blé Hybride / Raffiné"
+    },
+    "scientific_defaults": {
+      "pral": 3.7,
+      "density": 12
+    },
+    "source": "USDA FoodData Central",
+    "note": "Farine de blé hybride raffinée. Amidon pur. Non approuvé Dr. Sebi. NOVA 4."
+  },
+  {
+    "id": "whole_wheat_bread",
+    "names": [
+      "whole wheat bread",
+      "pain complet",
+      "pain intégral"
+    ],
+    "emoji": "🍞",
+    "family": "Processed",
+    "category": "Pain & Boulangerie",
+    "vitality": {
+      "nova": 3,
+      "freshness": 22,
+      "label": "Transformé · Complet"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Blé Hybride / Moins Raffiné"
+    },
+    "scientific_defaults": {
+      "pral": 1.8,
+      "density": 20
+    },
+    "source": "USDA FoodData Central",
+    "note": "Blé complet hybride — moins transformé mais toujours hybridé. Non approuvé."
+  },
+  {
+    "id": "sourdough_bread",
+    "names": [
+      "sourdough bread",
+      "pain au levain",
+      "levain"
+    ],
+    "emoji": "🍞",
+    "family": "Fermented",
+    "category": "Pain & Boulangerie",
+    "vitality": {
+      "nova": 3,
+      "freshness": 35,
+      "label": "Fermenté · Artisanal"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": true,
+      "electric": false,
+      "label": "Fermenté / Moins Acide"
+    },
+    "scientific_defaults": {
+      "pral": 1.2,
+      "density": 30
+    },
+    "source": "USDA FoodData Central",
+    "note": "Fermentation améliore la biodisponibilité. Blé toujours hybride mais moins problématique."
+  },
+  {
+    "id": "spelt_bread",
+    "names": [
+      "spelt bread",
+      "pain d'épeautre",
+      "épeautre"
+    ],
+    "emoji": "🍞",
+    "family": "Fermented",
+    "category": "Pain & Boulangerie",
+    "vitality": {
+      "nova": 2,
+      "freshness": 55,
+      "label": "Grain Ancestral · Fermenté"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Approuvé (Épeautre)"
+    },
+    "scientific_defaults": {
+      "pral": -0.3,
+      "density": 52
+    },
+    "source": "USDA FoodData Central",
+    "note": "Épeautre = grain approuvé Dr. Sebi. Pain d'épeautre au levain = le plus proche de l'approbation."
+  },
+  {
+    "id": "rye_bread",
+    "names": [
+      "rye bread",
+      "pain de seigle",
+      "pumpernickel"
+    ],
+    "emoji": "🍞",
+    "family": "Fermented",
+    "category": "Pain & Boulangerie",
+    "vitality": {
+      "nova": 2,
+      "freshness": 52,
+      "label": "Grain Ancestral · Fermenté"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Approuvé (Seigle)"
+    },
+    "scientific_defaults": {
+      "pral": -0.5,
+      "density": 50
+    },
+    "source": "USDA FoodData Central",
+    "note": "Seigle = grain approuvé Dr. Sebi."
+  },
+  {
+    "id": "tortilla_corn",
+    "names": [
+      "corn tortilla",
+      "tortilla de maïs"
+    ],
+    "emoji": "🫓",
+    "family": "Processed",
+    "category": "Pain & Boulangerie",
+    "vitality": {
+      "nova": 3,
+      "freshness": 18,
+      "label": "Transformé · Maïs"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Hybride / Nixtamal"
+    },
+    "scientific_defaults": {
+      "pral": 1.5,
+      "density": 15
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "tortilla_wheat",
+    "names": [
+      "flour tortilla",
+      "tortilla blé",
+      "wrap"
+    ],
+    "emoji": "🫓",
+    "family": "Processed",
+    "category": "Pain & Boulangerie",
+    "vitality": {
+      "nova": 4,
+      "freshness": 12,
+      "label": "Ultra-Transformé"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Blé Hybride / NOVA 4"
+    },
+    "scientific_defaults": {
+      "pral": 3.5,
+      "density": 10
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "crackers",
+    "names": [
+      "crackers",
+      "biscuits salés",
+      "craquelins"
+    ],
+    "emoji": "🍘",
+    "family": "Processed",
+    "category": "Pain & Boulangerie",
+    "vitality": {
+      "nova": 4,
+      "freshness": 8,
+      "label": "Ultra-Transformé"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Ultra-Transformé"
+    },
+    "scientific_defaults": {
+      "pral": 4.2,
+      "density": 6
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "croissant",
+    "names": [
+      "croissant",
+      "viennoiserie",
+      "pain au chocolat"
+    ],
+    "emoji": "🥐",
+    "family": "Processed",
+    "category": "Pain & Boulangerie",
+    "vitality": {
+      "nova": 4,
+      "freshness": 8,
+      "label": "Ultra-Transformé · Beurre"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Blé + Laitier / Très Acide"
+    },
+    "scientific_defaults": {
+      "pral": 4.8,
+      "density": 6
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "pasta",
+    "names": [
+      "pasta",
+      "pâtes",
+      "spaghetti",
+      "penne",
+      "macaroni"
+    ],
+    "emoji": "🍝",
+    "family": "Processed",
+    "category": "Pain & Boulangerie",
+    "vitality": {
+      "nova": 3,
+      "freshness": 18,
+      "label": "Raffiné · Blé"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Blé Hybride / Amidon"
+    },
+    "scientific_defaults": {
+      "pral": 4.1,
+      "density": 15
+    },
+    "source": "USDA FoodData Central",
+    "note": "Blé hybride. Amidon pur. Non approuvé. Utiliser quinoa/kamut/teff à la place."
+  },
+  {
+    "id": "pasta_whole_wheat",
+    "names": [
+      "whole wheat pasta",
+      "pâtes complètes"
+    ],
+    "emoji": "🍝",
+    "family": "Processed",
+    "category": "Pain & Boulangerie",
+    "vitality": {
+      "nova": 3,
+      "freshness": 22,
+      "label": "Raffiné · Blé Complet"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Blé Hybride / Moins Raffiné"
+    },
+    "scientific_defaults": {
+      "pral": 3.5,
+      "density": 20
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "brown_rice",
+    "names": [
+      "brown rice",
+      "riz brun",
+      "riz complet"
+    ],
+    "emoji": "🍚",
+    "family": "Poaceae",
+    "category": "Céréales",
+    "vitality": {
+      "nova": 1,
+      "freshness": 45,
+      "label": "Brut · Complet"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Hybride / Moins Raffiné que Riz Blanc"
+    },
+    "scientific_defaults": {
+      "pral": 1.0,
+      "density": 40
+    },
+    "source": "USDA FoodData Central",
+    "note": "Moins transformé que le riz blanc mais toujours hybridé. Non approuvé Dr. Sebi."
+  },
+  {
+    "id": "jasmine_rice",
+    "names": [
+      "jasmine rice",
+      "riz jasmin"
+    ],
+    "emoji": "🍚",
+    "family": "Poaceae",
+    "category": "Céréales",
+    "vitality": {
+      "nova": 2,
+      "freshness": 30,
+      "label": "Raffiné"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Hybride / Raffiné"
+    },
+    "scientific_defaults": {
+      "pral": 1.7,
+      "density": 28
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "oatmeal",
+    "names": [
+      "oatmeal",
+      "porridge d'avoine",
+      "flocons d'avoine"
+    ],
+    "emoji": "🥣",
+    "family": "Poaceae",
+    "category": "Céréales",
+    "vitality": {
+      "nova": 2,
+      "freshness": 38,
+      "label": "Brut · Avoine"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Non Approuvé / Avenine"
+    },
+    "scientific_defaults": {
+      "pral": 3.2,
+      "density": 35
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "granola",
+    "names": [
+      "granola",
+      "muesli",
+      "céréales petit-déjeuner"
+    ],
+    "emoji": "🥣",
+    "family": "Processed",
+    "category": "Céréales",
+    "vitality": {
+      "nova": 4,
+      "freshness": 12,
+      "label": "Ultra-Transformé · Sucré"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Ultra-Transformé / Sucré"
+    },
+    "scientific_defaults": {
+      "pral": 2.5,
+      "density": 10
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "corn_flakes",
+    "names": [
+      "corn flakes",
+      "céréales maïs",
+      "frosted flakes"
+    ],
+    "emoji": "🥣",
+    "family": "Processed",
+    "category": "Céréales",
+    "vitality": {
+      "nova": 4,
+      "freshness": 5,
+      "label": "Ultra-Transformé"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Ultra-Transformé / Maïs Hybride"
+    },
+    "scientific_defaults": {
+      "pral": 2.8,
+      "density": 4
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "potato_chips",
+    "names": [
+      "potato chips",
+      "chips",
+      "crisps",
+      "croustilles"
+    ],
+    "emoji": "🥔",
+    "family": "Processed",
+    "category": "Snacks & Ultra-transformés",
+    "vitality": {
+      "nova": 4,
+      "freshness": 3,
+      "label": "Ultra-Transformé · Frit"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Ultra-Transformé / Très Acide"
+    },
+    "scientific_defaults": {
+      "pral": 12.8,
+      "density": 3
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "french_fries",
+    "names": [
+      "french fries",
+      "frites",
+      "pommes de terre frites"
+    ],
+    "emoji": "🍟",
+    "family": "Processed",
+    "category": "Snacks & Ultra-transformés",
+    "vitality": {
+      "nova": 4,
+      "freshness": 5,
+      "label": "Ultra-Transformé · Frit"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Ultra-Transformé / Acide"
+    },
+    "scientific_defaults": {
+      "pral": 6.5,
+      "density": 4
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "chocolate_milk",
+    "names": [
+      "milk chocolate",
+      "chocolat au lait",
+      "barre chocolatée"
+    ],
+    "emoji": "🍫",
+    "family": "Processed",
+    "category": "Snacks & Ultra-transformés",
+    "vitality": {
+      "nova": 4,
+      "freshness": 5,
+      "label": "Ultra-Transformé · Sucré"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Sucre + Laitier / Acide"
+    },
+    "scientific_defaults": {
+      "pral": 3.2,
+      "density": 4
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "dark_chocolate",
+    "names": [
+      "dark chocolate",
+      "chocolat noir",
+      "cacao"
+    ],
+    "emoji": "🍫",
+    "family": "Theobroma",
+    "category": "Snacks & Ultra-transformés",
+    "vitality": {
+      "nova": 2,
+      "freshness": 40,
+      "label": "Transformé · Cacao"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Légèrement Acide / Cacao"
+    },
+    "scientific_defaults": {
+      "pral": 0.4,
+      "density": 35
+    },
+    "source": "USDA FoodData Central",
+    "note": "PRAL quasi neutre. Riche en magnésium et flavonoïdes. Absent liste Dr. Sebi mais moins nocif."
+  },
+  {
+    "id": "raw_cacao",
+    "names": [
+      "raw cacao",
+      "cacao cru",
+      "fèves de cacao"
+    ],
+    "emoji": "🫘",
+    "family": "Theobroma",
+    "category": "Snacks & Ultra-transformés",
+    "vitality": {
+      "nova": 1,
+      "freshness": 60,
+      "label": "Brut · Cacao Non-Traité"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Alcalin / Magnésium"
+    },
+    "scientific_defaults": {
+      "pral": -2.5,
+      "density": 65
+    },
+    "source": "USDA FoodData Central",
+    "note": "Cacao brut non traité. Riche en magnésium, iron, théobromine. Non listé Dr. Sebi mais proche philosophie."
+  },
+  {
+    "id": "pretzels",
+    "names": [
+      "pretzels",
+      "bretzels"
+    ],
+    "emoji": "🥨",
+    "family": "Processed",
+    "category": "Snacks & Ultra-transformés",
+    "vitality": {
+      "nova": 4,
+      "freshness": 4,
+      "label": "Ultra-Transformé"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Blé Hybride / Sel"
+    },
+    "scientific_defaults": {
+      "pral": 5.6,
+      "density": 3
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "popcorn",
+    "names": [
+      "popcorn",
+      "pop-corn"
+    ],
+    "emoji": "🍿",
+    "family": "Poaceae",
+    "category": "Snacks & Ultra-transformés",
+    "vitality": {
+      "nova": 3,
+      "freshness": 15,
+      "label": "Transformé · Maïs"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Maïs Hybride"
+    },
+    "scientific_defaults": {
+      "pral": -0.2,
+      "density": 12
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "rice_cakes",
+    "names": [
+      "rice cakes",
+      "galettes de riz soufflé"
+    ],
+    "emoji": "🍘",
+    "family": "Processed",
+    "category": "Snacks & Ultra-transformés",
+    "vitality": {
+      "nova": 3,
+      "freshness": 12,
+      "label": "Transformé · Riz"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Riz Hybride / Raffiné"
+    },
+    "scientific_defaults": {
+      "pral": 1.5,
+      "density": 10
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "protein_bar",
+    "names": [
+      "protein bar",
+      "barre protéinée",
+      "barre énergétique"
+    ],
+    "emoji": "💪",
+    "family": "Processed",
+    "category": "Snacks & Ultra-transformés",
+    "vitality": {
+      "nova": 4,
+      "freshness": 5,
+      "label": "Ultra-Transformé"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Ultra-Transformé / Protéines Isolées"
+    },
+    "scientific_defaults": {
+      "pral": 8.5,
+      "density": 4
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "candy",
+    "names": [
+      "candy",
+      "bonbons",
+      "confiseries",
+      "sucettes"
+    ],
+    "emoji": "🍬",
+    "family": "Processed",
+    "category": "Snacks & Ultra-transformés",
+    "vitality": {
+      "nova": 4,
+      "freshness": 0,
+      "label": "Ultra-Transformé · Sucre Pur"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Sucre Pur / Acide"
+    },
+    "scientific_defaults": {
+      "pral": 0.2,
+      "density": 0
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "gummy_bears",
+    "names": [
+      "gummy bears",
+      "oursons gélifiés",
+      "gélatine",
+      "gummies"
+    ],
+    "emoji": "🐻",
+    "family": "Processed",
+    "category": "Snacks & Ultra-transformés",
+    "vitality": {
+      "nova": 4,
+      "freshness": 0,
+      "label": "Ultra-Transformé · Gélatine"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Animal (Gélatine) / Sucre"
+    },
+    "scientific_defaults": {
+      "pral": 0.5,
+      "density": 0
+    },
+    "source": "USDA FoodData Central",
+    "note": "Gélatine = collagène animal. Ultra-transformé. Sucre pur."
+  },
+  {
+    "id": "honey_roasted_nuts",
+    "names": [
+      "honey roasted nuts",
+      "noix grillées sucrées"
+    ],
+    "emoji": "🌰",
+    "family": "Processed",
+    "category": "Snacks & Ultra-transformés",
+    "vitality": {
+      "nova": 3,
+      "freshness": 18,
+      "label": "Transformé · Sucré"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Grillé / Enzymes Détruits"
+    },
+    "scientific_defaults": {
+      "pral": 3.5,
+      "density": 15
+    },
+    "source": "USDA FoodData Central",
+    "note": "Torréfaction détruit les enzymes et la charge électrique. Non approuvé Dr. Sebi."
+  },
+  {
+    "id": "ketchup",
+    "names": [
+      "ketchup",
+      "sauce tomate ketchup"
+    ],
+    "emoji": "🍅",
+    "family": "Processed",
+    "category": "Condiments & Sauces",
+    "vitality": {
+      "nova": 4,
+      "freshness": 5,
+      "label": "Ultra-Transformé · Sucré"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Sucre + Hybride / Acide"
+    },
+    "scientific_defaults": {
+      "pral": 1.2,
+      "density": 5
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "mustard",
+    "names": [
+      "mustard",
+      "moutarde"
+    ],
+    "emoji": "🫙",
+    "family": "Brassicaceae",
+    "category": "Condiments & Sauces",
+    "vitality": {
+      "nova": 3,
+      "freshness": 18,
+      "label": "Transformé · Fermenté"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Légèrement Acide"
+    },
+    "scientific_defaults": {
+      "pral": -0.5,
+      "density": 15
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "mayonnaise",
+    "names": [
+      "mayonnaise",
+      "mayo"
+    ],
+    "emoji": "🫙",
+    "family": "Processed",
+    "category": "Condiments & Sauces",
+    "vitality": {
+      "nova": 4,
+      "freshness": 5,
+      "label": "Ultra-Transformé · Œuf"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Huile Raffinée + Œuf"
+    },
+    "scientific_defaults": {
+      "pral": 3.5,
+      "density": 4
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "soy_sauce",
+    "names": [
+      "soy sauce",
+      "sauce soja",
+      "tamari"
+    ],
+    "emoji": "🫙",
+    "family": "Fabaceae",
+    "category": "Condiments & Sauces",
+    "vitality": {
+      "nova": 4,
+      "freshness": 5,
+      "label": "Ultra-Transformé · Soja"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Soja Hybride / Sel"
+    },
+    "scientific_defaults": {
+      "pral": -0.5,
+      "density": 5
+    },
+    "source": "USDA FoodData Central",
+    "note": "Soja hybridé + sel en excès + fermentation industrielle. Non approuvé."
+  },
+  {
+    "id": "hot_sauce",
+    "names": [
+      "hot sauce",
+      "tabasco",
+      "sauce piquante"
+    ],
+    "emoji": "🌶",
+    "family": "Processed",
+    "category": "Condiments & Sauces",
+    "vitality": {
+      "nova": 3,
+      "freshness": 25,
+      "label": "Transformé · Fermenté"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Variable / Cayenne si naturel"
+    },
+    "scientific_defaults": {
+      "pral": -1.0,
+      "density": 22
+    },
+    "source": "USDA FoodData Central",
+    "note": "Variable selon composition. Si piment cayenne naturel + sel marin = plus acceptable."
+  },
+  {
+    "id": "tahini_raw",
+    "names": [
+      "tahini",
+      "beurre de sésame",
+      "pâte de sésame"
+    ],
+    "emoji": "🌱",
+    "family": "Pedaliaceae",
+    "category": "Condiments & Sauces",
+    "vitality": {
+      "nova": 1,
+      "freshness": 75,
+      "label": "Brut · Pressé"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Approuvé (Sésame Cru)"
+    },
+    "scientific_defaults": {
+      "pral": -1.0,
+      "density": 78
+    },
+    "source": "USDA FoodData Central",
+    "note": "Tahini de sésame brut = approuvé Dr. Sebi. Différent du tahini industriel."
+  },
+  {
+    "id": "hummus",
+    "names": [
+      "hummus",
+      "houmous"
+    ],
+    "emoji": "🫘",
+    "family": "Fabaceae",
+    "category": "Condiments & Sauces",
+    "vitality": {
+      "nova": 2,
+      "freshness": 55,
+      "label": "Semi-Transformé"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Pois chiche + Tahini"
+    },
+    "scientific_defaults": {
+      "pral": 0.8,
+      "density": 50
+    },
+    "source": "USDA FoodData Central",
+    "note": "Pois chiche (approuvé) + tahini (approuvé) + ail (non approuvé) + citron (non approuvé). Hybride culinaire."
+  },
+  {
+    "id": "guacamole",
+    "names": [
+      "guacamole"
+    ],
+    "emoji": "🥑",
+    "family": "Lauraceae",
+    "category": "Condiments & Sauces",
+    "vitality": {
+      "nova": 1,
+      "freshness": 82,
+      "label": "Brut"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": true,
+      "label": "Approuvé (Avocat)"
+    },
+    "scientific_defaults": {
+      "pral": -6.5,
+      "density": 85
+    },
+    "source": "USDA FoodData Central",
+    "note": "Avocat (approuvé) + lime (approuvé) + cilantro (approuvé) + oignon (approuvé). Entièrement Dr. Sebi si sans ail."
+  },
+  {
+    "id": "salsa",
+    "names": [
+      "salsa",
+      "sauce salsa"
+    ],
+    "emoji": "🍅",
+    "family": "Various",
+    "category": "Condiments & Sauces",
+    "vitality": {
+      "nova": 2,
+      "freshness": 55,
+      "label": "Semi-Transformé"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Variable"
+    },
+    "scientific_defaults": {
+      "pral": -1.5,
+      "density": 50
+    },
+    "source": "USDA FoodData Central",
+    "note": "Tomate cerise + cilantro + oignon + habanero = entièrement Dr. Sebi si fait maison."
+  },
+  {
+    "id": "tomato_sauce",
+    "names": [
+      "tomato sauce",
+      "sauce tomate",
+      "coulis de tomate"
+    ],
+    "emoji": "🍅",
+    "family": "Solanaceae",
+    "category": "Condiments & Sauces",
+    "vitality": {
+      "nova": 2,
+      "freshness": 45,
+      "label": "Semi-Transformé"
+    },
+    "specific": {
+      "mucus": "Neutre",
+      "hybrid": false,
+      "electric": false,
+      "label": "Légèrement Acide"
+    },
+    "scientific_defaults": {
+      "pral": -2.0,
+      "density": 42
+    },
+    "source": "USDA FoodData Central",
+    "note": "Si tomates cerise ou prune (approuvées) sans additifs = acceptable Dr. Sebi."
+  },
+  {
+    "id": "tahini_industrial",
+    "names": [
+      "peanut butter",
+      "beurre de cacahuète",
+      "peanut butter"
+    ],
+    "emoji": "🥜",
+    "family": "Fabaceae",
+    "category": "Condiments & Sauces",
+    "vitality": {
+      "nova": 4,
+      "freshness": 10,
+      "label": "Ultra-Transformé"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Légumineuse / Acide"
+    },
+    "scientific_defaults": {
+      "pral": 6.2,
+      "density": 8
+    },
+    "source": "USDA FoodData Central",
+    "note": "Cacahuète = légumineuse acide. Non approuvé Dr. Sebi. Souvent contaminé aflatoxines."
+  },
+  {
+    "id": "burger",
+    "names": [
+      "burger",
+      "hamburger"
+    ],
+    "emoji": "🍔",
+    "family": "Processed",
+    "category": "Plats Cuisinés & Fast Food",
+    "vitality": {
+      "nova": 4,
+      "freshness": 3,
+      "label": "Ultra-Transformé"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Ultra-Transformé / Très Acide"
+    },
+    "scientific_defaults": {
+      "pral": 9.5,
+      "density": 2
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "pizza",
+    "names": [
+      "pizza"
+    ],
+    "emoji": "🍕",
+    "family": "Processed",
+    "category": "Plats Cuisinés & Fast Food",
+    "vitality": {
+      "nova": 4,
+      "freshness": 4,
+      "label": "Ultra-Transformé"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Blé + Laitier / Très Acide"
+    },
+    "scientific_defaults": {
+      "pral": 5.8,
+      "density": 3
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "fried_chicken",
+    "names": [
+      "fried chicken",
+      "poulet frit",
+      "KFC style"
+    ],
+    "emoji": "🍗",
+    "family": "Processed",
+    "category": "Plats Cuisinés & Fast Food",
+    "vitality": {
+      "nova": 4,
+      "freshness": 4,
+      "label": "Ultra-Transformé · Frit"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Ultra-Transformé / Acide"
+    },
+    "scientific_defaults": {
+      "pral": 8.2,
+      "density": 3
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "ramen",
+    "names": [
+      "ramen",
+      "nouilles instantanées",
+      "cup noodles",
+      "nouilles"
+    ],
+    "emoji": "🍜",
+    "family": "Processed",
+    "category": "Plats Cuisinés & Fast Food",
+    "vitality": {
+      "nova": 4,
+      "freshness": 2,
+      "label": "Ultra-Transformé · Chimique"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Ultra-Transformé / Acide"
+    },
+    "scientific_defaults": {
+      "pral": 4.8,
+      "density": 2
+    },
+    "source": "USDA FoodData Central",
+    "note": "NOVA 4. Huile hydrogénée + sel en excès + exhausteurs de goût (MSG). Extrêmement transformé."
+  },
+  {
+    "id": "frozen_meal",
+    "names": [
+      "frozen meal",
+      "repas surgelé",
+      "plat préparé"
+    ],
+    "emoji": "🥡",
+    "family": "Processed",
+    "category": "Plats Cuisinés & Fast Food",
+    "vitality": {
+      "nova": 4,
+      "freshness": 3,
+      "label": "Ultra-Transformé"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": true,
+      "electric": false,
+      "label": "Ultra-Transformé"
+    },
+    "scientific_defaults": {
+      "pral": 4.0,
+      "density": 2
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "multivitamin",
+    "names": [
+      "multivitamin",
+      "multivitamines",
+      "complexe vitamines"
+    ],
+    "emoji": "💊",
+    "family": "Synthetic",
+    "category": "Compléments & Suppléments",
+    "vitality": {
+      "nova": 4,
+      "freshness": 0,
+      "label": "Synthétique"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Synthétique / Inorganique"
+    },
+    "scientific_defaults": {
+      "pral": 0.0,
+      "density": 0
+    },
+    "source": "USDA FoodData Central",
+    "note": "Vitamines synthétiques rejetées par les cellules selon Dr. Sebi. 'Le corps connaît la différence entre une plante et un laboratoire.'"
+  },
+  {
+    "id": "vitamin_c_synthetic",
+    "names": [
+      "vitamin C supplement",
+      "vitamine C synthétique",
+      "acide ascorbique"
+    ],
+    "emoji": "💊",
+    "family": "Synthetic",
+    "category": "Compléments & Suppléments",
+    "vitality": {
+      "nova": 4,
+      "freshness": 0,
+      "label": "Synthétique"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Synthétique / Inorganique"
+    },
+    "scientific_defaults": {
+      "pral": 0.0,
+      "density": 0
+    },
+    "source": "USDA FoodData Central"
+  },
+  {
+    "id": "iron_supplement",
+    "names": [
+      "iron supplement",
+      "supplément fer",
+      "sulfate ferreux"
+    ],
+    "emoji": "💊",
+    "family": "Synthetic",
+    "category": "Compléments & Suppléments",
+    "vitality": {
+      "nova": 4,
+      "freshness": 0,
+      "label": "Synthétique · Inorganique"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Synthétique / Inorganique"
+    },
+    "scientific_defaults": {
+      "pral": 2.0,
+      "density": 0
+    },
+    "source": "USDA FoodData Central",
+    "note": "Sulfate ferreux = inorganique. Cause constipation et irritation. Interdit Dr. Sebi. Utiliser Bio Ferro."
+  },
+  {
+    "id": "spirulina",
+    "names": [
+      "spirulina",
+      "spiruline"
+    ],
+    "emoji": "🌊",
+    "family": "Arthrospiraceae",
+    "category": "Compléments & Suppléments",
+    "vitality": {
+      "nova": 1,
+      "freshness": 88,
+      "label": "Brut · Algue"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique / Protéine végétale"
+    },
+    "scientific_defaults": {
+      "pral": -3.5,
+      "density": 92
+    },
+    "source": "USDA FoodData Central",
+    "note": "Approuvé dans Green Food (Dr. Sebi Cell Food). Protéine complète, fer biodisponible, chlorophylle."
+  },
+  {
+    "id": "chlorella",
+    "names": [
+      "chlorella",
+      "chlorelle"
+    ],
+    "emoji": "🌊",
+    "family": "Chlorellaceae",
+    "category": "Compléments & Suppléments",
+    "vitality": {
+      "nova": 1,
+      "freshness": 88,
+      "label": "Brut · Algue"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique / Détoxifiant"
+    },
+    "scientific_defaults": {
+      "pral": -3.0,
+      "density": 90
+    },
+    "source": "USDA FoodData Central",
+    "note": "Algue verte à paroi cellulaire brisée. Chélateur naturel de métaux lourds. Proche philosophie Dr. Sebi."
+  },
+  {
+    "id": "sea_moss_capsules",
+    "names": [
+      "sea moss capsules",
+      "sea moss supplement",
+      "sea moss pills"
+    ],
+    "emoji": "🌊",
+    "family": "Gigartinaceae",
+    "category": "Compléments & Suppléments",
+    "vitality": {
+      "nova": 2,
+      "freshness": 80,
+      "label": "Séché · Capsule"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Approuvé (si wildcrafted)"
+    },
+    "scientific_defaults": {
+      "pral": -5.5,
+      "density": 75
+    },
+    "source": "USDA FoodData Central",
+    "note": "Sea moss séché = moins puissant que gel frais wildcrafted. Acceptable si source pure."
+  },
+  {
+    "id": "collagen_powder",
+    "names": [
+      "collagen powder",
+      "collagène en poudre",
+      "peptides collagène"
+    ],
+    "emoji": "💊",
+    "family": "Animal",
+    "category": "Compléments & Suppléments",
+    "vitality": {
+      "nova": 4,
+      "freshness": 5,
+      "label": "Ultra-Transformé · Animal"
+    },
+    "specific": {
+      "mucus": "Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Animal / Acide"
+    },
+    "scientific_defaults": {
+      "pral": 15.0,
+      "density": 3
+    },
+    "source": "USDA FoodData Central",
+    "note": "Protéine animale concentrée. Très acide. Non approuvé Dr. Sebi."
+  }
 ]

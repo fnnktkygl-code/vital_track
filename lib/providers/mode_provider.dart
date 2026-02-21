@@ -6,7 +6,7 @@ class ProtocolMode {
   final String label;
   final String icon;
   final Color color;
-  final Color bg;
+  final Color darkColor;
   final String desc;
 
   const ProtocolMode({
@@ -14,9 +14,12 @@ class ProtocolMode {
     required this.label,
     required this.icon,
     required this.color,
-    required this.bg,
+    required this.darkColor,
     required this.desc,
   });
+
+  Color resolveColor(bool isDark) => isDark ? darkColor : color;
+  Color resolveBg(bool isDark) => (isDark ? darkColor : color).withValues(alpha: 0.12);
 }
 
 class ModeProvider with ChangeNotifier {
@@ -27,24 +30,24 @@ class ModeProvider with ChangeNotifier {
       id: "sebi",
       label: "Dr. Sebi Strict",
       icon: "⚡",
-      color: Color(0xFFa78bfa),
-      bg: Color(0x1Aa78bfa),
+      color: Color(0xFF9065B0), // Notion Purple (Light)
+      darkColor: Color(0xFF9A6DD7), // Notion Purple (Dark)
       desc: "Tolérance zéro hybrides & amidon",
     ),
     ProtocolMode(
       id: "ehret",
       label: "Transition Ehret",
       icon: "🌿",
-      color: Color(0xFF4ade80),
-      bg: Color(0x1A4ade80),
+      color: Color(0xFF448361), // Notion Green (Light)
+      darkColor: Color(0xFF4DAB9A), // Notion Green (Dark)
       desc: "Réduction progressive du mucus",
     ),
     ProtocolMode(
       id: "morse",
       label: "Protocole Morse",
       icon: "💧",
-      color: Color(0xFF38bdf8),
-      bg: Color(0x1A38bdf8),
+      color: Color(0xFF337EA9), // Notion Blue (Light)
+      darkColor: Color(0xFF529CCA), // Notion Blue (Dark)
       desc: "Astringence & régénération lymphatique",
     ),
   ];

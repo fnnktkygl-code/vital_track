@@ -2,230 +2,806 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vital_track/providers/profile_provider.dart';
 import 'package:vital_track/providers/theme_provider.dart';
+import 'package:vital_track/providers/mode_provider.dart';
+import 'package:vital_track/providers/mascot_provider.dart';
+import 'package:vital_track/ui/screens/knowledge_admin_screen.dart';
 import 'package:vital_track/ui/theme.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
   @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<MascotProvider>().setContext("profile");
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final profileProvider = context.watch<ProfileProvider>();
-    final themeProvider = context.watch<ThemeProvider>();
-    final profile = profileProvider.profile;
+    final pp = context.watch<ProfileProvider>();
+    final tp = context.watch<ThemeProvider>();
+    final mp = context.watch<ModeProvider>();
+    final profile = pp.profile;
     final colors = context.colors;
+    final currentMode = mp.currentMode;
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        title: const Text("Préférences"),
-        backgroundColor: Colors.transparent,
-      ),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 8, 20, 40),
-        children: [
-
-          // ── BASE THEME ─────────────────────────────────────────────────────
-          _SectionLabel(label: "APPARENCE", colors: colors),
-          const SizedBox(height: 12),
-          _BaseThemeSelector(themeProvider: themeProvider, colors: colors),
-          const SizedBox(height: 28),
-
-          // ── ACCENT COLOR ──────────────────────────────────────────────────
-          _SectionLabel(label: "COULEUR D'ACCENT", colors: colors),
-          const SizedBox(height: 12),
-          _AccentSelector(themeProvider: themeProvider, colors: colors),
-          const SizedBox(height: 28),
-
-          // ── NAME ──────────────────────────────────────────────────────────
-          _SectionLabel(label: "PROFIL", colors: colors),
-          const SizedBox(height: 12),
-          TextField(
-            controller: TextEditingController(text: profile.name)
-              ..selection = TextSelection.fromPosition(
-                  TextPosition(offset: profile.name.length)),
-            style: TextStyle(color: colors.textPrimary),
-            decoration: const InputDecoration(
-              hintText: "Votre prénom",
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 100,
+            pinned: true,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back_rounded, color: colors.textPrimary),
+              onPressed: () => Navigator.pop(context),
             ),
-            onSubmitted: (val) => profileProvider.updateProfile(name: val),
-          ),
-          const SizedBox(height: 24),
-
-          // ── GOALS ─────────────────────────────────────────────────────────
-          _SectionLabel(label: "OBJECTIFS", colors: colors),
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              "Weight Loss",
-              "Muscle Gain",
-              "Detox / Healing",
-              "Maintenance",
-              "Transition",
-            ].map((goal) {
-              final isSelected = profile.goals.contains(goal);
-              return _Chip(
-                label: goal,
-                isSelected: isSelected,
-                colors: colors,
-                onTap: () => profileProvider.toggleGoal(goal),
-              );
-            }).toList(),
-          ),
-          const SizedBox(height: 24),
-
-          // ── RESTRICTIONS ──────────────────────────────────────────────────
-          _SectionLabel(label: "RESTRICTIONS", colors: colors),
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              "Gluten Free",
-              "No Starch",
-              "Mucusless Diet",
-              "Sebi Strict",
-              "Fruitarian",
-              "Raw Only",
-            ].map((r) {
-              final isSelected = profile.restrictions.contains(r);
-              return _Chip(
-                label: r,
-                isSelected: isSelected,
-                colors: colors,
-                onTap: () => profileProvider.toggleRestriction(r),
-                useSecondary: true,
-               );
-             }).toList(),
-           ),
-           const SizedBox(height: 24),
- 
-           // ── API KEY ───────────────────────────────────────────────────────
-           _SectionLabel(label: "CONFIGURATION AI (GOOGLE GEMINI)", colors: colors),
-           const SizedBox(height: 12),
-           TextField(
-             controller: TextEditingController(text: profileProvider.geminiApiKey)
-               ..selection = TextSelection.fromPosition(
-                   TextPosition(offset: profileProvider.geminiApiKey.length)),
-             style: TextStyle(color: colors.textPrimary, fontSize: 13, fontFamily: 'monospace'),
-             obscureText: true,
-             decoration: InputDecoration(
-               hintText: "Collez votre clé API ici",
-               helperText: "Nécessaire pour le scan et le chat mascot.",
-               helperStyle: TextStyle(color: colors.textTertiary, fontSize: 11),
-               suffixIcon: Icon(Icons.vpn_key, color: colors.iconMuted, size: 18),
-             ),
-             onSubmitted: (val) => profileProvider.updateApiKey(val),
-           ),
-           const SizedBox(height: 12),
-           Text(
-             "Vous pouvez obtenir une clé gratuite sur aistudio.google.com",
-             style: TextStyle(color: colors.textTertiary, fontSize: 10, fontStyle: FontStyle.italic),
-           ),
-         ],
-       ),
-     );
-  }
-}
-
-// ── SECTION LABEL ─────────────────────────────────────────────────────────────
-
-class _SectionLabel extends StatelessWidget {
-  final String label;
-  final AppColors colors;
-  const _SectionLabel({required this.label, required this.colors});
-
-  @override
-  Widget build(BuildContext context) => Text(
-    label,
-    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-      color: colors.textTertiary,
-      letterSpacing: 1.2,
-    ),
-  );
-}
-
-// ── BASE THEME GRID ──────────────────────────────────────────────────────────
-
-class _BaseThemeSelector extends StatelessWidget {
-  final ThemeProvider themeProvider;
-  final AppColors colors;
-  const _BaseThemeSelector({required this.themeProvider, required this.colors});
-
-  @override
-  Widget build(BuildContext context) {
-    return GridView.count(
-      crossAxisCount: 2,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      mainAxisSpacing: 10,
-      crossAxisSpacing: 10,
-      childAspectRatio: 2.4,
-      children: AppBaseTheme.values.map((base) {
-        final isSelected = themeProvider.baseTheme == base;
-        final meta = _themeMetadata(base);
-        return GestureDetector(
-          onTap: () => themeProvider.setBaseTheme(base),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeOut,
-            decoration: BoxDecoration(
-              color: meta.bgColor,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: isSelected
-                    ? colors.accent
-                    : meta.borderColor,
-                width: isSelected ? 2 : 1,
-              ),
-              boxShadow: isSelected
-                  ? [BoxShadow(
-                color: colors.accent.withValues(alpha: 0.25),
-                blurRadius: 10,
-                offset: const Offset(0, 3),
-              )]
-                  : [],
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            flexibleSpace: FlexibleSpaceBar(
+              titlePadding: const EdgeInsets.only(left: 56, bottom: 14),
+              title: Text("Réglages",
+                  style: TextStyle(
+                      color: colors.textPrimary,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 22)),
             ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 0),
-              child: Row(
-                children: [
-                  Text(meta.emoji, style: const TextStyle(fontSize: 20)),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          meta.label,
-                          style: TextStyle(
-                            color: meta.textColor,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 13,
+          ),
+
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 120),
+            sliver: SliverList(
+              delegate: SliverChildListDelegate([
+                // ═══════════════════════════════════════════════════════════
+                // 1. APPARENCE
+                // ═══════════════════════════════════════════════════════════
+                _Section(
+                  icon: "🎨",
+                  title: "Apparence",
+                  subtitle: "Thème et couleur",
+                  colors: colors,
+                ),
+                const SizedBox(height: 10),
+                _Card(
+                  colors: colors,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _MiniLabel("THÈME", colors),
+                      const SizedBox(height: 10),
+                      _ThemePills(tp: tp, colors: colors),
+                      const SizedBox(height: 18),
+                      _MiniLabel("COULEUR", colors),
+                      const SizedBox(height: 10),
+                      _AccentDots(tp: tp, colors: colors),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 28),
+
+                // ═══════════════════════════════════════════════════════════
+                // 2. PROTOCOLE
+                // ═══════════════════════════════════════════════════════════
+                _Section(
+                  icon: "⚡",
+                  title: "Mon Protocole",
+                  subtitle: "Grille de lecture active",
+                  colors: colors,
+                ),
+                const SizedBox(height: 10),
+                SizedBox(
+                  height: 72,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: ModeProvider.availableModes.map((m) {
+                      final sel = currentMode.id == m.id;
+                      return GestureDetector(
+                        onTap: () {
+                          mp.setMode(m.id);
+                          context.read<MascotProvider>().onModeChanged(m.id);
+                        },
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          margin: const EdgeInsets.only(right: 10),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14, vertical: 10),
+                          decoration: BoxDecoration(
+                            color: sel ? m.resolveBg(colors.isDark) : colors.surface,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: sel
+                                  ? m.resolveColor(colors.isDark).withValues(alpha: 0.5)
+                                  : colors.border,
+                              width: sel ? 2 : 1,
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Text(m.icon,
+                                  style: const TextStyle(fontSize: 26)),
+                              const SizedBox(width: 10),
+                              Column(
+                                crossAxisAlignment:
+                                CrossAxisAlignment.start,
+                                mainAxisAlignment:
+                                MainAxisAlignment.center,
+                                children: [
+                                  Text(m.label,
+                                      style: TextStyle(
+                                          color: sel
+                                              ? m.resolveColor(colors.isDark)
+                                              : colors.textPrimary,
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 14)),
+                                  Text(
+                                    m.id == "sebi"
+                                        ? "Dr. Sebi"
+                                        : m.id == "ehret"
+                                        ? "Arnold Ehret"
+                                        : "Dr. Morse",
+                                    style: TextStyle(
+                                        color: colors.textTertiary,
+                                        fontSize: 12),
+                                  ),
+                                ],
+                              ),
+                              if (sel) ...[
+                                const SizedBox(width: 8),
+                                Icon(Icons.check_circle_rounded,
+                                    color: m.resolveColor(colors.isDark), size: 18),
+                              ],
+                            ],
                           ),
                         ),
-                        Text(
-                          meta.subtitle,
-                          style: TextStyle(
-                            color: meta.textColor.withValues(alpha: 0.6),
-                            fontSize: 10,
+                      );
+                    }).toList(),
+                  ),
+                ),
+
+                const SizedBox(height: 28),
+
+                // ═══════════════════════════════════════════════════════════
+                // 2. PROFIL
+                // ═══════════════════════════════════════════════════════════
+                _Section(
+                  icon: "👤",
+                  title: "Mon Profil",
+                  subtitle: "Personnalisation",
+                  colors: colors,
+                ),
+                const SizedBox(height: 10),
+                _Card(
+                  colors: colors,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Name
+                      _NameInputRow(
+                        initialName: profile.name,
+                        onChanged: (v) => pp.updateProfile(name: v),
+                        colors: colors,
+                      ),
+                      Divider(color: colors.borderSubtle, height: 24),
+
+                      // Goals
+                      _MiniLabel("Objectifs", colors),
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: {
+                          "Perte de poids 🏃": "Weight Loss",
+                          "Muscle 💪": "Muscle Gain",
+                          "Détox 🧹": "Detox / Healing",
+                          "Maintien ⚖️": "Maintenance",
+                          "Transition 🌱": "Transition",
+                        }.entries.map((e) => _Chip(
+                          label: e.key,
+                          selected: profile.goals.contains(e.value),
+                          colors: colors,
+                          onTap: () => pp.toggleGoal(e.value),
+                        )).toList(),
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Restrictions
+                      _MiniLabel("Restrictions", colors),
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: {
+                          "Sans gluten 🌾": "Gluten Free",
+                          "Sans amidon 🥔": "No Starch",
+                          "Non-mucogène 💧": "Mucusless Diet",
+                          "Sebi strict 🌿": "Sebi Strict",
+                          "Frugivore 🍇": "Fruitarian",
+                          "Cru 🥬": "Raw Only",
+                        }.entries.map((e) => _Chip(
+                          label: e.key,
+                          selected:
+                          profile.restrictions.contains(e.value),
+                          colors: colors,
+                          onTap: () => pp.toggleRestriction(e.value),
+                        )).toList(),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 28),
+
+                // ═══════════════════════════════════════════════════════════
+                // 3. NOTIFICATIONS
+                // ═══════════════════════════════════════════════════════════
+                _Section(
+                  icon: "🔔",
+                  title: "Notifications",
+                  subtitle: "Coaching & rappels",
+                  colors: colors,
+                ),
+                const SizedBox(height: 10),
+                _Card(
+                  colors: colors,
+                  child: Column(
+                    children: [
+                      _Toggle(
+                        icon: Icons.tips_and_updates_outlined,
+                        label: "Conseil du jour",
+                        subtitle:
+                        "Citation ou tip de Sebi, Ehret ou Morse",
+                        value: profile.notifyDailyTip,
+                        colors: colors,
+                        onChanged: (_) => pp.toggleNotifyDailyTip(),
+                      ),
+                      Divider(color: colors.borderSubtle, height: 8),
+                      _Toggle(
+                        icon: Icons.restaurant_outlined,
+                        label: "Rappel de repas",
+                        subtitle: "Rappel pour enregistrer vos repas",
+                        value: profile.notifyMealReminder,
+                        colors: colors,
+                        onChanged: (_) => pp.toggleNotifyMealReminder(),
+                      ),
+                      Divider(color: colors.borderSubtle, height: 8),
+                      _Toggle(
+                        icon: Icons.warning_amber_rounded,
+                        label: "Alerte aliment",
+                        subtitle:
+                        "Prévient si un aliment est hybride ou nocif",
+                        value: profile.notifyFoodWarning,
+                        colors: colors,
+                        onChanged: (_) => pp.toggleNotifyFoodWarning(),
+                      ),
+                      Divider(color: colors.borderSubtle, height: 8),
+                      _Toggle(
+                        icon: Icons.water_drop_outlined,
+                        label: "Hydratation",
+                        subtitle: "Rappel de boire de l'eau de source",
+                        value: profile.notifyHydration,
+                        colors: colors,
+                        onChanged: (_) => pp.toggleNotifyHydration(),
+                      ),
+                      Divider(color: colors.borderSubtle, height: 20),
+
+                      // Frequency
+                      Row(
+                        children: [
+                          Icon(Icons.schedule_rounded,
+                              color: colors.accent, size: 18),
+                          const SizedBox(width: 10),
+                          Text("Fréquence",
+                              style: TextStyle(
+                                  color: colors.textPrimary,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14)),
+                          const Spacer(),
+                          _FreqPills(
+                            current: profile.notifyFrequency,
+                            colors: colors,
+                            onChanged: (f) => pp.setNotifyFrequency(f),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 28),
+
+                // ═══════════════════════════════════════════════════════════
+                // 5. SOURCES / CONNAISSANCES
+                // ═══════════════════════════════════════════════════════════
+                _Section(
+                  icon: "📚",
+                  title: "Base de connaissances",
+                  subtitle: "Ressources pour l'assistant & le coaching",
+                  colors: colors,
+                ),
+                const SizedBox(height: 10),
+                _Card(
+                  colors: colors,
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => const KnowledgeAdminScreen()),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: colors.accent.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Icon(Icons.menu_book_rounded,
+                              color: colors.accent, size: 20),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("Gérer mes sources",
+                                  style: TextStyle(
+                                      color: colors.textPrimary,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 14)),
+                              const SizedBox(height: 2),
+                              Text(
+                                  "PDF, vidéos YouTube, liens, textes",
+                                  style: TextStyle(
+                                      color: colors.textTertiary,
+                                      fontSize: 12)),
+                            ],
+                          ),
+                        ),
+                        Icon(Icons.chevron_right_rounded,
+                            color: colors.iconMuted, size: 22),
+                      ],
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 28),
+
+                // ═══════════════════════════════════════════════════════════
+                // 6. CLÉ API
+                // ═══════════════════════════════════════════════════════════
+                _Section(
+                  icon: "🤖",
+                  title: "Intelligence artificielle",
+                  subtitle: "Clé API pour l'assistant",
+                  colors: colors,
+                ),
+                const SizedBox(height: 10),
+                _Card(
+                  colors: colors,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.vpn_key_rounded,
+                              color: colors.accent, size: 18),
+                          const SizedBox(width: 10),
+                          Text("Google Gemini",
+                              style: TextStyle(
+                                  color: colors.textPrimary,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14)),
+                          const Spacer(),
+                          SizedBox(
+                            width: 150,
+                            child: TextField(
+                              controller: TextEditingController(
+                                  text: pp.geminiApiKey)
+                                ..selection =
+                                TextSelection.fromPosition(
+                                    TextPosition(
+                                        offset:
+                                        pp.geminiApiKey.length)),
+                              style: TextStyle(
+                                  color: colors.textPrimary,
+                                  fontSize: 12,
+                                  fontFamily: 'monospace'),
+                              obscureText: true,
+                              textAlign: TextAlign.right,
+                              decoration: InputDecoration(
+                                hintText: "Collez la clé",
+                                hintStyle: TextStyle(
+                                    color: colors.textTertiary),
+                                border: InputBorder.none,
+                                isDense: true,
+                                contentPadding: EdgeInsets.zero,
+                              ),
+                              onSubmitted: (v) => pp.updateApiKey(v),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        "Gratuit sur aistudio.google.com · Requis pour le scan et le chat.",
+                        style: TextStyle(
+                            color: colors.textTertiary,
+                            fontSize: 12,
+                            fontStyle: FontStyle.italic),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 28),
+
+                // ═══════════════════════════════════════════════════════════
+                // 7. ZONE DE DANGER
+                // ═══════════════════════════════════════════════════════════
+                _Section(
+                  icon: "⚠️",
+                  title: "Zone de danger",
+                  subtitle: "Actions irréversibles",
+                  colors: colors,
+                ),
+                const SizedBox(height: 10),
+                _Card(
+                  colors: colors,
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () => _showResetDialog(context, pp, colors),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: Colors.redAccent.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Icon(Icons.delete_forever_rounded, color: Colors.redAccent, size: 20),
+                        ),
+                        const SizedBox(width: 12),
+                        const Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("Réinitialiser l'application",
+                                  style: TextStyle(
+                                      color: Colors.redAccent,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 14)),
+                              SizedBox(height: 2),
+                              Text("Supprime toutes les données",
+                                  style: TextStyle(color: Colors.redAccent, fontSize: 12)),
+                            ],
                           ),
                         ),
                       ],
                     ),
                   ),
-                  if (isSelected)
-                    Container(
-                      width: 18,
-                      height: 18,
-                      decoration: BoxDecoration(
-                        color: colors.accent,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(Icons.check, size: 11, color: colors.accentOnPrimary),
-                    ),
+                ),
+
+                const SizedBox(height: 40),
+              ]),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+void _showResetDialog(BuildContext context, ProfileProvider pp, AppColors colors) {
+  showDialog(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      backgroundColor: colors.surface,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      title: Row(
+        children: [
+          const Icon(Icons.warning_amber_rounded, color: Colors.redAccent),
+          const SizedBox(width: 10),
+          Text("Tout effacer ?", style: TextStyle(color: colors.textPrimary, fontSize: 18, fontWeight: FontWeight.bold)),
+        ],
+      ),
+      content: Text(
+        "Êtes-vous sûr de vouloir réinitialiser l'application ? Cette action supprimera tout votre historique de repas, vos données de jeûne, et vos préférences. Cette action est irréversible.",
+        style: TextStyle(color: colors.textSecondary, fontSize: 14, height: 1.5),
+      ),
+      actionsPadding: const EdgeInsets.only(right: 16, bottom: 16),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(ctx),
+          child: Text("Annuler", style: TextStyle(color: colors.textTertiary)),
+        ),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.redAccent,
+            foregroundColor: Colors.white,
+            elevation: 0,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+          onPressed: () async {
+            Navigator.pop(ctx); // Close dialog
+            await pp.resetAllData();
+            if (context.mounted) {
+              // Pop everything to get back to the home/dashboard view with a fresh state
+              Navigator.of(context).popUntil((route) => route.isFirst);
+            }
+          },
+          child: const Text("Oui, effacer", style: TextStyle(fontWeight: FontWeight.w600)),
+        ),
+      ],
+    ),
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SHARED WIDGETS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+class _Section extends StatelessWidget {
+  final String icon, title, subtitle;
+  final AppColors colors;
+  const _Section(
+      {required this.icon,
+        required this.title,
+        required this.subtitle,
+        required this.colors});
+
+  @override
+  Widget build(BuildContext context) => Row(
+    children: [
+      Text(icon, style: const TextStyle(fontSize: 18)),
+      const SizedBox(width: 8),
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title,
+              style: TextStyle(
+                  color: colors.textPrimary,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 15)),
+          Text(subtitle,
+              style:
+              TextStyle(color: colors.textTertiary, fontSize: 12)),
+        ],
+      ),
+    ],
+  );
+}
+
+class _Card extends StatelessWidget {
+  final AppColors colors;
+  final Widget child;
+  const _Card({required this.colors, required this.child});
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      color: colors.surface,
+      borderRadius: BorderRadius.circular(18),
+      border: Border.all(color: colors.border),
+    ),
+    child: child,
+  );
+}
+
+class _MiniLabel extends StatelessWidget {
+  final String text;
+  final AppColors colors;
+  const _MiniLabel(this.text, this.colors);
+
+  @override
+  Widget build(BuildContext context) => Text(
+    text.toUpperCase(),
+    style: TextStyle(
+        color: colors.textTertiary,
+        fontSize: 12,
+        letterSpacing: 1.2,
+        fontWeight: FontWeight.w700),
+  );
+}
+
+class _Chip extends StatelessWidget {
+  final String label;
+  final bool selected;
+  final AppColors colors;
+  final VoidCallback onTap;
+  const _Chip({
+    required this.label,
+    required this.selected,
+    required this.colors,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final c = colors.accent;
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          color: selected
+              ? c.withValues(alpha: colors.isDark ? 0.22 : 0.12)
+              : colors.surfaceSubtle,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: selected ? c.withValues(alpha: colors.isDark ? 0.65 : 0.4) : colors.border,
+            width: selected ? 1.5 : 1,
+          ),
+        ),
+        child: Text(label,
+            style: TextStyle(
+                color: selected ? c : colors.textSecondary,
+                fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+                fontSize: 12)),
+      ),
+    );
+  }
+}
+
+class _Toggle extends StatelessWidget {
+  final IconData icon;
+  final String label, subtitle;
+  final bool value;
+  final AppColors colors;
+  final ValueChanged<bool> onChanged;
+
+  const _Toggle({
+    required this.icon,
+    required this.label,
+    required this.subtitle,
+    required this.value,
+    required this.colors,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.symmetric(vertical: 6),
+    child: Row(
+      children: [
+        Icon(icon, color: colors.accent, size: 18),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(label,
+                  style: TextStyle(
+                      color: colors.textPrimary,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13)),
+              Text(subtitle,
+                  style: TextStyle(
+                      color: colors.textTertiary, fontSize: 12)),
+            ],
+          ),
+        ),
+        Switch.adaptive(
+          value: value,
+          onChanged: onChanged,
+          activeTrackColor: colors.accent,
+        ),
+      ],
+    ),
+  );
+}
+
+class _FreqPills extends StatelessWidget {
+  final String current;
+  final AppColors colors;
+  final ValueChanged<String> onChanged;
+  const _FreqPills(
+      {required this.current,
+        required this.colors,
+        required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    const items = [
+      ("low", "Discret"),
+      ("medium", "Normal"),
+      ("high", "Fréquent"),
+    ];
+    return Row(
+      children: items.map((item) {
+        final sel = current == item.$1;
+        return GestureDetector(
+          onTap: () => onChanged(item.$1),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 150),
+            margin: const EdgeInsets.only(left: 6),
+            padding:
+            const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            decoration: BoxDecoration(
+              color: sel
+                  ? colors.accent.withValues(alpha: 0.12)
+                  : colors.surfaceSubtle,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: sel
+                    ? colors.accent.withValues(alpha: 0.4)
+                    : colors.border,
+              ),
+            ),
+            child: Text(item.$2,
+                style: TextStyle(
+                    color: sel ? colors.accent : colors.textSecondary,
+                    fontWeight: sel ? FontWeight.w700 : FontWeight.w400,
+                    fontSize: 12)),
+          ),
+        );
+      }).toList(),
+    );
+  }
+}
+
+// ── THEME PILLS ──────────────────────────────────────────────────────────────
+class _ThemePills extends StatelessWidget {
+  final ThemeProvider tp;
+  final AppColors colors;
+  const _ThemePills({required this.tp, required this.colors});
+
+  @override
+  Widget build(BuildContext context) {
+    final themes = [
+      (AppBaseTheme.light, "☀️", "Clair", const Color(0xFFFFFFFF),
+      const Color(0xFF18181B)),
+      (AppBaseTheme.sepia, "📜", "Sépia", const Color(0xFFFAF6EF),
+      const Color(0xFF2C2416)),
+      (AppBaseTheme.dark, "🌙", "Sombre", const Color(0xFF1C1C1E),
+      const Color(0xFFE4E4E7)),
+      (AppBaseTheme.oled, "⚫", "OLED", const Color(0xFF000000),
+      const Color(0xFFF4F4F5)),
+    ];
+
+    return Row(
+      children: themes.map((t) {
+        final sel = tp.baseTheme == t.$1;
+        return Expanded(
+          child: GestureDetector(
+            onTap: () => tp.setBaseTheme(t.$1),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 180),
+              margin: const EdgeInsets.symmetric(horizontal: 3),
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              decoration: BoxDecoration(
+                color: t.$4,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: sel ? colors.accent : t.$4 == const Color(0xFFFFFFFF) ? const Color(0xFFE4E4E7) : t.$4.withValues(alpha: 0.3),
+                  width: sel ? 2 : 1,
+                ),
+                boxShadow: sel
+                    ? [BoxShadow(color: colors.accent.withValues(alpha: 0.25), blurRadius: 8)]
+                    : [],
+              ),
+              child: Column(
+                children: [
+                  Text(t.$2, style: const TextStyle(fontSize: 16)),
+                  const SizedBox(height: 3),
+                  Text(t.$3,
+                      style: TextStyle(
+                          color: t.$5,
+                          fontSize: 12,
+                          fontWeight:
+                          sel ? FontWeight.w700 : FontWeight.w500)),
                 ],
               ),
             ),
@@ -234,233 +810,170 @@ class _BaseThemeSelector extends StatelessWidget {
       }).toList(),
     );
   }
-
-  _ThemeMeta _themeMetadata(AppBaseTheme base) {
-    switch (base) {
-      case AppBaseTheme.light:
-        return const _ThemeMeta(
-          label: 'Light',
-          subtitle: 'Blanc & clair',
-          emoji: '☀️',
-          bgColor: Color(0xFFFFFFFF),
-          borderColor: Color(0xFFE4E4E7),
-          textColor: Color(0xFF18181B),
-        );
-      case AppBaseTheme.sepia:
-        return const _ThemeMeta(
-          label: 'Sepia',
-          subtitle: 'Chaud & doux',
-          emoji: '📜',
-          bgColor: Color(0xFFFAF6EF),
-          borderColor: Color(0xFFDDD3C0),
-          textColor: Color(0xFF2C2416),
-        );
-      case AppBaseTheme.dark:
-        return const _ThemeMeta(
-          label: 'Dark',
-          subtitle: 'Sombre & élégant',
-          emoji: '🌙',
-          bgColor: Color(0xFF1C1C1E),
-          borderColor: Color(0xFF3A3A3C),
-          textColor: Color(0xFFE4E4E7),
-        );
-      case AppBaseTheme.oled:
-        return const _ThemeMeta(
-          label: 'OLED',
-          subtitle: 'Noir absolu',
-          emoji: '⚫',
-          bgColor: Color(0xFF000000),
-          borderColor: Color(0xFF2A2A2A),
-          textColor: Color(0xFFF4F4F5),
-        );
-    }
-  }
 }
 
-class _ThemeMeta {
-  final String label;
-  final String subtitle;
-  final String emoji;
-  final Color bgColor;
-  final Color borderColor;
-  final Color textColor;
-  const _ThemeMeta({
-    required this.label,
-    required this.subtitle,
-    required this.emoji,
-    required this.bgColor,
-    required this.borderColor,
-    required this.textColor,
-  });
-}
-
-// ── ACCENT COLOR ROW ─────────────────────────────────────────────────────────
-
-class _AccentSelector extends StatelessWidget {
-  final ThemeProvider themeProvider;
+// ── ACCENT DOTS ──────────────────────────────────────────────────────────────
+class _AccentDots extends StatelessWidget {
+  final ThemeProvider tp;
   final AppColors colors;
-  const _AccentSelector({required this.themeProvider, required this.colors});
+  const _AccentDots({required this.tp, required this.colors});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: colors.border),
-      ),
-      child: Column(
-        children: kAccents.entries.map((entry) {
-          final accent = entry.key;
-          final data = entry.value;
-          final isSelected = themeProvider.accentColor == accent;
-          return GestureDetector(
-            onTap: () => themeProvider.setAccentColor(accent),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 180),
-              margin: const EdgeInsets.only(bottom: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              decoration: BoxDecoration(
-                color: isSelected
-                    ? Color.alphaBlend(data.primaryMuted, colors.surface)
-                    : Colors.transparent,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: isSelected
-                      ? data.primary.withValues(alpha: 0.35)
-                      : Colors.transparent,
+    return Wrap(
+      spacing: 12,
+      runSpacing: 12,
+      children: kAccents.entries.map((e) {
+        final sel = tp.accentColor == e.key;
+        final d = e.value;
+        return GestureDetector(
+          onTap: () => tp.setAccentColor(e.key),
+          child: Column(
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 150),
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: d.resolvePrimary(colors.isDark),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: sel ? colors.textPrimary : Colors.transparent,
+                    width: sel ? 3 : 0,
+                  ),
+                  boxShadow: sel
+                      ? [BoxShadow(
+                      color: d.primary.withValues(alpha: 0.4),
+                      blurRadius: 10)]
+                      : [],
                 ),
+                child: sel
+                    ? const Icon(Icons.check, size: 16, color: Colors.white)
+                    : null,
               ),
-              child: Row(
-                children: [
-                  // Color swatch
-                  Container(
-                    width: 28,
-                    height: 28,
-                    decoration: BoxDecoration(
-                      color: data.primary,
-                      shape: BoxShape.circle,
-                      boxShadow: isSelected
-                          ? [BoxShadow(
-                        color: data.primary.withValues(alpha: 0.4),
-                        blurRadius: 8,
-                      )]
-                          : [],
-                    ),
-                  ),
-                  const SizedBox(width: 14),
-                  // Labels
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              '${data.emoji}  ${data.label}',
-                              style: TextStyle(
-                                color: isSelected ? data.primary : colors.textPrimary,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 14,
-                              ),
-                            ),
-                          ],
-                        ),
-                        // Companion color preview strip
-                        const SizedBox(height: 4),
-                        Row(
-                          children: [
-                            _ColorDot(color: data.primary, size: 10),
-                            const SizedBox(width: 4),
-                            _ColorDot(color: data.secondary, size: 10),
-                            const SizedBox(width: 6),
-                            Text(
-                              '#${data.primary.value.toRadixString(16).substring(2).toUpperCase()}',
-                              style: TextStyle(
-                                fontFamily: 'monospace',
-                                fontSize: 9,
-                                color: colors.textTertiary,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  if (isSelected)
-                    Icon(Icons.check_circle_rounded,
-                        color: data.primary, size: 20),
-                ],
-              ),
-            ),
-          );
-        }).toList(),
-      ),
+              const SizedBox(height: 4),
+              Text(d.emoji, style: const TextStyle(fontSize: 12)),
+            ],
+          ),
+        );
+      }).toList(),
     );
   }
 }
 
-class _ColorDot extends StatelessWidget {
-  final Color color;
-  final double size;
-  const _ColorDot({required this.color, required this.size});
-
-  @override
-  Widget build(BuildContext context) => Container(
-    width: size,
-    height: size,
-    decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-  );
-}
-
-// ── ADAPTIVE CHIP ─────────────────────────────────────────────────────────────
-
-class _Chip extends StatelessWidget {
-  final String label;
-  final bool isSelected;
+// ── NAME INPUT ───────────────────────────────────────────────────────────────
+class _NameInputRow extends StatefulWidget {
+  final String initialName;
+  final ValueChanged<String> onChanged;
   final AppColors colors;
-  final VoidCallback onTap;
-  final bool useSecondary;
-  const _Chip({
-    required this.label,
-    required this.isSelected,
+
+  const _NameInputRow({
+    required this.initialName,
+    required this.onChanged,
     required this.colors,
-    required this.onTap,
-    this.useSecondary = false,
   });
 
   @override
+  State<_NameInputRow> createState() => _NameInputRowState();
+}
+
+class _NameInputRowState extends State<_NameInputRow> {
+  late TextEditingController _controller;
+  late FocusNode _focusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.initialName);
+    _focusNode = FocusNode();
+    _focusNode.addListener(() {
+      if (mounted) setState(() {});
+      if (!_focusNode.hasFocus) {
+        if (_controller.text.trim().isNotEmpty) {
+          widget.onChanged(_controller.text.trim());
+        } else {
+          _controller.text = widget.initialName;
+        }
+      }
+    });
+  }
+
+  @override
+  void didUpdateWidget(_NameInputRow oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialName != oldWidget.initialName && !_focusNode.hasFocus) {
+      _controller.text = widget.initialName;
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final activeColor =
-    useSecondary ? colors.accentSecondary : colors.accent;
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? Color.alphaBlend(
-              activeColor.withValues(alpha: 0.12), colors.surface)
-              : colors.surfaceSubtle,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: isSelected
-                ? activeColor.withValues(alpha: 0.4)
-                : colors.border,
-            width: isSelected ? 1.5 : 1,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text("Ton prénom",
+            style: TextStyle(
+                color: widget.colors.textSecondary,
+                fontWeight: FontWeight.w600,
+                fontSize: 12)),
+        const SizedBox(height: 8),
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          height: 48,
+          decoration: BoxDecoration(
+            color: _focusNode.hasFocus ? widget.colors.surface : widget.colors.surfaceSubtle,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+                color: _focusNode.hasFocus
+                    ? widget.colors.accent
+                    : widget.colors.borderSubtle,
+                width: _focusNode.hasFocus ? 1.5 : 1.0),
+            boxShadow: _focusNode.hasFocus
+                ? [BoxShadow(color: widget.colors.accent.withValues(alpha: 0.1), blurRadius: 8)]
+                : [],
+          ),
+          child: Row(
+            children: [
+              const SizedBox(width: 16),
+              Icon(Icons.person_rounded, color: widget.colors.iconMuted, size: 20),
+              const SizedBox(width: 12),
+              Expanded(
+                child: TextField(
+                  controller: _controller,
+                  focusNode: _focusNode,
+                  style: TextStyle(
+                      color: widget.colors.textPrimary,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15),
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    isDense: true,
+                    contentPadding: EdgeInsets.zero,
+                    hintText: "Comment t'appelles-tu ?",
+                    hintStyle: TextStyle(
+                        color: widget.colors.textTertiary,
+                        fontWeight: FontWeight.w400),
+                  ),
+                ),
+              ),
+              if (_focusNode.hasFocus)
+                IconButton(
+                  icon: Icon(Icons.check_circle_rounded, color: widget.colors.accent, size: 22),
+                  onPressed: () {
+                    _focusNode.unfocus();
+                  },
+                ),
+            ],
           ),
         ),
-        child: Text(
-          label,
-          style: TextStyle(
-            color: isSelected ? activeColor : colors.textSecondary,
-            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-            fontSize: 13,
-          ),
-        ),
-      ),
+      ],
     );
   }
 }

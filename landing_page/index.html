@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vital Track — Jeûne, Respiration & Nutrition Vitaliste</title>
+    <meta name="description"
+        content="Vital Track : suivi de jeûne, respiration Wim Hof, nutrition alcaline. Inspiré par Dr. Sebi, Arnold Ehret, Dr. Morse et Wim Hof. Téléchargez l'APK Android.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Floating background blobs -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
+    <!-- ═══════════ NAVBAR ═══════════ -->
+    <header class="navbar">
+        <div class="container nav-content">
+            <a href="#" class="logo">
+                <span class="logo-icon">🌿</span> Vital<span class="logo-accent">Track</span>
+            </a>
+            <nav class="nav-links">
+                <a href="#features">Fonctionnalités</a>
+                <a href="#screenshots">Aperçu</a>
+                <a href="#philosophy">Philosophie</a>
+                <a href="#download" class="btn-nav">Télécharger</a>
+            </nav>
+            <button class="hamburger" id="menuToggle" aria-label="Menu">
+                <i class="ri-menu-3-line"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Mobile nav -->
+    <div class="mobile-nav" id="mobileNav">
+        <a href="#features" onclick="closeMobileNav()">Fonctionnalités</a>
+        <a href="#screenshots" onclick="closeMobileNav()">Aperçu</a>
+        <a href="#philosophy" onclick="closeMobileNav()">Philosophie</a>
+        <a href="#download" class="btn-nav" onclick="closeMobileNav()">Télécharger</a>
+    </div>
+
+    <main>
+        <!-- ═══════════ HERO ═══════════ -->
+        <section class="hero" id="home">
+            <div class="container hero-content">
+                <div class="hero-text">
+                    <div class="badge"><i class="ri-sparkling-line"></i> Coach IA intégré inspiré de 4 maîtres</div>
+                    <h1>Reprenez le contrôle de votre <span class="gradient-text">Vitalité</span></h1>
+                    <p class="hero-desc">Suivez vos jeûnes thérapeutiques, pratiquez la respiration Wim Hof, et analysez
+                        chaque repas grâce à l'IA. Un coach vitaliste inspiré par <strong>Dr. Sebi</strong>,
+                        <strong>Arnold Ehret</strong>, <strong>Dr. Morse</strong> et <strong>Wim Hof</strong>.</p>
+                    <div class="hero-actions">
+                        <a href="vital_track.apk" download class="btn-primary">
+                            <i class="ri-android-line"></i> Télécharger l'APK
+                        </a>
+                        <span class="version-tag">v1.0.1 · Android</span>
+                    </div>
+                    <div class="hero-trust">
+                        <div class="trust-item"><i class="ri-shield-check-line"></i> Données locales</div>
+                        <div class="trust-item"><i class="ri-wifi-off-line"></i> Fonctionne hors-ligne</div>
+                        <div class="trust-item"><i class="ri-open-source-line"></i> Open Source</div>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="phone-frame">
+                        <img src="screenshots/dashboard.png" alt="Dashboard Vital Track" class="phone-screenshot" />
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════ FEATURES ═══════════ -->
+        <section class="features" id="features">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Tout pour votre <span class="gradient-text">bien-être</span></h2>
+                    <p>Des outils concrets, pas du marketing. Chaque fonctionnalité existe réellement dans
+                        l'application.</p>
+                </div>
+
+                <div class="feature-grid">
+                    <!-- Card 1 -->
+                    <div class="feature-card">
+                        <div class="feature-icon icon-fire"><i class="ri-fire-line"></i></div>
+                        <h3>Jeûne Thérapeutique</h3>
+                        <p>Jeûne à l'eau, cure de raisin, mono-fruit, jeûne sec solaire… Suivez vos phases métaboliques
+                            (glycogène → cétose → autophagie) en temps réel avec des conseils adaptés à votre protocole.
+                        </p>
+                    </div>
+
+                    <!-- Card 2 -->
+                    <div class="feature-card">
+                        <div class="feature-icon icon-leaf"><i class="ri-leaf-line"></i></div>
+                        <h3>Nutrition Vitaliste</h3>
+                        <p>Base de données CIQUAL/USDA avec indice PRAL, densité nutritionnelle et classement par le
+                            guide vitaliste. Cherchez n'importe quel aliment et obtenez son profil alcalin complet.</p>
+                    </div>
+
+                    <!-- Card 3 -->
+                    <div class="feature-card">
+                        <div class="feature-icon icon-wind"><i class="ri-windy-line"></i></div>
+                        <h3>Respiration Guidée</h3>
+                        <p>Wim Hof (hyperventilation + rétention), Relaxation (1:2), Box Breathing (4-4-4-4). Choisissez
+                            le nombre de tours et laissez-vous guider par l'animation respiratoire.</p>
+                    </div>
+
+                    <!-- Card 4 -->
+                    <div class="feature-card">
+                        <div class="feature-icon icon-scan"><i class="ri-camera-lens-line"></i></div>
+                        <h3>Scan & Reconnaissance</h3>
+                        <p>Photographiez votre plat, scannez un code-barres, dictez vocalement ou importez une image.
+                            L'IA identifie automatiquement les aliments et récupère leurs données nutritionnelles.</p>
+                    </div>
+
+                    <!-- Card 5 -->
+                    <div class="feature-card">
+                        <div class="feature-icon icon-chart"><i class="ri-bar-chart-grouped-line"></i></div>
+                        <h3>Statistiques & Planning</h3>
+                        <p>Graphiques d'évolution du poids, calendrier de planning, courbe d'humeur et historique
+                            détaillé de tous vos jeûnes. Visualisez vos progrès sur 30 jours.</p>
+                    </div>
+
+                    <!-- Card 6 -->
+                    <div class="feature-card">
+                        <div class="feature-icon icon-ai"><i class="ri-chat-smile-3-line"></i></div>
+                        <h3>Coach IA Contextuel</h3>
+                        <p>Un pigeon mascotte animé vous accompagne avec des citations sourcées de Dr. Sebi, Arnold
+                            Ehret, Dr. Morse et Wim Hof. Discutez avec lui pour approfondir n'importe quel sujet.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════ SCREENSHOTS CAROUSEL ═══════════ -->
+        <section class="screenshots" id="screenshots">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Aperçu de <span class="gradient-text">l'application</span></h2>
+                    <p>Captures d'écran réelles — pas de maquettes.</p>
+                </div>
+                <div class="screenshot-track">
+                    <div class="screenshot-item">
+                        <img src="screenshots/dashboard.png" alt="Dashboard & Mascotte IA" loading="lazy" />
+                        <span class="screenshot-label">Dashboard & Coach IA</span>
+                    </div>
+                    <div class="screenshot-item">
+                        <img src="screenshots/breathing.png" alt="Respiration Wim Hof" loading="lazy" />
+                        <span class="screenshot-label">Respiration Wim Hof</span>
+                    </div>
+                    <div class="screenshot-item">
+                        <img src="screenshots/nutrition.png" alt="Fiche nutritionnelle" loading="lazy" />
+                        <span class="screenshot-label">Fiche Nutritionnelle</span>
+                    </div>
+                    <div class="screenshot-item">
+                        <img src="screenshots/analytics.png" alt="Statistiques de jeûne" loading="lazy" />
+                        <span class="screenshot-label">Statistiques & Planning</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════ PHILOSOPHY ═══════════ -->
+        <section class="philosophy" id="philosophy">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Inspiré par les <span class="gradient-text">maîtres</span></h2>
+                    <p>Vital Track s'appuie sur les enseignements de quatre pionniers de la santé naturelle.</p>
+                </div>
+                <div class="masters-grid">
+                    <div class="master-card">
+                        <div class="master-emoji">🌿</div>
+                        <h3>Dr. Sebi</h3>
+                        <p>Guide nutritionnel alcalin, minéraux bio-disponibles et nettoyage intracellulaire.</p>
+                    </div>
+                    <div class="master-card">
+                        <div class="master-emoji">📖</div>
+                        <h3>Arnold Ehret</h3>
+                        <p>Système de guérison par le régime amuqueux, cure de raisin et V = P − O.</p>
+                    </div>
+                    <div class="master-card">
+                        <div class="master-emoji">🔬</div>
+                        <h3>Dr. Robert Morse</h3>
+                        <p>Détoxification lymphatique, filtration rénale et régénération cellulaire.</p>
+                    </div>
+                    <div class="master-card">
+                        <div class="master-emoji">❄️</div>
+                        <h3>Wim Hof</h3>
+                        <p>Méthode de respiration, exposition au froid et maîtrise du système nerveux autonome.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════ DOWNLOAD CTA ═══════════ -->
+        <section class="download-section" id="download">
+            <div class="container">
+                <div class="cta-card glassmorphism">
+                    <div class="cta-content">
+                        <h2>Prêt à revitaliser votre santé ?</h2>
+                        <p>Application privée distribuée directement par APK. Pas sur le Play Store (pour l'instant).
+                        </p>
+                        <ol class="install-steps">
+                            <li><strong>Téléchargez</strong> l'APK ci-dessous</li>
+                            <li><strong>Acceptez</strong> le téléchargement si votre navigateur vous alerte</li>
+                            <li><strong>Autorisez</strong> l'installation depuis sources inconnues dans les paramètres
+                                Android</li>
+                            <li><strong>Profitez</strong> des mises à jour automatiques directement dans l'app !</li>
+                        </ol>
+                        <div class="cta-actions">
+                            <a href="vital_track.apk" download class="btn-primary btn-large">
+                                <i class="ri-download-cloud-2-line"></i> Obtenir Vital Track v1.0.1
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ═══════════ FOOTER ═══════════ -->
+    <footer>
+        <div class="container footer-content">
+            <div class="footer-brand">
+                <span class="logo"><span class="logo-icon">🌿</span> Vital<span class="logo-accent">Track</span></span>
+                <p>Éveillez le potentiel régénérateur de votre corps.</p>
+            </div>
+            <div class="footer-links">
+                <a href="https://github.com/fnnktkygl-code/vital_track" target="_blank" rel="noopener"><i
+                        class="ri-github-fill"></i> GitHub</a>
+            </div>
+            <p class="copyright">&copy; 2026 Vital Track. Tous droits réservés.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Scroll reveal for feature cards
+        document.addEventListener('DOMContentLoaded', () => {
+            const reveals = document.querySelectorAll('.feature-card, .master-card, .screenshot-item');
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach((entry, i) => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.transitionDelay = `${i * 0.08}s`;
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+            reveals.forEach(el => observer.observe(el));
+
+            // Hamburger menu
+            const toggle = document.getElementById('menuToggle');
+            const mobileNav = document.getElementById('mobileNav');
+            toggle.addEventListener('click', () => mobileNav.classList.toggle('open'));
+        });
+
+        function closeMobileNav() {
+            document.getElementById('mobileNav').classList.remove('open');
+        }
+    </script>
+</body>
+
+</html>
