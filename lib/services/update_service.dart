@@ -5,10 +5,11 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
 
 class UpdateService {
-  // ⚠️ REMPLACE "TON_NOM_UTILISATEUR" PAR TON VRAI USERNAME GITHUB !
   static const String versionUrl = 'https://fnnktkygl-code.github.io/vital_track/version.json';
   
-  static Future<void> checkForUpdates(BuildContext context) async {
+  /// Check for updates.
+  /// If [forceShow] is true, shows a "you're up to date" dialog when no update is available.
+  static Future<void> checkForUpdates(BuildContext context, {bool forceShow = false}) async {
     try {
       final PackageInfo packageInfo = await PackageInfo.fromPlatform();
       final currentVersion = packageInfo.version;
@@ -28,10 +29,17 @@ class UpdateService {
           if (context.mounted) {
             _showUpdateDialog(context, latestVersion, apkUrl, releaseNotes);
           }
+        } else if (forceShow && context.mounted) {
+          _showUpToDateDialog(context, currentVersion);
         }
+      } else if (forceShow && context.mounted) {
+        _showErrorDialog(context, 'Erreur serveur (${response.statusCode})');
       }
     } catch (e) {
       debugPrint('Error checking for updates: $e');
+      if (forceShow && context.mounted) {
+        _showErrorDialog(context, e.toString());
+      }
     }
   }
 
@@ -93,6 +101,52 @@ class UpdateService {
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
             child: const Text('Télécharger'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  static void _showUpToDateDialog(BuildContext context, String currentVersion) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Row(
+          children: [
+            Text('✅', style: TextStyle(fontSize: 24)),
+            SizedBox(width: 10),
+            Text('À jour !'),
+          ],
+        ),
+        content: Text('Vous utilisez la dernière version de Vital Track (v$currentVersion).'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text('OK', style: TextStyle(color: Theme.of(context).colorScheme.primary)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  static void _showErrorDialog(BuildContext context, String error) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Row(
+          children: [
+            Text('⚠️', style: TextStyle(fontSize: 24)),
+            SizedBox(width: 10),
+            Text('Erreur'),
+          ],
+        ),
+        content: Text('Impossible de vérifier les mises à jour.\n\n$error'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('OK'),
           ),
         ],
       ),

@@ -71,7 +71,7 @@ class VitalTrackApp extends StatelessWidget {
       child: Consumer<ThemeProvider>(
         builder: (ctx, themeProv, child) {
           return MaterialApp(
-            title: 'VitalTrack',
+            title: 'Vital Track',
             navigatorKey: navigatorKey,
             theme: themeProv.themeData,
             debugShowCheckedModeBanner: false,

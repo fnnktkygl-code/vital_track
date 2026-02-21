@@ -282,12 +282,21 @@ class MascotProvider with ChangeNotifier {
 
   void toggleVisibility() {
     _isVisible = !_isVisible;
+    if (!_isVisible) {
+      // Mute: clear any active message
+      _autoHideTimer?.cancel();
+      _currentMessage = null;
+      _isSpeaking = false;
+    }
     notifyListeners();
   }
 
   // ── PRIVATE ─────────────────────────────────────────────────────────────────
 
   void _showMessage(MascotMessage message, {int autoDismiss = 5}) {
+    // Mute: don't show messages when mascot is hidden
+    if (!_isVisible) return;
+
     _autoHideTimer?.cancel();
     _currentMessage = message;
     _mood = message.mood;
