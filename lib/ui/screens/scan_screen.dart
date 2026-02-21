@@ -12,6 +12,7 @@ import 'package:vital_track/services/ai_service.dart';
 import 'package:vital_track/services/hive_service.dart';
 import 'package:vital_track/models/food.dart';
 import 'package:vital_track/providers/meal_provider.dart';
+import 'package:vital_track/ui/widgets/ai_loading_animation.dart';
 
 enum _ScanMode { food, barcode }
 
@@ -100,30 +101,33 @@ class _ScanScreenState extends State<ScanScreen>
     // 1. Confirm AI usage
     final confirm = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF0D1410),
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-            side: BorderSide(color: AppTheme.primary.withValues(alpha: 0.2))),
-        title: const Text("Utiliser l'IA ?",
-            style: TextStyle(color: Colors.white, fontSize: 18)),
-        content: const Text(
-            "L'analyse visuelle consomme 1 crédit par requête. Voulez-vous continuer ?",
-            style: TextStyle(color: Colors.white70)),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text("Annuler",
-                style: TextStyle(color: AppTheme.textSecondary)),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text("Analyser",
-                style: TextStyle(
-                    color: AppTheme.primary, fontWeight: FontWeight.bold)),
-          ),
-        ],
-      ),
+      builder: (ctx) {
+        final dlgColors = ctx.colors;
+        return AlertDialog(
+          backgroundColor: dlgColors.sheetBg,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+              side: BorderSide(color: dlgColors.accent.withValues(alpha: 0.2))),
+          title: Text("Utiliser l'IA ?",
+              style: TextStyle(color: dlgColors.textPrimary, fontSize: 18)),
+          content: Text(
+              "L'analyse visuelle consomme 1 crédit par requête. Voulez-vous continuer ?",
+              style: TextStyle(color: dlgColors.textSecondary)),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text("Annuler",
+                  style: TextStyle(color: dlgColors.textSecondary)),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: Text("Analyser",
+                  style: TextStyle(
+                      color: dlgColors.accent, fontWeight: FontWeight.bold)),
+            ),
+          ],
+        );
+      },
     );
 
     if (confirm != true) return;
@@ -238,7 +242,7 @@ class _ScanScreenState extends State<ScanScreen>
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(msg),
-      backgroundColor: error ? AppTheme.error : AppTheme.surface,
+      backgroundColor: error ? context.colors.error : context.colors.surface,
     ));
   }
 
@@ -305,7 +309,7 @@ class _ScanScreenState extends State<ScanScreen>
                         style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.w600,
-                            fontSize: 14),
+                            fontSize: 15),
                       ),
                     ),
                     const Spacer(),
@@ -347,7 +351,7 @@ class _ScanScreenState extends State<ScanScreen>
                       ),
                       child: const Text(
                         "Centrez votre aliment dans le cadre",
-                        style: TextStyle(color: Colors.white70, fontSize: 13),
+                        style: TextStyle(color: Colors.white70, fontSize: 14),
                       ),
                     ),
                   ),
@@ -539,7 +543,7 @@ class _ModeChip extends StatelessWidget {
           style: TextStyle(
             color: selected ? Colors.black : Colors.white70,
             fontWeight: FontWeight.w600,
-            fontSize: 13,
+            fontSize: 14,
           ),
         ),
       ),
@@ -615,74 +619,125 @@ class _CircleBtn extends StatelessWidget {
         this.size = 42});
 
   @override
-  Widget build(BuildContext context) => GestureDetector(
-    onTap: onTap,
-    child: Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: Colors.black.withValues(alpha: 0.5),
-        border: Border.all(
-          color: active
-              ? AppTheme.primary.withValues(alpha: 0.6)
-              : Colors.white.withValues(alpha: 0.2),
+  Widget build(BuildContext context) {
+    final accent = context.colors.accent;
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.black.withValues(alpha: 0.5),
+          border: Border.all(
+            color: active
+                ? accent.withValues(alpha: 0.6)
+                : Colors.white.withValues(alpha: 0.2),
+          ),
         ),
+        child: Icon(icon,
+            color: active ? accent : Colors.white, size: 18),
       ),
-      child: Icon(icon,
-          color: active ? AppTheme.primary : Colors.white, size: 18),
-    ),
-  );
+    );
+  }
 }
 
 // ── PROCESSING OVERLAY ────────────────────────────────────────────────────────
 class _ProcessingOverlay extends StatelessWidget {
   @override
-  Widget build(BuildContext context) => Container(
-    color: Colors.black.withValues(alpha: 0.72),
-    child: Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const SizedBox(
-              width: 48,
-              height: 48,
-              child: CircularProgressIndicator(
-                  color: AppTheme.primary, strokeWidth: 3)),
-          const SizedBox(height: 18),
-          Text("Analyse en cours...",
-              style: Theme.of(context)
-                  .textTheme
-                  .titleMedium
-                  ?.copyWith(color: Colors.white)),
-          const SizedBox(height: 4),
-          const Text("VitalTrack AI",
-              style: TextStyle(
-                  fontFamily: 'SpaceMono',
-                  fontSize: 11,
-                  color: AppTheme.primary)),
-        ],
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.black.withValues(alpha: 0.72),
+      child: const Center(
+        child: AiLoadingAnimation(
+          initialTitle: "Analyse en cours...",
+          darkMode: true,
+        ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 // ── SCAN RESULTS SHEET ────────────────────────────────────────────────────────
-class _ScanResultsSheet extends StatelessWidget {
+class _ScanResultsSheet extends StatefulWidget {
   final List<Food> foods;
   final int confidence;
-  const _ScanResultsSheet(
-      {required this.foods, required this.confidence});
+  const _ScanResultsSheet({
+    required this.foods,
+    required this.confidence,
+  });
+
+  @override
+  State<_ScanResultsSheet> createState() => _ScanResultsSheetState();
+}
+
+class _ScanResultsSheetState extends State<_ScanResultsSheet> {
+  late List<Food> _currentFoods;
+  late Set<int> _selectedIndices;
+  bool _isEditing = false;
+  bool _isAddingItem = false;
+  final TextEditingController _addController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _currentFoods = List.from(widget.foods);
+    // Auto-select all by default
+    _selectedIndices = Set.from(Iterable.generate(_currentFoods.length));
+  }
+
+  @override
+  void dispose() {
+    _addController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _addIngredient(String text) async {
+    if (text.trim().isEmpty) return;
+    setState(() => _isAddingItem = true);
+    try {
+      final json = await AIService.analyzeText(text.trim());
+      if (!mounted) return;
+      if (json != null) {
+        final foods = FoodMapper.fromAIJsonList(json);
+        if (foods.isNotEmpty) {
+          setState(() {
+            final startIdx = _currentFoods.length;
+            _currentFoods.addAll(foods);
+            for (int i = startIdx; i < _currentFoods.length; i++) {
+              _selectedIndices.add(i);
+            }
+            _addController.clear();
+          });
+        }
+      }
+    } finally {
+      if (mounted) setState(() => _isAddingItem = false);
+    }
+  }
+
+  void _removeItem(int index) {
+    setState(() {
+      _currentFoods.removeAt(index);
+      // Rebuild selection indices
+      _selectedIndices = Set.from(
+        _selectedIndices
+            .where((i) => i != index)
+            .map((i) => i > index ? i - 1 : i),
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    final colors = context.colors;
     return Container(
       height: MediaQuery.of(context).size.height * 0.75,
-      decoration: const BoxDecoration(
-        color: Color(0xFF0D1410),
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      decoration: BoxDecoration(
+        color: colors.sheetBg,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
         border: Border(
-          top: BorderSide(color: Color(0x264ADE80)),
+          top: BorderSide(color: colors.accent.withValues(alpha: 0.15)),
         ),
       ),
       child: Column(
@@ -695,7 +750,7 @@ class _ScanResultsSheet extends StatelessWidget {
               width: 36,
               height: 4,
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.12),
+                color: colors.borderSubtle,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -707,9 +762,9 @@ class _ScanResultsSheet extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
               decoration: BoxDecoration(
-                color: AppTheme.primary.withValues(alpha: 0.12),
+                color: colors.accent.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppTheme.primary.withValues(alpha: 0.3)),
+                border: Border.all(color: colors.accent.withValues(alpha: 0.3)),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -717,17 +772,17 @@ class _ScanResultsSheet extends StatelessWidget {
                   Container(
                     width: 8,
                     height: 8,
-                    decoration: const BoxDecoration(
-                      color: AppTheme.primary,
+                    decoration: BoxDecoration(
+                      color: colors.accent,
                       shape: BoxShape.circle,
                     ),
                   ),
                   const SizedBox(width: 8),
-                  const Text("Scan Complet",
+                  Text("Scan Complet",
                       style: TextStyle(
-                          color: AppTheme.primary,
+                          color: colors.accent,
                           fontWeight: FontWeight.w600,
-                          fontSize: 12)),
+                          fontSize: 13)),
                 ],
               ),
             ),
@@ -748,15 +803,15 @@ class _ScanResultsSheet extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(
                       horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: AppTheme.secondary.withValues(alpha: 0.12),
+                    color: colors.accentSecondary.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Text("$confidence% CONFIANCE",
-                      style: const TextStyle(
-                          fontFamily: 'SpaceMono',
-                          fontSize: 9,
-                          color: AppTheme.secondary,
-                          fontWeight: FontWeight.bold)),
+                  child: Text("${widget.confidence}% CONFIANCE",
+                      style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: colors.accentSecondary,
+                          letterSpacing: 0.5)),
                 ),
               ],
             ),
@@ -769,74 +824,200 @@ class _ScanResultsSheet extends StatelessWidget {
                 style: Theme.of(context)
                     .textTheme
                     .bodySmall
-                    ?.copyWith(fontSize: 12)),
+                    ?.copyWith(fontSize: 13)),
           ),
 
           const SizedBox(height: 16),
+
+          // ── Edit mode: add ingredient field ──
+          if (_isEditing)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _addController,
+                      style: TextStyle(color: colors.textPrimary, fontSize: 14),
+                      decoration: InputDecoration(
+                        hintText: "Ex: riz, œufs, avocat...",
+                        hintStyle: TextStyle(color: colors.textTertiary, fontSize: 13),
+                        helperText: "Séparez par des virgules pour l'IA",
+                        helperStyle: TextStyle(color: colors.accent.withValues(alpha: 0.7), fontSize: 11),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        filled: true,
+                        fillColor: colors.surface,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: BorderSide(color: colors.border),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: BorderSide(color: colors.border),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(14),
+                          borderSide: BorderSide(color: colors.accent),
+                        ),
+                      ),
+                      onSubmitted: (val) => _addIngredient(val),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  GestureDetector(
+                    onTap: _isAddingItem
+                        ? null
+                        : () => _addIngredient(_addController.text),
+                    child: Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: colors.accent,
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: _isAddingItem
+                          ? Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: colors.accentOnPrimary,
+                              ),
+                            )
+                          : Icon(Icons.add_rounded,
+                              color: colors.accentOnPrimary, size: 22),
+                    ),
+                  ),
+                ],
+              ),
+            ),
 
           // Detected items list
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              itemCount: foods.length,
-              itemBuilder: (_, i) {
-                final f = foods[i];
-                final c = f.approved ? AppTheme.primary : AppTheme.error;
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                    showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      backgroundColor: Colors.transparent,
-                      builder: (_) => FoodModal(food: f),
-                    );
-                  },
-                  child: Container(
+              itemCount: _currentFoods.length,
+              itemBuilder: (ctx, i) {
+                final f = _currentFoods[i];
+                final isSelected = _selectedIndices.contains(i);
+                final c = isSelected ? (f.approved ? colors.accent : colors.error) : colors.border;
+                return Dismissible(
+                  key: ValueKey(f.id),
+                  direction: DismissDirection.endToStart,
+                  onDismissed: (_) => _removeItem(i),
+                  background: Container(
                     margin: const EdgeInsets.only(bottom: 10),
-                    padding: const EdgeInsets.all(14),
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.only(right: 20),
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.04),
+                      color: colors.error,
                       borderRadius: BorderRadius.circular(18),
-                      border: Border.all(color: c.withValues(alpha: 0.15)),
                     ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 48,
-                          height: 48,
-                          decoration: BoxDecoration(
-                            color: c.withValues(alpha: 0.08),
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                          child: Center(
-                            child: Text(f.emoji,
-                                style: const TextStyle(fontSize: 24)),
-                          ),
-                        ),
-                        const SizedBox(width: 14),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(f.name,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 14)),
-                              const SizedBox(height: 2),
-                              Text(
-                                "${f.vitality.label} · ${f.scientific.label}",
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall
-                                    ?.copyWith(fontSize: 11),
+                    child: const Icon(Icons.delete_outline, color: Colors.white),
+                  ),
+                  child: GestureDetector(
+                    onTap: _isEditing
+                        ? null
+                        : () {
+                            Navigator.pop(context);
+                            showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              backgroundColor: Colors.transparent,
+                              builder: (_) => FoodModal(food: f),
+                            );
+                          },
+                    child: Container(
+                      margin: const EdgeInsets.only(bottom: 10),
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? colors.surfaceSubtle.withValues(alpha: 0.5)
+                            : colors.surface,
+                        borderRadius: BorderRadius.circular(18),
+                        border: Border.all(
+                            color: isSelected ? c.withValues(alpha: 0.5) : colors.borderSubtle),
+                      ),
+                      child: Row(
+                        children: [
+                          if (!_isEditing)
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  if (isSelected) {
+                                    _selectedIndices.remove(i);
+                                  } else {
+                                    _selectedIndices.add(i);
+                                  }
+                                });
+                              },
+                              child: Container(
+                                width: 24,
+                                height: 24,
+                                margin: const EdgeInsets.only(right: 14),
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: isSelected ? colors.accent : Colors.transparent,
+                                  border: Border.all(
+                                    color: isSelected ? colors.accent : colors.iconMuted,
+                                    width: 2,
+                                  ),
+                                ),
+                                child: isSelected
+                                    ? Icon(Icons.check, size: 16, color: colors.accentOnPrimary)
+                                    : null,
                               ),
-                            ],
+                            ),
+                          Container(
+                            width: 44,
+                            height: 44,
+                            decoration: BoxDecoration(
+                              color: c.withValues(alpha: 0.08),
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            child: Center(
+                              child: Text(f.emoji,
+                                  style: const TextStyle(fontSize: 22)),
+                            ),
                           ),
-                        ),
-                        const Icon(Icons.edit_outlined,
-                            color: AppTheme.textSecondary, size: 16),
-                      ],
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(f.name,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 15,
+                                        color: isSelected ? colors.textPrimary : colors.textSecondary)),
+                                const SizedBox(height: 2),
+                                Text(
+                                  "${f.vitality.label} · ${f.scientific.label}",
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      color: isSelected ? colors.textSecondary : colors.textTertiary),
+                                ),
+                              ],
+                            ),
+                          ),
+                          if (_isEditing)
+                            GestureDetector(
+                              onTap: () => _removeItem(i),
+                              child: Container(
+                                width: 32,
+                                height: 32,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: colors.error.withValues(alpha: 0.1),
+                                ),
+                                child: Icon(Icons.remove_circle_rounded,
+                                    color: colors.error, size: 20),
+                              ),
+                            )
+                          else
+                            Icon(Icons.edit_outlined,
+                                color: colors.textTertiary, size: 16),
+                        ],
+                      ),
                     ),
                   ),
                 );
@@ -852,20 +1033,33 @@ class _ScanResultsSheet extends StatelessWidget {
               children: [
                 Expanded(
                   child: GestureDetector(
-                    onTap: () => Navigator.pop(context),
+                    onTap: () {
+                      if (_isAddingItem) return;
+                      setState(() => _isEditing = !_isEditing);
+                    },
+                    behavior: HitTestBehavior.opaque, // Ensure it catches all taps
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 15),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.06),
+                        color: _isEditing
+                            ? colors.accent.withValues(alpha: 0.15)
+                            : colors.surfaceSubtle,
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.1)),
+                          color: _isEditing ? colors.accent : colors.border,
+                          width: _isEditing ? 2 : 1,
+                        ),
                       ),
-                      child: const Center(
-                        child: Text("✦ Corriger",
-                            style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                color: AppTheme.textPrimary)),
+                      child: Center(
+                        child: Text(
+                          _isEditing ? "Terminé" : "✦ Corriger",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            color: _isEditing
+                                ? colors.accent
+                                : colors.textPrimary,
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -875,22 +1069,30 @@ class _ScanResultsSheet extends StatelessWidget {
                   flex: 2,
                   child: GestureDetector(
                     onTap: () {
+                      if (_selectedIndices.isEmpty || _isEditing) return;
                       final mealProvider = Provider.of<MealProvider>(context, listen: false);
-                      for (final food in foods) {
-                        mealProvider.addFood(food);
+                      for (final index in _selectedIndices) {
+                        mealProvider.addFood(_currentFoods[index]);
                       }
                       Navigator.pop(context);
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 15),
                       decoration: BoxDecoration(
-                        color: AppTheme.primary,
+                        color: (_selectedIndices.isEmpty || _isEditing)
+                            ? colors.surfaceSubtle
+                            : colors.accent,
                         borderRadius: BorderRadius.circular(16),
                       ),
-                      child: const Center(
-                        child: Text("Ajouter au repas",
+                      child: Center(
+                        child: Text(
+                          _selectedIndices.isEmpty
+                              ? "Sélectionnez des éléments"
+                              : "Ajouter (${_selectedIndices.length}) au repas",
                             style: TextStyle(
-                                color: Colors.black,
+                                color: (_selectedIndices.isEmpty || _isEditing)
+                                    ? colors.textTertiary
+                                    : colors.accentOnPrimary,
                                 fontWeight: FontWeight.bold)),
                       ),
                     ),

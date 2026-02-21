@@ -34,6 +34,7 @@ class _FoodModalState extends State<FoodModal> with SingleTickerProviderStateMix
   @override
   Widget build(BuildContext context) {
     final food = widget.food;
+    final colors = context.colors;
     final mealProvider = Provider.of<MealProvider>(context, listen: false);
 
     return Container(
@@ -52,7 +53,7 @@ class _FoodModalState extends State<FoodModal> with SingleTickerProviderStateMix
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.15),
+                color: context.colors.borderSubtle,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -70,7 +71,7 @@ class _FoodModalState extends State<FoodModal> with SingleTickerProviderStateMix
                       width: 72,
                       height: 72,
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.04),
+                        color: context.colors.surfaceSubtle.withValues(alpha: 0.5),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
                           color: food.approved ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.3) : Theme.of(context).colorScheme.error.withValues(alpha: 0.3),
@@ -106,7 +107,7 @@ class _FoodModalState extends State<FoodModal> with SingleTickerProviderStateMix
                         ],
                       ),
                       const SizedBox(height: 2),
-                      Text("${food.family} · ${food.origin}", style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.7))),
+                      Text("${food.family} · ${food.origin}", style: Theme.of(context).textTheme.bodySmall?.copyWith(color: colors.textSecondary)),
                       const SizedBox(height: 8),
                       Wrap(
                         spacing: 6,
@@ -205,16 +206,16 @@ class _FoodModalState extends State<FoodModal> with SingleTickerProviderStateMix
             child: Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.03),
+                color: context.colors.surfaceMuted,
                 borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
+                border: Border.all(color: context.colors.borderSubtle),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text("Contextualisation", style: Theme.of(context).textTheme.bodySmall),
                   const SizedBox(height: 4),
-                  Text(food.note, style: TextStyle(fontSize: 13, height: 1.5, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7))),
+                  Text(food.note, style: TextStyle(fontSize: 14, height: 1.55, color: context.colors.textSecondary)),
                 ],
               ),
             ),
@@ -317,7 +318,7 @@ class _FoodModalState extends State<FoodModal> with SingleTickerProviderStateMix
       ),
       child: Text(
         text,
-        style: TextStyle(fontSize: 10, color: color, fontFamily: 'SpaceMono'),
+        style: TextStyle(fontSize: 11, color: color, fontWeight: FontWeight.w600),
       ),
     );
   }
@@ -342,8 +343,8 @@ class _FoodModalState extends State<FoodModal> with SingleTickerProviderStateMix
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("$icon $title", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                  Text(subtitle, style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary)),
+                  Text("$icon $title", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17, color: context.colors.textPrimary)),
+                  Text(subtitle, style: TextStyle(fontSize: 13, color: context.colors.textSecondary)),
                 ],
               ),
               Container(
@@ -353,7 +354,7 @@ class _FoodModalState extends State<FoodModal> with SingleTickerProviderStateMix
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(color: badgeColor.withValues(alpha: 0.3)),
                 ),
-                child: Text(badge, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: badgeColor)),
+                child: Text(badge, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: context.colors.adaptForText(badgeColor))),
               ),
             ],
           ),
@@ -373,7 +374,7 @@ class _FoodModalState extends State<FoodModal> with SingleTickerProviderStateMix
                 children: [
                   const Text("💡", style: TextStyle(fontSize: 16)),
                   const SizedBox(width: 8),
-                  Expanded(child: Text(note, style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.secondary))),
+                  Expanded(child: Text(note, style: TextStyle(fontSize: 12, color: context.colors.textSecondary))),
                 ],
               ),
             ),
@@ -388,7 +389,7 @@ class _FoodModalState extends State<FoodModal> with SingleTickerProviderStateMix
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.15)),
               ),
-              child: Text(warning, style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.secondaryContainer)),
+              child: Text(warning, style: TextStyle(fontSize: 11, color: context.colors.textTertiary)),
             ),
           ],
         ],
@@ -401,17 +402,17 @@ class _FoodModalState extends State<FoodModal> with SingleTickerProviderStateMix
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.03),
+        color: context.colors.surfaceMuted,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+        border: Border.all(color: context.colors.borderSubtle),
       ),
       child: Column(
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(label, style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7))),
-              Text(value, style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: color, fontFamily: 'SpaceMono')),
+              Text(label, style: TextStyle(fontSize: 13, color: context.colors.textSecondary)),
+              Text(value, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: context.colors.adaptForText(color))),
             ],
           ),
           if (barValue != null) ...[

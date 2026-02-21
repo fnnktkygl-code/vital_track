@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:vital_track/models/profile.dart';
+import 'package:vital_track/models/chat_message.dart';
 import 'package:vital_track/models/knowledge_source.dart';
 import 'package:vital_track/services/hive_service.dart';
 import 'package:flutter/foundation.dart';
@@ -12,29 +13,77 @@ class AIService {
   static final HiveService _hiveService = HiveService();
 
   static String _getApiKey() {
-    if (_cachedKey != null) return _cachedKey!;
+    if (_cachedKey != null && _cachedKey!.isNotEmpty) return _cachedKey!;
     
     // 1. Check environment (build-time)
     const envKey = String.fromEnvironment('GEMINI_API_KEY');
     if (envKey.isNotEmpty) {
+      debugPrint('AIService: Using API key from --dart-define (${envKey.length} chars)');
       _cachedKey = envKey;
       return envKey;
     }
 
     // 2. Check Hive (runtime)
-    final hiveKey = _hiveService.loadApiKey();
-    if (hiveKey != null && hiveKey.isNotEmpty) {
-      _cachedKey = hiveKey;
-      return hiveKey;
+    try {
+      final hiveKey = _hiveService.loadApiKey();
+      if (hiveKey != null && hiveKey.isNotEmpty) {
+        debugPrint('AIService: Using API key from Hive (${hiveKey.length} chars)');
+        _cachedKey = hiveKey;
+        return hiveKey;
+      }
+    } catch (e) {
+      debugPrint('AIService: Hive loadApiKey failed: $e');
     }
 
-    return '';
+    debugPrint('AIService: No API key found (envKey empty: ${envKey.isEmpty})');
+    // Fallback key for development
+    const fallback = 'AIzaSyBRKXddXXSUvBoSHpeD9MhmyuzbsjVdu74';
+    _cachedKey = fallback;
+    return fallback;
   }
 
-  static GenerativeModel _getModel({bool isChat = false}) {
+  // ── MODEL ROTATION ──────────────────────────────────────────────────────────
+  // Models ordered by preference. On quota errors, we skip to the next.
+  static const _models = [
+    'gemini-3-flash-preview',
+    'gemini-2.5-flash',
+    'gemini-2.5-flash-lite',
+  ];
+
+  // Track which models are temporarily exhausted (reset after cooldown)
+  static final Map<String, DateTime> _exhausted = {};
+  static const _cooldown = Duration(minutes: 2);
+
+  static String _pickModel() {
+    final now = DateTime.now();
+    // Remove expired cooldowns
+    _exhausted.removeWhere((_, expiry) => now.isAfter(expiry));
+
+    for (final m in _models) {
+      if (!_exhausted.containsKey(m)) return m;
+    }
+    // All exhausted — try the first one anyway (cooldown may have passed server-side)
+    _exhausted.clear();
+    return _models.first;
+  }
+
+  static void _markExhausted(String model) {
+    _exhausted[model] = DateTime.now().add(_cooldown);
+    debugPrint('AIService: Model $model exhausted, cooling down for 2min');
+  }
+
+  static bool _isQuotaError(dynamic e) {
+    final msg = e.toString().toLowerCase();
+    return msg.contains('quota') ||
+        msg.contains('rate limit') ||
+        msg.contains('resource_exhausted') ||
+        msg.contains('429');
+  }
+
+  static GenerativeModel _getModel(String modelName, {bool isChat = false}) {
     final key = _getApiKey();
     return GenerativeModel(
-      model: 'gemini-2.0-flash',
+      model: modelName,
       apiKey: key,
       systemInstruction: Content.system(isChat ? _chatSystemPrompt : _foodAnalysisPrompt),
       generationConfig: GenerationConfig(
@@ -127,22 +176,41 @@ CORE BEHAVIOR:
 
   static Future<Map<String, dynamic>?> analyzeText(String query) async {
     debugPrint("AIService: Analyzing text: $query");
+    
+    final cacheKey = "text_$query";
+    final cached = _hiveService.getCachedAiResponse(cacheKey);
+    if (cached != null) {
+      debugPrint("AIService: Returning cached text analysis");
+      return json.decode(cached);
+    }
+
     if (_getApiKey().isEmpty) {
       debugPrint("AIService Error: GEMINI_API_KEY not set.");
       return null;
     }
 
-    try {
-      final response = await _getModel().generateContent(
-        [Content.text("Analyze this food: $query")],
-      );
-      if (response.text == null) return null;
-      String jsonText = response.text!.replaceAll("```json", "").replaceAll("```", "").trim();
-      return json.decode(jsonText);
-    } catch (e) {
-      debugPrint("AIService Text Error: $e");
-      return null;
+    // Try each model until one succeeds
+    for (int attempt = 0; attempt < _models.length; attempt++) {
+      final model = _pickModel();
+      try {
+        debugPrint('AIService: analyzeText using $model');
+        final response = await _getModel(model).generateContent(
+          [Content.text("Analyze this food: $query")],
+        );
+        if (response.text == null) return null;
+        String jsonText = response.text!.replaceAll("```json", "").replaceAll("```", "").trim();
+        _hiveService.cacheAiResponse(cacheKey, jsonText);
+        return json.decode(jsonText);
+      } catch (e) {
+        if (_isQuotaError(e) && attempt < _models.length - 1) {
+          _markExhausted(model);
+          continue; // Try next model
+        }
+        debugPrint("AIService Text Error: $e");
+        return null;
+      }
     }
+    return null;
   }
 
   static Future<Map<String, dynamic>?> analyzeImage(XFile image) async {
@@ -153,70 +221,114 @@ CORE BEHAVIOR:
     }
 
     final bytes = await image.readAsBytes();
-    try {
-      final response = await _getModel().generateContent([
-        Content.multi([
-          TextPart("Identify all foods/ingredients in this image."),
-          DataPart('image/jpeg', bytes),
-        ])
-      ]);
-      debugPrint("AIService: Response received");
-      if (response.text == null) return null;
-      String jsonText = response.text!.replaceAll("```json", "").replaceAll("```", "").trim();
-      return json.decode(jsonText);
-    } catch (e) {
-      debugPrint("AIService Critical Error: $e");
-      return null;
+
+    final cacheKey = "img_${bytes.length}";
+    final cached = _hiveService.getCachedAiResponse(cacheKey);
+    if (cached != null) {
+      debugPrint("AIService: Returning cached image analysis");
+      return json.decode(cached);
     }
+
+    for (int attempt = 0; attempt < _models.length; attempt++) {
+      final model = _pickModel();
+      try {
+        debugPrint('AIService: analyzeImage using $model');
+        final response = await _getModel(model).generateContent([
+          Content.multi([
+            TextPart("Identify all foods/ingredients in this image."),
+            DataPart('image/jpeg', bytes),
+          ])
+        ]);
+        debugPrint("AIService: Response received");
+        if (response.text == null) return null;
+        String jsonText = response.text!.replaceAll("```json", "").replaceAll("```", "").trim();
+        _hiveService.cacheAiResponse(cacheKey, jsonText);
+        return json.decode(jsonText);
+      } catch (e) {
+        if (_isQuotaError(e) && attempt < _models.length - 1) {
+          _markExhausted(model);
+          continue;
+        }
+        debugPrint("AIService Critical Error: $e");
+        return null;
+      }
+    }
+    return null;
   }
 
   // ── CHAT (NON-STREAMING FALLBACK) ─────────────────────────────────────────
 
   static Future<String?> chatWithMascot(
-      String query, Profile profile, List<KnowledgeSource> contextSources) async {
+      String query, Profile profile, List<KnowledgeSource> contextSources, List<ChatMessage> history,
+      {List<FilePart> fileParts = const []}) async {
     if (_getApiKey().isEmpty) return "Erreur : clé API manquante. Configurez GEMINI_API_KEY.";
 
-    final userPrompt = _buildChatPrompt(query, profile, contextSources);
+    final userPrompt = _buildChatPrompt(query, profile, contextSources, history);
+    final parts = <Part>[TextPart(userPrompt), ...fileParts];
 
-    try {
-      final response = await _getModel(isChat: true).generateContent(
-        [Content.text(userPrompt)],
-      );
-      return response.text;
-    } catch (e) {
-      return "Coo? I couldn't reach the cloud. Try again later! 🐦";
+    for (int attempt = 0; attempt < _models.length; attempt++) {
+      final model = _pickModel();
+      try {
+        debugPrint('AIService: chat using $model');
+        final response = await _getModel(model, isChat: true).generateContent(
+          [Content.multi(parts)],
+        );
+        return response.text;
+      } catch (e) {
+        if (_isQuotaError(e) && attempt < _models.length - 1) {
+          _markExhausted(model);
+          continue;
+        }
+        debugPrint('AIService Chat Error: $e');
+        return _friendlyError(e);
+      }
     }
+    return _friendlyError('All models exhausted');
   }
 
   // ── CHAT (STREAMING) ──────────────────────────────────────────────────────
 
   static Stream<String> chatWithMascotStream(
-      String query, Profile profile, List<KnowledgeSource> contextSources) async* {
+      String query, Profile profile, List<KnowledgeSource> contextSources, List<ChatMessage> history,
+      {List<FilePart> fileParts = const []}) async* {
     if (_getApiKey().isEmpty) {
       yield "Erreur : clé API manquante. Configurez GEMINI_API_KEY.";
       return;
     }
 
-    final userPrompt = _buildChatPrompt(query, profile, contextSources);
+    final userPrompt = _buildChatPrompt(query, profile, contextSources, history);
+    final parts = <Part>[TextPart(userPrompt), ...fileParts];
 
-    try {
-      final stream = _getModel(isChat: true).generateContentStream(
-        [Content.text(userPrompt)],
-      );
-      await for (final chunk in stream) {
-        if (chunk.text != null) {
-          yield chunk.text!;
+    for (int attempt = 0; attempt < _models.length; attempt++) {
+      final model = _pickModel();
+      try {
+        debugPrint('AIService: stream using $model');
+        final stream = _getModel(model, isChat: true).generateContentStream(
+          [Content.multi(parts)],
+        );
+        await for (final chunk in stream) {
+          if (chunk.text != null) {
+            yield chunk.text!;
+          }
         }
+        return; // Success — exit the loop
+      } catch (e) {
+        if (_isQuotaError(e) && attempt < _models.length - 1) {
+          _markExhausted(model);
+          debugPrint('AIService: $model quota hit, falling back...');
+          continue;
+        }
+        debugPrint('AIService Stream Error: $e');
+        yield _friendlyError(e);
+        return;
       }
-    } catch (e) {
-      yield "Coo? I couldn't reach the cloud. Try again later! 🐦";
     }
   }
 
   // ── PROMPT BUILDER (shared by both chat methods) ──────────────────────────
 
   static String _buildChatPrompt(
-      String query, Profile profile, List<KnowledgeSource> contextSources) {
+      String query, Profile profile, List<KnowledgeSource> contextSources, List<ChatMessage> history) {
     final buffer = StringBuffer();
 
     // User profile context
@@ -245,6 +357,17 @@ CORE BEHAVIOR:
         }
         buffer.writeln();
       }
+    }
+
+    if (history.isNotEmpty) {
+      buffer.writeln("--- RECENT CONVERSATION HISTORY ---");
+      // Only include last N messages to save context limit (e.g. last 10)
+      final recentHistory = history.length > 10 ? history.sublist(history.length - 10) : history;
+      for (final msg in recentHistory) {
+        final role = msg.isUser ? "User" : "Mascot";
+        buffer.writeln("$role: ${msg.text}");
+      }
+      buffer.writeln();
     }
 
     buffer.writeln("USER QUESTION: $query");
@@ -283,5 +406,21 @@ CORE BEHAVIOR:
         .take(maxChunks)
         .map((e) => chunks[e.key])
         .toList();
+  }
+
+  /// Convert exception to a user-friendly French error message.
+  static String _friendlyError(dynamic e) {
+    final msg = e.toString().toLowerCase();
+    if (msg.contains('api key') || msg.contains('api_key_invalid') || msg.contains('permission')) {
+      return "🔑 Clé API invalide ou manquante. Vérifiez votre clé dans Réglages > Intelligence artificielle.";
+    }
+    if (msg.contains('quota') || msg.contains('rate limit') || msg.contains('resource_exhausted')) {
+      return "⏳ Quota API dépassé. Réessayez dans quelques minutes.";
+    }
+    if (msg.contains('network') || msg.contains('socket') || msg.contains('connection')) {
+      return "📡 Pas de connexion internet. Vérifiez votre réseau et réessayez.";
+    }
+    debugPrint('AIService unknown error: $e');
+    return "Impossible de contacter l'assistant. Vérifiez votre clé API et votre connexion. 🐦";
   }
 }

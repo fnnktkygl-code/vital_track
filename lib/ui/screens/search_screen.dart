@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-import 'package:vital_track/data/mock_data.dart';
+
 import 'package:vital_track/models/food.dart';
 import 'package:vital_track/services/vital_rules_engine.dart';
 import 'package:vital_track/services/open_food_facts_service.dart';
@@ -25,7 +25,6 @@ class _SearchScreenState extends State<SearchScreen> {
   bool _isLoading = false;
 
   final HiveService _hiveService = HiveService();
-  List<Food> _history = [];
   Timer? _debounce;
 
   @override
@@ -36,12 +35,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   void _loadHistory() {
     setState(() {
-      _history = _hiveService.loadHistory();
-      if (_history.isEmpty) {
-        _results = MockData.foods.take(5).toList();
-      } else {
-        _results = _history;
-      }
+      _results = VitalRulesEngine.getAllFoods();
     });
   }
 
@@ -96,8 +90,9 @@ class _SearchScreenState extends State<SearchScreen> {
               'muesli', 'yaourt', 'compote', 'dessert', 'gâteau', 'biscuit', 'tarte'
             ];
             for (final junk in junkTerms) {
-              if (nameLower.contains(junk) && !queryLower.contains(junk))
+              if (nameLower.contains(junk) && !queryLower.contains(junk)) {
                 return false;
+              }
             }
             if (f.vitality.nova >= 3) return false;
           }
@@ -111,10 +106,12 @@ class _SearchScreenState extends State<SearchScreen> {
           });
         }
       } catch (_) {
-        if (mounted) setState(() {
-          _results = [];
-          _isLoading = false;
-        });
+        if (mounted) {
+          setState(() {
+            _results = [];
+            _isLoading = false;
+          });
+        }
       }
     });
   }
@@ -279,11 +276,11 @@ class _SearchScreenState extends State<SearchScreen> {
                     style: TextStyle(
                       color: colors.textPrimary,
                       fontWeight: FontWeight.w600,
-                      fontSize: 15,
+                      fontSize: 16,
                     )),
                 const SizedBox(height: 2),
                 Text(f.family,
-                    style: TextStyle(color: colors.textTertiary, fontSize: 12)),
+                    style: TextStyle(color: colors.textTertiary, fontSize: 13)),
                 const SizedBox(height: 6),
                 Wrap(
                   spacing: 6,
@@ -310,6 +307,7 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget _buildTag(String label, Color color) {
+    final adapted = context.colors.adaptForText(color);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
@@ -319,7 +317,7 @@ class _SearchScreenState extends State<SearchScreen> {
       child: Text(
         label,
         style: TextStyle(
-            fontSize: 10, color: color, fontWeight: FontWeight.bold),
+            fontSize: 11, color: adapted, fontWeight: FontWeight.bold),
       ),
     );
   }

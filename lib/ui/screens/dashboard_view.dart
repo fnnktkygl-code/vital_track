@@ -4,19 +4,32 @@ import 'package:provider/provider.dart';
 import 'package:vital_track/providers/mode_provider.dart';
 import 'package:vital_track/providers/meal_provider.dart';
 import 'package:vital_track/ui/theme.dart';
-import 'package:vital_track/ui/widgets/food_modal.dart';
 import 'package:vital_track/ui/widgets/add_meal_sheet.dart';
+import 'package:vital_track/ui/widgets/food_modal.dart';
+import 'package:vital_track/providers/profile_provider.dart';
 import 'package:vital_track/models/food.dart';
+import 'package:vital_track/ui/widgets/circadian_clock_card.dart';
+import 'package:vital_track/providers/fasting_provider.dart';
+import 'package:vital_track/models/fasting_session.dart';
+import 'package:vital_track/ui/screens/fasting_screen.dart';
+import 'package:vital_track/services/smart_insight_service.dart';
+import 'package:vital_track/providers/breathing_provider.dart';
+import 'package:vital_track/models/breathing_session.dart';
+import 'package:vital_track/ui/screens/breathing_screen.dart';
+
 
 class DashboardView extends StatelessWidget {
-  const DashboardView({super.key});
+  final VoidCallback? onOpenDrawer;
+  const DashboardView({super.key, this.onOpenDrawer});
 
   @override
   Widget build(BuildContext context) {
     final modeProvider = Provider.of<ModeProvider>(context);
     final mealProvider = Provider.of<MealProvider>(context);
+    final profileProvider = Provider.of<ProfileProvider>(context);
     final mode = modeProvider.currentMode;
     final mealScore = mealProvider.mealScore?.toDouble() ?? 0;
+    final colors = context.colors;
 
     return Scaffold(
       floatingActionButton: _AddFab(),
@@ -25,25 +38,49 @@ class DashboardView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _ProfileHeader(mode: mode),
+            _ProfileHeader(mode: mode, userName: profileProvider.profile.name, onOpenDrawer: onOpenDrawer),
             const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: AppSpacing.screenH,
               child: _WeekStrip(),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: AppSpacing.xl),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: AppSpacing.screenH,
               child: _VitalityArcCard(score: mealScore, mode: mode),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.lg),
+            const Padding(
+              padding: AppSpacing.screenH,
+              child: _FastingDashCard(),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            const Padding(
+              padding: AppSpacing.screenH,
+              child: _BreathingDashCard(),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            Padding(
+              padding: AppSpacing.screenH,
+              child: _SmartInsightCard(
+                modeId: mode.id,
+                mealItems: mealProvider.mealItems,
+                mealScore: mealProvider.mealScore,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.lg),
             if (mealProvider.mealItems.isNotEmpty)
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: AppSpacing.screenH,
                 child: _AxisDonutRow(items: mealProvider.mealItems),
               ),
-            if (mealProvider.mealItems.isNotEmpty) const SizedBox(height: 24),
+            if (mealProvider.mealItems.isNotEmpty) const SizedBox(height: AppSpacing.xl),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: AppSpacing.screenH,
+              child: CircadianClockCard(colors: colors),
+            ),
+            const SizedBox(height: AppSpacing.xl),
+            Padding(
+              padding: AppSpacing.screenH,
               child: _TrackedTodaySection(
                 items: mealProvider.mealItems,
                 mode: mode,
@@ -74,13 +111,7 @@ class _AddFab extends StatelessWidget {
         decoration: BoxDecoration(
           color: colors.accent,
           shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: colors.accent.withValues(alpha: 0.35),
-              blurRadius: 20,
-              offset: const Offset(0, 6),
-            ),
-          ],
+          boxShadow: AppShadows.float(colors.accent),
         ),
         child: Icon(Icons.add_rounded, color: colors.accentOnPrimary, size: 28),
       ),
@@ -91,58 +122,58 @@ class _AddFab extends StatelessWidget {
 // ── PROFILE HEADER ────────────────────────────────────────────────────────────
 class _ProfileHeader extends StatelessWidget {
   final ProtocolMode mode;
-  const _ProfileHeader({required this.mode});
+  final String userName;
+  final VoidCallback? onOpenDrawer;
+  const _ProfileHeader({required this.mode, required this.userName, this.onOpenDrawer});
 
   String get _greeting {
     final h = DateTime.now().hour;
-    if (h < 12) return "BONJOUR !";
-    if (h < 18) return "BON APRÈS-MIDI !";
-    return "BONSOIR !";
+    final name = userName.trim().isEmpty ? "l'ami" : userName;
+    if (h < 5) return "Bonne nuit, $name";
+    if (h < 12) return "Bonjour, $name";
+    if (h < 18) return "Bon après-midi, $name";
+    return "Bonsoir, $name";
   }
 
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final modeColor = mode.color;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 58, 20, 20),
+      padding: const EdgeInsets.fromLTRB(AppSpacing.xl, 56, AppSpacing.xl, AppSpacing.xl),
       child: Row(
         children: [
-          Container(
-            width: 46,
-            height: 46,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: modeColor.withValues(alpha: 0.12),
-              border: Border.all(color: modeColor.withValues(alpha: 0.4), width: 2),
-            ),
-            child: Center(
-              child: Text(mode.icon,
-                  style: const TextStyle(fontSize: 22)),
+          GestureDetector(
+            onTap: onOpenDrawer,
+            child: Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: colors.surfaceSubtle,
+                shape: BoxShape.circle,
+                border: Border.all(color: colors.borderSubtle, width: 1),
+              ),
+              child: Icon(Icons.menu_rounded, color: colors.icon, size: 24),
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: AppSpacing.md),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   _greeting,
-                  style: TextStyle(
-                    fontFamily: 'SpaceMono',
-                    fontSize: 9,
-                    letterSpacing: 1.8,
-                    color: colors.textTertiary,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  "Vitaliste ${mode.label}",
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontSize: 17, fontWeight: FontWeight.bold),
+                      fontSize: 20, fontWeight: FontWeight.bold, color: colors.textPrimary),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                Text(
+                  "Prêt(e) à optimiser ta journée ?",
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: colors.textTertiary,
+                    letterSpacing: 0.5,
+                  ),
                 ),
               ],
             ),
@@ -194,12 +225,10 @@ class _DayCell extends StatelessWidget {
     return Column(
       children: [
         Text(label,
-            style: TextStyle(
-                fontFamily: 'SpaceMono',
-                fontSize: 9,
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
                 color: isToday ? colors.accent : colors.textTertiary,
-                fontWeight: isToday ? FontWeight.bold : FontWeight.normal)),
-        const SizedBox(height: 6),
+                fontWeight: isToday ? FontWeight.w700 : FontWeight.w500)),
+        const SizedBox(height: AppSpacing.sm),
         AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           width: 36,
@@ -210,7 +239,7 @@ class _DayCell extends StatelessWidget {
                 : isPast
                 ? colors.surfaceSubtle
                 : colors.surfaceMuted,
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: AppRadius.brSm,
             border: Border.all(
               color: isToday ? colors.accent : colors.borderSubtle,
               width: isToday ? 0 : 1,
@@ -219,8 +248,7 @@ class _DayCell extends StatelessWidget {
           child: Center(
             child: Text(
               '$dayNum',
-              style: TextStyle(
-                fontSize: 13,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
                 fontWeight: isToday ? FontWeight.w700 : FontWeight.w500,
                 color: isToday
                     ? colors.accentOnPrimary
@@ -245,7 +273,7 @@ class _VitalityArcCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
-    final modeColor = mode.color;
+    final modeColor = mode.resolveColor(colors.isDark);
     final scoreColor = score >= 70
         ? colors.accent
         : score >= 40
@@ -253,20 +281,12 @@ class _VitalityArcCard extends StatelessWidget {
         : colors.error;
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(AppSpacing.xl),
       decoration: BoxDecoration(
         color: colors.surface,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: colors.border),
-        boxShadow: [
-          BoxShadow(
-            color: colors.isDark
-                ? Colors.black.withValues(alpha: 0.3)
-                : Colors.black.withValues(alpha: 0.04),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        borderRadius: AppRadius.brXl,
+        border: Border.all(color: colors.borderSubtle),
+        boxShadow: AppShadows.soft(colors.shadowBase),
       ),
       child: Row(
         children: [
@@ -294,10 +314,10 @@ class _VitalityArcCard extends StatelessWidget {
                     Text(
                       'VITAL',
                       style: TextStyle(
-                        fontFamily: 'SpaceMono',
-                        fontSize: 8,
+                        fontSize: 12,
                         color: colors.textTertiary,
                         letterSpacing: 1.5,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ],
@@ -305,7 +325,7 @@ class _VitalityArcCard extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: 20),
+          const SizedBox(width: AppSpacing.xl),
           // Info column
           Expanded(
             child: Column(
@@ -314,16 +334,15 @@ class _VitalityArcCard extends StatelessWidget {
                 Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
                       decoration: BoxDecoration(
                         color: modeColor.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: AppRadius.brSm,
                         border: Border.all(color: modeColor.withValues(alpha: 0.3)),
                       ),
                       child: Text(
                         '${mode.icon}  ${mode.label}',
-                        style: TextStyle(
-                          fontSize: 10,
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
                           color: modeColor,
                           fontWeight: FontWeight.w600,
                         ),
@@ -331,14 +350,14 @@ class _VitalityArcCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: AppSpacing.md),
                 _StatRow(
                   label: 'Score du jour',
                   value: '${score.toInt()}/100',
                   color: scoreColor,
                   colors: colors,
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: AppSpacing.sm),
                 _StatRow(
                   label: 'Catégorie',
                   value: score >= 70
@@ -375,12 +394,10 @@ class _StatRow extends StatelessWidget {
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
       Text(label,
-          style: TextStyle(fontSize: 12, color: colors.textTertiary)),
+          style: Theme.of(context).textTheme.labelMedium?.copyWith(color: colors.textTertiary)),
       Text(value,
-          style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: color)),
+          style: Theme.of(context).textTheme.labelMedium?.copyWith(
+              color: colors.adaptForText(color))),
     ],
   );
 }
@@ -446,11 +463,11 @@ class _AxisDonutRow extends StatelessWidget {
     final total = items.length;
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
         color: colors.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: colors.border),
+        borderRadius: AppRadius.brXl,
+        border: Border.all(color: colors.borderSubtle),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -508,12 +525,12 @@ class _DonutStat extends StatelessWidget {
         style: TextStyle(
           fontSize: 22,
           fontWeight: FontWeight.w800,
-          color: color,
+          color: colors.adaptForText(color),
         ),
       ),
       Text(
         label,
-        style: TextStyle(fontSize: 11, color: colors.textTertiary),
+        style: TextStyle(fontSize: 12, color: colors.textTertiary),
       ),
     ],
   );
@@ -533,16 +550,14 @@ class _TrackedTodaySection extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text("Repas du jour",
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: 17)),
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: 18)),
             if (items.isNotEmpty)
               Text("${items.length} aliment${items.length > 1 ? 's' : ''}",
-                  style: TextStyle(
-                      color: context.colors.textTertiary,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500)),
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      color: context.colors.textTertiary)),
           ],
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.md),
         if (items.isEmpty)
           _EmptyState()
         else ...[
@@ -562,23 +577,23 @@ class _EmptyState extends StatelessWidget {
     final colors = context.colors;
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 36, horizontal: 20),
+      padding: const EdgeInsets.symmetric(vertical: 36, horizontal: AppSpacing.xl),
       decoration: BoxDecoration(
         color: colors.surfaceMuted,
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: AppRadius.brXl,
         border: Border.all(color: colors.borderSubtle),
       ),
       child: Column(
         children: [
           const Text("🌿", style: TextStyle(fontSize: 40)),
-          const SizedBox(height: 12),
-          Text("Aucun aliment enregistré",
+          const SizedBox(height: AppSpacing.md),
+          Text("Prêt à nourrir votre corps aujourd'hui ?",
               style: Theme.of(context)
                   .textTheme
                   .bodyMedium
                   ?.copyWith(fontWeight: FontWeight.w600)),
-          const SizedBox(height: 4),
-          Text("Appuyez sur + pour commencer",
+          const SizedBox(height: AppSpacing.xs),
+          Text("Appuyez sur + pour ajouter un repas",
               style: Theme.of(context).textTheme.bodySmall),
         ],
       ),
@@ -607,14 +622,14 @@ class _FoodCard extends StatelessWidget {
         );
       },
       background: Container(
-        margin: const EdgeInsets.only(bottom: 10),
+        margin: const EdgeInsets.only(bottom: AppSpacing.md),
         alignment: Alignment.centerRight,
-        padding: const EdgeInsets.only(right: 20),
+        padding: const EdgeInsets.only(right: AppSpacing.xl),
         decoration: BoxDecoration(
           color: colors.error,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: AppRadius.brLg,
         ),
-        child: const Icon(Icons.delete, color: Colors.white),
+        child: Icon(Icons.delete, color: Theme.of(context).colorScheme.onError),
       ),
       child: GestureDetector(
         onTap: () => showModalBottomSheet(
@@ -624,10 +639,10 @@ class _FoodCard extends StatelessWidget {
           builder: (_) => FoodModal(food: food),
         ),
         child: Container(
-          margin: const EdgeInsets.only(bottom: 10),
+          margin: const EdgeInsets.only(bottom: AppSpacing.md),
           decoration: BoxDecoration(
             color: colors.surface,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: AppRadius.brLg,
             border: Border.all(color: c.withValues(alpha: 0.2)),
           ),
           child: Row(
@@ -638,7 +653,7 @@ class _FoodCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: c.withValues(alpha: 0.08),
                   borderRadius:
-                  const BorderRadius.horizontal(left: Radius.circular(20)),
+                  const BorderRadius.horizontal(left: Radius.circular(AppRadius.lg)),
                 ),
                 child: Center(
                     child:
@@ -646,7 +661,7 @@ class _FoodCard extends StatelessWidget {
               ),
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+                  padding: const EdgeInsets.fromLTRB(14, AppSpacing.md, 14, AppSpacing.md),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -654,21 +669,19 @@ class _FoodCard extends StatelessWidget {
                         children: [
                           Expanded(
                             child: Text(food.name,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.w700, fontSize: 14),
+                                style: Theme.of(context).textTheme.titleSmall?.copyWith(fontSize: 15),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis),
                           ),
                           Text(_fmt(food.addedAt),
                               style: Theme.of(context)
                                   .textTheme
-                                  .bodySmall
-                                  ?.copyWith(fontSize: 10)),
+                                  .labelSmall),
                         ],
                       ),
-                      const SizedBox(height: 5),
+                      const SizedBox(height: AppSpacing.xs),
                       Wrap(
-                        spacing: 5,
+                        spacing: AppSpacing.xs,
                         children: [
                           _Pill(food.scientific.label, food.scientific.color),
                           _Pill("NOVA ${food.vitality.nova}", food.vitality.color),
@@ -676,7 +689,7 @@ class _FoodCard extends StatelessWidget {
                             _Pill("⚡ Électrique", colors.accentSecondary),
                         ],
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: AppSpacing.sm),
                       _MicroBar(value: food.vitality.freshness.toDouble(), color: c, colors: colors),
                     ],
                   ),
@@ -697,14 +710,13 @@ class _Pill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: 2),
     decoration: BoxDecoration(
       color: color.withValues(alpha: 0.12),
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: AppRadius.brSm,
     ),
     child: Text(label,
-        style: TextStyle(
-            fontSize: 9, fontWeight: FontWeight.bold, color: color)),
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(color: context.colors.adaptForText(color))),
   );
 }
 
@@ -748,11 +760,11 @@ class _AddNextCard extends StatelessWidget {
         builder: (_) => const AddMealSheet(),
       ),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: 14),
         decoration: BoxDecoration(
           color: colors.surfaceMuted,
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: colors.border, style: BorderStyle.solid),
+          border: Border.all(color: colors.borderSubtle, style: BorderStyle.solid),
         ),
         child: Row(
           children: [
@@ -761,26 +773,22 @@ class _AddNextCard extends StatelessWidget {
               height: 40,
               decoration: BoxDecoration(
                 color: colors.accentMuted,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: AppRadius.brMd,
                 border: Border.all(color: colors.accent.withValues(alpha: 0.25)),
               ),
               child: Icon(Icons.add_rounded, color: colors.accent, size: 20),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.md),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text("Ajouter un aliment",
-                      style: TextStyle(
-                          fontWeight: FontWeight.w600,
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
                           fontSize: 14,
                           color: colors.accent)),
                   Text("Scanner · Rechercher · Décrire",
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodySmall
-                          ?.copyWith(fontSize: 11)),
+                      style: Theme.of(context).textTheme.labelSmall),
                 ],
               ),
             ),
@@ -790,5 +798,591 @@ class _AddNextCard extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+// ── FASTING DASHBOARD CARD ───────────────────────────────────────────────────
+
+class _FastingDashCard extends StatelessWidget {
+  const _FastingDashCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final fp = context.watch<FastingProvider>();
+    final colors = context.colors;
+
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const FastingScreen()),
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        decoration: BoxDecoration(
+          color: colors.surface,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+            color: fp.isFasting
+                ? colors.accent.withValues(alpha: 0.4)
+                : colors.borderSubtle,
+          ),
+          boxShadow: fp.isFasting
+              ? AppShadows.soft(colors.accent)
+              : null,
+        ),
+        child: fp.isFasting
+            ? _activeFastRow(context, fp, colors)
+            : _idleContent(context, fp, colors),
+      ),
+    );
+  }
+
+  Widget _idleContent(BuildContext context, FastingProvider fp, AppColors colors) {
+    // Has history → show last fast + streak
+    if (fp.history.isNotEmpty) {
+      final last = fp.history.first;
+      final dur = last.elapsed;
+      final h = dur.inHours;
+      final m = dur.inMinutes.remainder(60);
+      final date = last.startTime;
+      final dateStr =
+          '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}';
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header row
+          Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: colors.accentMuted,
+                  borderRadius: AppRadius.brMd,
+                ),
+                child: Center(
+                    child: Text(last.type.emoji,
+                        style: const TextStyle(fontSize: 20))),
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Dernier jeûne',
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(fontSize: 14)),
+                    Text(
+                        '${last.type.label} • ${h}h${m > 0 ? '${m}min' : ''} • $dateStr',
+                        style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500)),
+                  ],
+                ),
+              ),
+              if (fp.currentStreak > 0)
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
+                  decoration: BoxDecoration(
+                    color: colors.accent.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text('🔥', style: TextStyle(fontSize: 12)),
+                      const SizedBox(width: 3),
+                      Text('${fp.currentStreak}',
+                          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                              color: colors.accent,
+                              fontSize: 13)),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+          // CTA row
+          Row(
+            children: [
+              Icon(Icons.add_circle_outline_rounded,
+                  color: colors.accent, size: 16),
+              const SizedBox(width: 6),
+              Text('Nouveau jeûne',
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      color: colors.accent,
+                      fontSize: 13)),
+              const Spacer(),
+              Text('${fp.history.length} sessions',
+                  style: Theme.of(context).textTheme.labelMedium),
+              const SizedBox(width: AppSpacing.xs),
+              Icon(Icons.chevron_right_rounded,
+                  color: colors.iconMuted, size: 18),
+            ],
+          ),
+        ],
+      );
+    }
+
+    // No history → simple CTA
+    return Row(
+      children: [
+        Container(
+          width: 42,
+          height: 42,
+          decoration: BoxDecoration(
+            color: colors.accentMuted,
+            borderRadius: AppRadius.brMd,
+          ),
+          child: const Center(
+              child: Text('🌿', style: TextStyle(fontSize: 20))),
+        ),
+        const SizedBox(width: AppSpacing.md),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Commencer un jeûne',
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      color: colors.accent,
+                      fontSize: 14)),
+              Text('Hydrique · Fruits · Raisin · Intermittent',
+                  style: Theme.of(context).textTheme.labelMedium),
+            ],
+          ),
+        ),
+        Icon(Icons.chevron_right_rounded,
+            color: colors.iconMuted, size: 20),
+      ],
+    );
+  }
+
+  Widget _activeFastRow(BuildContext context, FastingProvider fp, AppColors colors) {
+    final fast = fp.activeFast!;
+    final h = fp.elapsed.inHours;
+    final m = fp.elapsed.inMinutes.remainder(60);
+    return Row(
+      children: [
+        // Mini ring
+        SizedBox(
+          width: 42,
+          height: 42,
+          child: CustomPaint(
+            painter: _MiniRingPainter(
+              progress: fp.progress,
+              bgColor: colors.surfaceSubtle,
+              fgColor: colors.accent,
+            ),
+            child: Center(
+                child: Text(fast.type.emoji,
+                    style: const TextStyle(fontSize: 16))),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('${fast.type.label} en cours',
+                  style: TextStyle(
+                      color: colors.textPrimary,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600)),
+              Text('${h}h${m.toString().padLeft(2, '0')} • ${fp.phaseLabel}',
+                  style: TextStyle(color: colors.accent, fontSize: 12)),
+            ],
+          ),
+        ),
+        Icon(Icons.chevron_right_rounded,
+            color: colors.iconMuted, size: 20),
+      ],
+    );
+  }
+}
+
+class _MiniRingPainter extends CustomPainter {
+  final double progress;
+  final Color bgColor;
+  final Color fgColor;
+
+  _MiniRingPainter({
+    required this.progress,
+    required this.bgColor,
+    required this.fgColor,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = (size.shortestSide - 5) / 2;
+
+    canvas.drawCircle(
+      center,
+      radius,
+      Paint()
+        ..color = bgColor
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 3.5,
+    );
+
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      -math.pi / 2,
+      2 * math.pi * progress,
+      false,
+      Paint()
+        ..color = fgColor
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 3.5
+        ..strokeCap = StrokeCap.round,
+    );
+  }
+
+  @override
+  bool shouldRepaint(_MiniRingPainter old) =>
+      old.progress != progress || old.fgColor != fgColor;
+}
+
+// ── BREATHING DASH CARD ──────────────────────────────────────────────────────
+
+class _BreathingDashCard extends StatelessWidget {
+  const _BreathingDashCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final bp = context.watch<BreathingProvider>();
+    final colors = context.colors;
+
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const BreathingScreen()),
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        decoration: BoxDecoration(
+          color: colors.surface,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+            color: bp.isBreathing
+                ? colors.accent.withValues(alpha: 0.4)
+                : colors.borderSubtle,
+          ),
+          boxShadow: bp.isBreathing
+              ? AppShadows.soft(colors.accent)
+              : null,
+        ),
+        child: bp.isBreathing
+            ? _activeBreathingRow(context, bp, colors)
+            : _idleBreathingContent(context, bp, colors),
+      ),
+    );
+  }
+
+  Widget _idleBreathingContent(BuildContext context, BreathingProvider bp, AppColors colors) {
+    if (bp.history.isNotEmpty) {
+      final last = bp.history.first;
+      final m = last.elapsed.inMinutes;
+      final date = last.startTime;
+      final dateStr =
+          '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}';
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: colors.accentMuted,
+                  borderRadius: AppRadius.brMd,
+                ),
+                child: Center(
+                    child: Text(last.type.emoji,
+                        style: const TextStyle(fontSize: 20))),
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Dernière respiration',
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(fontSize: 14)),
+                    Text(
+                        '${last.type.label} · ${m}min · $dateStr',
+                        style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w500)),
+                  ],
+                ),
+              ),
+              if (bp.currentStreak > 0)
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
+                  decoration: BoxDecoration(
+                    color: colors.accent.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text('🔥', style: TextStyle(fontSize: 12)),
+                      const SizedBox(width: 3),
+                      Text('${bp.currentStreak}',
+                          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                              color: colors.accent,
+                              fontSize: 13)),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Row(
+            children: [
+              Icon(Icons.add_circle_outline_rounded,
+                  color: colors.accent, size: 16),
+              const SizedBox(width: 6),
+              Text('Nouvelle session',
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      color: colors.accent,
+                      fontSize: 13)),
+              const Spacer(),
+              Text('${bp.history.length} sessions',
+                  style: Theme.of(context).textTheme.labelMedium),
+              const SizedBox(width: AppSpacing.xs),
+              Icon(Icons.chevron_right_rounded,
+                  color: colors.iconMuted, size: 18),
+            ],
+          ),
+        ],
+      );
+    }
+
+    // No history
+    return Row(
+      children: [
+        Container(
+          width: 42,
+          height: 42,
+          decoration: BoxDecoration(
+            color: colors.accentMuted,
+            borderRadius: AppRadius.brMd,
+          ),
+          child: const Center(
+              child: Text('🌬️', style: TextStyle(fontSize: 20))),
+        ),
+        const SizedBox(width: AppSpacing.md),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Respiration',
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      color: colors.accent,
+                      fontSize: 14)),
+              Text('WHM · Relaxation · Box · Cohérence',
+                  style: Theme.of(context).textTheme.labelMedium),
+            ],
+          ),
+        ),
+        Icon(Icons.chevron_right_rounded,
+            color: colors.iconMuted, size: 20),
+      ],
+    );
+  }
+
+  Widget _activeBreathingRow(BuildContext context, BreathingProvider bp, AppColors colors) {
+    final session = bp.activeSession!;
+    final m = bp.elapsed.inMinutes;
+    final s = bp.elapsed.inSeconds.remainder(60);
+    return Row(
+      children: [
+        Container(
+          width: 42,
+          height: 42,
+          decoration: BoxDecoration(
+            color: colors.accentMuted,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Center(
+              child: Text(session.type.emoji,
+                  style: const TextStyle(fontSize: 20))),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('${session.type.label} en cours',
+                  style: TextStyle(
+                      color: colors.textPrimary,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600)),
+              Text(
+                  '${m}m${s.toString().padLeft(2, '0')}s · ${bp.phaseLabel}',
+                  style: TextStyle(color: colors.accent, fontSize: 12)),
+            ],
+          ),
+        ),
+        Icon(Icons.chevron_right_rounded,
+            color: colors.iconMuted, size: 20),
+      ],
+    );
+  }
+}
+
+// ── SMART INSIGHT CARD ───────────────────────────────────────────────────────
+class _SmartInsightCard extends StatefulWidget {
+  final String modeId;
+  final List<Food> mealItems;
+  final int? mealScore;
+
+  const _SmartInsightCard({
+    required this.modeId,
+    required this.mealItems,
+    required this.mealScore,
+  });
+
+  @override
+  State<_SmartInsightCard> createState() => _SmartInsightCardState();
+}
+
+class _SmartInsightCardState extends State<_SmartInsightCard> {
+  late SmartInsight _insight;
+
+  @override
+  void initState() {
+    super.initState();
+    _refresh();
+  }
+
+  @override
+  void didUpdateWidget(_SmartInsightCard old) {
+    super.didUpdateWidget(old);
+    if (old.modeId != widget.modeId ||
+        old.mealItems.length != widget.mealItems.length ||
+        old.mealScore != widget.mealScore) {
+      _refresh();
+    }
+  }
+
+  void _refresh() {
+    final fasting = Provider.of<FastingProvider>(context, listen: false);
+    final breathing = Provider.of<BreathingProvider>(context, listen: false);
+    _insight = SmartInsightService.getInsight(
+      modeId: widget.modeId,
+      mealItems: widget.mealItems,
+      mealScore: widget.mealScore,
+      isFasting: fasting.isFasting,
+      fastingElapsed: fasting.elapsed,
+      fastingStreak: fasting.currentStreak,
+      isBreathing: breathing.isBreathing,
+      breathingStreak: breathing.currentStreak,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    final sourceColor = _categoryColor(colors);
+    return GestureDetector(
+      onTap: () => setState(_refresh),
+      child: Container(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        decoration: BoxDecoration(
+          color: sourceColor.withValues(alpha: 0.06),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: sourceColor.withValues(alpha: 0.18)),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: sourceColor.withValues(alpha: 0.12),
+                borderRadius: AppRadius.brMd,
+              ),
+              alignment: Alignment.center,
+              child: Text(_insight.icon, style: const TextStyle(fontSize: 22)),
+            ),
+            const SizedBox(width: AppSpacing.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          _insight.title,
+                          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            fontSize: 15,
+                            color: colors.textPrimary,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: sourceColor.withValues(alpha: 0.12),
+                          borderRadius: AppRadius.brSm,
+                        ),
+                        child: Text(
+                          _insight.source,
+                          style: Theme.of(context).textTheme.labelSmall?.copyWith(color: colors.adaptForText(sourceColor)),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: AppSpacing.xs),
+                  Text(
+                    _insight.body,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      fontSize: 14,
+                      color: colors.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                  Row(
+                    children: [
+                      Icon(Icons.refresh_rounded, size: 13, color: colors.textTertiary),
+                      const SizedBox(width: 4),
+                      Text(
+                        "Appuyez pour un nouveau conseil",
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(color: colors.textTertiary),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Color _categoryColor(AppColors colors) {
+    switch (_insight.category) {
+      case InsightCategory.fasting:
+      case InsightCategory.encouragement:
+      case InsightCategory.general:
+        return colors.accent;
+      case InsightCategory.scoreWarning:
+      case InsightCategory.trophology:
+        return colors.error;
+      case InsightCategory.hydration:
+      case InsightCategory.breathing:
+        return colors.info;
+      case InsightCategory.movement:
+      case InsightCategory.mealSuggestion:
+        return colors.movement;
+      case InsightCategory.education:
+        return colors.discovery;
+      case InsightCategory.rest:
+        return colors.rest;
+    }
   }
 }

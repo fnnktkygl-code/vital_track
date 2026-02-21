@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vital_track/ui/theme.dart';
 
 class ScoreBar extends StatelessWidget {
   final double value;
@@ -15,11 +16,12 @@ class ScoreBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final percentage = (value / max).clamp(0.0, 1.0);
+    final colors = context.colors;
 
     return Container(
       height: 6,
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.06),
+        color: colors.surfaceSubtle,
         borderRadius: BorderRadius.circular(3),
       ),
       clipBehavior: Clip.antiAlias,
@@ -30,7 +32,7 @@ class ScoreBar extends StatelessWidget {
             child: Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [color.withValues(alpha: 0.53), color], // 0x88 is ~53%
+                  colors: [color.withValues(alpha: 0.53), color],
                 ),
                 borderRadius: BorderRadius.circular(3),
                 boxShadow: [

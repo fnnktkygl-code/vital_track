@@ -16,9 +16,9 @@ class VitalRulesEngine {
 
   static Map<String, dynamic>? findInExpertDb(String query) {
     if (_expertDb.isEmpty) return null;
-    
+
     final normalizedQuery = query.toLowerCase().trim();
-    
+
     // Direct match check in names array
     try {
       return _expertDb.firstWhere((item) {
@@ -71,9 +71,9 @@ class VitalRulesEngine {
   }
   static List<Food> searchExpertDb(String query) {
     if (query.isEmpty) return [];
-    
+
     final normalizedQuery = query.toLowerCase().trim();
-    
+
     // Find all items where any name matches
     final matches = _expertDb.where((item) {
       final List<dynamic> names = item['names'];
@@ -85,6 +85,14 @@ class VitalRulesEngine {
     }).toList();
 
     return matches.map((data) => getExpertFood((data['names'] as List).first.toString())!).toList();
+  }
+
+  /// Returns ALL foods from the expert database (for the default search list).
+  static List<Food> getAllFoods() {
+    return _expertDb
+        .map((data) => getExpertFood((data['names'] as List).first.toString()))
+        .whereType<Food>()
+        .toList();
   }
 }
 

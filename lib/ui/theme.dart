@@ -5,87 +5,215 @@ import 'package:google_fonts/google_fonts.dart';
 
 enum AppBaseTheme { light, sepia, dark, oled }
 
-enum AppAccentColor { vitalist, sage, amber, clay, walnut, plum }
+enum AppAccentColor { vitalist, amber, clay, plum, sand, rose, ocean, peach, sunflower, coral }
 
 // ─── ACCENT DATA ──────────────────────────────────────────────────────────────
 
 class AppAccentData {
   final Color primary;
+  final Color darkPrimary;     // Official Notion dark variant
   final Color onPrimary;       // text/icon on primary-colored surfaces
-  final Color primaryMuted;    // tinted muted bg (chips, badges, etc.)
-  final Color primarySubtle;   // very light tint for borders, hover
-  final Color secondary;       // gold/warm companion
+  final Color primaryMuted;    // tinted muted bg
+  final Color darkMuted;       // official Notion dark-bg variant
+  final Color primarySubtle;   // very light tint
+  final Color darkSubtle;      // official Notion dark-border variant
+  final Color secondary;       // companion color
+  final Color darkSecondary;   // companion color dark
   final String label;
   final String emoji;
 
   const AppAccentData({
     required this.primary,
+    required this.darkPrimary,
     required this.onPrimary,
     required this.primaryMuted,
+    required this.darkMuted,
     required this.primarySubtle,
+    required this.darkSubtle,
     required this.secondary,
+    required this.darkSecondary,
     required this.label,
     required this.emoji,
   });
+
+  Color resolvePrimary(bool isDark) => isDark ? darkPrimary : primary;
+  Color resolveMuted(bool isDark) => isDark ? darkMuted : primaryMuted;
+  Color resolveSubtle(bool isDark) => isDark ? darkSubtle : primarySubtle;
+  Color resolveSecondary(bool isDark) => isDark ? darkSecondary : secondary;
 }
 
 /// All six warm Notion-like accent options.
 const Map<AppAccentColor, AppAccentData> kAccents = {
   AppAccentColor.vitalist: AppAccentData(
-    primary: Color(0xFF1E5128),
+    primary: Color(0xFF1E5128), // Deep Forest (Light)
+    darkPrimary: Color(0xFF4DAB9A), // Notion Green (Dark)
     onPrimary: Colors.white,
     primaryMuted: Color(0x1A1E5128),
+    darkMuted: Color(0xFF1F3529), // Notion Green dark bg
     primarySubtle: Color(0x0D1E5128),
+    darkSubtle: Color(0xFF2B3E34),
     secondary: Color(0xFFD8B669),
+    darkSecondary: Color(0xFFB7C7BF),
     label: 'Vitalist',
     emoji: '🌿',
   ),
-  AppAccentColor.sage: AppAccentData(
-    primary: Color(0xFF52796F),
+  AppAccentColor.peach: AppAccentData(
+    primary: Color(0xFFF28B82),
+    darkPrimary: Color(0xFFFFB4AB),
     onPrimary: Colors.white,
-    primaryMuted: Color(0x1A52796F),
-    primarySubtle: Color(0x0D52796F),
-    secondary: Color(0xFFB7C9C1),
-    label: 'Sage',
-    emoji: '🍃',
+    primaryMuted: Color(0x1AF28B82),
+    darkMuted: Color(0xFF5A2A25),
+    primarySubtle: Color(0x0DF28B82),
+    darkSubtle: Color(0xFF451E19),
+    secondary: Color(0xFFF6B5AF),
+    darkSecondary: Color(0xFFE5A199),
+    label: 'Peach',
+    emoji: '🍑',
+  ),
+  AppAccentColor.sunflower: AppAccentData(
+    primary: Color(0xFFE5A910),
+    darkPrimary: Color(0xFFFFCC33),
+    onPrimary: Colors.white,
+    primaryMuted: Color(0x1AE5A910),
+    darkMuted: Color(0xFF5E4300),
+    primarySubtle: Color(0x0DE5A910),
+    darkSubtle: Color(0xFF4D3600),
+    secondary: Color(0xFFEDC95E),
+    darkSecondary: Color(0xFFDAB34A),
+    label: 'Sunflower',
+    emoji: '🌻',
   ),
   AppAccentColor.amber: AppAccentData(
-    primary: Color(0xFF92400E),
+    primary: Color(0xFFD9730D),
+    darkPrimary: Color(0xFFFFA344),
     onPrimary: Colors.white,
-    primaryMuted: Color(0x1A92400E),
-    primarySubtle: Color(0x0D92400E),
-    secondary: Color(0xFFD97706),
+    primaryMuted: Color(0x1AD9730D),
+    darkMuted: Color(0xFF592E12),
+    primarySubtle: Color(0x0DD9730D),
+    darkSubtle: Color(0xFF633D1F),
+    secondary: Color(0xFFF0B375),
+    darkSecondary: Color(0xFFE5A880),
     label: 'Amber',
     emoji: '🌅',
   ),
   AppAccentColor.clay: AppAccentData(
-    primary: Color(0xFF9B4521),
+    primary: Color(0xFF976D57),
+    darkPrimary: Color(0xFF937264),
     onPrimary: Colors.white,
-    primaryMuted: Color(0x1A9B4521),
-    primarySubtle: Color(0x0D9B4521),
-    secondary: Color(0xFFE5A880),
+    primaryMuted: Color(0x1A976D57),
+    darkMuted: Color(0xFF3C2B24),
+    primarySubtle: Color(0x0D976D57),
+    darkSubtle: Color(0xFF4D3B34),
+    secondary: Color(0xFFC7B1A5),
+    darkSecondary: Color(0xFFB08F7E),
     label: 'Clay',
     emoji: '🏺',
   ),
-  AppAccentColor.walnut: AppAccentData(
-    primary: Color(0xFF78350F),
-    onPrimary: Colors.white,
-    primaryMuted: Color(0x1A78350F),
-    primarySubtle: Color(0x0D78350F),
-    secondary: Color(0xFFC8975A),
-    label: 'Walnut',
-    emoji: '🪵',
-  ),
   AppAccentColor.plum: AppAccentData(
-    primary: Color(0xFF6B21A8),
+    primary: Color(0xFF9065B0),
+    darkPrimary: Color(0xFF9A6DD7),
     onPrimary: Colors.white,
-    primaryMuted: Color(0x1A6B21A8),
-    primarySubtle: Color(0x0D6B21A8),
-    secondary: Color(0xFFB87DD6),
+    primaryMuted: Color(0x1A9065B0),
+    darkMuted: Color(0xFF2B1E3E), // Notion Purple dark bg
+    primarySubtle: Color(0x0D9065B0),
+    darkSubtle: Color(0xFF3E2B4D),
+    secondary: Color(0xFFC4ADDE),
+    darkSecondary: Color(0xFFB496D1),
     label: 'Plum',
     emoji: '🫐',
   ),
+  AppAccentColor.sand: AppAccentData(
+    primary: Color(0xFFD9971C),
+    darkPrimary: Color(0xFFFFCA80),
+    onPrimary: Colors.white,
+    primaryMuted: Color(0x1AD9971C),
+    darkMuted: Color(0xFF5C471A), 
+    primarySubtle: Color(0x0DD9971C),
+    darkSubtle: Color(0xFF4A3815),
+    secondary: Color(0xFFF2C87A),
+    darkSecondary: Color(0xFFE5B55E),
+    label: 'Sand',
+    emoji: '🏜️',
+  ),
+  AppAccentColor.rose: AppAccentData(
+    primary: Color(0xFFE03E3E),
+    darkPrimary: Color(0xFFFF7369),
+    onPrimary: Colors.white,
+    primaryMuted: Color(0x1AE03E3E),
+    darkMuted: Color(0xFF592222),
+    primarySubtle: Color(0x0DE03E3E),
+    darkSubtle: Color(0xFF451A1A),
+    secondary: Color(0xFFEFA5A5),
+    darkSecondary: Color(0xFFE58787),
+    label: 'Rose',
+    emoji: '🌹',
+  ),
+  AppAccentColor.ocean: AppAccentData(
+    primary: Color(0xFF0B6E99),
+    darkPrimary: Color(0xFF529CCA),
+    onPrimary: Colors.white,
+    primaryMuted: Color(0x1A0B6E99),
+    darkMuted: Color(0xFF143A4D),
+    primarySubtle: Color(0x0D0B6E99),
+    darkSubtle: Color(0xFF0F2C3A),
+    secondary: Color(0xFF8AC7E6),
+    darkSecondary: Color(0xFF6EB4D7),
+    label: 'Ocean',
+    emoji: '🌊',
+  ),
+  AppAccentColor.coral: AppAccentData(
+    primary: Color(0xFFF06A57),
+    darkPrimary: Color(0xFFFF9583),
+    onPrimary: Colors.white,
+    primaryMuted: Color(0x1AF06A57),
+    darkMuted: Color(0xFF4D241D),
+    primarySubtle: Color(0x0DF06A57),
+    darkSubtle: Color(0xFF3B1A14),
+    secondary: Color(0xFFF4998C),
+    darkSecondary: Color(0xFFE58071),
+    label: 'Coral',
+    emoji: '🪸',
+  ),
 };
+
+// ─── DESIGN TOKENS (SPACING, RADIUS, SHADOWS) ───────────────────────────────
+
+class AppSpacing {
+  static const double xs = 4.0;
+  static const double sm = 8.0;
+  static const double md = 12.0;
+  static const double lg = 16.0;
+  static const double xl = 24.0;
+  static const double xxl = 32.0;
+  
+  static const EdgeInsets screenH = EdgeInsets.symmetric(horizontal: xl);
+  static const EdgeInsets screenV = EdgeInsets.symmetric(vertical: xl);
+}
+
+class AppRadius {
+  static const double sm = 8.0;
+  static const double md = 12.0;
+  static const double lg = 16.0;
+  static const double xl = 24.0;
+  
+  static final BorderRadius brSm = BorderRadius.circular(sm);
+  static final BorderRadius brMd = BorderRadius.circular(md);
+  static final BorderRadius brLg = BorderRadius.circular(lg);
+  static final BorderRadius brXl = BorderRadius.circular(xl);
+  static const BorderRadius brSheet = BorderRadius.vertical(top: Radius.circular(28));
+}
+
+class AppShadows {
+  static List<BoxShadow> soft(Color shadowBase) => [
+        BoxShadow(color: shadowBase.withValues(alpha: 0.04), blurRadius: 10, offset: const Offset(0, 4)),
+        BoxShadow(color: shadowBase.withValues(alpha: 0.02), blurRadius: 2, offset: const Offset(0, 1)),
+      ];
+      
+  static List<BoxShadow> float(Color shadowBase) => [
+        BoxShadow(color: shadowBase.withValues(alpha: 0.08), blurRadius: 24, offset: const Offset(0, 8)),
+        BoxShadow(color: shadowBase.withValues(alpha: 0.04), blurRadius: 8, offset: const Offset(0, 4)),
+      ];
+}
 
 // ─── SEMANTIC COLOR TOKENS (ThemeExtension) ───────────────────────────────────
 
@@ -119,6 +247,15 @@ class AppColors extends ThemeExtension<AppColors> {
   final Color error;
   final Color errorMuted;
 
+  // ── Semantic category colors ─────────────────────────────────────────────
+  final Color info;           // hydration, knowledge, neutral info
+  final Color discovery;      // education, learning, protocol insights
+  final Color movement;       // exercise, movement, activity
+  final Color rest;           // sleep, relaxation, wind-down
+
+  // ── Shadows ──────────────────────────────────────────────────────────────
+  final Color shadowBase;     // base color for all box shadows
+
   // ── Accent (resolved from user's accent choice) ────────────────────────────
   final Color accent;         // == primary
   final Color accentOnPrimary;
@@ -128,6 +265,24 @@ class AppColors extends ThemeExtension<AppColors> {
 
   // ── Meta ───────────────────────────────────────────────────────────────────
   final bool isDark;
+
+  /// Adapt a data-driven color for use as text/badge to ensure readability.
+  /// On light themes, darkens bright/pastel colors.
+  /// On dark themes, lightens overly dark colors.
+  Color adaptForText(Color c) {
+    final hsl = HSLColor.fromColor(c);
+    if (isDark) {
+      // Lighten for dark themes (target lightness >= 0.65 for better contrast)
+      return hsl.lightness < 0.65
+          ? hsl.withLightness(0.65).toColor()
+          : c;
+    } else {
+      // Darken for light themes (target lightness <= 0.32 for better contrast)
+      return hsl.lightness > 0.32
+          ? hsl.withLightness(0.32).toColor()
+          : c;
+    }
+  }
 
   const AppColors({
     required this.surface,
@@ -145,6 +300,11 @@ class AppColors extends ThemeExtension<AppColors> {
     required this.sheetBorder,
     required this.error,
     required this.errorMuted,
+    required this.info,
+    required this.discovery,
+    required this.movement,
+    required this.rest,
+    required this.shadowBase,
     required this.accent,
     required this.accentOnPrimary,
     required this.accentMuted,
@@ -170,6 +330,11 @@ class AppColors extends ThemeExtension<AppColors> {
     Color? sheetBorder,
     Color? error,
     Color? errorMuted,
+    Color? info,
+    Color? discovery,
+    Color? movement,
+    Color? rest,
+    Color? shadowBase,
     Color? accent,
     Color? accentOnPrimary,
     Color? accentMuted,
@@ -193,6 +358,11 @@ class AppColors extends ThemeExtension<AppColors> {
       sheetBorder: sheetBorder ?? this.sheetBorder,
       error: error ?? this.error,
       errorMuted: errorMuted ?? this.errorMuted,
+      info: info ?? this.info,
+      discovery: discovery ?? this.discovery,
+      movement: movement ?? this.movement,
+      rest: rest ?? this.rest,
+      shadowBase: shadowBase ?? this.shadowBase,
       accent: accent ?? this.accent,
       accentOnPrimary: accentOnPrimary ?? this.accentOnPrimary,
       accentMuted: accentMuted ?? this.accentMuted,
@@ -221,6 +391,11 @@ class AppColors extends ThemeExtension<AppColors> {
       sheetBorder: Color.lerp(sheetBorder, other.sheetBorder, t)!,
       error: Color.lerp(error, other.error, t)!,
       errorMuted: Color.lerp(errorMuted, other.errorMuted, t)!,
+      info: Color.lerp(info, other.info, t)!,
+      discovery: Color.lerp(discovery, other.discovery, t)!,
+      movement: Color.lerp(movement, other.movement, t)!,
+      rest: Color.lerp(rest, other.rest, t)!,
+      shadowBase: Color.lerp(shadowBase, other.shadowBase, t)!,
       accent: Color.lerp(accent, other.accent, t)!,
       accentOnPrimary: Color.lerp(accentOnPrimary, other.accentOnPrimary, t)!,
       accentMuted: Color.lerp(accentMuted, other.accentMuted, t)!,
@@ -234,62 +409,70 @@ class AppColors extends ThemeExtension<AppColors> {
 
   factory AppColors.light(AppAccentData a) => AppColors(
     surface: const Color(0xFFFFFFFF),
-    surfaceRaised: const Color(0xFFF4F4F5),
-    surfaceSubtle: const Color(0xFFEEEEF0),
-    surfaceMuted: const Color(0xFFF8F8F9),
-    border: const Color(0xFFE4E4E7),
-    borderSubtle: const Color(0xFFF0F0F2),
-    textPrimary: const Color(0xFF18181B),
-    textSecondary: const Color(0xFF52525B),
-    textTertiary: const Color(0xFF8F8F9A),
-    icon: const Color(0xFF3F3F46),
-    iconMuted: const Color(0xFF8F8F9A),
+    surfaceRaised: const Color(0xFFF7F6F3),
+    surfaceSubtle: const Color(0xFFF1F0EC),
+    surfaceMuted: const Color(0xFFF7F6F3),
+    border: const Color(0xFFDFDFDE),
+    borderSubtle: const Color(0xFFEEEEEE),
+    textPrimary: const Color(0xFF37352F),
+    textSecondary: const Color(0xFF5A574E),
+    textTertiary: const Color(0xFF9B9A93),
+    icon: const Color(0xFF37352F),
+    iconMuted: const Color(0xFF91918E),
     sheetBg: const Color(0xFFFFFFFF),
-    sheetBorder: const Color(0xFFE4E4E7),
-    error: const Color(0xFFDC2626),
-    errorMuted: const Color(0x1ADC2626),
-    accent: a.primary,
+    sheetBorder: const Color(0xFFDFDFDE),
+    error: const Color(0xFFEB5757),
+    errorMuted: const Color(0x1AEB5757),
+    info: const Color(0xFF0284C7),
+    discovery: const Color(0xFF7C3AED),
+    movement: const Color(0xFF16A34A),
+    rest: const Color(0xFF4F46E5),
+    shadowBase: const Color(0x0A000000),
+    accent: a.resolvePrimary(false),
     accentOnPrimary: a.onPrimary,
-    accentMuted: a.primaryMuted,
-    accentSubtle: a.primarySubtle,
-    accentSecondary: a.secondary,
+    accentMuted: a.resolveMuted(false),
+    accentSubtle: a.resolveSubtle(false),
+    accentSecondary: a.resolveSecondary(false),
     isDark: false,
   );
 
   factory AppColors.sepia(AppAccentData a) => AppColors(
-    // Warm parchment — very easy on the eyes for long reading sessions
-    surface: const Color(0xFFFAF6EF),
-    surfaceRaised: const Color(0xFFF5EFE3),
-    surfaceSubtle: const Color(0xFFEFE7D6),
-    surfaceMuted: const Color(0xFFFCF9F4),
-    border: const Color(0xFFDDD3C0),
-    borderSubtle: const Color(0xFFEDE7D8),
-    textPrimary: const Color(0xFF2C2416),
-    textSecondary: const Color(0xFF6B5C3E),
-    textTertiary: const Color(0xFF9E8B6D),
-    icon: const Color(0xFF4A3B26),
-    iconMuted: const Color(0xFF9E8B6D),
-    sheetBg: const Color(0xFFF5EFE3),
-    sheetBorder: const Color(0xFFDDD3C0),
-    error: const Color(0xFFB91C1C),
-    errorMuted: const Color(0x1AB91C1C),
-    accent: a.primary,
+    surface: const Color(0xFFFBF9F5),
+    surfaceRaised: const Color(0xFFF1EFEA),
+    surfaceSubtle: const Color(0xFFF1F0E8),
+    surfaceMuted: const Color(0xFFFDFCFB),
+    border: const Color(0xFFE9E5E0),
+    borderSubtle: const Color(0xFFF0EDE9),
+    textPrimary: const Color(0xFF37352F),
+    textSecondary: const Color(0xFF5A574E),
+    textTertiary: const Color(0xFF8E8B83),
+    icon: const Color(0xFF37352F),
+    iconMuted: const Color(0xFF8E8B83),
+    sheetBg: const Color(0xFFFBF9F5),
+    sheetBorder: const Color(0xFFE9E5E0),
+    error: const Color(0xFFD44333),
+    errorMuted: const Color(0x1AD44333),
+    info: const Color(0xFF0369A1),
+    discovery: const Color(0xFF6D28D9),
+    movement: const Color(0xFF15803D),
+    rest: const Color(0xFF4338CA),
+    shadowBase: const Color(0x08000000),
+    accent: a.resolvePrimary(false),
     accentOnPrimary: a.onPrimary,
-    accentMuted: a.primaryMuted,
-    accentSubtle: a.primarySubtle,
-    accentSecondary: a.secondary,
+    accentMuted: a.resolveMuted(false),
+    accentSubtle: a.resolveSubtle(false),
+    accentSecondary: a.resolveSecondary(false),
     isDark: false,
   );
 
   factory AppColors.dark(AppAccentData a) => AppColors(
-    // True dark with visible surface elevation
     surface: const Color(0xFF1C1C1E),
     surfaceRaised: const Color(0xFF2C2C2E),
     surfaceSubtle: const Color(0xFF3A3A3C),
     surfaceMuted: const Color(0xFF141414),
     border: const Color(0xFF3A3A3C),
     borderSubtle: const Color(0xFF2C2C2E),
-    textPrimary: const Color(0xFFE4E4E7),
+    textPrimary: const Color(0xFFD4D4D8),
     textSecondary: const Color(0xFFA1A1AA),
     textTertiary: const Color(0xFF71717A),
     icon: const Color(0xFFD4D4D8),
@@ -298,23 +481,27 @@ class AppColors extends ThemeExtension<AppColors> {
     sheetBorder: const Color(0xFF3A3A3C),
     error: const Color(0xFFF87171),
     errorMuted: const Color(0x1AF87171),
-    accent: a.primary,
+    info: const Color(0xFF7DD3FC),
+    discovery: const Color(0xFFC4B5FD),
+    movement: const Color(0xFF86EFAC),
+    rest: const Color(0xFFA5B4FC),
+    shadowBase: const Color(0x4D000000),
+    accent: a.resolvePrimary(true),
     accentOnPrimary: a.onPrimary,
-    accentMuted: a.primaryMuted,
-    accentSubtle: a.primarySubtle,
-    accentSecondary: a.secondary,
+    accentMuted: a.resolveMuted(true),
+    accentSubtle: a.resolveSubtle(true),
+    accentSecondary: a.resolveSecondary(true),
     isDark: true,
   );
 
   factory AppColors.oled(AppAccentData a) => AppColors(
-    // Pure black OLED — maximum battery on AMOLED, maximum contrast
     surface: const Color(0xFF0A0A0A),
     surfaceRaised: const Color(0xFF141414),
     surfaceSubtle: const Color(0xFF1E1E1E),
     surfaceMuted: const Color(0xFF050505),
     border: const Color(0xFF2A2A2A),
     borderSubtle: const Color(0xFF141414),
-    textPrimary: const Color(0xFFF4F4F5),
+    textPrimary: const Color(0xFFE4E4E7),
     textSecondary: const Color(0xFFA1A1AA),
     textTertiary: const Color(0xFF52525B),
     icon: const Color(0xFFE4E4E7),
@@ -323,11 +510,16 @@ class AppColors extends ThemeExtension<AppColors> {
     sheetBorder: const Color(0xFF2A2A2A),
     error: const Color(0xFFF87171),
     errorMuted: const Color(0x1AF87171),
-    accent: a.primary,
+    info: const Color(0xFF7DD3FC),
+    discovery: const Color(0xFFC4B5FD),
+    movement: const Color(0xFF86EFAC),
+    rest: const Color(0xFFA5B4FC),
+    shadowBase: const Color(0x66000000),
+    accent: a.resolvePrimary(true),
     accentOnPrimary: a.onPrimary,
-    accentMuted: a.primaryMuted,
-    accentSubtle: a.primarySubtle,
-    accentSecondary: a.secondary,
+    accentMuted: a.resolveMuted(true),
+    accentSubtle: a.resolveSubtle(true),
+    accentSecondary: a.resolveSecondary(true),
     isDark: true,
   );
 
@@ -353,30 +545,30 @@ TextTheme _buildTextTheme(Color text, Color muted) {
   return TextTheme(
     // Display — bold, used for score numbers, big heroes
     displayLarge: GoogleFonts.outfit(
-        fontSize: 36, fontWeight: FontWeight.w800, color: text, height: 1.1),
+        fontSize: 38, fontWeight: FontWeight.w800, color: text, height: 1.1),
     displayMedium: GoogleFonts.outfit(
-        fontSize: 28, fontWeight: FontWeight.w700, color: text, height: 1.2),
+        fontSize: 30, fontWeight: FontWeight.w700, color: text, height: 1.2),
     // Title — section headings
     titleLarge: GoogleFonts.outfit(
-        fontSize: 22, fontWeight: FontWeight.w700, color: text),
+        fontSize: 24, fontWeight: FontWeight.w700, color: text),
     titleMedium: GoogleFonts.outfit(
-        fontSize: 18, fontWeight: FontWeight.w600, color: text),
+        fontSize: 20, fontWeight: FontWeight.w600, color: text),
     titleSmall: GoogleFonts.outfit(
-        fontSize: 15, fontWeight: FontWeight.w600, color: text),
+        fontSize: 16, fontWeight: FontWeight.w600, color: text),
     // Body — all readable content, optimised for low fatigue
     bodyLarge: GoogleFonts.inter(
-        fontSize: 16, fontWeight: FontWeight.w400, color: text, height: 1.65),
+        fontSize: 17, fontWeight: FontWeight.w400, color: text, height: 1.7),
     bodyMedium: GoogleFonts.inter(
-        fontSize: 15, fontWeight: FontWeight.w400, color: text, height: 1.6),
+        fontSize: 16, fontWeight: FontWeight.w400, color: text, height: 1.65),
     bodySmall: GoogleFonts.inter(
-        fontSize: 13, fontWeight: FontWeight.w400, color: muted, height: 1.5),
+        fontSize: 14, fontWeight: FontWeight.w400, color: muted, height: 1.55),
     // Label — chips, tags, nav labels
     labelLarge: GoogleFonts.inter(
-        fontSize: 14, fontWeight: FontWeight.w600, color: text),
+        fontSize: 15, fontWeight: FontWeight.w600, color: text),
     labelMedium: GoogleFonts.inter(
-        fontSize: 12, fontWeight: FontWeight.w600, color: muted),
+        fontSize: 13, fontWeight: FontWeight.w600, color: muted),
     labelSmall: GoogleFonts.inter(
-        fontSize: 10,
+        fontSize: 12,
         fontWeight: FontWeight.w700,
         color: muted,
         letterSpacing: 0.8),
@@ -412,9 +604,9 @@ class AppTheme {
         : Brightness.dark;
 
     final bg = base == AppBaseTheme.light
-        ? const Color(0xFFF8F9FA)
+        ? const Color(0xFFFAF9F6) // Notion background
         : base == AppBaseTheme.sepia
-        ? const Color(0xFFF0E9DB)
+        ? const Color(0xFFF1EDE4) // Notion warm background
         : base == AppBaseTheme.dark
         ? const Color(0xFF111111)
         : const Color(0xFF000000);

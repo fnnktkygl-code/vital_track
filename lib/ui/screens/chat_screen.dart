@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:uuid/uuid.dart';
 import 'package:vital_track/models/knowledge_source.dart';
 import 'package:vital_track/services/ai_service.dart';
 import 'package:vital_track/services/knowledge_service.dart';
 import 'package:vital_track/services/hive_service.dart';
+import 'package:vital_track/models/chat_message.dart';
 import 'package:vital_track/providers/profile_provider.dart';
 import 'package:vital_track/ui/theme.dart';
 
@@ -16,37 +16,37 @@ class ChatScreen extends StatefulWidget {
   State<ChatScreen> createState() => _ChatScreenState();
 }
 
-class _ChatMessage {
-  final String id;
-  String text;
-  final bool isUser;
-  final List<KnowledgeSource> sources;
-  bool isStreaming;
-
-  _ChatMessage({
-    required this.text,
-    required this.isUser,
-    this.sources = const [],
-    this.isStreaming = false,
-  }) : id = const Uuid().v4();
-}
+// Removed _ChatMessage in favor of lib/models/chat_message.dart
 
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _ctrl = TextEditingController();
   final ScrollController _scrollCtrl = ScrollController();
-  final KnowledgeService _knowledgeService = KnowledgeService(HiveService());
-  final List<_ChatMessage> _messages = [];
+  final HiveService _hiveService = HiveService();
+  late final KnowledgeService _knowledgeService;
+  List<ChatMessage> _messages = [];
   bool _isTyping = false;
   StreamSubscription<String>? _streamSub;
 
   @override
   void initState() {
     super.initState();
-    _messages.add(_ChatMessage(
-      text:
-          "Coo! I'm your Vitalist guide. Ask me about Dr. Sebi, Arnold Ehret, or Dr. Morse — I have their full teachings in my knowledge base! 🐦",
-      isUser: false,
-    ));
+    _knowledgeService = KnowledgeService(_hiveService);
+    _loadHistory();
+  }
+
+  void _loadHistory() {
+    final history = _hiveService.loadChatHistory();
+    if (history.isEmpty) {
+      final welcome = ChatMessage(
+        text: "Coo! I'm your Vitalist guide. Ask me about Dr. Sebi, Arnold Ehret, or Dr. Morse — I have their full teachings in my knowledge base! 🐦",
+        isUser: false,
+      );
+      _messages.add(welcome);
+      _hiveService.saveChatMessage(welcome);
+    } else {
+      _messages = history;
+    }
+    setState(() {});
   }
 
   @override
@@ -73,53 +73,72 @@ class _ChatScreenState extends State<ChatScreen> {
     final text = _ctrl.text.trim();
     if (text.isEmpty || _isTyping) return;
 
+    // Inline sources (text/url/youtube) — keyword search
     final contextSources = _knowledgeService.searchSources(text);
+    // File-based sources (pdf/image/video) — Gemini FileParts
+    final fileParts = _knowledgeService.getFileParts();
     final profile = context.read<ProfileProvider>().profile;
 
-    final aiMsg = _ChatMessage(
+    final userMsg = ChatMessage(text: text, isUser: true);
+    
+    // We start the AI message empty and streaming
+    var aiMsg = ChatMessage(
       text: '',
       isUser: false,
-      sources: contextSources,
       isStreaming: true,
+      sources: contextSources,
     );
 
     setState(() {
-      _messages.add(_ChatMessage(text: text, isUser: true));
+      _messages.add(userMsg);
       _messages.add(aiMsg);
       _isTyping = true;
       _ctrl.clear();
     });
     _scrollToBottom();
+    _hiveService.saveChatMessage(userMsg);
 
-    final stream =
-        AIService.chatWithMascotStream(text, profile, contextSources);
+    // Pass the entire history to the AI service for context (excluding the currently streaming empty message)
+    final historyContext = _messages.sublist(0, _messages.length - 1);
+
+    final stream = AIService.chatWithMascotStream(
+      text, profile, contextSources, historyContext,
+      fileParts: fileParts,
+    );
 
     _streamSub = stream.listen(
       (chunk) {
         if (!mounted) return;
+        // Replace the aiMsg object entirely to ensure Hive captures the update
+        aiMsg = aiMsg.copyWithText(aiMsg.text + chunk);
         setState(() {
-          aiMsg.text += chunk;
+          _messages[_messages.length - 1] = aiMsg;
         });
         _scrollToBottom();
+        // Periodically save to Hive (or wait until done)
       },
       onDone: () {
         if (!mounted) return;
+        aiMsg = aiMsg.copyWithText(aiMsg.text, isStreaming: false);
         setState(() {
-          aiMsg.isStreaming = false;
+          _messages[_messages.length - 1] = aiMsg;
           _isTyping = false;
         });
+        _hiveService.saveChatMessage(aiMsg);
         _scrollToBottom();
       },
       onError: (_) {
         if (!mounted) return;
         setState(() {
           if (aiMsg.text.isEmpty) {
-            aiMsg.text =
-                "Coo? I couldn't reach the cloud. Try again later! 🐦";
+            aiMsg = aiMsg.copyWithText("Coo? I couldn't reach the cloud. Try again later! 🐦", isStreaming: false);
+          } else {
+            aiMsg = aiMsg.copyWithText(aiMsg.text, isStreaming: false);
           }
-          aiMsg.isStreaming = false;
+          _messages[_messages.length - 1] = aiMsg;
           _isTyping = false;
         });
+        _hiveService.saveChatMessage(aiMsg);
       },
     );
   }
@@ -202,7 +221,7 @@ class _ChatScreenState extends State<ChatScreen> {
 // ── CHAT BUBBLE ──────────────────────────────────────────────────────────────
 
 class _ChatBubble extends StatelessWidget {
-  final _ChatMessage msg;
+  final ChatMessage msg;
   const _ChatBubble({required this.msg});
 
   @override
@@ -235,8 +254,8 @@ class _ChatBubble extends StatelessWidget {
           msg.text,
           style: TextStyle(
             color: colors.accentOnPrimary,
-            fontSize: 15,
-            height: 1.5,
+            fontSize: 16,
+            height: 1.55,
           ),
         ),
       ),
@@ -308,6 +327,8 @@ class _ChatBubble extends StatelessWidget {
                     KnowledgeType.url => Icons.link,
                     KnowledgeType.youtube => Icons.video_library,
                     KnowledgeType.text => Icons.description,
+                    KnowledgeType.image => Icons.image,
+                    KnowledgeType.video => Icons.movie,
                   };
                   return Container(
                     padding:
@@ -327,7 +348,7 @@ class _ChatBubble extends StatelessWidget {
                               ? '${s.title.substring(0, 30)}...'
                               : s.title,
                           style: TextStyle(
-                              color: colors.textTertiary, fontSize: 11),
+                              color: colors.textTertiary, fontSize: 12),
                         ),
                       ],
                     ),
@@ -369,7 +390,7 @@ class _MarkdownBody extends StatelessWidget {
             line.trimLeft().substring(4),
             style: TextStyle(
               color: colors.textPrimary,
-              fontSize: 16,
+              fontSize: 18,
               fontWeight: FontWeight.w700,
               height: 1.4,
             ),
@@ -386,7 +407,7 @@ class _MarkdownBody extends StatelessWidget {
             line.trimLeft().substring(3),
             style: TextStyle(
               color: colors.textPrimary,
-              fontSize: 17,
+              fontSize: 20,
               fontWeight: FontWeight.w800,
               height: 1.4,
             ),
@@ -407,9 +428,9 @@ class _MarkdownBody extends StatelessWidget {
                   style: TextStyle(
                       color: colors.accent,
                       fontWeight: FontWeight.bold,
-                      fontSize: 14)),
+                      fontSize: 16)),
               Expanded(
-                  child: _buildRichText(bulletMatch.group(1)!, colors, 14.5)),
+                  child: _buildRichText(bulletMatch.group(1)!, colors, 16)),
             ],
           ),
         ));
@@ -431,11 +452,11 @@ class _MarkdownBody extends StatelessWidget {
                   style: TextStyle(
                       color: colors.accent,
                       fontWeight: FontWeight.w700,
-                      fontSize: 14.5),
+                      fontSize: 16),
                 ),
               ),
               Expanded(
-                  child: _buildRichText(numMatch.group(2)!, colors, 14.5)),
+                  child: _buildRichText(numMatch.group(2)!, colors, 16)),
             ],
           ),
         ));
@@ -445,7 +466,7 @@ class _MarkdownBody extends StatelessWidget {
       // Regular paragraph
       widgets.add(Padding(
         padding: const EdgeInsets.symmetric(vertical: 2),
-        child: _buildRichText(line, colors, 14.5),
+        child: _buildRichText(line, colors, 16),
       ));
     }
 
@@ -497,7 +518,7 @@ class _MarkdownBody extends StatelessWidget {
         style: TextStyle(
           color: colors.textPrimary,
           fontSize: fontSize,
-          height: 1.6,
+          height: 1.65,
         ),
         children: spans.isEmpty ? [TextSpan(text: text)] : spans,
       ),

@@ -73,11 +73,11 @@ class ModesScreen extends StatelessWidget {
                     padding: const EdgeInsets.all(18),
                     decoration: BoxDecoration(
                       color:
-                      isSelected ? m.bg : Theme.of(context).cardColor,
+                      isSelected ? m.resolveBg(context.colors.isDark) : Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
                         color: isSelected
-                            ? m.color.withValues(alpha: 0.4)
+                            ? m.resolveColor(context.colors.isDark).withValues(alpha: 0.4)
                             : Theme.of(context).dividerColor.withValues(alpha: 0.06),
                         width: isSelected ? 1.5 : 1,
                       ),
@@ -89,10 +89,10 @@ class ModesScreen extends StatelessWidget {
                           height: 54,
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
-                            color: m.color.withValues(alpha: 0.12),
+                            color: m.resolveColor(context.colors.isDark).withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
-                                color: m.color.withValues(alpha: 0.3)),
+                                color: m.resolveColor(context.colors.isDark).withValues(alpha: 0.3)),
                           ),
                           child: Text(m.icon,
                               style: const TextStyle(fontSize: 28)),
@@ -247,10 +247,10 @@ class _SourceBadge extends StatelessWidget {
     return Text(
       label,
       style: TextStyle(
-        fontFamily: 'SpaceMono',
-        fontSize: 9,
+        fontSize: 11,
         color: color.withValues(alpha: 0.7),
         letterSpacing: 0.5,
+        fontWeight: FontWeight.w600,
       ),
     );
   }
@@ -288,7 +288,7 @@ class _ComboItem extends StatelessWidget {
               children: [
                 Text(title,
                     style: const TextStyle(
-                        fontWeight: FontWeight.w600, fontSize: 13)),
+                        fontWeight: FontWeight.w600, fontSize: 14)),
                 Text(subtitle,
                     style: Theme.of(context).textTheme.bodySmall),
               ],
@@ -331,7 +331,7 @@ class _QuickRefCard extends StatelessWidget {
               Text(title,
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 15,
+                      fontSize: 16,
                       color: color)),
             ],
           ),
@@ -345,13 +345,13 @@ class _QuickRefCard extends StatelessWidget {
                     style: TextStyle(
                         color: color,
                         fontWeight: FontWeight.bold,
-                        fontSize: 13)),
+                        fontSize: 14)),
                 Expanded(
                   child: Text(p,
                       style: TextStyle(
-                          fontSize: 12,
+                          fontSize: 13,
                           color: Theme.of(context).colorScheme.onSurface,
-                          height: 1.4)),
+                          height: 1.5)),
                 ),
               ],
             ),

@@ -20,23 +20,17 @@ class BottomNavBar extends StatelessWidget {
         filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
         child: Container(
           decoration: BoxDecoration(
-            // Use a slightly transparent version of the scaffold background
             color: Theme.of(context)
                 .scaffoldBackgroundColor
                 .withValues(alpha: 0.94),
-            border: Border(
-              top: BorderSide(color: colors.border, width: 1),
-            ),
           ),
-          padding: const EdgeInsets.only(top: 12, bottom: 28),
+          padding: const EdgeInsets.only(top: 12, bottom: 32),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               _buildNavItem(context, 0, "🌿", "Accueil", colors),
-              _buildNavItem(context, 1, "🔍", "Chercher", colors),
-              _buildNavItem(context, 2, "➕", "Ajouter", colors, accent: true),
-              _buildNavItem(context, 3, "❤️", "Favoris", colors),
-              _buildNavItem(context, 4, "📊", "Modes", colors),
+              _buildNavItem(context, 1, Icons.add_rounded, "Ajouter", colors, accent: true),
+              _buildNavItem(context, 2, "🔍", "Chercher", colors),
             ],
           ),
         ),
@@ -47,7 +41,7 @@ class BottomNavBar extends StatelessWidget {
   Widget _buildNavItem(
       BuildContext context,
       int index,
-      String emoji,
+      dynamic iconSource,
       String label,
       AppColors colors, {
         bool accent = false,
@@ -55,6 +49,7 @@ class BottomNavBar extends StatelessWidget {
     final isSelected = currentIndex == index;
     final activeColor = colors.accent;
     final inactiveColor = colors.iconMuted;
+    final contentColor = accent ? colors.accent : (isSelected ? activeColor : inactiveColor);
 
     return GestureDetector(
       onTap: () => onTap(index),
@@ -62,7 +57,7 @@ class BottomNavBar extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeOut,
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: accent
             ? BoxDecoration(
           color: Color.alphaBlend(
@@ -78,19 +73,24 @@ class BottomNavBar extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              emoji,
-              style: const TextStyle(fontSize: 20),
-            ),
+            if (iconSource is String)
+              Text(
+                iconSource,
+                style: const TextStyle(fontSize: 20),
+              )
+            else if (iconSource is IconData)
+              Icon(
+                iconSource,
+                size: 24,
+                color: contentColor,
+              ),
             const SizedBox(height: 4),
             Text(
               label,
               style: TextStyle(
-                fontSize: 10,
+                fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: isSelected
-                    ? (accent ? activeColor : activeColor)
-                    : inactiveColor,
+                color: contentColor,
               ),
             ),
             // Active indicator dot (not on accent button)
