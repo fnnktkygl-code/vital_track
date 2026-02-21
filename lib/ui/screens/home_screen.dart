@@ -67,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (accepted == true) return;
     if (!mounted) return;
 
-    final colors = VitalColors.of(context);
+    final colors = context.colors;
     showDialog(
       context: context,
       barrierDismissible: false,
