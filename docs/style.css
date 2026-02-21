@@ -273,6 +273,36 @@ img {
     font-size: 1.1rem;
 }
 
+.btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: transparent;
+    color: var(--text);
+    padding: 16px 36px;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 1.05rem;
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.btn-secondary:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: translateY(-2px);
+}
+
+.btn-web {
+    background: linear-gradient(135deg, #818CF8 0%, #A855F7 100%) !important;
+    box-shadow: 0 8px 20px -4px rgba(129, 140, 248, 0.3) !important;
+}
+
+.btn-web:hover {
+    box-shadow: 0 12px 28px -4px rgba(129, 140, 248, 0.4) !important;
+}
+
 /* ══════════════ HERO ══════════════ */
 .hero {
     min-height: 100vh;
