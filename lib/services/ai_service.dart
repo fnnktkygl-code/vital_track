@@ -23,7 +23,7 @@ class AIService {
       return envKey;
     }
 
-    // 2. Check Hive (runtime)
+    // 2. Check Hive (runtime — user-provided key from profile)
     try {
       final hiveKey = _hiveService.loadApiKey();
       if (hiveKey != null && hiveKey.isNotEmpty) {
@@ -35,11 +35,8 @@ class AIService {
       debugPrint('AIService: Hive loadApiKey failed: $e');
     }
 
-    debugPrint('AIService: No API key found (envKey empty: ${envKey.isEmpty})');
-    // Fallback key for development
-    const fallback = 'AIzaSyBRKXddXXSUvBoSHpeD9MhmyuzbsjVdu74';
-    _cachedKey = fallback;
-    return fallback;
+    debugPrint('AIService: No API key found. User must set one in Profile.');
+    return '';
   }
 
   // ── MODEL ROTATION ──────────────────────────────────────────────────────────

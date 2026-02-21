@@ -750,6 +750,51 @@ footer {
     font-size: 0.8rem;
 }
 
+/* Health disclaimer */
+.health-disclaimer {
+    background: rgba(239, 68, 68, 0.06);
+    border: 1px solid rgba(239, 68, 68, 0.15);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 28px;
+}
+
+.health-disclaimer p {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    line-height: 1.55;
+    margin: 0;
+}
+
+.health-disclaimer strong {
+    color: #F87171;
+}
+
+.health-disclaimer i {
+    color: #F87171;
+    margin-right: 4px;
+}
+
+/* Web limitation notice */
+.web-notice {
+    color: var(--text-dim);
+    font-size: 0.82rem;
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.web-notice i {
+    color: var(--accent-alt);
+}
+
+/* Footer separator */
+.footer-sep {
+    color: var(--text-dim);
+    margin: 0 8px;
+}
+
 /* ══════════════ RESPONSIVE ══════════════ */
 @media (max-width: 1024px) {
     .feature-grid {
