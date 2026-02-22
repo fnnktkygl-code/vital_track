@@ -276,8 +276,20 @@
     </footer>
 
     <script>
+        function applyWebAppCacheBustLinks() {
+            const appLinks = document.querySelectorAll('a[href="app/"], a[href="app"]');
+            const cacheValue = Date.now().toString();
+            appLinks.forEach((link) => {
+                const baseHref = link.getAttribute('href') || 'app/';
+                const cleanHref = baseHref.split('?')[0];
+                link.setAttribute('href', `${cleanHref}?t=${cacheValue}`);
+            });
+        }
+
         // Scroll reveal for feature cards
         document.addEventListener('DOMContentLoaded', () => {
+            applyWebAppCacheBustLinks();
+
             const reveals = document.querySelectorAll('.feature-card, .master-card, .screenshot-item');
             const observer = new IntersectionObserver(entries => {
                 entries.forEach((entry, i) => {
