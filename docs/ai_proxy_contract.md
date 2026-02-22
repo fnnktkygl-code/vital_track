@@ -86,6 +86,102 @@ or
 }
 ```
 
+### `POST /v1/analyze-image`
+
+Request: `multipart/form-data`
+
+- `file`: image bytes
+- `mimeType`: `image/jpeg` or `image/png`
+
+Response (same accepted shapes as text analysis):
+
+```json
+{
+  "items": []
+}
+```
+
+or
+
+```json
+{
+  "data": {
+    "items": []
+  }
+}
+```
+
+### `POST /v1/files/upload`
+
+Request: `multipart/form-data`
+
+- `file`: file bytes
+- `displayName`: string
+- `mimeType`: string
+
+Response:
+
+```json
+{
+  "file": {
+    "name": "files/abc123",
+    "uri": "https://...",
+    "mimeType": "application/pdf",
+    "sizeBytes": 12345,
+    "createTime": "2026-02-22T12:00:00Z",
+    "expirationTime": "2026-02-24T12:00:00Z",
+    "displayName": "My PDF",
+    "state": "PROCESSING"
+  }
+}
+```
+
+### `GET /v1/files`
+
+Response:
+
+```json
+{
+  "files": [
+    {
+      "name": "files/abc123",
+      "uri": "https://...",
+      "mimeType": "application/pdf",
+      "sizeBytes": 12345,
+      "createTime": "2026-02-22T12:00:00Z",
+      "expirationTime": "2026-02-24T12:00:00Z",
+      "displayName": "My PDF",
+      "state": "ACTIVE"
+    }
+  ]
+}
+```
+
+### `GET /v1/files/{encodedName}`
+
+Where `{encodedName}` is URL-encoded (e.g. `files%2Fabc123`).
+
+Response:
+
+```json
+{
+  "file": {
+    "name": "files/abc123",
+    "uri": "https://...",
+    "mimeType": "application/pdf",
+    "sizeBytes": 12345,
+    "createTime": "2026-02-22T12:00:00Z",
+    "expirationTime": "2026-02-24T12:00:00Z",
+    "displayName": "My PDF",
+    "state": "ACTIVE"
+  }
+}
+```
+
+### `DELETE /v1/files/{encodedName}`
+
+Response: `200` or `204`.
+
 ## Security Requirements for Backend
 
 - Keep Gemini/API keys **only on server**.

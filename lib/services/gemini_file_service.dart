@@ -49,6 +49,19 @@ class GeminiFile {
 
 /// Wraps the Gemini File API (REST) for uploading, listing, and deleting files.
 class GeminiFileService {
+  static String _proxyBaseUrl() {
+    const envUrl = String.fromEnvironment('AI_PROXY_BASE_URL', defaultValue: '');
+    return envUrl.trim();
+  }
+
+  static bool _useProxy() => _proxyBaseUrl().isNotEmpty;
+
+  static Uri _proxyUri(String path) {
+    final base = _proxyBaseUrl().replaceAll(RegExp(r'/$'), '');
+    final normalizedPath = path.startsWith('/') ? path : '/$path';
+    return Uri.parse('$base$normalizedPath');
+  }
+
   static String _getApiKey() {
     // Check Hive (user-provided)
     try {
@@ -83,6 +96,15 @@ class GeminiFileService {
     if (!_hasPrivacyConsent()) {
       throw Exception('Privacy consent not set.');
     }
+
+    if (_useProxy()) {
+      return _uploadFileViaProxy(
+        localPath: localPath,
+        displayName: displayName,
+        mimeType: mimeType,
+      );
+    }
+
     if (_getApiKey().isEmpty) {
       throw Exception('GEMINI_API_KEY not set.');
     }
@@ -155,6 +177,23 @@ class GeminiFileService {
   /// Get the current status of an uploaded file.
   static Future<GeminiFile> getFile(String fileName) async {
     if (!_hasPrivacyConsent()) throw Exception('Privacy consent not set.');
+
+    if (_useProxy()) {
+      final encodedName = Uri.encodeComponent(fileName);
+      final response = await http.get(_proxyUri('/v1/files/$encodedName'));
+
+      if (response.statusCode != 200) {
+        throw Exception(
+            'Proxy getFile failed. Status: ${response.statusCode}, Body: ${response.body}');
+      }
+
+      final jsonBody = json.decode(response.body);
+      final fileData = (jsonBody is Map<String, dynamic> && jsonBody['file'] is Map<String, dynamic>)
+          ? jsonBody['file'] as Map<String, dynamic>
+          : (jsonBody as Map<String, dynamic>);
+      return GeminiFile.fromJson(fileData);
+    }
+
     if (_getApiKey().isEmpty) throw Exception('GEMINI_API_KEY not set.');
 
     final response = await http.get(
@@ -193,6 +232,17 @@ class GeminiFileService {
   /// Delete an uploaded file from Google's servers.
   static Future<void> deleteFile(String fileName) async {
     if (!_hasPrivacyConsent()) throw Exception('Privacy consent not set.');
+
+    if (_useProxy()) {
+      final encodedName = Uri.encodeComponent(fileName);
+      final response = await http.delete(_proxyUri('/v1/files/$encodedName'));
+      if (response.statusCode != 200 && response.statusCode != 204) {
+        debugPrint(
+            'GeminiFileService proxy delete warning for $fileName — ${response.statusCode}');
+      }
+      return;
+    }
+
     if (_getApiKey().isEmpty) throw Exception('GEMINI_API_KEY not set.');
 
     final response = await http.delete(
@@ -208,6 +258,24 @@ class GeminiFileService {
   /// List all files uploaded to the Gemini File API.
   static Future<List<GeminiFile>> listFiles() async {
     if (!_hasPrivacyConsent()) throw Exception('Privacy consent not set.');
+
+    if (_useProxy()) {
+      final response = await http.get(_proxyUri('/v1/files'));
+
+      if (response.statusCode != 200) {
+        throw Exception('Proxy listFiles failed. Status: ${response.statusCode}');
+      }
+
+      final data = json.decode(response.body);
+      final files = (data is Map<String, dynamic>)
+          ? (data['files'] as List<dynamic>? ?? [])
+          : (data as List<dynamic>? ?? []);
+      return files
+          .whereType<Map<String, dynamic>>()
+          .map((f) => GeminiFile.fromJson(f))
+          .toList();
+    }
+
     if (_getApiKey().isEmpty) throw Exception('GEMINI_API_KEY not set.');
 
     final response = await http.get(
@@ -222,5 +290,49 @@ class GeminiFileService {
     final data = json.decode(response.body);
     final files = data['files'] as List<dynamic>? ?? [];
     return files.map((f) => GeminiFile.fromJson(f)).toList();
+  }
+
+  static Future<GeminiFile> _uploadFileViaProxy({
+    required String localPath,
+    required String displayName,
+    String? mimeType,
+  }) async {
+    final file = File(localPath);
+    if (!await file.exists()) {
+      throw Exception('File not found: $localPath');
+    }
+
+    final detectedMime =
+        mimeType ?? lookupMimeType(localPath) ?? 'application/octet-stream';
+    final fileBytes = await file.readAsBytes();
+
+    final request = http.MultipartRequest('POST', _proxyUri('/v1/files/upload'));
+    request.fields['displayName'] = displayName;
+    request.fields['mimeType'] = detectedMime;
+    request.files.add(
+      http.MultipartFile.fromBytes(
+        'file',
+        fileBytes,
+        filename: file.uri.pathSegments.isNotEmpty
+            ? file.uri.pathSegments.last
+            : 'upload.bin',
+      ),
+    );
+
+    final streamed = await request.send().timeout(const Duration(minutes: 2));
+    final response = await http.Response.fromStream(streamed);
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception(
+          'Proxy upload failed. Status: ${response.statusCode}, Body: ${response.body}');
+    }
+
+    final responseJson = json.decode(response.body);
+    final fileData = (responseJson is Map<String, dynamic> &&
+            responseJson['file'] is Map<String, dynamic>)
+        ? responseJson['file'] as Map<String, dynamic>
+        : (responseJson as Map<String, dynamic>);
+
+    return GeminiFile.fromJson(fileData);
   }
 }

@@ -241,6 +241,11 @@ CORE BEHAVIOR:
       debugPrint("AIService: Privacy consent missing.");
       return null;
     }
+
+    if (_useProxy()) {
+      return _analyzeImageViaProxy(image);
+    }
+
     if (_getApiKey().isEmpty) {
       debugPrint("AIService Error: GEMINI_API_KEY not set.");
       return null;
@@ -446,6 +451,45 @@ CORE BEHAVIOR:
       return null;
     } catch (e) {
       debugPrint('AIService proxy analyzeText error: $e');
+      return null;
+    }
+  }
+
+  static Future<Map<String, dynamic>?> _analyzeImageViaProxy(XFile image) async {
+    try {
+      final bytes = await image.readAsBytes();
+      final mimeType = image.path.toLowerCase().endsWith('.png')
+          ? 'image/png'
+          : 'image/jpeg';
+
+      final request = http.MultipartRequest('POST', _proxyUri('/v1/analyze-image'));
+      request.files.add(
+        http.MultipartFile.fromBytes(
+          'file',
+          bytes,
+          filename: image.name,
+        ),
+      );
+      request.fields['mimeType'] = mimeType;
+
+      final streamed = await request.send().timeout(const Duration(seconds: 25));
+      final response = await http.Response.fromStream(streamed);
+
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        debugPrint('AIService proxy analyzeImage HTTP ${response.statusCode}: ${response.body}');
+        return null;
+      }
+
+      final decoded = json.decode(response.body);
+      if (decoded is Map<String, dynamic>) {
+        if (decoded['data'] is Map<String, dynamic>) {
+          return decoded['data'] as Map<String, dynamic>;
+        }
+        return decoded;
+      }
+      return null;
+    } catch (e) {
+      debugPrint('AIService proxy analyzeImage error: $e');
       return null;
     }
   }
