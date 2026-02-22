@@ -53,3 +53,8 @@ SCR-*.png
 # Claude settings
 .claude/
 *.apk
+
+# Local secrets
+.env
+.env.*
+!.env.example

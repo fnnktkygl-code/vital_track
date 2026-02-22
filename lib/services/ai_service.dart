@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:vital_track/models/profile.dart';
@@ -14,8 +15,16 @@ class AIService {
 
   static String _getApiKey() {
     if (_cachedKey != null && _cachedKey!.isNotEmpty) return _cachedKey!;
-    
-    // 1. Check environment (build-time)
+
+    // 1. Check .env (runtime local secret)
+    final dotenvKey = dotenv.env['GEMINI_API_KEY']?.trim() ?? '';
+    if (dotenvKey.isNotEmpty) {
+      debugPrint('AIService: Using API key from .env (${dotenvKey.length} chars)');
+      _cachedKey = dotenvKey;
+      return dotenvKey;
+    }
+
+    // 2. Check environment (build-time)
     const envKey = String.fromEnvironment('GEMINI_API_KEY');
     if (envKey.isNotEmpty) {
       debugPrint('AIService: Using API key from --dart-define (${envKey.length} chars)');
@@ -23,7 +32,7 @@ class AIService {
       return envKey;
     }
 
-    // 2. Check Hive (runtime — user-provided key from profile)
+    // 3. Check Hive (runtime — user-provided key from profile)
     try {
       final hiveKey = _hiveService.loadApiKey();
       if (hiveKey != null && hiveKey.isNotEmpty) {

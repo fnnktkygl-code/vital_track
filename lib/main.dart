@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:vital_track/providers/theme_provider.dart';
 import 'package:vital_track/providers/meal_provider.dart';
@@ -17,6 +18,12 @@ import 'package:vital_track/ui/screens/home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  try {
+    await dotenv.load(fileName: '.env');
+  } catch (e) {
+    debugPrint(".env load skipped: $e");
+  }
 
   final hiveService = HiveService();
   try {
