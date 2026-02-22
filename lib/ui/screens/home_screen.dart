@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vital_track/services/update_service.dart';
 import 'package:vital_track/services/hive_service.dart';
+import 'package:vital_track/services/knowledge_service.dart';
 import 'package:vital_track/ui/theme.dart';
 import 'package:vital_track/ui/widgets/bottom_nav_bar.dart';
 import 'package:vital_track/ui/widgets/add_meal_sheet.dart';
@@ -32,7 +33,10 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   bool _mascotInitialized = false;
+  bool _postConsentTasksDone = false;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final HiveService _hiveService = HiveService();
+  late final KnowledgeService _knowledgeService = KnowledgeService(_hiveService);
 
   late final List<Widget> _screens = [
     DashboardView(onOpenDrawer: openDrawer),
@@ -46,10 +50,9 @@ class _HomeScreenState extends State<HomeScreen> {
     if (!_mascotInitialized) {
       _mascotInitialized = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        // Show health disclaimer on first launch
+        // Show health + privacy consent dialog on first launch
         _showDisclaimerIfNeeded();
-        // Check for updates
-        UpdateService.checkForUpdates(context);
+        _runPostConsentTasksIfNeeded();
         
         final modeId = context.read<ModeProvider>().currentMode.id;
         context.read<MascotProvider>().onAppLaunch(modeId);
@@ -62,8 +65,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showDisclaimerIfNeeded() {
-    final hive = HiveService();
-    final accepted = hive.settingsBox.get('disclaimer_accepted', defaultValue: false);
+    final accepted = _hiveService.settingsBox
+            .get('privacy_consent_accepted', defaultValue: false) ==
+        true;
     if (accepted == true) return;
     if (!mounted) return;
 
@@ -86,6 +90,8 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         content: Text(
           'Cette application ne remplace pas un avis médical.\n\n'
+          'En continuant, vous acceptez aussi la politique de confidentialité : '
+          'les fonctionnalités IA envoient vos requêtes (texte/images/contexte) à Google Gemini.\n\n'
           'Consultez un professionnel de santé avant de modifier votre alimentation '
           'ou de pratiquer le jeûne.\n\n'
           'Les approches présentées sont à titre informatif et éducatif uniquement.',
@@ -94,14 +100,30 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           TextButton(
             onPressed: () {
-              hive.settingsBox.put('disclaimer_accepted', true);
+              _hiveService.settingsBox.put('disclaimer_accepted', true);
+              _hiveService.settingsBox.put('privacy_consent_accepted', true);
               Navigator.of(ctx).pop();
+              _runPostConsentTasksIfNeeded();
             },
             child: Text("J'ai compris", style: TextStyle(color: colors.accent, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
     );
+  }
+
+  void _runPostConsentTasksIfNeeded() {
+    if (_postConsentTasksDone || !mounted) return;
+    final consent =
+        _hiveService.settingsBox.get('privacy_consent_accepted', defaultValue: false) == true;
+    if (!consent) return;
+
+    _postConsentTasksDone = true;
+
+    UpdateService.checkForUpdates(context);
+    _knowledgeService.refreshExpiredFiles().catchError((e) {
+      debugPrint("File refresh failed: $e");
+    });
   }
 
   void _onFastingUpdate(FastingProvider fp) {

@@ -50,14 +50,22 @@ class GeminiFile {
 /// Wraps the Gemini File API (REST) for uploading, listing, and deleting files.
 class GeminiFileService {
   static String _getApiKey() {
-    // 1. Check Hive (user-provided)
+    // Check Hive (user-provided)
     try {
       final hiveKey = HiveService().loadApiKey();
       if (hiveKey != null && hiveKey.isNotEmpty) return hiveKey;
     } catch (_) {}
-    // 2. Check environment (build-time)
-    const envKey = String.fromEnvironment('GEMINI_API_KEY', defaultValue: '');
-    return envKey;
+    return '';
+  }
+
+  static bool _hasPrivacyConsent() {
+    try {
+      return HiveService().settingsBox
+              .get('privacy_consent_accepted', defaultValue: false) ==
+          true;
+    } catch (_) {
+      return false;
+    }
   }
 
   static const String _baseUrl =
@@ -72,6 +80,9 @@ class GeminiFileService {
     required String displayName,
     String? mimeType,
   }) async {
+    if (!_hasPrivacyConsent()) {
+      throw Exception('Privacy consent not set.');
+    }
     if (_getApiKey().isEmpty) {
       throw Exception('GEMINI_API_KEY not set.');
     }
@@ -143,6 +154,7 @@ class GeminiFileService {
 
   /// Get the current status of an uploaded file.
   static Future<GeminiFile> getFile(String fileName) async {
+    if (!_hasPrivacyConsent()) throw Exception('Privacy consent not set.');
     if (_getApiKey().isEmpty) throw Exception('GEMINI_API_KEY not set.');
 
     final response = await http.get(
@@ -180,6 +192,7 @@ class GeminiFileService {
 
   /// Delete an uploaded file from Google's servers.
   static Future<void> deleteFile(String fileName) async {
+    if (!_hasPrivacyConsent()) throw Exception('Privacy consent not set.');
     if (_getApiKey().isEmpty) throw Exception('GEMINI_API_KEY not set.');
 
     final response = await http.delete(
@@ -194,6 +207,7 @@ class GeminiFileService {
 
   /// List all files uploaded to the Gemini File API.
   static Future<List<GeminiFile>> listFiles() async {
+    if (!_hasPrivacyConsent()) throw Exception('Privacy consent not set.');
     if (_getApiKey().isEmpty) throw Exception('GEMINI_API_KEY not set.');
 
     final response = await http.get(

@@ -44,11 +44,6 @@ void main() async {
   final knowledgeService = KnowledgeService(hiveService);
   await knowledgeService.seedDefaultSources();
 
-  // Re-upload expired Gemini files in background (non-blocking)
-  knowledgeService.refreshExpiredFiles().catchError((e) {
-    debugPrint("File refresh failed: $e");
-  });
-
   runApp(VitalTrackApp(hiveService: hiveService));
 }
 

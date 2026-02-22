@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:vital_track/models/profile.dart';
@@ -16,23 +15,7 @@ class AIService {
   static String _getApiKey() {
     if (_cachedKey != null && _cachedKey!.isNotEmpty) return _cachedKey!;
 
-    // 1. Check .env (runtime local secret)
-    final dotenvKey = dotenv.env['GEMINI_API_KEY']?.trim() ?? '';
-    if (dotenvKey.isNotEmpty) {
-      debugPrint('AIService: Using API key from .env (${dotenvKey.length} chars)');
-      _cachedKey = dotenvKey;
-      return dotenvKey;
-    }
-
-    // 2. Check environment (build-time)
-    const envKey = String.fromEnvironment('GEMINI_API_KEY');
-    if (envKey.isNotEmpty) {
-      debugPrint('AIService: Using API key from --dart-define (${envKey.length} chars)');
-      _cachedKey = envKey;
-      return envKey;
-    }
-
-    // 3. Check Hive (runtime — user-provided key from profile)
+    // Check Hive (runtime — user-provided key from profile)
     try {
       final hiveKey = _hiveService.loadApiKey();
       if (hiveKey != null && hiveKey.isNotEmpty) {
@@ -46,6 +29,16 @@ class AIService {
 
     debugPrint('AIService: No API key found. User must set one in Profile.');
     return '';
+  }
+
+  static bool _hasPrivacyConsent() {
+    try {
+      return _hiveService.settingsBox
+              .get('privacy_consent_accepted', defaultValue: false) ==
+          true;
+    } catch (_) {
+      return false;
+    }
   }
 
   // ── MODEL ROTATION ──────────────────────────────────────────────────────────
@@ -182,6 +175,11 @@ CORE BEHAVIOR:
 
   static Future<Map<String, dynamic>?> analyzeText(String query) async {
     debugPrint("AIService: Analyzing text: $query");
+
+    if (!_hasPrivacyConsent()) {
+      debugPrint("AIService: Privacy consent missing.");
+      return null;
+    }
     
     final cacheKey = "text_$query";
     final cached = _hiveService.getCachedAiResponse(cacheKey);
@@ -221,6 +219,10 @@ CORE BEHAVIOR:
 
   static Future<Map<String, dynamic>?> analyzeImage(XFile image) async {
     debugPrint("AIService: Analyzing image...");
+    if (!_hasPrivacyConsent()) {
+      debugPrint("AIService: Privacy consent missing.");
+      return null;
+    }
     if (_getApiKey().isEmpty) {
       debugPrint("AIService Error: GEMINI_API_KEY not set.");
       return null;
@@ -267,6 +269,9 @@ CORE BEHAVIOR:
   static Future<String?> chatWithMascot(
       String query, Profile profile, List<KnowledgeSource> contextSources, List<ChatMessage> history,
       {List<FilePart> fileParts = const []}) async {
+    if (!_hasPrivacyConsent()) {
+      return "Confidentialité : acceptez d'abord la politique de confidentialité dans l'application.";
+    }
     if (_getApiKey().isEmpty) return "Erreur : clé API manquante. Configurez GEMINI_API_KEY.";
 
     final userPrompt = _buildChatPrompt(query, profile, contextSources, history);
@@ -297,6 +302,10 @@ CORE BEHAVIOR:
   static Stream<String> chatWithMascotStream(
       String query, Profile profile, List<KnowledgeSource> contextSources, List<ChatMessage> history,
       {List<FilePart> fileParts = const []}) async* {
+    if (!_hasPrivacyConsent()) {
+      yield "Confidentialité : acceptez d'abord la politique de confidentialité dans l'application.";
+      return;
+    }
     if (_getApiKey().isEmpty) {
       yield "Erreur : clé API manquante. Configurez GEMINI_API_KEY.";
       return;
