@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: vital-track-ai-proxy
+    runtime: node
+    rootDir: ai_proxy
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: PORT
+        value: 10000
+      - key: ALLOWED_ORIGINS
+        value: https://fnnktkygl-code.github.io
+      - key: RATE_LIMIT_WINDOW_MS
+        value: 60000
+      - key: RATE_LIMIT_MAX
+        value: 60
+      - key: GEMINI_API_KEY
+        sync: false

@@ -54,3 +54,25 @@ flutter build web --dart-define=AI_PROXY_BASE_URL=https://your-proxy.example.com
 - `DELETE /v1/files/{encodedName}`
 
 Use [../docs/ai_proxy_contract.md](../docs/ai_proxy_contract.md) as the canonical request/response contract.
+
+## 5) Render Deployment (Recommended)
+
+This repo includes a Render blueprint at `../render.yaml`.
+
+### Deploy
+
+1. In Render, choose **New +** → **Blueprint**.
+2. Select this GitHub repo.
+3. Confirm service `vital-track-ai-proxy`.
+4. Set secret env var `GEMINI_API_KEY`.
+5. Deploy.
+
+Render will expose a URL like:
+
+`https://vital-track-ai-proxy.onrender.com`
+
+Then run/build Flutter with:
+
+```bash
+flutter run --dart-define=AI_PROXY_BASE_URL=https://vital-track-ai-proxy.onrender.com
+```
