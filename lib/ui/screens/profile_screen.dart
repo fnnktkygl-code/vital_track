@@ -34,6 +34,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final profile = pp.profile;
     final colors = context.colors;
     final currentMode = mp.currentMode;
+    const proxyBaseUrl = String.fromEnvironment('AI_PROXY_BASE_URL', defaultValue: '');
+    final isProxyMode = proxyBaseUrl.trim().isNotEmpty;
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -383,7 +385,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 _Section(
                   icon: "🤖",
                   title: "Intelligence artificielle",
-                  subtitle: "Clé API pour l'assistant",
+                  subtitle: isProxyMode
+                      ? "Mode proxy sécurisé activé"
+                      : "Clé API pour l'assistant",
                   colors: colors,
                 ),
                 const SizedBox(height: 10),
@@ -392,6 +396,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      if (isProxyMode) ...[
+                        Row(
+                          children: [
+                            Icon(Icons.shield_rounded,
+                                color: colors.accent, size: 18),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text("Proxy IA actif",
+                                  style: TextStyle(
+                                      color: colors.textPrimary,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 14)),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          "La clé Gemini est gérée côté serveur via AI_PROXY_BASE_URL. Aucune clé locale n'est requise.",
+                          style: TextStyle(
+                              color: colors.textTertiary,
+                              fontSize: 12,
+                              fontStyle: FontStyle.italic),
+                        ),
+                      ] else
                       Row(
                         children: [
                           Icon(Icons.vpn_key_rounded,
@@ -432,14 +460,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 6),
-                      Text(
-                        "Gratuit sur aistudio.google.com · Requis pour le scan et le chat.",
-                        style: TextStyle(
-                            color: colors.textTertiary,
-                            fontSize: 12,
-                            fontStyle: FontStyle.italic),
-                      ),
+                      if (!isProxyMode) ...[
+                        const SizedBox(height: 6),
+                        Text(
+                          "Gratuit sur aistudio.google.com · Requis pour le scan et le chat.",
+                          style: TextStyle(
+                              color: colors.textTertiary,
+                              fontSize: 12,
+                              fontStyle: FontStyle.italic),
+                        ),
+                      ],
                     ],
                   ),
                 ),
