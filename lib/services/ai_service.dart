@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:vital_track/models/profile.dart';
 import 'package:vital_track/models/chat_message.dart';
@@ -29,6 +30,19 @@ class AIService {
 
     debugPrint('AIService: No API key found. User must set one in Profile.');
     return '';
+  }
+
+  static String _proxyBaseUrl() {
+    const envUrl = String.fromEnvironment('AI_PROXY_BASE_URL', defaultValue: '');
+    return envUrl.trim();
+  }
+
+  static bool _useProxy() => _proxyBaseUrl().isNotEmpty;
+
+  static Uri _proxyUri(String path) {
+    final base = _proxyBaseUrl().replaceAll(RegExp(r'/$'), '');
+    final normalizedPath = path.startsWith('/') ? path : '/$path';
+    return Uri.parse('$base$normalizedPath');
   }
 
   static bool _hasPrivacyConsent() {
@@ -180,6 +194,10 @@ CORE BEHAVIOR:
       debugPrint("AIService: Privacy consent missing.");
       return null;
     }
+
+    if (_useProxy()) {
+      return _analyzeTextViaProxy(query);
+    }
     
     final cacheKey = "text_$query";
     final cached = _hiveService.getCachedAiResponse(cacheKey);
@@ -272,6 +290,9 @@ CORE BEHAVIOR:
     if (!_hasPrivacyConsent()) {
       return "Confidentialité : acceptez d'abord la politique de confidentialité dans l'application.";
     }
+    if (_useProxy()) {
+      return _chatViaProxy(query, profile, contextSources, history);
+    }
     if (_getApiKey().isEmpty) return "Erreur : clé API manquante. Configurez GEMINI_API_KEY.";
 
     final userPrompt = _buildChatPrompt(query, profile, contextSources, history);
@@ -306,6 +327,17 @@ CORE BEHAVIOR:
       yield "Confidentialité : acceptez d'abord la politique de confidentialité dans l'application.";
       return;
     }
+
+    if (_useProxy()) {
+      final text = await _chatViaProxy(query, profile, contextSources, history);
+      if (text != null && text.isNotEmpty) {
+        yield text;
+      } else {
+        yield "Impossible de contacter le proxy IA.";
+      }
+      return;
+    }
+
     if (_getApiKey().isEmpty) {
       yield "Erreur : clé API manquante. Configurez GEMINI_API_KEY.";
       return;
@@ -387,6 +419,100 @@ CORE BEHAVIOR:
 
     buffer.writeln("USER QUESTION: $query");
     return buffer.toString();
+  }
+
+  static Future<Map<String, dynamic>?> _analyzeTextViaProxy(String query) async {
+    try {
+      final response = await http
+          .post(
+            _proxyUri('/v1/analyze-text'),
+            headers: {'Content-Type': 'application/json'},
+            body: json.encode({'query': query}),
+          )
+          .timeout(const Duration(seconds: 20));
+
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        debugPrint('AIService proxy analyzeText HTTP ${response.statusCode}: ${response.body}');
+        return null;
+      }
+
+      final decoded = json.decode(response.body);
+      if (decoded is Map<String, dynamic>) {
+        if (decoded['data'] is Map<String, dynamic>) {
+          return decoded['data'] as Map<String, dynamic>;
+        }
+        return decoded;
+      }
+      return null;
+    } catch (e) {
+      debugPrint('AIService proxy analyzeText error: $e');
+      return null;
+    }
+  }
+
+  static Future<String?> _chatViaProxy(
+    String query,
+    Profile profile,
+    List<KnowledgeSource> contextSources,
+    List<ChatMessage> history,
+  ) async {
+    try {
+      final compactContext = contextSources.take(3).map((source) {
+        final chunks = source.chunks.take(2).map((c) {
+          final trimmed = c.trim();
+          return trimmed.length > 400 ? trimmed.substring(0, 400) : trimmed;
+        }).toList();
+        return {
+          'title': source.title,
+          'type': source.type.name,
+          'chunks': chunks,
+        };
+      }).toList();
+
+      final compactHistory = history
+          .take(history.length > 6 ? 6 : history.length)
+          .map((m) => {
+                'isUser': m.isUser,
+                'text': m.text,
+              })
+          .toList();
+
+      final payload = {
+        'query': query,
+        'profile': {
+          'name': profile.name,
+          'goals': profile.goals,
+          'restrictions': profile.restrictions,
+          'bodyType': profile.bodyType,
+          'fastingExperience': profile.fastingExperience,
+        },
+        'context': compactContext,
+        'history': compactHistory,
+      };
+
+      final response = await http
+          .post(
+            _proxyUri('/v1/chat'),
+            headers: {'Content-Type': 'application/json'},
+            body: json.encode(payload),
+          )
+          .timeout(const Duration(seconds: 25));
+
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        debugPrint('AIService proxy chat HTTP ${response.statusCode}: ${response.body}');
+        return null;
+      }
+
+      final decoded = json.decode(response.body);
+      if (decoded is Map<String, dynamic>) {
+        final text = decoded['text'] ?? decoded['reply'] ?? decoded['message'];
+        if (text is String && text.trim().isNotEmpty) return text;
+      }
+      return null;
+    } catch (e) {
+      debugPrint('AIService proxy chat error: $e');
+      return null;
+    }
   }
 
   /// Select the most relevant chunks from a source based on keyword overlap.
