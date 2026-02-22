@@ -1,0 +1,45 @@
+name: Security Scan
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+permissions:
+  contents: read
+
+jobs:
+  secret-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Gitleaks scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  hardcoded-key-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Block Google API key patterns in source/deploy assets
+        run: |
+          set -euo pipefail
+          echo "Scanning for forbidden AIza key patterns..."
+          if grep -R -n -E 'AIza[0-9A-Za-z_-]{20,}' \
+            lib web docs docs/app \
+            --exclude='*.apk' \
+            --exclude-dir='.git' \
+            --exclude-dir='build' \
+            --exclude-dir='.dart_tool'; then
+            echo "❌ Hardcoded Google API key pattern detected."
+            exit 1
+          fi
+          echo "✅ No hardcoded Google API key patterns found."

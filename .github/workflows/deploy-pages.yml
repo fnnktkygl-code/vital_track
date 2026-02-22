@@ -29,6 +29,15 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
+      - name: Security gate (no hardcoded AIza key)
+        run: |
+          set -euo pipefail
+          if grep -R -n -E 'AIza[0-9A-Za-z_-]{20,}' docs/app docs/index.html docs/privacy.html --exclude='*.apk'; then
+            echo "❌ Hardcoded Google API key pattern detected in docs artifact."
+            exit 1
+          fi
+          echo "✅ Docs artifact passed key scan."
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
