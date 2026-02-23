@@ -1,5 +1,4 @@
 require('dotenv').config();
-
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -9,7 +8,7 @@ const multer = require('multer');
 const app = express();
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 25 * 1024 * 1024 },
+  limits: { fileSize: 20 * 1024 * 1024 }, // 20MB for inline Vertex data
 });
 
 const PORT = Number(process.env.PORT || 8080);
@@ -26,40 +25,35 @@ if (!GEMINI_API_KEY) {
   process.exit(1);
 }
 
-const JSON_LIMIT = '1mb';
-
 app.disable('x-powered-by');
-app.use(
-  helmet({
-    crossOriginResourcePolicy: false,
-  })
-);
-app.use(
-  cors({
-    origin(origin, callback) {
-      if (!origin) return callback(null, true);
-      if (ALLOWED_ORIGINS.length === 0 || ALLOWED_ORIGINS.includes(origin)) {
-        return callback(null, true);
-      }
-      return callback(new Error('Origin not allowed by CORS'));
-    },
-    methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-  })
-);
-app.use(express.json({ limit: JSON_LIMIT }));
-app.use(
-  rateLimit({
-    windowMs: RATE_LIMIT_WINDOW_MS,
-    max: RATE_LIMIT_MAX,
-    standardHeaders: true,
-    legacyHeaders: false,
-    message: { error: 'Too many requests' },
-  })
-);
+app.use(helmet({ crossOriginResourcePolicy: false }));
+app.use(cors({
+  origin(origin, callback) {
+    if (!origin) return callback(null, true);
+    if (ALLOWED_ORIGINS.length === 0 || ALLOWED_ORIGINS.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error('Origin not allowed by CORS'));
+  },
+  methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+}));
+app.use(express.json({ limit: '50mb' }));
+app.use(rateLimit({
+  windowMs: RATE_LIMIT_WINDOW_MS,
+  max: RATE_LIMIT_MAX,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests' },
+}));
 
-const GEMINI_BASE = 'https://generativelanguage.googleapis.com/v1beta';
-const GEMINI_UPLOAD = 'https://generativelanguage.googleapis.com/upload/v1beta/files';
+const PROJECT_ID = 'neon-polymer-487913-j6';
+const LOCATION = 'us-central1';
+const MODELS = ['gemini-2.5-flash', 'gemini-2.5-flash-lite'];
+
+function buildVertexEndpoint(modelId, method) {
+  return `https://${LOCATION}-aiplatform.googleapis.com/v1/projects/${PROJECT_ID}/locations/${LOCATION}/publishers/google/models/${modelId}:${method}?key=${encodeURIComponent(GEMINI_API_KEY)}`;
+}
 
 function safeError(error) {
   return {
@@ -68,99 +62,77 @@ function safeError(error) {
   };
 }
 
-function parseGeminiJson(text) {
-  const cleaned = text.replace(/```json/g, '').replace(/```/g, '').trim();
-  return JSON.parse(cleaned);
+async function fetchWithFallback(method, payload, isStream = false) {
+  let lastError = null;
+  for (const model of MODELS) {
+    try {
+      const endpoint = buildVertexEndpoint(model, isStream ? 'streamGenerateContent?alt=sse' : method);
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(`Vertex API failed (${response.status}): ${errText}`);
+      }
+      return response; // Return the fetch response object
+    } catch (error) {
+      console.error(`[Vertex error ${model}]:`, error.message);
+      lastError = error;
+      if (error.message.includes('429') || error.message.toLowerCase().includes('quota')) {
+        continue;
+      }
+      throw error;
+    }
+  }
+  throw lastError;
 }
 
-function sanitizeFileName(fileName) {
-  return (fileName || 'upload.bin').replace(/[^a-zA-Z0-9._-]/g, '_');
+// System Prompts
+const foodAnalysisPrompt = `You are an expert in Vitalist Nutrition (Dr. Sebi, Arnold Ehret, Dr. Morse).
+YOUR GOAL: IDENTIFY ALL VISIBLE INGREDIENTS/FOODS.
+Return a JSON object with an "items" array:
+{
+  "items": [{ "name": "Food Name", "emoji": "🍎", "origin": "Native/Hybrid/Man-made", "family": "Botanical Family", "scientific": { "pral": -2.5, "density": 90 }, "vitality": { "nova": 1, "freshness": 90 }, "specific": { "mucus": "Mucogène/Neutre/Dissolvant", "hybrid": false, "electric": true, "label": "Electric/Hybrid/Mucus" }, "note": "Brief analysis." }]
 }
+STRICT VITALIST RULES:
+1. ELECTRIC / ALKALINE (Good): Fruits (Seeded ONLY), Amaranth greens, Avocado, Bell Pepper, Cucumber, Dandelion greens, Chickpeas, Kale, Quinoa, Spelt.
+2. HYBRID / STARCH (Bad): CARROT, Garlic, Beet, Celery, Cauliflower, Corn, Potato, Cabbage, Grapefruit, Seedless fruits, White Rice, Wheat, Soy.
+3. MUCUS FORMING (Bad): Meat, Eggs, Dairy, Sugar, Fried foods, Alcohol.
+LOGIC: list dominant ingredients.`;
 
-async function geminiGenerateContent(parts, model = 'gemini-2.5-flash') {
-  const endpoint = `${GEMINI_BASE}/models/${model}:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`;
-  const response = await fetch(endpoint, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ contents: [{ parts }] }),
-  });
-
-  const payload = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    throw new Error(`Gemini generateContent failed (${response.status})`);
-  }
-
-  const text =
-    payload?.candidates?.[0]?.content?.parts?.find((part) => typeof part.text === 'string')?.text || '';
-
-  if (!text) {
-    throw new Error('Gemini returned empty response');
-  }
-
-  return text;
-}
-
-async function geminiFileUpload({ bytes, mimeType, displayName, fileName }) {
-  const startResponse = await fetch(`${GEMINI_UPLOAD}?key=${encodeURIComponent(GEMINI_API_KEY)}`, {
-    method: 'POST',
-    headers: {
-      'X-Goog-Upload-Protocol': 'resumable',
-      'X-Goog-Upload-Command': 'start',
-      'X-Goog-Upload-Header-Content-Length': String(bytes.length),
-      'X-Goog-Upload-Header-Content-Type': mimeType,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      file: {
-        displayName,
-        mimeType,
-        name: fileName,
-      },
-    }),
-  });
-
-  const uploadUrl = startResponse.headers.get('x-goog-upload-url');
-  if (!startResponse.ok || !uploadUrl) {
-    throw new Error(`Gemini upload start failed (${startResponse.status})`);
-  }
-
-  const uploadResponse = await fetch(uploadUrl, {
-    method: 'PUT',
-    headers: {
-      'Content-Length': String(bytes.length),
-      'X-Goog-Upload-Offset': '0',
-      'X-Goog-Upload-Command': 'upload, finalize',
-    },
-    body: bytes,
-  });
-
-  const payload = await uploadResponse.json().catch(() => ({}));
-  if (!uploadResponse.ok) {
-    throw new Error(`Gemini upload finalize failed (${uploadResponse.status})`);
-  }
-
-  return payload.file || payload;
-}
+const chatSystemPrompt = `You are the VitalTrack Mascot — a friendly, wise Pigeon and expert in Vitalist Nutrition.
+Be concise, practical, and supportive. Answer using BOTH context and your baseline Vitalist knowledge.`;
 
 app.get('/health', (_req, res) => {
-  res.json({ ok: true, service: 'vital-track-ai-proxy' });
+  res.json({ ok: true, service: 'vital-track-vertex-proxy' });
 });
 
+// 1. Analyze text
 app.post('/v1/analyze-text', async (req, res) => {
   try {
-    const query = String(req.body?.query || '').trim();
-    if (!query) {
-      return res.status(400).json({ error: 'query is required' });
-    }
+    const query = req.body?.query;
+    if (!query) return res.status(400).json({ error: 'query is required' });
 
-    const text = await geminiGenerateContent([{ text: `Analyze this food: ${query}` }]);
-    const data = parseGeminiJson(text);
-    return res.json(data);
+    const payload = {
+      contents: [{ role: 'user', parts: [{ text: `Analyze this food: ${query}` }] }],
+      systemInstruction: { role: 'system', parts: [{ text: foodAnalysisPrompt }] },
+      generationConfig: { temperature: 0.1, responseMimeType: 'application/json' }
+    };
+
+    const response = await fetchWithFallback('generateContent', payload);
+    const data = await response.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
+    const cleaned = text.replace(/```json/g, '').replace(/```/g, '').trim();
+    res.json({ data: JSON.parse(cleaned) });
   } catch (error) {
-    return res.status(502).json(safeError(error));
+    res.status(502).json(safeError(error));
   }
 });
 
+// 2. Analyze image
 app.post('/v1/analyze-image', upload.single('file'), async (req, res) => {
   try {
     if (!req.file?.buffer || req.file.buffer.length === 0) {
@@ -168,124 +140,84 @@ app.post('/v1/analyze-image', upload.single('file'), async (req, res) => {
     }
 
     const mimeType = String(req.body?.mimeType || req.file.mimetype || 'image/jpeg');
-    const dataPart = {
-      inlineData: {
-        mimeType,
-        data: req.file.buffer.toString('base64'),
-      },
+    const payload = {
+      contents: [{
+        role: 'user',
+        parts: [
+          { text: 'Identify all foods/ingredients in this image.' },
+          { inlineData: { mimeType, data: req.file.buffer.toString('base64') } }
+        ]
+      }],
+      systemInstruction: { role: 'system', parts: [{ text: foodAnalysisPrompt }] },
+      generationConfig: { temperature: 0.1, responseMimeType: 'application/json' }
     };
 
-    const text = await geminiGenerateContent([
-      { text: 'Identify all foods/ingredients in this image.' },
-      dataPart,
-    ]);
-    const data = parseGeminiJson(text);
-    return res.json(data);
+    const response = await fetchWithFallback('generateContent', payload);
+    const data = await response.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
+    const cleaned = text.replace(/```json/g, '').replace(/```/g, '').trim();
+    res.json({ data: JSON.parse(cleaned) });
   } catch (error) {
-    return res.status(502).json(safeError(error));
+    res.status(502).json(safeError(error));
   }
 });
 
+// 3. Chat (supports SSE streaming)
 app.post('/v1/chat', async (req, res) => {
   try {
     const query = String(req.body?.query || '').trim();
-    if (!query) {
-      return res.status(400).json({ error: 'query is required' });
-    }
+    if (!query) return res.status(400).json({ error: 'query is required' });
 
+    const isStream = req.query.stream === 'true' || req.headers['accept'] === 'text/event-stream';
     const profile = req.body?.profile || {};
     const context = Array.isArray(req.body?.context) ? req.body.context : [];
     const history = Array.isArray(req.body?.history) ? req.body.history : [];
+    const fileParts = Array.isArray(req.body?.fileParts) ? req.body.fileParts : [];
 
-    const prompt = [
-      'You are the VitalTrack Mascot — concise, practical, supportive.',
-      `USER QUESTION: ${query}`,
-      `PROFILE: ${JSON.stringify(profile)}`,
-      `CONTEXT: ${JSON.stringify(context)}`,
-      `HISTORY: ${JSON.stringify(history)}`,
-    ].join('\n\n');
+    let prompt = `USER QUESTION: ${query}\nPROFILE: ${JSON.stringify(profile)}\nCONTEXT: ${JSON.stringify(context)}\n`;
+    if (history.length) prompt += `HISTORY: ${JSON.stringify(history)}\n`;
 
-    const text = await geminiGenerateContent([{ text: prompt }]);
-    return res.json({ text });
+    const parts = [{ text: prompt }];
+    for (const f of fileParts) {
+      if (f.inlineData) parts.push(f);
+    }
+
+    const payload = {
+      contents: [{ role: 'user', parts }],
+      systemInstruction: { role: 'system', parts: [{ text: chatSystemPrompt }] },
+      generationConfig: { temperature: 0.3 }
+    };
+
+    const response = await fetchWithFallback('generateContent', payload, isStream);
+
+    if (isStream) {
+      res.setHeader('Content-Type', 'text/event-stream');
+      res.setHeader('Cache-Control', 'no-cache');
+      res.setHeader('Connection', 'keep-alive');
+
+      // Forward SSE chunks from Vertex AI to Flutter
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder('utf-8');
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value, { stream: true });
+        // The chunk from Vertex is pure SSE. We can just pipe it directly!
+        // Flutter expects standard "data: {...}" but Vertex sends "data: {...}"
+        // Vertex SSE format for streamGenerateContent: "data: { ...candidates... }"
+        // Wait, Dart parses 'data: {"candidates": [{"content": {"parts": [{"text": "..."}]}}]}
+        // We will forward it directly.
+        res.write(chunk);
+      }
+      res.end();
+    } else {
+      const data = await response.json();
+      const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      res.json({ text });
+    }
   } catch (error) {
-    return res.status(502).json(safeError(error));
-  }
-});
-
-app.post('/v1/files/upload', upload.single('file'), async (req, res) => {
-  try {
-    if (!req.file?.buffer || req.file.buffer.length === 0) {
-      return res.status(400).json({ error: 'file is required' });
-    }
-
-    const displayName = String(req.body?.displayName || req.file.originalname || 'upload');
-    const mimeType = String(req.body?.mimeType || req.file.mimetype || 'application/octet-stream');
-
-    const file = await geminiFileUpload({
-      bytes: req.file.buffer,
-      mimeType,
-      displayName,
-      fileName: sanitizeFileName(req.file.originalname),
-    });
-
-    return res.json({ file });
-  } catch (error) {
-    return res.status(502).json(safeError(error));
-  }
-});
-
-app.get('/v1/files', async (_req, res) => {
-  try {
-    const response = await fetch(`${GEMINI_BASE}/files?key=${encodeURIComponent(GEMINI_API_KEY)}`);
-    const payload = await response.json().catch(() => ({}));
-    if (!response.ok) {
-      throw new Error(`Gemini list files failed (${response.status})`);
-    }
-    return res.json({ files: payload.files || [] });
-  } catch (error) {
-    return res.status(502).json(safeError(error));
-  }
-});
-
-app.get('/v1/files/:encodedName', async (req, res) => {
-  try {
-    const fileName = decodeURIComponent(req.params.encodedName || '');
-    if (!fileName) {
-      return res.status(400).json({ error: 'fileName is required' });
-    }
-
-    const response = await fetch(
-      `${GEMINI_BASE}/${fileName}?key=${encodeURIComponent(GEMINI_API_KEY)}`
-    );
-    const payload = await response.json().catch(() => ({}));
-    if (!response.ok) {
-      throw new Error(`Gemini get file failed (${response.status})`);
-    }
-    return res.json({ file: payload });
-  } catch (error) {
-    return res.status(502).json(safeError(error));
-  }
-});
-
-app.delete('/v1/files/:encodedName', async (req, res) => {
-  try {
-    const fileName = decodeURIComponent(req.params.encodedName || '');
-    if (!fileName) {
-      return res.status(400).json({ error: 'fileName is required' });
-    }
-
-    const response = await fetch(
-      `${GEMINI_BASE}/${fileName}?key=${encodeURIComponent(GEMINI_API_KEY)}`,
-      { method: 'DELETE' }
-    );
-
-    if (!response.ok && response.status !== 204) {
-      throw new Error(`Gemini delete file failed (${response.status})`);
-    }
-
-    return res.status(204).send();
-  } catch (error) {
-    return res.status(502).json(safeError(error));
+    res.status(502).json(safeError(error));
   }
 });
 
@@ -297,5 +229,5 @@ app.use((error, _req, res, _next) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`vital-track-ai-proxy listening on :${PORT}`);
+  console.log(`vital-track-vertex-proxy listening on :${PORT}`);
 });

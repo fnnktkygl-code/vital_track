@@ -75,9 +75,10 @@ class _ChatScreenState extends State<ChatScreen> {
 
     // Inline sources (text/url/youtube) — keyword search
     final contextSources = _knowledgeService.searchSources(text);
-    // File-based sources (pdf/image/video) — Gemini FileParts
-    final fileParts = _knowledgeService.getFileParts();
     final profile = context.read<ProfileProvider>().profile;
+    
+    // File-based sources (pdf/image/video) — VertexInlineData
+    final fileParts = await _knowledgeService.getFileParts();
 
     final userMsg = ChatMessage(text: text, isUser: true);
     

@@ -1,11 +1,11 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:vital_track/models/knowledge_source.dart';
-import 'package:vital_track/services/gemini_file_service.dart';
+import 'package:vital_track/services/ai_service.dart';
 import 'package:vital_track/services/hive_service.dart';
 import 'package:vital_track/services/resource_ingestion_service.dart';
 
@@ -99,101 +99,58 @@ class KnowledgeService {
     await _hiveService.knowledgeSourcesBox.add(source);
   }
 
-  // ── FILE-BASED SOURCES (pdf, image, video — uploaded to Gemini) ───────────
+  // ── FILE-BASED SOURCES (pdf, image, video — inline data) ───────────
 
   Future<void> addPdfSource(String title, String path) async {
     final sourceId = DateTime.now().toIso8601String();
     final localPath = await _copyToLocalStorage(sourceId, path);
+    final file = File(localPath);
+    final fileSize = await file.length();
 
     final source = KnowledgeSource(
       id: sourceId,
       title: title,
-      content: 'Uploading PDF to Gemini...',
+      content: 'PDF added • ${_formatBytes(fileSize)}',
       type: KnowledgeType.pdf,
       sourceUrl: path,
       addedDate: DateTime.now(),
       localFilePath: localPath,
-      uploadStatus: 'uploading',
+      uploadStatus: 'ready',
+      uploadedAt: DateTime.now(),
+      geminiFileUri: localPath, // re-used as local reference
     );
     await _hiveService.knowledgeSourcesBox.add(source);
-
-    try {
-      final geminiFile = await GeminiFileService.uploadFile(
-        localPath: localPath,
-        displayName: title,
-        mimeType: 'application/pdf',
-      );
-
-      final activeFile =
-          await GeminiFileService.waitForProcessing(geminiFile.name);
-
-      source.geminiFileUri = activeFile.uri;
-      source.geminiFileName = activeFile.name;
-      source.uploadedAt = DateTime.now();
-      source.uploadStatus = 'ready';
-      source.content = 'PDF uploaded • ${_formatBytes(activeFile.sizeBytes)}';
-      await source.save();
-    } catch (e) {
-      debugPrint('KnowledgeService: PDF upload failed: $e');
-      source.uploadStatus = 'error';
-      source.content = 'Upload failed: $e';
-      await source.save();
-      rethrow;
-    }
   }
 
   Future<void> addImageSource(String title, String path) async {
     final sourceId = DateTime.now().toIso8601String();
     final localPath = await _copyToLocalStorage(sourceId, path);
+    final file = File(localPath);
+    final fileSize = await file.length();
 
     final source = KnowledgeSource(
       id: sourceId,
       title: title,
-      content: 'Uploading image to Gemini...',
+      content: 'Image added • ${_formatBytes(fileSize)}',
       type: KnowledgeType.image,
       sourceUrl: path,
       addedDate: DateTime.now(),
       localFilePath: localPath,
-      uploadStatus: 'uploading',
+      uploadStatus: 'ready',
+      uploadedAt: DateTime.now(),
+      geminiFileUri: localPath,
     );
     await _hiveService.knowledgeSourcesBox.add(source);
-
-    try {
-      final mimeType = path.toLowerCase().endsWith('.png')
-          ? 'image/png'
-          : 'image/jpeg';
-      final geminiFile = await GeminiFileService.uploadFile(
-        localPath: localPath,
-        displayName: title,
-        mimeType: mimeType,
-      );
-
-      final activeFile =
-          await GeminiFileService.waitForProcessing(geminiFile.name);
-
-      source.geminiFileUri = activeFile.uri;
-      source.geminiFileName = activeFile.name;
-      source.uploadedAt = DateTime.now();
-      source.uploadStatus = 'ready';
-      source.content =
-          'Image uploaded • ${_formatBytes(activeFile.sizeBytes)}';
-      await source.save();
-    } catch (e) {
-      debugPrint('KnowledgeService: Image upload failed: $e');
-      source.uploadStatus = 'error';
-      source.content = 'Upload failed: $e';
-      await source.save();
-      rethrow;
-    }
   }
 
   Future<void> addVideoSource(String title, String path) async {
     final file = File(path);
     final fileSize = await file.length();
 
-    if (fileSize > 2 * 1024 * 1024 * 1024) {
+    // Limit to 20MB for Vertex AI inline data compatibility via REST
+    if (fileSize > 20 * 1024 * 1024) {
       throw Exception(
-          'Video is too large (${_formatBytes(fileSize)}). Maximum is 2 GB.');
+          'Video is too large (${_formatBytes(fileSize)}). Maximum is 20 MB for inline base64.');
     }
 
     final sourceId = DateTime.now().toIso8601String();
@@ -202,131 +159,58 @@ class KnowledgeService {
     final source = KnowledgeSource(
       id: sourceId,
       title: title,
-      content: 'Uploading video to Gemini...',
+      content: 'Video added • ${_formatBytes(fileSize)}',
       type: KnowledgeType.video,
       sourceUrl: path,
       addedDate: DateTime.now(),
       localFilePath: localPath,
-      uploadStatus: 'uploading',
+      uploadStatus: 'ready',
+      uploadedAt: DateTime.now(),
+      geminiFileUri: localPath,
     );
     await _hiveService.knowledgeSourcesBox.add(source);
-
-    try {
-      final mimeType = path.toLowerCase().endsWith('.mov')
-          ? 'video/quicktime'
-          : 'video/mp4';
-      final geminiFile = await GeminiFileService.uploadFile(
-        localPath: localPath,
-        displayName: title,
-        mimeType: mimeType,
-      );
-
-      final activeFile = await GeminiFileService.waitForProcessing(
-        geminiFile.name,
-        maxWait: const Duration(minutes: 10),
-      );
-
-      source.geminiFileUri = activeFile.uri;
-      source.geminiFileName = activeFile.name;
-      source.uploadedAt = DateTime.now();
-      source.uploadStatus = 'ready';
-      source.content =
-          'Video uploaded • ${_formatBytes(activeFile.sizeBytes)}';
-      await source.save();
-    } catch (e) {
-      debugPrint('KnowledgeService: Video upload failed: $e');
-      source.uploadStatus = 'error';
-      source.content = 'Upload failed: $e';
-      await source.save();
-      rethrow;
-    }
   }
 
   // ── FILE MANAGEMENT ───────────────────────────────────────────────────────
 
-  /// Re-upload expired files to Gemini. Call on app startup.
   Future<void> refreshExpiredFiles() async {
-    for (final source in sources) {
-      if (!source.isFileBased) continue;
-      if (source.uploadStatus == 'error') continue;
-      if (source.localFilePath == null) continue;
-
-      if (!source.isFileActive && source.uploadedAt != null) {
-        debugPrint(
-            'KnowledgeService: Re-uploading expired file: ${source.title}');
-        try {
-          source.uploadStatus = 'uploading';
-          await source.save();
-
-          final geminiFile = await GeminiFileService.uploadFile(
-            localPath: source.localFilePath!,
-            displayName: source.title,
-          );
-
-          final activeFile =
-              await GeminiFileService.waitForProcessing(geminiFile.name);
-
-          // Clean up old file on Gemini
-          if (source.geminiFileName != null) {
-            try {
-              await GeminiFileService.deleteFile(source.geminiFileName!);
-            } catch (_) {}
-          }
-
-          source.geminiFileUri = activeFile.uri;
-          source.geminiFileName = activeFile.name;
-          source.uploadedAt = DateTime.now();
-          source.uploadStatus = 'ready';
-          await source.save();
-        } catch (e) {
-          debugPrint('KnowledgeService: Re-upload failed: $e');
-          source.uploadStatus = 'expired';
-          await source.save();
-        }
-      }
-    }
+    // Vertex API inline data doesn't expire, no-op
   }
 
-  /// Manually re-upload a single source.
   Future<void> reuploadSource(KnowledgeSource source) async {
+    // No-op for Vertex AI inline
     if (source.localFilePath == null) {
-      throw Exception('No local file available for re-upload.');
+      throw Exception('No local file available.');
     }
-
-    source.uploadStatus = 'uploading';
+    source.uploadStatus = 'ready';
     await source.save();
-
-    try {
-      final geminiFile = await GeminiFileService.uploadFile(
-        localPath: source.localFilePath!,
-        displayName: source.title,
-      );
-
-      final activeFile =
-          await GeminiFileService.waitForProcessing(geminiFile.name);
-
-      source.geminiFileUri = activeFile.uri;
-      source.geminiFileName = activeFile.name;
-      source.uploadedAt = DateTime.now();
-      source.uploadStatus = 'ready';
-      await source.save();
-    } catch (e) {
-      source.uploadStatus = 'error';
-      source.content = 'Re-upload failed: $e';
-      await source.save();
-      rethrow;
-    }
   }
 
-  /// Get FilePart references for all active uploaded files.
-  List<FilePart> getFileParts() {
-    final parts = <FilePart>[];
+  /// Get VertexInlineData references for all active uploaded files.
+  Future<List<VertexInlineData>> getFileParts() async {
+    final parts = <VertexInlineData>[];
     for (final source in sources) {
       if (source.isFileBased &&
           source.uploadStatus == 'ready' &&
-          source.geminiFileUri != null &&
+          source.localFilePath != null &&
           source.isFileActive) {
-        parts.add(FilePart(Uri.parse(source.geminiFileUri!)));
+        try {
+          final file = File(source.localFilePath!);
+          if (await file.exists()) {
+             final bytes = await file.readAsBytes();
+             final b64 = base64Encode(bytes);
+             String mime = 'application/octet-stream';
+             if (source.type == KnowledgeType.pdf) mime = 'application/pdf';
+             else if (source.type == KnowledgeType.image) {
+               mime = source.localFilePath!.toLowerCase().endsWith('.png') ? 'image/png' : 'image/jpeg';
+             } else if (source.type == KnowledgeType.video) {
+               mime = source.localFilePath!.toLowerCase().endsWith('.mov') ? 'video/quicktime' : 'video/mp4';
+             }
+             parts.add(VertexInlineData(mimeType: mime, base64Data: b64));
+          }
+        } catch (e) {
+          debugPrint('KnowledgeService: Error reading local file for inline data: $e');
+        }
       }
     }
     return parts;
@@ -338,16 +222,6 @@ class KnowledgeService {
     final source = _hiveService.knowledgeSourcesBox.get(key);
 
     if (source != null) {
-      // Delete from Gemini if uploaded
-      if (source.geminiFileName != null) {
-        try {
-          await GeminiFileService.deleteFile(source.geminiFileName!);
-        } catch (e) {
-          debugPrint('KnowledgeService: Gemini delete failed: $e');
-        }
-      }
-
-      // Delete local copy
       if (source.localFilePath != null) {
         try {
           final file = File(source.localFilePath!);
@@ -367,8 +241,6 @@ class KnowledgeService {
 
   // ── RETRIEVAL (for inline sources only) ───────────────────────────────────
 
-  /// Keyword-scored search for inline sources (text/url/youtube).
-  /// File-based sources are handled via Gemini FileParts directly.
   List<KnowledgeSource> searchSources(String query) {
     final inlineSources = sources.where((s) => !s.isFileBased).toList();
 

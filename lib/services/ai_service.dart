@@ -1,22 +1,37 @@
 import 'dart:convert';
 
-import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
-import 'package:vital_track/models/profile.dart';
 import 'package:vital_track/models/chat_message.dart';
 import 'package:vital_track/models/knowledge_source.dart';
+import 'package:vital_track/models/profile.dart';
 import 'package:vital_track/services/hive_service.dart';
-import 'package:flutter/foundation.dart';
+
+class VertexInlineData {
+  final String mimeType;
+  final String base64Data;
+
+  VertexInlineData({required this.mimeType, required this.base64Data});
+
+  Map<String, dynamic> toJson() => {
+        'inlineData': {
+          'mimeType': mimeType,
+          'data': base64Data,
+        }
+      };
+}
 
 class AIService {
   static String? _cachedKey;
   static final HiveService _hiveService = HiveService();
 
+  static const String _projectId = 'neon-polymer-487913-j6';
+  static const String _location = 'us-central1';
+
   static String _getApiKey() {
     if (_cachedKey != null && _cachedKey!.isNotEmpty) return _cachedKey!;
 
-    // Check Hive (runtime — user-provided key from profile)
     try {
       final hiveKey = _hiveService.loadApiKey();
       if (hiveKey != null && hiveKey.isNotEmpty) {
@@ -55,27 +70,21 @@ class AIService {
     }
   }
 
-  // ── MODEL ROTATION ──────────────────────────────────────────────────────────
-  // Models ordered by preference. On quota errors, we skip to the next.
   static const _models = [
-    'gemini-3-flash-preview',
     'gemini-2.5-flash',
     'gemini-2.5-flash-lite',
   ];
 
-  // Track which models are temporarily exhausted (reset after cooldown)
   static final Map<String, DateTime> _exhausted = {};
   static const _cooldown = Duration(minutes: 2);
 
   static String _pickModel() {
     final now = DateTime.now();
-    // Remove expired cooldowns
     _exhausted.removeWhere((_, expiry) => now.isAfter(expiry));
 
     for (final m in _models) {
       if (!_exhausted.containsKey(m)) return m;
     }
-    // All exhausted — try the first one anyway (cooldown may have passed server-side)
     _exhausted.clear();
     return _models.first;
   }
@@ -93,23 +102,32 @@ class AIService {
         msg.contains('429');
   }
 
-  static GenerativeModel _getModel(String modelName, {bool isChat = false}) {
+  static Uri _buildVertexEndpoint(String modelId, String method) {
     final key = _getApiKey();
-    return GenerativeModel(
-      model: modelName,
-      apiKey: key,
-      systemInstruction: Content.system(isChat ? _chatSystemPrompt : _foodAnalysisPrompt),
-      generationConfig: GenerationConfig(
-        temperature: isChat ? 0.3 : 0.1,
-        responseMimeType: isChat ? 'text/plain' : 'application/json',
-      ),
-    );
+    return Uri.parse(
+        'https://$_location-aiplatform.googleapis.com/v1/projects/$_projectId/locations/$_location/publishers/google/models/$modelId:$method?key=$key');
   }
 
-  // To allow clearing cache when user updates key
-  static void resetKeyCache() => _cachedKey = null;
+  static Map<String, dynamic> _buildVertexPayload(
+      {required List<Map<String, dynamic>> contents,
+      required bool isChat,
+      required String systemPrompt}) {
+    return {
+      'contents': contents,
+      'systemInstruction': {
+        'role': 'system',
+        'parts': [
+          {'text': systemPrompt}
+        ]
+      },
+      'generationConfig': {
+        'temperature': isChat ? 0.3 : 0.1,
+        'responseMimeType': isChat ? 'text/plain' : 'application/json',
+      }
+    };
+  }
 
-  // ── SYSTEM PROMPTS (sent ONCE via systemInstruction, not per request) ─────
+  static void resetKeyCache() => _cachedKey = null;
 
   static const _foodAnalysisPrompt = """
 You are an expert in Vitalist Nutrition (Dr. Sebi, Arnold Ehret, Dr. Morse).
@@ -185,48 +203,64 @@ CORE BEHAVIOR:
 9. Answer ONLY from the provided context when available. If the answer is NOT in the context, say so clearly.
 """;
 
-  // ── FOOD ANALYSIS ─────────────────────────────────────────────────────────
-
   static Future<Map<String, dynamic>?> analyzeText(String query) async {
     debugPrint("AIService: Analyzing text: $query");
 
-    if (!_hasPrivacyConsent()) {
-      debugPrint("AIService: Privacy consent missing.");
-      return null;
-    }
+    if (!_hasPrivacyConsent()) return null;
 
     if (_useProxy()) {
       return _analyzeTextViaProxy(query);
     }
-    
+
     final cacheKey = "text_$query";
     final cached = _hiveService.getCachedAiResponse(cacheKey);
     if (cached != null) {
-      debugPrint("AIService: Returning cached text analysis");
       return json.decode(cached);
     }
 
-    if (_getApiKey().isEmpty) {
-      debugPrint("AIService Error: GEMINI_API_KEY not set.");
-      return null;
-    }
+    if (_getApiKey().isEmpty) return null;
 
-    // Try each model until one succeeds
     for (int attempt = 0; attempt < _models.length; attempt++) {
       final model = _pickModel();
       try {
-        debugPrint('AIService: analyzeText using $model');
-        final response = await _getModel(model).generateContent(
-          [Content.text("Analyze this food: $query")],
+        final uri = _buildVertexEndpoint(model, 'generateContent');
+        final payload = _buildVertexPayload(
+          contents: [
+            {
+              'role': 'user',
+              'parts': [
+                {'text': "Analyze this food: $query"}
+              ]
+            }
+          ],
+          isChat: false,
+          systemPrompt: _foodAnalysisPrompt,
         );
-        if (response.text == null) return null;
-        String jsonText = response.text!.replaceAll("```json", "").replaceAll("```", "").trim();
-        _hiveService.cacheAiResponse(cacheKey, jsonText);
-        return json.decode(jsonText);
+
+        final response = await http.post(
+          uri,
+          headers: {'Content-Type': 'application/json'},
+          body: json.encode(payload),
+        );
+
+        if (response.statusCode >= 200 && response.statusCode < 300) {
+          final data = json.decode(response.body);
+          final candidates = data['candidates'] as List?;
+          if (candidates != null && candidates.isNotEmpty) {
+            final text = candidates.first['content']['parts'][0]['text'] as String?;
+            if (text != null) {
+              String jsonText = text.replaceAll("```json", "").replaceAll("```", "").trim();
+              _hiveService.cacheAiResponse(cacheKey, jsonText);
+              return json.decode(jsonText);
+            }
+          }
+        } else {
+          throw Exception('HTTP ${response.statusCode}: ${response.body}');
+        }
       } catch (e) {
         if (_isQuotaError(e) && attempt < _models.length - 1) {
           _markExhausted(model);
-          continue; // Try next model
+          continue;
         }
         debugPrint("AIService Text Error: $e");
         return null;
@@ -237,44 +271,67 @@ CORE BEHAVIOR:
 
   static Future<Map<String, dynamic>?> analyzeImage(XFile image) async {
     debugPrint("AIService: Analyzing image...");
-    if (!_hasPrivacyConsent()) {
-      debugPrint("AIService: Privacy consent missing.");
-      return null;
-    }
+    if (!_hasPrivacyConsent()) return null;
 
     if (_useProxy()) {
       return _analyzeImageViaProxy(image);
     }
 
-    if (_getApiKey().isEmpty) {
-      debugPrint("AIService Error: GEMINI_API_KEY not set.");
-      return null;
-    }
+    if (_getApiKey().isEmpty) return null;
 
     final bytes = await image.readAsBytes();
-
     final cacheKey = "img_${bytes.length}";
     final cached = _hiveService.getCachedAiResponse(cacheKey);
     if (cached != null) {
-      debugPrint("AIService: Returning cached image analysis");
       return json.decode(cached);
     }
+
+    final mimeType = image.path.toLowerCase().endsWith('.png') ? 'image/png' : 'image/jpeg';
+    final base64Image = base64Encode(bytes);
 
     for (int attempt = 0; attempt < _models.length; attempt++) {
       final model = _pickModel();
       try {
-        debugPrint('AIService: analyzeImage using $model');
-        final response = await _getModel(model).generateContent([
-          Content.multi([
-            TextPart("Identify all foods/ingredients in this image."),
-            DataPart('image/jpeg', bytes),
-          ])
-        ]);
-        debugPrint("AIService: Response received");
-        if (response.text == null) return null;
-        String jsonText = response.text!.replaceAll("```json", "").replaceAll("```", "").trim();
-        _hiveService.cacheAiResponse(cacheKey, jsonText);
-        return json.decode(jsonText);
+        final uri = _buildVertexEndpoint(model, 'generateContent');
+        final payload = _buildVertexPayload(
+          contents: [
+            {
+              'role': 'user',
+              'parts': [
+                {'text': "Identify all foods/ingredients in this image."},
+                {
+                  'inlineData': {
+                    'mimeType': mimeType,
+                    'data': base64Image,
+                  }
+                }
+              ]
+            }
+          ],
+          isChat: false,
+          systemPrompt: _foodAnalysisPrompt,
+        );
+
+        final response = await http.post(
+          uri,
+          headers: {'Content-Type': 'application/json'},
+          body: json.encode(payload),
+        );
+
+        if (response.statusCode >= 200 && response.statusCode < 300) {
+          final data = json.decode(response.body);
+          final candidates = data['candidates'] as List?;
+          if (candidates != null && candidates.isNotEmpty) {
+            final text = candidates.first['content']['parts'][0]['text'] as String?;
+            if (text != null) {
+              String jsonText = text.replaceAll("```json", "").replaceAll("```", "").trim();
+              _hiveService.cacheAiResponse(cacheKey, jsonText);
+              return json.decode(jsonText);
+            }
+          }
+        } else {
+          throw Exception('HTTP ${response.statusCode}: ${response.body}');
+        }
       } catch (e) {
         if (_isQuotaError(e) && attempt < _models.length - 1) {
           _markExhausted(model);
@@ -287,11 +344,9 @@ CORE BEHAVIOR:
     return null;
   }
 
-  // ── CHAT (NON-STREAMING FALLBACK) ─────────────────────────────────────────
-
-  static Future<String?> chatWithMascot(
-      String query, Profile profile, List<KnowledgeSource> contextSources, List<ChatMessage> history,
-      {List<FilePart> fileParts = const []}) async {
+  static Future<String?> chatWithMascot(String query, Profile profile, List<KnowledgeSource> contextSources,
+      List<ChatMessage> history,
+      {List<VertexInlineData> fileParts = const []}) async {
     if (!_hasPrivacyConsent()) {
       return "Confidentialité : acceptez d'abord la politique de confidentialité dans l'application.";
     }
@@ -301,45 +356,65 @@ CORE BEHAVIOR:
     if (_getApiKey().isEmpty) return "Erreur : clé API manquante. Configurez GEMINI_API_KEY.";
 
     final userPrompt = _buildChatPrompt(query, profile, contextSources, history);
-    final parts = <Part>[TextPart(userPrompt), ...fileParts];
+    final parts = <Map<String, dynamic>>[
+      {'text': userPrompt}
+    ];
+
+    for (var f in fileParts) {
+      parts.add(f.toJson());
+    }
 
     for (int attempt = 0; attempt < _models.length; attempt++) {
       final model = _pickModel();
       try {
-        debugPrint('AIService: chat using $model');
-        final response = await _getModel(model, isChat: true).generateContent(
-          [Content.multi(parts)],
+        final uri = _buildVertexEndpoint(model, 'generateContent');
+        final payload = _buildVertexPayload(
+          contents: [
+            {
+              'role': 'user',
+              'parts': parts,
+            }
+          ],
+          isChat: true,
+          systemPrompt: _chatSystemPrompt,
         );
-        return response.text;
+
+        final response = await http.post(
+          uri,
+          headers: {'Content-Type': 'application/json'},
+          body: json.encode(payload),
+        );
+
+        if (response.statusCode >= 200 && response.statusCode < 300) {
+          final data = json.decode(response.body);
+          final candidates = data['candidates'] as List?;
+          if (candidates != null && candidates.isNotEmpty) {
+            return candidates.first['content']['parts'][0]['text'] as String?;
+          }
+        } else {
+          throw Exception('HTTP ${response.statusCode}: ${response.body}');
+        }
       } catch (e) {
         if (_isQuotaError(e) && attempt < _models.length - 1) {
           _markExhausted(model);
           continue;
         }
-        debugPrint('AIService Chat Error: $e');
         return _friendlyError(e);
       }
     }
     return _friendlyError('All models exhausted');
   }
 
-  // ── CHAT (STREAMING) ──────────────────────────────────────────────────────
-
-  static Stream<String> chatWithMascotStream(
-      String query, Profile profile, List<KnowledgeSource> contextSources, List<ChatMessage> history,
-      {List<FilePart> fileParts = const []}) async* {
+  static Stream<String> chatWithMascotStream(String query, Profile profile, List<KnowledgeSource> contextSources,
+      List<ChatMessage> history,
+      {List<VertexInlineData> fileParts = const []}) async* {
     if (!_hasPrivacyConsent()) {
       yield "Confidentialité : acceptez d'abord la politique de confidentialité dans l'application.";
       return;
     }
 
     if (_useProxy()) {
-      final text = await _chatViaProxy(query, profile, contextSources, history);
-      if (text != null && text.isNotEmpty) {
-        yield text;
-      } else {
-        yield "Impossible de contacter le proxy IA.";
-      }
+      yield* _chatStreamViaProxy(query, profile, contextSources, history, fileParts: fileParts);
       return;
     }
 
@@ -349,21 +424,63 @@ CORE BEHAVIOR:
     }
 
     final userPrompt = _buildChatPrompt(query, profile, contextSources, history);
-    final parts = <Part>[TextPart(userPrompt), ...fileParts];
+    final parts = <Map<String, dynamic>>[
+      {'text': userPrompt}
+    ];
+
+    for (var f in fileParts) {
+      parts.add(f.toJson());
+    }
 
     for (int attempt = 0; attempt < _models.length; attempt++) {
       final model = _pickModel();
       try {
-        debugPrint('AIService: stream using $model');
-        final stream = _getModel(model, isChat: true).generateContentStream(
-          [Content.multi(parts)],
+        final uri = _buildVertexEndpoint(model, 'streamGenerateContent?alt=sse');
+        final payload = _buildVertexPayload(
+          contents: [
+            {
+              'role': 'user',
+              'parts': parts,
+            }
+          ],
+          isChat: true,
+          systemPrompt: _chatSystemPrompt,
         );
-        await for (final chunk in stream) {
-          if (chunk.text != null) {
-            yield chunk.text!;
+
+        final request = http.Request('POST', uri);
+        request.headers['Content-Type'] = 'application/json';
+        request.body = json.encode(payload);
+
+        final response = await http.Client().send(request);
+
+        if (response.statusCode >= 200 && response.statusCode < 300) {
+          try {
+            await for (var chunk in response.stream.transform(utf8.decoder)) {
+              if (chunk.startsWith('data: ')) {
+                final jsonStr = chunk.substring(6).trim();
+                if (jsonStr.isNotEmpty) {
+                  final data = json.decode(jsonStr);
+                  final candidates = data['candidates'] as List?;
+                  if (candidates != null && candidates.isNotEmpty) {
+                    final parts = candidates.first['content']?['parts'] as List?;
+                    if (parts != null && parts.isNotEmpty) {
+                      final text = parts[0]['text'] as String?;
+                      if (text != null && text.isNotEmpty) {
+                        yield text;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          } catch (e) {
+            // Stream exception handled locally here if any
           }
+          return;
+        } else {
+          String body = await response.stream.bytesToString();
+          throw Exception('HTTP ${response.statusCode}: $body');
         }
-        return; // Success — exit the loop
       } catch (e) {
         if (_isQuotaError(e) && attempt < _models.length - 1) {
           _markExhausted(model);
@@ -377,13 +494,10 @@ CORE BEHAVIOR:
     }
   }
 
-  // ── PROMPT BUILDER (shared by both chat methods) ──────────────────────────
-
   static String _buildChatPrompt(
       String query, Profile profile, List<KnowledgeSource> contextSources, List<ChatMessage> history) {
     final buffer = StringBuffer();
 
-    // User profile context
     buffer.writeln("USER PROFILE:");
     buffer.writeln("Name: ${profile.name}");
     buffer.writeln("Goals: ${profile.goals.join(', ')}");
@@ -391,19 +505,15 @@ CORE BEHAVIOR:
     buffer.writeln("Metrics: ${profile.vitalMetrics}");
     buffer.writeln();
 
-    // Knowledge context — only relevant CHUNKS, not full documents
     if (contextSources.isNotEmpty) {
       buffer.writeln("RELEVANT KNOWLEDGE CONTEXT:");
       for (final source in contextSources) {
         buffer.writeln("--- [${source.title}] (${source.type.name}) ---");
-        // Send chunks instead of full content to stay within token budget
         final chunks = source.chunks;
         if (chunks.isNotEmpty) {
-          // Find the most relevant chunks for this query
           final relevantChunks = _selectRelevantChunks(query, chunks, maxChunks: 4);
           buffer.writeln(relevantChunks.join('\n\n'));
         } else {
-          // Fallback: truncate full content
           final content = source.content;
           buffer.writeln(content.length > 3000 ? content.substring(0, 3000) : content);
         }
@@ -413,7 +523,6 @@ CORE BEHAVIOR:
 
     if (history.isNotEmpty) {
       buffer.writeln("--- RECENT CONVERSATION HISTORY ---");
-      // Only include last N messages to save context limit (e.g. last 10)
       final recentHistory = history.length > 10 ? history.sublist(history.length - 10) : history;
       for (final msg in recentHistory) {
         final role = msg.isUser ? "User" : "Mascot";
@@ -437,7 +546,7 @@ CORE BEHAVIOR:
           .timeout(const Duration(seconds: 20));
 
       if (response.statusCode < 200 || response.statusCode >= 300) {
-        debugPrint('AIService proxy analyzeText HTTP ${response.statusCode}: ${response.body}');
+        debugPrint('AIService proxy analyzeText HTTP \${response.statusCode}: \${response.body}');
         return null;
       }
 
@@ -450,7 +559,7 @@ CORE BEHAVIOR:
       }
       return null;
     } catch (e) {
-      debugPrint('AIService proxy analyzeText error: $e');
+      debugPrint('AIService proxy analyzeText error: \$e');
       return null;
     }
   }
@@ -458,9 +567,7 @@ CORE BEHAVIOR:
   static Future<Map<String, dynamic>?> _analyzeImageViaProxy(XFile image) async {
     try {
       final bytes = await image.readAsBytes();
-      final mimeType = image.path.toLowerCase().endsWith('.png')
-          ? 'image/png'
-          : 'image/jpeg';
+      final mimeType = image.path.toLowerCase().endsWith('.png') ? 'image/png' : 'image/jpeg';
 
       final request = http.MultipartRequest('POST', _proxyUri('/v1/analyze-image'));
       request.files.add(
@@ -472,7 +579,7 @@ CORE BEHAVIOR:
       );
       request.fields['mimeType'] = mimeType;
 
-      final streamed = await request.send().timeout(const Duration(seconds: 25));
+      final streamed = await request.send().timeout(const Duration(seconds: 40));
       final response = await http.Response.fromStream(streamed);
 
       if (response.statusCode < 200 || response.statusCode >= 300) {
@@ -540,7 +647,7 @@ CORE BEHAVIOR:
             headers: {'Content-Type': 'application/json'},
             body: json.encode(payload),
           )
-          .timeout(const Duration(seconds: 25));
+          .timeout(const Duration(seconds: 40));
 
       if (response.statusCode < 200 || response.statusCode >= 300) {
         debugPrint('AIService proxy chat HTTP ${response.statusCode}: ${response.body}');
@@ -558,16 +665,90 @@ CORE BEHAVIOR:
       return null;
     }
   }
+  
+  static Stream<String> _chatStreamViaProxy(
+    String query,
+    Profile profile,
+    List<KnowledgeSource> contextSources,
+    List<ChatMessage> history,
+    {List<VertexInlineData> fileParts = const []}
+  ) async* {
+    try {
+      final compactContext = contextSources.take(3).map((source) {
+        final chunks = source.chunks.take(2).map((c) {
+          final trimmed = c.trim();
+          return trimmed.length > 400 ? trimmed.substring(0, 400) : trimmed;
+        }).toList();
+        return {
+          'title': source.title,
+          'type': source.type.name,
+          'chunks': chunks,
+        };
+      }).toList();
 
-  /// Select the most relevant chunks from a source based on keyword overlap.
-  static List<String> _selectRelevantChunks(
-      String query, List<String> chunks, {int maxChunks = 4}) {
-    final keywords = query
-        .toLowerCase()
-        .split(RegExp(r'\s+'))
-        .where((w) => w.length > 2)
-        .toSet();
+      final compactHistory = history
+          .take(history.length > 6 ? 6 : history.length)
+          .map((m) => {
+                'isUser': m.isUser,
+                'text': m.text,
+              })
+          .toList();
 
+      final payload = {
+        'query': query,
+        'profile': {
+          'name': profile.name,
+          'goals': profile.goals,
+          'restrictions': profile.restrictions,
+          'bodyType': profile.bodyType,
+          'fastingExperience': profile.fastingExperience,
+        },
+        'context': compactContext,
+        'history': compactHistory,
+        'fileParts': fileParts.map((f) => f.toJson()).toList(),
+      };
+
+      final request = http.Request('POST', _proxyUri('/v1/chat?stream=true'));
+      request.headers['Content-Type'] = 'application/json';
+      request.headers['Accept'] = 'text/event-stream';
+      request.body = json.encode(payload);
+
+      final response = await http.Client().send(request);
+
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        try {
+          await for (var chunk in response.stream.transform(utf8.decoder)) {
+            final lines = chunk.split('\\n');
+            for (final line in lines) {
+              if (line.startsWith('data: ')) {
+                final jsonStr = line.substring(6).trim();
+                if (jsonStr.isNotEmpty) {
+                  final data = json.decode(jsonStr);
+                  if (data['error'] != null) {
+                    yield data['error'];
+                  } else if (data['text'] != null) {
+                    yield data['text'];
+                  }
+                }
+              }
+            }
+          }
+        } catch (e) {
+           debugPrint("Substream parsing error: $e");
+        }
+      } else {
+        String body = await response.stream.bytesToString();
+        debugPrint('AIService proxy stream HTTP ${response.statusCode}: $body');
+        yield "Erreur proxy HTTP ${response.statusCode}";
+      }
+    } catch (e) {
+      debugPrint('AIService proxy stream error: $e');
+      yield "Erreur de connexion au Proxy IA.";
+    }
+  }
+
+  static List<String> _selectRelevantChunks(String query, List<String> chunks, {int maxChunks = 4}) {
+    final keywords = query.toLowerCase().split(RegExp(r'\s+')).where((w) => w.length > 2).toSet();
     if (keywords.isEmpty) return chunks.take(maxChunks).toList();
 
     final scored = <int, int>{};
@@ -575,25 +756,17 @@ CORE BEHAVIOR:
       final lower = chunks[i].toLowerCase();
       int score = 0;
       for (final kw in keywords) {
-        // Count occurrences for better ranking
-        final matches = kw.allMatches(lower).length;
-        score += matches;
+        score += kw.allMatches(lower).length;
       }
       if (score > 0) scored[i] = score;
     }
 
     if (scored.isEmpty) return chunks.take(maxChunks).toList();
 
-    final sortedIndices = scored.entries.toList()
-      ..sort((a, b) => b.value.compareTo(a.value));
-
-    return sortedIndices
-        .take(maxChunks)
-        .map((e) => chunks[e.key])
-        .toList();
+    final sortedIndices = scored.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
+    return sortedIndices.take(maxChunks).map((e) => chunks[e.key]).toList();
   }
 
-  /// Convert exception to a user-friendly French error message.
   static String _friendlyError(dynamic e) {
     final msg = e.toString().toLowerCase();
     if (msg.contains('api key') || msg.contains('api_key_invalid') || msg.contains('permission')) {
@@ -605,7 +778,7 @@ CORE BEHAVIOR:
     if (msg.contains('network') || msg.contains('socket') || msg.contains('connection')) {
       return "📡 Pas de connexion internet. Vérifiez votre réseau et réessayez.";
     }
-    debugPrint('AIService unknown error: $e');
+    debugPrint('AIService unknown error: \$e');
     return "Impossible de contacter l'assistant. Vérifiez votre clé API et votre connexion. 🐦";
   }
 }
