@@ -143,23 +143,28 @@ class FastingProvider extends ChangeNotifier {
     if (hours < 6) {
       if (proto == 'ehret') return 'Ehret : la digestion du dernier repas s\'achève. Le nettoyage commence.';
       if (proto == 'morse') return 'Morse : le système lymphatique commence à se désencombrer sans nouvel apport acide.';
-      return 'Sebi : le corps redirige l\'énergie de la digestion vers l\'élimination du mucus.';
+      if (proto == 'sebi') return 'Sebi : le corps redirige l\'énergie de la digestion vers l\'élimination du mucus.';
+      return 'Vitaliste : ensemble, Sebi, Ehret et Morse s\'accordent — laisse le corps se concentrer sur le nettoyage.';
     } else if (hours < 12) {
       if (proto == 'ehret') return 'Ehret : V = P − O. L\'obstruction diminue, la vitalité monte progressivement.';
       if (proto == 'morse') return 'Morse : les surrénales commencent à stimuler la filtration rénale. Reste hydraté.';
-      return 'Sebi : les dépôts de mucus se ramollissent. L\'eau de source aide à les évacuer.';
+      if (proto == 'sebi') return 'Sebi : les dépôts de mucus se ramollissent. L\'eau de source aide à les évacuer.';
+      return 'Vitaliste : phase de transition — ton corps commence à brûler ses réserves et à nettoyer la lymphe.';
     } else if (hours < 24) {
       if (proto == 'ehret') return 'Ehret : le corps brûle les réserves graisseuses chargées de mucus. Nettoyage métabolique.';
       if (proto == 'morse') return 'Morse : la cétose aide à dissoudre les acides stockés dans les tissus interstitiels.';
-      return 'Sebi : les tissus profonds libèrent les minéraux inorganiques. Le nettoyage s\'intensifie.';
+      if (proto == 'sebi') return 'Sebi : les tissus profonds libèrent les minéraux inorganiques. Le nettoyage s\'intensifie.';
+      return 'Vitaliste : cétose active — la lymphe se filtre, les acides se dissolvent, les 102 minéraux se rééquilibrent.';
     } else if (hours < 48) {
       if (proto == 'ehret') return 'Ehret : l\'autophagie recycle les protéines endommagées. Le « médecin intérieur » opère.';
       if (proto == 'morse') return 'Morse : nettoyage lymphatique profond. Les reins devraient filtrer — vérifie ton urine.';
-      return 'Sebi : les cellules se débarrassent des dépôts de calcium inorganique et de mucus ancien.';
+      if (proto == 'sebi') return 'Sebi : les cellules se débarrassent des dépôts de calcium inorganique et de mucus ancien.';
+      return 'Vitaliste : autophagie + nettoyage lymphatique profond. Le corps travaille en synergie totale.';
     } else {
       if (proto == 'ehret') return 'Ehret : « Le jeûne avancé apporte une clarté mentale extraordinaire. » Tu régénères en profondeur.';
       if (proto == 'morse') return 'Morse : régénération des cellules souches. Le système immunitaire se reconstruit. Écoute ton corps.';
-      return 'Sebi : nettoyage intracellulaire profond. Les 102 minéraux se rééquilibrent naturellement.';
+      if (proto == 'sebi') return 'Sebi : nettoyage intracellulaire profond. Les 102 minéraux se rééquilibrent naturellement.';
+      return 'Vitaliste : tu entres dans la phase de régénération profonde. Sebi, Ehret et Morse sont unanimes — reste à l\'écoute de ton corps.';
     }
   }
 
@@ -173,13 +178,15 @@ class FastingProvider extends ChangeNotifier {
       case FastingType.waterFast:
         if (proto == 'ehret') return 'Ehret : brise avec un demi-orange ou quelques raisins. Attends 1h, puis un peu plus de fruit.';
         if (proto == 'morse') return 'Morse : raisins noirs avec pépins ou pastèque. Petite quantité d\'abord, puis augmente.';
-        return 'Sebi : papaye, melon avec pépins, ou raisins. Petite portion, puis augmente sur 24h.';
+        if (proto == 'sebi') return 'Sebi : papaye, melon avec pépins, ou raisins. Petite portion, puis augmente sur 24h.';
+        return 'Vitaliste : papaye, melon, ou raisins noirs. Commence par une petite portion. L\'eau de source prépare la transition.';
       case FastingType.grapeCure:
         return 'Après une cure de raisin, reintroduis d\'autres fruits lentement : agrumes, baies, puis légumes-feuilles.';
       case FastingType.intermittent:
         if (proto == 'ehret') return 'Ehret : un mono-fruit est idéal. Oranges, raisins, ou pamplemousse.';
         if (proto == 'morse') return 'Morse : un fruit astringent pour activer la filtration — baies, raisins, ou agrumes.';
-        return 'Sebi : un fruit du guide nutritionnel. Mangue, papaye, ou baies avec pépins.';
+        if (proto == 'sebi') return 'Sebi : un fruit du guide nutritionnel. Mangue, papaye, ou baies avec pépins.';
+        return 'Vitaliste : un fruit astringent et électrique — mangue, baies, ou raisins. Mangez lentement et consciemment.';
       case FastingType.monoFruit:
         return 'Après le mono-fruit, diversifie vers d\'autres fruits approuvés, puis ajoute des légumes-feuilles.';
       case FastingType.juiceFast:

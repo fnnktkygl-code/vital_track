@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
+import 'package:vital_track/models/fasting_program.dart';
 import 'package:vital_track/models/knowledge_source.dart';
 
 part 'chat_message.g.dart';
@@ -25,6 +26,7 @@ class ChatMessage extends HiveObject {
   // Non-persistent runtime fields
   bool isStreaming;
   List<KnowledgeSource> sources;
+  FastingProgram? proposedProgram;
 
   ChatMessage({
     String? id,
@@ -33,10 +35,11 @@ class ChatMessage extends HiveObject {
     DateTime? timestamp,
     this.isStreaming = false,
     this.sources = const [],
+    this.proposedProgram,
   })  : id = id ?? const Uuid().v4(),
         timestamp = timestamp ?? DateTime.now();
   
-  ChatMessage copyWithText(String newText, {bool? isStreaming, List<KnowledgeSource>? sources}) {
+  ChatMessage copyWithText(String newText, {bool? isStreaming, List<KnowledgeSource>? sources, FastingProgram? proposedProgram}) {
     return ChatMessage(
       id: id,
       text: newText,
@@ -44,6 +47,7 @@ class ChatMessage extends HiveObject {
       timestamp: timestamp,
       isStreaming: isStreaming ?? this.isStreaming,
       sources: sources ?? this.sources,
+      proposedProgram: proposedProgram ?? this.proposedProgram,
     );
   }
 }
