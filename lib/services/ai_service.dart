@@ -608,15 +608,14 @@ CORE BEHAVIOR:
     List<ChatMessage> history,
   ) async {
     try {
-      final compactContext = contextSources.take(3).map((source) {
-        final chunks = source.chunks.take(2).map((c) {
-          final trimmed = c.trim();
-          return trimmed.length > 400 ? trimmed.substring(0, 400) : trimmed;
-        }).toList();
+      final compactContext = contextSources.take(5).map((source) {
+        final relevantChunks = _selectRelevantChunks(query, source.chunks, maxChunks: 10);
         return {
           'title': source.title,
           'type': source.type.name,
-          'chunks': chunks,
+          'chunks': relevantChunks.isNotEmpty 
+              ? relevantChunks 
+              : [source.content.length > 5000 ? source.content.substring(0, 5000) : source.content],
         };
       }).toList();
 
@@ -674,15 +673,14 @@ CORE BEHAVIOR:
     {List<VertexInlineData> fileParts = const []}
   ) async* {
     try {
-      final compactContext = contextSources.take(3).map((source) {
-        final chunks = source.chunks.take(2).map((c) {
-          final trimmed = c.trim();
-          return trimmed.length > 400 ? trimmed.substring(0, 400) : trimmed;
-        }).toList();
+      final compactContext = contextSources.take(5).map((source) {
+        final relevantChunks = _selectRelevantChunks(query, source.chunks, maxChunks: 10);
         return {
           'title': source.title,
           'type': source.type.name,
-          'chunks': chunks,
+          'chunks': relevantChunks.isNotEmpty 
+              ? relevantChunks 
+              : [source.content.length > 5000 ? source.content.substring(0, 5000) : source.content],
         };
       }).toList();
 

@@ -244,7 +244,13 @@ class KnowledgeService {
   List<KnowledgeSource> searchSources(String query) {
     final inlineSources = sources.where((s) => !s.isFileBased).toList();
 
-    if (query.isEmpty) return inlineSources;
+    // 1. Always prioritize recent user-added sources (not default)
+    final userSources = inlineSources
+        .where((s) => !s.id.startsWith('default_'))
+        .toList()
+      ..sort((a, b) => b.addedDate.compareTo(a.addedDate));
+
+    if (query.isEmpty) { return userSources.take(5).toList(); }
 
     final keywords = query
         .toLowerCase()
@@ -252,7 +258,7 @@ class KnowledgeService {
         .where((w) => w.length > 2)
         .toList();
 
-    if (keywords.isEmpty) return inlineSources;
+    if (keywords.isEmpty) return userSources.take(5).toList();
 
     final scored = <KnowledgeSource, int>{};
     for (final s in inlineSources) {
@@ -260,8 +266,13 @@ class KnowledgeService {
       final lowerContent = s.content.toLowerCase();
       int score = 0;
 
+      // Massive boost for user sources so they always win if there's any slight relevance or even no relevance
+      if (!s.id.startsWith('default_')) {
+        score += 50; 
+      }
+
       for (final kw in keywords) {
-        if (lowerTitle.contains(kw)) score += 3;
+        if (lowerTitle.contains(kw)) score += 5;
         if (lowerContent.contains(kw)) score += 1;
       }
 
@@ -271,7 +282,14 @@ class KnowledgeService {
     final sorted = scored.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
 
-    return sorted.take(5).map((e) => e.key).toList();
+    var topSources = sorted.take(5).map((e) => e.key).toList();
+    
+    // Ensure at least the most recent user source is included if the list is empty
+    if (topSources.isEmpty && userSources.isNotEmpty) {
+      topSources = [userSources.first];
+    }
+    
+    return topSources;
   }
 
   // ── CHUNKING (for inline sources) ─────────────────────────────────────────
