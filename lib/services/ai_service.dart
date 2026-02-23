@@ -717,18 +717,19 @@ CORE BEHAVIOR:
 
       if (response.statusCode >= 200 && response.statusCode < 300) {
         try {
-          await for (var chunk in response.stream.transform(utf8.decoder)) {
-            final lines = chunk.split('\\n');
-            for (final line in lines) {
-              if (line.startsWith('data: ')) {
-                final jsonStr = line.substring(6).trim();
-                if (jsonStr.isNotEmpty) {
+          await for (var line in response.stream.transform(utf8.decoder).transform(const LineSplitter())) {
+            if (line.startsWith('data: ')) {
+              final jsonStr = line.substring(6).trim();
+              if (jsonStr.isNotEmpty) {
+                try {
                   final data = json.decode(jsonStr);
                   if (data['error'] != null) {
                     yield data['error'];
                   } else if (data['text'] != null) {
                     yield data['text'];
                   }
+                } catch (e) {
+                  // Ignore JSON parse errors for incomplete chunks
                 }
               }
             }

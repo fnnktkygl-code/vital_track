@@ -200,16 +200,33 @@ app.post('/v1/chat', async (req, res) => {
       const reader = response.body.getReader();
       const decoder = new TextDecoder('utf-8');
 
+      let buffer = '';
       while (true) {
         const { value, done } = await reader.read();
         if (done) break;
-        const chunk = decoder.decode(value, { stream: true });
-        // The chunk from Vertex is pure SSE. We can just pipe it directly!
-        // Flutter expects standard "data: {...}" but Vertex sends "data: {...}"
-        // Vertex SSE format for streamGenerateContent: "data: { ...candidates... }"
-        // Wait, Dart parses 'data: {"candidates": [{"content": {"parts": [{"text": "..."}]}}]}
-        // We will forward it directly.
-        res.write(chunk);
+        buffer += decoder.decode(value, { stream: true });
+
+        let boundary = buffer.indexOf('\n');
+        while (boundary !== -1) {
+          const line = buffer.slice(0, boundary).trim();
+          buffer = buffer.slice(boundary + 1);
+
+          if (line.startsWith('data: ')) {
+            const jsonStr = line.substring(6).trim();
+            if (jsonStr) {
+              try {
+                const data = JSON.parse(jsonStr);
+                const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+                if (text) {
+                  res.write(`data: ${JSON.stringify({ text })}\n\n`);
+                }
+              } catch (e) {
+                // ignore incomplete chunks or parse errors
+              }
+            }
+          }
+          boundary = buffer.indexOf('\n');
+        }
       }
       res.end();
     } else {
