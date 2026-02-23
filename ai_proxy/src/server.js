@@ -52,7 +52,8 @@ const LOCATION = 'us-central1';
 const MODELS = ['gemini-2.5-flash', 'gemini-2.5-flash-lite'];
 
 function buildVertexEndpoint(modelId, method) {
-  return `https://${LOCATION}-aiplatform.googleapis.com/v1/projects/${PROJECT_ID}/locations/${LOCATION}/publishers/google/models/${modelId}:${method}?key=${encodeURIComponent(GEMINI_API_KEY)}`;
+  const separator = method.includes('?') ? '&' : '?';
+  return `https://${LOCATION}-aiplatform.googleapis.com/v1/projects/${PROJECT_ID}/locations/${LOCATION}/publishers/google/models/${modelId}:${method}${separator}key=${encodeURIComponent(GEMINI_API_KEY)}`;
 }
 
 function safeError(error) {
