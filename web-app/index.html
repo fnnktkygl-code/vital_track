@@ -404,57 +404,60 @@
   <!-- ═══════ CALENDAR (Diet Plan) ═══════ -->
   <main class="page" id="page-calendar">
     <div class="calendar-container" style="max-width:800px;margin:0 auto">
-      <!-- Empty state: no active plan -->
-      <div id="calendarEmpty" class="glass" style="text-align:center;padding:40px 24px">
-        <div style="font-size:3rem;margin-bottom:16px">📅</div>
-        <h2>Plan Alimentaire</h2>
-        <p class="subtitle" style="margin-bottom:24px">Crée un plan personnalisé basé sur ton protocole préféré (Ehret, Dr. Sebi, Dr. Morse) ou un mélange des trois.</p>
-        <button class="btn btn-primary" onclick="showCalendarWizard()" style="padding:12px 32px;font-size:1rem">
-          <i class="ri-add-line"></i> Créer mon plan alimentaire
-        </button>
-        <p style="margin-top:16px;font-size:0.8rem;color:var(--text-dim)">
-          Tu peux aussi demander au <a href="#" onclick="showPage('chat')" style="color:var(--accent)">Chat IA</a> de te créer un plan !
-        </p>
-      </div>
-
-      <!-- Wizard (hidden by default) -->
-      <div id="calendarWizard" style="display:none">
-        <div class="glass" style="padding:24px">
-          <h2 style="margin-bottom:4px">🌱 Créer ton plan</h2>
-          <p class="subtitle" style="margin-bottom:20px" id="wizardStepLabel">Étape 1/4 — Quel est ton objectif ?</p>
-
-          <!-- Step 1: Objective -->
-          <div id="wizardStep1" class="wizard-step">
-            <div class="wizard-options" id="wizardObjectives"></div>
+      
+      <!-- Header & Week Selector -->
+      <div class="dash-card glass" style="margin-bottom:24px; padding:20px 24px; background: linear-gradient(145deg, rgba(30,58,138,0.1) 0%, rgba(16,185,129,0.05) 100%);">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+          <div>
+            <h2 style="margin:0; font-size:1.6rem; color:var(--text); display:flex; align-items:center; gap:8px;">
+              📅 Mon Semainier
+            </h2>
+            <div style="font-size:0.9rem; color:var(--text-dim); margin-top:4px;" id="calendarWeekLabel">Semaine du ...</div>
           </div>
-
-          <!-- Step 2: Protocol -->
-          <div id="wizardStep2" class="wizard-step" style="display:none">
-            <div class="wizard-options" id="wizardProtocols"></div>
-          </div>
-
-          <!-- Step 3: Duration -->
-          <div id="wizardStep3" class="wizard-step" style="display:none">
-            <div class="wizard-options" id="wizardDurations"></div>
-          </div>
-
-          <!-- Step 4: Restrictions -->
-          <div id="wizardStep4" class="wizard-step" style="display:none">
-            <p style="margin-bottom:12px">Aliments à éviter ou allergies ? (optionnel)</p>
-            <input type="text" id="wizardRestrictions" class="chat-input-field" placeholder="Ex: sans noix, sans agrumes..." style="width:100%;margin-bottom:16px;padding:12px">
-          </div>
-
-          <div style="display:flex;gap:12px;margin-top:20px">
-            <button class="btn" id="wizardBackBtn" onclick="wizardBack()" style="display:none"><i class="ri-arrow-left-line"></i> Retour</button>
-            <button class="btn btn-primary" id="wizardNextBtn" onclick="wizardNext()">Suivant <i class="ri-arrow-right-line"></i></button>
+          <div style="display:flex; gap:12px;">
+            <button class="btn btn-outline" onclick="changeCalendarWeek(-1)"><i class="ri-arrow-left-s-line"></i></button>
+            <button class="btn btn-outline" onclick="changeCalendarWeek(1)"><i class="ri-arrow-right-s-line"></i></button>
+            <button class="btn btn-primary" onclick="promptAIPlan()"><i class="ri-magic-line"></i> Générer (IA)</button>
           </div>
         </div>
       </div>
 
-      <!-- Active plan view (dynamically rendered by JS) -->
-      <div id="calendarActive" style="display:none"></div>
+      <!-- Weekly Grid -->
+      <div class="calendar-week-grid" id="calendarWeekGrid">
+        <!-- Rendered by JS -->
+      </div>
+      
     </div>
   </main>
+
+  <!-- Modals for Calendar -->
+  <div class="scrim" id="mealModalScrim"></div>
+  <div class="more-sheet" id="mealModal">
+    <div class="handle"></div>
+    <div style="padding:20px; text-align:left;">
+      <h3 style="margin-bottom:16px; font-size:1.2rem;" id="mealModalTitle">Ajouter un repas</h3>
+      
+      <div style="margin-bottom:16px;">
+        <label style="display:block; margin-bottom:8px; font-size:0.9rem; color:var(--text-dim);">Type de repas</label>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;" id="mealSlotSelector">
+          <button class="chip-btn active" data-slot="Petit-déjeuner">Petit-déjeuner</button>
+          <button class="chip-btn" data-slot="Déjeuner">Déjeuner</button>
+          <button class="chip-btn" data-slot="Collation">Collation</button>
+          <button class="chip-btn" data-slot="Dîner">Dîner</button>
+        </div>
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <label style="display:block; margin-bottom:8px; font-size:0.9rem; color:var(--text-dim);">Que vas-tu manger ?</label>
+        <textarea id="mealModalContent" class="chat-input-field" rows="3" placeholder="Ex: Salade de fruits avec mangue et papaye..." style="width:100%; resize:none; padding:12px; border-radius:12px;"></textarea>
+      </div>
+      
+      <div style="display:flex; gap:12px; margin-top:24px;">
+        <button class="btn btn-outline" onclick="closeMealModal()" style="flex:1;">Annuler</button>
+        <button class="btn btn-primary" id="saveMealBtn" style="flex:2;">Enregistrer</button>
+      </div>
+    </div>
+  </div>
 
   <!-- ═══════ FAVORITES ═══════ -->
   <main class="page" id="page-favorites">

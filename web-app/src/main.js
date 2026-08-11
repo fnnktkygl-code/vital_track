@@ -1445,539 +1445,191 @@ const SLOT_META = {
 function formatDateShort(d) { return `${d.getDate()} ${MONTHS_FR[d.getMonth()]}`; }
 function isSameDay(a, b) { return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate(); }
 
-// ── Diet Plan Generator ──
-function buildFoodPools(restrictions = '') {
-  const restrictedWords = restrictions.toLowerCase().split(/[,;/\n]/).map(s => s.trim()).filter(Boolean);
-  const byCategory = {};
-  vitalDb.forEach(item => {
-    if (!item.specific || item.specific.electric !== true) return;
-    if (!item.names || !item.names.length) return;
-    const cat = item.category || 'Autres';
-    if (!byCategory[cat]) byCategory[cat] = [];
-    const rawName = item.names[1] || item.names[0];
-    const name = rawName.charAt(0).toUpperCase() + rawName.slice(1);
-    byCategory[cat].push({ name, emoji: item.emoji || '🌱' });
-  });
+// ── Flexible Calendar ──
+let currentDateOffset = 0; // 0 = this week, -1 = last week, etc.
 
-  function clean(list, fallback) {
-    const source = (list && list.length) ? list : fallback;
-    const filtered = source.filter(item => {
-      const n = typeof item === 'string' ? item : item.name;
-      return !restrictedWords.some(r => n.toLowerCase().includes(r));
-    });
-    return (filtered.length ? filtered : fallback).map(x => typeof x === 'string' ? { name: x, emoji: '🌱' } : x);
+function getWeekDates(offsetWeeks = 0) {
+  const now = new Date();
+  const dayOfWeek = now.getDay() === 0 ? 6 : now.getDay() - 1; // Monday = 0
+  const monday = new Date(now);
+  monday.setDate(now.getDate() - dayOfWeek + (offsetWeeks * 7));
+  monday.setHours(0,0,0,0);
+  
+  const days = [];
+  for(let i=0; i<7; i++) {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    days.push(d);
   }
-
-  return {
-    fruits: clean(byCategory['Fruits'], [{name:'Papaye',emoji:'🥭'},{name:'Mangue',emoji:'🥭'},{name:'Raisin',emoji:'🍇'},{name:'Pastèque',emoji:'🍉'}]),
-    veggies: clean(byCategory['Légumes'], [{name:'Kale',emoji:'🥬'},{name:'Concombre',emoji:'🥒'},{name:'Avocat',emoji:'🥑'},{name:'Roquette',emoji:'🥬'}]),
-    grains: clean(byCategory['Céréales'], [{name:'Quinoa',emoji:'🌾'},{name:'Amarante',emoji:'🌾'},{name:'Sarrasin',emoji:'🌾'}]),
-    herbs: clean(byCategory['Herbes & Thés'], [{name:'Tisane gingembre',emoji:'🫚'},{name:'Tisane menthe',emoji:'🍵'}]),
-    nuts: clean(byCategory['Noix & Graines'], [{name:'Graines de courge',emoji:'🎃'},{name:'Graines de tournesol',emoji:'🌻'}]),
-  };
+  return days;
 }
 
-function pick(list, dayIndex, seed, offset = 0) { return list[(dayIndex + seed + offset) % list.length]; }
-function pickN(list, n, dayIndex, seed, offset = 0) {
-  const out = []; const seen = new Set();
-  for (let k = 0; out.length < n && k < n + list.length; k++) {
-    const item = list[(dayIndex + seed + offset + k) % list.length];
-    if (!seen.has(item.name)) { seen.add(item.name); out.push(item); }
-  }
-  return out;
-}
+window.changeCalendarWeek = function(delta) {
+  currentDateOffset += delta;
+  renderCalendar();
+};
 
-function phaseLabel(protocol, dayIndex, numDays) {
-  const ratio = numDays <= 1 ? 1.0 : dayIndex / (numDays - 1);
-  const activeProtocol = Array.isArray(protocol) && protocol.length > 0 
-    ? protocol[dayIndex % protocol.length] 
-    : (Array.isArray(protocol) ? 'ehret' : protocol);
-    
-  const phases = {
-    ehret: [['Élimination douce (Ehret)',0.34],['Transition mucusless (Ehret)',0.7],['Régénération (Ehret)',1]],
-    sebi: [['Nettoyage alcalin (Sebi)',0.34],['Reconstruction minérale (Sebi)',0.7],['Équilibre bio-minéral (Sebi)',1]],
-    morse: [['Activation lymphatique (Morse)',0.34],['Détoxification (Morse)',0.7],['Régénération cellulaire (Morse)',1]],
-  };
-  const p = phases[activeProtocol] || [['Mise en route',0.34],['Approfondissement',0.7],['Ancrage',1]];
-  for (const [label, threshold] of p) if (ratio < threshold || threshold === 1) return label;
-  return 'Ancrage';
-}
-
-function buildDay(protocol, dayIndex, numDays, date, pools, seed) {
-  const { fruits, veggies, grains, herbs, nuts } = pools;
-  const earlyRatio = numDays <= 1 ? 1.0 : dayIndex / (numDays - 1);
-  let meals;
-  const wrap = (x) => Array.isArray(x) ? x : [x];
-
-  const activeProtocol = Array.isArray(protocol) && protocol.length > 0 
-    ? protocol[dayIndex % protocol.length] 
-    : (Array.isArray(protocol) ? 'ehret' : protocol);
-
-  switch (activeProtocol) {
-    case 'ehret':
-      meals = [
-        { slot: 'Réveil', items: [{name:'Eau tiède citronnée',emoji:'🍋'}], note: "Draine la lymphe.", done: false },
-        { slot: 'Petit-déjeuner', items: pickN(fruits, earlyRatio < 0.3 ? 1 : 2, dayIndex, seed), note: 'Mono-fruit de préférence.', done: false },
-        { slot: 'Déjeuner', items: [...pickN(veggies, 2, dayIndex, seed), ...(earlyRatio > 0.4 ? wrap(pick(grains, dayIndex, seed, 1)) : [])], note: 'Salade crue + féculent sans mucus.', done: false },
-        { slot: 'Dîner', items: pickN(veggies, 2, dayIndex, seed, 3), note: 'Repas léger, 3h avant coucher.', done: false },
-      ];
-      break;
-    case 'sebi':
-      meals = [
-        { slot: 'Réveil', items: wrap(pick(herbs, dayIndex, seed)), note: 'Tisane approuvée Dr. Sebi.', done: false },
-        { slot: 'Petit-déjeuner', items: pickN(fruits, 2, dayIndex, seed), note: 'Fruits approuvés.', done: false },
-        { slot: 'Déjeuner', items: [...pickN(veggies, 2, dayIndex, seed, 1), pick(grains, dayIndex, seed)], note: 'Céréale sans gluten + feuilles.', done: false },
-        { slot: 'Collation', items: wrap(pick(nuts, dayIndex, seed)), note: 'Petite poignée.', done: false },
-        { slot: 'Dîner', items: pickN(veggies, 2, dayIndex, seed, 2), note: 'Vapeur + huile approuvée.', done: false },
-      ];
-      break;
-    case 'morse':
-      meals = [
-        { slot: 'Réveil', items: [{name:'Eau de source',emoji:'💧'}], note: 'Hydrate le système lymphatique.', done: false },
-        { slot: 'Petit-déjeuner', items: pickN(fruits, 2, dayIndex, seed), note: 'Fruits astringents.', done: false },
-        { slot: 'Déjeuner', items: pickN(veggies, 3, dayIndex, seed), note: 'Grande salade crue.', done: false },
-        { slot: 'Collation', items: wrap(pick(fruits, dayIndex, seed, 2)), note: 'Un fruit si besoin.', done: false },
-        { slot: 'Dîner', items: pickN(veggies, 2, dayIndex, seed, 1), note: 'Léger, vapeur.', done: false },
-      ];
-      break;
-    default:
-      meals = [
-        { slot: 'Réveil', items: [{name:'Eau tiède citronnée',emoji:'🍋'}], note: '', done: false },
-        { slot: 'Petit-déjeuner', items: pickN(fruits, 2, dayIndex, seed), note: 'Fruits frais et mûrs.', done: false },
-        { slot: 'Déjeuner', items: [...pickN(veggies, 2, dayIndex, seed), pick(grains, dayIndex, seed)], note: '', done: false },
-        { slot: 'Collation', items: wrap(pick(nuts, dayIndex, seed)), note: '', done: false },
-        { slot: 'Dîner', items: pickN(veggies, 2, dayIndex, seed, 2), note: '', done: false },
-      ];
-  }
-  return { dayIndex, date: date.toISOString(), phaseLabel: phaseLabel(protocol, dayIndex, numDays), meals };
-}
-
-function generateDietPlan({ protocol, numDays, objective, restrictions = '', source = 'wizard' }) {
-  const proto = ['ehret','sebi','morse','personalized'].includes(protocol) ? protocol : 'personalized';
-  const days = Math.max(1, Math.min(30, numDays));
-  const pools = buildFoodPools(restrictions);
-  const start = new Date();
-  const startDay = new Date(start.getFullYear(), start.getMonth(), start.getDate());
-  const protoLabels = { sebi: 'Guide Dr. Sebi', ehret: 'Transition Ehret', morse: 'Détox Dr. Morse', personalized: 'Plan Vitaliste' };
-  const daysList = [];
-  for (let i = 0; i < days; i++) {
-    const d = new Date(startDay); d.setDate(d.getDate() + i);
-    daysList.push(buildDay(proto, i, days, d, pools, 0));
-  }
-  return {
-    id: 'plan_' + Date.now(),
-    name: `${protoLabels[proto] || 'Plan Vitaliste'}${objective ? ' — ' + objective : ''}`,
-    protocol: proto, objective: objective || '', startDate: start.toISOString(),
-    days: daysList, isActive: true, endDate: null, source, restrictions: restrictions || '',
-  };
-}
-
-// ── Calendar Rendering ──
 function renderCalendar() {
-  const plan = store.get('active_plan', null);
-  const emptyEl = document.getElementById('calendarEmpty');
-  const wizardEl = document.getElementById('calendarWizard');
-  const activeEl = document.getElementById('calendarActive');
-  if (!emptyEl || !activeEl) return;
-  if (!plan) { emptyEl.style.display = ''; wizardEl.style.display = 'none'; activeEl.style.display = 'none'; return; }
-  emptyEl.style.display = 'none'; wizardEl.style.display = 'none'; activeEl.style.display = '';
-
-  const protoEmojis = { sebi: '⚡', ehret: '🌿', morse: '💧', personalized: '🤝' };
-  const protoLabels = { sebi: 'Dr. Sebi', ehret: 'Ehret', morse: 'Dr. Morse', personalized: 'Vitaliste' };
-  const totalMeals = plan.days.reduce((s, d) => s + d.meals.length, 0);
-  const doneMeals = plan.days.reduce((s, d) => s + d.meals.filter(m => m.done).length, 0);
-  const pct = totalMeals ? Math.round((doneMeals / totalMeals) * 100) : 0;
+  const grid = document.getElementById('calendarWeekGrid');
+  if (!grid) return;
+  
+  const weekDays = getWeekDates(currentDateOffset);
+  const meals = store.get('calendar_meals', []); // { id, dateStr, slot, text, done }
   const today = new Date();
-  const selectedIdx = store.get('cal_selected_day', 0);
-  const todayIdx = plan.days.findIndex(d => isSameDay(new Date(d.date), today));
-  const daysPast = todayIdx >= 0 ? todayIdx + 1 : 0;
+  
+  // Update header label
+  const wStart = weekDays[0];
+  const wEnd = weekDays[6];
+  document.getElementById('calendarWeekLabel').textContent = 
+    `Du ${wStart.getDate()} ${MONTHS_FR[wStart.getMonth()]} au ${wEnd.getDate()} ${MONTHS_FR[wEnd.getMonth()]}`;
 
-  activeEl.innerHTML = `
-    <!-- Header Card -->
-    <div class="dash-card glass" style="margin-bottom:24px; padding:24px; background: linear-gradient(145deg, rgba(30,58,138,0.1) 0%, rgba(16,185,129,0.05) 100%);">
-      <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:20px; flex-wrap:wrap;">
-        
-        <div style="display:flex; align-items:center; gap:20px;">
-          <!-- Progress Circle -->
-          <div style="position:relative; width:80px; height:80px; flex-shrink:0;">
-            <svg viewBox="0 0 36 36" style="transform:rotate(-90deg); width:100%; height:100%; drop-shadow: 0 4px 10px rgba(16,185,129,0.2);">
-              <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="3"/>
-              <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="var(--accent)" stroke-width="3" stroke-dasharray="${pct}, 100" stroke-linecap="round" style="transition:stroke-dasharray 1s ease-out"/>
-            </svg>
-            <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-              <span style="font-weight:800; font-size:1.1rem; color:var(--text); line-height:1;">${pct}%</span>
-            </div>
-          </div>
-          
-          <!-- Plan Info -->
-          <div>
-            <h2 style="margin:0; font-size:1.3rem; font-weight:700; color:var(--text); display:flex; align-items:center; gap:8px;">
-              ${protoEmojis[plan.protocol] || '🌱'} ${esc(plan.name)}
-            </h2>
-            <div style="font-size:0.85rem; color:var(--text-dim); margin-top:6px; display:flex; align-items:center; gap:12px;">
-              <span><i class="ri-calendar-event-line"></i> ${plan.days.length} jours</span>
-              <span><i class="ri-user-star-line"></i> ${protoLabels[plan.protocol] || 'Vitaliste'}</span>
-            </div>
-            <div style="font-size:0.85rem; color:var(--accent); margin-top:4px; font-weight:500;">
-              <i class="ri-restaurant-2-line"></i> ${doneMeals}/${totalMeals} repas · Jour ${daysPast}/${plan.days.length}
-            </div>
-          </div>
-        </div>
-        
-        <button class="chip-btn" onclick="endActivePlan()" style="border-color:rgba(239,68,68,0.3); color:#fca5a5;" data-tooltip="Terminer et archiver ce plan">
-          <i class="ri-stop-circle-line"></i> Arrêter
-        </button>
-      </div>
-    </div>
-
-    <!-- Days Strip -->
-    <div style="margin-bottom:24px; padding-bottom:12px; overflow-x:auto; -webkit-overflow-scrolling:touch; mask-image: linear-gradient(to right, black 85%, transparent 100%);">
-      <div id="calDayStrip" style="display:flex; gap:12px; min-width:max-content; padding:0 4px;"></div>
-    </div>
+  grid.innerHTML = weekDays.map(date => {
+    const dateStr = date.toISOString().split('T')[0];
+    const isToday = isSameDay(date, today);
+    const dayMeals = meals.filter(m => m.dateStr === dateStr);
     
-    <!-- Day Detail -->
-    <div id="calDayDetail"></div>
-  `;
+    // Sort meals logically
+    const slotOrder = { 'Petit-déjeuner': 1, 'Déjeuner': 2, 'Collation': 3, 'Dîner': 4 };
+    dayMeals.sort((a,b) => (slotOrder[a.slot]||99) - (slotOrder[b.slot]||99));
 
-  const strip = document.getElementById('calDayStrip');
-  strip.innerHTML = plan.days.map((d, i) => {
-    const dt = new Date(d.date); const isToday = isSameDay(dt, today);
-    const allDone = d.meals.every(m => m.done); const selected = i === selectedIdx;
-    const isPast = dt < new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    return `<button onclick="selectCalDay(${i})" style="flex-shrink:0; width:64px; padding:12px 6px; border-radius:16px; cursor:pointer; text-align:center;
-      border: 1px solid ${selected ? 'var(--accent)' : 'rgba(255,255,255,0.05)'};
-      background: ${selected ? 'rgba(16,185,129,0.1)' : 'rgba(255,255,255,0.02)'};
-      color: var(--text); opacity: ${isPast && !selected ? '0.4' : '1'}; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); position: relative;
-      box-shadow: ${selected ? '0 4px 12px rgba(16,185,129,0.1)' : 'none'};">
-      <div style="font-size:0.7rem; text-transform:uppercase; letter-spacing:1px; color:${isToday ? 'var(--accent)' : 'var(--text-dim)'}; font-weight:${selected||isToday ? '700' : '500'}">${isToday ? 'Auj' : DAYS_FR[dt.getDay()]}</div>
-      <div style="font-size:1.3rem; font-weight:700; margin:4px 0; color:${selected ? 'var(--accent)' : 'var(--text)'}">${dt.getDate()}</div>
-      <div style="display:flex; justify-content:center; gap:3px; margin-top:6px;">
-        ${d.meals.map(m => `<div style="width:5px; height:5px; border-radius:50%; background:${m.done ? 'var(--accent)' : 'rgba(255,255,255,0.15)'}"></div>`).join('')}
-      </div>
-      ${allDone ? '<div style="position:absolute; top:-4px; right:-4px; font-size:0.6rem; background:var(--accent); color:#000; border-radius:50%; width:18px; height:18px; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 5px rgba(0,0,0,0.3);"><i class="ri-check-line"></i></div>' : ''}
-    </button>`;
-  }).join('');
-
-  const selectedChip = strip.children[selectedIdx];
-  if (selectedChip) selectedChip.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-  renderCalDay(plan, selectedIdx);
-}
-
-function renderCalDay(plan, dayIdx) {
-  const detail = document.getElementById('calDayDetail');
-  const day = plan.days[dayIdx];
-  if (!day) { detail.innerHTML = ''; return; }
-  const dt = new Date(day.date); const today = new Date(); const isToday = isSameDay(dt, today);
-  const completedCount = day.meals.filter(m => m.done).length;
-
-  detail.innerHTML = `
-    <div class="dash-card glass" style="padding:24px;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:16px;">
-        <div>
-          <div style="display:flex; align-items:center; gap:12px;">
-            <h3 style="margin:0; font-size:1.3rem; font-weight:700;">${isToday ? '📍 Aujourd\'hui' : DAYS_FULL_FR[dt.getDay()]} ${dt.getDate()} ${MONTHS_FR[dt.getMonth()]}</h3>
-            <span style="font-size:0.75rem; padding:4px 10px; border-radius:12px; background:rgba(16,185,129,0.1); color:var(--accent); font-weight:600; border:1px solid rgba(16,185,129,0.2);">Jour ${day.dayIndex + 1}</span>
+    return `
+      <div class="cal-day-block">
+        <div class="cal-day-header ${isToday ? 'today' : ''}">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <div style="width:10px; height:10px; border-radius:50%; background:${isToday ? 'var(--accent)' : 'rgba(255,255,255,0.2)'}"></div>
+            ${DAYS_FULL_FR[date.getDay()]} ${date.getDate()} ${MONTHS_FR[date.getMonth()]}
           </div>
-          <div style="font-size:0.9rem; color:var(--text-dim); margin-top:6px;"><i class="ri-magic-line" style="color:var(--accent);"></i> ${esc(day.phaseLabel)}</div>
+          <button class="btn-icon-small" onclick="openMealModal('${dateStr}')" data-tooltip="Ajouter un repas">
+            <i class="ri-add-line"></i>
+          </button>
         </div>
-        <div style="display:flex; gap:8px;">
-          ${isToday ? '<button class="chip-btn" onclick="addTodayToTracker()" data-tooltip="Ajouter les repas du jour au suivi"><i class="ri-add-circle-line"></i> Suivi</button>' : ''}
-          <button class="chip-btn" onclick="regenerateCalDay(${dayIdx})" data-tooltip="Nouvelles suggestions"><i class="ri-refresh-line"></i></button>
-        </div>
-      </div>
-      
-      <div style="position:relative; padding-left:32px; margin-bottom:16px;">
-        <div style="position:absolute; left:14px; top:12px; bottom:12px; width:2px; background:linear-gradient(to bottom, var(--accent) 0%, rgba(16,185,129,0.1) 100%); border-radius:2px;"></div>
         
-        ${day.meals.map((m, mi) => {
-          const meta = SLOT_META[m.slot] || { emoji: '🍽️', time: '', color: '#4ade80' };
-          return `
-          <div style="position:relative; margin-bottom:20px;">
-            <!-- Timeline Dot -->
-            <div style="position:absolute; left:-24px; top:16px; width:14px; height:14px; border-radius:50%; background:${m.done ? 'var(--accent)' : 'var(--bg-card)'}; border:2px solid var(--accent); z-index:1; display:flex; align-items:center; justify-content:center; box-shadow:0 0 10px rgba(16,185,129,0.3);">
-               ${m.done ? '<div style="width:6px; height:6px; background:#000; border-radius:50%;"></div>' : ''}
+        <div class="cal-meals-list">
+          ${dayMeals.length === 0 ? `
+            <div class="cal-empty-day">
+              Rien de prévu pour ce jour. <br>
+              <a href="#" onclick="openMealModal('${dateStr}'); return false;" style="color:var(--accent); text-decoration:none; margin-top:8px; display:inline-block;">+ Ajouter</a>
             </div>
-            
-            <!-- Meal Card -->
-            <div onclick="openEditMealModal(${dayIdx}, ${mi})" class="glass" style="
-              border-radius:16px; padding:16px 20px; cursor:pointer;
-              background: ${m.done ? 'rgba(16,185,129,0.02)' : 'rgba(255,255,255,0.02)'};
-              border: 1px solid ${m.done ? 'rgba(16,185,129,0.2)' : 'rgba(255,255,255,0.05)'};
-              transition: all 0.2s ease; opacity:${m.done ? '0.7' : '1'};">
-              
-              <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
-                <div style="display:flex; align-items:center; gap:12px;">
-                  <div style="width:40px; height:40px; border-radius:12px; background:rgba(255,255,255,0.03); display:flex; align-items:center; justify-content:center; font-size:1.4rem; border:1px solid rgba(255,255,255,0.05);">
-                    ${meta.emoji}
-                  </div>
-                  <div>
-                    <div style="font-weight:700; font-size:1.05rem; color:var(--text); ${m.done ? 'text-decoration:line-through; color:var(--text-dim);' : ''}">${esc(m.slot)}</div>
-                    <div style="font-size:0.8rem; color:${meta.color}; margin-top:2px;">
-                      <i class="ri-time-line"></i> ${meta.time}
-                    </div>
-                  </div>
+          ` : dayMeals.map(m => {
+            const meta = SLOT_META[m.slot] || { emoji: '🍽️', color: '#4ade80' };
+            return `
+            <div class="cal-meal-card">
+              <div style="flex:1;">
+                <div class="cal-meal-slot" style="background:${meta.color}22; color:${meta.color}">
+                  ${meta.emoji} ${esc(m.slot)}
                 </div>
-                
-                <!-- Checkbox -->
-                <div style="width:28px; height:28px; border-radius:8px; border:2px solid ${m.done ? 'var(--accent)' : 'rgba(255,255,255,0.15)'};
-                  display:flex; align-items:center; justify-content:center; background:${m.done ? 'var(--accent)' : 'transparent'}; transition:all 0.2s;">
-                  ${m.done ? '<i class="ri-check-line" style="font-size:1.1rem; color:#000; font-weight:800;"></i>' : ''}
-                </div>
+                <div class="cal-meal-content">${esc(m.text)}</div>
               </div>
-              
-              <div style="display:flex; flex-wrap:wrap; gap:8px; ${m.note ? 'margin-bottom:10px;' : ''}">
-                ${m.items.map(item => {
-                  const n = typeof item === 'string' ? item : item.name;
-                  const e = typeof item === 'string' ? '🌱' : (item.emoji || '🌱');
-                  return `<span style="padding:6px 12px; border-radius:24px; background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.15); font-size:0.85rem; color:var(--text); display:inline-flex; align-items:center; gap:6px; font-weight:500;">
-                    <span>${e}</span> ${esc(n)}
-                  </span>`;
-                }).join('')}
+              <div class="cal-meal-actions">
+                <button class="btn-icon-small magic" onclick="promptAIFixMeal('${m.id}')" data-tooltip="Changer avec l'IA">
+                  <i class="ri-magic-line"></i>
+                </button>
+                <button class="btn-icon-small" onclick="openMealModal('${dateStr}', '${m.id}')">
+                  <i class="ri-edit-line"></i>
+                </button>
+                <button class="btn-icon-small danger" onclick="deleteCalendarMeal('${m.id}')">
+                  <i class="ri-delete-bin-line"></i>
+                </button>
               </div>
-              
-              ${m.note ? `<div style="font-size:0.85rem; color:var(--text-dim); font-style:italic; background:rgba(0,0,0,0.2); padding:8px 12px; border-radius:8px; border-left:2px solid rgba(255,255,255,0.1);"><i class="ri-information-line"></i> ${esc(m.note)}</div>` : ''}
             </div>
-          </div>`;
-        }).join('')}
+            `;
+          }).join('')}
+        </div>
       </div>
-      <div style="text-align:center; padding-top:16px; border-top:1px dashed rgba(255,255,255,0.1); font-size:0.85rem; color:var(--text-dim); font-weight:500;">
-        <i class="ri-flag-2-line" style="color:var(--accent);"></i> ${completedCount} sur ${day.meals.length} repas complétés
-      </div>
-    </div>
-  `;
-}
-
-window.selectCalDay = function(idx) { store.set('cal_selected_day', idx); renderCalendar(); };
-
-let editMealCtx = null;
-
-window.openEditMealModal = function(dayIdx, mealIdx) {
-  const plan = store.get('active_plan', null); if (!plan) return;
-  const meal = plan.days[dayIdx].meals[mealIdx];
-  editMealCtx = { dayIdx, mealIdx, meal: JSON.parse(JSON.stringify(meal)) };
-  
-  document.getElementById('editMealTitle').innerHTML = `🍽️ Éditer : ${esc(meal.slot)}`;
-  document.getElementById('editMealNote').value = editMealCtx.meal.note || '';
-  document.getElementById('editMealSearchInput').value = '';
-  document.getElementById('editMealSearchResults').innerHTML = '';
-  
-  renderEditMealItems();
-  updateEditMealDoneBtn();
-  
-  document.getElementById('editMealModal').style.display = 'flex';
-};
-
-window.closeEditMealModal = function(e) {
-  if (e && e.target !== document.getElementById('editMealModal')) return;
-  document.getElementById('editMealModal').style.display = 'none';
-  editMealCtx = null;
-};
-
-function renderEditMealItems() {
-  const container = document.getElementById('editMealItems');
-  container.innerHTML = editMealCtx.meal.items.map((item, i) => {
-    const n = typeof item === 'string' ? item : item.name;
-    const e = typeof item === 'string' ? '🌱' : (item.emoji || '🌱');
-    return `<span style="padding:6px 12px;border-radius:20px;background:rgba(255,255,255,0.06);font-size:0.85rem;display:inline-flex;align-items:center;gap:6px">
-      <span>${e}</span> ${esc(n)}
-      <i class="ri-close-circle-fill" style="cursor:pointer;color:var(--text-dim)" onclick="removeEditMealItem(${i})"></i>
-    </span>`;
+    `;
   }).join('');
 }
 
-window.removeEditMealItem = function(idx) {
-  editMealCtx.meal.items.splice(idx, 1);
-  renderEditMealItems();
-};
+// ── CRUD Actions ──
+let currentEditMeal = null; // { dateStr, id, slot, text }
 
-window.searchEditMealFoods = function(q) {
-  const res = document.getElementById('editMealSearchResults');
-  if (q.length < 2) { res.innerHTML = ''; return; }
-  const matches = vitalDb.filter(i => i.names && i.names.some(n => n.toLowerCase().includes(q.toLowerCase()))).slice(0,5);
-  res.innerHTML = matches.map(m => `
-    <div class="meal-search-item" onclick="addEditMealItem('${esc(m.names[1]||m.names[0])}', '${m.emoji||'🌱'}')">
-      <span>${m.emoji||'🌱'} ${esc(m.names[1]||m.names[0])}</span>
-      <i class="ri-add-circle-line"></i>
-    </div>
-  `).join('');
-};
-
-window.addEditMealItem = function(name, emoji) {
-  editMealCtx.meal.items.push({ name, emoji });
-  renderEditMealItems();
-  document.getElementById('editMealSearchInput').value = '';
-  document.getElementById('editMealSearchResults').innerHTML = '';
-};
-
-window.toggleEditMealDone = function() {
-  editMealCtx.meal.done = !editMealCtx.meal.done;
-  updateEditMealDoneBtn();
-};
-
-function updateEditMealDoneBtn() {
-  const btn = document.getElementById('editMealDoneBtn');
-  if (editMealCtx.meal.done) {
-    btn.className = 'btn-primary';
-    btn.innerHTML = '<i class="ri-check-line"></i> Terminé';
+window.openMealModal = function(dateStr, mealId = null) {
+  const scrim = document.getElementById('mealModalScrim');
+  const modal = document.getElementById('mealModal');
+  const title = document.getElementById('mealModalTitle');
+  const input = document.getElementById('mealModalContent');
+  const saveBtn = document.getElementById('saveMealBtn');
+  
+  // Set context
+  currentEditMeal = { dateStr, id: mealId, slot: 'Déjeuner', text: '' };
+  
+  if (mealId) {
+    title.textContent = 'Modifier le repas';
+    const meals = store.get('calendar_meals', []);
+    const m = meals.find(x => x.id === mealId);
+    if (m) {
+      currentEditMeal.slot = m.slot;
+      currentEditMeal.text = m.text;
+    }
   } else {
-    btn.className = 'btn-outline';
-    btn.innerHTML = '<i class="ri-check-line"></i> Marquer Terminé';
+    title.textContent = 'Ajouter un repas';
   }
-}
-
-window.saveEditMeal = function() {
-  if (!editMealCtx) return;
-  const plan = store.get('active_plan', null);
-  editMealCtx.meal.note = document.getElementById('editMealNote').value;
-  plan.days[editMealCtx.dayIdx].meals[editMealCtx.mealIdx] = editMealCtx.meal;
-  store.set('active_plan', plan);
-  renderCalendar();
-  closeEditMealModal();
-};
-
-window.regenerateCalDay = function(dayIdx) {
-  const plan = store.get('active_plan', null); if (!plan) return;
-  const pools = buildFoodPools(plan.restrictions);
-  const dt = new Date(plan.days[dayIdx].date);
-  plan.days[dayIdx] = buildDay(plan.protocol, dayIdx, plan.days.length, dt, pools, (Date.now() % 97) + 1);
-  store.set('active_plan', plan); renderCalendar();
-};
-
-window.endActivePlan = function() {
-  if (!confirm('Arrêter ce plan alimentaire ?')) return;
-  const plan = store.get('active_plan', null);
-  if (plan) { plan.isActive = false; plan.endDate = new Date().toISOString(); const h = store.get('plan_history', []); h.unshift(plan); store.set('plan_history', h); }
-  store.del('active_plan'); store.set('cal_selected_day', 0); renderCalendar();
-};
-
-window.addTodayToTracker = function() {
-  const plan = store.get('active_plan', null); if (!plan) return;
-  const today = new Date();
-  const todayPlan = plan.days.find(d => isSameDay(new Date(d.date), today)); if (!todayPlan) return;
-  const meals = store.get('meals', []);
-  const allItems = todayPlan.meals.flatMap(m => m.items);
-  allItems.forEach(item => {
-    const foodName = typeof item === 'string' ? item : item.name;
-    const match = vitalDb.find(dbItem => dbItem.names && dbItem.names.some(n => n.toLowerCase() === foodName.toLowerCase()));
-    meals.push({ 
-      id: match?.id || Date.now().toString(), 
-      name: foodName, 
-      emoji: typeof item === 'string' ? (match?.emoji || '🌱') : (item.emoji || match?.emoji || '🌱'), 
-      family: match?.category || match?.family || 'Plan alimentaire', 
-      approved: match?.specific?.electric === true,
-      electric: match?.specific?.electric === true,
-      hybrid: match?.specific?.hybrid === true,
-      pral: match?.scientific_defaults?.pral ?? 0,
-      nova: match?.vitality?.nova ?? 4,
-      timestamp: Date.now() 
-    });
+  
+  input.value = currentEditMeal.text;
+  
+  // UI Selectors
+  document.querySelectorAll('#mealSlotSelector .chip-btn').forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll('#mealSlotSelector .chip-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentEditMeal.slot = btn.dataset.slot;
+    };
+    if (btn.dataset.slot === currentEditMeal.slot) btn.classList.add('active');
+    else btn.classList.remove('active');
   });
-  store.set('meals', meals); renderMeals();
-  alert(`✅ ${allItems.length} aliment(s) ajouté(s) au suivi du jour !`);
+  
+  saveBtn.onclick = saveMealModal;
+  
+  scrim.classList.add('active');
+  modal.classList.add('active');
 };
 
-// ── Wizard ──
-let wizardStep = 0;
-let wizardData = { objectives: [], protocols: [], numDays: 7, restrictions: '' };
-const wizardObjectives = [
-  { emoji: '🧹', label: 'Détox & nettoyage' },
-  { emoji: '⚖️', label: 'Perte de poids' },
-  { emoji: '⚡', label: 'Énergie & vitalité' },
-  { emoji: '🌱', label: 'Transition en douceur' },
-];
-const wizardProtocols = [
-  { id: 'ehret', emoji: '🌿', label: 'Arnold Ehret', tagline: 'Transition progressive sans mucus' },
-  { id: 'sebi', emoji: '⚡', label: 'Dr. Sebi', tagline: 'Guide alcalin strict, zéro hybride' },
-  { id: 'morse', emoji: '💧', label: 'Dr. Morse', tagline: 'Fruits, détox et drainage lymphatique' },
-  { id: 'personalized', emoji: '🤝', label: 'Personnalisé', tagline: 'Un mélange des trois, à ton rythme' },
-];
-const wizardDurations = [3, 7, 14, 21];
-
-window.showCalendarWizard = function() {
-  wizardStep = 0;
-  wizardData = { objectives: [], protocols: currentProtocol !== 'vitalist' ? [currentProtocol] : [], numDays: 7, restrictions: '' };
-  document.getElementById('calendarEmpty').style.display = 'none';
-  document.getElementById('calendarWizard').style.display = '';
-  renderWizardStep();
+window.closeMealModal = function() {
+  document.getElementById('mealModalScrim').classList.remove('active');
+  document.getElementById('mealModal').classList.remove('active');
 };
 
-function renderWizardStep() {
-  const labels = [
-    'Étape 1/4 — Ton objectif ? (Multi-choix possible)',
-    'Étape 2/4 — Quel protocole ? (Mix possible)',
-    'Étape 3/4 — Combien de jours ?',
-    'Étape 4/4 — Restrictions ? (optionnel)'
-  ];
-  document.getElementById('wizardStepLabel').textContent = labels[wizardStep];
-  [1,2,3,4].forEach(i => document.getElementById(`wizardStep${i}`).style.display = i === wizardStep + 1 ? '' : 'none');
-  document.getElementById('wizardBackBtn').style.display = wizardStep > 0 ? '' : 'none';
-  document.getElementById('wizardNextBtn').textContent = wizardStep === 3 ? '🌱 Générer mon plan' : 'Suivant →';
-
-  if (wizardStep === 0) {
-    document.getElementById('wizardObjectives').innerHTML = wizardObjectives.map(o => {
-      const isSelected = wizardData.objectives.includes(o.label);
-      return `<button class="wizard-opt ${isSelected ? 'selected' : ''}" onclick="wizardToggleObjective('${o.label}')" style="
-        display:flex;align-items:center;gap:12px;padding:14px 18px;border-radius:12px;border:2px solid ${isSelected ? 'var(--accent)' : 'rgba(255,255,255,0.1)'};
-        background:${isSelected ? 'rgba(var(--accent-rgb,74,222,128),0.1)' : 'rgba(255,255,255,0.03)'};
-        cursor:pointer;width:100%;margin-bottom:8px;color:var(--text);font-size:0.95rem;text-align:left">
-        <span style="font-size:1.5rem">${o.emoji}</span> ${o.label}
-        ${isSelected ? '<i class="ri-checkbox-circle-fill" style="margin-left:auto;color:var(--accent);font-size:1.2rem"></i>' : ''}
-      </button>`;
-    }).join('');
+function saveMealModal() {
+  const input = document.getElementById('mealModalContent').value.trim();
+  if (!input) return alert('Le repas ne peut pas être vide.');
+  
+  currentEditMeal.text = input;
+  let meals = store.get('calendar_meals', []);
+  
+  if (currentEditMeal.id) {
+    const idx = meals.findIndex(x => x.id === currentEditMeal.id);
+    if (idx > -1) meals[idx] = currentEditMeal;
+  } else {
+    currentEditMeal.id = 'meal_' + Date.now();
+    meals.push(currentEditMeal);
   }
-  if (wizardStep === 1) {
-    document.getElementById('wizardProtocols').innerHTML = wizardProtocols.map(p => {
-      const isSelected = wizardData.protocols.includes(p.id);
-      return `<button class="wizard-opt ${isSelected ? 'selected' : ''}" onclick="wizardToggleProtocol('${p.id}')" style="
-        display:flex;flex-direction:column;gap:4px;padding:14px 18px;border-radius:12px;border:2px solid ${isSelected ? 'var(--accent)' : 'rgba(255,255,255,0.1)'};
-        background:${isSelected ? 'rgba(var(--accent-rgb,74,222,128),0.1)' : 'rgba(255,255,255,0.03)'};
-        cursor:pointer;width:100%;margin-bottom:8px;color:var(--text);text-align:left;position:relative">
-        <div style="display:flex;align-items:center;gap:8px;font-size:1rem"><span style="font-size:1.3rem">${p.emoji}</span> <strong>${p.label}</strong></div>
-        <div style="font-size:0.8rem;color:var(--text-dim);padding-right:20px">${p.tagline}</div>
-        ${isSelected ? '<i class="ri-checkbox-circle-fill" style="position:absolute;top:14px;right:18px;color:var(--accent);font-size:1.2rem"></i>' : ''}
-      </button>`;
-    }).join('');
-  }
-  if (wizardStep === 2) {
-    document.getElementById('wizardDurations').innerHTML = wizardDurations.map(d => `
-      <button class="wizard-opt ${wizardData.numDays === d ? 'selected' : ''}" onclick="wizardSelectDuration(${d})" style="
-        padding:16px 24px;border-radius:12px;border:2px solid ${wizardData.numDays === d ? 'var(--accent)' : 'rgba(255,255,255,0.1)'};
-        background:${wizardData.numDays === d ? 'rgba(var(--accent-rgb,74,222,128),0.1)' : 'rgba(255,255,255,0.03)'};
-        cursor:pointer;margin:4px;color:var(--text);font-size:1.1rem;font-weight:600;min-width:80px">
-        ${d} jours
-      </button>`).join('');
-  }
+  
+  store.set('calendar_meals', meals);
+  closeMealModal();
+  renderCalendar();
 }
 
-window.wizardToggleObjective = function(label) {
-  if (wizardData.objectives.includes(label)) wizardData.objectives = wizardData.objectives.filter(x => x !== label);
-  else wizardData.objectives.push(label);
-  renderWizardStep(); 
-};
-window.wizardToggleProtocol = function(id) {
-  if (wizardData.protocols.includes(id)) wizardData.protocols = wizardData.protocols.filter(x => x !== id);
-  else wizardData.protocols.push(id);
-  renderWizardStep(); 
-};
-window.wizardSelectDuration = function(d) { wizardData.numDays = d; renderWizardStep(); };
-
-window.wizardNext = function() {
-  if (wizardStep === 0 && wizardData.objectives.length === 0) { alert('Choisis au moins un objectif !'); return; }
-  if (wizardStep === 1 && wizardData.protocols.length === 0) { alert('Choisis au moins un protocole !'); return; }
-  if (wizardStep < 3) { wizardStep++; renderWizardStep(); return; }
-  wizardData.restrictions = document.getElementById('wizardRestrictions')?.value || '';
-  const plan = generateDietPlan({ protocol: wizardData.protocols, numDays: wizardData.numDays, objective: wizardData.objectives.join(' & '), restrictions: wizardData.restrictions, source: 'wizard' });
-  store.set('active_plan', plan); store.set('cal_selected_day', 0);
-  document.getElementById('calendarWizard').style.display = 'none';
+window.deleteCalendarMeal = function(id) {
+  if (!confirm('Supprimer ce repas ?')) return;
+  let meals = store.get('calendar_meals', []);
+  meals = meals.filter(x => x.id !== id);
+  store.set('calendar_meals', meals);
   renderCalendar();
 };
-window.wizardBack = function() { if (wizardStep > 0) { wizardStep--; renderWizardStep(); } };
 
-// ── Chat integration ──
-window.generatePlanFromChat = function(protocol, numDays, objective, restrictions) {
-  const plan = generateDietPlan({ protocol, numDays, objective, restrictions, source: 'chat' });
-  store.set('active_plan', plan); store.set('cal_selected_day', 0);
-  showPage('calendar');
+window.promptAIFixMeal = function(id) {
+  showPage('chat');
+  const chatInput = document.getElementById('chatInput');
+  chatInput.value = "IA, j'aimerais changer ce repas. Propose-moi une alternative cohérente. (ID: " + id + ")";
+  chatInput.focus();
+};
+
+window.promptAIPlan = function() {
+  showPage('chat');
+  const chatInput = document.getElementById('chatInput');
+  chatInput.value = "IA, crée-moi un menu de 3 jours basé sur ce que j'ai dans le frigo : ...";
+  chatInput.focus();
+};
 };
 
 window.addSuggestedFood = function(btn, foodName) {
