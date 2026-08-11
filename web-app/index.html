@@ -498,128 +498,134 @@
 
   <!-- ═══════ FASTING ═══════ -->
   <main class="page" id="page-fasting">
-    <div class="fasting-container" style="max-width:800px; margin:0 auto;">
-      <!-- Header -->
-      <div class="dash-card glass" style="margin-bottom:24px; padding:24px; background: linear-gradient(145deg, rgba(234,88,12,0.1) 0%, rgba(30,58,138,0.05) 100%); text-align:center;">
-        <h2 style="font-size:2rem; margin-bottom:8px; color:var(--text);">🔥 Jeûne</h2>
-        <p class="subtitle" style="font-size:0.95rem;">Programmes et timer en temps réel</p>
-      </div>
+    <div class="jn-container">
 
-      <!-- Fasting Program Selector -->
-      <div class="dash-card glass" id="fastingPrograms" style="margin-bottom:24px;">
-        <h3 style="margin-bottom:20px; font-size:1.2rem;"><i class="ri-list-check-2"></i> Programmes de jeûne</h3>
-        <div class="program-grid" id="programGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:12px;"></div>
-      </div>
-
-      <!-- Timer Section -->
-      <div class="dash-card glass" style="margin-bottom:24px; padding:40px 24px; display:flex; flex-direction:column; align-items:center; background:linear-gradient(to bottom, rgba(0,0,0,0.15), transparent);">
-        
-        <!-- Timer Ring -->
-        <div class="fasting-timer-display" style="position:relative; width:220px; height:220px; margin-bottom:32px;">
-          <div style="position:absolute; inset:-10px; border-radius:50%; background:radial-gradient(circle, rgba(16,185,129,0.1) 0%, transparent 70%);"></div>
-          <svg viewBox="0 0 200 200" style="width:100%; height:100%; transform:rotate(-90deg); filter:drop-shadow(0 0 10px rgba(16,185,129,0.3));">
-            <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="6" />
-            <circle cx="100" cy="100" r="90" fill="none" stroke="var(--accent)" stroke-width="8" stroke-linecap="round" id="timerProgress" style="transition:stroke-dashoffset 1s linear; stroke-dasharray:565.48; stroke-dashoffset:565.48;" />
-          </svg>
-          <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-            <span id="timerDigits" style="font-size:2.5rem; font-weight:800; font-variant-numeric:tabular-nums; line-height:1; margin-bottom:8px; text-shadow:0 2px 10px rgba(0,0,0,0.5);">00:00:00</span>
-            <span id="timerLabel" style="font-size:0.9rem; color:var(--text-dim); font-weight:600; text-transform:uppercase; letter-spacing:1px;">Prêt</span>
-          </div>
-        </div>
-
-        <div class="fasting-type-select" style="display:flex; flex-wrap:wrap; justify-content:center; gap:12px; margin-bottom:24px;">
-          <div style="display:flex; align-items:center; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; overflow:hidden;">
-            <span style="padding:10px 14px; border-right:1px solid rgba(255,255,255,0.1); font-size:0.9rem; color:var(--text-dim);"><i class="ri-timer-line"></i> Type</span>
-            <select id="fastingType" style="background:transparent; border:none; color:var(--text); padding:10px 14px; font-family:var(--font); outline:none; cursor:pointer;">
-              <option value="intermittent">⏰ Intermittent (16:8)</option>
-              <option value="waterFast">💧 Jeûne hydrique</option>
-              <option value="juiceFast">🧃 Jeûne aux jus</option>
-              <option value="fruitFast">🍎 Jeûne aux fruits</option>
-              <option value="grapeCure">🍇 Cure de raisins</option>
-              <option value="drySunFast">☀️ Jeûne sec</option>
-              <option value="monoFruit">🍌 Mono-fruit</option>
-            </select>
-          </div>
-          
-          <div style="display:flex; align-items:center; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; overflow:hidden;">
-            <span style="padding:10px 14px; border-right:1px solid rgba(255,255,255,0.1); font-size:0.9rem; color:var(--text-dim);">Durée (h)</span>
-            <input type="number" id="fastingDuration" value="16" min="1" max="168" style="background:transparent; border:none; color:var(--text); padding:10px 14px; font-family:var(--font); outline:none; width:80px; text-align:center;">
-          </div>
-        </div>
-        
-        <div id="fastingSafetyWarning" class="safety-warning" style="display:none; width:100%; max-width:500px; margin-bottom:24px; padding:12px 16px; border-radius:12px; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.2); color:#fca5a5; font-size:0.85rem; text-align:center;">
-          <i class="ri-alert-line" style="font-size:1.1rem; vertical-align:middle; margin-right:4px;"></i> <strong>Attention :</strong> Les jeûnes de plus de 24h nécessitent un suivi médical. Consultez un professionnel de santé.
-        </div>
-        
-        <div class="fasting-controls">
-          <button class="btn btn-primary" id="fastStartBtn" onclick="toggleFasting()" style="padding:16px 48px; font-size:1.1rem; border-radius:30px; box-shadow:0 8px 20px rgba(16,185,129,0.3); font-weight:700;">
-            <i class="ri-play-fill"></i> Démarrer
-          </button>
-        </div>
-      </div>
-
-      <!-- Masterclass Arnold Ehret (Horizontal Scroll) -->
-      <div class="dash-card glass" style="margin-bottom:24px; padding-bottom:12px;">
-        <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
-          <div style="width:40px; height:40px; border-radius:12px; background:linear-gradient(135deg, rgba(234,88,12,0.2), rgba(250,204,21,0.2)); display:flex; align-items:center; justify-content:center; border:1px solid rgba(255,255,255,0.05); color:#facc15; font-size:1.3rem;">
-            <i class="ri-book-open-line"></i>
+      <!-- ===== PROGRAMMES DE JEÛNE ===== -->
+      <section class="jn-card">
+        <div class="jn-section-head">
+          <div class="jn-section-icon">
+            <svg class="jn-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="14" height="14" rx="2"/><line x1="3" y1="8" x2="17" y2="8"/><line x1="7" y1="3" x2="7" y2="8"/></svg>
           </div>
           <div>
-            <h3 style="margin:0;">Masterclass : Rational Fasting</h3>
-            <div style="font-size:0.8rem; color:var(--text-dim); margin-top:2px;">Le protocole complet d'Arnold Ehret</div>
+            <div class="jn-section-title">Programmes de jeûne</div>
+            <div class="jn-section-sub">Choisissez un protocole pour préremplir le minuteur</div>
           </div>
         </div>
-
-        <div class="masterclass-scroll" id="masterclassContainer">
+        <div class="jn-program-grid" id="programGrid">
           <!-- Injected via JS -->
         </div>
-      </div>
+      </section>
 
-      <!-- Conseils d'Experts (Accordion) -->
-      <div class="dash-card glass" id="expertAdviceCard" style="margin-bottom:24px;">
-        <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
-          <div style="width:40px; height:40px; border-radius:12px; background:linear-gradient(135deg, rgba(30,58,138,0.2), rgba(16,185,129,0.2)); display:flex; align-items:center; justify-content:center; border:1px solid rgba(255,255,255,0.05); color:var(--accent); font-size:1.3rem;">
-            <i class="ri-book-read-line"></i>
+      <!-- ===== MINUTEUR ===== -->
+      <section class="jn-card">
+        <div class="jn-hero-inner">
+          <div class="jn-ring-wrap">
+            <div class="jn-ring">
+              <svg viewBox="0 0 216 216">
+                <defs>
+                  <linearGradient id="fastGrad" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="var(--accent)"/>
+                    <stop offset="100%" stop-color="#7dffc4"/>
+                  </linearGradient>
+                </defs>
+                <circle class="jn-ring-track" cx="108" cy="108" r="101.5"/>
+                <circle class="jn-ring-fill" id="timerProgress" cx="108" cy="108" r="101.5" stroke-dasharray="637.6" stroke-dashoffset="637.6"/>
+              </svg>
+              <div class="jn-ring-center">
+                <div class="jn-time" id="timerDigits">00:00:00</div>
+                <div class="jn-status" id="timerLabel">PRÊT</div>
+                <div class="jn-goal" id="fastGoal">Objectif : 16h</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="jn-controls">
+            <div class="jn-field">
+              <label>Type</label>
+              <div class="jn-select-wrap">
+                <select class="jn-field-control" id="fastingType">
+                  <option value="intermittent" data-hours="16" selected>🍅 Intermittent (16:8)</option>
+                  <option value="warrior" data-hours="20">⚔️ Warrior (20:4)</option>
+                  <option value="waterFast" data-hours="24">💧 Hydrique 24h</option>
+                  <option value="juiceFast" data-hours="72">🧃 Jus 3 jours</option>
+                  <option value="fruitFast" data-hours="48">🍎 Fruits 48h</option>
+                  <option value="grapeCure" data-hours="72">🍇 Cure de raisins</option>
+                  <option value="drySunFast" data-hours="16">☀️ Sec 16h</option>
+                  <option value="ramadan" data-hours="14">🌙 Ramadan</option>
+                </select>
+                <svg class="jn-icon jn-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l5 5 5-5"/></svg>
+              </div>
+            </div>
+            <div class="jn-field">
+              <label>Durée (h)</label>
+              <input class="jn-field-control" type="number" id="fastingDuration" value="16" min="1" max="168">
+            </div>
+            <div id="fastingSafetyWarning" style="display:none; padding:10px 14px; border-radius:12px; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.2); color:#fca5a5; font-size:0.82rem;">
+              ⚠️ <strong>Attention :</strong> Les jeûnes de plus de 24h nécessitent un suivi médical.
+            </div>
+            <button class="jn-btn-start" id="fastStartBtn" onclick="toggleFasting()">
+              <svg class="jn-icon" viewBox="0 0 20 20" fill="currentColor" id="fastBtnIcon"><path d="M6 4l10 6-10 6V4z"/></svg>
+              <span id="fastBtnLabel">Démarrer</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== MASTERCLASS ===== -->
+      <section class="jn-card">
+        <div class="jn-section-head">
+          <div class="jn-section-icon" style="background:rgba(246,185,59,.14); color:#f6b93b; border-color:transparent;">
+            <svg class="jn-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4.5a2 2 0 0 1 2-1h4v13H5a2 2 0 0 0-2 1v-13z"/><path d="M17 4.5a2 2 0 0 0-2-1h-4v13h4a2 2 0 0 1 2 1v-13z"/></svg>
           </div>
           <div>
-            <h3 style="margin:0;">Conseils d'Experts</h3>
-            <div style="font-size:0.8rem; color:var(--text-dim); margin-top:2px;">Sagesse et recommandations des maîtres du jeûne</div>
+            <div class="jn-section-title">Masterclass : Rational Fasting</div>
+            <div class="jn-section-sub">Le protocole complet d'Arnold Ehret</div>
           </div>
         </div>
-        
-        <div class="expert-accordion" id="expertAccordion" style="display:flex; flex-direction:column; gap:10px;">
+        <div class="jn-lesson-grid" id="masterclassContainer">
           <!-- Injected via JS -->
         </div>
-      </div>
+      </section>
 
-      <!-- Analytics -->
-      <div class="dash-card glass" style="margin-bottom:40px;">
-        <div class="card-head" style="margin-bottom:20px; display:flex; align-items:center; gap:10px;">
-          <i class="ri-bar-chart-box-line" style="font-size:1.3rem; color:var(--accent);"></i>
-          <h3 style="margin:0;">Historique & Statistiques</h3>
-        </div>
-        
-        <div class="fast-analytics" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:12px; margin-bottom:24px;">
-          <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); padding:16px; border-radius:12px; text-align:center;">
-            <span style="display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:6px;">Total sessions</span>
-            <span id="analyticTotal" style="font-size:1.5rem; font-weight:700; color:var(--accent);">0</span>
+      <!-- ===== CONSEILS D'EXPERTS ===== -->
+      <section class="jn-card">
+        <div class="jn-section-head">
+          <div class="jn-section-icon">
+            <svg class="jn-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="14" height="14" rx="2"/><line x1="10" y1="3" x2="10" y2="17"/></svg>
           </div>
-          <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); padding:16px; border-radius:12px; text-align:center;">
-            <span style="display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:6px;">Heures cumulées</span>
-            <span id="analyticHours" style="font-size:1.5rem; font-weight:700; color:var(--text);">0h</span>
-          </div>
-          <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); padding:16px; border-radius:12px; text-align:center;">
-            <span style="display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:6px;">Plus long</span>
-            <span id="analyticLongest" style="font-size:1.5rem; font-weight:700; color:var(--accent);">0h</span>
-          </div>
-          <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); padding:16px; border-radius:12px; text-align:center;">
-            <span style="display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:6px;">Taux complétion</span>
-            <span id="analyticCompletion" style="font-size:1.5rem; font-weight:700; color:var(--text);">0%</span>
+          <div>
+            <div class="jn-section-title">Conseils d'Experts</div>
+            <div class="jn-section-sub">Sagesse et recommandations des maîtres du jeûne</div>
           </div>
         </div>
-        
-        <div id="historyList"><p class="empty-state-sm">Aucune session enregistrée.</p></div>
-      </div>
+        <div class="jn-expert-list" id="expertAccordion">
+          <!-- Injected via JS -->
+        </div>
+      </section>
+
+      <!-- ===== HISTORIQUE & STATISTIQUES ===== -->
+      <section class="jn-card" style="margin-bottom:0;">
+        <div class="jn-section-head">
+          <div class="jn-section-icon">
+            <svg class="jn-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 17V9M9 17V3M15 17v-6"/></svg>
+          </div>
+          <div>
+            <div class="jn-section-title">Historique &amp; Statistiques</div>
+          </div>
+        </div>
+
+        <div class="jn-stats-grid">
+          <div class="jn-stat-card"><div class="jn-stat-num" id="analyticTotal">0</div><div class="jn-stat-label">Total sessions</div></div>
+          <div class="jn-stat-card"><div class="jn-stat-num" id="analyticHours">0h</div><div class="jn-stat-label">Heures cumulées</div></div>
+          <div class="jn-stat-card"><div class="jn-stat-num" style="color:var(--accent);" id="analyticLongest">0h</div><div class="jn-stat-label">Plus long</div></div>
+          <div class="jn-stat-card"><div class="jn-stat-num" style="color:var(--accent);" id="analyticCompletion">0%</div><div class="jn-stat-label">Taux complétion</div></div>
+        </div>
+
+        <div class="jn-history-list" id="historyList">
+          <p class="empty-state-sm">Aucune session enregistrée.</p>
+        </div>
+      </section>
+
     </div>
   </main>
 

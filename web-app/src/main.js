@@ -733,10 +733,11 @@ const FASTING_PROGRAMS = [
 function initFastingPrograms() {
   const grid = document.getElementById('programGrid');
   if (!grid) return;
-  grid.innerHTML = FASTING_PROGRAMS.map(p =>
-    `<div class="program-card" data-id="${p.id}" onclick="selectProgram('${p.id}')">
-      <h5><span style="font-size:1.4rem;">${p.icon}</span> ${esc(p.name)}</h5>
-      <p>${esc(p.desc)}</p>
+  grid.innerHTML = FASTING_PROGRAMS.map((p, i) =>
+    `<div class="jn-program-tile${i === 0 ? ' selected' : ''}" data-id="${p.id}" onclick="selectProgram('${p.id}')">
+      <span class="jn-p-icon">${p.icon}</span>
+      <span class="jn-p-title">${esc(p.name)}</span>
+      <span class="jn-p-desc">${esc(p.desc)}</span>
     </div>`
   ).join('');
 }
@@ -745,11 +746,14 @@ window.selectProgram = function(id) {
   const p = FASTING_PROGRAMS.find(x => x.id === id);
   if (!p) return;
   document.getElementById('fastingDuration').value = p.hours;
-  document.getElementById('fastingSafetyWarning').style.display = p.hours > 24 ? 'flex' : 'none';
-  document.querySelectorAll('.program-card').forEach(c => c.classList.toggle('active', c.dataset.id === id));
-  // Map program to select
-  const typeMap = { intermittent: 'intermittent', warrior: 'intermittent', waterFast24: 'waterFast', juiceFast: 'juiceFast', fruitFast: 'fruitFast', grapeCure: 'grapeCure', drySunFast: 'drySunFast', ramadan: 'intermittent' };
-  document.getElementById('fastingType').value = typeMap[id] || 'intermittent';
+  const goalEl = document.getElementById('fastGoal');
+  if (goalEl) goalEl.textContent = 'Objectif : ' + p.hours + 'h';
+  document.getElementById('fastingSafetyWarning').style.display = p.hours > 24 ? 'block' : 'none';
+  document.querySelectorAll('.jn-program-tile').forEach(c => c.classList.toggle('selected', c.dataset.id === id));
+  // Sync select dropdown
+  const typeMap = { intermittent:'intermittent', warrior:'warrior', waterFast24:'waterFast', juiceFast:'juiceFast', fruitFast:'fruitFast', grapeCure:'grapeCure', drySunFast:'drySunFast', ramadan:'ramadan' };
+  const sel = document.getElementById('fastingType');
+  sel.value = typeMap[id] || 'intermittent';
 };
 
 // ═══════ MASTERCLASS ARNOLD EHRET ═══════
@@ -826,16 +830,32 @@ function initMasterclass() {
   const container = document.getElementById('masterclassContainer');
   if (!container) return;
 
-  container.innerHTML = ehretMasterclassData.map((mc, i) => `
-    <div class="mc-card" onclick="openMasterclass(${i})">
-      <div class="mc-pill">${mc.pill}</div>
-      <div class="mc-icon-wrap" style="color:${mc.color}; background:${mc.bg};">
-        <i class="${mc.icon}"></i>
+  const tagColors = [
+    { bg:'rgba(240,112,156,.14)', color:'#f0709c' },
+    { bg:'rgba(55,211,153,.14)', color:'var(--accent)' },
+    { bg:'rgba(76,195,240,.14)', color:'#4cc3f0' },
+    { bg:'rgba(167,139,250,.14)', color:'#a78bfa' },
+    { bg:'rgba(250,204,21,.14)', color:'#facc15' },
+    { bg:'rgba(236,72,153,.14)', color:'#ec4899' },
+  ];
+
+  container.innerHTML = ehretMasterclassData.map((mc, i) => {
+    const tc = tagColors[i % tagColors.length];
+    return `
+    <div class="jn-lesson-tile" onclick="openMasterclass(${i})">
+      <div class="jn-lesson-head">
+        <div class="jn-lesson-icon" style="background:${tc.bg}; color:${tc.color};">
+          <i class="${mc.icon}"></i>
+        </div>
+        <span class="jn-lesson-tag" style="background:${tc.bg}; color:${tc.color};">${mc.pill}</span>
       </div>
-      <div class="mc-title">${mc.title}</div>
-      <div class="mc-desc">${mc.shortDesc}</div>
+      <div>
+        <div class="jn-lesson-title">${mc.title}</div>
+        <div class="jn-lesson-desc">${mc.shortDesc}</div>
+      </div>
     </div>
-  `).join('');
+  `;
+  }).join('');
 }
 
 window.openMasterclass = function(index) {
@@ -863,6 +883,13 @@ window.closeMasterclass = function(e) {
 
 // ═══════ EXPERT ADVICE ═══════
 function initExpertAccordion() {
+  const expertColors = [
+    { bg:'rgba(246,185,59,.14)', color:'#f6b93b' },
+    { bg:'rgba(55,211,153,.14)', color:'var(--accent)' },
+    { bg:'rgba(246,185,59,.14)', color:'#f6b93b' },
+    { bg:'rgba(76,195,240,.14)', color:'#4cc3f0' },
+    { bg:'rgba(255,255,255,.06)', color:'var(--text-dim)' },
+  ];
   const experts = [
     {
       id: 'ehret',
@@ -929,45 +956,32 @@ function initExpertAccordion() {
   const container = document.getElementById('expertAccordion');
   if (!container) return;
 
-  container.innerHTML = experts.map((exp, i) => `
-    <div class="expert-acc-item" style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); border-radius:12px; overflow:hidden; transition:all 0.3s ease;">
-      <div class="expert-acc-header" onclick="toggleExpertAccordion(${i})" style="padding:16px; display:flex; justify-content:space-between; align-items:center; cursor:pointer;">
-        <div style="display:flex; align-items:center; gap:12px;">
-          <div style="width:36px; height:36px; border-radius:10px; background:rgba(255,255,255,0.05); display:flex; align-items:center; justify-content:center; color:${exp.color}; font-size:1.2rem;">
-            <i class="${exp.icon}"></i>
-          </div>
-          <div>
-            <div style="font-weight:700; color:var(--text); font-size:1rem;">${exp.name}</div>
-            <div style="font-size:0.75rem; color:var(--text-dim);">${exp.title}</div>
-          </div>
-        </div>
-        <i class="ri-arrow-down-s-line" id="acc-icon-${i}" style="font-size:1.4rem; color:var(--text-dim); transition:transform 0.3s ease;"></i>
+  const expertIcons = ['🌱', '💧', '🌿', '🌬️', 'ℹ️'];
+
+  container.innerHTML = experts.map((exp, i) => {
+    const ec = expertColors[i % expertColors.length];
+    return `
+    <div class="jn-expert-row${i === 0 ? ' open' : ''}">
+      <div class="jn-expert-head" onclick="toggleExpertAccordion(this)">
+        <div class="jn-expert-icon" style="background:${ec.bg}; color:${ec.color};">${expertIcons[i] || '📖'}</div>
+        <div><div class="jn-expert-name">${exp.name}</div><div class="jn-expert-sub">${exp.title}</div></div>
+        <svg class="jn-icon jn-expert-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l5 5 5-5"/></svg>
       </div>
-      <div class="expert-acc-content" id="acc-content-${i}" style="max-height:0; overflow:hidden; transition:max-height 0.3s ease;">
-        <div style="padding:0 16px 16px 60px; display:flex; flex-direction:column; gap:12px;">
-          ${exp.tips.map(t => `<div style="font-size:0.9rem; color:var(--text); line-height:1.5; border-left:2px solid ${exp.color}40; padding-left:12px;">${t}</div>`).join('')}
-        </div>
-      </div>
+      <div class="jn-expert-body"><div class="jn-expert-body-inner">
+        ${exp.tips.map(t => `<div style="margin-bottom:8px;">${t}</div>`).join('')}
+      </div></div>
     </div>
-  `).join('');
+  `;
+  }).join('');
 }
 
-window.toggleExpertAccordion = function(index) {
-  const content = document.getElementById(`acc-content-${index}`);
-  const icon = document.getElementById(`acc-icon-${index}`);
-  const isExpanded = content.style.maxHeight !== '0px';
-  
+window.toggleExpertAccordion = function(headEl) {
+  const row = headEl.closest('.jn-expert-row');
+  const wasOpen = row.classList.contains('open');
   // Close all
-  document.querySelectorAll('.expert-acc-content').forEach(el => el.style.maxHeight = '0px');
-  document.querySelectorAll('.expert-acc-header i').forEach(el => el.style.transform = 'rotate(0deg)');
-  document.querySelectorAll('.expert-acc-item').forEach(el => el.style.background = 'rgba(255,255,255,0.02)');
-  
+  document.querySelectorAll('.jn-expert-row').forEach(r => r.classList.remove('open'));
   // Open clicked if it was closed
-  if (!isExpanded) {
-    content.style.maxHeight = content.scrollHeight + 'px';
-    icon.style.transform = 'rotate(180deg)';
-    content.parentElement.style.background = 'rgba(255,255,255,0.05)';
-  }
+  if (!wasOpen) row.classList.add('open');
 };
 
 // ═══════ FASTING TIMER ═══════
@@ -979,7 +993,13 @@ function startFasting() {
   store.set('fasting-active', { startTime: fastingState.startTime, durationMs: fastingState.durationMs, type });
   fastingState.interval = setInterval(updateFastingUI, 1000);
   updateFastingUI();
-  const btn = document.getElementById('fastStartBtn'); btn.innerHTML = '<i class="ri-stop-fill"></i> Arrêter'; btn.classList.add('danger');
+  const btn = document.getElementById('fastStartBtn');
+  document.getElementById('fastBtnIcon').innerHTML = '<rect x="5" y="5" width="10" height="10" rx="1.5"/>';
+  document.getElementById('fastBtnLabel').textContent = 'Arrêter';
+  btn.classList.add('stop');
+  const statusEl = document.getElementById('timerLabel');
+  statusEl.textContent = 'EN COURS';
+  statusEl.classList.add('active');
   renderDashboard();
 }
 function stopFasting() {
@@ -990,10 +1010,15 @@ function stopFasting() {
   clearInterval(fastingState.interval);
   fastingState = { active: false, startTime: null, durationMs: 0, type: '', interval: null };
   store.del('fasting-active');
-  const btn = document.getElementById('fastStartBtn'); btn.innerHTML = '<i class="ri-play-fill"></i> Démarrer'; btn.classList.remove('danger');
+  const btn = document.getElementById('fastStartBtn');
+  document.getElementById('fastBtnIcon').innerHTML = '<path d="M6 4l10 6-10 6V4z"/>';
+  document.getElementById('fastBtnLabel').textContent = 'Démarrer';
+  btn.classList.remove('stop');
   document.getElementById('timerDigits').textContent = '00:00:00';
-  document.getElementById('timerLabel').textContent = 'Terminé ✨';
-  document.getElementById('timerProgress').style.strokeDashoffset = '565.48';
+  const statusEl = document.getElementById('timerLabel');
+  statusEl.textContent = 'PRÊT';
+  statusEl.classList.remove('active');
+  document.getElementById('timerProgress').style.strokeDashoffset = '637.6';
   renderFastingHistory(); renderFastingAnalytics(); renderDashboard();
 }
 function updateFastingUI() {
@@ -1003,42 +1028,46 @@ function updateFastingUI() {
   const progress = Math.min(1, elapsed / fastingState.durationMs);
   const ts = Math.floor(elapsed / 1000);
   document.getElementById('timerDigits').textContent = `${String(Math.floor(ts/3600)).padStart(2,'0')}:${String(Math.floor((ts%3600)/60)).padStart(2,'0')}:${String(ts%60).padStart(2,'0')}`;
-  document.getElementById('timerProgress').style.strokeDashoffset = 565.48 * (1 - progress);
-  document.getElementById('timerLabel').textContent = remaining <= 0 ? '🎉 Objectif atteint !' : `Reste ${Math.floor(remaining/3600000)}h ${Math.floor((remaining%3600000)/60000)}min`;
+  document.getElementById('timerProgress').style.strokeDashoffset = 637.6 * (1 - progress);
+  const statusEl = document.getElementById('timerLabel');
+  if (remaining <= 0) { statusEl.textContent = '🎉 OBJECTIF ATTEINT !'; statusEl.classList.add('active'); }
+  else { statusEl.textContent = `Reste ${Math.floor(remaining/3600000)}h ${Math.floor((remaining%3600000)/60000)}min`; }
   // Dashboard mirror
   const dt = document.getElementById('dashFastTimer'); if (dt) { dt.textContent = document.getElementById('timerDigits').textContent; }
   const df = document.getElementById('dashFastFill'); if (df) { df.style.width = `${progress * 100}%`; }
-  const dft = document.getElementById('dashFastType'); if (dft) { const tl = { intermittent:'⏰ Intermittent', waterFast:'💧 Hydrique', juiceFast:'🧃 Jus', fruitFast:'🍎 Fruits', grapeCure:'🍇 Raisin', drySunFast:'☀️ Sec', monoFruit:'🍌 Mono-fruit' }; dft.textContent = tl[fastingState.type] || fastingState.type; }
+  const dft = document.getElementById('dashFastType'); if (dft) { const tl = { intermittent:'⏰ Intermittent', warrior:'⚔️ Warrior', waterFast:'💧 Hydrique', juiceFast:'🧃 Jus', fruitFast:'🍎 Fruits', grapeCure:'🍇 Raisin', drySunFast:'☀️ Sec', ramadan:'🌙 Ramadan' }; dft.textContent = tl[fastingState.type] || fastingState.type; }
 }
 function loadFastingState() {
   const saved = store.get('fasting-active', null);
-  if (saved?.startTime) { fastingState = { ...saved, active: true, interval: null }; fastingState.interval = setInterval(updateFastingUI, 1000); updateFastingUI(); const btn = document.getElementById('fastStartBtn'); btn.innerHTML = '<i class="ri-stop-fill"></i> Arrêter'; btn.classList.add('danger'); }
+  if (saved?.startTime) {
+    fastingState = { ...saved, active: true, interval: null };
+    fastingState.interval = setInterval(updateFastingUI, 1000);
+    updateFastingUI();
+    const btn = document.getElementById('fastStartBtn');
+    document.getElementById('fastBtnIcon').innerHTML = '<rect x="5" y="5" width="10" height="10" rx="1.5"/>';
+    document.getElementById('fastBtnLabel').textContent = 'Arrêter';
+    btn.classList.add('stop');
+    const statusEl = document.getElementById('timerLabel');
+    statusEl.textContent = 'EN COURS'; statusEl.classList.add('active');
+  }
 }
 function renderFastingHistory() {
   const list = document.getElementById('historyList'); if (!list) return;
   const history = store.get('fasting-history', []);
-  if (history.length === 0) { list.innerHTML = '<div class="empty-state-card" style="margin-top:16px;"><i class="ri-history-line"></i><p>Aucune session enregistrée.</p></div>'; return; }
-  const tl = { intermittent:'⏰', waterFast:'💧', juiceFast:'🧃', fruitFast:'🍎', grapeCure:'🍇', drySunFast:'☀️', monoFruit:'🍌' };
-  list.innerHTML = '<div style="background:rgba(255,255,255,0.02); border-radius:16px; border:1px solid rgba(255,255,255,0.05); overflow:hidden;">' + history.slice(0, 10).map(h => {
-    const d = new Date(h.startTime).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'}); 
+  if (history.length === 0) { list.innerHTML = '<p class="empty-state-sm">Aucune session enregistrée.</p>'; return; }
+  const tl = { intermittent:'🍅', warrior:'⚔️', waterFast:'💧', juiceFast:'🧃', fruitFast:'🍎', grapeCure:'🍇', drySunFast:'☀️', ramadan:'🌙' };
+  list.innerHTML = history.slice(0, 10).map(h => {
+    const d = new Date(h.startTime).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});
     return `
-    <div style="display:flex; justify-content:space-between; align-items:center; padding:16px; border-bottom:1px solid rgba(255,255,255,0.05);">
-      <div style="display:flex; align-items:center; gap:12px;">
-        <div style="width:40px; height:40px; border-radius:12px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05); display:flex; align-items:center; justify-content:center; font-size:1.3rem;">
-          ${tl[h.type]||'✨'}
-        </div>
-        <div>
-          <div style="font-weight:700; font-size:1rem; color:var(--text);">${(h.elapsed/3600000).toFixed(1)}h</div>
-          <div style="font-size:0.75rem; color:var(--text-dim); margin-top:2px;">
-            ${h.completed ? '<span style="color:var(--accent);"><i class="ri-checkbox-circle-fill"></i> Objectif atteint</span>' : '<span style="color:#fca5a5;"><i class="ri-stop-circle-line"></i> Arrêté plus tôt</span>'}
-          </div>
-        </div>
+    <div class="jn-history-row">
+      <div class="jn-history-icon">${tl[h.type]||'✨'}</div>
+      <div class="jn-history-info">
+        <div class="jn-history-title">${(h.elapsed/3600000).toFixed(1)}h</div>
+        <div class="jn-history-sub">${h.completed ? '✅ Objectif atteint' : '⊙ Arrêté plus tôt'}</div>
       </div>
-      <div style="font-size:0.85rem; color:var(--text-dim); font-weight:500; background:rgba(0,0,0,0.2); padding:4px 10px; border-radius:20px;">
-        ${d}
-      </div>
+      <div class="jn-history-date">${d}</div>
     </div>`;
-  }).join('') + '</div>';
+  }).join('');
 }
 function renderFastingAnalytics() {
   const history = store.get('fasting-history', []);
