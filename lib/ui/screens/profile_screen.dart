@@ -7,7 +7,8 @@ import 'package:vital_track/providers/mascot_provider.dart';
 import 'package:vital_track/ui/screens/knowledge_admin_screen.dart';
 import 'package:vital_track/ui/theme.dart';
 import 'package:vital_track/services/update_service.dart';
-
+import 'package:vital_track/ui/widgets/animated_pigeon.dart';
+import 'package:vital_track/providers/mascot_knowledge_base.dart';
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -480,7 +481,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 // 7. MASCOTTE
                 // ═══════════════════════════════════════════════════════════
                 _Section(
-                  icon: "🐦",
+                  icon: const StaticPigeonPortrait(mood: MascotMood.talking, size: 24),
                   title: "Mascotte",
                   subtitle: "Pigeon coach IA",
                   colors: colors,
@@ -677,7 +678,8 @@ void _showResetDialog(BuildContext context, ProfileProvider pp, AppColors colors
 // ═══════════════════════════════════════════════════════════════════════════════
 
 class _Section extends StatelessWidget {
-  final String icon, title, subtitle;
+  final dynamic icon;
+  final String title, subtitle;
   final AppColors colors;
   const _Section(
       {required this.icon,
@@ -688,7 +690,7 @@ class _Section extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Row(
     children: [
-      Text(icon, style: const TextStyle(fontSize: 18)),
+      icon is String ? Text(icon as String, style: const TextStyle(fontSize: 18)) : icon as Widget,
       const SizedBox(width: 8),
       Column(
         crossAxisAlignment: CrossAxisAlignment.start,

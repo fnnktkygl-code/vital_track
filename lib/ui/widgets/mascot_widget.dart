@@ -212,7 +212,7 @@ class _MascotStackState extends State<_MascotStack>
           });
         }
 
-        if (!mascot.isVisible) return const SizedBox.shrink();
+        if (!mascot.isVisible || mascot.currentContext == 'chat') return const SizedBox.shrink();
 
         // DOCKED STATE icon
         if (_isDocked) {
@@ -237,7 +237,7 @@ class _MascotStackState extends State<_MascotStack>
                      BoxShadow(color: Colors.black.withValues(alpha: 0.3), blurRadius: 10)
                   ],
                 ),
-                child: const Text("🐦", style: TextStyle(fontSize: 24)),
+                child: StaticPigeonPortrait(mood: mascot.mood, size: 28),
               ),
             ),
             ),

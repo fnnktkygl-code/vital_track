@@ -594,3 +594,45 @@ class _PigeonPainter extends CustomPainter {
       old.mood != mood || old.isSpeaking != isSpeaking || 
       old.blinkL != blinkL || old.blinkR != blinkR || old.waveAngle != waveAngle;
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// STATIC PORTRAIT (NO ANIMATION, HEAD ONLY)
+// ─────────────────────────────────────────────────────────────────────────────
+
+class StaticPigeonPortrait extends StatelessWidget {
+  final MascotMood mood;
+  final double size;
+
+  const StaticPigeonPortrait({
+    super.key,
+    required this.mood,
+    this.size = 28,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // The painter draws in a 100x122 canvas by default, and the head is centered around y=41, radius=22.
+    // To make a static portrait, we draw it at a larger scale, and translate it so the head is in the middle of our `size` box.
+    return SizedBox(
+      width: size,
+      height: size,
+      child: ClipOval(
+        child: OverflowBox(
+          maxWidth: size * 2.5,
+          maxHeight: size * 2.5 * 1.22,
+          alignment: const Alignment(0, -0.65), // Magic number to align the head (y=41 out of 122) in the center of the viewport
+          child: CustomPaint(
+            size: Size(size * 2.5, size * 2.5 * 1.22),
+            painter: _PigeonPainter(
+              mood: mood,
+              isSpeaking: false,
+              blinkL: 1.0,
+              blinkR: 1.0,
+              waveAngle: 0.0,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

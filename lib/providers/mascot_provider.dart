@@ -22,6 +22,7 @@ class MascotProvider with ChangeNotifier {
   MascotMood get mood => _mood;
   bool get isVisible => _isVisible;
   bool get isSpeaking => _isSpeaking;
+  String get currentContext => _currentContext;
 
   MascotProvider() {
     _startIdleLoop();
@@ -306,14 +307,24 @@ class MascotProvider with ChangeNotifier {
     _autoHideTimer = Timer(Duration(seconds: autoDismiss), () {
       _isSpeaking = false;
       _currentMessage = null;
+      _mood = MascotMood.talking; // Return to neutral state
       notifyListeners();
     });
   }
 
   void _startIdleLoop() {
-    // Show contextual tip every 30s if nothing else is happening
-    _idleTimer = Timer.periodic(const Duration(seconds: 30), (_) {
-      if (!_isSpeaking) {
+    // Show contextual tip every 3 minutes if nothing else is happening
+    _idleTimer = Timer.periodic(const Duration(minutes: 3), (_) {
+      if (!_isSpeaking && _currentContext != "chat") {
+        // Only trigger if app is in foreground and user is not actively typing
+        if (WidgetsBinding.instance.lifecycleState != null && 
+            WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed) {
+          return;
+        }
+        if (FocusManager.instance.primaryFocus?.hasFocus ?? false) {
+          return;
+        }
+
         // 50% chance to show a time-based idle message, 50% chance for a random knowledge tip
         if (DateTime.now().second % 2 == 0) {
           final idle = MascotKnowledgeBase.idleMessage(_activeModeId);

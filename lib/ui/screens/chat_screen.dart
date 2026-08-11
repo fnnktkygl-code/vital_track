@@ -6,13 +6,23 @@ import 'package:uuid/uuid.dart';
 import 'package:vital_track/models/fasting_program.dart';
 import 'package:vital_track/models/fasting_session.dart';
 import 'package:vital_track/models/knowledge_source.dart';
+import 'package:vital_track/models/diet_plan.dart';
 import 'package:vital_track/providers/fasting_provider.dart';
+import 'package:vital_track/providers/diet_plan_provider.dart';
+import 'package:vital_track/providers/meal_provider.dart';
 import 'package:vital_track/services/ai_service.dart';
 import 'package:vital_track/services/knowledge_service.dart';
 import 'package:vital_track/services/hive_service.dart';
+import 'package:vital_track/services/diet_plan_generator.dart';
+import 'package:vital_track/services/vital_rules_engine.dart';
+import 'package:vital_track/utils/food_mapper.dart';
 import 'package:vital_track/models/chat_message.dart';
 import 'package:vital_track/providers/profile_provider.dart';
+import 'package:vital_track/ui/screens/diet_plan_calendar_screen.dart';
 import 'package:vital_track/ui/theme.dart';
+import 'package:vital_track/providers/mascot_provider.dart';
+import 'package:vital_track/providers/mascot_knowledge_base.dart';
+import 'package:vital_track/ui/widgets/animated_pigeon.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -41,7 +51,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final history = _hiveService.loadChatHistory();
     if (history.isEmpty) {
       final welcome = ChatMessage(
-        text: "Coo! Je suis ton guide Vitaliste. Pose-moi des questions sur le Dr. Sebi, Arnold Ehret, ou le Dr. Morse — et demande-moi de te créer un programme de jeûne personnalisé ! 🐦",
+        text: "Coo! Je suis ton guide Vitaliste. Pose-moi des questions sur le Dr. Sebi, Arnold Ehret, ou le Dr. Morse — je peux aussi te créer un programme de jeûne ou un plan alimentaire complet, calendrier inclus ! 🐦📅",
         isUser: false,
       );
       _messages.add(welcome);
@@ -72,46 +82,76 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
-  /// Parses the AI response text to extract a JSON program block.
-  /// Returns a tuple: (cleanText, FastingProgram?)
-  (String, FastingProgram?) _parseAiResponse(String text) {
-    // Find ``` json { "program": ... } ``` block
+  /// Parses the AI response text to extract a single JSON block that may
+  /// contain a fasting `program`, a `dietPlanRequest`, and/or `suggestFoods`.
+  ({String text, FastingProgram? program, DietPlan? dietPlan, List<String> suggestFoods})
+      _parseAiResponse(String text) {
+    // Find a single ```json { ... } ``` block that may carry any combination
+    // of "program", "dietPlanRequest" and "suggestFoods" keys.
     final jsonRegex = RegExp(r'```json\s*(\{[\s\S]*?\})\s*```', caseSensitive: false);
     final match = jsonRegex.firstMatch(text);
-    if (match == null) return (text, null);
+    if (match == null) {
+      return (text: text, program: null, dietPlan: null, suggestFoods: const []);
+    }
+
+    FastingProgram? program;
+    DietPlan? dietPlan;
+    List<String> suggestFoods = const [];
 
     try {
       final jsonStr = match.group(1)!;
-      final decoded = json.decode(jsonStr);
+      final decoded = json.decode(jsonStr) as Map<String, dynamic>;
+
       final programData = decoded['program'] as Map<String, dynamic>?;
-      if (programData == null) return (text, null);
+      if (programData != null) {
+        final configsList = (programData['configs'] as List<dynamic>?) ?? [];
+        final configs = configsList.map((c) {
+          final typeStr = c['type'] as String? ?? 'intermittent';
+          final type = _parseFastingType(typeStr);
+          return FastingSessionConfig(
+            type: type,
+            durationMinutes: (c['durationMinutes'] as num?)?.toInt() ?? 480,
+            breakHours: (c['breakHours'] as num?)?.toInt() ?? 0,
+          );
+        }).toList();
 
-      final configsList = (programData['configs'] as List<dynamic>?) ?? [];
-      final configs = configsList.map((c) {
-        final typeStr = c['type'] as String? ?? 'intermittent';
-        final type = _parseFastingType(typeStr);
-        return FastingSessionConfig(
-          type: type,
-          durationMinutes: (c['durationMinutes'] as num?)?.toInt() ?? 480,
-          breakHours: (c['breakHours'] as num?)?.toInt() ?? 0,
+        program = FastingProgram(
+          id: const Uuid().v4(),
+          name: programData['name'] as String? ?? 'Programme Vitaliste',
+          targetObjective: programData['targetObjective'] as String? ?? '',
+          startDate: DateTime.now(),
+          configs: configs,
+          protocol: programData['protocol'] as String? ?? 'vitalist',
         );
-      }).toList();
+      }
 
-      final program = FastingProgram(
-        id: const Uuid().v4(),
-        name: programData['name'] as String? ?? 'Programme Vitaliste',
-        targetObjective: programData['targetObjective'] as String? ?? '',
-        startDate: DateTime.now(),
-        configs: configs,
-        protocol: programData['protocol'] as String? ?? 'vitalist',
-      );
+      final planReq = decoded['dietPlanRequest'] as Map<String, dynamic>?;
+      if (planReq != null) {
+        final protocol = planReq['protocol'] as String? ?? 'personalized';
+        final objective = planReq['objective'] as String? ?? '';
+        final numDays = (planReq['numDays'] as num?)?.toInt() ?? 7;
+        final restrictions = planReq['restrictions'] as String? ?? '';
+        // The AI only supplies parameters — the app always builds the
+        // actual calendar locally from the verified vitalist food database.
+        dietPlan = DietPlanGenerator.generate(
+          protocol: protocol,
+          numDays: numDays,
+          objective: objective,
+          restrictions: restrictions,
+          source: 'chat',
+        );
+      }
 
-      // Strip the JSON block from the displayed text
+      final foods = decoded['suggestFoods'] as List<dynamic>?;
+      if (foods != null) {
+        suggestFoods = foods.map((e) => e.toString()).toList();
+      }
+
       final cleanText = text.replaceAll(match.group(0)!, '').trim();
-      return (cleanText, program);
+      return (text: cleanText, program: program, dietPlan: dietPlan, suggestFoods: suggestFoods);
     } catch (e) {
-      debugPrint('ChatScreen: Failed to parse program JSON: $e');
-      return (text, null);
+      debugPrint('ChatScreen: Failed to parse AI JSON block: $e');
+      return (text: text, program: null, dietPlan: null, suggestFoods: const []);
     }
   }
 
@@ -171,14 +211,20 @@ class _ChatScreenState extends State<ChatScreen> {
       },
       onDone: () {
         if (!mounted) return;
-        // Parse for a program proposal
-        final (cleanText, program) = _parseAiResponse(aiMsg.text);
-        aiMsg = aiMsg.copyWithText(cleanText, isStreaming: false, proposedProgram: program);
+        // Parse for a program / diet-plan proposal / food suggestions
+        final parsed = _parseAiResponse(aiMsg.text);
+        aiMsg = aiMsg.copyWithText(
+          parsed.text,
+          isStreaming: false,
+          proposedProgram: parsed.program,
+          proposedDietPlan: parsed.dietPlan,
+          suggestedFoods: parsed.suggestFoods,
+        );
         setState(() {
           _messages[_messages.length - 1] = aiMsg;
           _isTyping = false;
         });
-        _hiveService.saveChatMessage(aiMsg.copyWithText(cleanText, isStreaming: false));
+        _hiveService.saveChatMessage(aiMsg.copyWithText(parsed.text, isStreaming: false));
         _scrollToBottom();
       },
       onError: (_) {
@@ -213,8 +259,35 @@ class _ChatScreenState extends State<ChatScreen> {
     _scrollToBottom();
   }
 
+  Future<void> _acceptDietPlan(DietPlan plan) async {
+    await context.read<DietPlanProvider>().activatePlan(plan);
+    if (!mounted) return;
+
+    final confirmMsg = ChatMessage(
+      text: "📅 C'est noté ! Ton plan **${plan.name}** (${plan.totalDays} jours) est activé et rempli dans ton calendrier. Tu peux le consulter et le modifier à tout moment. Coo! 🐦🌿",
+      isUser: false,
+    );
+    setState(() {
+      _messages.add(confirmMsg);
+    });
+    _hiveService.saveChatMessage(confirmMsg);
+    _scrollToBottom();
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const DietPlanCalendarScreen()),
+    );
+  }
+
+  Future<bool> _addSuggestedFood(String name) async {
+    final food = VitalRulesEngine.getExpertFood(name) ?? FoodMapper.fromNameFallback(name);
+    context.read<MealProvider>().addFood(food);
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
+    context.read<MascotProvider>().setContext("chat");
     final colors = context.colors;
     return Scaffold(
       backgroundColor: colors.surface,
@@ -235,11 +308,56 @@ class _ChatScreenState extends State<ChatScreen> {
               itemBuilder: (ctx, i) => _ChatBubble(
                 msg: _messages[i],
                 onAcceptProgram: _acceptProgram,
+                onAcceptDietPlan: _acceptDietPlan,
+                onAddFood: _addSuggestedFood,
               ),
             ),
           ),
           _buildInput(colors),
         ],
+      ),
+    );
+  }
+
+  Widget _buildQuickActions(AppColors colors) {
+    final chips = <(String, String)>[
+      ('📅', 'Crée-moi un plan alimentaire'),
+      ('🍽️', "Qu'est-ce que je devrais manger aujourd'hui ?"),
+    ];
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: chips.map((c) {
+            return Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: GestureDetector(
+                onTap: () {
+                  _ctrl.text = c.$2;
+                  _sendMessage();
+                },
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+                  decoration: BoxDecoration(
+                    color: colors.accentSubtle,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: colors.sheetBorder),
+                  ),
+                  child: Text(
+                    '${c.$1}  ${c.$2}',
+                    style: TextStyle(
+                      color: colors.accent,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
       ),
     );
   }
@@ -252,38 +370,46 @@ class _ChatScreenState extends State<ChatScreen> {
         color: colors.sheetBg,
         border: Border(top: BorderSide(color: colors.sheetBorder)),
       ),
-      child: Row(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: TextField(
-              controller: _ctrl,
-              style: TextStyle(color: colors.textPrimary),
-              decoration: InputDecoration(
-                hintText: "Posez votre question...",
-                hintStyle: TextStyle(color: colors.textTertiary),
-                border: InputBorder.none,
+          if (_messages.length <= 1) _buildQuickActions(colors),
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _ctrl,
+                  style: TextStyle(color: colors.textPrimary),
+                  decoration: InputDecoration(
+                    hintText: "Posez votre question...",
+                    hintStyle: TextStyle(color: colors.textTertiary),
+                    border: InputBorder.none,
+                  ),
+                  onSubmitted: (_) => _sendMessage(),
+                  textInputAction: TextInputAction.send,
+                ),
               ),
-              onSubmitted: (_) => _sendMessage(),
-              textInputAction: TextInputAction.send,
-            ),
-          ),
-          const SizedBox(width: 12),
-          GestureDetector(
-            onTap: _isTyping ? null : _sendMessage,
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 150),
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: _isTyping ? colors.surfaceSubtle : colors.accent,
-                shape: BoxShape.circle,
+              const SizedBox(width: 12),
+              GestureDetector(
+                onTap: _isTyping ? null : _sendMessage,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 150),
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: _isTyping ? colors.surfaceSubtle : colors.accent,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.send_rounded,
+                    color:
+                        _isTyping ? colors.iconMuted : colors.accentOnPrimary,
+                    size: 20,
+                  ),
+                ),
               ),
-              child: Icon(
-                Icons.send_rounded,
-                color: _isTyping ? colors.iconMuted : colors.accentOnPrimary,
-                size: 20,
-              ),
-            ),
+            ],
           ),
         ],
       ),
@@ -296,7 +422,14 @@ class _ChatScreenState extends State<ChatScreen> {
 class _ChatBubble extends StatelessWidget {
   final ChatMessage msg;
   final Future<void> Function(FastingProgram)? onAcceptProgram;
-  const _ChatBubble({required this.msg, this.onAcceptProgram});
+  final Future<void> Function(DietPlan)? onAcceptDietPlan;
+  final Future<bool> Function(String)? onAddFood;
+  const _ChatBubble({
+    required this.msg,
+    this.onAcceptProgram,
+    this.onAcceptDietPlan,
+    this.onAddFood,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -353,8 +486,8 @@ class _ChatBubble extends StatelessWidget {
                   color: colors.accentSubtle,
                   shape: BoxShape.circle,
                 ),
-                child: const Center(
-                    child: Text('🐦', style: TextStyle(fontSize: 14))),
+                child: Center(
+                    child: StaticPigeonPortrait(mood: MascotMood.talking, size: 24)),
               ),
               const SizedBox(width: 8),
               Text(
@@ -393,6 +526,24 @@ class _ChatBubble extends StatelessWidget {
               child: _PlanProposalCard(
                 program: msg.proposedProgram!,
                 onAccept: onAcceptProgram,
+              ),
+            ),
+          // ── DIET PLAN PROPOSAL CARD ─────────────────────────────────────────
+          if (msg.proposedDietPlan != null && !msg.isStreaming)
+            Padding(
+              padding: const EdgeInsets.only(left: 36, top: 16),
+              child: _DietPlanProposalCard(
+                plan: msg.proposedDietPlan!,
+                onAccept: onAcceptDietPlan,
+              ),
+            ),
+          // ── PROACTIVE FOOD SUGGESTIONS ──────────────────────────────────────
+          if (msg.suggestedFoods.isNotEmpty && !msg.isStreaming)
+            Padding(
+              padding: const EdgeInsets.only(left: 36, top: 12),
+              child: _FoodSuggestionChips(
+                foods: msg.suggestedFoods,
+                onAdd: onAddFood,
               ),
             ),
           // Source chips
@@ -705,6 +856,336 @@ class _PlanProposalCardState extends State<_PlanProposalCard> {
           ),
         ],
       ),
+    );
+  }
+}
+
+// ── DIET PLAN PROPOSAL CARD ──────────────────────────────────────────────────
+
+class _DietPlanProposalCard extends StatefulWidget {
+  final DietPlan plan;
+  final Future<void> Function(DietPlan)? onAccept;
+
+  const _DietPlanProposalCard({required this.plan, this.onAccept});
+
+  @override
+  State<_DietPlanProposalCard> createState() => _DietPlanProposalCardState();
+}
+
+class _DietPlanProposalCardState extends State<_DietPlanProposalCard> {
+  bool _accepted = false;
+  bool _loading = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    final plan = widget.plan;
+    final preview = plan.days.take(2).toList();
+
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            colors.accent.withOpacity(0.12),
+            colors.accentSubtle.withOpacity(0.06),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: colors.accent.withOpacity(0.3), width: 1.5),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: colors.accent.withOpacity(0.12),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(18),
+                topRight: Radius.circular(18),
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: colors.accent.withOpacity(0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Text(plan.protocol.dietProtocolEmoji,
+                      style: const TextStyle(fontSize: 18)),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        plan.name,
+                        style: TextStyle(
+                          color: colors.textPrimary,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Row(
+                        children: [
+                          Icon(Icons.calendar_month_rounded,
+                              size: 12, color: colors.accent),
+                          const SizedBox(width: 4),
+                          Text(
+                            '${plan.protocol.dietProtocolLabel} · ${plan.totalDays} jours',
+                            style: TextStyle(
+                                color: colors.accent,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (plan.objective.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 6),
+              child: Text(
+                '🎯 ${plan.objective}',
+                style: TextStyle(
+                  color: colors.textSecondary,
+                  fontSize: 14,
+                  height: 1.5,
+                ),
+              ),
+            ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+            child: Text(
+              'Aperçu du calendrier',
+              style: TextStyle(
+                color: colors.textTertiary,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.5,
+              ),
+            ),
+          ),
+          ...preview.map((day) {
+            return Padding(
+              padding: const EdgeInsets.fromLTRB(16, 6, 16, 0),
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: colors.surface.withOpacity(0.5),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Jour ${day.dayIndex + 1} · ${day.phaseLabel}',
+                      style: TextStyle(
+                        color: colors.textPrimary,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    ...day.meals.take(3).map((m) => Padding(
+                          padding: const EdgeInsets.only(top: 2),
+                          child: Text(
+                            '${m.slot} : ${m.items.join(', ')}',
+                            style: TextStyle(
+                              color: colors.textSecondary,
+                              fontSize: 12.5,
+                              height: 1.4,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        )),
+                  ],
+                ),
+              ),
+            );
+          }),
+          if (plan.totalDays > preview.length)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+              child: Text(
+                '+ ${plan.totalDays - preview.length} autres jours, modifiables après activation.',
+                style: TextStyle(
+                  color: colors.textTertiary,
+                  fontSize: 12,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            ),
+          const SizedBox(height: 4),
+          // Accept button
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+            child: _accepted
+                ? Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.check_circle, color: colors.accent, size: 20),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Plan activé !',
+                        style: TextStyle(
+                            color: colors.accent,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 15),
+                      ),
+                    ],
+                  )
+                : SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: _loading
+                          ? null
+                          : () async {
+                              setState(() => _loading = true);
+                              await widget.onAccept?.call(widget.plan);
+                              if (mounted) {
+                                setState(() {
+                                  _accepted = true;
+                                  _loading = false;
+                                });
+                              }
+                            },
+                      icon: _loading
+                          ? SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(
+                                  strokeWidth: 2, color: colors.accentOnPrimary),
+                            )
+                          : const Icon(Icons.calendar_month_rounded, size: 20),
+                      label: Text(_loading
+                          ? 'Activation...'
+                          : 'Activer et remplir mon calendrier'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: colors.accent,
+                        foregroundColor: colors.accentOnPrimary,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14)),
+                        textStyle: const TextStyle(
+                            fontWeight: FontWeight.w700, fontSize: 15),
+                        elevation: 0,
+                      ),
+                    ),
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ── PROACTIVE FOOD SUGGESTION CHIPS ──────────────────────────────────────────
+
+class _FoodSuggestionChips extends StatefulWidget {
+  final List<String> foods;
+  final Future<bool> Function(String)? onAdd;
+
+  const _FoodSuggestionChips({required this.foods, this.onAdd});
+
+  @override
+  State<_FoodSuggestionChips> createState() => _FoodSuggestionChipsState();
+}
+
+class _FoodSuggestionChipsState extends State<_FoodSuggestionChips> {
+  final Set<String> _added = {};
+  String? _loading;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.colors;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Ajouter à ta liste du jour ?',
+          style: TextStyle(
+            color: colors.textTertiary,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: widget.foods.map((food) {
+            final isAdded = _added.contains(food);
+            final isLoading = _loading == food;
+            return GestureDetector(
+              onTap: isAdded || isLoading
+                  ? null
+                  : () async {
+                      setState(() => _loading = food);
+                      final ok = await widget.onAdd?.call(food) ?? false;
+                      if (!mounted) return;
+                      setState(() {
+                        _loading = null;
+                        if (ok) _added.add(food);
+                      });
+                    },
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: isAdded
+                      ? colors.accent.withOpacity(0.15)
+                      : colors.accentSubtle,
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(
+                    color: isAdded
+                        ? colors.accent.withOpacity(0.4)
+                        : colors.sheetBorder,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(food,
+                        style: TextStyle(
+                          color:
+                              isAdded ? colors.accent : colors.textPrimary,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        )),
+                    const SizedBox(width: 6),
+                    if (isLoading)
+                      SizedBox(
+                        width: 12,
+                        height: 12,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 1.5, color: colors.accent),
+                      )
+                    else
+                      Icon(
+                        isAdded ? Icons.check_rounded : Icons.add_rounded,
+                        size: 15,
+                        color: isAdded ? colors.accent : colors.textTertiary,
+                      ),
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
     );
   }
 }
