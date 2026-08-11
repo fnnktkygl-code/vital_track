@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Vital Track — Coach Vitaliste IA</title>
+  <meta name="description" content="Vital Track : suivi de jeûne, respiration Wim Hof, nutrition alcaline, repas, favoris. Coach IA vitaliste.">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#0F172A">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="icon" type="image/png" href="/icon-192.png">
+  <link rel="apple-touch-icon" href="/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+  <div class="bg-blob blob-1"></div>
+  <div class="bg-blob blob-2"></div>
+
+  <div class="app-container">
+    <!-- ═══════ DESKTOP SIDEBAR ═══════ -->
+    <aside class="sidebar-desktop">
+      <a href="#" class="sidebar-logo" onclick="showPage('dashboard')">
+        <div class="logo-icon"><i class="ri-leaf-fill"></i></div>
+        VitalTrack
+      </a>
+      
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Principal</div>
+        <a href="#" class="sidebar-link active" data-page="dashboard" onclick="showPage('dashboard')"><i class="ri-dashboard-fill"></i> Tableau</a>
+        <a href="#" class="sidebar-link" data-page="meals" onclick="showPage('meals')"><i class="ri-restaurant-fill"></i> Repas</a>
+        <a href="#" class="sidebar-link" data-page="fasting" onclick="showPage('fasting')"><i class="ri-fire-fill"></i> Jeûne</a>
+        <a href="#" class="sidebar-link" data-page="chat" onclick="showPage('chat')"><i class="ri-chat-smile-3-fill"></i> Chat</a>
+      </div>
+      
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Suivi</div>
+        <a href="#" class="sidebar-link" data-page="search" onclick="showPage('search')"><i class="ri-search-line"></i> Aliments</a>
+        <a href="#" class="sidebar-link" data-page="scan" onclick="showPage('scan')"><i class="ri-camera-lens-line"></i> Scanner</a>
+        <a href="#" class="sidebar-link" data-page="calendar" onclick="showPage('calendar')"><i class="ri-calendar-check-line"></i> Calendrier</a>
+      </div>
+      
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Bien-être</div>
+        <a href="#" class="sidebar-link" data-page="breathing" onclick="showPage('breathing')"><i class="ri-windy-line"></i> Respiration</a>
+        <a href="#" class="sidebar-link" data-page="resources" onclick="showPage('resources')"><i class="ri-play-circle-line"></i> Médias</a>
+      </div>
+      
+      <div class="sidebar-spacer"></div>
+      
+      <div class="sidebar-section" style="margin-bottom:0">
+        <a href="#" class="sidebar-link" data-page="modes" onclick="showPage('modes')"><i class="ri-settings-3-line"></i> Paramètres</a>
+      </div>
+    </aside>
+
+  <!-- ═══════ NAV ═══════ -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="#" class="logo" onclick="showPage('dashboard')">
+        <span class="logo-icon">🌿</span> Vital<span class="accent">Track</span>
+      </a>
+      <div class="nav-links" id="navLinks">
+        <a href="#" class="nav-link active" data-page="dashboard" onclick="showPage('dashboard')"><i class="ri-dashboard-line"></i> Tableau</a>
+        <a href="#" class="nav-link" data-page="chat" onclick="showPage('chat')"><i class="ri-chat-smile-3-line"></i> Chat</a>
+        <a href="#" class="nav-link" data-page="scan" onclick="showPage('scan')"><i class="ri-camera-lens-fill"></i> Scanner</a>
+        <a href="#" class="nav-link" data-page="search" onclick="showPage('search')"><i class="ri-search-line"></i> Aliments</a>
+        <a href="#" class="nav-link" data-page="meals" onclick="showPage('meals')"><i class="ri-restaurant-line"></i> Repas</a>
+        <a href="#" class="nav-link" data-page="calendar" onclick="showPage('calendar')"><i class="ri-calendar-check-line"></i> Calendrier</a>
+        <a href="#" class="nav-link" data-page="fasting" onclick="showPage('fasting')"><i class="ri-fire-line"></i> Jeûne</a>
+        <a href="#" class="nav-link" data-page="breathing" onclick="showPage('breathing')"><i class="ri-windy-line"></i> Respir.</a>
+        <a href="#" class="nav-link" data-page="resources" onclick="showPage('resources')"><i class="ri-play-circle-line"></i> Médias</a>
+        <a href="#" class="nav-link" data-page="modes" onclick="showPage('modes')"><i class="ri-settings-3-line"></i> Plus</a>
+      </div>
+      <button class="theme-toggle" onclick="toggleTheme()" data-tooltip="Mode sombre/clair"><i class="ri-moon-line" id="themeIcon"></i></button>
+      <button class="hamburger" onclick="toggleMobileNav()"><i class="ri-menu-3-line"></i></button>
+    </div>
+  </nav>
+  <div class="mobile-nav" id="mobileNav">
+    <a href="#" onclick="showPage('dashboard'); toggleMobileNav()"><i class="ri-dashboard-line"></i> Tableau de bord</a>
+    <a href="#" onclick="showPage('chat'); toggleMobileNav()"><i class="ri-chat-smile-3-line"></i> Chat IA</a>
+    <a href="#" onclick="showPage('scan'); toggleMobileNav()"><i class="ri-camera-lens-fill"></i> Scanner IA</a>
+    <a href="#" onclick="showPage('search'); toggleMobileNav()"><i class="ri-search-line"></i> Recherche aliments</a>
+    <a href="#" onclick="showPage('meals'); toggleMobileNav()"><i class="ri-restaurant-line"></i> Mes repas</a>
+    <a href="#" onclick="showPage('calendar'); toggleMobileNav()"><i class="ri-calendar-check-line"></i> Plan alimentaire</a>
+    <a href="#" onclick="showPage('fasting'); toggleMobileNav()"><i class="ri-fire-line"></i> Jeûne</a>
+    <a href="#" onclick="showPage('breathing'); toggleMobileNav()"><i class="ri-windy-line"></i> Respiration</a>
+    <a href="#" onclick="showPage('resources'); toggleMobileNav()"><i class="ri-play-circle-line"></i> Bibliothèque</a>
+    <a href="#" onclick="showPage('favorites'); toggleMobileNav()"><i class="ri-heart-line"></i> Favoris</a>
+    <a href="#" onclick="showPage('modes'); toggleMobileNav()"><i class="ri-settings-3-line"></i> Protocoles & Profil</a>
+  </div>
+
+  <!-- ═══════ BOTTOM NAV (Mobile) ═══════ -->
+  <nav class="bottom-nav" id="bottomNav">
+    <a href="#" class="bnav-item active" data-page="dashboard" onclick="showPage('dashboard')"><i class="ri-dashboard-line"></i><span>Tableau</span></a>
+    <a href="#" class="bnav-item" data-page="scan" onclick="showPage('scan')"><i class="ri-camera-lens-fill"></i><span>Scanner</span></a>
+    <a href="#" class="bnav-item" data-page="chat" onclick="showPage('chat')"><i class="ri-chat-smile-3-line"></i><span>Chat</span></a>
+    <a href="#" class="bnav-item" data-page="calendar" onclick="showPage('calendar')"><i class="ri-calendar-check-line"></i><span>Plan</span></a>
+    <a href="#" class="bnav-item" data-page="fasting" onclick="showPage('fasting')"><i class="ri-fire-line"></i><span>Jeûne</span></a>
+    <a href="#" class="bnav-item" data-page="modes" onclick="showPage('modes')"><i class="ri-apps-line"></i><span>Plus</span></a>
+  </nav>
+
+  <!-- ═══════ DASHBOARD ═══════ -->
+  <div class="main-content">
+  <main class="page active" id="page-dashboard">
+    <div class="dash-container">
+      
+      <!-- Top Header -->
+      <div class="dashboard-header">
+        <div>
+          <h1 style="font-size: 1.8rem; font-weight: 700; color: var(--text); margin-bottom:4px;">Tableau de bord</h1>
+          <p id="dashboardDate" style="color: var(--text-dim); font-size: 0.9rem;">Lundi 10 Août</p>
+        </div>
+        <div style="display:flex; gap: 8px;">
+          <button class="icon-btn glass" onclick="toggleTheme()"><i class="ri-moon-fill" id="themeIcon"></i></button>
+          <button class="icon-btn glass" onclick="showPage('modes')"><i class="ri-settings-3-fill"></i></button>
+          <button class="icon-btn" style="background: var(--accent); color:#000; border:none; font-weight:bold; width:40px; height:40px; border-radius:12px;">F</button>
+        </div>
+      </div>
+
+      <!-- Greeting Card -->
+      <div class="dash-greeting-card glass" style="display:flex; justify-content:space-between; align-items:center; padding:16px 24px; margin-bottom:24px; border-radius:var(--radius);">
+        <div style="display:flex; align-items:center; gap:16px;">
+          <div style="width:56px; height:56px; border-radius:50%; background:rgba(255,255,255,0.05); display:flex; justify-content:center; align-items:center; border:1px solid var(--border);">
+            <canvas id="mascotCanvas" width="40" height="40" style="width:40px; height:40px;"></canvas>
+          </div>
+          <div>
+            <h2 id="greetName" style="font-size:1.1rem; font-weight:600;">Salut, Fnnk 👋</h2>
+            <p id="greetMode" style="color:var(--text-dim); font-size:0.85rem;">Mode Vitaliste</p>
+          </div>
+        </div>
+        <div id="greetingContext" style="background:rgba(255,255,255,0.03); padding:8px 16px; border-radius:50px; font-size:0.85rem; color:var(--text-dim); border:1px solid var(--border);">
+          🌙 La soirée approche, système digestif bientôt au repos.
+        </div>
+      </div>
+
+      <!-- Main Grid: Clock & Vitality -->
+      <div class="dash-grid-top">
+        
+        <!-- Circadian Rhythm Widget -->
+        <div class="dash-card glass" id="circadianCard" style="display:flex; flex-direction:column; padding: 24px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 24px;">
+            <h3 style="font-size:1rem; display:flex; align-items:center; gap:8px;"><i class="ri-time-line" style="color:var(--accent);"></i> Horloge Interne</h3>
+            <span id="circadianTimePill" style="background:rgba(255,255,255,0.05); padding:4px 10px; border-radius:50px; font-size:0.8rem; font-weight:600; color:var(--text-dim);">23:59</span>
+          </div>
+          
+          <div style="display:flex; flex-direction:column; align-items:center; flex:1; justify-content:center; position:relative;">
+            <!-- CSS Clock Ring -->
+            <div class="clock-ring">
+              <div class="clock-center">
+                <div id="clockTime" style="font-size: 2.5rem; font-weight: 700; line-height: 1;">23:59</div>
+                <div id="clockPhase" style="font-size: 0.75rem; color: var(--accent); font-weight: 700; letter-spacing: 1px; margin-top: 4px;">REPOS PROFOND</div>
+              </div>
+              <div class="clock-indicator" id="clockIndicator"><i class="ri-moon-clear-fill"></i></div>
+            </div>
+            
+            <div style="display:flex; gap: 24px; margin-top: 36px; font-size: 0.8rem; color:var(--text-dim);">
+               <span>🌅 Lever ~06:00</span>
+               <span>🌄 Coucher ~20:00</span>
+            </div>
+          </div>
+          <p id="circadianDesc" style="font-size: 0.85rem; color: var(--text-dim); text-align:center; margin-top:24px; border-top:1px solid var(--border); padding-top:16px;"><strong>Repos profond</strong> — Priorité à la récupération, le système digestif est au repos.</p>
+        </div>
+
+        <!-- Vitality Arc -->
+        <div class="dash-card glass" id="vitalityCard" style="padding: 24px;">
+          <h3 style="font-size:1rem; display:flex; align-items:center; gap:8px; margin-bottom:24px;"><i class="ri-heart-pulse-fill" style="color:var(--accent);"></i> Score Vitalité</h3>
+          
+          <div style="display:flex; flex-direction:column; align-items:center; margin-bottom: 24px;">
+            <div class="vitality-arc">
+              <svg viewBox="0 0 200 120" class="arc-svg">
+                <path d="M 20 100 A 80 80 0 0 1 180 100" class="arc-track" />
+                <path d="M 20 100 A 80 80 0 0 1 180 100" class="arc-progress" id="arcProgress" />
+              </svg>
+              <div class="arc-center">
+                <span class="arc-score" id="arcScore" style="font-size:2.8rem; font-weight:700;">45</span>
+                <span class="arc-label" style="color:var(--text-dim);">/ 100</span>
+              </div>
+            </div>
+            <div style="color:var(--warn); font-size:0.85rem; font-weight:500; display:flex; align-items:center; gap:4px; margin-top:-10px;"><i class="ri-error-warning-fill"></i> Correcte, mais améliorable</div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap: 12px; border-top:1px solid var(--border); padding-top:16px;">
+            <div class="vitality-bar-row">
+              <span class="v-label">Sommeil</span>
+              <div class="v-bar"><div class="v-fill" style="width: 42%; background: #3b82f6;"></div></div>
+              <span class="v-pct">42%</span>
+            </div>
+            <div class="vitality-bar-row">
+              <span class="v-label">Nutrition</span>
+              <div class="v-bar"><div class="v-fill" style="width: 68%; background: var(--accent);"></div></div>
+              <span class="v-pct">68%</span>
+            </div>
+            <div class="vitality-bar-row">
+              <span class="v-label">Activité</span>
+              <div class="v-bar"><div class="v-fill" style="width: 25%; background: var(--warn);"></div></div>
+              <span class="v-pct">25%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="dash-actions" style="display:flex; flex-wrap:wrap; gap:12px; margin: 24px 0;">
+        <button class="btn-primary" onclick="showPage('meals')" style="flex:1; min-width: 140px; padding: 12px 24px;"><i class="ri-add-line"></i> Ajouter un repas</button>
+        <button class="btn-outline glass" onclick="showPage('fasting')" style="flex:1; min-width: 140px; padding: 12px 24px; border:1px solid var(--border);"><i class="ri-drop-fill"></i> Démarrer un jeûne</button>
+        <button class="btn-outline glass" onclick="showPage('scan')" style="flex:1; min-width: 140px; padding: 12px 24px; border:1px solid var(--border);"><i class="ri-fullscreen-line"></i> Scanner un aliment</button>
+      </div>
+
+      <!-- Quick Stats Row -->
+      <div class="dash-grid-bottom" style="display:grid; grid-template-columns:repeat(4, 1fr); gap:16px;">
+        <div class="stat-card glass" onclick="showPage('meals')">
+          <div class="stat-icon-wrap" style="background:rgba(16,185,129,0.1); color:var(--accent);"><i class="ri-restaurant-line"></i></div>
+          <span class="stat-value" id="statMeals" style="font-size:1.8rem; font-weight:700; margin-top:12px;">0</span>
+          <span class="stat-label">Repas</span>
+          <span class="stat-sub">CETTE SEMAINE</span>
+        </div>
+        <div class="stat-card glass" onclick="showPage('fasting')">
+          <div class="stat-icon-wrap" style="background:rgba(250,204,21,0.1); color:var(--warn);"><i class="ri-moon-fill"></i></div>
+          <span class="stat-value" id="statFasts" style="font-size:1.8rem; font-weight:700; margin-top:12px;">0</span>
+          <span class="stat-label">Jeûnes</span>
+          <span class="stat-sub">CETTE SEMAINE</span>
+        </div>
+        <div class="stat-card glass" onclick="showPage('breathing')">
+          <div class="stat-icon-wrap" style="background:rgba(59,130,246,0.1); color:#3b82f6;"><i class="ri-windy-line"></i></div>
+          <span class="stat-value" id="statBreaths" style="font-size:1.8rem; font-weight:700; margin-top:12px;">0</span>
+          <span class="stat-label">Séances</span>
+          <span class="stat-sub">CETTE SEMAINE</span>
+        </div>
+        <div class="stat-card glass" onclick="showPage('favorites')">
+          <div class="stat-icon-wrap" style="background:rgba(239,68,68,0.1); color:var(--danger);"><i class="ri-heart-fill"></i></div>
+          <span class="stat-value" id="statFavs" style="font-size:1.8rem; font-weight:700; margin-top:12px;">0</span>
+          <span class="stat-label">Favoris</span>
+          <span class="stat-sub">AU TOTAL</span>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:24px; margin-top:24px;">
+        <!-- Weight Tracker -->
+        <div class="dash-card glass">
+        <div class="card-head">
+          <h3><i class="ri-scales-3-line"></i> Évolution du Poids</h3>
+          <button class="chip-btn" onclick="promptWeightEntry()"><i class="ri-add-line"></i> Pesée</button>
+        </div>
+        <div id="weightChartEmpty" class="empty-state-card">
+          <i class="ri-scales-3-line"></i>
+          <p>Ajoutez votre première pesée pour voir l'évolution.</p>
+        </div>
+        <div id="weightChartContainer" style="height: 120px; width: 100%; margin-top: 16px; position: relative; display: none;">
+           <svg id="weightChartSvg" width="100%" height="100%" style="overflow: visible;"></svg>
+        </div>
+      </div>
+
+      <!-- Active Fasting Card -->
+      <div class="dash-card glass" id="dashFastingCard" style="display:none">
+        <h3><i class="ri-fire-line"></i> Jeûne en cours</h3>
+        <div class="dash-fast-info">
+          <span class="dash-fast-timer" id="dashFastTimer">00:00:00</span>
+          <span class="dash-fast-type" id="dashFastType"></span>
+        </div>
+        <div class="dash-fast-bar"><div class="dash-fast-fill" id="dashFastFill"></div></div>
+      </div>
+
+      <!-- Today's Meals -->
+      <div class="dash-card glass">
+        <div class="card-head"><h3><i class="ri-restaurant-line"></i> Repas du jour</h3><button class="chip-btn" onclick="showPage('meals')">Voir tout</button></div>
+        <div id="dashMealList"><p class="empty-state-sm">Aucun repas enregistré aujourd'hui.</p></div>
+      </div>
+
+      <!-- Smart Insight -->
+      <div class="dash-card glass">
+        <h3><i class="ri-lightbulb-line"></i> Conseil du jour</h3>
+        <p id="smartInsight" class="insight-box">
+          <i class="ri-lightbulb-flash-line"></i>
+          <span>Chargement...</span>
+        </p>
+      </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ═══════ CHAT ═══════ -->
+  <main class="page" id="page-chat">
+    <div class="chat-layout">
+      <!-- ── Sidebar ── -->
+      <aside class="chat-sidebar glass" id="chatSidebar">
+        <div class="sidebar-top">
+          <button class="btn-new-chat" onclick="newConversation()"><i class="ri-add-line"></i> Nouveau chat</button>
+          <input type="text" class="sidebar-search" id="sidebarSearch" placeholder="Chercher..." oninput="filterConversations(this.value)">
+        </div>
+        <div class="sidebar-list" id="sidebarList"></div>
+      </aside>
+      <!-- ── Main Chat ── -->
+      <div class="chat-main">
+        <div class="chat-header glass">
+          <button class="icon-btn sidebar-toggle" onclick="toggleSidebar()" data-tooltip="Historique des conversations" class="tooltip-bottom"><i class="ri-menu-line"></i></button>
+          <div class="chat-header-info" style="position:relative">
+            <h2 id="chatTitle" style="margin-bottom:2px">Coach Vitaliste</h2>
+            <div class="model-selector" onclick="toggleModelList()" style="cursor:pointer;display:inline-flex;align-items:center;font-size:0.75rem;color:var(--text-dim);background:var(--bg-glass);padding:2px 8px;border-radius:12px;border:1px solid rgba(255,255,255,0.1)">
+              <span id="currentModelBadge"><i class="ri-instance-line"></i> Rotateur Auto</span>
+              <i class="ri-arrow-down-s-line" style="margin-left:4px"></i>
+            </div>
+            <div class="model-dropdown glass" id="modelDropdown" style="display:none;position:absolute;top:100%;left:0;margin-top:8px;width:220px;border-radius:12px;padding:8px;z-index:100;box-shadow:var(--shadow)">
+              <div style="font-size:0.7rem;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;padding:0 8px;font-weight:600">Modèles configurés</div>
+              <div style="font-size:0.7rem;text-transform:uppercase;color:var(--text-dim);margin-bottom:4px;padding:0 8px;font-weight:600;margin-top:8px">Premium (Raisonnement)</div>
+              <div class="model-item" style="padding:4px 8px;font-size:0.8rem;display:flex;align-items:center;gap:8px"><i class="ri-server-line" style="color:#fbbf24"></i> gemini-3.1-pro</div>
+              <div class="model-item" style="padding:4px 8px;font-size:0.8rem;display:flex;align-items:center;gap:8px"><i class="ri-server-line" style="color:#fbbf24"></i> gemini-2.5-pro</div>
+              
+              <div style="font-size:0.7rem;text-transform:uppercase;color:var(--text-dim);margin-bottom:4px;padding:0 8px;font-weight:600;margin-top:8px">Flash (Rapide)</div>
+              <div class="model-item" style="padding:4px 8px;font-size:0.8rem;display:flex;align-items:center;gap:8px"><i class="ri-flashlight-fill" style="color:#4ade80"></i> gemini-3.6-flash</div>
+              <div class="model-item" style="padding:4px 8px;font-size:0.8rem;display:flex;align-items:center;gap:8px"><i class="ri-flashlight-fill" style="color:#4ade80"></i> gemini-3.5-flash</div>
+              <div class="model-item" style="padding:4px 8px;font-size:0.8rem;display:flex;align-items:center;gap:8px"><i class="ri-flashlight-fill" style="color:#4ade80"></i> gemini-3.1-flash</div>
+              <div class="model-item" style="padding:4px 8px;font-size:0.8rem;display:flex;align-items:center;gap:8px"><i class="ri-flashlight-fill" style="color:#4ade80"></i> gemini-3.0-flash</div>
+              <div class="model-item" style="padding:4px 8px;font-size:0.8rem;display:flex;align-items:center;gap:8px"><i class="ri-flashlight-fill" style="color:#4ade80"></i> gemini-2.5-flash</div>
+              <div class="model-item" style="padding:4px 8px;font-size:0.8rem;display:flex;align-items:center;gap:8px"><i class="ri-flashlight-fill" style="color:#4ade80"></i> gemini-2.0-flash</div>
+              <div class="model-item" style="padding:4px 8px;font-size:0.8rem;display:flex;align-items:center;gap:8px"><i class="ri-flashlight-fill" style="color:#4ade80"></i> gemini-omni-flash</div>
+              
+              <div style="font-size:0.7rem;text-transform:uppercase;color:var(--text-dim);margin-bottom:4px;padding:0 8px;font-weight:600;margin-top:8px">Lite (Haute capacité)</div>
+              <div class="model-item" style="padding:4px 8px;font-size:0.8rem;display:flex;align-items:center;gap:8px"><i class="ri-flashlight-line" style="color:#a78bfa"></i> gemini-3.6-flash-lite</div>
+              <div class="model-item" style="padding:4px 8px;font-size:0.8rem;display:flex;align-items:center;gap:8px"><i class="ri-flashlight-line" style="color:#a78bfa"></i> gemini-3.5-flash-lite</div>
+              <div class="model-item" style="padding:4px 8px;font-size:0.8rem;display:flex;align-items:center;gap:8px"><i class="ri-flashlight-line" style="color:#a78bfa"></i> gemini-3.1-flash-lite</div>
+              <div class="model-item" style="padding:4px 8px;font-size:0.8rem;display:flex;align-items:center;gap:8px"><i class="ri-flashlight-line" style="color:#a78bfa"></i> gemini-2.5-flash-lite</div>
+              <div class="model-item" style="padding:4px 8px;font-size:0.8rem;display:flex;align-items:center;gap:8px"><i class="ri-flashlight-line" style="color:#a78bfa"></i> gemini-2.0-flash-lite</div>
+              
+              <div style="font-size:0.7rem;text-transform:uppercase;color:var(--text-dim);margin-bottom:4px;padding:0 8px;font-weight:600;margin-top:8px">Open Weights</div>
+              <div class="model-item" style="padding:4px 8px;font-size:0.8rem;display:flex;align-items:center;gap:8px"><i class="ri-cpu-line" style="color:#22d3ee"></i> gemma-4-31b-it</div>
+              <div class="model-item" style="padding:4px 8px;font-size:0.8rem;display:flex;align-items:center;gap:8px"><i class="ri-cpu-line" style="color:#22d3ee"></i> gemma-4-26b-it</div>
+              <div class="model-item" style="padding:4px 8px;font-size:0.8rem;display:flex;align-items:center;gap:8px"><i class="ri-cpu-line" style="color:#22d3ee"></i> gemma-2-27b-it</div>
+              <div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.1);font-size:0.75rem;color:var(--text-dim);padding-left:8px;padding-right:8px;line-height:1.4">
+                Le "Routeur Intelligent" sélectionne la catégorie optimale selon la complexité et bascule en cas de surcharge.
+              </div>
+            </div>
+          </div>
+          <button class="icon-btn" onclick="newConversation()" data-tooltip="Nouveau chat"><i class="ri-add-line"></i></button>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+          <div class="chat-welcome" id="chatWelcome">
+            <div class="welcome-mascot" id="welcomeMascotPortrait"></div>
+            <h2>Roucouuu ! 🌿</h2>
+            <p>Je suis ton coach vitaliste IA. Pose-moi une question sur la nutrition, le jeûne, la respiration ou la santé naturelle.</p>
+            <div class="welcome-chips">
+              <button class="welcome-chip" onclick="quickChat('Fais-moi un programme de jeûne de 7 jours')">🔥 Programme de jeûne</button>
+              <button class="welcome-chip" onclick="quickChat('Qu\'est-ce que je peux cuisiner avec les restes de mon frigo ?')">🧑‍🍳 Cuisiner mes restes</button>
+              <button class="welcome-chip" onclick="quickChat('Quels aliments sont approuvés par le Dr. Sebi ?')">🌿 Aliments Dr. Sebi</button>
+              <button class="welcome-chip" onclick="quickChat('Comment fonctionne la méthode Wim Hof ?')">❄️ Wim Hof</button>
+              <button class="welcome-chip" onclick="quickChat('Le jeûne du Ramadan : bienfaits et conseils')">🌙 Jeûne Ramadan</button>
+            </div>
+          </div>
+        </div>
+        <form class="chat-input-bar" id="chatForm" onsubmit="sendChat(event)">
+          <input type="text" id="chatInput" placeholder="Pose ta question..." autocomplete="off">
+          <button type="submit" class="send-btn" id="sendBtn"><i class="ri-send-plane-2-fill"></i></button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <!-- ═══════ SEARCH ═══════ -->
+  <main class="page" id="page-search">
+    <div class="search-container">
+      <div class="search-header glass"><h2>🔍 Recherche d'aliments</h2><p class="subtitle">Base vitaliste — Dr. Sebi / Ehret / Morse</p></div>
+      <div class="search-bar-wrap">
+        <input type="text" id="searchInput" placeholder="Chercher un aliment (ex: mangue, quinoa, kale)..." oninput="searchFoods(this.value)">
+      </div>
+      <div class="search-filters">
+        <button class="filter-chip active" data-filter="all" onclick="setSearchFilter('all')">Tous</button>
+        <button class="filter-chip" data-filter="electric" onclick="setSearchFilter('electric')">⚡ Électriques</button>
+        <button class="filter-chip" data-filter="hybrid" onclick="setSearchFilter('hybrid')">🔀 Hybrides</button>
+        <button class="filter-chip" data-filter="alkaline" onclick="setSearchFilter('alkaline')">🟢 Alcalinisants</button>
+      </div>
+      <div class="food-results" id="foodResults"><p class="empty-state">Tapez un nom d'aliment pour voir son profil vitaliste.</p></div>
+    </div>
+  </main>
+
+  <!-- ═══════ MEALS ═══════ -->
+  <main class="page" id="page-meals">
+    <div class="meals-container">
+      <div class="meals-header glass">
+        <h2>🍽️ Mes repas</h2>
+        <p class="subtitle">Suivez votre alimentation quotidienne</p>
+      </div>
+      <button class="btn-primary full-w" onclick="showAddMealModal()"><i class="ri-add-line"></i> Ajouter un repas</button>
+      <div class="meal-axis-row" id="mealAxisRow" style="display:none">
+        <div class="axis-card glass">
+          <div class="axis-dot" style="background:#4ade80"></div>
+          <div><span class="axis-label">PRAL moyen</span><span class="axis-value" id="mealPral">0</span></div>
+        </div>
+        <div class="axis-card glass">
+          <div class="axis-dot" style="background:#22d3ee"></div>
+          <div><span class="axis-label">Score NOVA</span><span class="axis-value" id="mealNova">0</span></div>
+        </div>
+        <div class="axis-card glass">
+          <div class="axis-dot" style="background:#a78bfa"></div>
+          <div><span class="axis-label">Vitalité</span><span class="axis-value" id="mealVitality">0%</span></div>
+        </div>
+      </div>
+      <div id="mealsList"><p class="empty-state">Aucun repas enregistré. Ajoutez votre premier repas !</p></div>
+    </div>
+  </main>
+
+  <!-- ═══════ CALENDAR (Diet Plan) ═══════ -->
+  <main class="page" id="page-calendar">
+    <div class="calendar-container" style="max-width:800px;margin:0 auto">
+      <!-- Empty state: no active plan -->
+      <div id="calendarEmpty" class="glass" style="text-align:center;padding:40px 24px">
+        <div style="font-size:3rem;margin-bottom:16px">📅</div>
+        <h2>Plan Alimentaire</h2>
+        <p class="subtitle" style="margin-bottom:24px">Crée un plan personnalisé basé sur ton protocole préféré (Ehret, Dr. Sebi, Dr. Morse) ou un mélange des trois.</p>
+        <button class="btn btn-primary" onclick="showCalendarWizard()" style="padding:12px 32px;font-size:1rem">
+          <i class="ri-add-line"></i> Créer mon plan alimentaire
+        </button>
+        <p style="margin-top:16px;font-size:0.8rem;color:var(--text-dim)">
+          Tu peux aussi demander au <a href="#" onclick="showPage('chat')" style="color:var(--accent)">Chat IA</a> de te créer un plan !
+        </p>
+      </div>
+
+      <!-- Wizard (hidden by default) -->
+      <div id="calendarWizard" style="display:none">
+        <div class="glass" style="padding:24px">
+          <h2 style="margin-bottom:4px">🌱 Créer ton plan</h2>
+          <p class="subtitle" style="margin-bottom:20px" id="wizardStepLabel">Étape 1/4 — Quel est ton objectif ?</p>
+
+          <!-- Step 1: Objective -->
+          <div id="wizardStep1" class="wizard-step">
+            <div class="wizard-options" id="wizardObjectives"></div>
+          </div>
+
+          <!-- Step 2: Protocol -->
+          <div id="wizardStep2" class="wizard-step" style="display:none">
+            <div class="wizard-options" id="wizardProtocols"></div>
+          </div>
+
+          <!-- Step 3: Duration -->
+          <div id="wizardStep3" class="wizard-step" style="display:none">
+            <div class="wizard-options" id="wizardDurations"></div>
+          </div>
+
+          <!-- Step 4: Restrictions -->
+          <div id="wizardStep4" class="wizard-step" style="display:none">
+            <p style="margin-bottom:12px">Aliments à éviter ou allergies ? (optionnel)</p>
+            <input type="text" id="wizardRestrictions" class="chat-input-field" placeholder="Ex: sans noix, sans agrumes..." style="width:100%;margin-bottom:16px;padding:12px">
+          </div>
+
+          <div style="display:flex;gap:12px;margin-top:20px">
+            <button class="btn" id="wizardBackBtn" onclick="wizardBack()" style="display:none"><i class="ri-arrow-left-line"></i> Retour</button>
+            <button class="btn btn-primary" id="wizardNextBtn" onclick="wizardNext()">Suivant <i class="ri-arrow-right-line"></i></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active plan view (dynamically rendered by JS) -->
+      <div id="calendarActive" style="display:none"></div>
+    </div>
+  </main>
+
+  <!-- ═══════ FAVORITES ═══════ -->
+  <main class="page" id="page-favorites">
+    <div class="favs-container">
+      <div class="favs-header glass"><h2>❤️ Favoris</h2><p class="subtitle">Vos aliments favoris</p></div>
+      <div id="favsList"><p class="empty-state">Aucun favori. Ajoutez des aliments depuis la recherche.</p></div>
+    </div>
+  </main>
+
+  <!-- ═══════ SCANNER ═══════ -->
+  <main class="page" id="page-scan">
+    <div class="scan-container" style="max-width:600px;margin:0 auto;text-align:center">
+      <div class="scan-header glass" style="padding:16px 20px;margin-bottom:20px">
+        <h2>📸 Scanner IA</h2>
+        <p class="subtitle">Analysez vos aliments par photo</p>
+      </div>
+      
+      <div class="glass" style="padding:30px 20px;border-radius:var(--radius);margin-bottom:20px">
+        <div id="scanPreviewContainer" style="display:none;margin-bottom:20px">
+          <img id="scanPreview" src="" alt="Scan preview" style="max-width:100%;max-height:300px;border-radius:12px;box-shadow:var(--shadow)">
+        </div>
+        
+        <label for="scanUpload" class="btn-primary" style="font-size:1.1rem;padding:14px 32px;display:inline-flex;cursor:pointer">
+          <i class="ri-camera-lens-fill"></i> Photo ou Galerie
+        </label>
+        <input type="file" id="scanUpload" accept="image/*" style="display:none" onchange="handleScanUpload(event)">
+        
+        <p style="margin-top:16px;color:var(--text-dim);font-size:0.9rem">L'IA analysera l'aliment pour vous dire s'il est vitaliste.</p>
+      </div>
+      
+      <div id="scanResult" style="text-align:left;display:none" class="glass">
+        <!-- Results will appear here -->
+      </div>
+      
+      <div id="scanLoading" style="display:none;padding:40px 0">
+        <div class="typing-dots" style="justify-content:center;margin-bottom:12px"><span></span><span></span><span></span></div>
+        <p style="color:var(--accent);font-weight:600">Analyse visuelle en cours...</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- ═══════ FASTING ═══════ -->
+  <main class="page" id="page-fasting">
+    <div class="fasting-container" style="max-width:800px; margin:0 auto;">
+      <!-- Header -->
+      <div class="dash-card glass" style="margin-bottom:24px; padding:24px; background: linear-gradient(145deg, rgba(234,88,12,0.1) 0%, rgba(30,58,138,0.05) 100%); text-align:center;">
+        <h2 style="font-size:2rem; margin-bottom:8px; color:var(--text);">🔥 Jeûne</h2>
+        <p class="subtitle" style="font-size:0.95rem;">Programmes et timer en temps réel</p>
+      </div>
+
+      <!-- Fasting Program Selector -->
+      <div class="dash-card glass" id="fastingPrograms" style="margin-bottom:24px;">
+        <h3 style="margin-bottom:20px; font-size:1.2rem;"><i class="ri-list-check-2"></i> Programmes de jeûne</h3>
+        <div class="program-grid" id="programGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:12px;"></div>
+      </div>
+
+      <!-- Timer Section -->
+      <div class="dash-card glass" style="margin-bottom:24px; padding:40px 24px; display:flex; flex-direction:column; align-items:center; background:linear-gradient(to bottom, rgba(0,0,0,0.15), transparent);">
+        
+        <!-- Timer Ring -->
+        <div class="fasting-timer-display" style="position:relative; width:220px; height:220px; margin-bottom:32px;">
+          <div style="position:absolute; inset:-10px; border-radius:50%; background:radial-gradient(circle, rgba(16,185,129,0.1) 0%, transparent 70%);"></div>
+          <svg viewBox="0 0 200 200" style="width:100%; height:100%; transform:rotate(-90deg); filter:drop-shadow(0 0 10px rgba(16,185,129,0.3));">
+            <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="6" />
+            <circle cx="100" cy="100" r="90" fill="none" stroke="var(--accent)" stroke-width="8" stroke-linecap="round" id="timerProgress" style="transition:stroke-dashoffset 1s linear; stroke-dasharray:565.48; stroke-dashoffset:565.48;" />
+          </svg>
+          <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+            <span id="timerDigits" style="font-size:2.5rem; font-weight:800; font-variant-numeric:tabular-nums; line-height:1; margin-bottom:8px; text-shadow:0 2px 10px rgba(0,0,0,0.5);">00:00:00</span>
+            <span id="timerLabel" style="font-size:0.9rem; color:var(--text-dim); font-weight:600; text-transform:uppercase; letter-spacing:1px;">Prêt</span>
+          </div>
+        </div>
+
+        <div class="fasting-type-select" style="display:flex; flex-wrap:wrap; justify-content:center; gap:12px; margin-bottom:24px;">
+          <div style="display:flex; align-items:center; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; overflow:hidden;">
+            <span style="padding:10px 14px; border-right:1px solid rgba(255,255,255,0.1); font-size:0.9rem; color:var(--text-dim);"><i class="ri-timer-line"></i> Type</span>
+            <select id="fastingType" style="background:transparent; border:none; color:var(--text); padding:10px 14px; font-family:var(--font); outline:none; cursor:pointer;">
+              <option value="intermittent">⏰ Intermittent (16:8)</option>
+              <option value="waterFast">💧 Jeûne hydrique</option>
+              <option value="juiceFast">🧃 Jeûne aux jus</option>
+              <option value="fruitFast">🍎 Jeûne aux fruits</option>
+              <option value="grapeCure">🍇 Cure de raisins</option>
+              <option value="drySunFast">☀️ Jeûne sec</option>
+              <option value="monoFruit">🍌 Mono-fruit</option>
+            </select>
+          </div>
+          
+          <div style="display:flex; align-items:center; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:12px; overflow:hidden;">
+            <span style="padding:10px 14px; border-right:1px solid rgba(255,255,255,0.1); font-size:0.9rem; color:var(--text-dim);">Durée (h)</span>
+            <input type="number" id="fastingDuration" value="16" min="1" max="168" style="background:transparent; border:none; color:var(--text); padding:10px 14px; font-family:var(--font); outline:none; width:80px; text-align:center;">
+          </div>
+        </div>
+        
+        <div id="fastingSafetyWarning" class="safety-warning" style="display:none; width:100%; max-width:500px; margin-bottom:24px; padding:12px 16px; border-radius:12px; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.2); color:#fca5a5; font-size:0.85rem; text-align:center;">
+          <i class="ri-alert-line" style="font-size:1.1rem; vertical-align:middle; margin-right:4px;"></i> <strong>Attention :</strong> Les jeûnes de plus de 24h nécessitent un suivi médical. Consultez un professionnel de santé.
+        </div>
+        
+        <div class="fasting-controls">
+          <button class="btn btn-primary" id="fastStartBtn" onclick="toggleFasting()" style="padding:16px 48px; font-size:1.1rem; border-radius:30px; box-shadow:0 8px 20px rgba(16,185,129,0.3); font-weight:700;">
+            <i class="ri-play-fill"></i> Démarrer
+          </button>
+        </div>
+      </div>
+
+      <!-- Masterclass Arnold Ehret (Horizontal Scroll) -->
+      <div class="dash-card glass" style="margin-bottom:24px; padding-bottom:12px;">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
+          <div style="width:40px; height:40px; border-radius:12px; background:linear-gradient(135deg, rgba(234,88,12,0.2), rgba(250,204,21,0.2)); display:flex; align-items:center; justify-content:center; border:1px solid rgba(255,255,255,0.05); color:#facc15; font-size:1.3rem;">
+            <i class="ri-book-open-line"></i>
+          </div>
+          <div>
+            <h3 style="margin:0;">Masterclass : Rational Fasting</h3>
+            <div style="font-size:0.8rem; color:var(--text-dim); margin-top:2px;">Le protocole complet d'Arnold Ehret</div>
+          </div>
+        </div>
+
+        <div class="masterclass-scroll" id="masterclassContainer">
+          <!-- Injected via JS -->
+        </div>
+      </div>
+
+      <!-- Conseils d'Experts (Accordion) -->
+      <div class="dash-card glass" id="expertAdviceCard" style="margin-bottom:24px;">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
+          <div style="width:40px; height:40px; border-radius:12px; background:linear-gradient(135deg, rgba(30,58,138,0.2), rgba(16,185,129,0.2)); display:flex; align-items:center; justify-content:center; border:1px solid rgba(255,255,255,0.05); color:var(--accent); font-size:1.3rem;">
+            <i class="ri-book-read-line"></i>
+          </div>
+          <div>
+            <h3 style="margin:0;">Conseils d'Experts</h3>
+            <div style="font-size:0.8rem; color:var(--text-dim); margin-top:2px;">Sagesse et recommandations des maîtres du jeûne</div>
+          </div>
+        </div>
+        
+        <div class="expert-accordion" id="expertAccordion" style="display:flex; flex-direction:column; gap:10px;">
+          <!-- Injected via JS -->
+        </div>
+      </div>
+
+      <!-- Analytics -->
+      <div class="dash-card glass" style="margin-bottom:40px;">
+        <div class="card-head" style="margin-bottom:20px; display:flex; align-items:center; gap:10px;">
+          <i class="ri-bar-chart-box-line" style="font-size:1.3rem; color:var(--accent);"></i>
+          <h3 style="margin:0;">Historique & Statistiques</h3>
+        </div>
+        
+        <div class="fast-analytics" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:12px; margin-bottom:24px;">
+          <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); padding:16px; border-radius:12px; text-align:center;">
+            <span style="display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:6px;">Total sessions</span>
+            <span id="analyticTotal" style="font-size:1.5rem; font-weight:700; color:var(--accent);">0</span>
+          </div>
+          <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); padding:16px; border-radius:12px; text-align:center;">
+            <span style="display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:6px;">Heures cumulées</span>
+            <span id="analyticHours" style="font-size:1.5rem; font-weight:700; color:var(--text);">0h</span>
+          </div>
+          <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); padding:16px; border-radius:12px; text-align:center;">
+            <span style="display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:6px;">Plus long</span>
+            <span id="analyticLongest" style="font-size:1.5rem; font-weight:700; color:var(--accent);">0h</span>
+          </div>
+          <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); padding:16px; border-radius:12px; text-align:center;">
+            <span style="display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:6px;">Taux complétion</span>
+            <span id="analyticCompletion" style="font-size:1.5rem; font-weight:700; color:var(--text);">0%</span>
+          </div>
+        </div>
+        
+        <div id="historyList"><p class="empty-state-sm">Aucune session enregistrée.</p></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ═══════ BREATHING ═══════ -->
+  <main class="page" id="page-breathing">
+    <div class="breathing-container">
+      <div class="breathing-header glass"><h2>🌬️ Respiration guidée</h2><p class="subtitle">Wim Hof · Relaxation · Box Breathing</p></div>
+      <div class="breathing-modes">
+        <button class="breath-mode active" onclick="setBreathMode('wimhof')" data-mode="wimhof">❄️ Wim Hof</button>
+        <button class="breath-mode" onclick="setBreathMode('relax')" data-mode="relax">🧘 Relaxation</button>
+        <button class="breath-mode" onclick="setBreathMode('box')" data-mode="box">📦 Box</button>
+      </div>
+      <div class="breathing-visual">
+        <div class="breath-circle" id="breathCircle"><span class="breath-text" id="breathText">Prêt</span></div>
+      </div>
+      <div class="breath-info" id="breathInfo"><p>Choisissez un mode et appuyez sur Démarrer.</p></div>
+      <div class="breath-controls">
+        <label>Tours : <input type="number" id="breathRounds" value="3" min="1" max="10" class="rounds-input"></label>
+        <button class="btn-primary" id="breathStartBtn" onclick="startBreathing()"><i class="ri-play-fill"></i> Démarrer</button>
+      </div>
+      <div class="dash-card glass" style="margin-top:24px">
+        <h3><i class="ri-history-line"></i> Historique respirations</h3>
+        <div id="breathHistory"><p class="empty-state-sm">Aucune session enregistrée.</p></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ═══════ RESOURCES ═══════ -->
+  <main class="page" id="page-resources">
+    <div class="container" style="max-width:800px; padding:80px 20px 100px;">
+      <div class="dash-greeting glass" style="margin-bottom:24px;">
+        <h1 style="margin-bottom:4px; font-size:1.5rem;">Bibliothèque 📚</h1>
+        <p class="subtitle">Documentaires santé, vidéos et guides PDF pour approfondir tes connaissances.</p>
+      </div>
+      
+      <div id="resourcesContainer" style="display:grid; grid-template-columns:1fr; gap:20px;">
+        <!-- Injected via JS -->
+      </div>
+    </div>
+  </main>
+
+  <!-- ═══════ MODES / SETTINGS ═══════ -->
+  <main class="page" id="page-modes">
+    <div class="modes-container">
+      <div class="modes-header glass"><h2>⚙️ Protocoles & Paramètres</h2><p class="subtitle">Choisissez votre approche</p></div>
+
+      <!-- Protocol Cards -->
+      <div class="protocol-grid">
+        <div class="protocol-card glass" data-mode="vitalist" onclick="setProtocol('vitalist')">
+          <span class="proto-icon">🌿</span><h4>Vitaliste</h4>
+          <p>Dr. Sebi + Ehret + Morse combinés</p>
+        </div>
+        <div class="protocol-card glass" data-mode="sebi" onclick="setProtocol('sebi')">
+          <span class="proto-icon">🌱</span><h4>Dr. Sebi</h4>
+          <p>Bio-Mineral Balance, aliments électriques</p>
+        </div>
+        <div class="protocol-card glass" data-mode="ehret" onclick="setProtocol('ehret')">
+          <span class="proto-icon">🌾</span><h4>Arnold Ehret</h4>
+          <p>Régime sans mucus, transition douce</p>
+        </div>
+        <div class="protocol-card glass" data-mode="morse" onclick="setProtocol('morse')">
+          <span class="proto-icon">🍇</span><h4>Dr. Morse</h4>
+          <p>Détox lymphatique, fruits & plantes</p>
+        </div>
+      </div>
+
+      <!-- Profile -->
+      <div class="dash-card glass">
+        <h3><i class="ri-user-line"></i> Profil</h3>
+        <div class="profile-form">
+          <label>Nom<input type="text" id="profileName" placeholder="Votre nom..." class="form-input"></label>
+          <label>Objectif
+            <select id="profileGoal" class="form-input">
+              <option value="detox">🧹 Détox & Nettoyage</option>
+              <option value="weight">⚖️ Perte de poids</option>
+              <option value="energy">⚡ Énergie & Vitalité</option>
+              <option value="spiritual">🕊️ Jeûne spirituel</option>
+              <option value="healing">💚 Guérison</option>
+            </select>
+          </label>
+          <button class="btn-primary" onclick="saveProfile()"><i class="ri-save-line"></i> Sauvegarder</button>
+        </div>
+      </div>
+
+      <!-- Shortcuts -->
+      <div class="dash-card glass">
+        <h3><i class="ri-links-line"></i> Accès rapide</h3>
+        <div class="shortcut-grid">
+          <a href="#" onclick="showPage('favorites')" class="shortcut-item"><i class="ri-heart-line"></i> Favoris</a>
+          <a href="#" onclick="showPage('chat')" class="shortcut-item"><i class="ri-chat-smile-3-line"></i> Chat IA</a>
+          <a href="https://fnnktkygl-code.github.io/vital_track/privacy.html" target="_blank" class="shortcut-item"><i class="ri-shield-line"></i> Confidentialité</a>
+          <a href="https://github.com/fnnktkygl-code/vital_track" target="_blank" class="shortcut-item"><i class="ri-github-line"></i> GitHub</a>
+        </div>
+      </div>
+    </div>
+  </main>
+  </div> <!-- /.main-content -->
+  </div> <!-- /.app-container -->
+
+  <!-- Masterclass Modal -->
+  <div class="masterclass-overlay" id="masterclassModal" onclick="closeMasterclass(event)">
+    <div class="masterclass-content">
+      <button class="masterclass-close" onclick="closeMasterclass(null)"><i class="ri-close-line"></i></button>
+      <div id="mcHeader" style="margin-bottom:24px;"></div>
+      <div id="mcBody" style="display:flex; flex-direction:column; gap:16px;"></div>
+    </div>
+  </div>
+
+  <!-- ═══════ MODALS ═══════ -->
+  <div class="modal-overlay" id="foodModal" onclick="closeFoodModal(event)">
+    <div class="modal-content glass" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeFoodModal()"><i class="ri-close-line"></i></button>
+      <div class="modal-food-header" id="modalFoodHeader"></div>
+      <div class="modal-tabs">
+        <button class="tab active" data-tab="scientific" onclick="setModalTab('scientific')">🔬 Scientifique</button>
+        <button class="tab" data-tab="vitality" onclick="setModalTab('vitality')">💚 Vitalité</button>
+        <button class="tab" data-tab="specific" onclick="setModalTab('specific')">🌿 Spécifique</button>
+      </div>
+      <div class="modal-tab-content" id="modalTabContent"></div>
+      <div class="modal-actions" id="modalActionsContainer">
+        <button class="btn-primary" id="modalAddMeal" onclick="addFoodToMeal()"><i class="ri-add-line"></i> Ajouter au repas</button>
+        <button class="btn-outline" id="modalFavBtn" onclick="toggleFavorite()"><i class="ri-heart-line"></i> Favori</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ ADD MEAL MODAL ═══════ -->
+  <div class="modal-overlay" id="addMealModal" onclick="closeAddMealModal(event)">
+    <div class="modal-content glass modal-sm" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeAddMealModal()"><i class="ri-close-line"></i></button>
+      <h3>🍽️ Ajouter un repas</h3>
+      <div class="add-meal-search">
+        <input type="text" id="mealSearchInput" placeholder="Chercher un aliment..." oninput="searchMealFoods(this.value)">
+      </div>
+      <div id="mealSearchResults" class="meal-search-results"></div>
+      <div id="mealSelectedItems" class="selected-items"></div>
+      <button class="btn-primary full-w" onclick="confirmAddMeal()"><i class="ri-check-line"></i> Valider le repas</button>
+    </div>
+  </div>
+
+  <!-- ═══════ EDIT CALENDAR MEAL MODAL ═══════ -->
+  <div class="modal-overlay" id="editMealModal" onclick="closeEditMealModal(event)" style="display:none">
+    <div class="modal-content glass modal-sm" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeEditMealModal()"><i class="ri-close-line"></i></button>
+      <h3 id="editMealTitle">🍽️ Éditer le repas</h3>
+      
+      <div style="margin-top:16px;margin-bottom:12px;font-size:0.85rem;color:var(--text-dim)">Aliments prévus :</div>
+      <div id="editMealItems" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px"></div>
+      
+      <div class="add-meal-search" style="margin-bottom:8px">
+        <input type="text" id="editMealSearchInput" placeholder="Chercher pour remplacer ou ajouter..." oninput="searchEditMealFoods(this.value)">
+      </div>
+      <div id="editMealSearchResults" class="meal-search-results" style="max-height:120px;margin-bottom:16px"></div>
+      
+      <div style="margin-bottom:16px">
+        <label style="font-size:0.85rem;color:var(--text-dim);display:block;margin-bottom:6px">Note / Avis personnel :</label>
+        <textarea id="editMealNote" class="form-input" rows="2" placeholder="Ex: Remplacé par une mangue car pas de papaye..."></textarea>
+      </div>
+
+      <div style="display:flex;gap:8px">
+        <button class="btn-outline" onclick="toggleEditMealDone()" id="editMealDoneBtn" style="flex:1"><i class="ri-check-line"></i> Marquer Terminé</button>
+        <button class="btn-primary" onclick="saveEditMeal()" style="flex:1"><i class="ri-save-line"></i> Sauvegarder</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/mascot.js"></script>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
