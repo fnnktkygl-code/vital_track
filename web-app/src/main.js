@@ -1236,20 +1236,17 @@ function renderMarkdown(text) {
       const json = match.replace(/```json\n?/g, '').replace(/```/g, '').trim();
       const obj = JSON.parse(json);
 
-      // Diet Plan Request card
-      if (obj.dietPlanRequest) {
-        const dp = obj.dietPlanRequest;
-        const protoLabels = { sebi: 'Dr. Sebi ⚡', ehret: 'Arnold Ehret 🌿', morse: 'Dr. Morse 💧', personalized: 'Personnalisé 🤝' };
+      // Calendar Meals Injection
+      if (obj.calendarMeals && Array.isArray(obj.calendarMeals)) {
+        const meals = obj.calendarMeals;
+        const encodedMeals = encodeURIComponent(JSON.stringify(meals));
         return `<div class="ai-plan-card glass" style="margin:12px 0;padding:16px;border-radius:12px;border-left:4px solid var(--accent)">
-          <div style="font-weight:600;margin-bottom:8px">📅 Plan alimentaire proposé</div>
+          <div style="font-weight:600;margin-bottom:8px">📅 Menus générés par l'IA</div>
           <div style="font-size:0.9rem;color:var(--text-dim);margin-bottom:12px">
-            <span>🏷️ ${protoLabels[dp.protocol] || dp.protocol}</span> · 
-            <span>📆 ${dp.numDays} jours</span> · 
-            <span>🎯 ${esc(dp.objective || '')}</span>
-            ${dp.restrictions ? ` · <span>⚠️ ${esc(dp.restrictions)}</span>` : ''}
+            <span>🍽️ ${meals.length} repas proposés</span>
           </div>
-          <button class="btn btn-primary" onclick="generatePlanFromChat('${dp.protocol}', ${dp.numDays}, '${esc(dp.objective || '')}', '${esc(dp.restrictions || '')}')">
-            <i class="ri-calendar-check-line"></i> Activer et remplir mon calendrier
+          <button class="btn btn-primary" onclick="addMealsToCalendar(decodeURIComponent('${encodedMeals}'))">
+            <i class="ri-calendar-check-line"></i> Ajouter au calendrier
           </button>
         </div>`;
       }
@@ -1627,8 +1624,38 @@ window.promptAIFixMeal = function(id) {
 window.promptAIPlan = function() {
   showPage('chat');
   const chatInput = document.getElementById('chatInput');
-  chatInput.value = "IA, crée-moi un menu de 3 jours basé sur ce que j'ai dans le frigo : ...";
+  chatInput.value = "IA, propose-moi un plan alimentaire de 3 jours pour mon calendrier.";
   chatInput.focus();
+};
+
+window.addMealsToCalendar = function(mealsJson) {
+  try {
+    const newMeals = JSON.parse(mealsJson);
+    let meals = store.get('calendar_meals', []);
+    
+    newMeals.forEach(m => {
+      // Calculate date based on dayOffset from today
+      const d = new Date();
+      d.setDate(d.getDate() + (m.dayOffset || 0));
+      const dateStr = d.toISOString().split('T')[0];
+      
+      meals.push({
+        id: 'meal_' + Date.now() + Math.random().toString(36).substr(2, 5),
+        dateStr: dateStr,
+        slot: m.slot || 'Déjeuner',
+        text: m.text || '',
+        done: false
+      });
+    });
+    
+    store.set('calendar_meals', meals);
+    alert(`✅ ${newMeals.length} repas ajoutés à ton calendrier !`);
+    showPage('calendar');
+    renderCalendar();
+  } catch (e) {
+    console.error("Erreur lors de l'ajout des repas", e);
+    alert("Une erreur est survenue lors de l'ajout des repas.");
+  }
 };
 
 window.addSuggestedFood = function(btn, foodName) {
