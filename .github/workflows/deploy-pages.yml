@@ -32,7 +32,7 @@ jobs:
       - name: Security gate (no hardcoded AIza key)
         run: |
           set -euo pipefail
-          if grep -R -n -E 'AIza[0-9A-Za-z_-]{20,}' docs/app docs/index.html docs/privacy.html --exclude='*.apk'; then
+          if grep -R -n -E 'AIza[0-9A-Za-z_-]{20,}' docs/app docs/index.html landing_page/ --exclude-dir='.git'; then
             echo "❌ Hardcoded Google API key pattern detected in docs artifact."
             exit 1
           fi

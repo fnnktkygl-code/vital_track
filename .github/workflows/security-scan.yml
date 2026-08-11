@@ -35,7 +35,6 @@ jobs:
           echo "Scanning for forbidden AIza key patterns..."
           if grep -R -n -E 'AIza[0-9A-Za-z_-]{20,}' \
             lib web docs docs/app \
-            --exclude='*.apk' \
             --exclude-dir='.git' \
             --exclude-dir='build' \
             --exclude-dir='.dart_tool'; then

@@ -172,6 +172,44 @@ class FoodMapper {
     }
   }
 
+  /// Lightweight fallback used when a food name (e.g. suggested in chat or
+  /// inside a generated diet plan) has no match in the expert database.
+  /// Produces a neutral, unverified [Food] entry so it can still be added
+  /// to the user's meal list — clearly tagged as unverified.
+  static Food fromNameFallback(String name, {String note = ''}) {
+    return Food(
+      id: 'sugg_${DateTime.now().millisecondsSinceEpoch}_$name',
+      name: name,
+      emoji: '🌱',
+      family: 'Inconnu',
+      origin: 'Suggestion',
+      approved: true,
+      scientific: const ScientificData(
+        pral: -1.0,
+        density: 60,
+        label: 'Non vérifié',
+        colorValue: 0xFFfacc15,
+      ),
+      vitality: const VitalityData(
+        nova: 1,
+        freshness: 70,
+        label: 'Non vérifié',
+        colorValue: 0xFFfacc15,
+      ),
+      specific: const SpecificData(
+        mucus: 'Inconnu',
+        hybrid: false,
+        electric: true,
+        label: 'Suggestion',
+        colorValue: 0xFFfacc15,
+      ),
+      tags: const ['Suggestion IA', 'Non vérifié'],
+      note: note.isEmpty
+          ? 'Suggéré par le mascot — pas encore vérifié dans la base experte VitalTrack.'
+          : note,
+    );
+  }
+
   static String _inferEmoji(Map<String, dynamic> data) {
     final categories = (data['categories_tags'] ?? []).join(' ').toLowerCase();
     if (categories.contains('beverage')) return "🥤";

@@ -5,6 +5,7 @@ import 'package:vital_track/models/fasting_session.dart';
 import 'package:vital_track/models/fasting_program.dart';
 import 'package:vital_track/models/breathing_session.dart';
 import 'package:vital_track/models/chat_message.dart';
+import 'package:vital_track/models/diet_plan.dart';
 
 class HiveService {
   static const String _mealBoxName = 'daily_meal';
@@ -17,6 +18,7 @@ class HiveService {
   static const String _breathingBoxName = 'breathing_sessions';
   static const String _chatHistoryBoxName = 'chat_history';
   static const String _aiCacheBoxName = 'ai_cache';
+  static const String _dietPlanBoxName = 'diet_plans';
 
   Future<void> init() async {
     await Hive.initFlutter();
@@ -44,6 +46,11 @@ class HiveService {
     // Chat Adapters
     if (!Hive.isAdapterRegistered(13)) Hive.registerAdapter(ChatMessageAdapter());
 
+    // Diet Plan Adapters
+    if (!Hive.isAdapterRegistered(14)) Hive.registerAdapter(DietPlanAdapter());
+    if (!Hive.isAdapterRegistered(15)) Hive.registerAdapter(DietDayAdapter());
+    if (!Hive.isAdapterRegistered(16)) Hive.registerAdapter(PlannedMealAdapter());
+
     await Hive.openBox<Food>(_mealBoxName);
     await Hive.openBox(settingsBoxName);
     await Hive.openBox<Food>(_favoritesBoxName);
@@ -54,6 +61,7 @@ class HiveService {
     await Hive.openBox<BreathingSession>(_breathingBoxName);
     await Hive.openBox<ChatMessage>(_chatHistoryBoxName);
     await Hive.openBox<String>(_aiCacheBoxName);
+    await Hive.openBox<DietPlan>(_dietPlanBoxName);
   }
 
   Future<void> deleteAll() async {
@@ -67,6 +75,7 @@ class HiveService {
     await Hive.deleteBoxFromDisk(_breathingBoxName);
     await Hive.deleteBoxFromDisk(_chatHistoryBoxName);
     await Hive.deleteBoxFromDisk(_aiCacheBoxName);
+    await Hive.deleteBoxFromDisk(_dietPlanBoxName);
   }
 
   Future<void> clearAllData() async {
@@ -80,6 +89,7 @@ class HiveService {
     await Hive.box<BreathingSession>(_breathingBoxName).clear();
     await Hive.box<ChatMessage>(_chatHistoryBoxName).clear();
     await Hive.box<String>(_aiCacheBoxName).clear();
+    await Hive.box<DietPlan>(_dietPlanBoxName).clear();
   }
 
   Box<Food> get mealBox => Hive.box<Food>(_mealBoxName);
@@ -219,5 +229,20 @@ class HiveService {
 
   Future<void> clearAiCache() async {
     await aiCacheBox.clear();
+  }
+
+  // ── DIET PLAN HELPERS ──────────────────────────────────────────────────────
+  Box<DietPlan> get dietPlanBox => Hive.box<DietPlan>(_dietPlanBoxName);
+
+  Future<void> saveDietPlan(DietPlan plan) async {
+    await dietPlanBox.put(plan.id, plan);
+  }
+
+  Future<void> deleteDietPlan(String id) async {
+    await dietPlanBox.delete(id);
+  }
+
+  List<DietPlan> loadDietPlans() {
+    return dietPlanBox.values.toList();
   }
 }

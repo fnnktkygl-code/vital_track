@@ -1630,7 +1630,6 @@ window.promptAIPlan = function() {
   chatInput.value = "IA, crée-moi un menu de 3 jours basé sur ce que j'ai dans le frigo : ...";
   chatInput.focus();
 };
-};
 
 window.addSuggestedFood = function(btn, foodName) {
   const meals = store.get('meals', []);

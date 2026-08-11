@@ -80,7 +80,7 @@
 
         <h2>1. Données collectées</h2>
         <p>Vital Track stocke toutes vos données <strong>localement sur votre appareil</strong> via une base de données
-            Hive. Aucune donnée personnelle n'est envoyée à nos serveurs — nous n'en avons pas.</p>
+            Hive. Aucune donnée personnelle n'est stockée de manière permanente sur nos serveurs.</p>
         <p>Les données stockées localement incluent :</p>
         <ul>
             <li>Votre nom d'utilisateur (pseudonyme, pas d'inscription requise)</li>
@@ -93,16 +93,23 @@
 
         <h2>2. Utilisation de l'API Google Gemini</h2>
         <p>Si vous utilisez les fonctionnalités d'IA (coach mascotte, analyse d'images, chat), vos requêtes sont
-            envoyées à l'<strong>API Google Gemini</strong> <strong>après votre consentement explicite</strong> affiché au premier lancement. Cela inclut :</p>
+            envoyées à l'<strong>API Google Gemini</strong> <strong>après votre consentement explicite</strong> affiché au premier lancement.</p>
+        <p><strong>Proxy intermédiaire :</strong> les requêtes IA transitent par un serveur proxy hébergé sur Vercel (serverless functions)
+            dont le seul rôle est de protéger la clé API du service. Ce proxy <strong>ne stocke aucune donnée de manière permanente</strong>.
+            Les données transitent en mémoire le temps du traitement et ne sont pas écrites sur disque. Les logs de plateforme
+            (Vercel) peuvent conserver des informations techniques pendant une durée limitée conformément à leur
+            <a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noopener">politique de confidentialité</a>.</p>
+        <p>Les données transmises au proxy et à Google incluent :</p>
         <ul>
             <li>Le texte de vos questions / messages</li>
             <li>Les images que vous soumettez pour analyse (photos de plats)</li>
             <li>Le contexte de conversation nécessaire à la réponse</li>
+            <li>Votre profil (nom, objectifs, restrictions) pour personnaliser les réponses</li>
         </ul>
         <p>Ces données sont soumises à la <a href="https://ai.google.dev/gemini-api/terms" target="_blank"
                 rel="noopener">politique de confidentialité de Google Gemini</a>. Vital Track ne contrôle pas le
             traitement de ces données par Google.</p>
-        <p><strong>Votre clé API Gemini</strong> est stockée uniquement sur votre appareil et n'est jamais transmise à
+        <p><strong>Votre clé API Gemini</strong> (si fournie) est stockée uniquement sur votre appareil et n'est jamais transmise à
             des tiers autres que Google pour l'authentification API.</p>
 
         <h2>3. Données de navigation (site web)</h2>

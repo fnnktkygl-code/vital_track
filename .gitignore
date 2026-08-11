@@ -58,3 +58,13 @@ SCR-*.png
 .env
 .env.*
 !.env.example
+
+# Android release signing
+android/key.properties
+
+# Node modules & Vercel
+node_modules/
+.vercel/
+web-app/dist/
+.vercel
+.env*

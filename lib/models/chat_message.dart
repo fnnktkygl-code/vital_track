@@ -2,6 +2,7 @@ import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
 import 'package:vital_track/models/fasting_program.dart';
 import 'package:vital_track/models/knowledge_source.dart';
+import 'package:vital_track/models/diet_plan.dart';
 
 part 'chat_message.g.dart';
 
@@ -27,6 +28,8 @@ class ChatMessage extends HiveObject {
   bool isStreaming;
   List<KnowledgeSource> sources;
   FastingProgram? proposedProgram;
+  DietPlan? proposedDietPlan;
+  List<String> suggestedFoods;
 
   ChatMessage({
     String? id,
@@ -36,10 +39,19 @@ class ChatMessage extends HiveObject {
     this.isStreaming = false,
     this.sources = const [],
     this.proposedProgram,
+    this.proposedDietPlan,
+    this.suggestedFoods = const [],
   })  : id = id ?? const Uuid().v4(),
         timestamp = timestamp ?? DateTime.now();
   
-  ChatMessage copyWithText(String newText, {bool? isStreaming, List<KnowledgeSource>? sources, FastingProgram? proposedProgram}) {
+  ChatMessage copyWithText(
+    String newText, {
+    bool? isStreaming,
+    List<KnowledgeSource>? sources,
+    FastingProgram? proposedProgram,
+    DietPlan? proposedDietPlan,
+    List<String>? suggestedFoods,
+  }) {
     return ChatMessage(
       id: id,
       text: newText,
@@ -48,6 +60,8 @@ class ChatMessage extends HiveObject {
       isStreaming: isStreaming ?? this.isStreaming,
       sources: sources ?? this.sources,
       proposedProgram: proposedProgram ?? this.proposedProgram,
+      proposedDietPlan: proposedDietPlan ?? this.proposedDietPlan,
+      suggestedFoods: suggestedFoods ?? this.suggestedFoods,
     );
   }
 }

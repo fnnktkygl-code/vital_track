@@ -90,8 +90,9 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         content: Text(
           'Cette application ne remplace pas un avis médical.\n\n'
-          'En continuant, vous acceptez aussi la politique de confidentialité : '
-          'les fonctionnalités IA envoient vos requêtes (texte/images/contexte) à Google Gemini.\n\n'
+          'En continuant avec l\'IA, vous acceptez aussi la politique de confidentialité : '
+          'les fonctionnalités IA envoient vos requêtes (texte/images/contexte) à Google Gemini '
+          'via un serveur proxy.\n\n'
           'Consultez un professionnel de santé avant de modifier votre alimentation '
           'ou de pratiquer le jeûne.\n\n'
           'Les approches présentées sont à titre informatif et éducatif uniquement.',
@@ -101,11 +102,20 @@ class _HomeScreenState extends State<HomeScreen> {
           TextButton(
             onPressed: () {
               _hiveService.settingsBox.put('disclaimer_accepted', true);
+              _hiveService.settingsBox.put('privacy_consent_accepted', false);
+              Navigator.of(ctx).pop();
+              // User can still use local features (search, fasting, breathing)
+            },
+            child: Text("Continuer sans IA", style: TextStyle(color: colors.textSecondary)),
+          ),
+          TextButton(
+            onPressed: () {
+              _hiveService.settingsBox.put('disclaimer_accepted', true);
               _hiveService.settingsBox.put('privacy_consent_accepted', true);
               Navigator.of(ctx).pop();
               _runPostConsentTasksIfNeeded();
             },
-            child: Text("J'ai compris", style: TextStyle(color: colors.accent, fontWeight: FontWeight.bold)),
+            child: Text("J'accepte (avec IA)", style: TextStyle(color: colors.accent, fontWeight: FontWeight.bold)),
           ),
         ],
       ),

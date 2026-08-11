@@ -10,6 +10,7 @@ import 'package:vital_track/providers/profile_provider.dart';
 import 'package:vital_track/providers/favorites_provider.dart';
 import 'package:vital_track/providers/fasting_provider.dart';
 import 'package:vital_track/providers/breathing_provider.dart';
+import 'package:vital_track/providers/diet_plan_provider.dart';
 import 'package:vital_track/services/hive_service.dart';
 import 'package:vital_track/services/knowledge_service.dart';
 import 'package:vital_track/services/vital_rules_engine.dart';
@@ -69,6 +70,7 @@ class VitalTrackApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => FavoritesProvider()),
         ChangeNotifierProvider(create: (_) => FastingProvider(hiveService)),
         ChangeNotifierProvider(create: (_) => BreathingProvider(hiveService)),
+        ChangeNotifierProvider(create: (_) => DietPlanProvider(hiveService)),
       ],
       child: Consumer<ThemeProvider>(
         builder: (ctx, themeProv, child) {

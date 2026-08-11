@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -16,7 +18,7 @@ class UpdateService {
       final currentBuildNumber = int.tryParse(packageInfo.buildNumber) ?? 0;
 
       // Make the request preventing caching
-      final response = await http.get(Uri.parse('$versionUrl?t=\${DateTime.now().millisecondsSinceEpoch}'));
+      final response = await http.get(Uri.parse('$versionUrl?t=${DateTime.now().millisecondsSinceEpoch}'));
       
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -24,10 +26,11 @@ class UpdateService {
         final latestBuildNumber = data['buildNumber'] as int;
         final apkUrl = data['apkUrl'] as String;
         final releaseNotes = data['releaseNotes'] as String?;
+        final expectedSha256 = data['sha256'] as String?;
 
         if (latestBuildNumber > currentBuildNumber || _isGreaterVersion(latestVersion, currentVersion)) {
           if (context.mounted) {
-            _showUpdateDialog(context, latestVersion, apkUrl, releaseNotes);
+            _showUpdateDialog(context, latestVersion, apkUrl, releaseNotes, expectedSha256);
           }
         } else if (forceShow && context.mounted) {
           _showUpToDateDialog(context, currentVersion);
@@ -56,7 +59,39 @@ class UpdateService {
     return false;
   }
 
-  static void _showUpdateDialog(BuildContext context, String version, String apkUrl, String? notes) {
+  /// Verify APK integrity via SHA-256 hash (audit fix #5)
+  static Future<bool> verifyApkIntegrity(String filePath, String expectedSha256) async {
+    try {
+      final file = File(filePath);
+      if (!await file.exists()) return false;
+      
+      final bytes = await file.readAsBytes();
+      final digest = sha256.convert(bytes);
+      final actualHash = digest.toString().toLowerCase();
+      final expectedHash = expectedSha256.toLowerCase().trim();
+      
+      if (actualHash != expectedHash) {
+        debugPrint('APK integrity check FAILED:');
+        debugPrint('  Expected: $expectedHash');
+        debugPrint('  Actual:   $actualHash');
+        return false;
+      }
+      
+      debugPrint('APK integrity check passed: $actualHash');
+      return true;
+    } catch (e) {
+      debugPrint('APK integrity verification error: $e');
+      return false;
+    }
+  }
+
+  static void _showUpdateDialog(
+    BuildContext context, 
+    String version, 
+    String apkUrl, 
+    String? notes,
+    String? expectedSha256,
+  ) {
     showDialog(
       context: context,
       barrierDismissible: false,

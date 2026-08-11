@@ -26,8 +26,8 @@ class AIService {
   static String? _cachedKey;
   static final HiveService _hiveService = HiveService();
 
-  static const String _projectId = 'neon-polymer-487913-j6';
-  static const String _location = 'us-central1';
+  // Google AI Studio endpoint (replaces Vertex AI)
+  static const String _aiStudioBase = 'https://generativelanguage.googleapis.com/v1beta';
 
   static String _getApiKey() {
     if (_cachedKey != null && _cachedKey!.isNotEmpty) return _cachedKey!;
@@ -52,12 +52,28 @@ class AIService {
     return envUrl.trim();
   }
 
+  /// App-level API key for authenticating with the proxy (audit fix #4)
+  static String _appKey() {
+    const key = String.fromEnvironment('VT_APP_KEY', defaultValue: '');
+    return key.trim();
+  }
+
   static bool _useProxy() => _proxyBaseUrl().isNotEmpty;
 
   static Uri _proxyUri(String path) {
     final base = _proxyBaseUrl().replaceAll(RegExp(r'/$'), '');
     final normalizedPath = path.startsWith('/') ? path : '/$path';
     return Uri.parse('$base$normalizedPath');
+  }
+
+  /// Standard headers for all proxy requests (includes auth)
+  static Map<String, String> _proxyHeaders({String contentType = 'application/json'}) {
+    final headers = <String, String>{'Content-Type': contentType};
+    final key = _appKey();
+    if (key.isNotEmpty) {
+      headers['X-VT-API-Key'] = key;
+    }
+    return headers;
   }
 
   static bool _hasPrivacyConsent() {
@@ -70,13 +86,27 @@ class AIService {
     }
   }
 
+  // Model cascade matching the Vercel proxy — 11 models across 4 tiers
   static const _models = [
-    'gemini-2.5-flash',
+    // Tier 1: Lite — High capacity (15 RPM / 500 RPD)
+    'gemini-3.5-flash-lite',
+    'gemini-3.1-flash-lite',
     'gemini-2.5-flash-lite',
+    // Tier 2: Premium Flash (5 RPM / 20 RPD)
+    'gemini-3.5-flash',
+    'gemini-3.6-flash',
+    'gemini-2.5-flash',
+    // Tier 3: Gemma Reserve (30 RPM / 14,400 RPD)
+    'gemma-4-31b-it',
+    'gemma-4-26b-a4b-it',
+    'gemma-2-27b-it',
+    // Tier 4: Legacy
+    'gemini-2.0-flash',
+    'gemini-1.5-flash',
   ];
 
   static final Map<String, DateTime> _exhausted = {};
-  static const _cooldown = Duration(minutes: 2);
+  static const _cooldown = Duration(minutes: 5);
 
   static String _pickModel() {
     final now = DateTime.now();
@@ -91,7 +121,7 @@ class AIService {
 
   static void _markExhausted(String model) {
     _exhausted[model] = DateTime.now().add(_cooldown);
-    debugPrint('AIService: Model $model exhausted, cooling down for 2min');
+    debugPrint('AIService: Model $model exhausted, cooling down for 5min');
   }
 
   static bool _isQuotaError(dynamic e) {
@@ -102,10 +132,20 @@ class AIService {
         msg.contains('429');
   }
 
-  static Uri _buildVertexEndpoint(String modelId, String method) {
-    final key = _getApiKey();
+  /// Build Google AI Studio endpoint (replaces Vertex AI)
+  /// API key is passed via header instead of query string (audit fix #7)
+  static Uri _buildAIStudioEndpoint(String modelId, String method) {
     return Uri.parse(
-        'https://$_location-aiplatform.googleapis.com/v1/projects/$_projectId/locations/$_location/publishers/google/models/$modelId:$method?key=$key');
+        '$_aiStudioBase/models/$modelId:$method');
+  }
+
+  /// Headers for direct AI Studio calls (key in header, not query string)
+  static Map<String, String> _aiStudioHeaders() {
+    final key = _getApiKey();
+    return {
+      'Content-Type': 'application/json',
+      if (key.isNotEmpty) 'x-goog-api-key': key,
+    };
   }
 
   static Map<String, dynamic> _buildVertexPayload(
@@ -193,6 +233,34 @@ CORE BEHAVIOR:
 2. If context is empty, use your built-in Vitalist knowledge naturally.
 3. If the user asks for a fasting plan/protocol/program, design one based on their goals and your combined knowledge.
 4. Give DETAILED, well-structured answers using markdown.
+5. Be PROACTIVE: whenever the conversation is about food, meals, or diet, don't just answer — actively offer to act. Ask if the user wants what you mentioned added to their food list, or wants a full diet plan built for them.
+
+🥗 CRITICAL INSTRUCTION FOR PROACTIVE FOOD SUGGESTIONS 🥗
+Whenever you mention specific approved foods that would fit what the user is eating or asking about (e.g. they describe a meal, ask "what should I eat", or ask about a food), end your answer by asking if they'd like them added to today's food list, and include a JSON block listing exactly the food names you mentioned (max 6, singular/simple names only, no descriptions):
+```json
+{ "suggestFoods": ["Papaye", "Mangue", "Kale"] }
+```
+Only include foods that are genuinely electric/approved. Skip this block entirely if you didn't recommend any specific food.
+
+📅 CRITICAL INSTRUCTION FOR DIET PLAN REQUESTS 📅
+If the user asks for a "diet plan", "nutrition plan", "meal plan", "eating plan", or similar (in any language), you must gather 3 things through natural conversation BEFORE proposing anything, asking ONE question at a time if missing:
+  a) Which approach appeals to them: Arnold Ehret (progressive mucus-free transition), Dr. Sebi (strict alkaline electric guide), Dr. Morse (fruit mornings + detox + lymphatic focus), or a Personalized blend of all three. If they don't know, suggest Personalized.
+  b) Their main objective (detox, weight loss, energy/vitality, gentle transition, etc.)
+  c) How many days the calendar should cover (e.g. 3, 7, 14, 21).
+  Optionally: foods to avoid / allergies / restrictions.
+Once you have protocol + objective + duration (restrictions optional), DO NOT write out the meals yourself — instead confirm what you understood in plain text, then emit EXACTLY this JSON block at the very end. The app will generate the actual day-by-day calendar locally from its verified food database and show it as a preview the user can accept or edit:
+```json
+{
+  "dietPlanRequest": {
+    "protocol": "sebi",
+    "objective": "Perte de poids et clarté mentale",
+    "numDays": 7,
+    "restrictions": "sans noix"
+  }
+}
+```
+Allowed `protocol` values: "ehret", "sebi", "morse", "personalized".
+`restrictions` may be an empty string. Never invent meals/foods yourself for a full plan — always defer to this JSON so the calendar stays consistent with the app's verified data.
 
 🔥 CRITICAL INSTRUCTION FOR FASTING PROGRAMS 🔥
 If you propose a specific sequence or program of fasting (e.g., "Here is a 3-day plan"), you MUST include a strict JSON block at the very end of your response, so the app can ingest it.
@@ -232,6 +300,8 @@ Allowed `type` values for configs:
 `durationMinutes`: How long the fast itself lasts.
 `breakHours`: The refeeding window (if any) before the next fast. Use 0 if consecutive.
 `protocol`: Default to "vitalist" if integrating multiple, otherwise "sebi", "ehret", or "morse".
+
+⚠️ JSON BLOCK RULES: Emit AT MOST ONE fenced ```json``` block per response. If you need to combine `suggestFoods` with a `program` or `dietPlanRequest`, put them as sibling keys inside the SAME single JSON object, e.g. { "program": {...}, "suggestFoods": [...] }. Never output more than one ```json``` fenced block.
 """;
 
   static Future<Map<String, dynamic>?> analyzeText(String query) async {
@@ -254,7 +324,7 @@ Allowed `type` values for configs:
     for (int attempt = 0; attempt < _models.length; attempt++) {
       final model = _pickModel();
       try {
-        final uri = _buildVertexEndpoint(model, 'generateContent');
+        final uri = _buildAIStudioEndpoint(model, 'generateContent');
         final payload = _buildVertexPayload(
           contents: [
             {
@@ -270,7 +340,7 @@ Allowed `type` values for configs:
 
         final response = await http.post(
           uri,
-          headers: {'Content-Type': 'application/json'},
+          headers: _aiStudioHeaders(),
           body: json.encode(payload),
         );
 
@@ -323,7 +393,7 @@ Allowed `type` values for configs:
     for (int attempt = 0; attempt < _models.length; attempt++) {
       final model = _pickModel();
       try {
-        final uri = _buildVertexEndpoint(model, 'generateContent');
+        final uri = _buildAIStudioEndpoint(model, 'generateContent');
         final payload = _buildVertexPayload(
           contents: [
             {
@@ -345,7 +415,7 @@ Allowed `type` values for configs:
 
         final response = await http.post(
           uri,
-          headers: {'Content-Type': 'application/json'},
+          headers: _aiStudioHeaders(),
           body: json.encode(payload),
         );
 
@@ -398,7 +468,7 @@ Allowed `type` values for configs:
     for (int attempt = 0; attempt < _models.length; attempt++) {
       final model = _pickModel();
       try {
-        final uri = _buildVertexEndpoint(model, 'generateContent');
+        final uri = _buildAIStudioEndpoint(model, 'generateContent');
         final payload = _buildVertexPayload(
           contents: [
             {
@@ -412,7 +482,7 @@ Allowed `type` values for configs:
 
         final response = await http.post(
           uri,
-          headers: {'Content-Type': 'application/json'},
+          headers: _aiStudioHeaders(),
           body: json.encode(payload),
         );
 
@@ -466,7 +536,7 @@ Allowed `type` values for configs:
     for (int attempt = 0; attempt < _models.length; attempt++) {
       final model = _pickModel();
       try {
-        final uri = _buildVertexEndpoint(model, 'streamGenerateContent?alt=sse');
+        final uri = _buildAIStudioEndpoint(model, 'streamGenerateContent?alt=sse');
         final payload = _buildVertexPayload(
           contents: [
             {
@@ -479,7 +549,7 @@ Allowed `type` values for configs:
         );
 
         final request = http.Request('POST', uri);
-        request.headers['Content-Type'] = 'application/json';
+        request.headers.addAll(_aiStudioHeaders());
         request.body = json.encode(payload);
 
         final response = await http.Client().send(request);
@@ -570,8 +640,8 @@ Allowed `type` values for configs:
     try {
       final response = await http
           .post(
-            _proxyUri('/v1/analyze-text'),
-            headers: {'Content-Type': 'application/json'},
+            _proxyUri('/api/analyze-text'),
+            headers: _proxyHeaders(),
             body: json.encode({'query': query}),
           )
           .timeout(const Duration(seconds: 20));
@@ -600,7 +670,11 @@ Allowed `type` values for configs:
       final bytes = await image.readAsBytes();
       final mimeType = image.path.toLowerCase().endsWith('.png') ? 'image/png' : 'image/jpeg';
 
-      final request = http.MultipartRequest('POST', _proxyUri('/v1/analyze-image'));
+      final request = http.MultipartRequest('POST', _proxyUri('/api/analyze-image'));
+      final appKey = _appKey();
+      if (appKey.isNotEmpty) {
+        request.headers['X-VT-API-Key'] = appKey;
+      }
       request.files.add(
         http.MultipartFile.fromBytes(
           'file',
@@ -673,8 +747,8 @@ Allowed `type` values for configs:
 
       final response = await http
           .post(
-            _proxyUri('/v1/chat'),
-            headers: {'Content-Type': 'application/json'},
+            _proxyUri('/api/chat'),
+            headers: _proxyHeaders(),
             body: json.encode(payload),
           )
           .timeout(const Duration(seconds: 40));
@@ -737,9 +811,10 @@ Allowed `type` values for configs:
         'fileParts': fileParts.map((f) => f.toJson()).toList(),
       };
 
-      final request = http.Request('POST', _proxyUri('/v1/chat?stream=true'));
-      request.headers['Content-Type'] = 'application/json';
-      request.headers['Accept'] = 'text/event-stream';
+      final request = http.Request('POST', _proxyUri('/api/chat?stream=true'));
+      final proxyH = _proxyHeaders();
+      proxyH['Accept'] = 'text/event-stream';
+      request.headers.addAll(proxyH);
       request.body = json.encode(payload);
 
       final response = await http.Client().send(request);
