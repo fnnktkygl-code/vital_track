@@ -531,7 +531,6 @@ class VitalMascot {
     this.canvas.style.height = '122px';
 
     this.pigeon = new Pigeon(this.canvas);
-    this.pigeon.ctx.scale(dpr, dpr);
     this.startTime = performance.now();
     this.loop = this.loop.bind(this);
     requestAnimationFrame(this.loop);
@@ -563,7 +562,6 @@ window.renderPigeonPortrait = function(size = 28, mood = 'talking') {
   offscreen.height = 122 * dpr;
 
   const p = new Pigeon(offscreen);
-  p.ctx.scale(dpr, dpr);
   p.mood = mood;
   p.toPose = {...(MOODS[mood] || MOODS.talking)};
   p.toPose._eyeShapeFrom = p.toPose.eyeShape;
