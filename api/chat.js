@@ -33,7 +33,7 @@ module.exports = async function handler(req, res) {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) return res.status(500).json({ error: 'Server GEMINI_API_KEY not configured' });
 
-    const { query, profile, history, fileParts } = req.body || {};
+    const { query, profile, history, fileParts, model } = req.body || {};
     if (!query || typeof query !== 'string' || !query.trim()) {
       return res.status(400).json({ error: 'query is required' });
     }
@@ -81,6 +81,7 @@ module.exports = async function handler(req, res) {
       systemInstruction: fullSystemInstruction,
       generationConfig: { temperature: 0.3 },
       stream: isStream,
+      requestedModel: model || null,
     });
 
     if (isStream) {

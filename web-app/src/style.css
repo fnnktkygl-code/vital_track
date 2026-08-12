@@ -805,3 +805,191 @@ input.jn-field-control{padding-right:14px;}
   from { opacity: 0; transform: translateY(40px) scale(0.98); }
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MODERN MODEL SELECTOR & FLYOUT SUB-MENU
+   ═══════════════════════════════════════════════════════════════════════════ */
+.model-dropdown-card {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 8px;
+  width: 290px;
+  background: rgba(18, 25, 38, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 8px;
+  z-index: 1000;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  animation: modelDropdownFadeIn 0.18s ease-out;
+}
+
+@keyframes modelDropdownFadeIn {
+  from { opacity: 0; transform: translateY(-6px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.model-dropdown-header {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-dim, #64748b);
+  padding: 6px 10px 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.model-cat-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.model-cat-item:hover, .model-cat-item.active {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.model-cat-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.model-cat-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.model-cat-title {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text, #f3f6f9);
+}
+
+.model-cat-sub {
+  font-size: 0.68rem;
+  color: var(--text-dim, #94a3b8);
+  margin-top: 1px;
+  line-height: 1.25;
+}
+
+.model-cat-arrow {
+  font-size: 0.9rem;
+  color: var(--text-dim, #64748b);
+  transition: transform 0.15s ease;
+}
+
+.model-cat-item:hover .model-cat-arrow {
+  color: var(--text, #f3f6f9);
+  transform: translateX(2px);
+}
+
+/* Sub-Menu Flyout (Cascading Menu) */
+.model-sub-dropdown {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 100%;
+  margin-left: 6px;
+  width: 280px;
+  background: rgba(18, 25, 38, 0.96);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 8px;
+  z-index: 1001;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  animation: modelSubFadeIn 0.15s ease-out;
+}
+
+/* Flip flyout to left if close to right edge */
+.model-dropdown-card.flip-sub .model-sub-dropdown {
+  left: auto;
+  right: 100%;
+  margin-left: 0;
+  margin-right: 6px;
+}
+
+@keyframes modelSubFadeIn {
+  from { opacity: 0; transform: translateX(-4px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.model-cat-item:hover .model-sub-dropdown,
+.model-cat-item.classList-active .model-sub-dropdown {
+  display: block;
+}
+
+.model-option-item {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  margin-bottom: 2px;
+}
+
+.model-option-item:hover {
+  background: rgba(55, 211, 153, 0.12);
+}
+
+.model-option-item.selected {
+  background: rgba(55, 211, 153, 0.18);
+  border-left: 3px solid var(--accent, #37d399);
+}
+
+.model-option-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.model-option-name {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text, #f3f6f9);
+}
+
+.model-option-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-dim, #94a3b8);
+  white-space: nowrap;
+}
+
+.model-option-item.selected .model-option-badge {
+  background: var(--accent, #37d399);
+  color: #000;
+}
+
+.model-option-tagline {
+  font-size: 0.69rem;
+  color: var(--text-dim, #94a3b8);
+  margin-top: 3px;
+  line-height: 1.3;
+}

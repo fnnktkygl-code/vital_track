@@ -27,32 +27,22 @@
  */
 
 const COMPLEX_CASCADE = [
-  'gemini-3.1-pro',
-  'gemini-2.5-pro',
   'gemini-3.6-flash',
   'gemini-3.5-flash',
-  'gemma-4-31b-it',
-  'gemini-3.1-flash',
-  'gemini-3.0-flash'
+  'gemini-3.1-pro-preview',
+  'gemini-flash-latest',
+  'gemini-3.1-flash-lite',
+  'gemma-4-31b-it'
 ];
 
 const SIMPLE_CASCADE = [
   'gemini-3.6-flash',
-  'gemini-3.6-flash-lite',
   'gemini-3.5-flash',
-  'gemini-3.5-flash-lite',
-  'gemini-3.1-flash',
   'gemini-3.1-flash-lite',
-  'gemini-3.0-flash',
-  'gemini-2.5-flash',
-  'gemini-2.5-flash-lite',
-  'gemini-2.0-flash',
-  'gemini-2.0-flash-lite',
-  'gemini-omni-flash',
+  'gemini-flash-latest',
+  'gemini-flash-lite-latest',
   'gemma-4-31b-it',
-  'gemma-4-26b-it',
-  'gemma-2-27b-it',
-  'gemini-3.1-pro' // Ultimate safety fallback
+  'gemma-4-26b-a4b-it'
 ];
 
 // In-memory cooldown registry (persists across warm serverless invocations)
@@ -82,7 +72,8 @@ async function enforcePacingDelay(delayMs = 200) {
  * @param {Object} [options.generationConfig] - Generation configuration
  * @param {Object} [options.systemInstruction] - System instruction (text string)
  * @param {boolean} [options.stream] - Whether to use streaming
- * @returns {Promise<string|ReadableStream>} Generated text or stream
+ * @param {string} [options.requestedModel] - Specific model selected by user
+ * @returns {Promise<Response|Object>} Generated text or fetch Response
  */
 async function callGeminiApi({
   apiKey,
@@ -91,6 +82,7 @@ async function callGeminiApi({
   generationConfig,
   systemInstruction,
   stream = false,
+  requestedModel = null,
 }) {
   if (!apiKey) {
     throw new Error('GEMINI_API_KEY is missing');
@@ -108,8 +100,14 @@ async function callGeminiApi({
     isComplex = true;
   }
 
-  const modelsToTry = isComplex ? COMPLEX_CASCADE : SIMPLE_CASCADE;
-  console.log(`[VT Router] Routing query (Complex: ${isComplex}) via cascade...`);
+  let modelsToTry = isComplex ? [...COMPLEX_CASCADE] : [...SIMPLE_CASCADE];
+
+  if (requestedModel && requestedModel !== 'auto' && requestedModel.trim()) {
+    // Put user requested model first in cascade
+    modelsToTry = [requestedModel.trim(), ...modelsToTry.filter(m => m !== requestedModel.trim())];
+  }
+
+  console.log(`[VT Router] Routing query (Complex: ${isComplex}, Requested: ${requestedModel || 'auto'}) via cascade...`);
 
   for (const modelName of modelsToTry) {
     // Skip models in cooldown

@@ -301,39 +301,12 @@
           <button class="icon-btn sidebar-toggle" onclick="toggleSidebar()" data-tooltip="Historique des conversations" class="tooltip-bottom"><i class="ri-menu-line"></i></button>
           <div class="chat-header-info" style="position:relative">
             <h2 id="chatTitle" style="margin-bottom:2px">Coach Vitaliste</h2>
-            <div class="model-selector" onclick="toggleModelList()" style="cursor:pointer;display:inline-flex;align-items:center;font-size:0.75rem;color:var(--text-dim);background:var(--bg-glass);padding:2px 8px;border-radius:12px;border:1px solid rgba(255,255,255,0.1)">
-              <span id="currentModelBadge"><i class="ri-instance-line"></i> Rotateur Auto</span>
+            <div class="model-selector" onclick="toggleModelList(event)" style="cursor:pointer;display:inline-flex;align-items:center;font-size:0.75rem;color:var(--text-dim);background:var(--bg-glass);padding:3px 10px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);transition:all 0.2s">
+              <span id="currentModelBadge"><i class="ri-instance-line" style="color:#34d399"></i> Rotateur Auto</span>
               <i class="ri-arrow-down-s-line" style="margin-left:4px"></i>
             </div>
-            <div class="model-dropdown glass" id="modelDropdown" style="display:none;position:absolute;top:100%;left:0;margin-top:8px;width:220px;border-radius:12px;padding:8px;z-index:100;box-shadow:var(--shadow)">
-              <div style="font-size:0.7rem;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;padding:0 8px;font-weight:600">Modèles configurés</div>
-              <div style="font-size:0.7rem;text-transform:uppercase;color:var(--text-dim);margin-bottom:4px;padding:0 8px;font-weight:600;margin-top:8px">Premium (Raisonnement)</div>
-              <div class="model-item" style="padding:4px 8px;font-size:0.8rem;display:flex;align-items:center;gap:8px"><i class="ri-server-line" style="color:#fbbf24"></i> gemini-3.1-pro</div>
-              <div class="model-item" style="padding:4px 8px;font-size:0.8rem;display:flex;align-items:center;gap:8px"><i class="ri-server-line" style="color:#fbbf24"></i> gemini-2.5-pro</div>
-              
-              <div style="font-size:0.7rem;text-transform:uppercase;color:var(--text-dim);margin-bottom:4px;padding:0 8px;font-weight:600;margin-top:8px">Flash (Rapide)</div>
-              <div class="model-item" style="padding:4px 8px;font-size:0.8rem;display:flex;align-items:center;gap:8px"><i class="ri-flashlight-fill" style="color:#4ade80"></i> gemini-3.6-flash</div>
-              <div class="model-item" style="padding:4px 8px;font-size:0.8rem;display:flex;align-items:center;gap:8px"><i class="ri-flashlight-fill" style="color:#4ade80"></i> gemini-3.5-flash</div>
-              <div class="model-item" style="padding:4px 8px;font-size:0.8rem;display:flex;align-items:center;gap:8px"><i class="ri-flashlight-fill" style="color:#4ade80"></i> gemini-3.1-flash</div>
-              <div class="model-item" style="padding:4px 8px;font-size:0.8rem;display:flex;align-items:center;gap:8px"><i class="ri-flashlight-fill" style="color:#4ade80"></i> gemini-3.0-flash</div>
-              <div class="model-item" style="padding:4px 8px;font-size:0.8rem;display:flex;align-items:center;gap:8px"><i class="ri-flashlight-fill" style="color:#4ade80"></i> gemini-2.5-flash</div>
-              <div class="model-item" style="padding:4px 8px;font-size:0.8rem;display:flex;align-items:center;gap:8px"><i class="ri-flashlight-fill" style="color:#4ade80"></i> gemini-2.0-flash</div>
-              <div class="model-item" style="padding:4px 8px;font-size:0.8rem;display:flex;align-items:center;gap:8px"><i class="ri-flashlight-fill" style="color:#4ade80"></i> gemini-omni-flash</div>
-              
-              <div style="font-size:0.7rem;text-transform:uppercase;color:var(--text-dim);margin-bottom:4px;padding:0 8px;font-weight:600;margin-top:8px">Lite (Haute capacité)</div>
-              <div class="model-item" style="padding:4px 8px;font-size:0.8rem;display:flex;align-items:center;gap:8px"><i class="ri-flashlight-line" style="color:#a78bfa"></i> gemini-3.6-flash-lite</div>
-              <div class="model-item" style="padding:4px 8px;font-size:0.8rem;display:flex;align-items:center;gap:8px"><i class="ri-flashlight-line" style="color:#a78bfa"></i> gemini-3.5-flash-lite</div>
-              <div class="model-item" style="padding:4px 8px;font-size:0.8rem;display:flex;align-items:center;gap:8px"><i class="ri-flashlight-line" style="color:#a78bfa"></i> gemini-3.1-flash-lite</div>
-              <div class="model-item" style="padding:4px 8px;font-size:0.8rem;display:flex;align-items:center;gap:8px"><i class="ri-flashlight-line" style="color:#a78bfa"></i> gemini-2.5-flash-lite</div>
-              <div class="model-item" style="padding:4px 8px;font-size:0.8rem;display:flex;align-items:center;gap:8px"><i class="ri-flashlight-line" style="color:#a78bfa"></i> gemini-2.0-flash-lite</div>
-              
-              <div style="font-size:0.7rem;text-transform:uppercase;color:var(--text-dim);margin-bottom:4px;padding:0 8px;font-weight:600;margin-top:8px">Open Weights</div>
-              <div class="model-item" style="padding:4px 8px;font-size:0.8rem;display:flex;align-items:center;gap:8px"><i class="ri-cpu-line" style="color:#22d3ee"></i> gemma-4-31b-it</div>
-              <div class="model-item" style="padding:4px 8px;font-size:0.8rem;display:flex;align-items:center;gap:8px"><i class="ri-cpu-line" style="color:#22d3ee"></i> gemma-4-26b-it</div>
-              <div class="model-item" style="padding:4px 8px;font-size:0.8rem;display:flex;align-items:center;gap:8px"><i class="ri-cpu-line" style="color:#22d3ee"></i> gemma-2-27b-it</div>
-              <div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.1);font-size:0.75rem;color:var(--text-dim);padding-left:8px;padding-right:8px;line-height:1.4">
-                Le "Routeur Intelligent" sélectionne la catégorie optimale selon la complexité et bascule en cas de surcharge.
-              </div>
+            <div id="modelDropdown" class="model-dropdown-card" style="display:none">
+              <!-- Dynamically rendered by renderModelPicker() -->
             </div>
           </div>
           <button class="icon-btn" onclick="newConversation()" data-tooltip="Nouveau chat"><i class="ri-add-line"></i></button>

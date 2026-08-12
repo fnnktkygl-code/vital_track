@@ -416,7 +416,7 @@ window.sendChat = async function(e) {
     const resp = await fetch(`${API_BASE}/api/chat?stream=true`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...(VT_APP_KEY ? { 'X-VT-API-Key': VT_APP_KEY } : {}) },
-      body: JSON.stringify({ query, profile, history: conv.messages.slice(0, -1) }),
+      body: JSON.stringify({ query, profile, history: conv.messages.slice(0, -1), model: store.get('selected_model', 'auto') }),
     });
     
     typingEl.remove();
@@ -497,10 +497,173 @@ window.sendChat = async function(e) {
   }
 };
 
-window.toggleModelList = function() {
+// ═══════════════════════════════════════════════════════════════════════════
+// MODEL SELECTOR & CASCADING FLYOUT SUB-MENU
+// ═══════════════════════════════════════════════════════════════════════════
+const MODEL_TAXONOMY = [
+  {
+    id: 'auto',
+    name: 'Rotateur Auto',
+    icon: 'ri-instance-line',
+    iconColor: '#34d399',
+    tagline: 'Bascule dynamique anti-surcharge',
+    models: [
+      { id: 'auto', name: 'Rotateur Automatique', badge: 'Recommandé', tagline: 'Sélectionne le meilleur modèle selon la charge & la complexité' }
+    ]
+  },
+  {
+    id: 'flash',
+    name: 'Flash (Ultra Rapide)',
+    icon: 'ri-flashlight-fill',
+    iconColor: '#4ade80',
+    tagline: 'Vitesse maximale & réponse immédiate',
+    models: [
+      { id: 'gemini-3.6-flash', name: 'Gemini 3.6 Flash', badge: 'Fastest ⚡', tagline: 'Modèle réactif de dernière génération pour le chat instantané' },
+      { id: 'gemini-3.5-flash', name: 'Gemini 3.5 Flash', badge: 'Équilibré', tagline: 'Vitesse élevée et excellente précision nutritionnelle' },
+      { id: 'gemini-flash-latest', name: 'Gemini Flash Latest', badge: 'Auto-Update', tagline: 'Pointé sur la version Flash stable la plus récente' }
+    ]
+  },
+  {
+    id: 'premium',
+    name: 'Premium (Raisonnement)',
+    icon: 'ri-brain-line',
+    iconColor: '#fbbf24',
+    tagline: 'Analyse approfondie & requêtes complexes',
+    models: [
+      { id: 'gemini-3.1-pro-preview', name: 'Gemini 3.1 Pro', badge: 'Raisonnement', tagline: 'Réfléchit en profondeur pour les cas médicaux et protocoles' },
+      { id: 'gemini-pro-latest', name: 'Gemini Pro Latest', badge: 'Pro Stable', tagline: 'Pro puissant pour la synthèse et les plans avancés' }
+    ]
+  },
+  {
+    id: 'lite',
+    name: 'Lite (Haute Capacité)',
+    icon: 'ri-bolt-line',
+    iconColor: '#a78bfa',
+    tagline: 'Grande fenêtre de contexte & légèreté',
+    models: [
+      { id: 'gemini-3.1-flash-lite', name: 'Gemini 3.1 Flash Lite', badge: 'Grand Contexte', tagline: 'Idéal pour absorber de longs documents ou fichiers PDF' },
+      { id: 'gemini-3.5-flash-lite', name: 'Gemini 3.5 Flash Lite', badge: 'Économe', tagline: 'Traitement fluide à consommation optimisée' },
+      { id: 'gemini-flash-lite-latest', name: 'Gemini Flash Lite', badge: 'Lite Stable', tagline: 'Modèle léger ultra-rapide' }
+    ]
+  },
+  {
+    id: 'gemma',
+    name: 'Open Weights (Gemma)',
+    icon: 'ri-cpu-line',
+    iconColor: '#22d3ee',
+    tagline: 'Modèles ouverts Google DeepMind',
+    models: [
+      { id: 'gemma-4-31b-it', name: 'Gemma 4 31B', badge: '31B Params', tagline: 'Grand modèle open-weights à haute fiabilité' },
+      { id: 'gemma-4-26b-a4b-it', name: 'Gemma 4 26B', badge: '26B Params', tagline: 'Modèle ouvert rapide et agile' }
+    ]
+  }
+];
+
+window.renderModelPicker = function() {
+  const container = document.getElementById('modelDropdown');
+  if (!container) return;
+
+  const currentSelected = store.get('selected_model', 'auto');
+
+  let html = `
+    <div class="model-dropdown-header">
+      <span>Sélection du Modèle AI</span>
+      <span style="font-size:0.6rem;opacity:0.7"><i class="ri-information-line"></i> Survoler pour la cascade</span>
+    </div>
+  `;
+
+  MODEL_TAXONOMY.forEach(cat => {
+    const isCatActive = cat.models.some(m => m.id === currentSelected);
+
+    let subHtml = `<div class="model-sub-dropdown">
+      <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;color:var(--text-dim,#64748b);padding:4px 8px 6px;border-bottom:1px solid rgba(255,255,255,0.06);margin-bottom:4px">
+        ${esc(cat.name)}
+      </div>`;
+
+    cat.models.forEach(m => {
+      const isSelected = m.id === currentSelected;
+      subHtml += `
+        <div class="model-option-item ${isSelected ? 'selected' : ''}" onclick="selectModel('${esc(m.id)}', '${esc(m.name)}', '${esc(cat.icon)}', '${esc(cat.iconColor)}')">
+          <div class="model-option-row">
+            <span class="model-option-name">${esc(m.name)}</span>
+            <span class="model-option-badge">${esc(m.badge)}</span>
+          </div>
+          <div class="model-option-tagline">${esc(m.tagline)}</div>
+        </div>
+      `;
+    });
+    subHtml += `</div>`;
+
+    html += `
+      <div class="model-cat-item ${isCatActive ? 'active' : ''}">
+        <div class="model-cat-left">
+          <div class="model-cat-icon" style="color:${cat.iconColor}">
+            <i class="${cat.icon}"></i>
+          </div>
+          <div>
+            <div class="model-cat-title">${esc(cat.name)}</div>
+            <div class="model-cat-sub">${esc(cat.tagline)}</div>
+          </div>
+        </div>
+        <i class="ri-arrow-right-s-line model-cat-arrow"></i>
+        ${subHtml}
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
+  updateModelHeaderBadge();
+};
+
+window.selectModel = function(modelId, modelName, iconClass, iconColor) {
+  store.set('selected_model', modelId);
   const dropdown = document.getElementById('modelDropdown');
-  if (dropdown) {
-    dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+  if (dropdown) dropdown.style.display = 'none';
+  updateModelHeaderBadge();
+};
+
+function updateModelHeaderBadge() {
+  const currentSelected = store.get('selected_model', 'auto');
+  const badge = document.getElementById('currentModelBadge');
+  if (!badge) return;
+
+  let foundModel = null;
+  let foundCat = null;
+
+  for (const cat of MODEL_TAXONOMY) {
+    const m = cat.models.find(x => x.id === currentSelected);
+    if (m) {
+      foundModel = m;
+      foundCat = cat;
+      break;
+    }
+  }
+
+  if (foundModel && foundCat) {
+    badge.innerHTML = `<i class="${foundCat.icon}" style="color:${foundCat.iconColor}"></i> ${esc(foundModel.name)}`;
+  } else {
+    badge.innerHTML = `<i class="ri-instance-line" style="color:#34d399"></i> Rotateur Auto`;
+  }
+}
+
+window.toggleModelList = function(e) {
+  if (e) e.stopPropagation();
+  const dropdown = document.getElementById('modelDropdown');
+  if (!dropdown) return;
+
+  const isVisible = dropdown.style.display === 'block';
+  if (!isVisible) {
+    window.renderModelPicker();
+    dropdown.style.display = 'block';
+
+    const rect = dropdown.getBoundingClientRect();
+    if (window.innerWidth - rect.right < 280) {
+      dropdown.classList.add('flip-sub');
+    } else {
+      dropdown.classList.remove('flip-sub');
+    }
+  } else {
+    dropdown.style.display = 'none';
   }
 };
 
@@ -512,6 +675,7 @@ document.addEventListener('click', (e) => {
     dropdown.style.display = 'none';
   }
 });
+
 
 function addMessage(text, isUser, modelUsed = null) {
   const container = document.getElementById('chatMessages');
