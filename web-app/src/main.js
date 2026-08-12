@@ -26,6 +26,7 @@ const store = {
   set: (k, v) => { try { localStorage.setItem(`vt-${k}`, JSON.stringify(v)); } catch {} },
   del: (k) => localStorage.removeItem(`vt-${k}`),
 };
+window.store = store;
 
 // ═══════ INIT ═══════
 document.addEventListener('DOMContentLoaded', async () => {
@@ -69,9 +70,55 @@ document.addEventListener('DOMContentLoaded', async () => {
       const baseDb = await resp.json();
       const customDb = store.get('customFoods', []);
       vitalDb = [...baseDb, ...customDb];
+      populateVitalApprovedFoods();
     }
   } catch (e) { console.warn('Could not load food database:', e); }
 });
+
+function populateVitalApprovedFoods() {
+  if (!Array.isArray(vitalDb) || vitalDb.length === 0) return;
+  const approved = {
+    fruits: [], veggies: [], grains: [], herbs: [], oils: [], nuts: [], spices: []
+  };
+  const emojis = {};
+
+  const catMap = {
+    'Fruits': 'fruits',
+    'Légumes': 'veggies',
+    'Céréales': 'grains',
+    'Herbes & Thés': 'herbs',
+    'Huiles': 'oils',
+    'Noix & Graines': 'nuts',
+    'Épices & Assaisonnements': 'spices'
+  };
+
+  vitalDb.forEach(item => {
+    const catKey = catMap[item.category] || 'fruits';
+    if (!approved[catKey]) approved[catKey] = [];
+
+    const nameStr = (item.names && (item.names[1] || item.names[0])) || item.id;
+    if (nameStr) {
+      const displayName = nameStr.charAt(0).toUpperCase() + nameStr.slice(1);
+      if (approved[catKey].indexOf(displayName) === -1) {
+        approved[catKey].push(displayName);
+      }
+      if (item.emoji) {
+        emojis[displayName] = item.emoji;
+        if (Array.isArray(item.names)) {
+          item.names.forEach(n => {
+            if (n) {
+              const cap = n.charAt(0).toUpperCase() + n.slice(1);
+              emojis[cap] = item.emoji;
+            }
+          });
+        }
+      }
+    }
+  });
+
+  window.VITAL_APPROVED_FOODS = approved;
+  window.VITAL_FOOD_EMOJIS = emojis;
+}
 
 // ═══════ NAVIGATION ═══════
 window.showPage = function(page) {
@@ -147,12 +194,29 @@ function renderDashboard() {
 
   // Vitality score
   const score = calculateVitalityScore(todayMeals);
-  document.getElementById('arcScore').textContent = score;
+  const arcScoreEl = document.getElementById('arcScore');
+  if (arcScoreEl) arcScoreEl.textContent = todayMeals.length === 0 ? '0' : score;
   const arcProgress = document.getElementById('arcProgress');
   if (arcProgress) {
-    const offset = 251 - (251 * score / 100);
+    const offset = 251 - (251 * (todayMeals.length === 0 ? 0 : score) / 100);
     arcProgress.style.strokeDashoffset = offset;
-    arcProgress.style.stroke = score >= 70 ? 'var(--accent)' : score >= 40 ? 'var(--warn)' : 'var(--danger)';
+    arcProgress.style.stroke = todayMeals.length === 0 ? 'rgba(255,255,255,0.1)' : (score >= 70 ? 'var(--accent)' : score >= 40 ? 'var(--warn)' : 'var(--danger)');
+  }
+  const commentEl = document.getElementById('vitalityScoreComment');
+  if (commentEl) {
+    if (todayMeals.length === 0) {
+      commentEl.style.color = 'var(--text-dim)';
+      commentEl.innerHTML = '<i class="ri-information-line"></i> Aucune donnée aujourd\'hui. Enregistrez vos repas pour calculer votre score.';
+    } else if (score >= 70) {
+      commentEl.style.color = 'var(--accent)';
+      commentEl.innerHTML = '<i class="ri-checkbox-circle-fill"></i> Excellente vitalité';
+    } else if (score >= 40) {
+      commentEl.style.color = 'var(--warn)';
+      commentEl.innerHTML = '<i class="ri-error-warning-fill"></i> Correcte, mais améliorable';
+    } else {
+      commentEl.style.color = 'var(--danger)';
+      commentEl.innerHTML = '<i class="ri-close-circle-fill"></i> Vitalité faible';
+    }
   }
 
   // Active fasting card (if exists)
@@ -348,19 +412,62 @@ window.sendChat = async function(e) {
   try {
     const profile = store.get('profile', { name: '', goal: 'detox', protocol: 'vitalist' });
     
-    // Pass the full conversation history directly to the backend
-    const resp = await fetch(`${API_BASE}/api/chat`, {
+    // Call the backend with stream=true to bypass the 10s Vercel timeout
+    const resp = await fetch(`${API_BASE}/api/chat?stream=true`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...(VT_APP_KEY ? { 'X-VT-API-Key': VT_APP_KEY } : {}) },
       body: JSON.stringify({ query, profile, history: conv.messages.slice(0, -1) }),
     });
     
     typingEl.remove();
-    if (!resp.ok) { const err = await resp.json().catch(() => ({})); throw new Error(err.error || `HTTP ${resp.status}`); }
+    if (!resp.ok) { 
+      const err = await resp.json().catch(() => ({})); 
+      throw new Error(err.error || `HTTP ${resp.status}`); 
+    }
     
-    const data = await resp.json();
-    const aiText = data.text || 'Désolé, je n\'ai pas pu répondre.';
-    const modelUsed = data.model || 'Inconnu';
+    let aiText = '';
+    let modelUsed = 'Inconnu';
+    const reader = resp.body.getReader();
+    const decoder = new TextDecoder('utf-8');
+    let buffer = '';
+    
+    // Create the streaming bubble
+    const container = document.getElementById('chatMessages');
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'message bot';
+    msgDiv.id = 'streaming-bubble-container';
+    const avatarHtml = window.renderPigeonPortrait ? window.renderPigeonPortrait(24, 'talking') : '🐦';
+    msgDiv.innerHTML = `<div class="message-avatar">${avatarHtml}</div><div class="message-bubble" id="streaming-bubble">...</div>`;
+    container.appendChild(msgDiv);
+    
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      
+      let newlineIdx;
+      while ((newlineIdx = buffer.indexOf('\n')) >= 0) {
+        const line = buffer.slice(0, newlineIdx).trim();
+        buffer = buffer.slice(newlineIdx + 1);
+        
+        if (line.startsWith('data: ')) {
+          try {
+            const dataObj = JSON.parse(line.substring(6));
+            if (dataObj.model) modelUsed = dataObj.model;
+            if (dataObj.candidates && dataObj.candidates[0].content) {
+              aiText += dataObj.candidates[0].content.parts[0].text;
+              const streamingBubble = document.getElementById('streaming-bubble');
+              if (streamingBubble) streamingBubble.innerHTML = renderMarkdown(aiText);
+              container.scrollTop = container.scrollHeight;
+            }
+          } catch (e) {}
+        }
+      }
+    }
+    
+    // Finalize message UI by replacing the streaming bubble with a normal addMessage call
+    const streamingContainer = document.getElementById('streaming-bubble-container');
+    if (streamingContainer) streamingContainer.remove();
     
     // Update badge UI
     const badge = document.getElementById('currentModelBadge');
@@ -1236,16 +1343,41 @@ function renderMarkdown(text) {
       const json = match.replace(/```json\n?/g, '').replace(/```/g, '').trim();
       const obj = JSON.parse(json);
 
-      // Calendar Meals Injection
+      // Deterministic Diet Plan Request Injection
+      if (obj.dietPlanRequest) {
+        const req = obj.dietPlanRequest;
+        const encodedReq = btoa(unescape(encodeURIComponent(JSON.stringify(req))));
+        const protocolLabels = { ehret: 'Transition Ehret', sebi: 'Guide Dr. Sebi', morse: 'Détox Dr. Morse', personalized: 'Programme Personnalisé' };
+        const protoName = protocolLabels[req.protocol] || 'Vitaliste';
+        const days = req.numDays || 7;
+        const objText = req.objective ? ` · ${esc(req.objective)}` : '';
+        const restrText = req.restrictions ? `<div style="font-size:0.8rem;color:#f2637a;margin-top:4px">⚠️ Restrictions : ${esc(req.restrictions)}</div>` : '';
+
+        return `<div class="ai-plan-card glass" style="margin:12px 0;padding:16px;border-radius:12px;border-left:4px solid var(--accent)">
+          <div style="font-weight:600;margin-bottom:8px">📅 Plan Alimentaire Proposé</div>
+          <div style="font-size:0.9rem;color:var(--text);margin-bottom:4px">
+            <strong>${protoName}</strong> (${days} jours)${objText}
+          </div>
+          ${restrText}
+          <div style="font-size:0.8rem;color:var(--text-dim);margin-top:6px;margin-bottom:12px">
+            ⚡ Plan déterministe basé sur notre base d'aliments approuvés.
+          </div>
+          <button class="btn btn-primary" onclick="handleApplyDietPlanRequest('${encodedReq}')">
+            <i class="ri-calendar-check-line"></i> Appliquer au calendrier
+          </button>
+        </div>`;
+      }
+
+      // Legacy Calendar Meals Injection (backward compatibility)
       if (obj.calendarMeals && Array.isArray(obj.calendarMeals)) {
         const meals = obj.calendarMeals;
-        const encodedMeals = encodeURIComponent(JSON.stringify(meals));
+        const encodedMeals = btoa(unescape(encodeURIComponent(JSON.stringify(meals))));
         return `<div class="ai-plan-card glass" style="margin:12px 0;padding:16px;border-radius:12px;border-left:4px solid var(--accent)">
           <div style="font-weight:600;margin-bottom:8px">📅 Menus générés par l'IA</div>
           <div style="font-size:0.9rem;color:var(--text-dim);margin-bottom:12px">
             <span>🍽️ ${meals.length} repas proposés</span>
           </div>
-          <button class="btn btn-primary" onclick="addMealsToCalendar(decodeURIComponent('${encodedMeals}'))">
+          <button class="btn btn-primary" onclick="addMealsToCalendar('${encodedMeals}')">
             <i class="ri-calendar-check-line"></i> Ajouter au calendrier
           </button>
         </div>`;
@@ -1297,7 +1429,7 @@ function renderMarkdown(text) {
 
 // ═══════ PROACTIVE MASCOT ═══════
 window.updateProactiveMascot = function(actionContext = null) {
-  const bubble = document.getElementById('mascotSpeechBubble');
+  const bubble = document.getElementById('mascotSpeechBubble') || document.getElementById('greetingContext');
   if (!bubble) return;
   
   const hour = new Date().getHours();
@@ -1305,29 +1437,29 @@ window.updateProactiveMascot = function(actionContext = null) {
   let mood = 'talking';
   
   if (actionContext === 'scan') {
-    msg = "Bravo pour ce scan ! Vérifie bien l'indice PRAL (acidité) de cet aliment.";
+    msg = "💬 <strong>Bravo pour ce scan !</strong> Vérifie bien l'indice PRAL (acidité) de cet aliment. 🍎";
     mood = 'excited';
   } else if (actionContext === 'meal') {
-    msg = "Repas enregistré. N'oublie pas de bien mastiquer pour aider ta digestion !";
+    msg = "💬 <strong>Repas enregistré !</strong> N'oublie pas de bien mastiquer pour aider ta digestion. 🥗";
     mood = 'proud';
   } else if (actionContext === 'fast_start') {
-    msg = "C'est parti pour le jeûne ! Ton corps commence son processus de nettoyage profond. 💧";
+    msg = "💬 <strong>C'est parti pour le jeûne !</strong> Ton corps commence son nettoyage profond. 💧";
     mood = 'loving';
   } else {
-    // Time-based
+    // Time-based circadian messages
     if (hour >= 5 && hour < 11) {
       msg = profile.protocol === 'vitalist' 
-        ? "Bonjour ! L'heure est à l'élimination. Un jus de citron ou de céleri pour commencer ? 🍋"
-        : "Bonjour ! Pense à bien t'hydrater dès le matin. 💧";
+        ? "💬 <strong>Matin (Élimination) :</strong> L'organisme élimine les toxines de la nuit. Un jus de citron tiède pour favoriser le drainage ? 🍋"
+        : "💬 <strong>Bonjour !</strong> Pense à bien t'hydrater dès le réveil. 💧";
       mood = 'excited';
     } else if (hour >= 11 && hour < 15) {
-      msg = "C'est le milieu de la journée. Si tu manges, privilégie des fruits riches en eau ! 🍉";
+      msg = "💬 <strong>Midi (Appropriation) :</strong> Le feu digestif est au maximum ! Privilégie des aliments vivants et riches en eau. 🍉";
       mood = 'talking';
     } else if (hour >= 15 && hour < 19) {
-      msg = "Une petite baisse d'énergie ? Quelques respirations profondes peuvent t'aider ! 🌬️";
+      msg = "💬 <strong>Après-midi (Assimilation) :</strong> Une baisse de forme ? Quelques respirations profondes pour réoxygéner tes cellules. 🌬️";
       mood = 'questioning';
     } else {
-      msg = "La soirée approche. C'est bientôt l'heure de mettre le système digestif au repos pour une bonne régénération nocturne. 🌙";
+      msg = "💬 <strong>Soir & Nuit (Régénération) :</strong> Mettre le système digestif au repos pour permettre la réparation cellulaire nocturne. 🌙";
       mood = 'sleepy';
     }
   }
@@ -1338,7 +1470,7 @@ window.updateProactiveMascot = function(actionContext = null) {
     window.appMascot.setMood(mood, true);
     setTimeout(() => {
       if (window.appMascot) window.appMascot.setMood(mood, false);
-    }, 3000);
+    }, 4000);
   }
 };
 
@@ -1628,9 +1760,50 @@ window.promptAIPlan = function() {
   chatInput.focus();
 };
 
+window.handleApplyDietPlanRequest = function(encodedReq, mode) {
+  try {
+    const req = JSON.parse(decodeURIComponent(escape(atob(encodedReq))));
+    if (!window.applyDietPlanRequest) {
+      alert("⚠️ Erreur : moteur de calendrier non disponible.");
+      return;
+    }
+    const res = window.applyDietPlanRequest(req, mode);
+
+    if (res.conflict) {
+      const existingModal = document.getElementById('conflictModalOverlay');
+      if (existingModal) existingModal.remove();
+
+      const overlay = document.createElement('div');
+      overlay.id = 'conflictModalOverlay';
+      overlay.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:20px;';
+      overlay.innerHTML = `<div style="background:var(--surface,#121b27);border:1px solid rgba(255,255,255,0.12);border-radius:22px;padding:24px;max-width:440px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,0.6);color:var(--text,#f3f6f9);">
+        <h3 style="margin:0 0 12px;font-size:1.15rem;font-weight:700;color:var(--text,#f3f6f9)">⚠️ Repas existants détectés</h3>
+        <p style="font-size:0.9rem;color:var(--text-mid,#9aa7b8);margin:0 0 20px;line-height:1.4;">Des repas existent déjà dans votre calendrier sur <strong>${res.conflictCount} créneau(x)</strong> pendant cette période. Que souhaitez-vous faire ?</p>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <button onclick="document.getElementById('conflictModalOverlay').remove(); window.handleApplyDietPlanRequest('${encodedReq}', 'replace')" style="padding:12px;border-radius:12px;border:none;background:var(--accent,#37d399);color:#000;font-weight:700;cursor:pointer;font-size:0.95rem;">🔄 Remplacer les jours du plan</button>
+          <button onclick="document.getElementById('conflictModalOverlay').remove(); window.handleApplyDietPlanRequest('${encodedReq}', 'merge')" style="padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:var(--text,#f3f6f9);font-weight:600;cursor:pointer;font-size:0.95rem;">➕ Fusionner (ajouter à côté)</button>
+          <button onclick="document.getElementById('conflictModalOverlay').remove()" style="padding:10px;border-radius:12px;border:none;background:transparent;color:var(--text-low,#5f6b7c);cursor:pointer;font-size:0.9rem;">Annuler</button>
+        </div>
+      </div>`;
+      document.body.appendChild(overlay);
+      return;
+    }
+
+    if (res.ok) {
+      alert(`✅ Plan "${res.meta.name}" (${res.meta.numDays} jours) appliqué au calendrier avec succès !`);
+      if (window.showPage) window.showPage('calendar');
+    } else {
+      alert("⚠️ Erreur lors de l'application du plan : " + (res.error || 'Erreur inconnue'));
+    }
+  } catch (e) {
+    console.error("Erreur lors de l'application du plan", e);
+    alert("Impossible d'appliquer le plan.");
+  }
+};
+
 window.addMealsToCalendar = function(mealsJson) {
   try {
-    const newMeals = JSON.parse(mealsJson);
+    const newMeals = JSON.parse(decodeURIComponent(escape(atob(mealsJson))));
     let meals = store.get('calendar_meals', []);
     
     newMeals.forEach(m => {
@@ -1642,8 +1815,14 @@ window.addMealsToCalendar = function(mealsJson) {
       meals.push({
         id: 'meal_' + Date.now() + Math.random().toString(36).substr(2, 5),
         dateStr: dateStr,
-        slot: m.slot || 'Déjeuner',
-        text: m.text || '',
+        slot: m.slot || m.title || 'Déjeuner',
+        text: m.text || m.note || '',
+        time: m.time,
+        tone: m.tone,
+        icon: m.icon,
+        title: m.title || m.slot,
+        tags: m.tags || [],
+        note: m.note || m.text,
         done: false
       });
     });

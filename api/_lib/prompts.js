@@ -62,24 +62,24 @@ SOIS DIRECT — ne pose pas des questions une par une. Déduis le maximum du con
   - Protocole : "personalized" si non précisé ; sinon utilise ce qui a été mentionné (ex: "sebi", ou un mix ["sebi", "morse"]).
   - Objectif : déduis-le du contexte ("détox", "perte de poids", "énergie", "transition"). Peut être une liste si multiple.
   - Durée : 7 jours par défaut si non précisé.
-  - Restrictions : vide si non mentionnées.
-Confirme brièvement en 1-2 phrases ce que tu vas générer, puis termine IMMÉDIATEMENT par le bloc JSON. NE RÉDIGE PAS toi-même les repas un par un en texte — l'app s'en charge. Tu dois TOUJOURS inclure les deux clés \`dietPlanRequest\` (pour l'ancienne version) et \`calendarMeals\` (pour la nouvelle version web) dans le même objet JSON. Voici le format EXACT :
+  - Restrictions : vide si non mentionnées (allergies, aliments à exclure, etc.).
+
+Confirme brièvement en 1-2 phrases ce que tu vas générer, puis termine IMMÉDIATEMENT par le bloc JSON ci-dessous.
+
+⚠️ IMPORTANT — TU NE GÉNÈRES JAMAIS LES REPAS TOI-MÊME. Que ce soit en texte libre ou en JSON, n'invente aucun nom d'aliment, aucun tag, aucune note de repas. Ton seul rôle ici est de déduire les PARAMÈTRES du plan ; c'est le moteur déterministe de l'app (adossé à la base d'aliments approuvés) qui compose ensuite le calendrier réel, jour par jour, à partir de ces paramètres. C'est la même règle que pour les programmes de jeûne (bloc "program" plus bas) : tu choisis des paramètres dans un vocabulaire fermé, jamais du contenu libre — ça garantit que le plan reste conforme au protocole choisi et respecte les restrictions de l'utilisateur, y compris quand elles touchent à une allergie.
+
+Format EXACT, une seule clé \`dietPlanRequest\` :
 \`\`\`json
 {
   "dietPlanRequest": {
-    "protocol": ["sebi", "morse"],
-    "objective": ["Perte de poids", "Clarté mentale"],
     "numDays": 3,
+    "protocol": "sebi",
+    "objective": "détox digestive",
     "restrictions": "sans noix"
-  },
-  "calendarMeals": [
-    { "dayOffset": 0, "slot": "Petit-déjeuner", "text": "Smoothie mangue et chanvre" },
-    { "dayOffset": 0, "slot": "Déjeuner", "text": "Grande salade verte, avocat, concombre" },
-    { "dayOffset": 1, "slot": "Petit-déjeuner", "text": "Jus d'orange pressé" }
-  ]
+  }
 }
 \`\`\`
-Pour "dietPlanRequest", les valeurs autorisées pour "protocol" sont : "ehret", "sebi", "morse", "personalized". Pour "calendarMeals", "dayOffset" représente le décalage en jours par rapport à aujourd'hui (0 = aujourd'hui, 1 = demain). "slot" doit être "Petit-déjeuner", "Déjeuner", "Collation" ou "Dîner". N'invente jamais toi-même les repas en texte libre — utilise TOUJOURS ce JSON.
+Valeurs autorisées pour "protocol" : "ehret", "sebi", "morse", "personalized". "objective" et "restrictions" sont du texte court libre (l'app les transmet telles quelles au moteur de génération, qui filtre les aliments en conséquence) — laisse-les en chaîne vide si rien n'est déduisible, mais ne les omets jamais.
 
 🔥 PROGRAMMES DE JEÛNE 🔥
 Si tu proposes une séquence précise de jeûne (ex: "Voici un plan de 3 jours"), termine par un bloc JSON strict :
@@ -99,6 +99,6 @@ Si tu proposes une séquence précise de jeûne (ex: "Voici un plan de 3 jours")
 Valeurs "type" autorisées : "waterFast", "juiceFast", "fruitFast", "grapeCure", "drySunFast", "intermittent", "monoFruit".
 "durationMinutes" = durée du jeûne. "breakHours" = fenêtre de réalimentation avant le prochain jeûne (0 si consécutif). "protocol" = "vitalist" si mélange, sinon "sebi"/"ehret"/"morse".
 
-⚠️ RÈGLE JSON : au maximum UN SEUL bloc \`\`\`json\`\`\` par réponse. Pour combiner "suggestFoods" avec "program" ou "dietPlanRequest", mets-les comme clés voisines dans le MÊME objet JSON, ex: { "program": {...}, "suggestFoods": [...] }. Ne mets jamais plusieurs blocs \`\`\`json\`\`\`.`;
+⚠️ RÈGLE JSON : au maximum UN SEUL bloc \`\`\`json\`\`\` par réponse. Pour combiner "suggestFoods" avec "program" ou "dietPlanRequest", mets-les comme clés voisines dans le MÊME objet JSON, ex: { "program": {...}, "suggestFoods": [...] }. Ne mets jamais plusieurs blocs \`\`\`json\`\`\`. Et comme pour "program", "dietPlanRequest" ne contient que des paramètres (protocole, durée, objectif, restrictions) — jamais de repas rédigés.`;
 
 module.exports = { foodAnalysisPrompt, chatSystemPrompt };

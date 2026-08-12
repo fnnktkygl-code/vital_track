@@ -16,6 +16,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
   <link rel="stylesheet" href="/src/style.css">
+  <link rel="stylesheet" href="/src/calendar-legacy.css">
 </head>
 <body>
   <div class="bg-blob blob-1"></div>
@@ -122,18 +123,18 @@
       </div>
 
       <!-- Greeting Card -->
-      <div class="dash-greeting-card glass" style="display:flex; justify-content:space-between; align-items:center; padding:16px 24px; margin-bottom:24px; border-radius:var(--radius);">
-        <div style="display:flex; align-items:center; gap:16px;">
-          <div style="width:56px; height:56px; border-radius:50%; background:rgba(255,255,255,0.05); display:flex; justify-content:center; align-items:center; border:1px solid var(--border);">
-            <canvas id="mascotCanvas" width="40" height="40" style="width:40px; height:40px;"></canvas>
+      <div class="dash-greeting-card glass" style="display:flex; justify-content:space-between; align-items:center; padding:20px 24px; margin-bottom:24px; border-radius:var(--radius); border:1px solid var(--border); flex-wrap:wrap; gap:16px;">
+        <div style="display:flex; align-items:center; gap:18px;">
+          <div style="width:84px; height:84px; border-radius:50%; background:linear-gradient(145deg, rgba(55,211,153,0.15), rgba(255,255,255,0.03)); display:flex; justify-content:center; align-items:center; border:2px solid var(--accent); box-shadow:0 8px 24px rgba(55,211,153,0.2); flex-shrink:0;">
+            <canvas id="mascotCanvas" width="84" height="84" style="width:84px; height:84px; object-fit:contain;"></canvas>
           </div>
           <div>
-            <h2 id="greetName" style="font-size:1.1rem; font-weight:600;">Salut, Fnnk 👋</h2>
-            <p id="greetMode" style="color:var(--text-dim); font-size:0.85rem;">Mode Vitaliste</p>
+            <h2 id="greetName" style="font-size:1.25rem; font-weight:700; color:var(--text,#f3f6f9); margin:0;">Salut ! 👋</h2>
+            <p id="greetMode" style="color:var(--accent); font-size:0.85rem; font-weight:600; margin:4px 0 0 0;">Mode Vitaliste</p>
           </div>
         </div>
-        <div id="greetingContext" style="background:rgba(255,255,255,0.03); padding:8px 16px; border-radius:50px; font-size:0.85rem; color:var(--text-dim); border:1px solid var(--border);">
-          🌙 La soirée approche, système digestif bientôt au repos.
+        <div id="mascotSpeechBubble" class="mascot-speech-bubble" style="flex:1; min-width:260px;">
+          <!-- Dynamically populated by JS -->
         </div>
       </div>
 
@@ -147,25 +148,26 @@
             <span id="circadianTimePill" style="background:rgba(255,255,255,0.05); padding:4px 10px; border-radius:50px; font-size:0.8rem; font-weight:600; color:var(--text-dim);">23:59</span>
           </div>
           
-          <div style="display:flex; flex-direction:column; align-items:center; flex:1; justify-content:center; position:relative;">
-            <!-- CSS Clock Ring -->
+          <div style="display:flex; justify-content:center; margin-bottom:24px;">
             <div class="clock-ring">
+              <div class="clock-indicator" id="clockIndicator">☀️</div>
               <div class="clock-center">
-                <div id="clockTime" style="font-size: 2.5rem; font-weight: 700; line-height: 1;">23:59</div>
-                <div id="clockPhase" style="font-size: 0.75rem; color: var(--accent); font-weight: 700; letter-spacing: 1px; margin-top: 4px;">REPOS PROFOND</div>
+                <span id="clockTime" style="font-size:2.2rem; font-weight:700;">12:00</span>
+                <span id="clockPhase" style="font-size:0.8rem; letter-spacing:1px; color:var(--accent); text-transform:uppercase; margin-top:4px;">APPROPRIATION</span>
               </div>
-              <div class="clock-indicator" id="clockIndicator"><i class="ri-moon-clear-fill"></i></div>
-            </div>
-            
-            <div style="display:flex; gap: 24px; margin-top: 36px; font-size: 0.8rem; color:var(--text-dim);">
-               <span>🌅 Lever ~06:00</span>
-               <span>🌄 Coucher ~20:00</span>
             </div>
           </div>
-          <p id="circadianDesc" style="font-size: 0.85rem; color: var(--text-dim); text-align:center; margin-top:24px; border-top:1px solid var(--border); padding-top:16px;"><strong>Repos profond</strong> — Priorité à la récupération, le système digestif est au repos.</p>
+
+          <div style="background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:12px; padding:12px 16px; display:flex; align-items:center; gap:12px;">
+            <i id="phaseIcon" class="ri-sun-fill" style="font-size:1.4rem; color:var(--accent);"></i>
+            <div>
+              <div id="phaseTitle" style="font-size:0.85rem; font-weight:600;">APPROPRIATION</div>
+              <div id="phaseDesc" style="font-size:0.75rem; color:var(--text-dim);">Feu digestif au maximum. Moment des repas denses.</div>
+            </div>
+          </div>
         </div>
 
-        <!-- Vitality Arc -->
+        <!-- Vitality Score Widget -->
         <div class="dash-card glass" id="vitalityCard" style="padding: 24px;">
           <h3 style="font-size:1rem; display:flex; align-items:center; gap:8px; margin-bottom:24px;"><i class="ri-heart-pulse-fill" style="color:var(--accent);"></i> Score Vitalité</h3>
           
@@ -176,11 +178,11 @@
                 <path d="M 20 100 A 80 80 0 0 1 180 100" class="arc-progress" id="arcProgress" />
               </svg>
               <div class="arc-center">
-                <span class="arc-score" id="arcScore" style="font-size:2.8rem; font-weight:700;">45</span>
+                <span class="arc-score" id="arcScore" style="font-size:2.8rem; font-weight:700;">0</span>
                 <span class="arc-label" style="color:var(--text-dim);">/ 100</span>
               </div>
             </div>
-            <div style="color:var(--warn); font-size:0.85rem; font-weight:500; display:flex; align-items:center; gap:4px; margin-top:-10px;"><i class="ri-error-warning-fill"></i> Correcte, mais améliorable</div>
+            <div id="vitalityScoreComment" style="color:var(--text-dim); font-size:0.85rem; font-weight:500; display:flex; align-items:center; gap:4px; margin-top:-10px;"><i class="ri-information-line"></i> Aucune donnée aujourd'hui</div>
           </div>
 
           <div style="display:flex; flex-direction:column; gap: 12px; border-top:1px solid var(--border); padding-top:16px;">
@@ -403,59 +405,94 @@
 
   <!-- ═══════ CALENDAR (Diet Plan) ═══════ -->
   <main class="page" id="page-calendar">
-    <div class="calendar-container" style="max-width:800px;margin:0 auto">
-      
-      <!-- Header & Week Selector -->
-      <div class="dash-card glass" style="margin-bottom:24px; padding:20px 24px; background: linear-gradient(145deg, rgba(30,58,138,0.1) 0%, rgba(16,185,129,0.05) 100%);">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+    <div id="legacy-calendar" style="max-width:1180px; width:100%; margin:0 auto; padding-top: 16px;">
+      <header class="topbar">
+        <div class="page-title">
+          <div class="emoji-badge">📅</div>
           <div>
-            <h2 style="margin:0; font-size:1.6rem; color:var(--text); display:flex; align-items:center; gap:8px;">
-              📅 Mon Semainier
-            </h2>
-            <div style="font-size:0.9rem; color:var(--text-dim); margin-top:4px;" id="calendarWeekLabel">Semaine du ...</div>
-          </div>
-          <div style="display:flex; gap:12px;">
-            <button class="btn btn-outline" onclick="changeCalendarWeek(-1)"><i class="ri-arrow-left-s-line"></i></button>
-            <button class="btn btn-outline" onclick="changeCalendarWeek(1)"><i class="ri-arrow-right-s-line"></i></button>
-            <button class="btn btn-primary" onclick="promptAIPlan()"><i class="ri-magic-line"></i> Générer (IA)</button>
+            <h1 style="font-size:22px; font-weight:800; letter-spacing:-.3px; margin:0; color:var(--text)">Calendrier</h1>
+            <div class="sub">Suivi de ton programme guidé</div>
           </div>
         </div>
+        <div class="topbar-actions">
+          <button class="icon-btn" onclick="window.openAddMealModal()" style="background:rgba(255,255,255,.06);color:var(--text);border:1px solid rgba(255,255,255,.1)"><i class="ri-add-line"></i></button>
+          <button class="icon-btn" onclick="promptAIPlan()" style="background:var(--accent);color:#000;border:none"><i class="ri-magic-line"></i></button>
+        </div>
+      </header>
+
+      <!-- PROGRAM HERO -->
+      <section class="card">
+        <div class="program-hero">
+          <div class="prog-ring">
+            <svg viewBox="0 0 104 104">
+              <circle cx="52" cy="52" r="44" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="9"/>
+              <circle id="progRingFg" class="prog-ring-fg" cx="52" cy="52" r="44" fill="none" stroke="var(--accent)" stroke-width="9" stroke-linecap="round" style="stroke-dasharray: 276.46; stroke-dashoffset: 276.46;"/>
+            </svg>
+            <div class="prog-ring-center">
+              <div class="prog-ring-pct" id="progPct">0%</div>
+              <div class="prog-ring-lbl">repas</div>
+            </div>
+          </div>
+          <div class="program-info">
+            <div class="program-title" id="progTitle">⚡ Programme Personnalisé</div>
+            <div class="info-chips">
+              <div class="info-chip"><i class="ri-leaf-line"></i> Vitaliste</div>
+              <div class="info-chip strong" id="progRepasChip">🍽 0/0 repas</div>
+              <div class="info-chip strong" id="progJourChip">Jour 1/1</div>
+            </div>
+          </div>
+          <button class="btn-stop" onclick="window.clearCalendar()">
+            <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><rect x="5" y="5" width="10" height="10" rx="1.5"/></svg>
+            Arrêter
+          </button>
+        </div>
+      </section>
+
+      <!-- DAY STRIP -->
+      <div class="day-strip-wrap">
+        <div class="day-strip" id="dayStrip"></div>
       </div>
 
-      <!-- Weekly Grid -->
-      <div class="calendar-week-grid" id="calendarWeekGrid">
-        <!-- Rendered by JS -->
-      </div>
-      
+      <!-- DAY CARD -->
+      <section class="card" id="dayCard"></section>
     </div>
   </main>
 
-  <!-- Modals for Calendar -->
-  <div class="scrim" id="mealModalScrim"></div>
-  <div class="more-sheet" id="mealModal">
-    <div class="handle"></div>
-    <div style="padding:20px; text-align:left;">
-      <h3 style="margin-bottom:16px; font-size:1.2rem;" id="mealModalTitle">Ajouter un repas</h3>
-      
-      <div style="margin-bottom:16px;">
-        <label style="display:block; margin-bottom:8px; font-size:0.9rem; color:var(--text-dim);">Type de repas</label>
-        <div style="display:flex; gap:8px; flex-wrap:wrap;" id="mealSlotSelector">
-          <button class="chip-btn active" data-slot="Petit-déjeuner">Petit-déjeuner</button>
-          <button class="chip-btn" data-slot="Déjeuner">Déjeuner</button>
-          <button class="chip-btn" data-slot="Collation">Collation</button>
-          <button class="chip-btn" data-slot="Dîner">Dîner</button>
-        </div>
-      </div>
+  <!-- Modal for adding a meal to calendar -->
+  <div id="calMealModalOverlay" style="display:none; position:fixed; inset:0; z-index:9998; background:rgba(0,0,0,.55); backdrop-filter:blur(4px);" onclick="window.closeCalMealModal()"></div>
+  <div id="calMealModal" style="display:none; position:fixed; bottom:0; left:0; right:0; z-index:9999; background:var(--surface, #121b27); border-top-left-radius:22px; border-top-right-radius:22px; padding:24px 20px 32px; max-width:520px; margin:0 auto; box-shadow:0 -10px 40px rgba(0,0,0,.5); border:1px solid rgba(255,255,255,.07); transform:translateY(0);">
+    <div style="width:36px;height:4px;border-radius:4px;background:rgba(255,255,255,.15);margin:0 auto 14px;"></div>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+      <h3 id="calMealModalTitle" style="margin:0; font-size:1.15rem; font-weight:700; color:var(--text,#f3f6f9);">➕ Ajouter un repas</h3>
+      <button type="button" onclick="window.closeCalMealModal()" style="background:none; border:none; color:var(--text-mid,#9aa7b8); font-size:1.4rem; cursor:pointer; padding:4px 8px; border-radius:8px; line-height:1;">✕</button>
+    </div>
 
-      <div style="margin-bottom:16px;">
-        <label style="display:block; margin-bottom:8px; font-size:0.9rem; color:var(--text-dim);">Que vas-tu manger ?</label>
-        <textarea id="mealModalContent" class="chat-input-field" rows="3" placeholder="Ex: Salade de fruits avec mangue et papaye..." style="width:100%; resize:none; padding:12px; border-radius:12px;"></textarea>
+    <!-- Date picker -->
+    <div style="margin-bottom:16px;">
+      <label style="display:block; margin-bottom:6px; font-size:0.85rem; color:var(--text-dim,#5f6b7c); font-weight:600;">📅 Date</label>
+      <input type="date" id="calMealDate" style="width:100%; padding:10px 14px; border-radius:12px; border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.04); color:var(--text,#f3f6f9); font-size:0.95rem; font-family:inherit;">
+    </div>
+
+    <!-- Slot selector -->
+    <div style="margin-bottom:16px;">
+      <label style="display:block; margin-bottom:6px; font-size:0.85rem; color:var(--text-dim,#5f6b7c); font-weight:600;">🍽️ Type de repas</label>
+      <div id="calMealSlots" style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button type="button" class="chip-btn active" data-slot="Petit-déjeuner" data-tone="matin" data-time="8h-9h" data-icon="🌅" onclick="window.selectCalSlot(this)">🌅 Petit-déjeuner</button>
+        <button type="button" class="chip-btn" data-slot="Déjeuner" data-tone="midi" data-time="12h-13h" data-icon="🥗" onclick="window.selectCalSlot(this)">🥗 Déjeuner</button>
+        <button type="button" class="chip-btn" data-slot="Collation" data-tone="matin" data-time="16h" data-icon="🌰" onclick="window.selectCalSlot(this)">🌰 Collation</button>
+        <button type="button" class="chip-btn" data-slot="Dîner" data-tone="soir" data-time="19h-20h" data-icon="🌙" onclick="window.selectCalSlot(this)">🌙 Dîner</button>
       </div>
-      
-      <div style="display:flex; gap:12px; margin-top:24px;">
-        <button class="btn btn-outline" onclick="closeMealModal()" style="flex:1;">Annuler</button>
-        <button class="btn btn-primary" id="saveMealBtn" style="flex:2;">Enregistrer</button>
-      </div>
+    </div>
+
+    <!-- Meal description -->
+    <div style="margin-bottom:20px;">
+      <label style="display:block; margin-bottom:6px; font-size:0.85rem; color:var(--text-dim,#5f6b7c); font-weight:600;">📝 Description</label>
+      <textarea id="calMealDesc" rows="3" placeholder="Ex: Salade de fruits avec mangue et papaye..." style="width:100%; resize:none; padding:12px 14px; border-radius:12px; border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.04); color:var(--text,#f3f6f9); font-size:0.95rem; font-family:inherit;"></textarea>
+    </div>
+
+    <div style="display:flex; gap:12px;">
+      <button type="button" onclick="window.closeCalMealModal()" style="flex:1; padding:12px; border-radius:12px; border:1px solid rgba(255,255,255,.1); background:transparent; color:var(--text,#f3f6f9); font-weight:600; cursor:pointer; font-size:0.95rem;">Annuler</button>
+      <button type="button" onclick="window.saveManualMeal()" style="flex:2; padding:12px; border-radius:12px; border:none; background:var(--accent,#37d399); color:#000; font-weight:700; cursor:pointer; font-size:0.95rem;">✅ Enregistrer</button>
     </div>
   </div>
 
@@ -796,6 +833,8 @@
   </div>
 
   <script type="module" src="/src/mascot.js"></script>
+  <script type="module" src="/src/diet-plan-engine.js"></script>
+  <script type="module" src="/src/calendar-legacy.js"></script>
   <script type="module" src="/src/main.js"></script>
 </body>
 </html>
