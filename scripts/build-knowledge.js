@@ -45,8 +45,8 @@ async function buildKnowledge() {
     }
   }
 
-  // Basic cleanup: remove extra newlines, unprintable chars
-  bundleText = bundleText.replace(/\n{3,}/g, '\n\n').replace(/[^\x20-\x7E\n\ràáâäçèéêëìíîïñòóôöùúûüýÿÀÁÂÄÇÈÉÊËÌÍÎÏÑÒÓÔÖÙÚÛÜÝ]/g, '');
+  // Basic cleanup: remove extra newlines, keep all valid UTF-8 characters
+  bundleText = bundleText.replace(/\r\n/g, '\n').replace(/\n{3,}/g, '\n\n');
 
   fs.writeFileSync(OUTPUT_FILE, bundleText, 'utf8');
   console.log(`✅ Knowledge base built! Total length: ${bundleText.length} characters.`);
