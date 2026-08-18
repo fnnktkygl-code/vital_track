@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:vital_track/ui/screens/scan_screen.dart';
+import 'package:vital_track/models/food.dart';
 import 'package:vital_track/services/ai_service.dart';
+import 'package:vital_track/services/vital_rules_engine.dart';
 import 'package:vital_track/utils/food_mapper.dart';
 import 'package:vital_track/ui/widgets/food_modal.dart';
 import 'package:vital_track/ui/theme.dart';
@@ -142,13 +144,45 @@ class _AddMealSheetState extends State<AddMealSheet> {
   }
 
   Future<void> _analyzeText(String text) async {
-    if (text.isEmpty) return;
+    if (text.trim().isEmpty) return;
     if (!await _confirmAIUsage()) return;
     setState(() {
       _isProcessing = true;
     });
-    final json = await AIService.analyzeText(text);
-    _handleAIResponse(json);
+
+    try {
+      final json = await AIService.analyzeText(text);
+      if (json != null) {
+        final foods = FoodMapper.fromAIJsonList(json);
+        if (foods.isNotEmpty) {
+          _displayIdentifiedFoods(foods);
+          return;
+        }
+      }
+
+      // Local VitalRulesEngine fallback if AI service returned nothing
+      final localFoods = VitalRulesEngine.extractFoodsFromQuery(text);
+      if (localFoods.isNotEmpty) {
+        _displayIdentifiedFoods(localFoods);
+        return;
+      }
+    } catch (e) {
+      debugPrint("Error during text analysis: $e");
+      final localFoods = VitalRulesEngine.extractFoodsFromQuery(text);
+      if (localFoods.isNotEmpty) {
+        _displayIdentifiedFoods(localFoods);
+        return;
+      }
+    }
+
+    if (!mounted) return;
+    setState(() {
+      _isProcessing = false;
+    });
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: const Text("L'IA n'a pas pu identifier d'aliments."),
+      backgroundColor: context.colors.error,
+    ));
   }
 
   Future<void> _analyzeImage(XFile image) async {
@@ -159,38 +193,47 @@ class _AddMealSheetState extends State<AddMealSheet> {
     _handleAIResponse(json);
   }
 
-  void _handleAIResponse(Map<String, dynamic>? json) {
+  void _displayIdentifiedFoods(List<Food> foods) {
     if (!mounted) return;
     setState(() {
       _isProcessing = false;
     });
 
+    if (foods.length == 1) {
+      // Single item -> Quick Add Modal
+      Navigator.pop(context);
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (context) => FoodModal(food: foods.first),
+      );
+    } else if (foods.isNotEmpty) {
+      // Multiple items -> Scan Results Screen
+      Navigator.pop(context);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ScanScreen(initialFoods: foods),
+        ),
+      );
+    }
+  }
+
+  void _handleAIResponse(Map<String, dynamic>? json) {
+    if (!mounted) return;
+
     if (json != null) {
       final foods = FoodMapper.fromAIJsonList(json);
-      
-      if (foods.length == 1) {
-        // Single item -> Quick Add Modal
-        Navigator.pop(context);
-        showModalBottomSheet(
-          context: context,
-          isScrollControlled: true,
-          backgroundColor: Colors.transparent,
-          builder: (context) => FoodModal(food: foods.first),
-        );
-        return;
-      } else if (foods.length > 1) {
-        // Multiple items -> Scan Results Screen
-        Navigator.pop(context);
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => ScanScreen(initialFoods: foods),
-          ),
-        );
+      if (foods.isNotEmpty) {
+        _displayIdentifiedFoods(foods);
         return;
       }
     }
-    
+
+    setState(() {
+      _isProcessing = false;
+    });
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: const Text("L'IA n'a pas pu identifier d'aliments."),
       backgroundColor: context.colors.error,

@@ -470,8 +470,8 @@ window.saveManualMeal = function() {
   const desc = document.getElementById('calMealDesc');
   const activeSlot = document.querySelector('#calMealSlots .chip-btn.active');
   
-  if (!dateInput || !dateInput.value) { alert('Choisis une date.'); return; }
-  if (!desc || !desc.value.trim()) { alert('Décris ton repas.'); return; }
+  if (!dateInput || !dateInput.value) { if (window.showToast) window.showToast('Choisis une date.', 'error'); return; }
+  if (!desc || !desc.value.trim()) { if (window.showToast) window.showToast('Décris ton repas.', 'error'); return; }
   
   const slot = activeSlot ? activeSlot.dataset.slot : 'Déjeuner';
   const tone = activeSlot ? activeSlot.dataset.tone : 'midi';

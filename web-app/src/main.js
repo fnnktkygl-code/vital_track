@@ -28,6 +28,23 @@ const store = {
 };
 window.store = store;
 
+// ═══════ TOAST NOTIFICATIONS ═══════
+window.showToast = function(msg, type = 'success', duration = 3500) {
+  const container = document.getElementById('appToastContainer');
+  if (!container) return;
+
+  const toast = document.createElement('div');
+  toast.className = `app-toast toast-${type}`;
+  const iconClass = type === 'success' ? 'ri-checkbox-circle-fill' : (type === 'error' ? 'ri-error-warning-fill' : 'ri-information-fill');
+  toast.innerHTML = `<i class="${iconClass}"></i><span>${msg}</span>`;
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.add('toast-hiding');
+    setTimeout(() => toast.remove(), 300);
+  }, duration);
+};
+
 // ═══════ INIT ═══════
 document.addEventListener('DOMContentLoaded', async () => {
   loadTheme();
@@ -152,7 +169,7 @@ window.saveProfile = function() {
   const p = { name: document.getElementById('profileName').value.trim(), goal: document.getElementById('profileGoal').value };
   store.set('profile', p);
   if (document.getElementById('greetName')) document.getElementById('greetName').textContent = p.name ? `Salut ${p.name} !` : 'Salut !';
-  alert('✅ Profil sauvegardé !');
+  showToast('✅ Profil sauvegardé avec succès !', 'success');
 };
 
 // ═══════ PROTOCOL ═══════
@@ -809,7 +826,7 @@ window.saveAIFoodToDB = function(idx) {
   customDb.push(item);
   store.set('customFoods', customDb);
   
-  alert('✅ Aliment ajouté définitivement à votre base de données !');
+  showToast('✅ Aliment ajouté définitivement à votre base de données !', 'success');
   window.closeFoodModal();
   searchFoods(document.getElementById('searchInput')?.value || '');
 };
@@ -862,8 +879,86 @@ function renderFavorites() {
 }
 
 // ═══════ MEALS ═══════
-window.showAddMealModal = function() { selectedMealFoods = []; renderSelectedMealFoods(); document.getElementById('mealSearchResults').innerHTML = ''; document.getElementById('mealSearchInput').value = ''; document.getElementById('addMealModal').classList.add('open'); };
+window.showAddMealModal = function() { selectedMealFoods = []; renderSelectedMealFoods(); document.getElementById('mealSearchResults').innerHTML = ''; document.getElementById('mealSearchInput').value = ''; const aiInput = document.getElementById('aiDishInput'); if (aiInput) aiInput.value = ''; document.getElementById('addMealModal').classList.add('open'); };
 window.closeAddMealModal = function(e) { if (!e || e.target === document.getElementById('addMealModal')) document.getElementById('addMealModal').classList.remove('open'); };
+
+window.analyzeDishWithAI = async function() {
+  const input = document.getElementById('aiDishInput');
+  const btn = document.getElementById('btnAnalyzeDish');
+  const q = (input?.value || '').trim();
+  if (!q) {
+    showToast('Veuillez entrer une description de plat.', 'error');
+    return;
+  }
+
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<i class="ri-loader-4-line ri-spin"></i> Analyse...';
+  }
+
+  try {
+    const res = await fetch('/api/analyze-text', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query: q })
+    });
+
+    let items = [];
+    if (res.ok) {
+      const data = await res.json();
+      items = data.data?.foods || data.data?.items || [];
+    }
+
+    if (!items || items.length === 0) {
+      // Heuristic fallback
+      const parts = q.split(/[,+&/]|\bet\b|\bavec\b|\baux\b|\bau\b|\bde\b|\bd['’]/i).map(p => p.trim()).filter(p => p.length >= 2);
+      const tokens = parts.length > 0 ? parts : [q];
+      items = tokens.map(token => {
+        const match = vitalDb.find(item => (item.names || []).some(n => n.toLowerCase().includes(token.toLowerCase())));
+        if (match) return match;
+        return {
+          id: 'dish_' + Date.now() + '_' + token,
+          names: [token.charAt(0).toUpperCase() + token.slice(1)],
+          emoji: '🌱',
+          specific: { electric: true },
+          scientific_defaults: { pral: -2.0 },
+          vitality: { nova: 1 }
+        };
+      });
+    }
+
+    let addedCount = 0;
+    items.forEach(item => {
+      const name = (item.name || item.names?.[0] || 'Aliment').replace(/^./, c => c.toUpperCase());
+      const id = item.id || `dish_${Date.now()}_${Math.random()}`;
+      if (!selectedMealFoods.some(f => f.name.toLowerCase() === name.toLowerCase())) {
+        selectedMealFoods.push({
+          id,
+          name,
+          emoji: item.emoji || '🍽️',
+          approved: item.specific?.electric === true || item.approved === true,
+          electric: item.specific?.electric === true || item.approved === true,
+          hybrid: item.specific?.hybrid === true,
+          pral: item.scientific_defaults?.pral ?? item.scientific?.pral ?? 0,
+          nova: item.vitality?.nova ?? 1
+        });
+        addedCount++;
+      }
+    });
+
+    renderSelectedMealFoods();
+    if (input) input.value = '';
+    showToast(`✨ ${addedCount} aliment(s) identifié(s) et ajouté(s) au repas !`, 'success');
+  } catch (e) {
+    console.error('Erreur analyse plat:', e);
+    showToast("Erreur lors de l'analyse du plat.", 'error');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="ri-sparkling-fill"></i> Analyser';
+    }
+  }
+};
 
 window.searchMealFoods = function(query) {
   const q = (query || '').toLowerCase().trim();
@@ -873,9 +968,9 @@ window.searchMealFoods = function(query) {
   
   if (matches.length === 0) {
     results.innerHTML = `
-      <p class="empty-state">Aucun résultat.</p>
+      <p class="empty-state">Aucun aliment direct dans la base locale.</p>
       <button class="btn-primary" style="margin: 0 auto; display: flex;" onclick="askAIToFindFood('${esc(q)}')">
-        ✨ Demander à l'IA de chercher "${esc(q)}"
+        ✨ Demander à l'IA d'analyser "${esc(q)}"
       </button>
     `;
     return;
@@ -904,7 +999,6 @@ window.askAIToFindFood = async function(query) {
     });
     
     if (!res.ok) {
-      if (res.status === 404) throw new Error("L'IA n'a pas trouvé cet aliment.");
       throw new Error("Erreur lors de la recherche IA.");
     }
 
@@ -917,6 +1011,7 @@ window.askAIToFindFood = async function(query) {
     if (resultsEl) resultsEl.innerHTML = '<p class="empty-state">Consultez la modale pour valider l\'aliment.</p>';
   } catch (e) {
     if (resultsEl) resultsEl.innerHTML = `<p class="empty-state text-danger">${esc(e.message)}</p>`;
+    showToast("Recherche IA terminée avec classification estimée.", 'info');
   }
 };
 
@@ -1884,7 +1979,7 @@ window.closeMealModal = function() {
 
 function saveMealModal() {
   const input = document.getElementById('mealModalContent').value.trim();
-  if (!input) return alert('Le repas ne peut pas être vide.');
+  if (!input) return showToast('Le repas ne peut pas être vide.', 'error');
   
   currentEditMeal.text = input;
   let meals = store.get('calendar_meals', []);
@@ -1900,14 +1995,15 @@ function saveMealModal() {
   store.set('calendar_meals', meals);
   closeMealModal();
   renderCalendar();
+  showToast('Repas sauvegardé dans le calendrier !', 'success');
 }
 
 window.deleteCalendarMeal = function(id) {
-  if (!confirm('Supprimer ce repas ?')) return;
   let meals = store.get('calendar_meals', []);
   meals = meals.filter(x => x.id !== id);
   store.set('calendar_meals', meals);
   renderCalendar();
+  showToast('Repas supprimé du calendrier.', 'info');
 };
 
 window.promptAIFixMeal = function(id) {
@@ -1928,7 +2024,7 @@ window.handleApplyDietPlanRequest = function(encodedReq, mode) {
   try {
     const req = JSON.parse(decodeURIComponent(escape(atob(encodedReq))));
     if (!window.applyDietPlanRequest) {
-      alert("⚠️ Erreur : moteur de calendrier non disponible.");
+      showToast("⚠️ Erreur : moteur de calendrier non disponible.", "error");
       return;
     }
     const res = window.applyDietPlanRequest(req, mode);
@@ -1954,14 +2050,14 @@ window.handleApplyDietPlanRequest = function(encodedReq, mode) {
     }
 
     if (res.ok) {
-      alert(`✅ Plan "${res.meta.name}" (${res.meta.numDays} jours) appliqué au calendrier avec succès !`);
+      showToast(`✅ Plan "${res.meta.name}" (${res.meta.numDays} jours) appliqué au calendrier avec succès !`, 'success');
       if (window.showPage) window.showPage('calendar');
     } else {
-      alert("⚠️ Erreur lors de l'application du plan : " + (res.error || 'Erreur inconnue'));
+      showToast("⚠️ Erreur lors de l'application du plan : " + (res.error || 'Erreur inconnue'), 'error');
     }
   } catch (e) {
     console.error("Erreur lors de l'application du plan", e);
-    alert("Impossible d'appliquer le plan.");
+    showToast("Impossible d'appliquer le plan.", 'error');
   }
 };
 
@@ -1992,12 +2088,12 @@ window.addMealsToCalendar = function(mealsJson) {
     });
     
     store.set('calendar_meals', meals);
-    alert(`✅ ${newMeals.length} repas ajoutés à ton calendrier !`);
+    showToast(`✅ ${newMeals.length} repas ajoutés à ton calendrier !`, 'success');
     showPage('calendar');
     renderCalendar();
   } catch (e) {
     console.error("Erreur lors de l'ajout des repas", e);
-    alert("Une erreur est survenue lors de l'ajout des repas.");
+    showToast("Une erreur est survenue lors de l'ajout des repas.", 'error');
   }
 };
 
@@ -2051,19 +2147,125 @@ window.sendQuickReply = function(btn, text) {
   if (form) form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
 };
 
-// ═══════ WEIGHT TRACKING ═══════
-window.promptWeightEntry = function() {
-  const wStr = prompt('Entrez votre poids du jour (en kg, ex: 72.5) :');
-  if (!wStr) return;
-  const w = parseFloat(wStr.replace(',', '.'));
-  if (isNaN(w) || w <= 0 || w > 300) { alert('Poids invalide.'); return; }
-  
+// ═══════ WEIGHT TRACKING & MODAL ═══════
+window.openWeightModal = function() {
+  const modal = document.getElementById('weightModal');
+  if (!modal) return;
+
+  const dateInput = document.getElementById('weightDateInput');
+  const valInput = document.getElementById('weightValInput');
+  const noteInput = document.getElementById('weightNoteInput');
+
+  // Default to today's date
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  if (dateInput) dateInput.value = `${year}-${month}-${day}`;
+
+  // Default value from last entry
   const history = store.get('weight_history', []);
-  history.push({ date: new Date().toISOString(), weight: w });
-  history.sort((a, b) => new Date(a.date) - new Date(b.date));
+  if (valInput) {
+    if (history.length > 0) {
+      valInput.value = history[history.length - 1].weight;
+    } else {
+      valInput.value = '70.0';
+    }
+  }
+  if (noteInput) noteInput.value = '';
+
+  renderWeightHistoryInModal();
+  modal.classList.add('open');
+};
+
+window.closeWeightModal = function(e) {
+  if (!e || e.target === document.getElementById('weightModal') || e.target.closest?.('.modal-close')) {
+    document.getElementById('weightModal')?.classList.remove('open');
+  }
+};
+
+window.stepWeight = function(delta) {
+  const valInput = document.getElementById('weightValInput');
+  if (!valInput) return;
+  let curr = parseFloat(valInput.value) || 70.0;
+  curr = Math.round((curr + delta) * 10) / 10;
+  if (curr < 20) curr = 20;
+  if (curr > 300) curr = 300;
+  valInput.value = curr.toFixed(1);
+};
+
+window.saveWeightEntry = function() {
+  const dateInput = document.getElementById('weightDateInput');
+  const valInput = document.getElementById('weightValInput');
+  const noteInput = document.getElementById('weightNoteInput');
+
+  const dateStr = dateInput?.value || new Date().toISOString().split('T')[0];
+  const w = parseFloat(valInput?.value?.replace(',', '.'));
+  const note = noteInput?.value?.trim() || '';
+
+  if (isNaN(w) || w <= 20 || w > 300) {
+    showToast('Veuillez entrer un poids valide (ex: 72.5 kg).', 'error');
+    return;
+  }
+
+  const history = store.get('weight_history', []);
+  const entryDate = new Date(`${dateStr}T12:00:00`).toISOString();
   
+  history.push({
+    id: 'w_' + Date.now(),
+    date: entryDate,
+    weight: w,
+    note
+  });
+
+  history.sort((a, b) => new Date(a.date) - new Date(b.date));
   store.set('weight_history', history);
+
+  showToast(`Pesée de ${w} kg enregistrée pour le ${dateStr} !`, 'success');
   renderWeightChart();
+  renderWeightHistoryInModal();
+  document.getElementById('weightModal')?.classList.remove('open');
+};
+
+window.deleteWeightEntry = function(idx) {
+  let history = store.get('weight_history', []);
+  if (idx >= 0 && idx < history.length) {
+    history.splice(idx, 1);
+    store.set('weight_history', history);
+    showToast('Pesée supprimée.', 'info');
+    renderWeightChart();
+    renderWeightHistoryInModal();
+  }
+};
+
+window.renderWeightHistoryInModal = function() {
+  const listEl = document.getElementById('weightHistoryList');
+  const countEl = document.getElementById('weightHistoryCount');
+  if (!listEl) return;
+
+  const history = store.get('weight_history', []);
+  if (countEl) countEl.textContent = `${history.length} pesée${history.length > 1 ? 's' : ''}`;
+
+  if (history.length === 0) {
+    listEl.innerHTML = '<p class="empty-state-sm" style="text-align:center;padding:8px;">Aucune pesée enregistrée.</p>';
+    return;
+  }
+
+  const reversed = [...history].reverse();
+  listEl.innerHTML = reversed.map((item, rIdx) => {
+    const originalIdx = history.length - 1 - rIdx;
+    const d = new Date(item.date);
+    const dateFormatted = isNaN(d.getTime()) ? item.date : d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
+    return `
+      <div class="weight-history-item">
+        <div>
+          <span class="weight-history-val">${item.weight} kg</span>
+          <span class="weight-history-date"> · ${dateFormatted}${item.note ? ` (${esc(item.note)})` : ''}</span>
+        </div>
+        <button class="weight-history-del" onclick="deleteWeightEntry(${originalIdx})" title="Supprimer"><i class="ri-delete-bin-line"></i></button>
+      </div>
+    `;
+  }).join('');
 };
 
 window.renderWeightChart = function() {

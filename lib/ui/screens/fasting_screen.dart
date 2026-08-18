@@ -186,6 +186,7 @@ class _FastingScreenState extends State<FastingScreen> {
     double? tempWeight;
     int tempEnergy = 3;
     String tempMood = '😊';
+    DateTime selectedDate = DateTime.now();
 
     showModalBottomSheet(
       context: context,
@@ -210,7 +211,69 @@ class _FastingScreenState extends State<FastingScreen> {
                         color: colors.textPrimary,
                         fontSize: 24,
                         fontWeight: FontWeight.w600)),
-                const SizedBox(height: 32),
+                const SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Date de la mesure',
+                        style: TextStyle(
+                            color: colors.textSecondary,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500)),
+                    InkWell(
+                      onTap: () async {
+                        final picked = await showDatePicker(
+                          context: ctx,
+                          initialDate: selectedDate,
+                          firstDate: DateTime(2020),
+                          lastDate: DateTime.now(),
+                          builder: (context, child) {
+                            return Theme(
+                              data: Theme.of(context).copyWith(
+                                colorScheme: ColorScheme.dark(
+                                  primary: colors.accent,
+                                  onPrimary: colors.accentOnPrimary,
+                                  surface: colors.sheetBg,
+                                  onSurface: colors.textPrimary,
+                                ),
+                              ),
+                              child: child!,
+                            );
+                          },
+                        );
+                        if (picked != null) {
+                          setState(() => selectedDate = picked);
+                        }
+                      },
+                      borderRadius: BorderRadius.circular(10),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: colors.surfaceMuted,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: colors.borderSubtle),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.calendar_today,
+                                size: 14, color: colors.accent),
+                            const SizedBox(width: 6),
+                            Text(
+                              "${selectedDate.day.toString().padLeft(2, '0')}/${selectedDate.month.toString().padLeft(2, '0')}/${selectedDate.year}",
+                              style: TextStyle(
+                                  color: colors.textPrimary,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
                 Text('Ton poids actuel',
                     style: TextStyle(
                         color: colors.textSecondary,

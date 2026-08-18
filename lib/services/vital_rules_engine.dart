@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:vital_track/models/food.dart';
+import 'package:vital_track/utils/food_mapper.dart';
 
 class VitalRulesEngine {
   static List<dynamic> _expertDb = [];
@@ -145,6 +146,56 @@ class VitalRulesEngine {
         })
         .whereType<Food>()
         .toList();
+  }
+
+  /// Extracts structured foods from a dish description or compound text.
+  /// Guarantees that at least 1 classified Food item is returned so the user is never blocked.
+  static List<Food> extractFoodsFromQuery(String query) {
+    final clean = query.trim();
+    if (clean.isEmpty) return [];
+
+    // 1. Direct expert lookup
+    final direct = getExpertFood(clean);
+    if (direct != null) return [direct];
+
+    // 2. Search whole query in DB
+    final search = searchExpertDb(clean);
+    if (search.isNotEmpty) return search;
+
+    // 3. Tokenize by separators and stop words
+    final parts = clean
+        .split(RegExp(r'[,+&/]|\bet\b|\bavec\b|\baux\b|\bau\b|\bde\b|\bd\x27|\bd\u2019', caseSensitive: false))
+        .map((p) => p.trim())
+        .where((p) => p.length >= 2)
+        .toList();
+
+    final List<Food> found = [];
+    final Set<String> seenIds = {};
+
+    for (final part in parts) {
+      final item = getExpertFood(part) ?? searchExpertDb(part).firstOrNull;
+      if (item != null && seenIds.add(item.id)) {
+        found.add(item);
+      }
+    }
+
+    if (found.isNotEmpty) return found;
+
+    // 4. Fallback to heuristic Food creation per token or whole query
+    if (parts.length > 1) {
+      for (final part in parts) {
+        final fallback = FoodMapper.fromNameFallback(part.capitalize());
+        if (seenIds.add(fallback.id)) {
+          found.add(fallback);
+        }
+      }
+    }
+
+    if (found.isEmpty) {
+      found.add(FoodMapper.fromNameFallback(clean.capitalize()));
+    }
+
+    return found;
   }
 
   /// Returns ALL foods from the expert database (for the default search list).

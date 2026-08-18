@@ -121,19 +121,45 @@ class FoodMapper {
     );
   }
 
-  static List<Food> fromAIJsonList(Map<String, dynamic> json) {
+  static List<Food> fromAIJsonList(dynamic json) {
     try {
-      final List<dynamic> items = json['items'] ?? [];
-      // Backward compatibility: if "items" is missing but "name" exists, treat as single item
-      if (items.isEmpty && json.containsKey('name')) {
-        final single = fromAIJson(json);
+      if (json == null) return [];
+      
+      if (json is List) {
+        return json
+            .whereType<Map<String, dynamic>>()
+            .map((item) => fromAIJson(item))
+            .whereType<Food>()
+            .toList();
+      }
+
+      if (json is! Map<String, dynamic>) return [];
+
+      // Check nested data wrapper if any
+      final map = json.containsKey('data') && json['data'] is Map<String, dynamic>
+          ? json['data'] as Map<String, dynamic>
+          : json;
+
+      final dynamic rawList = map['items'] ??
+          map['foods'] ??
+          map['results'] ??
+          map['data'];
+
+      if (rawList is List && rawList.isNotEmpty) {
+        return rawList
+            .whereType<Map<String, dynamic>>()
+            .map((item) => fromAIJson(item))
+            .whereType<Food>()
+            .toList();
+      }
+
+      // Single item fallback
+      if (map.containsKey('name') || map.containsKey('names') || map.containsKey('id')) {
+        final single = fromAIJson(map);
         return single != null ? [single] : [];
       }
-      
-      return items
-          .map((item) => fromAIJson(item as Map<String, dynamic>))
-          .whereType<Food>()
-          .toList();
+
+      return [];
     } catch (e) {
       debugPrint("Error parsing AI JSON List: $e");
       return [];
@@ -142,81 +168,170 @@ class FoodMapper {
 
   static Food? fromAIJson(Map<String, dynamic> json) {
     try {
-      final scientific = json['scientific'] ?? {};
-      final vitality = json['vitality'] ?? {};
-      final specific = json['specific'] ?? {};
+      final scientific = (json['scientific'] as Map<String, dynamic>?) ??
+          (json['scientific_defaults'] as Map<String, dynamic>?) ??
+          {};
+      final vitality = (json['vitality'] as Map<String, dynamic>?) ?? {};
+      final specific = (json['specific'] as Map<String, dynamic>?) ?? {};
+
+      String name = (json['name'] as String?)?.trim() ?? '';
+      if (name.isEmpty && json['names'] is List && (json['names'] as List).isNotEmpty) {
+        name = (json['names'] as List).first.toString().trim();
+      }
+      if (name.isEmpty) name = "Aliment inconnu";
+
+      final bool isElectric = specific['electric'] == true ||
+          json['electric'] == true ||
+          json['approved'] == true;
+      final bool isHybrid = specific['hybrid'] == true || json['hybrid'] == true;
+      final String mucus = (specific['mucus'] as String?) ??
+          (json['mucus'] as String?) ??
+          (isElectric ? "Dissolvant" : (isHybrid ? "Mucogène" : "Neutre"));
+
+      final double pral = ((scientific['pral'] ?? json['pral'] ?? (isElectric ? -3.0 : (isHybrid ? 2.5 : 0.0))) as num).toDouble();
+      final int density = ((scientific['density'] ?? json['density'] ?? (isElectric ? 85 : 45)) as num).toInt();
+
+      final int nova = ((vitality['nova'] ?? json['nova'] ?? 1) as num).toInt();
+      final int freshness = ((vitality['freshness'] ?? json['freshness'] ?? 90) as num).toInt();
+
+      String emoji = (json['emoji'] as String?) ?? '🍽️';
+      if (emoji == '🍽️' || emoji.isEmpty) {
+        emoji = _inferEmojiFromName(name);
+      }
 
       return Food(
-        id: DateTime.now().toIso8601String() + (json['name'] ?? ''), // Unique-ish ID
-        name: json['name'] ?? "Aliment inconnu",
-        emoji: json['emoji'] ?? "🍽️",
-        family: json['family'] ?? "Inconnu",
-        origin: json['origin'] ?? "Inconnu",
-        approved: specific['electric'] == true,
+        id: (json['id'] as String?) ?? '${DateTime.now().millisecondsSinceEpoch}_$name',
+        name: name,
+        emoji: emoji,
+        family: (json['family'] as String?) ?? (isElectric ? "Vitaliste" : "Alimentation"),
+        origin: (json['origin'] as String?) ?? (isElectric ? "Dr. Sebi Electric" : "Standard"),
+        approved: isElectric,
         scientific: ScientificData(
-          pral: (scientific['pral'] ?? 0).toDouble(),
-          density: (scientific['density'] ?? 50).toInt(),
-          label: (scientific['pral'] ?? 0) < 0 ? "Alcalinisant" : "Acidifiant",
-          colorValue: (scientific['pral'] ?? 0) < 0 ? 0xFF4ade80 : 0xFFfacc15,
+          pral: double.parse(pral.toStringAsFixed(1)),
+          density: density,
+          label: pral < 0 ? "Alcalinisant" : "Acidifiant",
+          colorValue: pral < 0 ? 0xFF4ade80 : 0xFFfacc15,
         ),
         vitality: VitalityData(
-          nova: (vitality['nova'] ?? 4).toInt(),
-          freshness: (vitality['freshness'] ?? 0).toInt(),
-          label: (vitality['nova'] ?? 4) == 1 ? "Brut · Vivant" : "Transformé",
-          colorValue: (vitality['nova'] ?? 4) == 1 ? 0xFFa3e635 : 0xFFef4444,
+          nova: nova,
+          freshness: freshness,
+          label: nova <= 1 ? "Brut · Vivant" : "Transformé",
+          colorValue: nova <= 1 ? 0xFFa3e635 : 0xFFef4444,
         ),
         specific: SpecificData(
-          mucus: specific['mucus'] ?? "Neutre",
-          hybrid: specific['hybrid'] ?? false,
-          electric: specific['electric'] ?? false,
-          label: specific['label'] ?? "Inconnu",
-          colorValue: (specific['electric'] == true) ? 0xFF34d399 : 0xFFf97316,
+          mucus: mucus,
+          hybrid: isHybrid,
+          electric: isElectric,
+          label: isElectric ? "Électrique" : (isHybrid ? "Hybride" : "Standard"),
+          colorValue: isElectric ? 0xFF34d399 : (isHybrid ? 0xFFfacc15 : 0xFFf97316),
         ),
-        tags: ["AI Analyzed"],
-        note: json['note'] ?? "Analyse générée par IA (Gemini).",
+        tags: (json['tags'] is List)
+            ? (json['tags'] as List).map((e) => e.toString()).toList()
+            : ["AI Analyzed"],
+        note: (json['note'] as String?) ?? "Analyse nutritionnelle vitaliste.",
       );
     } catch (e) {
-       // print("Error parsing AI JSON: $e");
+      debugPrint("Error parsing AI JSON: $e");
       return null;
     }
   }
 
-  /// Lightweight fallback used when a food name (e.g. suggested in chat or
-  /// inside a generated diet plan) has no match in the expert database.
-  /// Produces a neutral, unverified [Food] entry so it can still be added
-  /// to the user's meal list — clearly tagged as unverified.
+  /// Lightweight fallback used when a food name has no exact match in the expert database.
+  /// Evaluates vitalist heuristics to assign appropriate ratings.
   static Food fromNameFallback(String name, {String note = ''}) {
+    final lower = name.toLowerCase();
+    
+    // Heuristic vitalist evaluation
+    final bool isElectric = _isElectricHeuristic(lower);
+    final bool isHybrid = !isElectric && _isHybridHeuristic(lower);
+    final bool isMucus = !isElectric && !isHybrid && _isMucusHeuristic(lower);
+
+    final double pral = isElectric ? -3.5 : (isHybrid ? 2.0 : (isMucus ? 6.0 : -0.5));
+    final int density = isElectric ? 85 : (isHybrid ? 50 : 35);
+    final int nova = (isMucus || lower.contains('frit') || lower.contains('sucre')) ? 3 : 1;
+
     return Food(
       id: 'sugg_${DateTime.now().millisecondsSinceEpoch}_$name',
       name: name,
-      emoji: '🌱',
-      family: 'Inconnu',
-      origin: 'Suggestion',
-      approved: true,
-      scientific: const ScientificData(
-        pral: -1.0,
-        density: 60,
-        label: 'Non vérifié',
-        colorValue: 0xFFfacc15,
+      emoji: _inferEmojiFromName(name),
+      family: isElectric ? 'Vitaliste' : (isHybrid ? 'Hybride' : 'Général'),
+      origin: isElectric ? 'Dr. Sebi Approved' : 'Général',
+      approved: isElectric,
+      scientific: ScientificData(
+        pral: pral,
+        density: density,
+        label: pral < 0 ? 'Alcalinisant' : 'Acidifiant',
+        colorValue: pral < 0 ? 0xFF4ade80 : 0xFFfacc15,
       ),
-      vitality: const VitalityData(
-        nova: 1,
-        freshness: 70,
-        label: 'Non vérifié',
-        colorValue: 0xFFfacc15,
+      vitality: VitalityData(
+        nova: nova,
+        freshness: nova == 1 ? 85 : 40,
+        label: nova == 1 ? 'Brut · Vivant' : 'Transformé',
+        colorValue: nova == 1 ? 0xFF4ade80 : 0xFFef4444,
       ),
-      specific: const SpecificData(
-        mucus: 'Inconnu',
-        hybrid: false,
-        electric: true,
-        label: 'Suggestion',
-        colorValue: 0xFFfacc15,
+      specific: SpecificData(
+        mucus: isElectric ? 'Dissolvant' : (isMucus ? 'Mucogène' : (isHybrid ? 'Mucogène' : 'Neutre')),
+        hybrid: isHybrid,
+        electric: isElectric,
+        label: isElectric ? 'Électrique' : (isHybrid ? 'Hybride' : 'Neutre'),
+        colorValue: isElectric ? 0xFF34d399 : (isHybrid ? 0xFFfacc15 : 0xFFf97316),
       ),
-      tags: const ['Suggestion IA', 'Non vérifié'],
-      note: note.isEmpty
-          ? 'Suggéré par le mascot — pas encore vérifié dans la base experte VitalTrack.'
-          : note,
+      tags: ['Non vérifié', 'Suggestion IA', if (isElectric) 'Électrique', if (isHybrid) 'Hybride', if (pral < 0) 'Alcalinisant'],
+      note: note.isNotEmpty
+          ? note
+          : (isElectric
+              ? "Aliment vivant & alcalinisant conforme aux principes vitalistes."
+              : (isHybrid
+                  ? "Aliment hybridé ou riche en amidon, consommer avec modération."
+                  : "Aliment analysé selon les règles de nutrition naturelle.")),
     );
+  }
+
+  static bool _isElectricHeuristic(String lower) {
+    const electricKeywords = [
+      'avocat', 'concombre', 'mangue', 'papaye', 'melon', 'pasteque', 'pastèque',
+      'datte', 'figue', 'pomme', 'poire', 'cerise', 'prune', 'raisin', 'citron vert',
+      'kale', 'chou frise', 'chou frisé', 'amarante', 'fonio', 'quinoa', 'kamut',
+      'teff', 'courgette', 'graine de lin', 'chia', 'sésame', 'sesame', 'olive',
+      'laitue romaine', 'roquette', 'cresson', 'mache', 'mâche', 'gingembre'
+    ];
+    return electricKeywords.any((k) => lower.contains(k));
+  }
+
+  static bool _isHybridHeuristic(String lower) {
+    const hybridKeywords = [
+      'carotte', 'mais', 'maïs', 'pomme de terre', 'riz blanc', 'ble', 'blé',
+      'soja', 'tofu', 'seitan', 'haricot', 'lentille', 'pois', 'aubergine', 'pamplemousse'
+    ];
+    return hybridKeywords.any((k) => lower.contains(k));
+  }
+
+  static bool _isMucusHeuristic(String lower) {
+    const mucusKeywords = [
+      'viande', 'poulet', 'boeuf', 'porc', 'fromage', 'lait', 'creme', 'crème',
+      'beurre', 'oeuf', 'œuf', 'pain', 'gateau', 'gâteau', 'biscuit', 'pizza', 'friture'
+    ];
+    return mucusKeywords.any((k) => lower.contains(k));
+  }
+
+  static String _inferEmojiFromName(String name) {
+    final lower = name.toLowerCase();
+    if (lower.contains('avocat')) return '🥑';
+    if (lower.contains('concombre')) return '🥒';
+    if (lower.contains('mangue')) return '🥭';
+    if (lower.contains('papaye')) return '🍈';
+    if (lower.contains('pomme')) return '🍎';
+    if (lower.contains('banane')) return '🍌';
+    if (lower.contains('melon') || lower.contains('pasteque') || lower.contains('pastèque')) return '🍉';
+    if (lower.contains('raisin')) return '🍇';
+    if (lower.contains('citron')) return '🍋';
+    if (lower.contains('orange')) return '🍊';
+    if (lower.contains('salade') || lower.contains('laitue') || lower.contains('kale') || lower.contains('roquette')) return '🥗';
+    if (lower.contains('riz') || lower.contains('quinoa') || lower.contains('cereale') || lower.contains('céréale')) return '🍚';
+    if (lower.contains('jus')) return '🥤';
+    if (lower.contains('soupe') || lower.contains('bouillon')) return '🥣';
+    if (lower.contains('pain')) return '🍞';
+    return '🍽️';
   }
 
   static String _inferEmoji(Map<String, dynamic> data) {

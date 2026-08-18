@@ -245,7 +245,7 @@
         <div class="dash-card glass">
         <div class="card-head">
           <h3><i class="ri-scales-3-line"></i> Évolution du Poids</h3>
-          <button class="chip-btn" onclick="promptWeightEntry()"><i class="ri-add-line"></i> Pesée</button>
+          <button class="chip-btn" onclick="openWeightModal()"><i class="ri-add-line"></i> Pesée</button>
         </div>
         <div id="weightChartEmpty" class="empty-state-card">
           <i class="ri-scales-3-line"></i>
@@ -770,8 +770,18 @@
     <div class="modal-content glass modal-sm" onclick="event.stopPropagation()">
       <button class="modal-close" onclick="closeAddMealModal()"><i class="ri-close-line"></i></button>
       <h3>🍽️ Ajouter un repas</h3>
+      
+      <!-- AI Dish Analyzer Box -->
+      <div class="ai-dish-box">
+        <div class="ai-dish-box-title"><i class="ri-magic-line"></i> Analyser un plat par IA</div>
+        <div class="ai-dish-input-row">
+          <input type="text" id="aiDishInput" placeholder="Ex: Salade concombres, avocat et jus de citron..." class="form-input" onkeydown="if(event.key==='Enter') analyzeDishWithAI()">
+          <button class="btn-primary" id="btnAnalyzeDish" onclick="analyzeDishWithAI()"><i class="ri-sparkling-fill"></i> Analyser</button>
+        </div>
+      </div>
+
       <div class="add-meal-search">
-        <input type="text" id="mealSearchInput" placeholder="Chercher un aliment..." oninput="searchMealFoods(this.value)">
+        <input type="text" id="mealSearchInput" placeholder="Ou chercher un aliment unitaire..." oninput="searchMealFoods(this.value)">
       </div>
       <div id="mealSearchResults" class="meal-search-results"></div>
       <div id="mealSelectedItems" class="selected-items"></div>
@@ -804,6 +814,51 @@
       </div>
     </div>
   </div>
+
+  <!-- ═══════ WEIGHT MODAL ═══════ -->
+  <div class="modal-overlay" id="weightModal" onclick="closeWeightModal(event)">
+    <div class="modal-content glass modal-sm" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeWeightModal()"><i class="ri-close-line"></i></button>
+      <h3><i class="ri-scales-3-line"></i> Enregistrer une pesée</h3>
+      
+      <div class="weight-modal-form">
+        <div>
+          <label style="font-size:0.85rem;color:var(--text-dim);display:block;margin-bottom:6px">Date de la pesée :</label>
+          <input type="date" id="weightDateInput" class="form-input">
+        </div>
+
+        <div>
+          <label style="font-size:0.85rem;color:var(--text-dim);display:block;margin-bottom:6px">Poids (kg) :</label>
+          <div class="weight-input-group">
+            <button type="button" class="btn-step" onclick="stepWeight(-0.5)">-0.5</button>
+            <button type="button" class="btn-step" onclick="stepWeight(-0.1)">-0.1</button>
+            <input type="number" step="0.1" id="weightValInput" class="form-input" placeholder="70.0">
+            <button type="button" class="btn-step" onclick="stepWeight(0.1)">+0.1</button>
+            <button type="button" class="btn-step" onclick="stepWeight(0.5)">+0.5</button>
+          </div>
+        </div>
+
+        <div>
+          <label style="font-size:0.85rem;color:var(--text-dim);display:block;margin-bottom:6px">Note / Contexte (optionnel) :</label>
+          <input type="text" id="weightNoteInput" class="form-input" placeholder="Ex: à jeun au réveil, fin de jeûne...">
+        </div>
+
+        <button class="btn-primary full-w" onclick="saveWeightEntry()"><i class="ri-save-line"></i> Valider la pesée</button>
+      </div>
+
+      <!-- Weight History inside modal -->
+      <div class="weight-history-section">
+        <div class="weight-history-header">
+          <h4>Historique des pesées</h4>
+          <span id="weightHistoryCount" style="font-size:0.78rem;color:var(--text-dim)">0 enregistrement</span>
+        </div>
+        <div id="weightHistoryList" class="weight-history-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ APP TOAST CONTAINER ═══════ -->
+  <div id="appToastContainer" class="app-toast-container"></div>
 
   <script type="module" src="/src/mascot.js"></script>
   <script type="module" src="/src/diet-plan-engine.js"></script>
