@@ -26,14 +26,15 @@ module.exports = async function handler(req, res) {
     const { query } = req.body || {};
     if (!query) return res.status(400).json({ error: 'query is required' });
 
-    const text = await callGeminiApi({
+    const result = await callGeminiApi({
       apiKey,
       contents: [{ role: 'user', parts: [{ text: `Analyze this food: ${query}` }] }],
       systemInstruction: foodAnalysisPrompt,
       generationConfig: { temperature: 0.1, responseMimeType: 'application/json' },
     });
 
-    const cleaned = text.replace(/```json/g, '').replace(/```/g, '').trim();
+    const rawText = typeof result === 'object' && result.text ? result.text : String(result || '');
+    const cleaned = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
     res.status(200).json({ data: JSON.parse(cleaned) });
   } catch (error) {
     console.error('[/api/analyze-text] Error:', error.message);

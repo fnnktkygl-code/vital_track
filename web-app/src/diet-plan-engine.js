@@ -265,6 +265,7 @@
 
   window.DietPlanEngine = {
     supportedProtocols: SUPPORTED_PROTOCOLS,
+    generate: generateDietPlan,
     generateDietPlan: generateDietPlan,
     regenerateDietDay: regenerateDietDay
   };

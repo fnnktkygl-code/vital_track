@@ -41,14 +41,26 @@ class ResourceIngestionService {
     try {
       final video = await yt.videos.get(url);
       final manifest = await yt.videos.closedCaptions.getManifest(video.id);
-      final trackInfo = manifest.getByLanguage('en'); // Default to English, fallback later
       
-      if (trackInfo.isNotEmpty) {
-        final track = await yt.videos.closedCaptions.get(trackInfo.first);
+      // Try French first, then English, then any available track
+      ClosedCaptionTrackInfo? selectedTrack;
+      final frTracks = manifest.getByLanguage('fr');
+      if (frTracks.isNotEmpty) {
+        selectedTrack = frTracks.first;
+      } else {
+        final enTracks = manifest.getByLanguage('en');
+        if (enTracks.isNotEmpty) {
+          selectedTrack = enTracks.first;
+        } else if (manifest.tracks.isNotEmpty) {
+          selectedTrack = manifest.tracks.first;
+        }
+      }
+      
+      if (selectedTrack != null) {
+        final track = await yt.videos.closedCaptions.get(selectedTrack);
         return track.captions.map((e) => e.text).join(" ");
       }
       
-      // Try auto-generated or other langs if needed
       return "No captions found for this video.";
     } catch (e) {
       return "Error extracting YouTube: $e";

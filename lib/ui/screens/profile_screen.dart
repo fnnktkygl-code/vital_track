@@ -509,7 +509,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         Switch.adaptive(
                           value: mascotProv.isVisible,
-                          activeColor: colors.accent,
+                          activeTrackColor: colors.accent,
                           onChanged: (_) => mascotProv.toggleVisibility(),
                         ),
                       ],

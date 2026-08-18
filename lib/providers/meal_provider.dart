@@ -102,8 +102,40 @@ class MealProvider with ChangeNotifier {
 
   int? get mealScore {
     if (_mealItems.isEmpty) return null;
-    final totalFreshness =
-    _mealItems.fold(0, (sum, item) => sum + item.vitality.freshness);
-    return (totalFreshness / _mealItems.length).round();
+    
+    double totalScore = 0;
+    for (final item in _mealItems) {
+      double itemScore = item.vitality.freshness.toDouble();
+      
+      // Electric / Dr. Sebi alignment (+15 electric, -15 hybrid)
+      if (item.specific.electric) {
+        itemScore += 15;
+      } else if (item.specific.hybrid) {
+        itemScore -= 15;
+      }
+      
+      // PRAL / Acid-Alkaline alignment
+      if (item.scientific.pral <= -2.0) {
+        itemScore += 10; // Strongly alkaline
+      } else if (item.scientific.pral < 0) {
+        itemScore += 5;  // Mildly alkaline
+      } else if (item.scientific.pral > 2.0) {
+        itemScore -= 15; // Strongly acidifying
+      } else if (item.scientific.pral > 0) {
+        itemScore -= 8;  // Mildly acidifying
+      }
+      
+      // Mucus / Arnold Ehret alignment
+      final mucusLower = item.specific.mucus.toLowerCase();
+      if (mucusLower.contains('mucogène') || mucusLower.contains('mucus')) {
+        itemScore -= 15;
+      } else if (mucusLower.contains('dissolvant')) {
+        itemScore += 10;
+      }
+      
+      totalScore += itemScore.clamp(0.0, 100.0);
+    }
+    
+    return (totalScore / _mealItems.length).round().clamp(0, 100);
   }
 }

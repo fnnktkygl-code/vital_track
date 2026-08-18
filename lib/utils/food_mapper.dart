@@ -11,11 +11,9 @@ class FoodMapper {
     // Simple logic: check if product name contains any key from our DB
     // Ideally this should be more robust (tags matching etc)
     final expertMatch = VitalRulesEngine.findInExpertDb(name);
-    
     if (expertMatch != null) {
-      // Return the expert food directly (or merge if needed)
-       // We map it to a Food object
-       return VitalRulesEngine.getExpertFood(name)!; 
+      final expertFood = VitalRulesEngine.getExpertFood(name);
+      if (expertFood != null) return expertFood;
     }
 
     // 2. Fallback to Algorithmic Analysis (OpenFoodFacts)
@@ -25,11 +23,22 @@ class FoodMapper {
     // Scientific Data (PRAL estimation & Nutriscore)
     final nutriments = data['nutriments'] ?? {};
     final double proteins = (nutriments['proteins_100g'] ?? 0).toDouble();
-    // OpenFoodFacts already provides values in mg per 100g
-    final double phosphorus = (nutriments['phosphorus_100g'] ?? 0).toDouble();
-    final double potassium = (nutriments['potassium_100g'] ?? 0).toDouble();
-    final double magnesium = (nutriments['magnesium_100g'] ?? 0).toDouble();
-    final double calcium = (nutriments['calcium_100g'] ?? 0).toDouble();
+
+    // Helper to normalize mineral units (handling cases where OFF stores grams instead of mg)
+    double normalizeToMg(dynamic val) {
+      if (val == null) return 0.0;
+      final num v = val is num ? val : (double.tryParse(val.toString()) ?? 0.0);
+      final d = v.toDouble();
+      if (d > 0 && d < 2.0) {
+        return d * 1000.0;
+      }
+      return d;
+    }
+
+    final double phosphorus = normalizeToMg(nutriments['phosphorus_100g']);
+    final double potassium = normalizeToMg(nutriments['potassium_100g']);
+    final double magnesium = normalizeToMg(nutriments['magnesium_100g']);
+    final double calcium = normalizeToMg(nutriments['calcium_100g']);
 
     // Basic PRAL formula (Remer & Manz)
     // PRAL = 0.49 * Protein(g) + 0.037 * Phosphorus(mg) - 0.021 * Potassium(mg) - 0.026 * Magnesium(mg) - 0.013 * Calcium(mg)

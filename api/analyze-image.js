@@ -31,7 +31,7 @@ module.exports = async function handler(req, res) {
 
     const mime = mimeType || 'image/jpeg';
 
-    const text = await callGeminiApi({
+    const result = await callGeminiApi({
       apiKey,
       contents: [{
         role: 'user',
@@ -44,7 +44,8 @@ module.exports = async function handler(req, res) {
       generationConfig: { temperature: 0.1, responseMimeType: 'application/json' },
     });
 
-    const cleaned = text.replace(/```json/g, '').replace(/```/g, '').trim();
+    const rawText = typeof result === 'object' && result.text ? result.text : String(result || '');
+    const cleaned = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
     res.status(200).json({ data: JSON.parse(cleaned) });
   } catch (error) {
     console.error('[/api/analyze-image] Error:', error.message);

@@ -1,0 +1,12 @@
+# Release signing configuration — VitalTrack
+# Copy this file as key.properties and fill in your actual values.
+# NEVER commit key.properties to source control.
+#
+# To generate a keystore:
+#   keytool -genkey -v -keystore ~/vitaltrack-release.jks \
+#     -keyalg RSA -keysize 2048 -validity 10000 -alias vitaltrack
+#
+storePassword=YOUR_STORE_PASSWORD
+keyPassword=YOUR_KEY_PASSWORD
+keyAlias=vitaltrack
+storeFile=/path/to/vitaltrack-release.jks

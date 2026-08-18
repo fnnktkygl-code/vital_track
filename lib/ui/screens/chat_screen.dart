@@ -3,26 +3,24 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
+import 'package:vital_track/models/chat_message.dart';
+import 'package:vital_track/models/diet_plan.dart';
 import 'package:vital_track/models/fasting_program.dart';
 import 'package:vital_track/models/fasting_session.dart';
-import 'package:vital_track/models/knowledge_source.dart';
-import 'package:vital_track/models/diet_plan.dart';
-import 'package:vital_track/providers/fasting_provider.dart';
 import 'package:vital_track/providers/diet_plan_provider.dart';
+import 'package:vital_track/providers/fasting_provider.dart';
+import 'package:vital_track/providers/mascot_provider.dart';
 import 'package:vital_track/providers/meal_provider.dart';
-import 'package:vital_track/services/ai_service.dart';
-import 'package:vital_track/services/knowledge_service.dart';
-import 'package:vital_track/services/hive_service.dart';
-import 'package:vital_track/services/diet_plan_generator.dart';
-import 'package:vital_track/services/vital_rules_engine.dart';
-import 'package:vital_track/utils/food_mapper.dart';
-import 'package:vital_track/models/chat_message.dart';
 import 'package:vital_track/providers/profile_provider.dart';
+import 'package:vital_track/services/ai_service.dart';
+import 'package:vital_track/services/diet_plan_generator.dart';
+import 'package:vital_track/services/hive_service.dart';
+import 'package:vital_track/services/knowledge_service.dart';
+import 'package:vital_track/services/vital_rules_engine.dart';
 import 'package:vital_track/ui/screens/diet_plan_calendar_screen.dart';
 import 'package:vital_track/ui/theme.dart';
-import 'package:vital_track/providers/mascot_provider.dart';
-import 'package:vital_track/providers/mascot_knowledge_base.dart';
-import 'package:vital_track/ui/widgets/animated_pigeon.dart';
+import 'package:vital_track/ui/widgets/chat/chat_bubble.dart';
+import 'package:vital_track/utils/food_mapper.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -51,7 +49,8 @@ class _ChatScreenState extends State<ChatScreen> {
     final history = _hiveService.loadChatHistory();
     if (history.isEmpty) {
       final welcome = ChatMessage(
-        text: "Coo! Je suis ton guide Vitaliste. Pose-moi des questions sur le Dr. Sebi, Arnold Ehret, ou le Dr. Morse — je peux aussi te créer un programme de jeûne ou un plan alimentaire complet, calendrier inclus ! 🐦📅",
+        text:
+            "Coo! Je suis ton guide Vitaliste. Pose-moi des questions sur le Dr. Sebi, Arnold Ehret, ou le Dr. Morse — je peux aussi te créer un programme de jeûne ou un plan alimentaire complet, calendrier inclus ! 🐦📅",
         isUser: false,
       );
       _messages.add(welcome);
@@ -82,16 +81,22 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
-  /// Parses the AI response text to extract a single JSON block that may
-  /// contain a fasting `program`, a `dietPlanRequest`, and/or `suggestFoods`.
-  ({String text, FastingProgram? program, DietPlan? dietPlan, List<String> suggestFoods})
-      _parseAiResponse(String text) {
-    // Find a single ```json { ... } ``` block that may carry any combination
-    // of "program", "dietPlanRequest" and "suggestFoods" keys.
-    final jsonRegex = RegExp(r'```json\s*(\{[\s\S]*?\})\s*```', caseSensitive: false);
+  ({
+    String text,
+    FastingProgram? program,
+    DietPlan? dietPlan,
+    List<String> suggestFoods
+  }) _parseAiResponse(String text) {
+    final jsonRegex =
+        RegExp(r'```json\s*(\{[\s\S]*?\})\s*```', caseSensitive: false);
     final match = jsonRegex.firstMatch(text);
     if (match == null) {
-      return (text: text, program: null, dietPlan: null, suggestFoods: const []);
+      return (
+        text: text,
+        program: null,
+        dietPlan: null,
+        suggestFoods: const []
+      );
     }
 
     FastingProgram? program;
@@ -131,8 +136,6 @@ class _ChatScreenState extends State<ChatScreen> {
         final objective = planReq['objective'] as String? ?? '';
         final numDays = (planReq['numDays'] as num?)?.toInt() ?? 7;
         final restrictions = planReq['restrictions'] as String? ?? '';
-        // The AI only supplies parameters — the app always builds the
-        // actual calendar locally from the verified vitalist food database.
         dietPlan = DietPlanGenerator.generate(
           protocol: protocol,
           numDays: numDays,
@@ -148,23 +151,39 @@ class _ChatScreenState extends State<ChatScreen> {
       }
 
       final cleanText = text.replaceAll(match.group(0)!, '').trim();
-      return (text: cleanText, program: program, dietPlan: dietPlan, suggestFoods: suggestFoods);
+      return (
+        text: cleanText,
+        program: program,
+        dietPlan: dietPlan,
+        suggestFoods: suggestFoods
+      );
     } catch (e) {
       debugPrint('ChatScreen: Failed to parse AI JSON block: $e');
-      return (text: text, program: null, dietPlan: null, suggestFoods: const []);
+      return (
+        text: text,
+        program: null,
+        dietPlan: null,
+        suggestFoods: const []
+      );
     }
   }
 
   FastingType _parseFastingType(String typeStr) {
     switch (typeStr.toLowerCase().trim()) {
-      case 'waterfast': return FastingType.waterFast;
-      case 'juicefast': return FastingType.juiceFast;
-      case 'fruitfast': return FastingType.fruitFast;
-      case 'grapecure': return FastingType.grapeCure;
-      case 'drysunfast': return FastingType.drySunFast;
-      case 'monoFruit':
-      case 'monofruit': return FastingType.monoFruit;
-      default: return FastingType.intermittent;
+      case 'waterfast':
+        return FastingType.waterFast;
+      case 'juicefast':
+        return FastingType.juiceFast;
+      case 'fruitfast':
+        return FastingType.fruitFast;
+      case 'grapecure':
+        return FastingType.grapeCure;
+      case 'drysunfast':
+        return FastingType.drySunFast;
+      case 'monofruit':
+        return FastingType.monoFruit;
+      default:
+        return FastingType.intermittent;
     }
   }
 
@@ -196,7 +215,10 @@ class _ChatScreenState extends State<ChatScreen> {
     final historyContext = _messages.sublist(0, _messages.length - 1);
 
     final stream = AIService.chatWithMascotStream(
-      text, profile, contextSources, historyContext,
+      text,
+      profile,
+      contextSources,
+      historyContext,
       fileParts: fileParts,
     );
 
@@ -211,7 +233,6 @@ class _ChatScreenState extends State<ChatScreen> {
       },
       onDone: () {
         if (!mounted) return;
-        // Parse for a program / diet-plan proposal / food suggestions
         final parsed = _parseAiResponse(aiMsg.text);
         aiMsg = aiMsg.copyWithText(
           parsed.text,
@@ -224,14 +245,17 @@ class _ChatScreenState extends State<ChatScreen> {
           _messages[_messages.length - 1] = aiMsg;
           _isTyping = false;
         });
-        _hiveService.saveChatMessage(aiMsg.copyWithText(parsed.text, isStreaming: false));
+        _hiveService.saveChatMessage(
+            aiMsg.copyWithText(parsed.text, isStreaming: false));
         _scrollToBottom();
       },
       onError: (_) {
         if (!mounted) return;
         setState(() {
           if (aiMsg.text.isEmpty) {
-            aiMsg = aiMsg.copyWithText("Coo? Je ne peux pas accéder au cloud. Réessaie ! 🐦", isStreaming: false);
+            aiMsg = aiMsg.copyWithText(
+                "Coo? Je ne peux pas accéder au cloud. Réessaie ! 🐦",
+                isStreaming: false);
           } else {
             aiMsg = aiMsg.copyWithText(aiMsg.text, isStreaming: false);
           }
@@ -246,10 +270,10 @@ class _ChatScreenState extends State<ChatScreen> {
   Future<void> _acceptProgram(FastingProgram program) async {
     await context.read<FastingProvider>().startProgram(program);
     if (!mounted) return;
-    
-    // Add a confirmation message from the Mascot
+
     final confirmMsg = ChatMessage(
-      text: "🎉 Excellent choix ! Ton programme **${program.name}** est maintenant actif. Retrouve-le dans ta session de jeûne. Coo! 🐦✨",
+      text:
+          "🎉 Excellent choix ! Ton programme **${program.name}** est maintenant actif. Retrouve-le dans ta session de jeûne. Coo! 🐦✨",
       isUser: false,
     );
     setState(() {
@@ -260,27 +284,38 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Future<void> _acceptDietPlan(DietPlan plan) async {
-    await context.read<DietPlanProvider>().activatePlan(plan);
-    if (!mounted) return;
+    try {
+      await context.read<DietPlanProvider>().activatePlan(plan);
+      if (!mounted) return;
 
-    final confirmMsg = ChatMessage(
-      text: "📅 C'est noté ! Ton plan **${plan.name}** (${plan.totalDays} jours) est activé et rempli dans ton calendrier. Tu peux le consulter et le modifier à tout moment. Coo! 🐦🌿",
-      isUser: false,
-    );
-    setState(() {
-      _messages.add(confirmMsg);
-    });
-    _hiveService.saveChatMessage(confirmMsg);
-    _scrollToBottom();
+      final confirmMsg = ChatMessage(
+        text:
+            "📅 C'est noté ! Ton plan **${plan.name}** (${plan.totalDays} jours) est activé et rempli dans ton calendrier. Tu peux le consulter et le modifier à tout moment. Coo! 🐦🌿",
+        isUser: false,
+      );
+      setState(() {
+        _messages.add(confirmMsg);
+      });
+      _hiveService.saveChatMessage(confirmMsg);
+      _scrollToBottom();
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const DietPlanCalendarScreen()),
-    );
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const DietPlanCalendarScreen()),
+      );
+    } catch (e) {
+      debugPrint("Erreur lors de l'activation du plan: $e");
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erreur: $e')),
+        );
+      }
+    }
   }
 
   Future<bool> _addSuggestedFood(String name) async {
-    final food = VitalRulesEngine.getExpertFood(name) ?? FoodMapper.fromNameFallback(name);
+    final food = VitalRulesEngine.getExpertFood(name) ??
+        FoodMapper.fromNameFallback(name);
     context.read<MealProvider>().addFood(food);
     return true;
   }
@@ -305,7 +340,7 @@ class _ChatScreenState extends State<ChatScreen> {
               controller: _scrollCtrl,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               itemCount: _messages.length,
-              itemBuilder: (ctx, i) => _ChatBubble(
+              itemBuilder: (ctx, i) => ChatBubble(
                 msg: _messages[i],
                 onAcceptProgram: _acceptProgram,
                 onAcceptDietPlan: _acceptDietPlan,
@@ -412,939 +447,6 @@ class _ChatScreenState extends State<ChatScreen> {
             ],
           ),
         ],
-      ),
-    );
-  }
-}
-
-// ── CHAT BUBBLE ──────────────────────────────────────────────────────────────
-
-class _ChatBubble extends StatelessWidget {
-  final ChatMessage msg;
-  final Future<void> Function(FastingProgram)? onAcceptProgram;
-  final Future<void> Function(DietPlan)? onAcceptDietPlan;
-  final Future<bool> Function(String)? onAddFood;
-  const _ChatBubble({
-    required this.msg,
-    this.onAcceptProgram,
-    this.onAcceptDietPlan,
-    this.onAddFood,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    if (msg.isUser) return _buildUserBubble(context);
-    return _buildAiBubble(context);
-  }
-
-  Widget _buildUserBubble(BuildContext context) {
-    final colors = context.colors;
-    return Align(
-      alignment: Alignment.centerRight,
-      child: Container(
-        constraints:
-            BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.78),
-        margin: const EdgeInsets.only(top: 16, bottom: 4),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: colors.accent,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-            bottomLeft: Radius.circular(20),
-            bottomRight: Radius.circular(4),
-          ),
-        ),
-        child: Text(
-          msg.text,
-          style: TextStyle(
-            color: colors.accentOnPrimary,
-            fontSize: 16,
-            height: 1.55,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAiBubble(BuildContext context) {
-    final colors = context.colors;
-    return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.only(top: 8, bottom: 4),
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Avatar row
-          Row(
-            children: [
-              Container(
-                width: 28,
-                height: 28,
-                decoration: BoxDecoration(
-                  color: colors.accentSubtle,
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                    child: StaticPigeonPortrait(mood: MascotMood.talking, size: 24)),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                'VitalTrack',
-                style: TextStyle(
-                  color: colors.textSecondary,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              if (msg.isStreaming) ...[
-                const SizedBox(width: 8),
-                SizedBox(
-                  width: 12,
-                  height: 12,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 1.5,
-                    color: colors.accent,
-                  ),
-                ),
-              ],
-            ],
-          ),
-          const SizedBox(height: 8),
-          // Markdown content
-          Padding(
-            padding: const EdgeInsets.only(left: 36),
-            child: msg.text.isEmpty
-                ? Text('...', style: TextStyle(color: colors.textTertiary))
-                : _MarkdownBody(text: msg.text, colors: colors),
-          ),
-          // ── PLAN PROPOSAL CARD ──────────────────────────────────────────────
-          if (msg.proposedProgram != null && !msg.isStreaming)
-            Padding(
-              padding: const EdgeInsets.only(left: 36, top: 16),
-              child: _PlanProposalCard(
-                program: msg.proposedProgram!,
-                onAccept: onAcceptProgram,
-              ),
-            ),
-          // ── DIET PLAN PROPOSAL CARD ─────────────────────────────────────────
-          if (msg.proposedDietPlan != null && !msg.isStreaming)
-            Padding(
-              padding: const EdgeInsets.only(left: 36, top: 16),
-              child: _DietPlanProposalCard(
-                plan: msg.proposedDietPlan!,
-                onAccept: onAcceptDietPlan,
-              ),
-            ),
-          // ── PROACTIVE FOOD SUGGESTIONS ──────────────────────────────────────
-          if (msg.suggestedFoods.isNotEmpty && !msg.isStreaming)
-            Padding(
-              padding: const EdgeInsets.only(left: 36, top: 12),
-              child: _FoodSuggestionChips(
-                foods: msg.suggestedFoods,
-                onAdd: onAddFood,
-              ),
-            ),
-          // Source chips
-          if (!msg.isUser && msg.sources.isNotEmpty && !msg.isStreaming)
-            Padding(
-              padding: const EdgeInsets.only(left: 36, top: 10),
-              child: Wrap(
-                spacing: 6,
-                runSpacing: 4,
-                children: msg.sources.map((s) {
-                  final icon = switch (s.type) {
-                    KnowledgeType.pdf => Icons.picture_as_pdf,
-                    KnowledgeType.url => Icons.link,
-                    KnowledgeType.youtube => Icons.video_library,
-                    KnowledgeType.text => Icons.description,
-                    KnowledgeType.image => Icons.image,
-                    KnowledgeType.video => Icons.movie,
-                  };
-                  return Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: colors.surfaceSubtle,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: colors.borderSubtle),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(icon, size: 12, color: colors.textTertiary),
-                        const SizedBox(width: 4),
-                        Text(
-                          s.title.length > 30
-                              ? '${s.title.substring(0, 30)}...'
-                              : s.title,
-                          style: TextStyle(
-                              color: colors.textTertiary, fontSize: 12),
-                        ),
-                      ],
-                    ),
-                  );
-                }).toList(),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-}
-
-// ── PLAN PROPOSAL CARD ────────────────────────────────────────────────────────
-
-class _PlanProposalCard extends StatefulWidget {
-  final FastingProgram program;
-  final Future<void> Function(FastingProgram)? onAccept;
-
-  const _PlanProposalCard({required this.program, this.onAccept});
-
-  @override
-  State<_PlanProposalCard> createState() => _PlanProposalCardState();
-}
-
-class _PlanProposalCardState extends State<_PlanProposalCard> {
-  bool _accepted = false;
-  bool _loading = false;
-
-  String _protocolLabel(String? p) {
-    switch (p) {
-      case 'sebi': return 'Dr. Sebi';
-      case 'ehret': return 'Arnold Ehret';
-      case 'morse': return 'Dr. Morse';
-      default: return 'Vitaliste Intégré';
-    }
-  }
-  
-  String _formatDuration(int minutes) {
-    if (minutes < 60) return '$minutes min';
-    final h = minutes ~/ 60;
-    final m = minutes % 60;
-    return m == 0 ? '${h}h' : '${h}h${m}min';
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.colors;
-    final program = widget.program;
-
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            colors.accent.withOpacity(0.12),
-            colors.accentSubtle.withOpacity(0.06),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: colors.accent.withOpacity(0.3), width: 1.5),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              color: colors.accent.withOpacity(0.12),
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(18),
-                topRight: Radius.circular(18),
-              ),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: colors.accent.withOpacity(0.2),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Text('📋', style: TextStyle(fontSize: 18)),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        program.name,
-                        style: TextStyle(
-                          color: colors.textPrimary,
-                          fontWeight: FontWeight.w800,
-                          fontSize: 16,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Row(
-                        children: [
-                          Icon(Icons.science_outlined,
-                              size: 12, color: colors.accent),
-                          const SizedBox(width: 4),
-                          Text(
-                            _protocolLabel(program.protocol),
-                            style: TextStyle(
-                                color: colors.accent,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          // Goal
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 6),
-            child: Text(
-              '🎯 ${program.targetObjective}',
-              style: TextStyle(
-                color: colors.textSecondary,
-                fontSize: 14,
-                height: 1.5,
-              ),
-            ),
-          ),
-          // Steps timeline
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
-            child: Text(
-              'Programme (${program.configs.length} étapes)',
-              style: TextStyle(
-                color: colors.textTertiary,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 0.5,
-              ),
-            ),
-          ),
-          ...program.configs.asMap().entries.map((entry) {
-            final i = entry.key;
-            final config = entry.value;
-            final isLast = i == program.configs.length - 1;
-            return Padding(
-              padding: const EdgeInsets.fromLTRB(16, 2, 16, 0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Column(
-                    children: [
-                      Container(
-                        width: 26,
-                        height: 26,
-                        decoration: BoxDecoration(
-                          color: colors.accent.withOpacity(0.2),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: Text(
-                            config.type.emoji,
-                            style: const TextStyle(fontSize: 12),
-                          ),
-                        ),
-                      ),
-                      if (!isLast)
-                        Container(
-                          width: 1.5,
-                          height: 20,
-                          color: colors.accent.withOpacity(0.2),
-                        ),
-                    ],
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.only(top: 3, bottom: isLast ? 8 : 0),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              config.type.label,
-                              style: TextStyle(
-                                  color: colors.textPrimary,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500),
-                            ),
-                          ),
-                          Text(
-                            _formatDuration(config.durationMinutes),
-                            style: TextStyle(
-                                color: colors.accent,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w700),
-                          ),
-                          if (config.breakHours > 0) ...[
-                            const SizedBox(width: 4),
-                            Text(
-                              '+ ${config.breakHours}h pause',
-                              style: TextStyle(
-                                  color: colors.textTertiary,
-                                  fontSize: 11),
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }),
-          const SizedBox(height: 4),
-          // Accept button
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-            child: _accepted
-                ? Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.check_circle, color: colors.accent, size: 20),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Programme activé !',
-                        style: TextStyle(
-                            color: colors.accent,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 15),
-                      ),
-                    ],
-                  )
-                : SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      onPressed: _loading
-                          ? null
-                          : () async {
-                              setState(() => _loading = true);
-                              await widget.onAccept?.call(widget.program);
-                              if (mounted) {
-                                setState(() {
-                                  _accepted = true;
-                                  _loading = false;
-                                });
-                              }
-                            },
-                      icon: _loading
-                          ? SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(
-                                  strokeWidth: 2, color: colors.accentOnPrimary),
-                            )
-                          : const Icon(Icons.play_arrow_rounded, size: 20),
-                      label: Text(_loading ? 'Activation...' : 'Accepter ce programme'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: colors.accent,
-                        foregroundColor: colors.accentOnPrimary,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14)),
-                        textStyle: const TextStyle(
-                            fontWeight: FontWeight.w700, fontSize: 15),
-                        elevation: 0,
-                      ),
-                    ),
-                  ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ── DIET PLAN PROPOSAL CARD ──────────────────────────────────────────────────
-
-class _DietPlanProposalCard extends StatefulWidget {
-  final DietPlan plan;
-  final Future<void> Function(DietPlan)? onAccept;
-
-  const _DietPlanProposalCard({required this.plan, this.onAccept});
-
-  @override
-  State<_DietPlanProposalCard> createState() => _DietPlanProposalCardState();
-}
-
-class _DietPlanProposalCardState extends State<_DietPlanProposalCard> {
-  bool _accepted = false;
-  bool _loading = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.colors;
-    final plan = widget.plan;
-    final preview = plan.days.take(2).toList();
-
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            colors.accent.withOpacity(0.12),
-            colors.accentSubtle.withOpacity(0.06),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: colors.accent.withOpacity(0.3), width: 1.5),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              color: colors.accent.withOpacity(0.12),
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(18),
-                topRight: Radius.circular(18),
-              ),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: colors.accent.withOpacity(0.2),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Text(plan.protocol.dietProtocolEmoji,
-                      style: const TextStyle(fontSize: 18)),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        plan.name,
-                        style: TextStyle(
-                          color: colors.textPrimary,
-                          fontWeight: FontWeight.w800,
-                          fontSize: 16,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Row(
-                        children: [
-                          Icon(Icons.calendar_month_rounded,
-                              size: 12, color: colors.accent),
-                          const SizedBox(width: 4),
-                          Text(
-                            '${plan.protocol.dietProtocolLabel} · ${plan.totalDays} jours',
-                            style: TextStyle(
-                                color: colors.accent,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          if (plan.objective.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 6),
-              child: Text(
-                '🎯 ${plan.objective}',
-                style: TextStyle(
-                  color: colors.textSecondary,
-                  fontSize: 14,
-                  height: 1.5,
-                ),
-              ),
-            ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
-            child: Text(
-              'Aperçu du calendrier',
-              style: TextStyle(
-                color: colors.textTertiary,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 0.5,
-              ),
-            ),
-          ),
-          ...preview.map((day) {
-            return Padding(
-              padding: const EdgeInsets.fromLTRB(16, 6, 16, 0),
-              child: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: colors.surface.withOpacity(0.5),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Jour ${day.dayIndex + 1} · ${day.phaseLabel}',
-                      style: TextStyle(
-                        color: colors.textPrimary,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    ...day.meals.take(3).map((m) => Padding(
-                          padding: const EdgeInsets.only(top: 2),
-                          child: Text(
-                            '${m.slot} : ${m.items.join(', ')}',
-                            style: TextStyle(
-                              color: colors.textSecondary,
-                              fontSize: 12.5,
-                              height: 1.4,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        )),
-                  ],
-                ),
-              ),
-            );
-          }),
-          if (plan.totalDays > preview.length)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-              child: Text(
-                '+ ${plan.totalDays - preview.length} autres jours, modifiables après activation.',
-                style: TextStyle(
-                  color: colors.textTertiary,
-                  fontSize: 12,
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-            ),
-          const SizedBox(height: 4),
-          // Accept button
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-            child: _accepted
-                ? Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.check_circle, color: colors.accent, size: 20),
-                      const SizedBox(width: 8),
-                      Text(
-                        'Plan activé !',
-                        style: TextStyle(
-                            color: colors.accent,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 15),
-                      ),
-                    ],
-                  )
-                : SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      onPressed: _loading
-                          ? null
-                          : () async {
-                              setState(() => _loading = true);
-                              await widget.onAccept?.call(widget.plan);
-                              if (mounted) {
-                                setState(() {
-                                  _accepted = true;
-                                  _loading = false;
-                                });
-                              }
-                            },
-                      icon: _loading
-                          ? SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(
-                                  strokeWidth: 2, color: colors.accentOnPrimary),
-                            )
-                          : const Icon(Icons.calendar_month_rounded, size: 20),
-                      label: Text(_loading
-                          ? 'Activation...'
-                          : 'Activer et remplir mon calendrier'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: colors.accent,
-                        foregroundColor: colors.accentOnPrimary,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14)),
-                        textStyle: const TextStyle(
-                            fontWeight: FontWeight.w700, fontSize: 15),
-                        elevation: 0,
-                      ),
-                    ),
-                  ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ── PROACTIVE FOOD SUGGESTION CHIPS ──────────────────────────────────────────
-
-class _FoodSuggestionChips extends StatefulWidget {
-  final List<String> foods;
-  final Future<bool> Function(String)? onAdd;
-
-  const _FoodSuggestionChips({required this.foods, this.onAdd});
-
-  @override
-  State<_FoodSuggestionChips> createState() => _FoodSuggestionChipsState();
-}
-
-class _FoodSuggestionChipsState extends State<_FoodSuggestionChips> {
-  final Set<String> _added = {};
-  String? _loading;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.colors;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Ajouter à ta liste du jour ?',
-          style: TextStyle(
-            color: colors.textTertiary,
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        const SizedBox(height: 6),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: widget.foods.map((food) {
-            final isAdded = _added.contains(food);
-            final isLoading = _loading == food;
-            return GestureDetector(
-              onTap: isAdded || isLoading
-                  ? null
-                  : () async {
-                      setState(() => _loading = food);
-                      final ok = await widget.onAdd?.call(food) ?? false;
-                      if (!mounted) return;
-                      setState(() {
-                        _loading = null;
-                        if (ok) _added.add(food);
-                      });
-                    },
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(
-                  color: isAdded
-                      ? colors.accent.withOpacity(0.15)
-                      : colors.accentSubtle,
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(
-                    color: isAdded
-                        ? colors.accent.withOpacity(0.4)
-                        : colors.sheetBorder,
-                  ),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(food,
-                        style: TextStyle(
-                          color:
-                              isAdded ? colors.accent : colors.textPrimary,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                        )),
-                    const SizedBox(width: 6),
-                    if (isLoading)
-                      SizedBox(
-                        width: 12,
-                        height: 12,
-                        child: CircularProgressIndicator(
-                            strokeWidth: 1.5, color: colors.accent),
-                      )
-                    else
-                      Icon(
-                        isAdded ? Icons.check_rounded : Icons.add_rounded,
-                        size: 15,
-                        color: isAdded ? colors.accent : colors.textTertiary,
-                      ),
-                  ],
-                ),
-              ),
-            );
-          }).toList(),
-        ),
-      ],
-    );
-  }
-}
-
-// ── SIMPLE MARKDOWN RENDERER ─────────────────────────────────────────────────
-
-class _MarkdownBody extends StatelessWidget {
-  final String text;
-  final AppColors colors;
-  const _MarkdownBody({required this.text, required this.colors});
-
-  @override
-  Widget build(BuildContext context) {
-    // Skip rendering any leftover ```json blocks while still streaming
-    final displayText = text.replaceAll(
-        RegExp(r'```json[\s\S]*?```', caseSensitive: false), '');
-
-    final lines = displayText.split('\n');
-    final widgets = <Widget>[];
-
-    for (int i = 0; i < lines.length; i++) {
-      final line = lines[i];
-
-      if (line.trim().isEmpty) {
-        widgets.add(const SizedBox(height: 6));
-        continue;
-      }
-
-      if (line.trimLeft().startsWith('### ')) {
-        widgets.add(Padding(
-          padding: const EdgeInsets.only(top: 12, bottom: 4),
-          child: Text(
-            line.trimLeft().substring(4),
-            style: TextStyle(
-              color: colors.textPrimary,
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              height: 1.4,
-            ),
-          ),
-        ));
-        continue;
-      }
-
-      if (line.trimLeft().startsWith('## ')) {
-        widgets.add(Padding(
-          padding: const EdgeInsets.only(top: 14, bottom: 4),
-          child: Text(
-            line.trimLeft().substring(3),
-            style: TextStyle(
-              color: colors.textPrimary,
-              fontSize: 20,
-              fontWeight: FontWeight.w800,
-              height: 1.4,
-            ),
-          ),
-        ));
-        continue;
-      }
-
-      final bulletMatch = RegExp(r'^\s*[-*]\s+(.+)$').firstMatch(line);
-      if (bulletMatch != null) {
-        widgets.add(Padding(
-          padding: const EdgeInsets.only(left: 8, top: 2, bottom: 2),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('•  ',
-                  style: TextStyle(
-                      color: colors.accent,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16)),
-              Expanded(
-                  child: _buildRichText(bulletMatch.group(1)!, colors, 16)),
-            ],
-          ),
-        ));
-        continue;
-      }
-
-      final numMatch = RegExp(r'^\s*(\d+)\.\s+(.+)$').firstMatch(line);
-      if (numMatch != null) {
-        widgets.add(Padding(
-          padding: const EdgeInsets.only(left: 4, top: 2, bottom: 2),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                width: 24,
-                child: Text(
-                  '${numMatch.group(1)}.',
-                  style: TextStyle(
-                      color: colors.accent,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 16),
-                ),
-              ),
-              Expanded(
-                  child: _buildRichText(numMatch.group(2)!, colors, 16)),
-            ],
-          ),
-        ));
-        continue;
-      }
-
-      widgets.add(Padding(
-        padding: const EdgeInsets.symmetric(vertical: 2),
-        child: _buildRichText(line, colors, 16),
-      ));
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: widgets,
-    );
-  }
-
-  static Widget _buildRichText(
-      String text, AppColors colors, double fontSize) {
-    final spans = <TextSpan>[];
-    final pattern = RegExp(r'\*\*(.+?)\*\*|\[([^\]]+)\]');
-    int lastEnd = 0;
-
-    for (final match in pattern.allMatches(text)) {
-      if (match.start > lastEnd) {
-        spans.add(TextSpan(text: text.substring(lastEnd, match.start)));
-      }
-
-      if (match.group(1) != null) {
-        spans.add(TextSpan(
-          text: match.group(1),
-          style: const TextStyle(fontWeight: FontWeight.w700),
-        ));
-      } else if (match.group(2) != null) {
-        spans.add(TextSpan(
-          text: '[${match.group(2)}]',
-          style: TextStyle(
-            color: colors.accent,
-            fontWeight: FontWeight.w600,
-            fontSize: fontSize - 1,
-          ),
-        ));
-      }
-
-      lastEnd = match.end;
-    }
-
-    if (lastEnd < text.length) {
-      spans.add(TextSpan(text: text.substring(lastEnd)));
-    }
-
-    return RichText(
-      text: TextSpan(
-        style: TextStyle(
-          color: colors.textPrimary,
-          fontSize: fontSize,
-          height: 1.65,
-        ),
-        children: spans.isEmpty ? [TextSpan(text: text)] : spans,
       ),
     );
   }

@@ -30,12 +30,11 @@ void main() async {
   try {
     await hiveService.init();
   } catch (e) {
-    debugPrint("Hive init failed: $e. Attempting recovery...");
+    debugPrint("Hive init warning: $e. Retrying init safely...");
     try {
-      await hiveService.deleteAll();
       await hiveService.init();
-    } catch (_) {
-      debugPrint("Hive recovery failed. App may not persist data.");
+    } catch (e2) {
+      debugPrint("Hive safe init failed: $e2. App will operate in transient mode.");
     }
   }
 

@@ -80,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
           children: [
-            Icon(Icons.health_and_safety, color: Colors.redAccent, size: 28),
+            const Icon(Icons.health_and_safety, color: Colors.redAccent, size: 28),
             const SizedBox(width: 10),
             Expanded(
               child: Text('Avertissement santé',

@@ -75,7 +75,7 @@ class _FastingAnalyticsViewState extends State<FastingAnalyticsView> with Single
               Switch(
                 value: _useDemoData,
                 onChanged: (val) => setState(() => _useDemoData = val),
-                activeColor: colors.accent,
+                activeThumbColor: colors.accent,
                 activeTrackColor: colors.accent.withValues(alpha: 0.3),
               ),
             ],

@@ -669,23 +669,26 @@ Allowed `type` values for configs:
     try {
       final bytes = await image.readAsBytes();
       final mimeType = image.path.toLowerCase().endsWith('.png') ? 'image/png' : 'image/jpeg';
+      final b64 = base64Encode(bytes);
 
-      final request = http.MultipartRequest('POST', _proxyUri('/api/analyze-image'));
+      final headers = <String, String>{
+        'Content-Type': 'application/json',
+      };
       final appKey = _appKey();
       if (appKey.isNotEmpty) {
-        request.headers['X-VT-API-Key'] = appKey;
+        headers['X-VT-API-Key'] = appKey;
       }
-      request.files.add(
-        http.MultipartFile.fromBytes(
-          'file',
-          bytes,
-          filename: image.name,
-        ),
-      );
-      request.fields['mimeType'] = mimeType;
 
-      final streamed = await request.send().timeout(const Duration(seconds: 40));
-      final response = await http.Response.fromStream(streamed);
+      final body = json.encode({
+        'imageData': b64,
+        'mimeType': mimeType,
+      });
+
+      final response = await http.post(
+        _proxyUri('/api/analyze-image'),
+        headers: headers,
+        body: body,
+      ).timeout(const Duration(seconds: 40));
 
       if (response.statusCode < 200 || response.statusCode >= 300) {
         debugPrint('AIService proxy analyzeImage HTTP ${response.statusCode}: ${response.body}');
@@ -827,10 +830,23 @@ Allowed `type` values for configs:
               if (jsonStr.isNotEmpty) {
                 try {
                   final data = json.decode(jsonStr);
-                  if (data['error'] != null) {
-                    yield data['error'];
-                  } else if (data['text'] != null) {
-                    yield data['text'];
+                  if (data is Map<String, dynamic>) {
+                    if (data['error'] != null) {
+                      yield data['error'].toString();
+                    } else if (data['text'] != null) {
+                      yield data['text'].toString();
+                    } else if (data['candidates'] is List && (data['candidates'] as List).isNotEmpty) {
+                      final candidate = (data['candidates'] as List).first;
+                      if (candidate is Map<String, dynamic> && candidate['content'] is Map<String, dynamic>) {
+                        final content = candidate['content'] as Map<String, dynamic>;
+                        if (content['parts'] is List && (content['parts'] as List).isNotEmpty) {
+                          final part = (content['parts'] as List).first;
+                          if (part is Map<String, dynamic> && part['text'] != null) {
+                            yield part['text'].toString();
+                          }
+                        }
+                      }
+                    }
                   }
                 } catch (e) {
                   // Ignore JSON parse errors for incomplete chunks

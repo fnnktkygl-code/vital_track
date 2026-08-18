@@ -200,8 +200,9 @@ class KnowledgeService {
              final bytes = await file.readAsBytes();
              final b64 = base64Encode(bytes);
              String mime = 'application/octet-stream';
-             if (source.type == KnowledgeType.pdf) mime = 'application/pdf';
-             else if (source.type == KnowledgeType.image) {
+             if (source.type == KnowledgeType.pdf) {
+               mime = 'application/pdf';
+             } else if (source.type == KnowledgeType.image) {
                mime = source.localFilePath!.toLowerCase().endsWith('.png') ? 'image/png' : 'image/jpeg';
              } else if (source.type == KnowledgeType.video) {
                mime = source.localFilePath!.toLowerCase().endsWith('.mov') ? 'video/quicktime' : 'video/mp4';
@@ -258,7 +259,9 @@ class KnowledgeService {
         .where((w) => w.length > 2)
         .toList();
 
-    if (keywords.isEmpty) return userSources.take(5).toList();
+    if (keywords.isEmpty) {
+      return userSources.take(5).toList();
+    }
 
     final scored = <KnowledgeSource, int>{};
     for (final s in inlineSources) {

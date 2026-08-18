@@ -20,8 +20,12 @@ class HiveService {
   static const String _aiCacheBoxName = 'ai_cache';
   static const String _dietPlanBoxName = 'diet_plans';
 
-  Future<void> init() async {
-    await Hive.initFlutter();
+  Future<void> init({String? customPath}) async {
+    if (customPath != null) {
+      Hive.init(customPath);
+    } else {
+      await Hive.initFlutter();
+    }
 
     // Register Adapters
     if (!Hive.isAdapterRegistered(0)) Hive.registerAdapter(FoodAdapter());

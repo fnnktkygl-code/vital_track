@@ -241,7 +241,7 @@ class _PulsingDotState extends State<_PulsingDot>
     return Center(
       child: AnimatedBuilder(
         animation: _ctrl,
-        builder: (_, __) => Container(
+        builder: (context, child) => Container(
           width: 10 + _ctrl.value * 4,
           height: 10 + _ctrl.value * 4,
           decoration: BoxDecoration(

@@ -1,11 +1,20 @@
 const { callGeminiApi } = require('./_lib/geminiFallback');
+const { authGuard } = require('./_lib/auth');
 
 module.exports = async function handler(req, res) {
+  // CORS
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-VT-API-Key');
+
+  if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
-  const { query } = req.body;
+  if (!authGuard(req, res)) return;
+
+  const { query } = req.body || {};
   if (!query) {
     return res.status(400).json({ error: 'Missing query parameter' });
   }
@@ -82,7 +91,8 @@ IMPORTANT:
 
     let foodData;
     try {
-      foodData = JSON.parse(result.text);
+      const rawText = typeof result === 'object' && result.text ? result.text : String(result || '');
+      foodData = JSON.parse(rawText);
     } catch (e) {
       return res.status(500).json({ error: 'Failed to parse AI response' });
     }

@@ -9,9 +9,27 @@ class VitalRulesEngine {
   static Future<void> loadRules() async {
     try {
       final String jsonString = await rootBundle.loadString('assets/vital_ranking.json');
-      _expertDb = json.decode(jsonString);
+      loadRulesFromJson(jsonString);
     } catch (e) {
        // print("Error loading vital_ranking.json: $e");
+    }
+  }
+
+  /// Load rules directly from a JSON string (used for tests or dynamic updates)
+  static void loadRulesFromJson(String jsonString) {
+    try {
+      final decoded = json.decode(jsonString);
+      if (decoded is List) {
+        _expertDb = decoded;
+      } else if (decoded is Map && decoded['foods'] is List) {
+        _expertDb = decoded['foods'] as List<dynamic>;
+      } else if (decoded is Map && decoded['data'] is List) {
+        _expertDb = decoded['data'] as List<dynamic>;
+      } else {
+        _expertDb = [];
+      }
+    } catch (e) {
+      debugPrint("VitalRulesEngine: JSON decode error: $e");
     }
   }
 
@@ -19,16 +37,30 @@ class VitalRulesEngine {
     if (_expertDb.isEmpty) return null;
 
     final normalizedQuery = query.toLowerCase().trim();
+    if (normalizedQuery.isEmpty) return null;
 
-    // Direct match check in names array
-    try {
-      return _expertDb.firstWhere((item) {
-        final List<dynamic> names = item['names'];
-        return names.any((name) => normalizedQuery.contains(name.toString().toLowerCase()));
-      });
-    } catch (e) {
-      return null;
+    // 1. Exact match check in names array
+    for (final item in _expertDb) {
+      final List<dynamic>? names = item['names'] as List<dynamic>?;
+      if (names == null) continue;
+      if (names.any((name) => name.toString().toLowerCase().trim() == normalizedQuery)) {
+        return item as Map<String, dynamic>;
+      }
     }
+
+    // 2. Substring match
+    for (final item in _expertDb) {
+      final List<dynamic>? names = item['names'] as List<dynamic>?;
+      if (names == null) continue;
+      if (names.any((name) {
+        final n = name.toString().toLowerCase().trim();
+        return n.contains(normalizedQuery) || (normalizedQuery.length >= 3 && normalizedQuery.contains(n));
+      })) {
+        return item as Map<String, dynamic>;
+      }
+    }
+
+    return null;
   }
 
   // Helper to convert Expert DB JSON to Food object (merging with override logic if needed later)
@@ -89,6 +121,7 @@ class VitalRulesEngine {
       note: data['note'] ?? "Aliment vérifié dans la base de données VitalTrack.",
     );
   }
+
   static List<Food> searchExpertDb(String query) {
     if (query.isEmpty) return [];
 
@@ -96,21 +129,32 @@ class VitalRulesEngine {
 
     // Find all items where any name matches
     final matches = _expertDb.where((item) {
-      final List<dynamic> names = item['names'];
+      final List<dynamic>? names = item['names'] as List<dynamic>?;
+      if (names == null) return false;
       return names.any((name) {
-         final n = name.toString().toLowerCase();
-         // Check both directions: "apple" contains "app" OR "app" contains "apple" (exact match preference)
-         return n.contains(normalizedQuery) || normalizedQuery.contains(n);
+         final n = name.toString().toLowerCase().trim();
+         return n.contains(normalizedQuery) || (normalizedQuery.length >= 3 && normalizedQuery.contains(n));
       });
     }).toList();
 
-    return matches.map((data) => getExpertFood((data['names'] as List).first.toString())!).toList();
+    return matches
+        .map((data) {
+          final names = data['names'] as List<dynamic>?;
+          if (names == null || names.isEmpty) return null;
+          return getExpertFood(names.first.toString());
+        })
+        .whereType<Food>()
+        .toList();
   }
 
   /// Returns ALL foods from the expert database (for the default search list).
   static List<Food> getAllFoods() {
     return _expertDb
-        .map((data) => getExpertFood((data['names'] as List).first.toString()))
+        .map((data) {
+          final names = data['names'] as List<dynamic>?;
+          if (names == null || names.isEmpty) return null;
+          return getExpertFood(names.first.toString());
+        })
         .whereType<Food>()
         .toList();
   }
@@ -136,6 +180,7 @@ class VitalRulesEngine {
 
 extension StringExtension on String {
   String capitalize() {
-    return "${this[0].toUpperCase()}${substring(1)}";
+    if (isEmpty) return this;
+    return "${this[0].toUpperCase()}${substring(1).toLowerCase()}";
   }
 }

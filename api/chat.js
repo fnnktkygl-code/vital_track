@@ -8,16 +8,7 @@
 const { callGeminiApi } = require('./_lib/geminiFallback');
 const { authGuard } = require('./_lib/auth');
 const { chatSystemPrompt } = require('./_lib/prompts');
-const fs = require('fs');
-const path = require('path');
-
-// Load knowledge base into memory if available
-let knowledgeBase = '';
-try {
-  knowledgeBase = fs.readFileSync(path.join(__dirname, '_lib', 'knowledge_bundle.txt'), 'utf8');
-} catch (e) {
-  console.log('No knowledge base found.');
-}
+const { retrieveRelevantKnowledge } = require('./_lib/knowledgeRetriever');
 
 module.exports = async function handler(req, res) {
   // CORS
@@ -71,7 +62,8 @@ module.exports = async function handler(req, res) {
       ? `\n\n[RÈGLE STRICTE] Ceci est la suite d'une conversation en cours. NE DIS PAS BONJOUR. Reprends directement le fil de la discussion.` 
       : `\n\n[RÈGLE STRICTE] C'est le début d'une nouvelle conversation. Tu peux saluer l'utilisateur si c'est pertinent.`;
 
-    const fullSystemInstruction = `${chatSystemPrompt}${profileContext}${conversationRule}${knowledgeBase ? `\n\n[RAG_KNOWLEDGE_BASE]\nUtilise ce savoir brut extrait de nos PDFs officiels pour répondre avec précision si c'est pertinent :\n${knowledgeBase}` : ''}`;
+    const targetedKnowledge = retrieveRelevantKnowledge(query, 4);
+    const fullSystemInstruction = `${chatSystemPrompt}${profileContext}${conversationRule}${targetedKnowledge ? `\n\n[RAG_KNOWLEDGE_BASE]\nExtraits pertinents de nos livres de référence pour t'aider à répondre :\n${targetedKnowledge}` : ''}`;
 
     const isStream = req.query.stream === 'true';
 
