@@ -977,6 +977,7 @@ function renderFoodCard(item) {
 window.openFoodModal = function(idxOrFood) {
   let item = null;
   let isMealContext = false;
+  let isMealSelection = false;
 
   if (typeof idxOrFood === 'number' || (!isNaN(Number(idxOrFood)) && typeof idxOrFood !== 'object')) {
     item = vitalDb[Number(idxOrFood)];
@@ -985,10 +986,13 @@ window.openFoodModal = function(idxOrFood) {
   } else if (typeof idxOrFood === 'object' && idxOrFood !== null) {
     item = idxOrFood;
     isMealContext = idxOrFood.isMealItem === true;
+    isMealSelection = idxOrFood.isMealSelection === true;
   }
 
   if (!item) return;
   currentModalFood = item;
+
+  const isAddingMeal = isMealSelection || (document.getElementById('addMealModal')?.classList.contains('open'));
 
   const name = (item.names?.[0] || item.name || 'Aliment').replace(/^./, c => c.toUpperCase());
   
@@ -1014,12 +1018,31 @@ window.openFoodModal = function(idxOrFood) {
   const isE = sp.electric === true;
   const isHyb = sp.hybrid === true;
 
+  let multiNavHtml = '';
+  if (item.allAnalyzedItems && item.allAnalyzedItems.length > 1) {
+    multiNavHtml = `
+      <div class="analyzed-nav" style="margin-top:10px;">
+        <span style="font-size:0.75rem; color:var(--text-dim); width:100%; text-align:center; margin-bottom:4px; display:block;">
+          <i class="ri-sparkling-fill" style="color:var(--accent)"></i> ${item.allAnalyzedItems.length} aliments analysés dans ce plat :
+        </span>
+        ${item.allAnalyzedItems.map((it, i) => {
+          const itName = (it.name || it.names?.[0] || 'Aliment').replace(/^./, c => c.toUpperCase());
+          const isCurrent = itName.toLowerCase() === name.toLowerCase();
+          return `<button type="button" class="tab ${isCurrent ? 'active' : ''}" onclick="switchAnalyzedFoodInModal(${i})" style="padding:4px 10px; font-size:0.8rem; border-radius:20px;">
+            ${it.emoji || '🍽️'} ${esc(itName)}
+          </button>`;
+        }).join('')}
+      </div>
+    `;
+  }
+
   document.getElementById('modalFoodHeader').innerHTML = `
     <div style="font-size:3rem;margin-bottom:8px">${item.emoji || '🍽️'}</div>
     <h2 style="font-family:var(--font);font-weight:700;font-size:1.35rem;">${esc(name)}</h2>
     <p style="color:var(--text-dim);font-size:0.88rem;margin-top:4px;">
       ${esc(item.family || 'Aliment')} · ${isE ? '⚡ Électrique' : isHyb ? '🔀 Hybride' : '⛔ Mucogène'}
     </p>
+    ${multiNavHtml}
   `;
 
   currentModalFood._parsed = { name, sc, vt, sp, item };
@@ -1039,6 +1062,13 @@ window.openFoodModal = function(idxOrFood) {
       actionsContainer.innerHTML = `
         <button class="btn-outline full-w" onclick="closeFoodModal()"><i class="ri-check-line"></i> Fermer la carte d'identité</button>
       `;
+    } else if (isAddingMeal) {
+      actionsContainer.innerHTML = `
+        <div style="display:flex; gap:8px; width:100%;">
+          <button type="button" class="btn-outline" style="flex:1;" onclick="closeFoodModal()"><i class="ri-arrow-left-line"></i> Continuer le repas</button>
+          <button type="button" class="btn-primary" style="flex:1;" onclick="confirmAddMealFromModal()"><i class="ri-checkbox-circle-line"></i> Enregistrer le repas</button>
+        </div>
+      `;
     } else {
       const idx = vitalDb.indexOf(item);
       actionsContainer.innerHTML = `
@@ -1054,6 +1084,33 @@ window.openFoodModal = function(idxOrFood) {
   }
 
   document.getElementById('foodModal').classList.add('open');
+};
+
+window.switchAnalyzedFoodInModal = function(idx) {
+  if (!currentModalFood || !currentModalFood.allAnalyzedItems || !currentModalFood.allAnalyzedItems[idx]) return;
+  const target = currentModalFood.allAnalyzedItems[idx];
+  openFoodModal({
+    ...target,
+    isMealSelection: true,
+    allAnalyzedItems: currentModalFood.allAnalyzedItems
+  });
+};
+
+window.confirmAddMealFromModal = function() {
+  closeFoodModal();
+  confirmAddMeal();
+};
+
+window.openFoodModalFromSelection = function(id) {
+  const item = selectedMealFoods.find(f => f.id === id);
+  if (!item) return;
+  const dbMatch = vitalDb.find(f => f.id === id || (f.names || []).some(n => n.toLowerCase() === (item.name || '').toLowerCase()));
+  const fullItem = dbMatch ? { ...dbMatch, ...item } : item;
+  openFoodModal({
+    ...fullItem,
+    isMealSelection: true,
+    allAnalyzedItems: selectedMealFoods
+  });
 };
 
 window.openFoodModalFromMeal = function(idx) {
@@ -1414,32 +1471,69 @@ window.analyzeDishWithAI = async function() {
       items = tokens.map(token => classifyFoodLocally(token));
     }
 
+    const processedItems = [];
     let addedCount = 0;
     items.forEach(item => {
       const name = (item.name || item.names?.[0] || 'Aliment').replace(/^./, c => c.toUpperCase());
-      const id = item.id || `dish_${Date.now()}_${Math.random()}`;
-      if (!selectedMealFoods.some(f => f.name.toLowerCase() === name.toLowerCase())) {
-        selectedMealFoods.push({
-          id,
-          name,
-          emoji: item.emoji || '🍽️',
-          family: item.family,
-          approved: item.specific?.electric === true || item.approved === true,
-          electric: item.specific?.electric === true || item.approved === true,
-          hybrid: item.specific?.hybrid === true || item.hybrid === true,
-          pral: item.scientific_defaults?.pral ?? (item.scientific?.pral ?? (item.pral ?? 0)),
-          nova: item.vitality?.nova ?? (item.nova ?? 1),
-          freshness: item.vitality?.freshness ?? (item.freshness ?? 80),
-          mucus: item.specific?.mucus || item.mucus,
-          note: item.note
-        });
+      const id = item.id || `dish_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
+      const existing = selectedMealFoods.find(f => f.name.toLowerCase() === name.toLowerCase());
+      
+      const sc = item.scientific_defaults || item.scientific || {
+        pral: item.pral ?? 0,
+        density: item.density ?? ((item.pral ?? 0) < 0 ? 80 : 35),
+        label: (item.pral ?? 0) < 0 ? 'Alcalinisant' : 'Acidifiant'
+      };
+
+      const vt = item.vitality || {
+        nova: item.nova ?? (item.electric ? 1 : 2),
+        freshness: item.freshness ?? ((item.nova === 1 || item.electric) ? 95 : item.nova === 4 ? 15 : 60),
+        label: item.vitalityLabel || (item.nova === 1 ? 'Aliment Brut (Non transformé)' : item.nova === 4 ? 'Produit Ultra-Transformé' : 'Aliment transformé')
+      };
+
+      const sp = item.specific || {
+        electric: item.electric === true || item.approved === true,
+        hybrid: item.hybrid === true,
+        mucus: item.mucus || (item.electric ? 'Dissolvant' : item.hybrid ? 'Faiblement Mucogène' : 'Mucogène'),
+        label: item.electric ? 'Électrique (Dr. Sebi)' : item.hybrid ? 'Hybride' : 'Standard / Mucogène'
+      };
+
+      const foodObj = {
+        id: existing ? existing.id : id,
+        name,
+        names: item.names || [name],
+        emoji: item.emoji || '🍽️',
+        family: item.family || 'Alimentation',
+        approved: sp.electric === true,
+        electric: sp.electric === true,
+        hybrid: sp.hybrid === true,
+        pral: sc.pral ?? 0,
+        scientific_defaults: sc,
+        nova: vt.nova ?? 1,
+        vitality: vt,
+        freshness: vt.freshness ?? 80,
+        mucus: sp.mucus,
+        specific: sp,
+        note: item.note
+      };
+
+      if (!existing) {
+        selectedMealFoods.push(foodObj);
         addedCount++;
       }
+      processedItems.push(foodObj);
     });
 
     renderSelectedMealFoods();
     if (input) input.value = '';
-    showToast(`✨ ${addedCount} aliment(s) identifié(s) et ajouté(s) au repas !`, 'success');
+
+    if (processedItems.length > 0) {
+      openFoodModal({
+        ...processedItems[0],
+        isMealSelection: true,
+        allAnalyzedItems: processedItems
+      });
+      showToast(`✨ ${processedItems.length} aliment(s) identifié(s) ! Profil affiché ci-dessous.`, 'success');
+    }
   } catch (e) {
     console.error('Erreur analyse plat:', e);
     showToast("Erreur lors de l'analyse du plat.", 'error');
@@ -1507,37 +1601,69 @@ window.askAIToAddMealFood = async function(query) {
       items = tokens.map(token => classifyFoodLocally(token));
     }
 
+    const processedItems = [];
     let addedCount = 0;
     items.forEach(item => {
       const name = (item.name || item.names?.[0] || 'Aliment').replace(/^./, c => c.toUpperCase());
-      const id = item.id || `dish_${Date.now()}_${Math.random()}`;
-      if (!selectedMealFoods.some(f => f.name.toLowerCase() === name.toLowerCase())) {
-        selectedMealFoods.push({
-          id,
-          name,
-          emoji: item.emoji || '🍽️',
-          family: item.family,
-          approved: item.specific?.electric === true || item.approved === true,
-          electric: item.specific?.electric === true || item.approved === true,
-          hybrid: item.specific?.hybrid === true || item.hybrid === true,
-          pral: item.scientific_defaults?.pral ?? (item.scientific?.pral ?? (item.pral ?? 0)),
-          nova: item.vitality?.nova ?? (item.nova ?? 1),
-          freshness: item.vitality?.freshness ?? (item.freshness ?? 80),
-          mucus: item.specific?.mucus || item.mucus,
-          note: item.note
-        });
+      const id = item.id || `dish_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
+      const existing = selectedMealFoods.find(f => f.name.toLowerCase() === name.toLowerCase());
+
+      const sc = item.scientific_defaults || item.scientific || {
+        pral: item.pral ?? 0,
+        density: item.density ?? ((item.pral ?? 0) < 0 ? 80 : 35),
+        label: (item.pral ?? 0) < 0 ? 'Alcalinisant' : 'Acidifiant'
+      };
+
+      const vt = item.vitality || {
+        nova: item.nova ?? (item.electric ? 1 : 2),
+        freshness: item.freshness ?? ((item.nova === 1 || item.electric) ? 95 : item.nova === 4 ? 15 : 60),
+        label: item.vitalityLabel || (item.nova === 1 ? 'Aliment Brut (Non transformé)' : item.nova === 4 ? 'Produit Ultra-Transformé' : 'Aliment transformé')
+      };
+
+      const sp = item.specific || {
+        electric: item.electric === true || item.approved === true,
+        hybrid: item.hybrid === true,
+        mucus: item.mucus || (item.electric ? 'Dissolvant' : item.hybrid ? 'Faiblement Mucogène' : 'Mucogène'),
+        label: item.electric ? 'Électrique (Dr. Sebi)' : item.hybrid ? 'Hybride' : 'Standard / Mucogène'
+      };
+
+      const foodObj = {
+        id: existing ? existing.id : id,
+        name,
+        names: item.names || [name],
+        emoji: item.emoji || '🍽️',
+        family: item.family || 'Alimentation',
+        approved: sp.electric === true,
+        electric: sp.electric === true,
+        hybrid: sp.hybrid === true,
+        pral: sc.pral ?? 0,
+        scientific_defaults: sc,
+        nova: vt.nova ?? 1,
+        vitality: vt,
+        freshness: vt.freshness ?? 80,
+        mucus: sp.mucus,
+        specific: sp,
+        note: item.note
+      };
+
+      if (!existing) {
+        selectedMealFoods.push(foodObj);
         addedCount++;
       }
+      processedItems.push(foodObj);
     });
 
     renderSelectedMealFoods();
     if (results) results.innerHTML = '';
     if (searchInput) searchInput.value = '';
     
-    if (addedCount > 0) {
-      showToast(`✨ ${addedCount} aliment(s) identifié(s) et ajouté(s) au repas !`, 'success');
-    } else {
-      showToast('Cet aliment est déjà sélectionné.', 'info');
+    if (processedItems.length > 0) {
+      openFoodModal({
+        ...processedItems[0],
+        isMealSelection: true,
+        allAnalyzedItems: processedItems
+      });
+      showToast(`✨ Aliment "${processedItems[0].name}" analysé ! Profil affiché ci-dessous.`, 'success');
     }
   } catch (err) {
     if (results) results.innerHTML = `<p class="empty-state text-danger">${esc(err.message)}</p>`;
@@ -1608,15 +1734,54 @@ window.searchEditMealFoods = function(query) {
 window.selectMealFood = function(idx) {
   const item = vitalDb[idx]; if (!item) return;
   const name = (item.names?.[0] || '?').replace(/^./, c => c.toUpperCase());
-  if (selectedMealFoods.find(f => f.id === item.id)) return;
-  selectedMealFoods.push({ id: item.id, name, emoji: item.emoji || '🍽️', approved: item.specific?.electric === true, electric: item.specific?.electric === true, hybrid: item.specific?.hybrid === true, pral: item.scientific_defaults?.pral ?? 0, nova: item.vitality?.nova ?? 4 });
+  let target = selectedMealFoods.find(f => f.id === item.id || f.name.toLowerCase() === name.toLowerCase());
+  if (!target) {
+    const sc = item.scientific_defaults || item.scientific || { pral: item.pral ?? 0 };
+    const vt = item.vitality || { nova: item.nova ?? 1, freshness: item.freshness ?? 85 };
+    const sp = item.specific || { electric: item.electric === true, hybrid: item.hybrid === true, mucus: item.mucus };
+    target = {
+      id: item.id,
+      name,
+      names: item.names || [name],
+      emoji: item.emoji || '🍽️',
+      family: item.family || 'Alimentation',
+      approved: sp.electric === true || item.approved === true,
+      electric: sp.electric === true || item.approved === true,
+      hybrid: sp.hybrid === true,
+      pral: sc.pral ?? 0,
+      scientific_defaults: sc,
+      nova: vt.nova ?? 1,
+      vitality: vt,
+      freshness: vt.freshness ?? 85,
+      mucus: sp.mucus,
+      specific: sp,
+      note: item.note
+    };
+    selectedMealFoods.push(target);
+  }
+  renderSelectedMealFoods();
+  openFoodModal({
+    ...item,
+    ...target,
+    isMealSelection: true,
+    allAnalyzedItems: selectedMealFoods
+  });
+};
+
+window.removeSelectedFood = function(id) {
+  selectedMealFoods = selectedMealFoods.filter(f => f.id !== id);
   renderSelectedMealFoods();
 };
 
-window.removeSelectedFood = function(id) { selectedMealFoods = selectedMealFoods.filter(f => f.id !== id); renderSelectedMealFoods(); };
-
 function renderSelectedMealFoods() {
-  document.getElementById('mealSelectedItems').innerHTML = selectedMealFoods.map(f => `<span class="selected-chip">${f.emoji} ${esc(f.name)} <button onclick="removeSelectedFood('${f.id}')">×</button></span>`).join('');
+  const container = document.getElementById('mealSelectedItems');
+  if (!container) return;
+  container.innerHTML = selectedMealFoods.map(f => `
+    <span class="selected-chip clickable" onclick="openFoodModalFromSelection('${f.id}')" title="Cliquer pour voir la carte d'identité 3 onglets">
+      ${f.emoji || '🍽️'} ${esc(f.name)}
+      <button type="button" onclick="event.stopPropagation(); removeSelectedFood('${f.id}')" title="Retirer">×</button>
+    </span>
+  `).join('');
 }
 
 window.confirmAddMeal = function() {
