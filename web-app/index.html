@@ -341,17 +341,74 @@
   <!-- ═══════ SEARCH ═══════ -->
   <main class="page" id="page-search">
     <div class="search-container">
-      <div class="search-header glass"><h2>🔍 Recherche d'aliments</h2><p class="subtitle">Base vitaliste — Dr. Sebi / Ehret / Morse</p></div>
-      <div class="search-bar-wrap">
-        <input type="text" id="searchInput" placeholder="Chercher un aliment (ex: mangue, quinoa, kale)..." oninput="searchFoods(this.value)">
+      <!-- Header -->
+      <div class="search-header glass">
+        <h2>🔍 Recherche d'aliments</h2>
+        <p class="subtitle">Base vitaliste — Dr. Sebi / Ehret / Morse</p>
       </div>
+
+      <!-- Search bar with clear button -->
+      <div class="search-bar-wrap search-bar-enhanced">
+        <i class="ri-search-line search-icon-left"></i>
+        <input type="text" id="searchInput" placeholder="Chercher un aliment (ex: mangue, quinoa, kale)..." autocomplete="off" spellcheck="false">
+        <button class="search-clear-btn" id="searchClearBtn" onclick="clearSearch()" style="display:none" aria-label="Effacer la recherche">
+          <i class="ri-close-circle-fill"></i>
+        </button>
+      </div>
+
+      <!-- Filters -->
       <div class="search-filters">
         <button class="filter-chip active" data-filter="all" onclick="setSearchFilter('all')">Tous</button>
         <button class="filter-chip" data-filter="electric" onclick="setSearchFilter('electric')">⚡ Électriques</button>
         <button class="filter-chip" data-filter="hybrid" onclick="setSearchFilter('hybrid')">🔀 Hybrides</button>
         <button class="filter-chip" data-filter="alkaline" onclick="setSearchFilter('alkaline')">🟢 Alcalinisants</button>
+        <button class="filter-chip" data-filter="mucus" onclick="setSearchFilter('mucus')">⛔ Mucogènes</button>
       </div>
-      <div class="food-results" id="foodResults"><p class="empty-state">Tapez un nom d'aliment pour voir son profil vitaliste.</p></div>
+
+      <!-- Results stats bar + sort (visible only when results exist) -->
+      <div class="search-stats-bar" id="searchStatsBar" style="display:none">
+        <span class="search-result-count" id="searchResultCount"></span>
+        <div class="search-sort">
+          <label class="sort-label"><i class="ri-sort-asc"></i></label>
+          <select id="searchSortSelect" onchange="applySortAndRender()" class="sort-select">
+            <option value="relevance">Pertinence</option>
+            <option value="pral-asc">PRAL ↑ alcalin</option>
+            <option value="pral-desc">PRAL ↓ acide</option>
+            <option value="nova-asc">NOVA ↑ naturel</option>
+            <option value="freshness-desc">Fraîcheur ↓</option>
+            <option value="az">A → Z</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Empty state: recent searches + category browse -->
+      <div id="searchEmptyState">
+        <!-- Recent searches (rendered by JS) -->
+        <div id="searchRecentWrap" style="display:none">
+          <div class="search-section-label">
+            <span><i class="ri-history-line"></i> Recherches récentes</span>
+            <button onclick="clearRecentSearches()" class="search-section-clear">Effacer</button>
+          </div>
+          <div id="searchRecentChips" class="search-recent-chips"></div>
+        </div>
+
+        <!-- Category browse -->
+        <div class="search-section-label" id="categoryBrowseLabel">
+          <span><i class="ri-apps-2-line"></i> Explorer par catégorie</span>
+        </div>
+        <div class="category-browse-grid" id="categoryBrowseGrid">
+          <!-- Rendered by JS after DB loads -->
+        </div>
+
+        <!-- Popular foods -->
+        <div class="search-section-label" id="popularFoodsLabel" style="margin-top:18px">
+          <span><i class="ri-fire-line"></i> Aliments populaires</span>
+        </div>
+        <div class="food-results" id="popularFoodsGrid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:8px;"></div>
+      </div>
+
+      <!-- Live results -->
+      <div class="food-results" id="foodResults" style="display:none"></div>
     </div>
   </main>
 

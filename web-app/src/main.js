@@ -88,6 +88,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       const customDb = store.get('customFoods', []);
       vitalDb = [...baseDb, ...customDb];
       populateVitalApprovedFoods();
+      buildSearchIndex();
+      initSearchPage();
     }
   } catch (e) { console.warn('Could not load food database:', e); }
 });
@@ -927,49 +929,459 @@ function addTypingIndicator() {
   container.appendChild(div); container.scrollTop = container.scrollHeight; return div;
 }
 
-// ═══════ SEARCH ═══════
+// ═══════ SEARCH ENGINE ═══════
+// Inverted index: token → Set of vitalDb indices
+let _searchIndex = new Map();
+let _lastSearchResults = []; // cache last matches for sort/rerender
+let _lastSearchQuery = '';
+let _searchDebounceTimer = null;
+const _aiSearchCache = new Map(); // query string → food object (in-memory)
+
+// Build an inverted index of 2-char+ prefixes and full tokens from all names
+function buildSearchIndex() {
+  _searchIndex.clear();
+  vitalDb.forEach((item, idx) => {
+    const tokens = new Set();
+    (item.names || []).forEach(name => {
+      const lower = name.toLowerCase();
+      tokens.add(lower);
+      // Add all substrings of length >= 2 starting at position 0 (prefix index)
+      for (let len = 2; len <= lower.length; len++) tokens.add(lower.slice(0, len));
+      // Also index by each word's prefix for multi-word names
+      lower.split(/\s+/).forEach(word => {
+        for (let len = 2; len <= word.length; len++) tokens.add(word.slice(0, len));
+      });
+    });
+    // Add category as a searchable token too
+    if (item.category) {
+      const cat = item.category.toLowerCase();
+      tokens.add(cat);
+      for (let len = 2; len <= cat.length; len++) tokens.add(cat.slice(0, len));
+    }
+    tokens.forEach(token => {
+      if (!_searchIndex.has(token)) _searchIndex.set(token, new Set());
+      _searchIndex.get(token).add(idx);
+    });
+  });
+}
+
+// Levenshtein distance (simplified, capped at 3 for performance)
+function levenshtein(a, b) {
+  if (a === b) return 0;
+  if (Math.abs(a.length - b.length) > 3) return 99;
+  const m = a.length, n = b.length;
+  const dp = Array.from({ length: m + 1 }, (_, i) => [i, ...Array(n).fill(0)]);
+  for (let j = 0; j <= n; j++) dp[0][j] = j;
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      dp[i][j] = a[i - 1] === b[j - 1]
+        ? dp[i - 1][j - 1]
+        : 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+    }
+  }
+  return dp[m][n];
+}
+
+// Fuzzy search: find items where any name is within edit distance ≤ 2
+function fuzzySearch(q) {
+  const matched = new Set();
+  vitalDb.forEach((item, idx) => {
+    const names = item.names || [];
+    for (const name of names) {
+      const lower = name.toLowerCase();
+      // Substring match
+      if (lower.includes(q)) { matched.add(idx); break; }
+      // Per-word fuzzy match (edit distance ≤ 2 for words >= 4 chars)
+      const words = lower.split(/\s+/);
+      const qWords = q.split(/\s+/);
+      for (const qw of qWords) {
+        if (qw.length < 3) continue;
+        for (const w of words) {
+          if (w.length < 3) continue;
+          if (levenshtein(qw, w) <= (qw.length <= 4 ? 1 : 2)) {
+            matched.add(idx);
+            break;
+          }
+        }
+        if (matched.has(idx)) break;
+      }
+      if (matched.has(idx)) break;
+    }
+  });
+  return [...matched].map(i => vitalDb[i]);
+}
+
+// Index lookup (fast exact/prefix match)
+function indexSearch(q) {
+  const hits = _searchIndex.get(q);
+  if (hits && hits.size > 0) return [...hits].map(i => vitalDb[i]);
+  return null;
+}
+
+// Apply active filter to a list of items
+function applyFilter(matches) {
+  if (currentSearchFilter === 'all') return matches;
+  return matches.filter(item => {
+    const sp = item.specific || {};
+    if (currentSearchFilter === 'electric') return sp.electric === true;
+    if (currentSearchFilter === 'hybrid') return sp.hybrid === true;
+    if (currentSearchFilter === 'alkaline') return (item.scientific_defaults?.pral ?? 0) < 0;
+    if (currentSearchFilter === 'mucus') return sp.electric !== true && sp.hybrid !== true;
+    return true;
+  });
+}
+
+// Sort a list of items by current sort select value
+function applySortItems(items) {
+  const sort = document.getElementById('searchSortSelect')?.value || 'relevance';
+  const sorted = [...items];
+  if (sort === 'pral-asc') sorted.sort((a, b) => (a.scientific_defaults?.pral ?? 0) - (b.scientific_defaults?.pral ?? 0));
+  else if (sort === 'pral-desc') sorted.sort((a, b) => (b.scientific_defaults?.pral ?? 0) - (a.scientific_defaults?.pral ?? 0));
+  else if (sort === 'nova-asc') sorted.sort((a, b) => (a.vitality?.nova ?? 4) - (b.vitality?.nova ?? 4));
+  else if (sort === 'freshness-desc') sorted.sort((a, b) => (b.vitality?.freshness ?? 0) - (a.vitality?.freshness ?? 0));
+  else if (sort === 'az') sorted.sort((a, b) => (a.names?.[0] || '').localeCompare(b.names?.[0] || '', 'fr'));
+  return sorted;
+}
+
+// Re-render with current sort (called by sort select change)
+window.applySortAndRender = function() {
+  if (_lastSearchResults.length > 0) renderSearchResults(_lastSearchResults, _lastSearchQuery);
+};
+
 window.setSearchFilter = function(filter) {
   currentSearchFilter = filter;
   document.querySelectorAll('.filter-chip').forEach(c => c.classList.toggle('active', c.dataset.filter === filter));
-  searchFoods(document.getElementById('searchInput').value);
+  const q = (document.getElementById('searchInput')?.value || '').trim();
+  if (q) {
+    searchFoods(q);
+  } else {
+    // Re-render popular/category if no query
+    renderPopularFoods();
+  }
 };
 
+// Debounced search entry point
 window.searchFoods = function(query) {
-  const results = document.getElementById('foodResults');
-  const q = (query || '').toLowerCase().trim();
-  let matches = q ? vitalDb.filter(item => (item.names || []).some(n => n.toLowerCase().includes(q))) : vitalDb.slice(0, 30);
+  const q = (query || '').trim();
+  // Show/hide clear button
+  const clearBtn = document.getElementById('searchClearBtn');
+  if (clearBtn) clearBtn.style.display = q ? 'block' : 'none';
 
-  if (currentSearchFilter !== 'all') {
-    matches = matches.filter(item => {
-      const sp = item.specific || {};
-      if (currentSearchFilter === 'electric') return sp.electric === true;
-      if (currentSearchFilter === 'hybrid') return sp.hybrid === true;
-      if (currentSearchFilter === 'alkaline') return (item.scientific_defaults?.pral ?? 0) < 0;
-      return true;
-    });
+  clearTimeout(_searchDebounceTimer);
+  _searchDebounceTimer = setTimeout(() => _doSearch(q), 200);
+};
+
+function _doSearch(q) {
+  const resultsEl = document.getElementById('foodResults');
+  const emptyState = document.getElementById('searchEmptyState');
+  const statsBar = document.getElementById('searchStatsBar');
+
+  if (!q) {
+    // No query → show empty state (category browse + popular)
+    if (resultsEl) { resultsEl.innerHTML = ''; resultsEl.style.display = 'none'; }
+    if (emptyState) emptyState.style.display = '';
+    if (statsBar) statsBar.style.display = 'none';
+    _lastSearchResults = [];
+    _lastSearchQuery = '';
+    return;
   }
-  matches = matches.slice(0, 30);
+
+  const lower = q.toLowerCase();
+
+  // 1. Try fast index lookup
+  let matches = indexSearch(lower);
+
+  // 2. If no hit from index, try fuzzy
+  if (!matches || matches.length === 0) matches = fuzzySearch(lower);
+
+  // 3. Apply active filter
+  matches = applyFilter(matches || []);
+
+  // Store for sort re-renders
+  _lastSearchResults = matches;
+  _lastSearchQuery = q;
+
+  renderSearchResults(matches, q);
+}
+
+function renderSearchResults(matches, q) {
+  const resultsEl = document.getElementById('foodResults');
+  const emptyState = document.getElementById('searchEmptyState');
+  const statsBar = document.getElementById('searchStatsBar');
+  const countEl = document.getElementById('searchResultCount');
+
+  // Hide empty state, show results area
+  if (emptyState) emptyState.style.display = 'none';
+  if (resultsEl) resultsEl.style.display = 'flex';
+
+  // Apply sort
+  const sorted = applySortItems(matches).slice(0, 40);
 
   if (matches.length === 0) {
-    results.innerHTML = `
-      <p class="empty-state">Aucun aliment trouvé.</p>
-      <button class="btn-primary" style="margin: 0 auto; display: flex;" onclick="askAIToFindFood('${esc(q)}')">
-        ✨ Demander à l'IA de chercher "${esc(q)}"
-      </button>
+    if (statsBar) statsBar.style.display = 'none';
+    resultsEl.innerHTML = `
+      <p class="empty-state">Aucun résultat pour <strong>"${esc(q)}"</strong>.</p>
+      <div style="text-align:center; margin-top:8px">
+        <button class="btn-primary" style="margin: 0 auto; display: inline-flex; align-items:center; gap:8px;" onclick="askAIToFindFood('${esc(q)}')">
+          <i class="ri-sparkling-fill"></i> Analyser "${esc(q)}" avec l'IA
+        </button>
+      </div>
     `;
     return;
   }
-  results.innerHTML = matches.map(item => renderFoodCard(item)).join('');
-};
 
-function renderFoodCard(item) {
+  // Update stats bar
+  if (statsBar) statsBar.style.display = 'flex';
+  if (countEl) {
+    const total = matches.length;
+    countEl.textContent = total === 1 ? `1 résultat` : `${total} résultats`;
+  }
+
+  // Save to recent searches
+  saveRecentSearch(q);
+
+  resultsEl.innerHTML = sorted.map(item => renderFoodCard(item)).join('');
+}
+
+function renderFoodCard(item, compact = false) {
   const name = ((item.names?.[0] || 'Inconnu')).replace(/^./, c => c.toUpperCase());
-  const sp = item.specific || {}; const sc = item.scientific_defaults || {};
-  const isE = sp.electric === true; const isH = sp.hybrid === true;
+  const sp = item.specific || {};
+  const sc = item.scientific_defaults || {};
+  const vt = item.vitality || {};
+  const isE = sp.electric === true;
+  const isH = sp.hybrid === true;
   const pral = sc.pral ?? 0;
+  const nova = vt.nova ?? (isE ? 1 : isH ? 2 : 3);
+  const freshness = vt.freshness ?? 70;
   const bc = isE ? 'badge-electric' : isH ? 'badge-hybrid' : 'badge-mucus';
   const bt = isE ? 'Électrique' : isH ? 'Hybride' : 'Mucogène';
-  return `<div class="food-card" onclick="openFoodModal(${vitalDb.indexOf(item)})"><div class="food-emoji">${item.emoji || '🍽️'}</div><div class="food-info"><div class="food-name">${esc(name)}</div><div class="food-meta">${esc(item.family || '')} · PRAL ${pral > 0 ? '+' : ''}${pral.toFixed(1)}</div></div><span class="food-badge ${bc}">${bt}</span></div>`;
+  const novaCls = `nova-${Math.min(4, Math.max(1, nova))}`;
+  const freshnessColor = freshness >= 80 ? '#34d399' : freshness >= 50 ? '#facc15' : '#ef4444';
+  const idx = vitalDb.indexOf(item);
+  const favs = store.get('favorites', []);
+  const isFav = item.id && favs.some(f => f.id === item.id);
+  const noteHtml = item.note ? `<div class="food-note" title="${esc(item.note)}">${esc(item.note.slice(0, 70))}${item.note.length > 70 ? '…' : ''}</div>` : '';
+
+  if (compact) {
+    return `<div class="food-card-compact" onclick="openFoodModal(${idx})">
+      <div class="food-emoji">${item.emoji || '🍽️'}</div>
+      <div class="food-name">${esc(name)}</div>
+      <span class="food-badge ${bc}">${bt}</span>
+    </div>`;
+  }
+
+  return `<div class="food-card" onclick="openFoodModal(${idx})">
+    ${isFav ? '<span class="food-fav-icon"><i class="ri-heart-fill"></i></span>' : ''}
+    <div class="food-emoji">${item.emoji || '🍽️'}</div>
+    <div class="food-info">
+      <div class="food-name">${esc(name)}</div>
+      <div class="food-meta">${esc(item.family || item.category || '')} · PRAL ${pral > 0 ? '+' : ''}${pral.toFixed(1)}</div>
+      ${noteHtml}
+      <div class="food-freshness-bar"><div class="food-freshness-fill" style="width:${freshness}%;background:${freshnessColor}"></div></div>
+    </div>
+    <div class="food-card-right">
+      <span class="food-badge ${bc}">${bt}</span>
+      <span class="nova-pip ${novaCls}">NOVA ${nova}</span>
+    </div>
+  </div>`;
+}
+
+// ─── Recent searches (localStorage, max 8) ───
+function saveRecentSearch(q) {
+  if (!q || q.length < 2) return;
+  let recents = store.get('search-recents', []);
+  recents = recents.filter(r => r.toLowerCase() !== q.toLowerCase());
+  recents.unshift(q);
+  store.set('search-recents', recents.slice(0, 8));
+  renderRecentSearches();
+}
+
+function renderRecentSearches() {
+  const wrap = document.getElementById('searchRecentWrap');
+  const chips = document.getElementById('searchRecentChips');
+  if (!wrap || !chips) return;
+  const recents = store.get('search-recents', []);
+  if (recents.length === 0) { wrap.style.display = 'none'; return; }
+  wrap.style.display = '';
+  chips.innerHTML = recents.map(r => `
+    <button class="recent-chip" onclick="applyRecentSearch('${esc(r)}')">
+      <i class="ri-search-line"></i> ${esc(r)}
+    </button>
+  `).join('');
+}
+
+window.applyRecentSearch = function(q) {
+  const input = document.getElementById('searchInput');
+  if (input) { input.value = q; input.focus(); }
+  searchFoods(q);
+};
+
+window.clearRecentSearches = function() {
+  store.set('search-recents', []);
+  renderRecentSearches();
+};
+
+window.clearSearch = function() {
+  const input = document.getElementById('searchInput');
+  if (input) { input.value = ''; input.focus(); }
+  searchFoods('');
+};
+
+// ─── Category browse ───
+const CATEGORY_EMOJIS = {
+  'Fruits': '🍎', 'Légumes': '🥬', 'Herbes & Thés': '🌿', 'Épices & Assaisonnements': '🌶️',
+  'Céréales': '🌾', 'Légumineuses': '🫘', 'Noix & Graines': '🥜', 'Huiles': '🫒',
+  'Boissons': '💧', 'À éviter': '⛔', 'Viandes & Charcuterie': '🥩', 'Poissons & Fruits de mer': '🐟',
+  'Produits Laitiers': '🧀', 'Œufs': '🥚', 'Volailles': '🍗', 'Plats Cuisinés & Fast Food': '🍕',
+  'Snacks & Ultra-transformés': '🍟', 'Pain & Boulangerie': '🥖', 'Condiments & Sauces': '🧂',
+  'Compléments & Suppléments': '💊', 'Sucrants': '🍬', 'Algues & Minéraux': '🌊'
+};
+
+function renderCategoryBrowse() {
+  const grid = document.getElementById('categoryBrowseGrid');
+  if (!grid) return;
+  const cats = {};
+  vitalDb.forEach(item => { const c = item.category || 'Autre'; cats[c] = (cats[c] || 0) + 1; });
+  const sorted = Object.entries(cats).sort((a, b) => b[1] - a[1]);
+  grid.innerHTML = sorted.map(([cat, count]) => {
+    const emoji = CATEGORY_EMOJIS[cat] || '🍽️';
+    const shortName = cat.replace(' & ', '/').replace(' et ', '/');
+    return `<div class="category-card" onclick="browseFoodsByCategory('${esc(cat)}')">
+      <span class="category-card-emoji">${emoji}</span>
+      <span class="category-card-name">${esc(shortName)}</span>
+      <span class="category-card-count">${count} aliments</span>
+    </div>`;
+  }).join('');
+}
+
+window.browseFoodsByCategory = function(cat) {
+  const input = document.getElementById('searchInput');
+  if (input) { input.value = cat; }
+  const clearBtn = document.getElementById('searchClearBtn');
+  if (clearBtn) clearBtn.style.display = 'block';
+
+  const matches = applyFilter(vitalDb.filter(item => item.category === cat));
+  _lastSearchResults = matches;
+  _lastSearchQuery = cat;
+  renderSearchResults(matches, cat);
+};
+
+// ─── Popular foods (8 random electric/high-freshness items) ───
+function renderPopularFoods() {
+  const grid = document.getElementById('popularFoodsGrid');
+  if (!grid) return;
+  let pool = vitalDb.filter(i => i.specific?.electric === true && (i.vitality?.freshness ?? 0) >= 85);
+  if (pool.length < 6) pool = vitalDb.filter(i => (i.vitality?.freshness ?? 0) >= 70);
+  // Shuffle deterministically based on day
+  const seed = Math.floor(Date.now() / 86400000);
+  pool = [...pool].sort((a, b) => {
+    const ha = (a.id || '').split('').reduce((s, c) => s + c.charCodeAt(0), seed);
+    const hb = (b.id || '').split('').reduce((s, c) => s + c.charCodeAt(0), seed);
+    return ha - hb;
+  }).slice(0, 8);
+  grid.innerHTML = pool.map(item => renderFoodCard(item, true)).join('');
+}
+
+// ─── AI search cache ───
+window.askAIToFindFood = async function(query) {
+  const q = (query || '').trim();
+  if (!q) return;
+
+  const cacheKey = q.toLowerCase();
+  const resultsEl = document.getElementById('foodResults');
+  const emptyState = document.getElementById('searchEmptyState');
+  const statsBar = document.getElementById('searchStatsBar');
+
+  // Check in-memory cache first
+  if (_aiSearchCache.has(cacheKey)) {
+    const cached = _aiSearchCache.get(cacheKey);
+    if (resultsEl) { resultsEl.style.display = 'flex'; }
+    if (emptyState) emptyState.style.display = 'none';
+    if (statsBar) statsBar.style.display = 'none';
+    resultsEl.innerHTML = renderFoodCard(cached);
+    openFoodModal(vitalDb.indexOf(cached) >= 0 ? vitalDb.indexOf(cached) : cached);
+    return;
+  }
+
+  // Check localStorage cache (TTL 24h)
+  const storedCache = store.get('ai-food-cache', {});
+  if (storedCache[cacheKey] && (Date.now() - (storedCache[cacheKey]._cachedAt || 0)) < 86400000) {
+    const cached = storedCache[cacheKey];
+    _aiSearchCache.set(cacheKey, cached);
+    vitalDb.push(cached);
+    if (resultsEl) { resultsEl.style.display = 'flex'; }
+    if (emptyState) emptyState.style.display = 'none';
+    if (statsBar) statsBar.style.display = 'none';
+    resultsEl.innerHTML = renderFoodCard(cached);
+    openFoodModal(vitalDb.length - 1);
+    return;
+  }
+
+  if (resultsEl) {
+    resultsEl.style.display = 'flex';
+    resultsEl.innerHTML = `<p class="empty-state" style="padding:16px;text-align:center"><i class="ri-loader-4-line ri-spin" style="font-size:1.4rem;vertical-align:middle;margin-right:8px;color:var(--accent)"></i> Analyse de "${esc(q)}" via l'IA...</p>`;
+  }
+  if (emptyState) emptyState.style.display = 'none';
+  if (statsBar) statsBar.style.display = 'none';
+
+  try {
+    let aiFood = null;
+    try {
+      const res = await fetch('/api/searchFood', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: q })
+      });
+      if (res.ok) aiFood = await res.json();
+    } catch (err) {
+      console.warn('[AI Food Search] API fetch failed, using local fallback:', err);
+    }
+
+    if (!aiFood) {
+      aiFood = classifyFoodLocally(q);
+      aiFood.isNewFromAI = true;
+    }
+
+    // Cache result
+    aiFood._cachedAt = Date.now();
+    _aiSearchCache.set(cacheKey, aiFood);
+    const storedC = store.get('ai-food-cache', {});
+    storedC[cacheKey] = aiFood;
+    // Prune to 50 entries
+    const keys = Object.keys(storedC);
+    if (keys.length > 50) delete storedC[keys[0]];
+    store.set('ai-food-cache', storedC);
+
+    vitalDb.push(aiFood);
+    // Rebuild index with new item
+    buildSearchIndex();
+    const newIdx = vitalDb.length - 1;
+    if (resultsEl) resultsEl.innerHTML = renderFoodCard(aiFood);
+    openFoodModal(newIdx);
+    showToast(`✨ "${aiFood.names?.[0] || q}" analysé avec succès !`, 'success');
+  } catch (e) {
+    if (resultsEl) resultsEl.innerHTML = `<p class="empty-state text-danger">${esc(e.message)}</p>`;
+    showToast('Recherche IA terminée avec estimation locale.', 'info');
+  }
+};
+
+// ─── Init search page (called once after DB loads) ───
+function initSearchPage() {
+  renderRecentSearches();
+  renderCategoryBrowse();
+  renderPopularFoods();
+
+  // Wire debounced input (HTML now has no oninput attr)
+  const input = document.getElementById('searchInput');
+  if (input) {
+    input.addEventListener('input', e => searchFoods(e.target.value));
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Escape') clearSearch();
+      if (e.key === 'Enter' && !_lastSearchResults.length && input.value.trim()) {
+        askAIToFindFood(input.value.trim());
+      }
+    });
+  }
 }
 
 // ═══════ FOOD MODAL ═══════
@@ -1671,49 +2083,7 @@ window.askAIToAddMealFood = async function(query) {
   }
 };
 
-window.askAIToFindFood = async function(query) {
-  const q = (query || '').trim();
-  if (!q) return;
 
-  const resultsEl = document.getElementById('foodResults');
-  if (resultsEl) {
-    resultsEl.innerHTML = `<p class="empty-state" style="padding: 16px; text-align: center;"><i class="ri-loader-4-line ri-spin" style="font-size: 1.4rem; vertical-align: middle; margin-right: 8px; color: var(--accent);"></i> Recherche de "${esc(q)}" via l'IA...</p>`;
-  }
-
-  try {
-    let aiFood = null;
-    try {
-      const res = await fetch('/api/searchFood', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: q })
-      });
-      if (res.ok) {
-        aiFood = await res.json();
-      }
-    } catch (err) {
-      console.warn('[AI Food Search] API fetch failed, using local fallback:', err);
-    }
-
-    if (!aiFood) {
-      aiFood = classifyFoodLocally(q);
-      aiFood.isNewFromAI = true;
-    }
-
-    vitalDb.push(aiFood);
-    const newIdx = vitalDb.length - 1;
-
-    if (resultsEl) {
-      resultsEl.innerHTML = renderFoodCard(aiFood);
-    }
-    
-    openFoodModal(newIdx);
-    showToast(`✨ Aliment "${aiFood.names[0]}" analysé avec succès !`, 'success');
-  } catch (e) {
-    if (resultsEl) resultsEl.innerHTML = `<p class="empty-state text-danger">${esc(e.message)}</p>`;
-    showToast("Recherche IA terminée avec estimation locale.", 'info');
-  }
-};
 
 window.searchEditMealFoods = function(query) {
   const q = (query || '').toLowerCase().trim();
