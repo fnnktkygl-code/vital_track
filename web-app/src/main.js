@@ -209,30 +209,73 @@ function renderDashboard() {
     dateEl.textContent = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
   }
 
-  // Vitality score
-  const score = calculateVitalityScore(todayMeals);
+  // Vitality score & breakdown calculation
+  const breakdown = calculateVitalityBreakdown(todayMeals);
+  const score = breakdown.overallScore;
+
   const arcScoreEl = document.getElementById('arcScore');
-  if (arcScoreEl) arcScoreEl.textContent = todayMeals.length === 0 ? '0' : score;
+  if (arcScoreEl) arcScoreEl.textContent = (todayMeals.length === 0 && !breakdown.hasFasting && !breakdown.hasBreathing) ? '0' : score;
+  
   const arcProgress = document.getElementById('arcProgress');
   if (arcProgress) {
-    const offset = 251 - (251 * (todayMeals.length === 0 ? 0 : score) / 100);
+    const isZero = todayMeals.length === 0 && !breakdown.hasFasting && !breakdown.hasBreathing;
+    const offset = 251 - (251 * (isZero ? 0 : score) / 100);
     arcProgress.style.strokeDashoffset = offset;
-    arcProgress.style.stroke = todayMeals.length === 0 ? 'rgba(255,255,255,0.1)' : (score >= 70 ? 'var(--accent)' : score >= 40 ? 'var(--warn)' : 'var(--danger)');
+    arcProgress.style.stroke = isZero ? 'rgba(255,255,255,0.1)' : (score >= 70 ? 'var(--accent)' : score >= 40 ? 'var(--warn)' : 'var(--danger)');
   }
+
   const commentEl = document.getElementById('vitalityScoreComment');
   if (commentEl) {
-    if (todayMeals.length === 0) {
+    if (todayMeals.length === 0 && !breakdown.hasFasting && !breakdown.hasBreathing) {
       commentEl.style.color = 'var(--text-dim)';
-      commentEl.innerHTML = '<i class="ri-information-line"></i> Aucune donnée aujourd\'hui. Enregistrez vos repas pour calculer votre score.';
+      commentEl.innerHTML = '<i class="ri-information-line"></i> Aucune donnée enregistrée aujourd\'hui';
     } else if (score >= 70) {
       commentEl.style.color = 'var(--accent)';
-      commentEl.innerHTML = '<i class="ri-checkbox-circle-fill"></i> Excellente vitalité';
+      commentEl.innerHTML = `<i class="ri-checkbox-circle-fill"></i> Excellente vitalité cellulaire (${score}/100)`;
     } else if (score >= 40) {
       commentEl.style.color = 'var(--warn)';
-      commentEl.innerHTML = '<i class="ri-error-warning-fill"></i> Correcte, mais améliorable';
+      commentEl.innerHTML = `<i class="ri-error-warning-fill"></i> Vitalité moyenne, marge d'optimisation (${score}/100)`;
     } else {
       commentEl.style.color = 'var(--danger)';
-      commentEl.innerHTML = '<i class="ri-close-circle-fill"></i> Vitalité faible';
+      commentEl.innerHTML = `<i class="ri-close-circle-fill"></i> Vitalité faible ou acidose (${score}/100)`;
+    }
+  }
+
+  // Sub-bars updates (100% factual)
+  const vFillN = document.getElementById('vFillNutrition');
+  const vPctN = document.getElementById('vPctNutrition');
+  if (vFillN && vPctN) {
+    if (breakdown.hasMeals) {
+      vFillN.style.width = `${breakdown.nutritionScore}%`;
+      vFillN.style.background = breakdown.nutritionScore >= 70 ? 'var(--accent)' : breakdown.nutritionScore >= 40 ? 'var(--warn)' : 'var(--danger)';
+      vPctN.textContent = `${breakdown.nutritionScore}%`;
+    } else {
+      vFillN.style.width = '0%';
+      vPctN.textContent = '--';
+    }
+  }
+
+  const vFillF = document.getElementById('vFillFasting');
+  const vPctF = document.getElementById('vPctFasting');
+  if (vFillF && vPctF) {
+    if (breakdown.hasFasting) {
+      vFillF.style.width = `${breakdown.fastingScore}%`;
+      vPctF.textContent = `${breakdown.fastingScore}%`;
+    } else {
+      vFillF.style.width = '0%';
+      vPctF.textContent = '--';
+    }
+  }
+
+  const vFillB = document.getElementById('vFillBreathing');
+  const vPctB = document.getElementById('vPctBreathing');
+  if (vFillB && vPctB) {
+    if (breakdown.hasBreathing) {
+      vFillB.style.width = `${breakdown.breathingScore}%`;
+      vPctB.textContent = `${breakdown.breathingScore}%`;
+    } else {
+      vFillB.style.width = '0%';
+      vPctB.textContent = '--';
     }
   }
 
@@ -242,7 +285,7 @@ function renderDashboard() {
     dashFastingCard.style.display = fastingState.active ? 'block' : 'none';
   }
 
-  // Today's meals (if exists)
+  // Today's meals with clickable 3-tab modal trigger
   const dashList = document.getElementById('dashMealList');
   if (dashList) {
     if (todayMeals.length === 0) { 
@@ -252,9 +295,18 @@ function renderDashboard() {
                             </div>`; 
     }
     else {
-      dashList.innerHTML = todayMeals.slice(0, 5).map(m =>
-        `<div class="meal-item"><span class="food-emoji">${m.emoji || '🍽️'}</span><div class="meal-item-info"><div class="meal-item-name">${esc(m.name)}</div><div class="meal-item-meta">${m.approved ? '✅ Approuvé' : '⚠️ Non approuvé'} · PRAL ${(m.pral ?? 0).toFixed(1)}</div></div></div>`
-      ).join('');
+      dashList.innerHTML = todayMeals.slice(0, 5).map((m, idx) => {
+        const isElec = m.electric === true || m.approved === true;
+        const pral = m.pral ?? (m.scientific?.pral ?? (m.scientific_defaults?.pral ?? 0));
+        return `<div class="meal-item clickable" onclick="openFoodModalFromMeal(${idx})" style="cursor:pointer;" title="Cliquer pour ouvrir la carte d'identité 3 onglets">
+          <span class="food-emoji">${m.emoji || '🍽️'}</span>
+          <div class="meal-item-info">
+            <div class="meal-item-name">${esc(m.name)}</div>
+            <div class="meal-item-meta">${isElec ? '⚡ Électrique' : (m.hybrid ? '🔀 Hybride' : '⛔ Mucogène')} · PRAL ${pral > 0 ? '+' : ''}${pral.toFixed(1)} · NOVA ${m.nova ?? 1}</div>
+          </div>
+          <i class="ri-arrow-right-s-line" style="color:var(--text-dim); margin-left:auto; font-size:1.1rem;"></i>
+        </div>`;
+      }).join('');
     }
   }
 
@@ -263,18 +315,118 @@ function renderDashboard() {
   if(typeof renderWeightChart === 'function') renderWeightChart();
 }
 
-function calculateVitalityScore(meals) {
-  if (meals.length === 0) return 0;
-  let score = 0;
-  meals.forEach(m => {
-    if (m.electric) score += 25;
-    else if (m.approved) score += 15;
-    else if (m.hybrid) score += 5;
-    if ((m.pral ?? 0) < 0) score += 10;
-    if ((m.nova ?? 4) <= 1) score += 10;
-  });
-  return Math.min(100, Math.round(score / meals.length));
+function calculateVitalityBreakdown(meals) {
+  // 1. Nutrition Score (0-100)
+  let nutritionScore = 0;
+  if (meals.length > 0) {
+    let totalScore = 0;
+    meals.forEach(item => {
+      let itemScore = item.freshness ?? (item.vitality?.freshness ?? (item.nova === 1 ? 95 : item.nova === 2 ? 65 : item.nova === 3 ? 40 : 15));
+      
+      if (item.electric === true || item.approved === true) {
+        itemScore += 15;
+      } else if (item.hybrid === true) {
+        itemScore -= 15;
+      }
+
+      const pral = item.pral ?? (item.scientific?.pral ?? (item.scientific_defaults?.pral ?? 0));
+      if (pral <= -2.0) itemScore += 10;
+      else if (pral < 0) itemScore += 5;
+      else if (pral > 2.0) itemScore -= 15;
+      else if (pral > 0) itemScore -= 8;
+
+      const mucus = (item.mucus || item.specific?.mucus || '').toLowerCase();
+      if (mucus.includes('dissolvant') || mucus.includes('aucun')) {
+        itemScore += 10;
+      } else if (mucus.includes('mucog') || mucus.includes('mucus') || mucus.includes('élevé')) {
+        itemScore -= 15;
+      }
+
+      totalScore += Math.max(0, Math.min(100, itemScore));
+    });
+    nutritionScore = Math.round(totalScore / meals.length);
+  }
+
+  // 2. Fasting Score (0-100)
+  let fastingScore = 0;
+  let fastingActiveOrLogged = false;
+  if (fastingState.active && fastingState.startTime) {
+    fastingActiveOrLogged = true;
+    const elapsedHours = (Date.now() - fastingState.startTime) / 3600000;
+    const targetHours = (fastingState.durationMs || 57600000) / 3600000;
+    fastingScore = Math.min(100, Math.round((elapsedHours / Math.max(1, targetHours)) * 100));
+  } else {
+    const fastHistory = store.get('fasting-history', []);
+    const todayFasts = fastHistory.filter(f => isToday(f.startTime || f.timestamp));
+    if (todayFasts.length > 0) {
+      fastingActiveOrLogged = true;
+      const totalElapsedHours = todayFasts.reduce((s, f) => s + ((f.elapsed || 0) / 3600000), 0);
+      fastingScore = Math.min(100, Math.round((totalElapsedHours / 16) * 100));
+    }
+  }
+
+  // 3. Breathing Score (0-100)
+  let breathingScore = 0;
+  let breathingLogged = false;
+  const breathHistory = store.get('breathing-history', []);
+  const todayBreaths = breathHistory.filter(b => isToday(b.timestamp));
+  if (todayBreaths.length > 0) {
+    breathingLogged = true;
+    breathingScore = todayBreaths.length >= 2 ? 100 : 65;
+  }
+
+  // Overall Score calculation
+  let overallScore = 0;
+  if (meals.length === 0 && !fastingActiveOrLogged && !breathingLogged) {
+    overallScore = 0;
+  } else if (meals.length > 0 && !fastingActiveOrLogged && !breathingLogged) {
+    // If only nutrition is logged, it determines the vital score
+    overallScore = nutritionScore;
+  } else {
+    let totalWeight = 0;
+    let weightedSum = 0;
+
+    if (meals.length > 0) {
+      weightedSum += nutritionScore * 0.50;
+      totalWeight += 0.50;
+    }
+    if (fastingActiveOrLogged) {
+      weightedSum += fastingScore * 0.30;
+      totalWeight += 0.30;
+    }
+    if (breathingLogged) {
+      weightedSum += breathingScore * 0.20;
+      totalWeight += 0.20;
+    }
+
+    overallScore = totalWeight > 0 ? Math.round(weightedSum / totalWeight) : 0;
+  }
+
+  return {
+    nutritionScore,
+    fastingScore,
+    breathingScore,
+    overallScore,
+    hasMeals: meals.length > 0,
+    hasFasting: fastingActiveOrLogged,
+    hasBreathing: breathingLogged
+  };
 }
+
+function calculateVitalityScore(meals) {
+  const breakdown = calculateVitalityBreakdown(meals);
+  return breakdown.overallScore;
+}
+
+window.openVitalityInfoModal = function() {
+  document.getElementById('vitalityInfoModal')?.classList.add('open');
+};
+
+window.closeVitalityInfoModal = function(e) {
+  if (!e || e.target === document.getElementById('vitalityInfoModal')) {
+    document.getElementById('vitalityInfoModal')?.classList.remove('open');
+  }
+};
 
 function isToday(ts) { const d = new Date(ts); const t = new Date(); return d.toDateString() === t.toDateString(); }
 
@@ -777,31 +929,74 @@ function renderFoodCard(item) {
 }
 
 // ═══════ FOOD MODAL ═══════
-window.openFoodModal = function(idx) {
-  const item = vitalDb[idx]; if (!item) return;
+// ═══════ FOOD MODAL (3 ONGLETS UNIVERSEL) ═══════
+window.openFoodModal = function(idxOrFood) {
+  let item = null;
+  let isMealContext = false;
+
+  if (typeof idxOrFood === 'number' || (!isNaN(Number(idxOrFood)) && typeof idxOrFood !== 'object')) {
+    item = vitalDb[Number(idxOrFood)];
+  } else if (typeof idxOrFood === 'string') {
+    item = vitalDb.find(f => f.id === idxOrFood || (f.names || []).some(n => n.toLowerCase() === idxOrFood.toLowerCase()));
+  } else if (typeof idxOrFood === 'object' && idxOrFood !== null) {
+    item = idxOrFood;
+    isMealContext = idxOrFood.isMealItem === true;
+  }
+
+  if (!item) return;
   currentModalFood = item;
-  const name = ((item.names?.[0] || 'Inconnu')).replace(/^./, c => c.toUpperCase());
-  const sp = item.specific || {}; const sc = item.scientific_defaults || {}; const vt = item.vitality || {};
+
+  const name = (item.names?.[0] || item.name || 'Aliment').replace(/^./, c => c.toUpperCase());
+  
+  const sc = item.scientific_defaults || item.scientific || {
+    pral: item.pral ?? 0,
+    density: item.density ?? ((item.pral ?? 0) < 0 ? 80 : 35),
+    label: (item.pral ?? 0) < 0 ? 'Alcalinisant' : 'Acidifiant'
+  };
+  
+  const vt = item.vitality || {
+    nova: item.nova ?? (item.electric ? 1 : 2),
+    freshness: item.freshness ?? ((item.nova === 1 || item.electric) ? 95 : item.nova === 4 ? 15 : 60),
+    label: item.vitalityLabel || (item.nova === 1 ? 'Aliment Brut (Non transformé)' : item.nova === 4 ? 'Produit Ultra-Transformé' : 'Aliment transformé')
+  };
+
+  const sp = item.specific || {
+    electric: item.electric === true || item.approved === true,
+    hybrid: item.hybrid === true,
+    mucus: item.mucus || (item.electric ? 'Dissolvant' : item.hybrid ? 'Faiblement Mucogène' : 'Mucogène'),
+    label: item.electric ? 'Électrique (Dr. Sebi)' : item.hybrid ? 'Hybride' : 'Standard / Mucogène'
+  };
+
   const isE = sp.electric === true;
+  const isHyb = sp.hybrid === true;
 
-  document.getElementById('modalFoodHeader').innerHTML = `<div style="font-size:3rem;margin-bottom:8px">${item.emoji || '🍽️'}</div><h2 style="font-family:var(--font);font-weight:700">${esc(name)}</h2><p style="color:var(--text-dim)">${esc(item.family || 'Inconnu')} · ${isE ? '⚡ Électrique' : sp.hybrid ? '🔀 Hybride' : '⛔ Mucogène'}</p>`;
+  document.getElementById('modalFoodHeader').innerHTML = `
+    <div style="font-size:3rem;margin-bottom:8px">${item.emoji || '🍽️'}</div>
+    <h2 style="font-family:var(--font);font-weight:700;font-size:1.35rem;">${esc(name)}</h2>
+    <p style="color:var(--text-dim);font-size:0.88rem;margin-top:4px;">
+      ${esc(item.family || 'Aliment')} · ${isE ? '⚡ Électrique' : isHyb ? '🔀 Hybride' : '⛔ Mucogène'}
+    </p>
+  `;
 
-  currentModalFood._parsed = { name, sc, vt, sp };
+  currentModalFood._parsed = { name, sc, vt, sp, item };
   setModalTab('scientific');
 
   const favs = store.get('favorites', []);
-  const isFav = favs.some(f => f.id === item.id);
+  const isFav = item.id ? favs.some(f => f.id === item.id) : false;
 
-
-
-  // Render modal actions based on if it's from AI
+  // Render modal actions based on context
   const actionsContainer = document.getElementById('modalActionsContainer');
   if (actionsContainer) {
     if (item.isNewFromAI) {
       actionsContainer.innerHTML = `
-        <button class="btn-primary full-w" onclick="saveAIFoodToDB(${idx})"><i class="ri-save-line"></i> Confirmer et Sauvegarder dans ma base</button>
+        <button class="btn-primary full-w" onclick="saveAIFoodToDB()"><i class="ri-save-line"></i> Confirmer et Sauvegarder dans ma base</button>
+      `;
+    } else if (isMealContext) {
+      actionsContainer.innerHTML = `
+        <button class="btn-outline full-w" onclick="closeFoodModal()"><i class="ri-check-line"></i> Fermer la carte d'identité</button>
       `;
     } else {
+      const idx = vitalDb.indexOf(item);
       actionsContainer.innerHTML = `
         <button class="btn-primary" onclick="addFoodToMealFromModal(${idx})"><i class="ri-add-line"></i> Ajouter au repas</button>
         <button class="btn-outline" id="modalFavBtn" onclick="toggleFavorite()"><i class="ri-heart-line"></i> Favori</button>
@@ -817,8 +1012,49 @@ window.openFoodModal = function(idx) {
   document.getElementById('foodModal').classList.add('open');
 };
 
+window.openFoodModalFromMeal = function(idx) {
+  const meals = store.get('meals', []);
+  const todayMeals = meals.filter(m => isToday(m.timestamp));
+  if (idx >= 0 && idx < todayMeals.length) {
+    const m = todayMeals[idx];
+    const match = vitalDb.find(f => f.id === m.id || (f.names || []).some(n => n.toLowerCase() === (m.name || '').toLowerCase()));
+    if (match) {
+      openFoodModal({ ...match, isMealItem: true });
+    } else {
+      const isElec = m.electric === true || m.approved === true;
+      const isHyb = m.hybrid === true;
+      const nova = m.nova ?? (isElec ? 1 : 2);
+      const pral = m.pral ?? 0;
+      openFoodModal({
+        id: m.id,
+        name: m.name,
+        emoji: m.emoji || '🍽️',
+        family: m.family || (isElec ? 'Vitaliste' : isHyb ? 'Hybride' : 'Alimentation'),
+        scientific_defaults: {
+          pral,
+          density: m.density ?? (pral < 0 ? 85 : 30),
+          label: pral < 0 ? 'Alcalinisant' : 'Acidifiant'
+        },
+        vitality: {
+          nova,
+          freshness: m.freshness ?? (nova === 1 ? 95 : nova === 4 ? 15 : 60),
+          label: nova === 1 ? 'Aliment Brut (Non transformé)' : nova === 4 ? 'Produit Ultra-Transformé' : 'Aliment Transformé'
+        },
+        specific: {
+          electric: isElec,
+          hybrid: isHyb,
+          mucus: m.mucus || (isElec ? 'Dissolvant' : isHyb ? 'Faiblement Mucogène' : 'Mucogène'),
+          label: isElec ? 'Électrique (Dr. Sebi)' : isHyb ? 'Hybride' : 'Standard / Mucogène'
+        },
+        note: m.note || (isElec ? 'Aliment électrique vitalogène respectant le bio-équilibre minéral.' : nova === 4 ? 'Aliment ultra-transformé fortement acidifiant.' : 'Aliment ordinaire.'),
+        isMealItem: true
+      });
+    }
+  }
+};
+
 window.saveAIFoodToDB = function(idx) {
-  const item = vitalDb[idx];
+  const item = currentModalFood;
   if (!item) return;
   delete item.isNewFromAI;
   
@@ -832,25 +1068,108 @@ window.saveAIFoodToDB = function(idx) {
 };
 
 window.addFoodToMealFromModal = function(idx) {
-  selectMealFood(idx);
+  if (idx >= 0 && vitalDb[idx]) {
+    selectMealFood(idx);
+  } else if (currentModalFood) {
+    const f = currentModalFood;
+    const name = (f.names?.[0] || f.name || '?').replace(/^./, c => c.toUpperCase());
+    selectedMealFoods.push({
+      id: f.id || 'dish_' + Date.now(),
+      name,
+      emoji: f.emoji || '🍽️',
+      approved: f.specific?.electric === true || f.approved === true,
+      electric: f.specific?.electric === true || f.approved === true,
+      hybrid: f.specific?.hybrid === true,
+      pral: f.scientific_defaults?.pral ?? (f.scientific?.pral ?? 0),
+      nova: f.vitality?.nova ?? 1
+    });
+    renderSelectedMealFoods();
+  }
   window.closeFoodModal();
   showPage('meals');
 };
 
-window.closeFoodModal = function(e) { if (!e || e.target === document.getElementById('foodModal')) document.getElementById('foodModal').classList.remove('open'); };
+window.closeFoodModal = function(e) { 
+  if (!e || e.target === document.getElementById('foodModal')) {
+    document.getElementById('foodModal').classList.remove('open'); 
+  }
+};
 
 window.setModalTab = function(tab) {
   document.querySelectorAll('.modal-tabs .tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
   const content = document.getElementById('modalTabContent');
   if (!currentModalFood) return;
-  const { sc, vt, sp } = currentModalFood._parsed || {};
+  const { name, sc, vt, sp, item } = currentModalFood._parsed || {};
+
+  const pral = sc?.pral ?? 0;
+  const isAlkaline = pral < 0;
+  const nova = vt?.nova ?? 1;
+  const isElectric = sp?.electric === true;
+  const isHybrid = sp?.hybrid === true;
 
   if (tab === 'scientific') {
-    content.innerHTML = `<div class="data-row"><span class="data-label">PRAL</span><span class="data-value" style="color:${(sc?.pral??0) < 0 ? '#4ade80' : '#facc15'}">${(sc?.pral??0).toFixed(1)}</span></div><div class="data-row"><span class="data-label">Effet</span><span class="data-value">${(sc?.pral??0) < 0 ? '🟢 Alcalinisant' : '🟡 Acidifiant'}</span></div><div class="data-row"><span class="data-label">Densité nutritionnelle</span><span class="data-value">${sc?.density ?? '?'}/100</span></div><div class="data-bar"><div class="data-bar-fill" style="width:${sc?.density ?? 0}%;background:var(--accent)"></div></div>`;
+    content.innerHTML = `
+      <div class="data-row">
+        <span class="data-label">Charge PRAL (Remer & Manz)</span>
+        <span class="data-value" style="font-weight:700; color:${isAlkaline ? '#4ade80' : '#facc15'}">
+          ${pral > 0 ? '+' : ''}${pral.toFixed(1)} mEq/100g
+        </span>
+      </div>
+      <div class="data-row">
+        <span class="data-label">Effet Rénal Acido-Basique</span>
+        <span class="data-value" style="font-weight:600;">${isAlkaline ? '🟢 Alcalinisant puissant' : pral <= 4 ? '🟡 Faiblement acidifiant' : '🔴 Fortement acidifiant'}</span>
+      </div>
+      <div class="data-row">
+        <span class="data-label">Densité Micronutritionnelle</span>
+        <span class="data-value">${sc?.density ?? '?'}/100</span>
+      </div>
+      <div class="data-bar"><div class="data-bar-fill" style="width:${sc?.density ?? 50}%;background:${isAlkaline ? 'var(--accent)' : 'var(--warn)'}"></div></div>
+      <div style="margin-top:14px; padding:10px 12px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:8px; font-size:0.8rem; color:var(--text-dim); line-height:1.4;">
+        <strong style="color:var(--text)">Indice PRAL :</strong> Mesure la charge acide nette éliminée par les reins. Les valeurs négatives préservent les réserves minérales corporelles (Potassium, Magnésium, Calcium).
+      </div>
+    `;
   } else if (tab === 'vitality') {
-    content.innerHTML = `<div class="data-row"><span class="data-label">Score NOVA</span><span class="data-value" style="color:${(vt?.nova??4) <= 1 ? '#4ade80' : '#ef4444'}">${vt?.nova ?? '?'}/4</span></div><div class="data-row"><span class="data-label">Classification</span><span class="data-value">${vt?.label ?? 'Inconnu'}</span></div><div class="data-row"><span class="data-label">Fraîcheur</span><span class="data-value">${vt?.freshness ?? 0}%</span></div><div class="data-bar"><div class="data-bar-fill" style="width:${vt?.freshness ?? 0}%;background:var(--accent-2)"></div></div>`;
+    const novaColor = nova === 1 ? '#4ade80' : nova === 2 ? '#38bdf8' : nova === 3 ? '#facc15' : '#ef4444';
+    const novaDesc = nova === 1 ? 'Groupe 1 · Non transformé ou minimalement transformé' : nova === 2 ? 'Groupe 2 · Ingrédient culinaire' : nova === 3 ? 'Groupe 3 · Aliment transformé' : 'Groupe 4 · Produit ultra-transformé';
+    
+    content.innerHTML = `
+      <div class="data-row">
+        <span class="data-label">Degré de transformation NOVA</span>
+        <span class="data-value" style="font-weight:700; color:${novaColor}">NOVA ${nova}/4</span>
+      </div>
+      <div class="data-row">
+        <span class="data-label">Classification Carlos Monteiro</span>
+        <span class="data-value" style="font-size:0.85rem;">${vt?.label || novaDesc}</span>
+      </div>
+      <div class="data-row">
+        <span class="data-label">Taux de Fraîcheur & Biogénie</span>
+        <span class="data-value" style="font-weight:600;">${vt?.freshness ?? 0}%</span>
+      </div>
+      <div class="data-bar"><div class="data-bar-fill" style="width:${vt?.freshness ?? 0}%;background:${novaColor}"></div></div>
+      <div style="margin-top:14px; padding:10px 12px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:8px; font-size:0.8rem; color:var(--text-dim); line-height:1.4;">
+        <strong style="color:var(--text)">Échelle NOVA :</strong> Norme mondiale de l'Université de São Paulo évaluant l'impact des procédés industriels, additifs et raffinements sur la santé humaine.
+      </div>
+    `;
   } else {
-    content.innerHTML = `<div class="data-row"><span class="data-label">Électrique (Dr. Sebi)</span><span class="data-value">${sp?.electric ? '✅ Oui' : '❌ Non'}</span></div><div class="data-row"><span class="data-label">Hybride</span><span class="data-value">${sp?.hybrid ? '⚠️ Oui' : '✅ Non'}</span></div><div class="data-row"><span class="data-label">Mucus</span><span class="data-value">${sp?.mucus ?? 'Inconnu'}</span></div><div class="data-row"><span class="data-label">Verdict</span><span class="data-value">${sp?.label ?? 'Inconnu'}</span></div>${currentModalFood.note ? `<p style="margin-top:12px;color:var(--text-dim);font-size:0.85rem;line-height:1.5">${esc(currentModalFood.note)}</p>` : ''}`;
+    content.innerHTML = `
+      <div class="data-row">
+        <span class="data-label">Polarité Électrique (Dr. Sebi)</span>
+        <span class="data-value" style="font-weight:700; color:${isElectric ? '#4ade80' : '#ef4444'}">${isElectric ? '⚡ Oui (Bio-Minéral)' : '❌ Non électrique'}</span>
+      </div>
+      <div class="data-row">
+        <span class="data-label">Hybridation Génétique</span>
+        <span class="data-value">${isHybrid ? '⚠️ Hybride / Modifié' : '✅ Végétal Originel'}</span>
+      </div>
+      <div class="data-row">
+        <span class="data-label">Indice Mucus (Arnold Ehret)</span>
+        <span class="data-value" style="font-weight:600; color:${(sp?.mucus||'').toLowerCase().includes('dissolvant') ? '#4ade80' : (sp?.mucus||'').toLowerCase().includes('mucog') ? '#ef4444' : 'var(--text)'}">${sp?.mucus ?? 'Neutre'}</span>
+      </div>
+      <div class="data-row">
+        <span class="data-label">Verdict Vitaliste</span>
+        <span class="data-value">${sp?.label ?? 'Standard'}</span>
+      </div>
+      ${(currentModalFood.note || item?.note) ? `<div style="margin-top:14px; padding:10px 12px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:8px; font-size:0.8rem; color:var(--text-dim); line-height:1.4;"><strong style="color:var(--text)">Note Thérapeutique :</strong> ${esc(currentModalFood.note || item?.note)}</div>` : ''}
+    `;
   }
 };
 
@@ -859,14 +1178,26 @@ window.toggleFavorite = function() {
   if (!currentModalFood) return;
   let favs = store.get('favorites', []);
   const idx = favs.findIndex(f => f.id === currentModalFood.id);
-  if (idx >= 0) { favs.splice(idx, 1); } else {
-    const name = (currentModalFood.names?.[0] || 'Inconnu').replace(/^./, c => c.toUpperCase());
-    favs.push({ id: currentModalFood.id, name, emoji: currentModalFood.emoji || '🍽️', family: currentModalFood.family || '', electric: currentModalFood.specific?.electric === true, pral: currentModalFood.scientific_defaults?.pral ?? 0 });
+  if (idx >= 0) { 
+    favs.splice(idx, 1); 
+  } else {
+    const name = (currentModalFood.names?.[0] || currentModalFood.name || 'Inconnu').replace(/^./, c => c.toUpperCase());
+    favs.push({ 
+      id: currentModalFood.id, 
+      name, 
+      emoji: currentModalFood.emoji || '🍽️', 
+      family: currentModalFood.family || '', 
+      electric: currentModalFood.specific?.electric === true || currentModalFood.electric === true, 
+      pral: currentModalFood.scientific_defaults?.pral ?? (currentModalFood.scientific?.pral ?? (currentModalFood.pral ?? 0)) 
+    });
   }
   store.set('favorites', favs);
   const isFav = favs.some(f => f.id === currentModalFood.id);
-  document.getElementById('modalFavBtn').innerHTML = isFav ? '<i class="ri-heart-fill"></i> Retirer' : '<i class="ri-heart-line"></i> Favori';
-  document.getElementById('modalFavBtn').classList.toggle('active-fav', isFav);
+  const favBtn = document.getElementById('modalFavBtn');
+  if (favBtn) {
+    favBtn.innerHTML = isFav ? '<i class="ri-heart-fill"></i> Retirer' : '<i class="ri-heart-line"></i> Favori';
+    favBtn.classList.toggle('active-fav', isFav);
+  }
   renderFavorites();
 };
 
@@ -875,12 +1206,133 @@ function renderFavorites() {
   const list = document.getElementById('favsList');
   if (!list) return;
   if (favs.length === 0) { list.innerHTML = '<p class="empty-state">Aucun favori. Ajoutez des aliments depuis la recherche.</p>'; return; }
-  list.innerHTML = favs.map(f => `<div class="food-card"><div class="food-emoji">${f.emoji}</div><div class="food-info"><div class="food-name">${esc(f.name)}</div><div class="food-meta">${esc(f.family)} · PRAL ${(f.pral??0).toFixed(1)}</div></div><span class="food-badge ${f.electric ? 'badge-electric' : 'badge-mucus'}">${f.electric ? 'Électrique' : 'Mucogène'}</span></div>`).join('');
+  list.innerHTML = favs.map(f => `<div class="food-card clickable" onclick="openFoodModal('${f.id}')" style="cursor:pointer;"><div class="food-emoji">${f.emoji}</div><div class="food-info"><div class="food-name">${esc(f.name)}</div><div class="food-meta">${esc(f.family)} · PRAL ${(f.pral??0).toFixed(1)}</div></div><span class="food-badge ${f.electric ? 'badge-electric' : 'badge-mucus'}">${f.electric ? 'Électrique' : 'Mucogène'}</span></div>`).join('');
 }
 
 // ═══════ MEALS ═══════
 window.showAddMealModal = function() { selectedMealFoods = []; renderSelectedMealFoods(); document.getElementById('mealSearchResults').innerHTML = ''; document.getElementById('mealSearchInput').value = ''; const aiInput = document.getElementById('aiDishInput'); if (aiInput) aiInput.value = ''; document.getElementById('addMealModal').classList.add('open'); };
 window.closeAddMealModal = function(e) { if (!e || e.target === document.getElementById('addMealModal')) document.getElementById('addMealModal').classList.remove('open'); };
+
+function classifyFoodLocally(token) {
+  const clean = (token || '').trim();
+  const lower = clean.toLowerCase();
+
+  // 1. Check in vitalDb first
+  const match = vitalDb.find(item => (item.names || []).some(n => n.toLowerCase() === lower || n.toLowerCase().includes(lower)));
+  if (match) return match;
+
+  // 2. Junk Food / Ultra-Processed / Fast Food / Poutine / Fried / Dairy Heavy
+  const isUltraProcessed = /poutine|burger|hamburger|cheeseburger|pizza|frite|frites|hot-?dog|tacos|kebab|nugget|nuggets|chips|raclette|fondue|bacon|saucisse|soda|coca|donut|croissant|gaufre|biscuit|snack|fast-?food|croque-?monsieur/i.test(lower);
+  
+  // 3. Electric Foods (Dr. Sebi: bio-mineral, non-hybridized, alkaline)
+  const isElectric = !isUltraProcessed && /avocat|concombre|mangue|papaye|melon|pasteque|pastèque|datte|figue|pomme|poire|cerise|prune|raisin|citron|citron vert|lime|kale|amarante|fonio|quinoa|kamut|teff|courgette|lin|chia|sésame|sesame|olive|roquette|cresson|mache|mâche|gingembre|aneth|basilic|coriandre|origan|romarin|thym|sauvage|spiruline|clémentine|mandarine|mûre|framboise|myrtille|fraise/i.test(lower);
+  
+  // 4. Hybridized / Acidifying Starchy Foods
+  const isHybrid = !isUltraProcessed && !isElectric && /carotte|mais|maïs|pomme de terre|patate|riz|ble|blé|soja|tofu|seitan|haricot|lentille|pois|aubergine|pamplemousse|champignon/i.test(lower);
+  
+  // 5. Animal Products / Dairy / Standard Mucus-forming
+  const isAnimalMucus = !isUltraProcessed && !isElectric && !isHybrid && /viande|poulet|boeuf|bœuf|porc|veau|agneau|canard|dinde|fromage|lait|creme|crème|beurre|oeuf|œuf|poisson|saumon|thon|crevette/i.test(lower);
+
+  let emoji = '🍽️';
+  if (/poutine/i.test(lower)) emoji = '🍟';
+  else if (/burger/i.test(lower)) emoji = '🍔';
+  else if (/pizza/i.test(lower)) emoji = '🍕';
+  else if (/frite/i.test(lower)) emoji = '🍟';
+  else if (/avocat/i.test(lower)) emoji = '🥑';
+  else if (/concombre/i.test(lower)) emoji = '🥒';
+  else if (/mangue/i.test(lower)) emoji = '🥭';
+  else if (/papaye/i.test(lower)) emoji = '🍈';
+  else if (/pomme/i.test(lower)) emoji = '🍎';
+  else if (/banane/i.test(lower)) emoji = '🍌';
+  else if (/melon|pasteque|pastèque/i.test(lower)) emoji = '🍉';
+  else if (/raisin/i.test(lower)) emoji = '🍇';
+  else if (/citron/i.test(lower)) emoji = '🍋';
+  else if (/salade|laitue|kale|roquette/i.test(lower)) emoji = '🥗';
+  else if (/riz|quinoa/i.test(lower)) emoji = '🍚';
+
+  let pral, density, nova, freshness, mucus, label, family, note;
+
+  if (isUltraProcessed) {
+    pral = 14.8;
+    density = 15;
+    nova = 4;
+    freshness = 10;
+    mucus = 'Fortement Mucogène';
+    label = 'Ultra-transformé / Acidifiant';
+    family = 'Plat Industriel';
+    note = 'Produit ultra-transformé générant une forte acidose rénale (PRAL +14.8) et une congestion mucogène.';
+  } else if (isElectric) {
+    pral = -4.5;
+    density = 88;
+    nova = 1;
+    freshness = 95;
+    mucus = 'Dissolvant';
+    label = 'Électrique (Dr. Sebi)';
+    family = 'Aliment Vivant / Vitaliste';
+    note = 'Aliment bio-minéral alcalinisant à haute charge électrolytique favorisant le nettoyage cellulaire.';
+  } else if (isHybrid) {
+    pral = 2.5;
+    density = 55;
+    nova = 2;
+    freshness = 65;
+    mucus = 'Faiblement Mucogène';
+    label = 'Aliment Hybride';
+    family = 'Féculents & Végétaux Hybrides';
+    note = 'Aliment issu d\'hybridations végétales, contenant des amidons modérément mucogènes.';
+  } else if (isAnimalMucus) {
+    pral = 9.5;
+    density = 45;
+    nova = 3;
+    freshness = 30;
+    mucus = 'Mucogène Élevé';
+    label = 'Produit Animal / Mucogène';
+    family = 'Produits Animaux';
+    note = 'Génère une production intense de mucus lymphatique et une charge acide importante.';
+  } else {
+    pral = 1.0;
+    density = 50;
+    nova = 2;
+    freshness = 60;
+    mucus = 'Neutre à Mucogène';
+    label = 'Standard';
+    family = 'Alimentation Courante';
+    note = 'Aliment standard à consommer avec modération dans une démarche de détox.';
+  }
+
+  const nameCap = clean.charAt(0).toUpperCase() + clean.slice(1);
+
+  return {
+    id: 'food_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
+    names: [nameCap, clean],
+    name: nameCap,
+    emoji,
+    family,
+    category: family,
+    approved: isElectric,
+    electric: isElectric,
+    hybrid: isHybrid || isUltraProcessed,
+    scientific_defaults: {
+      pral,
+      density,
+      label: pral < 0 ? 'Alcalinisant' : 'Acidifiant',
+      colorValue: pral < 0 ? '0xFF4ade80' : '0xFFfacc15'
+    },
+    vitality: {
+      nova,
+      freshness,
+      label: nova === 1 ? 'Aliment Brut (Non transformé)' : nova === 2 ? 'Ingrédient culinaire' : nova === 3 ? 'Aliment transformé' : 'Produit Ultra-Transformé',
+      colorValue: nova === 1 ? '0xFF4ade80' : (nova <= 2 ? '0xFFfacc15' : '0xFFef4444')
+    },
+    specific: {
+      mucus,
+      hybrid: isHybrid || isUltraProcessed,
+      electric: isElectric,
+      label
+    },
+    tags: [isElectric ? 'Dr. Sebi Approved' : isUltraProcessed ? 'Ultra-Transformé (NOVA 4)' : 'VitalTrack Analyzed'],
+    note
+  };
+}
 
 window.analyzeDishWithAI = async function() {
   const input = document.getElementById('aiDishInput');
@@ -897,34 +1349,25 @@ window.analyzeDishWithAI = async function() {
   }
 
   try {
-    const res = await fetch('/api/analyze-text', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query: q })
-    });
-
     let items = [];
-    if (res.ok) {
-      const data = await res.json();
-      items = data.data?.foods || data.data?.items || [];
+    try {
+      const res = await fetch('/api/analyze-text', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: q })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        items = data.data?.foods || data.data?.items || [];
+      }
+    } catch (err) {
+      console.warn('[AI Dish Analysis] API fetch failed, using local extraction fallback:', err);
     }
 
     if (!items || items.length === 0) {
-      // Heuristic fallback
       const parts = q.split(/[,+&/]|\bet\b|\bavec\b|\baux\b|\bau\b|\bde\b|\bd['’]/i).map(p => p.trim()).filter(p => p.length >= 2);
       const tokens = parts.length > 0 ? parts : [q];
-      items = tokens.map(token => {
-        const match = vitalDb.find(item => (item.names || []).some(n => n.toLowerCase().includes(token.toLowerCase())));
-        if (match) return match;
-        return {
-          id: 'dish_' + Date.now() + '_' + token,
-          names: [token.charAt(0).toUpperCase() + token.slice(1)],
-          emoji: '🌱',
-          specific: { electric: true },
-          scientific_defaults: { pral: -2.0 },
-          vitality: { nova: 1 }
-        };
-      });
+      items = tokens.map(token => classifyFoodLocally(token));
     }
 
     let addedCount = 0;
@@ -936,11 +1379,15 @@ window.analyzeDishWithAI = async function() {
           id,
           name,
           emoji: item.emoji || '🍽️',
+          family: item.family,
           approved: item.specific?.electric === true || item.approved === true,
           electric: item.specific?.electric === true || item.approved === true,
-          hybrid: item.specific?.hybrid === true,
-          pral: item.scientific_defaults?.pral ?? item.scientific?.pral ?? 0,
-          nova: item.vitality?.nova ?? 1
+          hybrid: item.specific?.hybrid === true || item.hybrid === true,
+          pral: item.scientific_defaults?.pral ?? (item.scientific?.pral ?? (item.pral ?? 0)),
+          nova: item.vitality?.nova ?? (item.nova ?? 1),
+          freshness: item.vitality?.freshness ?? (item.freshness ?? 80),
+          mucus: item.specific?.mucus || item.mucus,
+          note: item.note
         });
         addedCount++;
       }
@@ -1011,23 +1458,9 @@ window.askAIToAddMealFood = async function(query) {
     }
 
     if (!items || items.length === 0) {
-      // Local extraction fallback
       const parts = q.split(/[,+&/]|\bet\b|\bavec\b|\baux\b|\bau\b|\bde\b|\bd['’]/i).map(p => p.trim()).filter(p => p.length >= 2);
       const tokens = parts.length > 0 ? parts : [q];
-      items = tokens.map(token => {
-        const lower = token.toLowerCase();
-        const match = vitalDb.find(item => (item.names || []).some(n => n.toLowerCase().includes(lower)));
-        if (match) return match;
-        const isElectric = /avocat|concombre|mangue|papaye|melon|pasteque|pastèque|datte|figue|pomme|poire|cerise|prune|raisin|citron|kale|amarante|fonio|quinoa|kamut|teff|courgette|lin|chia|sésame|olive|roquette|cresson|mache|gingembre/i.test(lower);
-        return {
-          id: 'dish_' + Date.now() + '_' + token.replace(/\s+/g, '_'),
-          names: [token.charAt(0).toUpperCase() + token.slice(1)],
-          emoji: isElectric ? '🥑' : '🍽️',
-          specific: { electric: isElectric },
-          scientific_defaults: { pral: isElectric ? -3.0 : 2.0 },
-          vitality: { nova: 1 }
-        };
-      });
+      items = tokens.map(token => classifyFoodLocally(token));
     }
 
     let addedCount = 0;
@@ -1039,11 +1472,15 @@ window.askAIToAddMealFood = async function(query) {
           id,
           name,
           emoji: item.emoji || '🍽️',
+          family: item.family,
           approved: item.specific?.electric === true || item.approved === true,
           electric: item.specific?.electric === true || item.approved === true,
-          hybrid: item.specific?.hybrid === true,
-          pral: item.scientific_defaults?.pral ?? item.scientific?.pral ?? 0,
-          nova: item.vitality?.nova ?? 1
+          hybrid: item.specific?.hybrid === true || item.hybrid === true,
+          pral: item.scientific_defaults?.pral ?? (item.scientific?.pral ?? (item.pral ?? 0)),
+          nova: item.vitality?.nova ?? (item.nova ?? 1),
+          freshness: item.vitality?.freshness ?? (item.freshness ?? 80),
+          mucus: item.specific?.mucus || item.mucus,
+          note: item.note
         });
         addedCount++;
       }
@@ -1089,30 +1526,8 @@ window.askAIToFindFood = async function(query) {
     }
 
     if (!aiFood) {
-      const lower = q.toLowerCase();
-      const isElectric = /avocat|concombre|mangue|papaye|melon|pasteque|pastèque|datte|figue|pomme|poire|cerise|prune|raisin|citron|kale|amarante|fonio|quinoa|kamut|teff|courgette|lin|chia|sésame|olive|roquette|cresson|mache|gingembre/i.test(lower);
-      const isHybrid = !isElectric && /carotte|mais|maïs|pomme de terre|riz|ble|blé|soja|tofu|seitan|haricot|lentille|pois|aubergine|pamplemousse/i.test(lower);
-      const isMucus = !isElectric && !isHybrid && /viande|poulet|boeuf|porc|fromage|lait|creme|beurre|oeuf|pain|gateau|pizza|frit/i.test(lower);
-      
-      aiFood = {
-        id: 'ai_' + Date.now(),
-        names: [q.charAt(0).toUpperCase() + q.slice(1), q],
-        emoji: isElectric ? '🥑' : (isHybrid ? '🥔' : '🍽️'),
-        family: isElectric ? 'Vitaliste' : (isHybrid ? 'Hybride' : 'Général'),
-        category: 'Alimentation',
-        vitality: { nova: isMucus ? 3 : 1, freshness: isMucus ? 40 : 90, label: isMucus ? 'Transformé' : 'Vivant' },
-        specific: {
-          mucus: isElectric ? 'Dissolvant' : 'Mucogène',
-          hybrid: isHybrid,
-          electric: isElectric,
-          label: isElectric ? 'Électrique' : (isHybrid ? 'Hybride' : 'Mucogène')
-        },
-        scientific_defaults: {
-          pral: isElectric ? -3.5 : (isHybrid ? 2.0 : 6.0),
-          density: isElectric ? 85 : 40
-        },
-        isNewFromAI: true
-      };
+      aiFood = classifyFoodLocally(q);
+      aiFood.isNewFromAI = true;
     }
 
     vitalDb.push(aiFood);
@@ -1187,19 +1602,32 @@ function renderMeals() {
   const list = document.getElementById('mealsList');
   if (!list) return;
 
-  if (todayMeals.length === 0) { list.innerHTML = '<p class="empty-state">Aucun repas enregistré. Ajoutez votre premier repas !</p>'; document.getElementById('mealAxisRow').style.display = 'none'; return; }
+  if (todayMeals.length === 0) { 
+    list.innerHTML = '<p class="empty-state">Aucun repas enregistré. Ajoutez votre premier repas !</p>'; 
+    document.getElementById('mealAxisRow').style.display = 'none'; 
+    return; 
+  }
 
   document.getElementById('mealAxisRow').style.display = 'grid';
-  const avgPral = todayMeals.reduce((s, m) => s + (m.pral ?? 0), 0) / todayMeals.length;
-  const avgNova = todayMeals.reduce((s, m) => s + (m.nova ?? 4), 0) / todayMeals.length;
-  const vitScore = calculateVitalityScore(todayMeals);
-  document.getElementById('mealPral').textContent = avgPral.toFixed(1);
+  const avgPral = todayMeals.reduce((s, m) => s + (m.pral ?? (m.scientific?.pral ?? (m.scientific_defaults?.pral ?? 0))), 0) / todayMeals.length;
+  const avgNova = todayMeals.reduce((s, m) => s + (m.nova ?? (m.vitality?.nova ?? 4)), 0) / todayMeals.length;
+  const vitBreakdown = calculateVitalityBreakdown(todayMeals);
+  document.getElementById('mealPral').textContent = (avgPral > 0 ? '+' : '') + avgPral.toFixed(1);
   document.getElementById('mealNova').textContent = avgNova.toFixed(1);
-  document.getElementById('mealVitality').textContent = `${vitScore}%`;
+  document.getElementById('mealVitality').textContent = `${vitBreakdown.nutritionScore}%`;
 
-  list.innerHTML = todayMeals.map((m, i) =>
-    `<div class="meal-item"><span class="food-emoji">${m.emoji || '🍽️'}</span><div class="meal-item-info"><div class="meal-item-name">${esc(m.name)}</div><div class="meal-item-meta">${m.electric ? '⚡ Électrique' : m.hybrid ? '🔀 Hybride' : '⛔ Mucogène'} · PRAL ${(m.pral??0).toFixed(1)}</div></div><button class="meal-item-remove" onclick="removeMeal(${i})"><i class="ri-delete-bin-line"></i></button></div>`
-  ).join('');
+  list.innerHTML = todayMeals.map((m, i) => {
+    const isElec = m.electric === true || m.approved === true;
+    const pral = m.pral ?? (m.scientific?.pral ?? (m.scientific_defaults?.pral ?? 0));
+    return `<div class="meal-item clickable" onclick="openFoodModalFromMeal(${i})" style="cursor:pointer;" title="Cliquer pour ouvrir la carte d'identité 3 onglets">
+      <span class="food-emoji">${m.emoji || '🍽️'}</span>
+      <div class="meal-item-info">
+        <div class="meal-item-name">${esc(m.name)}</div>
+        <div class="meal-item-meta">${isElec ? '⚡ Électrique' : (m.hybrid ? '🔀 Hybride' : '⛔ Mucogène')} · PRAL ${pral > 0 ? '+' : ''}${pral.toFixed(1)} · NOVA ${m.nova ?? 1}</div>
+      </div>
+      <button class="meal-item-remove" onclick="event.stopPropagation(); removeMeal(${i})" title="Supprimer ce repas"><i class="ri-delete-bin-line"></i></button>
+    </div>`;
+  }).join('');
 }
 
 window.removeMeal = function(idx) {

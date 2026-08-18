@@ -19,12 +19,25 @@ function extractHeuristicFoods(query) {
 
   return tokens.map(token => {
     const lower = token.toLowerCase();
-    const isElectric = /avocat|concombre|mangue|papaye|melon|pasteque|pastèque|datte|figue|pomme|poire|cerise|prune|raisin|citron|kale|amarante|fonio|quinoa|kamut|teff|courgette|lin|chia|sésame|sesame|olive|roquette|cresson|mache|mâche|gingembre/i.test(lower);
-    const isHybrid = !isElectric && /carotte|mais|maïs|pomme de terre|riz|ble|blé|soja|tofu|seitan|haricot|lentille|pois|aubergine|pamplemousse/i.test(lower);
-    const isMucus = !isElectric && !isHybrid && /viande|poulet|boeuf|porc|fromage|lait|creme|crème|beurre|oeuf|œuf|pain|gateau|gâteau|biscuit|pizza|frit/i.test(lower);
+    
+    // 1. Junk Food / Ultra-Processed / Fast Food / Poutine / Fried / Dairy Heavy
+    const isUltraProcessed = /poutine|burger|hamburger|cheeseburger|pizza|frite|frites|hot-?dog|tacos|kebab|nugget|nuggets|chips|raclette|fondue|bacon|saucisse|soda|coca|donut|croissant|gaufre|biscuit|snack|fast-?food|croque-?monsieur/i.test(lower);
+    
+    // 2. Electric Foods (Dr. Sebi: bio-mineral, non-hybridized, alkaline)
+    const isElectric = !isUltraProcessed && /avocat|concombre|mangue|papaye|melon|pasteque|pastèque|datte|figue|pomme|poire|cerise|prune|raisin|citron|citron vert|lime|kale|amarante|fonio|quinoa|kamut|teff|courgette|lin|chia|sésame|sesame|olive|roquette|cresson|mache|mâche|gingembre|aneth|basilic|coriandre|origan|romarin|thym|sauvage|spiruline|clémentine|mandarine|mûre|framboise|myrtille|fraise/i.test(lower);
+    
+    // 3. Hybridized / Acidifying Starchy Foods
+    const isHybrid = !isUltraProcessed && !isElectric && /carotte|mais|maïs|pomme de terre|patate|riz|ble|blé|soja|tofu|seitan|haricot|lentille|pois|aubergine|pamplemousse|champignon/i.test(lower);
+    
+    // 4. Animal Products / Dairy / Standard Mucus-forming
+    const isAnimalMucus = !isUltraProcessed && !isElectric && !isHybrid && /viande|poulet|boeuf|bœuf|porc|veau|agneau|canard|dinde|fromage|lait|creme|crème|beurre|oeuf|œuf|poisson|saumon|thon|crevette/i.test(lower);
 
     let emoji = '🍽️';
-    if (/avocat/i.test(lower)) emoji = '🥑';
+    if (/poutine/i.test(lower)) emoji = '🍟';
+    else if (/burger/i.test(lower)) emoji = '🍔';
+    else if (/pizza/i.test(lower)) emoji = '🍕';
+    else if (/frite/i.test(lower)) emoji = '🍟';
+    else if (/avocat/i.test(lower)) emoji = '🥑';
     else if (/concombre/i.test(lower)) emoji = '🥒';
     else if (/mangue/i.test(lower)) emoji = '🥭';
     else if (/papaye/i.test(lower)) emoji = '🍈';
@@ -36,19 +49,82 @@ function extractHeuristicFoods(query) {
     else if (/salade|laitue|kale|roquette/i.test(lower)) emoji = '🥗';
     else if (/riz|quinoa/i.test(lower)) emoji = '🍚';
 
-    const pral = isElectric ? -3.5 : (isHybrid ? 2.0 : (isMucus ? 6.0 : -0.5));
+    let pral, density, nova, freshness, mucus, label, family, note;
+    
+    if (isUltraProcessed) {
+      pral = 14.8;
+      density = 15;
+      nova = 4;
+      freshness = 10;
+      mucus = 'Fortement Mucogène';
+      label = 'Ultra-transformé / Acidifiant';
+      family = 'Plat Industriel';
+      note = 'Produit ultra-transformé générant une forte acidose rénale (PRAL +14.8) et une congestion mucogène.';
+    } else if (isElectric) {
+      pral = -4.5;
+      density = 88;
+      nova = 1;
+      freshness = 95;
+      mucus = 'Dissolvant';
+      label = 'Électrique (Dr. Sebi)';
+      family = 'Aliment Vivant / Vitaliste';
+      note = 'Aliment bio-minéral alcalinisant à haute charge électrolytique favorisant le nettoyage cellulaire.';
+    } else if (isHybrid) {
+      pral = 2.5;
+      density = 55;
+      nova = 2;
+      freshness = 65;
+      mucus = 'Faiblement Mucogène';
+      label = 'Aliment Hybride';
+      family = 'Féculents & Végétaux Hybrides';
+      note = 'Aliment issu d\'hybridations végétales, contenant des amidons modérément mucogènes.';
+    } else if (isAnimalMucus) {
+      pral = 9.5;
+      density = 45;
+      nova = 3;
+      freshness = 30;
+      mucus = 'Mucogène Élevé';
+      label = 'Produit Animal / Mucogène';
+      family = 'Produits Animaux';
+      note = 'Génère une production intense de mucus lymphatique et une charge acide importante.';
+    } else {
+      pral = 1.0;
+      density = 50;
+      nova = 2;
+      freshness = 60;
+      mucus = 'Neutre à Mucogène';
+      label = 'Standard';
+      family = 'Alimentation Courante';
+      note = 'Aliment standard à consommer avec modération dans une démarche de détox.';
+    }
+
     const nameCap = token.charAt(0).toUpperCase() + token.slice(1);
 
     return {
       name: nameCap,
       emoji,
-      family: isElectric ? 'Vitaliste' : (isHybrid ? 'Hybride' : 'Alimentation'),
+      family,
       approved: isElectric,
-      scientific: { pral, density: isElectric ? 85 : 50, label: pral < 0 ? 'Alcalinisant' : 'Acidifiant', colorValue: pral < 0 ? '0xFF4ade80' : '0xFFfacc15' },
-      vitality: { nova: isMucus ? 3 : 1, freshness: isMucus ? 40 : 90, label: isMucus ? 'Transformé' : 'Brut', colorValue: '0xFF4ade80' },
-      specific: { mucus: isElectric ? 'Dissolvant' : (isMucus ? 'Mucogène' : 'Neutre'), hybrid: isHybrid, electric: isElectric, label: isElectric ? 'Électrique' : (isHybrid ? 'Hybride' : 'Standard') },
-      tags: [isElectric ? 'Dr. Sebi Approved' : 'VitalTrack Analyzed'],
-      note: isElectric ? 'Aliment électrique et alcalinisant.' : 'Aliment naturel.'
+      scientific: { 
+        pral, 
+        density, 
+        label: pral < 0 ? 'Alcalinisant' : 'Acidifiant', 
+        colorValue: pral < 0 ? '0xFF4ade80' : '0xFFfacc15' 
+      },
+      vitality: { 
+        nova, 
+        freshness, 
+        label: nova === 1 ? 'Aliment Brut (Non transformé)' : nova === 2 ? 'Ingrédient culinaire' : nova === 3 ? 'Aliment transformé' : 'Produit Ultra-Transformé', 
+        colorValue: nova === 1 ? '0xFF4ade80' : (nova <= 2 ? '0xFFfacc15' : '0xFFef4444')
+      },
+      specific: { 
+        mucus, 
+        hybrid: isHybrid || isUltraProcessed, 
+        electric: isElectric, 
+        label 
+      },
+      tags: [isElectric ? 'Dr. Sebi Approved' : isUltraProcessed ? 'Ultra-Transformé (NOVA 4)' : 'VitalTrack Analyzed'],
+      note
     };
   });
 }

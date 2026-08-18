@@ -169,7 +169,12 @@
 
         <!-- Vitality Score Widget -->
         <div class="dash-card glass" id="vitalityCard" style="padding: 24px;">
-          <h3 style="font-size:1rem; display:flex; align-items:center; gap:8px; margin-bottom:24px;"><i class="ri-heart-pulse-fill" style="color:var(--accent);"></i> Score Vitalité</h3>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h3 style="font-size:1rem; display:flex; align-items:center; gap:8px; margin:0;"><i class="ri-heart-pulse-fill" style="color:var(--accent);"></i> Score Vitalité</h3>
+            <button type="button" class="info-badge-btn" onclick="openVitalityInfoModal()" title="Comprendre le calcul transparent du score">
+              <i class="ri-information-line"></i> Explication
+            </button>
+          </div>
           
           <div style="display:flex; flex-direction:column; align-items:center; margin-bottom: 24px;">
             <div class="vitality-arc">
@@ -187,19 +192,19 @@
 
           <div style="display:flex; flex-direction:column; gap: 12px; border-top:1px solid var(--border); padding-top:16px;">
             <div class="vitality-bar-row">
-              <span class="v-label">Sommeil</span>
-              <div class="v-bar"><div class="v-fill" style="width: 42%; background: #3b82f6;"></div></div>
-              <span class="v-pct">42%</span>
+              <span class="v-label" title="Alcalinité PRAL, absence de mucus, score NOVA, Dr. Sebi">🥗 Nutrition</span>
+              <div class="v-bar"><div class="v-fill" id="vFillNutrition" style="width: 0%; background: var(--accent);"></div></div>
+              <span class="v-pct" id="vPctNutrition">--</span>
             </div>
             <div class="vitality-bar-row">
-              <span class="v-label">Nutrition</span>
-              <div class="v-bar"><div class="v-fill" style="width: 68%; background: var(--accent);"></div></div>
-              <span class="v-pct">68%</span>
+              <span class="v-label" title="Heures de jeûne actif ou respect de la fenêtre de repos">💧 Jeûne & Repos</span>
+              <div class="v-bar"><div class="v-fill" id="vFillFasting" style="width: 0%; background: #38bdf8;"></div></div>
+              <span class="v-pct" id="vPctFasting">--</span>
             </div>
             <div class="vitality-bar-row">
-              <span class="v-label">Activité</span>
-              <div class="v-bar"><div class="v-fill" style="width: 25%; background: var(--warn);"></div></div>
-              <span class="v-pct">25%</span>
+              <span class="v-label" title="Séances de respiration guidée validées aujourd'hui">🌬️ Respiration</span>
+              <div class="v-bar"><div class="v-fill" id="vFillBreathing" style="width: 0%; background: #a855f7;"></div></div>
+              <span class="v-pct" id="vPctBreathing">--</span>
             </div>
           </div>
         </div>
@@ -748,6 +753,68 @@
   </div>
 
   <!-- ═══════ MODALS ═══════ -->
+  <!-- ═══════ VITALITY SCORE INFO MODAL ═══════ -->
+  <div class="modal-overlay" id="vitalityInfoModal" onclick="closeVitalityInfoModal(event)">
+    <div class="modal-content glass" onclick="event.stopPropagation()" style="max-width: 600px; max-height: 85vh; overflow-y: auto; padding: 24px;">
+      <button class="modal-close" onclick="closeVitalityInfoModal()"><i class="ri-close-line"></i></button>
+      <div style="text-align: center; margin-bottom: 20px;">
+        <div style="font-size: 2.5rem; margin-bottom: 6px;">✨</div>
+        <h2 style="font-size: 1.3rem; font-weight: 700; color: var(--text);">Calcul Transparent du Score Vitalité</h2>
+        <p style="font-size: 0.85rem; color: var(--text-dim); margin-top: 4px;">Rigueur scientifique & vitaliste · Zéro donnée fictive</p>
+      </div>
+
+      <div class="v-info-section" style="margin-bottom: 16px;">
+        <h4 style="color: var(--accent); display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 0.95rem;">
+          <i class="ri-scales-3-line"></i> 1. Formule Mathématique Réelle
+        </h4>
+        <p style="font-size: 0.85rem; color: var(--text-dim); line-height: 1.5; margin-bottom: 8px;">
+          Le Score Vitalité quotidien (0 à 100) est calculé exclusivement à partir de <strong>vos données réelles enregistrées</strong> dans l'application :
+        </p>
+        <div style="background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; font-family: monospace; font-size: 0.82rem; color: var(--accent); margin-bottom: 8px;">
+          Score = (Nutrition × 50%) + (Jeûne × 30%) + (Respiration × 20%)
+        </div>
+        <p style="font-size: 0.78rem; color: var(--text-dim); font-style: italic;">
+          * Si aucune séance de jeûne ou de respiration n'a été effectuée aujourd'hui, le score reflète à 100% la composante nutritionnelle active.
+        </p>
+      </div>
+
+      <div class="v-info-section" style="margin-bottom: 16px; border-top: 1px solid var(--border); padding-top: 14px;">
+        <h4 style="color: #4ade80; display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 0.95rem;">
+          <i class="ri-restaurant-line"></i> 2. Pilier Nutrition Vitaliste
+        </h4>
+        <p style="font-size: 0.85rem; color: var(--text-dim); line-height: 1.5;">
+          Chaque aliment et repas est noté selon 4 barèmes objectifs croisés :
+        </p>
+        <ul style="font-size: 0.82rem; color: var(--text-dim); line-height: 1.6; padding-left: 18px; margin-top: 6px;">
+          <li><strong>PRAL (Remer & Manz, 1995) :</strong> Évalue la charge rénale nette. Les aliments alcalinisants (PRAL négatif) apportent jusqu'à +10 pts, les aliments acidifiants déduisent jusqu'à -15 pts.</li>
+          <li><strong>Aliments Électriques (Dr. Sebi) :</strong> +15 pts pour les végétaux naturels non-hybridés à haute conductivité cellulaire, -15 pts pour les aliments hybridés/industriels.</li>
+          <li><strong>Indice Mucus (Arnold Ehret) :</strong> +10 pts pour les aliments dissolvants de mucus lymphatique, -15 pts pour les aliments fortement mucogènes.</li>
+          <li><strong>Score NOVA (Carlos Monteiro) :</strong> NOVA 1 (Brut/Frais) valorisé à 95%, NOVA 4 (Ultra-transformé) lourdement pénalisé.</li>
+        </ul>
+      </div>
+
+      <div class="v-info-section" style="margin-bottom: 16px; border-top: 1px solid var(--border); padding-top: 14px;">
+        <h4 style="color: #38bdf8; display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 0.95rem;">
+          <i class="ri-drop-line"></i> 3. Pilier Jeûne & Repos Digestif
+        </h4>
+        <p style="font-size: 0.85rem; color: var(--text-dim); line-height: 1.5;">
+          Mesure l'autophagie cellulaire et la régénération mitochondriale. Le score évolue selon les heures de repos digestif ou de jeûne actif accomplies (16h = 100%).
+        </p>
+      </div>
+
+      <div class="v-info-section" style="margin-bottom: 20px; border-top: 1px solid var(--border); padding-top: 14px;">
+        <h4 style="color: #a855f7; display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 0.95rem;">
+          <i class="ri-wind-line"></i> 4. Pilier Respiration & Oxygénation
+        </h4>
+        <p style="font-size: 0.85rem; color: var(--text-dim); line-height: 1.5;">
+          Favorise l'alcalinisation gazeuse du sang par élimination du dioxyde de carbone et réduction du cortisol (1 séance guidée = 60%, 2+ séances = 100%).
+        </p>
+      </div>
+
+      <button type="button" class="btn-primary full-w" onclick="closeVitalityInfoModal()"><i class="ri-check-line"></i> Compris</button>
+    </div>
+  </div>
+
   <div class="modal-overlay" id="foodModal" onclick="closeFoodModal(event)">
     <div class="modal-content glass" onclick="event.stopPropagation()">
       <button class="modal-close" onclick="closeFoodModal()"><i class="ri-close-line"></i></button>

@@ -153,10 +153,14 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
 }
 
 .vitality-bar-row { display: flex; align-items: center; gap: 12px; font-size: 0.85rem; }
-.v-label { width: 60px; color: var(--text-dim); }
+.v-label { width: 105px; color: var(--text-dim); font-size: 0.8rem; white-space: nowrap; display: flex; align-items: center; gap: 4px; }
 .v-bar { flex: 1; height: 6px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; }
-.v-fill { height: 100%; border-radius: 4px; }
-.v-pct { width: 30px; text-align: right; color: var(--text-dim); }
+.v-fill { height: 100%; border-radius: 4px; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+.v-pct { width: 38px; text-align: right; color: var(--text); font-size: 0.8rem; font-weight: 600; }
+.info-badge-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border); color: var(--text-dim); border-radius: 20px; padding: 4px 10px; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; transition: all 0.2s ease; }
+.info-badge-btn:hover { background: rgba(16, 185, 129, 0.12); color: var(--accent); border-color: var(--accent); }
+.meal-item.clickable { transition: all 0.2s ease; }
+.meal-item.clickable:hover { background: rgba(255, 255, 255, 0.06); transform: translateY(-1px); border-color: rgba(255, 255, 255, 0.15); }
 .stat-icon-wrap { width: 36px; height: 36px; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; }
 .stat-sub { display:block; font-size: 0.65rem; color: var(--text-dim); letter-spacing: 1px; margin-top: 4px; }
 .dash-greeting{display:flex;align-items:center;justify-content:space-between;padding:16px 20px}
