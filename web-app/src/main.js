@@ -2220,7 +2220,32 @@ const breathModes = {
   relax: { name: 'Relaxation (1:2)', inhale: 4, exhale: 8, hold: 0, breaths: 10, retentionAfter: false },
   box: { name: 'Box Breathing', inhale: 4, exhale: 4, hold: 4, breaths: 8, retentionAfter: false },
 };
-window.setBreathMode = function(mode) { currentBreathMode = mode; document.querySelectorAll('.breath-mode').forEach(b => b.classList.toggle('active', b.dataset.mode === mode)); document.getElementById('breathInfo').innerHTML = `<p>${breathModes[mode].name} — ${breathModes[mode].breaths} respirations/tour</p>`; };
+window.setBreathMode = function(mode) { 
+  currentBreathMode = mode; 
+  document.querySelectorAll('.breath-mode').forEach(b => b.classList.toggle('active', b.dataset.mode === mode)); 
+  document.getElementById('breathInfo').innerHTML = `<p>${breathModes[mode].name} — ${breathModes[mode].breaths} respirations/tour</p>`; 
+};
+
+window.setBreathRounds = function(n) {
+  const val = Math.max(1, Math.min(10, parseInt(n) || 3));
+  const input = document.getElementById('breathRounds');
+  const display = document.getElementById('breathRoundsDisplay');
+  if (input) input.value = val;
+  if (display) {
+    display.textContent = val;
+    display.classList.add('pop');
+    setTimeout(() => display.classList.remove('pop'), 180);
+  }
+  document.querySelectorAll('.rounds-presets .preset-pill').forEach(btn => {
+    btn.classList.toggle('active', parseInt(btn.textContent) === val);
+  });
+};
+
+window.adjustBreathRounds = function(delta) {
+  const input = document.getElementById('breathRounds');
+  const current = parseInt(input?.value || '3');
+  window.setBreathRounds(current + delta);
+};
 
 window.startBreathing = async function() {
   if (breathingActive) { breathingActive = false; resetBreathUI(); return; }

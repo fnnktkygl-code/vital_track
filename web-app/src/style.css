@@ -497,6 +497,27 @@ input.jn-field-control{padding-right:14px;}
 .breath-info{color:var(--text-dim);margin-bottom:20px;min-height:22px}
 .breath-controls{display:flex;gap:14px;justify-content:center;align-items:center;flex-wrap:wrap}
 
+/* ═══════ BREATHING STEPPER & PRESETS ═══════ */
+.breath-config-card{max-width:440px;margin:0 auto;padding:22px 20px;border-radius:var(--radius);background:var(--bg-card);border:1px solid var(--border);display:flex;flex-direction:column;gap:18px;box-shadow:0 8px 32px rgba(0,0,0,0.25)}
+.breath-rounds-wrapper{display:flex;flex-direction:column;align-items:center;gap:14px}
+.rounds-label{font-size:0.88rem;font-weight:600;color:var(--text-dim);display:flex;align-items:center;gap:6px;text-transform:uppercase;letter-spacing:0.5px}
+.rounds-stepper{display:flex;align-items:center;justify-content:center;gap:18px;background:rgba(255,255,255,0.03);border:1px solid var(--border);padding:8px 20px;border-radius:50px;box-shadow:inset 0 2px 6px rgba(0,0,0,0.3)}
+.stepper-btn{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.15rem;transition:all var(--transition)}
+.stepper-btn:hover{border-color:var(--accent);background:var(--accent-glow);color:var(--accent);transform:scale(1.08)}
+.stepper-btn:active{transform:scale(0.92)}
+.rounds-val-container{display:flex;align-items:baseline;gap:6px;min-width:85px;justify-content:center}
+.rounds-number{font-size:2.2rem;font-weight:800;font-family:var(--font);color:var(--accent);transition:transform 0.15s cubic-bezier(0.175,0.885,0.32,1.275);line-height:1}
+.rounds-number.pop{transform:scale(1.28)}
+.rounds-unit{font-size:0.85rem;color:var(--text-dim);font-weight:500}
+.rounds-presets{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.preset-pill{padding:6px 14px;border-radius:50px;border:1px solid var(--border);background:transparent;color:var(--text-dim);font-size:0.82rem;font-weight:500;cursor:pointer;transition:all var(--transition)}
+.preset-pill:hover{border-color:var(--accent);color:var(--text);background:rgba(255,255,255,0.03)}
+.preset-pill.active{border-color:var(--accent);background:var(--accent-glow);color:var(--accent);font-weight:600;box-shadow:0 0 12px var(--accent-glow)}
+.breath-action-row{display:flex;justify-content:center;margin-top:2px}
+.breath-launch-btn{width:100%;max-width:300px;padding:14px 24px;font-size:1rem;font-weight:700;border-radius:50px;display:inline-flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 4px 20px var(--accent-glow);transition:all var(--transition)}
+.breath-launch-btn:hover{transform:translateY(-2px);box-shadow:0 6px 24px var(--accent-glow)}
+.breath-launch-btn.danger{background:#ef4444!important;border-color:#ef4444!important;box-shadow:0 4px 20px rgba(239,68,68,0.4)!important}
+
 /* ═══════ MODES ═══════ */
 .protocol-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
 .protocol-card{padding:18px 16px;text-align:center;cursor:pointer;transition:all var(--transition)}

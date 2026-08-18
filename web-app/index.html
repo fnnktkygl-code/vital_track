@@ -660,9 +660,36 @@
         <div class="breath-circle" id="breathCircle"><span class="breath-text" id="breathText">Prêt</span></div>
       </div>
       <div class="breath-info" id="breathInfo"><p>Choisissez un mode et appuyez sur Démarrer.</p></div>
-      <div class="breath-controls">
-        <label>Tours : <input type="number" id="breathRounds" value="3" min="1" max="10" class="rounds-input"></label>
-        <button class="btn-primary" id="breathStartBtn" onclick="startBreathing()"><i class="ri-play-fill"></i> Démarrer</button>
+      <div class="breath-config-card glass">
+        <div class="breath-rounds-wrapper">
+          <span class="rounds-label"><i class="ri-repeat-2-line"></i> Nombre de tours</span>
+          <div class="rounds-stepper">
+            <button type="button" class="stepper-btn" onclick="adjustBreathRounds(-1)" aria-label="Diminuer les tours">
+              <i class="ri-subtract-line"></i>
+            </button>
+            <div class="rounds-val-container">
+              <span class="rounds-number" id="breathRoundsDisplay">3</span>
+              <span class="rounds-unit">tours</span>
+            </div>
+            <button type="button" class="stepper-btn" onclick="adjustBreathRounds(1)" aria-label="Augmenter les tours">
+              <i class="ri-add-line"></i>
+            </button>
+          </div>
+          <input type="hidden" id="breathRounds" value="3">
+          
+          <div class="rounds-presets">
+            <button type="button" class="preset-pill active" onclick="setBreathRounds(3)">3 tours</button>
+            <button type="button" class="preset-pill" onclick="setBreathRounds(4)">4 tours</button>
+            <button type="button" class="preset-pill" onclick="setBreathRounds(5)">5 tours</button>
+            <button type="button" class="preset-pill" onclick="setBreathRounds(8)">8 tours</button>
+          </div>
+        </div>
+
+        <div class="breath-action-row">
+          <button class="btn-primary breath-launch-btn" id="breathStartBtn" onclick="startBreathing()">
+            <i class="ri-play-fill"></i> Démarrer la session
+          </button>
+        </div>
       </div>
       <div class="dash-card glass" style="margin-top:24px">
         <h3><i class="ri-history-line"></i> Historique respirations</h3>
