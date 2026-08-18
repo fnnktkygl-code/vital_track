@@ -192,13 +192,16 @@ function updateProtocolUI() {
 function renderDashboard() {
   const meals = store.get('meals', []);
   const todayMeals = meals.filter(m => isToday(m.timestamp));
+  const weekMeals = meals.filter(m => (Date.now() - (m.timestamp || 0)) <= 7 * 86400000);
   const fasts = store.get('fasting-history', []);
+  const weekFasts = fasts.filter(f => (Date.now() - (f.startTime || f.timestamp || 0)) <= 7 * 86400000);
   const breaths = store.get('breathing-history', []);
+  const weekBreaths = breaths.filter(b => (Date.now() - (b.timestamp || 0)) <= 7 * 86400000);
   const favs = store.get('favorites', []);
 
-  document.getElementById('statMeals').textContent = todayMeals.length;
-  document.getElementById('statFasts').textContent = fasts.length;
-  document.getElementById('statBreaths').textContent = breaths.length;
+  document.getElementById('statMeals').textContent = weekMeals.length;
+  document.getElementById('statFasts').textContent = weekFasts.length;
+  document.getElementById('statBreaths').textContent = weekBreaths.length;
   document.getElementById('statFavs').textContent = favs.length;
 
   // Date
@@ -2266,7 +2269,7 @@ window.updateProactiveMascot = function(actionContext = null) {
   } else {
     // Time-based circadian messages
     if (hour >= 4 && hour < 12) {
-      msg = profile.protocol === 'vitalist' 
+      msg = currentProtocol === 'vitalist' 
         ? "💬 <strong>Matin (Élimination) :</strong> L'organisme élimine les toxines. Privilégie l'hydratation, les tisanes et les fruits aqueux. 🍋"
         : "💬 <strong>Bonjour !</strong> Pense à bien t'hydrater dès le réveil. 💧";
       mood = 'excited';

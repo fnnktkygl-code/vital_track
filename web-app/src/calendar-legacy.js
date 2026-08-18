@@ -232,6 +232,16 @@ window.updateProgramRing = function() {
   var progRepasChip = document.getElementById("progRepasChip");
   if (progRepasChip) progRepasChip.textContent = "🍽 " + done + "/" + total + " repas";
 
+  var progTitle = document.getElementById("progTitle");
+  if (progTitle) {
+    if (meta) {
+      const protocolLabels = { ehret: 'Transition Ehret', sebi: 'Guide Dr. Sebi', morse: 'Détox Dr. Morse', personalized: 'Programme Personnalisé' };
+      progTitle.textContent = "⚡ " + (meta.title || protocolLabels[meta.protocol] || "Programme Vitaliste");
+    } else {
+      progTitle.textContent = stored.length > 0 ? "📋 Plan Libre / Manuel" : "📅 Aucun programme actif";
+    }
+  }
+
   var progJourChip = document.getElementById("progJourChip");
   if (progJourChip) {
     if (meta) {
@@ -241,7 +251,7 @@ window.updateProgramRing = function() {
       var jourIndex = Math.min(meta.numDays, Math.max(1, offsetDays + 1));
       progJourChip.textContent = "Jour " + jourIndex + "/" + meta.numDays;
     } else {
-      progJourChip.textContent = "Aucun plan actif";
+      progJourChip.textContent = stored.length > 0 ? (stored.length + " repas saisis") : "Aucun plan actif";
     }
   }
 }
