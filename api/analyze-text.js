@@ -23,8 +23,8 @@ function extractHeuristicFoods(query) {
     // 1. Junk Food / Ultra-Processed / Fast Food / Poutine / Fried / Dairy Heavy
     const isUltraProcessed = /poutine|burger|hamburger|cheeseburger|pizza|frite|frites|hot-?dog|tacos|kebab|nugget|nuggets|chips|raclette|fondue|bacon|saucisse|soda|coca|donut|croissant|gaufre|biscuit|snack|fast-?food|croque-?monsieur/i.test(lower);
     
-    // 2. Electric Foods (Dr. Sebi: bio-mineral, non-hybridized, alkaline)
-    const isElectric = !isUltraProcessed && /avocat|concombre|mangue|papaye|melon|pasteque|pastèque|datte|figue|pomme|poire|cerise|prune|raisin|citron|citron vert|lime|kale|amarante|fonio|quinoa|kamut|teff|courgette|lin|chia|sésame|sesame|olive|roquette|cresson|mache|mâche|gingembre|aneth|basilic|coriandre|origan|romarin|thym|sauvage|spiruline|clémentine|mandarine|mûre|framboise|myrtille|fraise/i.test(lower);
+    // 2. Electric Foods (Universal Vitalist: bio-mineral, wild, non-hybridized, alkaline, Dr. Sebi, Ehret, Morse)
+    const isElectric = !isUltraProcessed && /avocat|concombre|mangue|papaye|melon|pasteque|pastèque|datte|figue|pomme|poire|cerise|prune|raisin|citron|citron vert|lime|kale|amarante|fonio|quinoa|kamut|teff|courgette|lin|chia|sésame|sesame|olive|roquette|cresson|mache|mâche|gingembre|aneth|basilic|coriandre|origan|romarin|thym|sauvage|spiruline|clémentine|mandarine|mûre|framboise|myrtille|fraise|moringa|baobab|bouye|bissap|hibiscus|bleuet|canneberge|argousier|ortie|pissenlit|ditakh|madd|gombo|sureau|aronia|camu|acai|acerola|pousse|germe/i.test(lower);
     
     // 3. Hybridized / Acidifying Starchy Foods
     const isHybrid = !isUltraProcessed && !isElectric && /carotte|mais|maïs|pomme de terre|patate|riz|ble|blé|soja|tofu|seitan|haricot|lentille|pois|aubergine|pamplemousse|champignon/i.test(lower);
@@ -156,7 +156,7 @@ module.exports = async function handler(req, res) {
       apiKey,
       contents: [{ role: 'user', parts: [{ text: `Analyze this food or dish: ${cleanQuery}` }] }],
       systemInstruction: foodAnalysisPrompt,
-      generationConfig: { temperature: 0.1, maxOutputTokens: 600, responseMimeType: 'application/json' },
+      generationConfig: { temperature: 0.1, maxOutputTokens: 1500, responseMimeType: 'application/json' },
     });
 
     const rawText = typeof result === 'object' && result.text ? result.text : String(result || '');

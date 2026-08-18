@@ -158,18 +158,59 @@ window.toggleTheme = function() {
 };
 function loadTheme() { if (store.get('theme') === 'light') { document.documentElement.setAttribute('data-theme', 'light'); document.getElementById('themeIcon').className = 'ri-sun-line'; } }
 
-// ═══════ PROFILE ═══════
-function loadProfile() {
-  const p = store.get('profile', { name: '', goal: 'detox' });
-  document.getElementById('profileName').value = p.name || '';
-  document.getElementById('profileGoal').value = p.goal || 'detox';
-  if (document.getElementById('greetName')) document.getElementById('greetName').textContent = p.name ? `Salut ${p.name} !` : 'Salut !';
+// ═══════ PROFILE & GEO MEMORY ═══════
+function getUserProfile() {
+  const p = store.get('profile', {});
+  const month = new Date().getMonth();
+  let defaultSeason = 'Hiver';
+  if (month >= 2 && month <= 4) defaultSeason = 'Printemps';
+  else if (month >= 5 && month <= 7) defaultSeason = 'Été';
+  else if (month >= 8 && month <= 10) defaultSeason = 'Automne';
+
+  let mems = [];
+  if (Array.isArray(p.memories)) mems = p.memories;
+  else if (typeof p.memories === 'string' && p.memories.trim()) mems = p.memories.split('\n').map(s => s.trim()).filter(Boolean);
+
+  return {
+    name: p.name || '',
+    goal: p.goal || 'detox',
+    protocol: currentProtocol || p.protocol || 'vitalist',
+    country: p.country || 'Canada 🍁',
+    city: p.city || 'Montréal',
+    season: p.season || defaultSeason,
+    restrictions: p.restrictions || '',
+    memories: mems
+  };
 }
+
+function loadProfile() {
+  const p = getUserProfile();
+  if (document.getElementById('profileName')) document.getElementById('profileName').value = p.name || '';
+  if (document.getElementById('profileGoal')) document.getElementById('profileGoal').value = p.goal || 'detox';
+  if (document.getElementById('profileCountry')) document.getElementById('profileCountry').value = p.country || 'Canada 🍁';
+  if (document.getElementById('profileCity')) document.getElementById('profileCity').value = p.city || 'Montréal';
+  if (document.getElementById('profileRestrictions')) document.getElementById('profileRestrictions').value = p.restrictions || '';
+  if (document.getElementById('profileMemories')) {
+    document.getElementById('profileMemories').value = Array.isArray(p.memories) ? p.memories.join('\n') : (p.memories || '');
+  }
+  if (document.getElementById('greetName')) document.getElementById('greetName').textContent = p.name ? `Salut ${p.name} ! 👋` : 'Salut ! 👋';
+}
+
 window.saveProfile = function() {
-  const p = { name: document.getElementById('profileName').value.trim(), goal: document.getElementById('profileGoal').value };
+  const rawMems = document.getElementById('profileMemories') ? document.getElementById('profileMemories').value : '';
+  const mems = rawMems.split('\n').map(s => s.trim()).filter(Boolean);
+
+  const p = {
+    name: document.getElementById('profileName') ? document.getElementById('profileName').value.trim() : '',
+    goal: document.getElementById('profileGoal') ? document.getElementById('profileGoal').value : 'detox',
+    country: document.getElementById('profileCountry') ? document.getElementById('profileCountry').value.trim() : 'Canada 🍁',
+    city: document.getElementById('profileCity') ? document.getElementById('profileCity').value.trim() : 'Montréal',
+    restrictions: document.getElementById('profileRestrictions') ? document.getElementById('profileRestrictions').value.trim() : '',
+    memories: mems
+  };
   store.set('profile', p);
-  if (document.getElementById('greetName')) document.getElementById('greetName').textContent = p.name ? `Salut ${p.name} !` : 'Salut !';
-  showToast('✅ Profil sauvegardé avec succès !', 'success');
+  if (document.getElementById('greetName')) document.getElementById('greetName').textContent = p.name ? `Salut ${p.name} ! 👋` : 'Salut ! 👋';
+  showToast('✅ Profil & préférences sauvegardés !', 'success');
 };
 
 // ═══════ PROTOCOL ═══════
@@ -582,7 +623,7 @@ window.sendChat = async function(e) {
   const typingEl = addTypingIndicator();
 
   try {
-    const profile = store.get('profile', { name: '', goal: 'detox', protocol: 'vitalist' });
+    const profile = getUserProfile();
     
     // Call the backend with stream=true to bypass the 10s Vercel timeout
     const resp = await fetch(`${API_BASE}/api/chat?stream=true`, {
@@ -2163,8 +2204,47 @@ function renderMarkdown(text) {
     try {
       const json = match.replace(/```json\n?/g, '').replace(/```/g, '').trim();
       const obj = JSON.parse(json);
+      let renderedCards = '';
 
-      // Deterministic Diet Plan Request Injection
+      // 1. Action Meal Card (Direct meal logging from chat)
+      if (obj.actionMeal) {
+        const meal = obj.actionMeal;
+        const encodedMeal = btoa(unescape(encodeURIComponent(JSON.stringify(meal))));
+        const itemsText = Array.isArray(meal.items) ? meal.items.join(', ') : (meal.items || meal.name);
+        const categoryLabels = { breakfast: 'Petit-déjeuner', lunch: 'Déjeuner', dinner: 'Dîner', snack: 'Collation' };
+        const catLabel = categoryLabels[meal.category] || 'Repas Vitaliste';
+
+        renderedCards += `<div class="ai-plan-card glass" style="margin:12px 0;padding:16px;border-radius:12px;border-left:4px solid var(--accent);background:rgba(55,211,153,0.06)">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+            <span style="font-weight:700;font-size:1.05rem;color:var(--text)">${meal.emoji || '🍲'} ${esc(meal.name || 'Repas Proposé')}</span>
+            <span class="food-badge badge-electric" style="font-size:0.75rem">${esc(catLabel)}</span>
+          </div>
+          <div style="font-size:0.88rem;color:var(--text);margin-bottom:6px">
+            <strong>Ingrédients :</strong> ${esc(itemsText)}
+          </div>
+          ${meal.note ? `<div style="font-size:0.82rem;color:var(--text-dim);margin-bottom:12px;font-style:italic">🌿 ${esc(meal.note)}</div>` : ''}
+          <button class="btn btn-primary" onclick="handleAddActionMeal('${encodedMeal}')" style="display:inline-flex;align-items:center;gap:6px">
+            <i class="ri-restaurant-line"></i> Enregistrer ce repas aux logs du jour
+          </button>
+        </div>`;
+      }
+
+      // 2. Fasting program card
+      if (obj.program) {
+        const p = obj.program;
+        const encodedProg = btoa(unescape(encodeURIComponent(JSON.stringify(p))));
+        const sessionsCount = p.configs?.length || 1;
+        renderedCards += `<div class="ai-plan-card glass" style="margin:12px 0;padding:16px;border-radius:12px;border-left:4px solid #f59e0b;background:rgba(245,158,11,0.06)">
+          <div style="font-weight:700;margin-bottom:6px;font-size:1.05rem;color:#f59e0b">🔥 ${esc(p.name || 'Programme de Jeûne')}</div>
+          <div style="font-size:0.9rem;margin-bottom:4px;color:var(--text)"><strong>Objectif :</strong> ${esc(p.targetObjective || 'Détox & Vitalité')}</div>
+          <div style="font-size:0.82rem;color:var(--text-dim);margin-bottom:12px">⏱️ ${sessionsCount} session(s) configurée(s)</div>
+          <button class="btn btn-primary" onclick="handleApplyFastingProgram('${encodedProg}')" style="background:#f59e0b;color:#000;display:inline-flex;align-items:center;gap:6px;border:none">
+            <i class="ri-fire-line"></i> Programmer ce jeûne
+          </button>
+        </div>`;
+      }
+
+      // 3. Deterministic Diet Plan Request Injection
       if (obj.dietPlanRequest) {
         const req = obj.dietPlanRequest;
         const encodedReq = btoa(unescape(encodeURIComponent(JSON.stringify(req))));
@@ -2174,8 +2254,8 @@ function renderMarkdown(text) {
         const objText = req.objective ? ` · ${esc(req.objective)}` : '';
         const restrText = req.restrictions ? `<div style="font-size:0.8rem;color:#f2637a;margin-top:4px">⚠️ Restrictions : ${esc(req.restrictions)}</div>` : '';
 
-        return `<div class="ai-plan-card glass" style="margin:12px 0;padding:16px;border-radius:12px;border-left:4px solid var(--accent)">
-          <div style="font-weight:600;margin-bottom:8px">📅 Plan Alimentaire Proposé</div>
+        renderedCards += `<div class="ai-plan-card glass" style="margin:12px 0;padding:16px;border-radius:12px;border-left:4px solid var(--accent);background:rgba(55,211,153,0.06)">
+          <div style="font-weight:700;margin-bottom:8px;color:var(--text)">📅 Plan Alimentaire Proposé</div>
           <div style="font-size:0.9rem;color:var(--text);margin-bottom:4px">
             <strong>${protoName}</strong> (${days} jours)${objText}
           </div>
@@ -2189,46 +2269,20 @@ function renderMarkdown(text) {
         </div>`;
       }
 
-      // Legacy Calendar Meals Injection (backward compatibility)
-      if (obj.calendarMeals && Array.isArray(obj.calendarMeals)) {
-        const meals = obj.calendarMeals;
-        const encodedMeals = btoa(unescape(encodeURIComponent(JSON.stringify(meals))));
-        return `<div class="ai-plan-card glass" style="margin:12px 0;padding:16px;border-radius:12px;border-left:4px solid var(--accent)">
-          <div style="font-weight:600;margin-bottom:8px">📅 Menus générés par l'IA</div>
-          <div style="font-size:0.9rem;color:var(--text-dim);margin-bottom:12px">
-            <span>🍽️ ${meals.length} repas proposés</span>
-          </div>
-          <button class="btn btn-primary" onclick="addMealsToCalendar('${encodedMeals}')">
-            <i class="ri-calendar-check-line"></i> Ajouter au calendrier
-          </button>
-        </div>`;
-      }
-
-      // Food suggestion chips
+      // 4. Food suggestion chips
       if (obj.suggestFoods && Array.isArray(obj.suggestFoods)) {
         const chips = obj.suggestFoods.map(f => 
           `<button class="food-chip" onclick="addSuggestedFood(this, '${esc(f)}')" style="display:inline-flex;align-items:center;gap:4px;padding:6px 14px;margin:4px;border-radius:20px;border:1px solid var(--accent);background:transparent;color:var(--text);cursor:pointer;font-size:0.85rem;transition:all 0.2s">
             <i class="ri-add-circle-line"></i> ${esc(f)}
           </button>`
         ).join('');
-        return `<div style="margin:12px 0">
+        renderedCards += `<div style="margin:12px 0">
           <div style="font-size:0.85rem;color:var(--text-dim);margin-bottom:8px">🥗 Ajouter à ta liste du jour :</div>
           <div style="display:flex;flex-wrap:wrap">${chips}</div>
         </div>`;
       }
 
-      // Fasting program card
-      if (obj.program) {
-        const p = obj.program;
-        return `<div class="ai-plan-card glass" style="margin:12px 0;padding:16px;border-radius:12px;border-left:4px solid #f59e0b">
-          <div style="font-weight:600;margin-bottom:8px">🔥 Programme de jeûne proposé</div>
-          <div style="font-size:0.9rem;margin-bottom:4px"><strong>${esc(p.name)}</strong></div>
-          <div style="font-size:0.85rem;color:var(--text-dim);margin-bottom:12px">${esc(p.targetObjective || '')}</div>
-          <div style="font-size:0.8rem;color:var(--text-dim)">${p.configs?.length || 0} session(s) planifiée(s)</div>
-        </div>`;
-      }
-
-      // Fallback: render as formatted JSON
+      if (renderedCards) return renderedCards;
       return `<pre><code>${esc(JSON.stringify(obj, null, 2))}</code></pre>`;
     } catch { return match; }
   });
@@ -2653,6 +2707,83 @@ window.addMealsToCalendar = function(mealsJson) {
   } catch (e) {
     console.error("Erreur lors de l'ajout des repas", e);
     showToast("Une erreur est survenue lors de l'ajout des repas.", 'error');
+  }
+};
+
+window.handleAddActionMeal = function(encodedMeal) {
+  try {
+    const meal = JSON.parse(decodeURIComponent(escape(atob(encodedMeal))));
+    const meals = store.get('meals', []);
+    
+    // Calculate PRAL and scores based on items if available
+    let totalPral = 0;
+    let itemCount = 0;
+    const items = Array.isArray(meal.items) ? meal.items : [meal.name];
+    
+    items.forEach(itemName => {
+      const match = vitalDb.find(f => (f.names || []).some(n => n.toLowerCase() === itemName.toLowerCase()) || f.id === itemName.toLowerCase());
+      if (match) {
+        totalPral += (match.scientific_defaults?.pral ?? -2.5);
+        itemCount++;
+      } else {
+        totalPral += -2.5; // vitalist default
+        itemCount++;
+      }
+    });
+
+    const avgPral = itemCount > 0 ? Number((totalPral / itemCount).toFixed(1)) : -2.5;
+
+    const newMeal = {
+      id: 'meal_' + Date.now(),
+      name: meal.name || 'Repas Vitaliste',
+      category: meal.category || 'lunch',
+      items: items,
+      emoji: meal.emoji || '🍲',
+      note: meal.note || 'Repas suggéré par le coach vitaliste IA',
+      approved: true,
+      electric: true,
+      hybrid: false,
+      pral: avgPral,
+      nova: 1,
+      timestamp: Date.now()
+    };
+
+    meals.unshift(newMeal);
+    store.set('meals', meals);
+
+    if (window.renderMeals) renderMeals();
+    if (window.renderDashboard) renderDashboard();
+    if (window.updateProactiveMascot) updateProactiveMascot('meal');
+    
+    showToast(`🍽️ Repas "${meal.name}" enregistré dans votre journal !`, 'success');
+  } catch (err) {
+    console.error('Erreur handleAddActionMeal:', err);
+    showToast("Impossible d'enregistrer le repas.", 'error');
+  }
+};
+
+window.handleApplyFastingProgram = function(encodedProgram) {
+  try {
+    const p = JSON.parse(decodeURIComponent(escape(atob(encodedProgram))));
+    const firstConfig = (p.configs && p.configs[0]) || { type: 'waterFast', durationMinutes: 1440 };
+    const durationHours = Math.round((firstConfig.durationMinutes || 960) / 60);
+    const fastType = firstConfig.type || 'waterFast';
+    
+    const typeSelect = document.getElementById('fastingType');
+    const durationSelect = document.getElementById('fastingDuration');
+    if (typeSelect) typeSelect.value = fastType;
+    if (durationSelect) durationSelect.value = durationHours.toString();
+
+    // Start fast if not active
+    if (!fastingState.active) {
+      startFasting();
+    }
+
+    showToast(`🔥 Programme "${p.name}" (${durationHours}h) activé !`, 'success');
+    if (window.showPage) showPage('fasting');
+  } catch (err) {
+    console.error('Erreur handleApplyFastingProgram:', err);
+    showToast("Impossible d'activer le programme de jeûne.", 'error');
   }
 };
 

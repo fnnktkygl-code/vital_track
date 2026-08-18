@@ -712,19 +712,31 @@
 
       <!-- Profile -->
       <div class="dash-card glass">
-        <h3><i class="ri-user-line"></i> Profil</h3>
+        <h3><i class="ri-user-line"></i> Profil & Localisation</h3>
         <div class="profile-form">
-          <label>Nom<input type="text" id="profileName" placeholder="Votre nom..." class="form-input"></label>
-          <label>Objectif
-            <select id="profileGoal" class="form-input">
-              <option value="detox">🧹 Détox & Nettoyage</option>
-              <option value="weight">⚖️ Perte de poids</option>
-              <option value="energy">⚡ Énergie & Vitalité</option>
-              <option value="spiritual">🕊️ Jeûne spirituel</option>
-              <option value="healing">💚 Guérison</option>
-            </select>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <label>Nom<input type="text" id="profileName" placeholder="Votre nom..." class="form-input"></label>
+            <label>Objectif
+              <select id="profileGoal" class="form-input">
+                <option value="detox">🧹 Détox & Nettoyage</option>
+                <option value="weight">⚖️ Perte de poids</option>
+                <option value="energy">⚡ Énergie & Vitalité</option>
+                <option value="spiritual">🕊️ Jeûne spirituel</option>
+                <option value="healing">💚 Guérison</option>
+              </select>
+            </label>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px">
+            <label>Pays<input type="text" id="profileCountry" placeholder="Canada 🍁" class="form-input"></label>
+            <label>Ville<input type="text" id="profileCity" placeholder="Montréal" class="form-input"></label>
+          </div>
+          <label style="margin-top:8px">Restrictions & Allergies (ex: sans arachides, sans solanacées...)
+            <input type="text" id="profileRestrictions" placeholder="Ex: sans noix, sans gluten..." class="form-input">
           </label>
-          <button class="btn-primary" onclick="saveProfile()"><i class="ri-save-line"></i> Sauvegarder</button>
+          <label style="margin-top:8px">Mémoire & Habitudes (préférences retenues par l'IA)
+            <textarea id="profileMemories" placeholder="Ex: aime les smoothies le matin, préfère les repas tièdes en hiver..." class="form-input" style="min-height:60px;resize:vertical"></textarea>
+          </label>
+          <button class="btn-primary" onclick="saveProfile()" style="margin-top:12px"><i class="ri-save-line"></i> Sauvegarder mon profil</button>
         </div>
       </div>
 

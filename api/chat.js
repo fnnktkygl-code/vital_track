@@ -54,7 +54,19 @@ module.exports = async function handler(req, res) {
     // ── Call Gemini with proper multi-turn ──
     let profileContext = '';
     if (profile && typeof profile === 'object' && Object.keys(profile).length > 0) {
-      profileContext = `\n\n[CONTEXTE DE L'UTILISATEUR ACTUEL]\nNom: ${profile.name || 'Inconnu'}\nObjectif: ${profile.goal || 'vitalité'}\nProtocole: ${profile.protocol || 'vitalist'}`;
+      const country = profile.country || 'Canada 🍁';
+      const city = profile.city || 'Montréal';
+      const season = profile.season || 'Hiver';
+      const restrictions = profile.restrictions || 'Aucune restriction déclarée';
+      
+      let memoriesText = '';
+      if (Array.isArray(profile.memories) && profile.memories.length > 0) {
+        memoriesText = `\nHabitudes et préférences mémorisées :\n${profile.memories.map(m => `- ${m}`).join('\n')}`;
+      } else if (typeof profile.memories === 'string' && profile.memories.trim()) {
+        memoriesText = `\nHabitudes et préférences mémorisées : ${profile.memories.trim()}`;
+      }
+
+      profileContext = `\n\n[CONTEXTE DE L'UTILISATEUR ACTUEL]\nNom: ${profile.name || 'Inconnu'}\nLocalisation: ${city}, ${country}\nSaison locale: ${season}\nObjectif: ${profile.goal || 'vitalité'}\nProtocole: ${profile.protocol || 'vitalist'}\nRestrictions: ${restrictions}${memoriesText}`;
     }
 
     const isContinuing = Array.isArray(history) && history.length > 0;
