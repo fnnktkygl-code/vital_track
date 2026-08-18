@@ -1837,17 +1837,14 @@ window.updateProactiveMascot = function(actionContext = null) {
     mood = 'loving';
   } else {
     // Time-based circadian messages
-    if (hour >= 5 && hour < 11) {
+    if (hour >= 4 && hour < 12) {
       msg = profile.protocol === 'vitalist' 
-        ? "💬 <strong>Matin (Élimination) :</strong> L'organisme élimine les toxines de la nuit. Un jus de citron tiède pour favoriser le drainage ? 🍋"
+        ? "💬 <strong>Matin (Élimination) :</strong> L'organisme élimine les toxines. Privilégie l'hydratation, les tisanes et les fruits aqueux. 🍋"
         : "💬 <strong>Bonjour !</strong> Pense à bien t'hydrater dès le réveil. 💧";
       mood = 'excited';
-    } else if (hour >= 11 && hour < 15) {
-      msg = "💬 <strong>Midi (Appropriation) :</strong> Le feu digestif est au maximum ! Privilégie des aliments vivants et riches en eau. 🍉";
+    } else if (hour >= 12 && hour < 20) {
+      msg = "💬 <strong>Journée (Appropriation) :</strong> Le feu digestif est au maximum ! Moment propice pour des repas vivants et nourrissants. 🍉";
       mood = 'talking';
-    } else if (hour >= 15 && hour < 19) {
-      msg = "💬 <strong>Après-midi (Assimilation) :</strong> Une baisse de forme ? Quelques respirations profondes pour réoxygéner tes cellules. 🌬️";
-      mood = 'questioning';
     } else {
       msg = "💬 <strong>Soir & Nuit (Régénération) :</strong> Mettre le système digestif au repos pour permettre la réparation cellulaire nocturne. 🌙";
       mood = 'sleepy';
@@ -2466,46 +2463,70 @@ window.updateCircadianWidget = function() {
   const clockTime = document.getElementById('clockTime');
   const clockPhase = document.getElementById('clockPhase');
   const clockIndicator = document.getElementById('clockIndicator');
-  const desc = document.getElementById('circadianDesc');
+  const phaseIcon = document.getElementById('phaseIcon');
+  const phaseTitle = document.getElementById('phaseTitle');
+  const phaseDesc = document.getElementById('phaseDesc');
   
   if (!timeEl) return; // Not on dashboard
 
   const now = new Date();
   const h = now.getHours();
   const m = now.getMinutes().toString().padStart(2, '0');
-  const timeStr = `${h}:${m}`;
+  const timeStr = `${h.toString().padStart(2, '0')}:${m}`;
   timeEl.textContent = timeStr;
   if (clockTime) clockTime.textContent = timeStr;
 
-  let cycle = '';
-  let emoji = '';
-  let text = '';
+  let shortCycle = '';
+  let fullCycle = '';
+  let iconClass = '';
+  let descText = '';
+  let phaseColor = '';
   
   if (h >= 4 && h < 12) {
-    cycle = 'ÉLIMINATION';
-    emoji = 'ri-sun-cloudy-fill';
-    text = `<div class="info-box"><i class="${emoji}"></i> <div><strong>${cycle}</strong><br><span style="color:var(--text-dim)">Le corps se nettoie. Privilégiez l'eau et les jus.</span></div></div>`;
+    shortCycle = 'ÉLIMINATION';
+    fullCycle = 'ÉLIMINATION';
+    iconClass = 'ri-sun-cloudy-fill';
+    descText = "04h - 12h • Nettoyage corporel & détox. Privilégiez l'eau, les tisanes et les fruits aqueux.";
+    phaseColor = '#f59e0b';
   } else if (h >= 12 && h < 20) {
-    cycle = 'APPROPRIATION';
-    emoji = 'ri-sun-fill';
-    text = `<div class="info-box"><i class="${emoji}"></i> <div><strong>${cycle}</strong><br><span style="color:var(--text-dim)">Feu digestif au maximum. Moment des repas denses.</span></div></div>`;
+    shortCycle = 'APPROPRIATION';
+    fullCycle = 'APPROPRIATION';
+    iconClass = 'ri-sun-fill';
+    descText = "12h - 20h • Feu digestif au maximum. Moment propice pour les repas et la nutrition.";
+    phaseColor = '#10b981';
   } else {
-    cycle = 'REPOS PROFOND';
-    emoji = 'ri-moon-clear-fill';
-    text = `<div class="info-box"><i class="${emoji}"></i> <div><strong>${cycle}</strong><br><span style="color:var(--text-dim)">Priorité à la récupération, système digestif au repos.</span></div></div>`;
+    shortCycle = 'RÉGÉNÉRATION';
+    fullCycle = 'ASSIMILATION & RÉGÉNÉRATION';
+    iconClass = 'ri-moon-clear-fill';
+    descText = "20h - 04h • Réparation cellulaire nocturne. Système digestif au repos complet.";
+    phaseColor = '#818cf8';
   }
 
-  if (clockPhase) clockPhase.textContent = cycle;
-  if (desc) desc.innerHTML = text;
+  if (clockPhase) {
+    clockPhase.textContent = shortCycle;
+    clockPhase.style.color = phaseColor;
+  }
+  if (phaseTitle) {
+    phaseTitle.textContent = fullCycle;
+    phaseTitle.style.color = phaseColor;
+  }
+  if (phaseDesc) {
+    phaseDesc.textContent = descText;
+  }
+  if (phaseIcon) {
+    phaseIcon.className = iconClass;
+    phaseIcon.style.color = phaseColor;
+  }
 
   if (clockIndicator) {
     // 0h = 180deg (bottom), 6h = 270deg (left), 12h = 0deg (top), 18h = 90deg (right)
     const minutesTotal = h * 60 + parseInt(m);
-    // map 0-1440 to 180-540 degrees
     const angle = 180 + (minutesTotal / 1440) * 360;
-    clockIndicator.innerHTML = `<i class="${emoji}"></i>`;
+    clockIndicator.innerHTML = `<i class="${iconClass}" style="color:${phaseColor}"></i>`;
     clockIndicator.style.transform = `rotate(${angle}deg) translateY(-110px) rotate(-${angle}deg)`;
   }
 };
 
-setInterval(updateCircadianWidget, 60000);
+updateCircadianWidget();
+setInterval(updateCircadianWidget, 30000);
+document.addEventListener('DOMContentLoaded', updateCircadianWidget);
