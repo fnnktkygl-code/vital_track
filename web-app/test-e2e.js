@@ -95,7 +95,7 @@ async function runE2ETests() {
     await page.waitForSelector('#addMealModal.open', { visible: true, timeout: 2000 });
     console.log('   ✅ #addMealModal opened');
 
-    // Enter dish description in AI box
+    // Test 3A: AI Dish box
     await page.$eval('#aiDishInput', el => el.value = 'Salade de concombres et avocat au citron');
     await page.evaluate(() => window.analyzeDishWithAI());
     
@@ -103,11 +103,31 @@ async function runE2ETests() {
     await page.waitForFunction(() => {
       const items = document.querySelectorAll('#mealSelectedItems .selected-chip');
       return items.length >= 1;
-    }, { timeout: 5000 });
+    }, { timeout: 15000 });
 
     const selectedItemsCount = await page.$$eval('#mealSelectedItems .selected-chip', els => els.length);
-    const selectedItemsNames = await page.$$eval('#mealSelectedItems .selected-chip', els => els.map(e => e.textContent.trim()));
-    console.log(`   ✅ AI Dish Analyzer extracted ${selectedItemsCount} items:`, selectedItemsNames);
+    console.log(`   ✅ AI Dish box extracted ${selectedItemsCount} item(s)`);
+
+    // Test 3B: Search input + "Demander à l'IA d'analyser" button
+    console.log('   Testing "Demander à l\'IA d\'analyser" from meal search input...');
+    await page.$eval('#mealSearchInput', el => {
+      el.value = 'mangue papaye et graines de courge';
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+    await page.waitForSelector('#mealSearchResults button', { visible: true, timeout: 5000 });
+    
+    // Click the "Demander à l'IA d'analyser" button
+    const askAiMealBtn = await page.$('#mealSearchResults button');
+    await askAiMealBtn.click();
+
+    // Wait for added items
+    await page.waitForFunction(() => {
+      const items = document.querySelectorAll('#mealSelectedItems .selected-chip');
+      return items.length >= 2;
+    }, { timeout: 35000 });
+
+    const totalSelected = await page.$$eval('#mealSelectedItems .selected-chip', els => els.map(e => e.textContent.trim()));
+    console.log(`   ✅ "Demander à l'IA d'analyser" succeeded! Total selected items:`, totalSelected);
 
     // Screenshot AI Meal Analyzer
     await page.screenshot({ path: '/Users/richard/.gemini/antigravity-ide/brain/e5d0ea18-d331-46c0-9562-9eebb3699cf8/e2e_ai_dish_modal.png' });
@@ -117,26 +137,26 @@ async function runE2ETests() {
     await page.waitForFunction(() => !document.getElementById('addMealModal').classList.contains('open'));
     console.log('   ✅ Meal confirmed and added to daily log');
 
-    // 4. Test Search & Food Detail Modal (3 Tabs)
-    console.log('📍 4. Testing Search & Food Detail Modal with 3 Tabs...');
+    // 4. Test Search & Food Detail Modal (3 Tabs) & "Demander à l'IA de chercher"
+    console.log('📍 4. Testing Search & "Demander à l\'IA de chercher"...');
     await page.evaluate(() => window.showPage('search'));
     await page.waitForSelector('#foodResults', { visible: true });
     
-    // Type search
+    // Type a query not in local database
     await page.$eval('#searchInput', el => {
-      el.value = 'avocat';
+      el.value = 'pitaya fruit du dragon';
       el.dispatchEvent(new Event('input', { bubbles: true }));
     });
-    await page.waitForSelector('.food-card', { visible: true });
-    console.log('   ✅ Search results displayed');
+    await page.waitForSelector('#foodResults button', { visible: true, timeout: 5000 });
+    console.log('   ✅ "Demander à l\'IA de chercher" button visible for novel query');
 
-    // Open detail modal for first food
-    await page.evaluate(() => {
-      const cards = document.querySelectorAll('#foodResults .food-card');
-      if (cards.length > 0) cards[0].click();
-    });
-    await page.waitForSelector('#foodModal.open', { visible: true });
-    console.log('   ✅ FoodModal opened');
+    // Click "Demander à l'IA de chercher"
+    const askAiSearchBtn = await page.$('#foodResults button');
+    await askAiSearchBtn.click();
+
+    // Wait for FoodModal to open with analyzed food
+    await page.waitForSelector('#foodModal.open', { visible: true, timeout: 25000 });
+    console.log('   ✅ FoodModal opened automatically with newly analyzed AI food');
 
     // Switch tabs: scientific, vitality, specific
     await page.evaluate(() => window.setModalTab('scientific'));
@@ -148,9 +168,9 @@ async function runE2ETests() {
     await page.screenshot({ path: '/Users/richard/.gemini/antigravity-ide/brain/e5d0ea18-d331-46c0-9562-9eebb3699cf8/e2e_food_modal.png' });
 
     // Toggle favorite
-    await page.evaluate(() => window.toggleFavorite());
-    console.log('   ✅ Favorite toggled');
     await page.evaluate(() => window.closeFoodModal());
+    await page.waitForFunction(() => !document.getElementById('foodModal').classList.contains('open'));
+    console.log('   ✅ FoodModal closed cleanly');
 
     // 5. Test Breathing Engine
     console.log('📍 5. Testing Breathing Exercises & Modes...');

@@ -51,41 +51,7 @@ class _AddMealSheetState extends State<AddMealSheet> {
     super.dispose();
   }
 
-  Future<bool> _confirmAIUsage() async {
-    return await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: ctx.colors.surface,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-            side: BorderSide(color: ctx.colors.border)),
-        title: Text("Utiliser l'IA ?",
-            style: TextStyle(color: ctx.colors.textPrimary, fontSize: 18)),
-        content: Text(
-          "L'analyse consomme 1 crédit par requête. Confirmer ?",
-          style: TextStyle(color: ctx.colors.textSecondary),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text("Annuler",
-                style: TextStyle(color: ctx.colors.textSecondary)),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: Text("Analyser",
-                style: TextStyle(
-                    color: ctx.colors.accent,
-                    fontWeight: FontWeight.bold)),
-          ),
-        ],
-      ),
-    ) ??
-        false;
-  }
-
   Future<void> _handlePhoto() async {
-    if (!await _confirmAIUsage()) return;
     final XFile? image = await _picker.pickImage(
       source: ImageSource.camera,
       maxWidth: 800,
@@ -95,7 +61,6 @@ class _AddMealSheetState extends State<AddMealSheet> {
   }
 
   Future<void> _handleGallery() async {
-    if (!await _confirmAIUsage()) return;
     final XFile? image = await _picker.pickImage(
       source: ImageSource.gallery,
       maxWidth: 800,
@@ -145,7 +110,6 @@ class _AddMealSheetState extends State<AddMealSheet> {
 
   Future<void> _analyzeText(String text) async {
     if (text.trim().isEmpty) return;
-    if (!await _confirmAIUsage()) return;
     setState(() {
       _isProcessing = true;
     });

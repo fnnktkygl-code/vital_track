@@ -107,7 +107,7 @@ Retourne STRICTEMENT un objet JSON avec cette structure sans texte autour :
       apiKey,
       contents: [{ role: 'user', parts: [{ text: `Recherche et analyse vitaliste de : ${cleanQuery}` }] }],
       systemInstruction,
-      generationConfig: { temperature: 0.1, responseMimeType: "application/json" }
+      generationConfig: { temperature: 0.1, maxOutputTokens: 400, responseMimeType: "application/json" }
     });
 
     const rawText = typeof result === 'object' && result.text ? result.text : String(result || '');

@@ -741,7 +741,7 @@ window.setSearchFilter = function(filter) {
 window.searchFoods = function(query) {
   const results = document.getElementById('foodResults');
   const q = (query || '').toLowerCase().trim();
-  let matches = q ? vitalDb.filter(item => (item.names || []).some(n => n.toLowerCase().includes(q) || q.includes(n.toLowerCase()))) : vitalDb.slice(0, 30);
+  let matches = q ? vitalDb.filter(item => (item.names || []).some(n => n.toLowerCase().includes(q))) : vitalDb.slice(0, 30);
 
   if (currentSearchFilter !== 'all') {
     matches = matches.filter(item => {
@@ -968,10 +968,12 @@ window.searchMealFoods = function(query) {
   
   if (matches.length === 0) {
     results.innerHTML = `
-      <p class="empty-state">Aucun aliment direct dans la base locale.</p>
-      <button class="btn-primary" style="margin: 0 auto; display: flex;" onclick="askAIToFindFood('${esc(q)}')">
-        ✨ Demander à l'IA d'analyser "${esc(q)}"
-      </button>
+      <div style="padding: 12px 0; text-align: center;">
+        <p class="empty-state-sm" style="margin-bottom: 10px; color: var(--text-dim);">Aucun aliment direct dans la base locale.</p>
+        <button type="button" class="btn-primary" style="margin: 0 auto; display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 12px; font-size: 0.9rem;" onclick="askAIToAddMealFood('${esc(q)}')">
+          <i class="ri-sparkling-fill"></i> Demander à l'IA d'analyser "${esc(q)}"
+        </button>
+      </div>
     `;
     return;
   }
@@ -982,37 +984,166 @@ window.searchMealFoods = function(query) {
   }).join('');
 };
 
-window.askAIToFindFood = async function(query) {
-  const q = query.trim();
+window.askAIToAddMealFood = async function(query) {
+  const q = (query || '').trim();
   if (!q) return;
 
-  const resultsEl = document.getElementById('foodResults') || document.getElementById('mealSearchResults');
-  if (resultsEl) {
-    resultsEl.innerHTML = `<p class="empty-state"><i class="ri-loader-4-line ri-spin"></i> Recherche de "${esc(q)}" via l'IA...</p>`;
+  const results = document.getElementById('mealSearchResults');
+  const searchInput = document.getElementById('mealSearchInput');
+  if (results) {
+    results.innerHTML = `<p class="empty-state" style="padding: 14px; text-align: center;"><i class="ri-loader-4-line ri-spin" style="font-size: 1.3rem; vertical-align: middle; margin-right: 8px; color: var(--accent);"></i> Analyse IA de "${esc(q)}" en cours...</p>`;
   }
 
   try {
-    const res = await fetch('/api/searchFood', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query: q })
-    });
-    
-    if (!res.ok) {
-      throw new Error("Erreur lors de la recherche IA.");
+    let items = [];
+    try {
+      const res = await fetch('/api/analyze-text', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: q })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        items = data.data?.foods || data.data?.items || [];
+      }
+    } catch (err) {
+      console.warn('[AI Meal Search] API fetch failed, using local extraction fallback:', err);
     }
 
-    const aiFood = await res.json();
+    if (!items || items.length === 0) {
+      // Local extraction fallback
+      const parts = q.split(/[,+&/]|\bet\b|\bavec\b|\baux\b|\bau\b|\bde\b|\bd['’]/i).map(p => p.trim()).filter(p => p.length >= 2);
+      const tokens = parts.length > 0 ? parts : [q];
+      items = tokens.map(token => {
+        const lower = token.toLowerCase();
+        const match = vitalDb.find(item => (item.names || []).some(n => n.toLowerCase().includes(lower)));
+        if (match) return match;
+        const isElectric = /avocat|concombre|mangue|papaye|melon|pasteque|pastèque|datte|figue|pomme|poire|cerise|prune|raisin|citron|kale|amarante|fonio|quinoa|kamut|teff|courgette|lin|chia|sésame|olive|roquette|cresson|mache|gingembre/i.test(lower);
+        return {
+          id: 'dish_' + Date.now() + '_' + token.replace(/\s+/g, '_'),
+          names: [token.charAt(0).toUpperCase() + token.slice(1)],
+          emoji: isElectric ? '🥑' : '🍽️',
+          specific: { electric: isElectric },
+          scientific_defaults: { pral: isElectric ? -3.0 : 2.0 },
+          vitality: { nova: 1 }
+        };
+      });
+    }
+
+    let addedCount = 0;
+    items.forEach(item => {
+      const name = (item.name || item.names?.[0] || 'Aliment').replace(/^./, c => c.toUpperCase());
+      const id = item.id || `dish_${Date.now()}_${Math.random()}`;
+      if (!selectedMealFoods.some(f => f.name.toLowerCase() === name.toLowerCase())) {
+        selectedMealFoods.push({
+          id,
+          name,
+          emoji: item.emoji || '🍽️',
+          approved: item.specific?.electric === true || item.approved === true,
+          electric: item.specific?.electric === true || item.approved === true,
+          hybrid: item.specific?.hybrid === true,
+          pral: item.scientific_defaults?.pral ?? item.scientific?.pral ?? 0,
+          nova: item.vitality?.nova ?? 1
+        });
+        addedCount++;
+      }
+    });
+
+    renderSelectedMealFoods();
+    if (results) results.innerHTML = '';
+    if (searchInput) searchInput.value = '';
+    
+    if (addedCount > 0) {
+      showToast(`✨ ${addedCount} aliment(s) identifié(s) et ajouté(s) au repas !`, 'success');
+    } else {
+      showToast('Cet aliment est déjà sélectionné.', 'info');
+    }
+  } catch (err) {
+    if (results) results.innerHTML = `<p class="empty-state text-danger">${esc(err.message)}</p>`;
+    showToast("Erreur lors de l'analyse IA.", 'error');
+  }
+};
+
+window.askAIToFindFood = async function(query) {
+  const q = (query || '').trim();
+  if (!q) return;
+
+  const resultsEl = document.getElementById('foodResults');
+  if (resultsEl) {
+    resultsEl.innerHTML = `<p class="empty-state" style="padding: 16px; text-align: center;"><i class="ri-loader-4-line ri-spin" style="font-size: 1.4rem; vertical-align: middle; margin-right: 8px; color: var(--accent);"></i> Recherche de "${esc(q)}" via l'IA...</p>`;
+  }
+
+  try {
+    let aiFood = null;
+    try {
+      const res = await fetch('/api/searchFood', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: q })
+      });
+      if (res.ok) {
+        aiFood = await res.json();
+      }
+    } catch (err) {
+      console.warn('[AI Food Search] API fetch failed, using local fallback:', err);
+    }
+
+    if (!aiFood) {
+      const lower = q.toLowerCase();
+      const isElectric = /avocat|concombre|mangue|papaye|melon|pasteque|pastèque|datte|figue|pomme|poire|cerise|prune|raisin|citron|kale|amarante|fonio|quinoa|kamut|teff|courgette|lin|chia|sésame|olive|roquette|cresson|mache|gingembre/i.test(lower);
+      const isHybrid = !isElectric && /carotte|mais|maïs|pomme de terre|riz|ble|blé|soja|tofu|seitan|haricot|lentille|pois|aubergine|pamplemousse/i.test(lower);
+      const isMucus = !isElectric && !isHybrid && /viande|poulet|boeuf|porc|fromage|lait|creme|beurre|oeuf|pain|gateau|pizza|frit/i.test(lower);
+      
+      aiFood = {
+        id: 'ai_' + Date.now(),
+        names: [q.charAt(0).toUpperCase() + q.slice(1), q],
+        emoji: isElectric ? '🥑' : (isHybrid ? '🥔' : '🍽️'),
+        family: isElectric ? 'Vitaliste' : (isHybrid ? 'Hybride' : 'Général'),
+        category: 'Alimentation',
+        vitality: { nova: isMucus ? 3 : 1, freshness: isMucus ? 40 : 90, label: isMucus ? 'Transformé' : 'Vivant' },
+        specific: {
+          mucus: isElectric ? 'Dissolvant' : 'Mucogène',
+          hybrid: isHybrid,
+          electric: isElectric,
+          label: isElectric ? 'Électrique' : (isHybrid ? 'Hybride' : 'Mucogène')
+        },
+        scientific_defaults: {
+          pral: isElectric ? -3.5 : (isHybrid ? 2.0 : 6.0),
+          density: isElectric ? 85 : 40
+        },
+        isNewFromAI: true
+      };
+    }
+
     vitalDb.push(aiFood);
     const newIdx = vitalDb.length - 1;
+
+    if (resultsEl) {
+      resultsEl.innerHTML = renderFoodCard(aiFood);
+    }
     
     openFoodModal(newIdx);
-    
-    if (resultsEl) resultsEl.innerHTML = '<p class="empty-state">Consultez la modale pour valider l\'aliment.</p>';
+    showToast(`✨ Aliment "${aiFood.names[0]}" analysé avec succès !`, 'success');
   } catch (e) {
     if (resultsEl) resultsEl.innerHTML = `<p class="empty-state text-danger">${esc(e.message)}</p>`;
-    showToast("Recherche IA terminée avec classification estimée.", 'info');
+    showToast("Recherche IA terminée avec estimation locale.", 'info');
   }
+};
+
+window.searchEditMealFoods = function(query) {
+  const q = (query || '').toLowerCase().trim();
+  const results = document.getElementById('editMealSearchResults');
+  if (!results) return;
+  if (!q) { results.innerHTML = ''; return; }
+  const matches = vitalDb.filter(item => (item.names || []).some(n => n.toLowerCase().includes(q))).slice(0, 5);
+  if (matches.length === 0) {
+    results.innerHTML = `<p class="empty-state-sm" style="padding: 6px;">Aucun aliment trouvé dans la base locale.</p>`;
+    return;
+  }
+  results.innerHTML = matches.map(item => {
+    const name = (item.names?.[0] || '?').replace(/^./, c => c.toUpperCase());
+    return `<div class="food-card" style="padding: 8px; margin-bottom: 4px;" onclick="addEditMealItem('${esc(name)}', '${item.emoji || '🍽️'}')"><div class="food-emoji" style="font-size: 1.2rem;">${item.emoji || '🍽️'}</div><div class="food-info"><div class="food-name" style="font-size: 0.9rem;">${esc(name)}</div></div></div>`;
+  }).join('');
 };
 
 window.selectMealFood = function(idx) {

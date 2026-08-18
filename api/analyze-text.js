@@ -80,7 +80,7 @@ module.exports = async function handler(req, res) {
       apiKey,
       contents: [{ role: 'user', parts: [{ text: `Analyze this food or dish: ${cleanQuery}` }] }],
       systemInstruction: foodAnalysisPrompt,
-      generationConfig: { temperature: 0.1, responseMimeType: 'application/json' },
+      generationConfig: { temperature: 0.1, maxOutputTokens: 600, responseMimeType: 'application/json' },
     });
 
     const rawText = typeof result === 'object' && result.text ? result.text : String(result || '');

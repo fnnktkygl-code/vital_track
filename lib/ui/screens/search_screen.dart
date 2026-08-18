@@ -6,6 +6,7 @@ import 'package:vital_track/models/food.dart';
 import 'package:vital_track/services/vital_rules_engine.dart';
 import 'package:vital_track/services/open_food_facts_service.dart';
 import 'package:vital_track/services/hive_service.dart';
+import 'package:vital_track/services/ai_service.dart';
 import 'package:vital_track/utils/food_mapper.dart';
 import 'package:vital_track/ui/theme.dart';
 import 'package:vital_track/ui/widgets/food_modal.dart';
@@ -116,6 +117,54 @@ class _SearchScreenState extends State<SearchScreen> {
     });
   }
 
+  Future<void> _askAiForFood(String query) async {
+    final cleanQuery = query.trim();
+    if (cleanQuery.isEmpty) return;
+    setState(() => _isLoading = true);
+    try {
+      final json = await AIService.analyzeText(cleanQuery);
+      Food? analyzedFood;
+      if (json != null) {
+        final list = FoodMapper.fromAIJsonList(json);
+        if (list.isNotEmpty) analyzedFood = list.first;
+      }
+      analyzedFood ??= VitalRulesEngine.extractFoodsFromQuery(cleanQuery).firstOrNull;
+
+      if (mounted) {
+        setState(() => _isLoading = false);
+        if (analyzedFood != null) {
+          await _addToHistory(analyzedFood);
+          if (!mounted) return;
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
+            builder: (context) => FoodModal(food: analyzedFood!),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: const Text("L'IA n'a pas pu identifier cet aliment."),
+            backgroundColor: context.colors.error,
+          ));
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        final local = VitalRulesEngine.extractFoodsFromQuery(cleanQuery).firstOrNull;
+        if (local != null) {
+          _addToHistory(local);
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            backgroundColor: Colors.transparent,
+            builder: (context) => FoodModal(food: local),
+          );
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
@@ -148,34 +197,31 @@ class _SearchScreenState extends State<SearchScreen> {
             Padding(
               padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
               child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 decoration: BoxDecoration(
                   color: colors.surfaceSubtle,
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(16),
                   border: Border.all(color: colors.border),
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Row(
                   children: [
-                    const SizedBox(width: 8),
                     Icon(Icons.search, color: colors.iconMuted, size: 20),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 12),
                     Expanded(
                       child: TextField(
                         controller: _searchController,
-                        onChanged: (val) {
-                          if (val.length > 2) _performSearch(val);
-                          if (val.isEmpty) _loadHistory();
-                        },
                         style: TextStyle(color: colors.textPrimary),
                         decoration: InputDecoration(
-                          hintText: "Aliment, marque...",
+                          hintText: "Rechercher un aliment ou un plat...",
                           hintStyle: TextStyle(color: colors.textTertiary),
                           border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(vertical: 14),
-                          // Override to remove filled/border from inputDecorationTheme inside this custom container
-                          fillColor: Colors.transparent,
-                          filled: false,
                         ),
+                        onChanged: _performSearch,
+                        onSubmitted: (val) {
+                          if (_results.isEmpty && val.trim().isNotEmpty) {
+                            _askAiForFood(val.trim());
+                          }
+                        },
                       ),
                     ),
                     if (_searchController.text.isNotEmpty)
@@ -207,14 +253,35 @@ class _SearchScreenState extends State<SearchScreen> {
             Expanded(
               child: _results.isEmpty
                   ? Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text("🔍", style: TextStyle(fontSize: 36)),
-                    const SizedBox(height: 12),
-                    Text("Aucun résultat",
-                        style: TextStyle(color: colors.textSecondary)),
-                  ],
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 28),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text("🔍", style: TextStyle(fontSize: 36)),
+                      const SizedBox(height: 12),
+                      Text("Aucun résultat direct",
+                          style: TextStyle(color: colors.textSecondary, fontWeight: FontWeight.w600)),
+                      if (_searchController.text.trim().isNotEmpty) ...[
+                        const SizedBox(height: 16),
+                        ElevatedButton.icon(
+                          onPressed: _isLoading ? null : () => _askAiForFood(_searchController.text.trim()),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: colors.accent,
+                            foregroundColor: colors.accentOnPrimary,
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                          ),
+                          icon: const Icon(Icons.auto_awesome, size: 18),
+                          label: Text(
+                            "Demander à l'IA d'analyser \"${_searchController.text.trim()}\"",
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
                 ),
               )
                   : ListView.builder(
