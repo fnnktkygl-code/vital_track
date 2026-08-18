@@ -31,6 +31,5 @@
         { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
       ]
     }
-  ],
-  "ignoreCommand": "exit 0"
+  ]
 }
