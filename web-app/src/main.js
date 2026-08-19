@@ -7443,7 +7443,6 @@ const _mascotQuotes = {
   laugh: "« Hahaha ! La joie et la respiration profonde alcalinisent le terrain ! 😄 »",
   coo: "« Roucouuu ! Écoute le chant de tes cellules régénérées. 🐦 »",
   think: "« J'analyse les flavonoïdes, le PRAL et la charge en mucus... 🧐 »",
-  peck: "« Une alimentation vivante, brute, gorgée d'eau structurée ! 🌾 »",
   celebrate: "« Félicitations pour tes victoires vitalistes ! 🎉 »",
   sleep: "« Réparation cellulaire et autolyse des déchets... Bonne nuit ! 😴 »"
 };
@@ -7483,7 +7482,7 @@ window.setInAppMascotAction = function(action) {
 };
 
 window.triggerInAppPigeonAction = function() {
-  const actions = ['laugh', 'celebrate', 'coo', 'peck', 'fly', 'walk'];
+  const actions = ['laugh', 'celebrate', 'coo', 'fly', 'walk', 'think'];
   const next = actions[Math.floor(Math.random() * actions.length)];
   window.setInAppMascotAction(next);
 };

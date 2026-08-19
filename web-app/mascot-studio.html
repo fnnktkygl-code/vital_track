@@ -321,9 +321,6 @@
           <button class="action-btn" data-action="think" onclick="setStudioAction('think')">
             <span>🧐</span> Observer
           </button>
-          <button class="action-btn" data-action="peck" onclick="setStudioAction('peck')">
-            <span>🌾</span> Picorer
-          </button>
           <button class="action-btn" data-action="celebrate" onclick="setStudioAction('celebrate')">
             <span>🌟</span> Célébrer
           </button>
@@ -396,7 +393,6 @@
       laugh: "« Hahaha ! La joie alcalinise le corps en quelques secondes ! »",
       coo: "« Roucouuu ! Écoute le chant de tes cellules régénérées. »",
       think: "« J'analyse les flavonoïdes et la charge en mucus... »",
-      peck: "« Une alimentation vivante, brute et pleine d'enzymes ! »",
       celebrate: "« Félicitations ! Palier d'autophagie validé ! 🎉 »",
       sleep: "« Réparation cellulaire et autolyse nocturne... Zzz »"
     };
@@ -432,7 +428,6 @@
         laugh: 'Rire & Allégresse 😄',
         coo: 'Roucoulement & Jabot gonflé 🐦',
         think: 'Observation Inquisitrice 🧐',
-        peck: 'Picorage au sol 🌾',
         celebrate: 'Célébration & Saut 🌟',
         sleep: 'Sommeil & Repos profond 😴'
       };
@@ -450,7 +445,7 @@
     };
 
     window.triggerPigeonClick = function() {
-      const actions = ['laugh', 'celebrate', 'coo', 'peck', 'fly', 'walk'];
+      const actions = ['laugh', 'celebrate', 'coo', 'fly', 'walk', 'think'];
       const next = actions[Math.floor(Math.random() * actions.length)];
       setStudioAction(next);
     };
