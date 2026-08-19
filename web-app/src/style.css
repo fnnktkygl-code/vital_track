@@ -5971,6 +5971,190 @@ mark.search-highlight {
   box-shadow: 0 0 14px rgba(52, 211, 153, 0.25);
 }
 
+/* ═══════ 🎙️ MULTI-SPEAKER VIDEO DUBBING & SUBTITLES ═══════ */
+.dubbing-control-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px 14px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
 
+.dubbing-pill-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 3px 6px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
 
+.dubbing-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border-radius: 16px;
+  border: none;
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
 
+.dubbing-toggle-btn.active {
+  background: var(--accent);
+  color: #042f2e;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(52, 211, 153, 0.4);
+}
+
+.dubbing-toggle-btn:hover:not(.active) {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Subtitle Overlay inside Video Frame */
+.video-subtitle-overlay {
+  position: absolute;
+  bottom: 50px;
+  left: 5%;
+  right: 5%;
+  margin: 0 auto;
+  max-width: 800px;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  text-align: center;
+  pointer-events: none;
+  z-index: 10;
+  animation: fadeInSubtitle 0.25s ease;
+}
+
+@keyframes fadeInSubtitle {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.subtitle-speaker-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.subtitle-text {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.4;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* Multi-Speaker Interactive Dialogue Panel */
+.dialogue-script-panel {
+  background: rgba(15, 23, 42, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 14px;
+  margin-top: 14px;
+}
+
+.dialogue-script-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.dialogue-script-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 260px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.dialogue-bubble {
+  display: flex;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dialogue-bubble:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateX(3px);
+}
+
+.dialogue-bubble.active {
+  background: rgba(52, 211, 153, 0.1);
+  border-left: 3px solid var(--accent);
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.15);
+}
+
+.speaker-avatar-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.dialogue-bubble-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.dialogue-bubble-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3px;
+}
+
+.dialogue-bubble-speaker {
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.dialogue-bubble-time {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  font-family: monospace;
+}
+
+.dialogue-bubble-text {
+  font-size: 0.84rem;
+  color: var(--text);
+  line-height: 1.45;
+}
