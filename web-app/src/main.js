@@ -7747,33 +7747,46 @@ window.renderResources = function () {
             <span class="badge badge-success" style="font-size:0.78rem;">${filteredBooks.length} ouvrage${filteredBooks.length > 1 ? 's' : ''} disponible${filteredBooks.length > 1 ? 's' : ''}</span>
           </div>
 
-          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:16px;">
+          <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(360px, 1fr)); gap:22px;">
             ${filteredBooks.map(b => `
-              <div class="dash-card glass" style="padding:18px; display:flex; flex-direction:column; justify-content:space-between; border-left:3px solid ${b.color};">
+              <div class="dash-card glass" style="padding:22px; display:flex; flex-direction:column; justify-content:space-between; border-left:4px solid ${b.color}; background:linear-gradient(145deg, rgba(255,255,255,0.035), rgba(15,23,42,0.8)); box-shadow:0 10px 30px rgba(0,0,0,0.3); border-radius:16px;">
                 <div>
-                  <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:8px;">
-                    <div style="display:flex; align-items:center; gap:8px;">
-                      <div style="width:36px; height:36px; border-radius:10px; background:rgba(255,255,255,0.06); color:${b.color}; display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0;">
-                        <i class="${b.icon}"></i>
-                      </div>
-                      <div>
-                        <h3 style="margin:0; font-size:0.96rem; font-weight:700; color:#fff; line-height:1.2;">${esc(b.title)}</h3>
-                        <div style="font-size:0.75rem; color:${b.color}; font-weight:600; margin-top:2px;">${esc(b.subtitle)}</div>
-                      </div>
+                  <!-- Top Meta Bar: Language Badge on Left, File Size on Right -->
+                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; gap:8px;">
+                    ${b.badgeText ? `
+                      <span style="font-size:0.75rem; font-weight:700; color:${b.lang === 'fr' ? '#34d399' : '#38bdf8'}; background:${b.lang === 'fr' ? 'rgba(52,211,153,0.12)' : 'rgba(56,189,248,0.12)'}; padding:4px 10px; border-radius:20px; border:1px solid ${b.lang === 'fr' ? 'rgba(52,211,153,0.3)' : 'rgba(56,189,248,0.3)'}; display:inline-flex; align-items:center; gap:5px;">
+                        ${esc(b.badgeText)}
+                      </span>
+                    ` : '<span></span>'}
+                    <span class="badge ${b.badgeClass}" style="font-size:0.72rem; padding:4px 9px; font-weight:600; white-space:nowrap; border-radius:8px;">${esc(b.size)}</span>
+                  </div>
+
+                  <!-- Book Title & Icon Header -->
+                  <div style="display:flex; align-items:flex-start; gap:12px; margin-bottom:10px;">
+                    <div style="width:44px; height:44px; border-radius:12px; background:rgba(255,255,255,0.06); color:${b.color}; border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-size:1.35rem; flex-shrink:0; box-shadow:0 4px 12px rgba(0,0,0,0.25);">
+                      <i class="${b.icon}"></i>
                     </div>
-                    <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
-                      <span class="badge ${b.badgeClass}" style="white-space:nowrap; font-size:0.7rem;">${esc(b.size)}</span>
-                      ${b.badgeText ? `<span style="white-space:nowrap; font-size:0.68rem; font-weight:700; color:${b.lang === 'fr' ? '#34d399' : '#38bdf8'}; background:${b.lang === 'fr' ? 'rgba(52,211,153,0.12)' : 'rgba(56,189,248,0.12)'}; padding:2px 6px; border-radius:6px; border:1px solid ${b.lang === 'fr' ? 'rgba(52,211,153,0.25)' : 'rgba(56,189,248,0.25)'};">${esc(b.badgeText)}</span>` : ''}
+                    <div style="flex:1; min-width:0;">
+                      <h3 style="margin:0 0 4px 0; font-size:1.05rem; font-weight:800; color:#fff; line-height:1.3; word-break:break-word;">${esc(b.title)}</h3>
+                      <div style="font-size:0.78rem; color:${b.color}; font-weight:600; line-height:1.35;">${esc(b.subtitle)}</div>
                     </div>
                   </div>
-                  <div style="font-size:0.78rem; color:var(--accent); font-weight:600; margin-bottom:6px;">Auteur : ${esc(b.author)}</div>
-                  <p style="font-size:0.82rem; color:var(--text-dim); line-height:1.45; margin:0 0 14px 0;">${esc(b.description)}</p>
+
+                  <!-- Author Meta Pill -->
+                  <div style="display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); padding:3px 10px; border-radius:8px; font-size:0.76rem; color:var(--accent); font-weight:600; margin-bottom:12px;">
+                    <i class="ri-quill-pen-line"></i> Auteur : <span style="color:#fff;">${esc(b.author)}</span>
+                  </div>
+
+                  <!-- Description -->
+                  <p style="font-size:0.85rem; color:var(--text-dim); line-height:1.55; margin:0 0 18px 0;">${esc(b.description)}</p>
                 </div>
-                <div style="display:flex; gap:8px; margin-top:auto;">
-                  <a href="${b.url}" target="_blank" rel="noopener noreferrer" class="btn-primary" style="flex:1; text-align:center; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:6px; font-size:0.82rem; padding:8px 12px;">
+
+                <!-- Balanced 50/50 Action Buttons -->
+                <div style="display:flex; gap:10px; margin-top:auto;">
+                  <a href="${b.url}" target="_blank" rel="noopener noreferrer" class="btn-primary" style="flex:1; text-align:center; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:6px; font-size:0.85rem; font-weight:700; padding:10px 14px; border-radius:10px; box-shadow:0 4px 14px rgba(16,185,129,0.25);">
                     <i class="ri-file-pdf-line"></i> Consulter
                   </a>
-                  <a href="${b.url}" download class="btn-secondary" style="text-align:center; text-decoration:none; padding:8px 12px; display:inline-flex; align-items:center; justify-content:center; gap:4px; font-size:0.82rem;" title="Télécharger le fichier PDF">
+                  <a href="${b.url}" download class="btn-secondary" style="flex:1; text-align:center; text-decoration:none; padding:10px 14px; display:inline-flex; align-items:center; justify-content:center; gap:6px; font-size:0.85rem; font-weight:600; border-radius:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); color:#fff;" title="Télécharger le fichier PDF">
                     <i class="ri-download-2-line"></i> Télécharger
                   </a>
                 </div>
