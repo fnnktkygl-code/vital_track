@@ -4,35 +4,43 @@
  */
 
 export const SYNONYMS = {
-  // Pathologies & conditions spécifiques
-  'crohn': ['crohn', 'maladie de crohn', "crohn's", 'colite', 'colitis', 'mici', 'ibd'],
-  'colite': ['colite', 'colitis', 'rectocolite', 'inflammation intestinale', 'rch'],
-  'candida': ['candida', 'candidose', 'levures', 'mycose', 'fungal', 'yeast'],
-  'yeux': ['yeux', 'oeil', 'vision', 'eyes', 'sight', 'oculaire', 'cataracte', 'glaucome'],
-  'eyes': ['eyes', 'eye', 'vision', 'sight', 'yeux', 'oeil', 'glaucoma', 'cataracts'],
-  'reins': ['reins', 'rein', 'kidney', 'kidneys', 'renal', 'filtration', 'nephron', 'surrenales', 'adrenals'],
-  'kidneys': ['kidneys', 'kidney', 'renal', 'reins', 'rein', 'filtration', 'adrenals', 'surrenales'],
-  'surrenales': ['surrenales', 'surrenale', 'adrenals', 'adrenal', 'medulla', 'cortex', 'aldosterone'],
-  'adrenals': ['adrenals', 'adrenal', 'surrenales', 'surrenale', 'medulla', 'cortex'],
+  // Pathologies & conditions spécifiques (strictes et dissociées)
+  'crohn': ['crohn', 'maladie de crohn', "crohn's", "crohn's disease"],
+  'colite': ['colite', 'colitis', 'rectocolite', 'colite ulcéreuse', 'colite ulcereuse', 'ulcerative colitis'],
+  'colitis': ['colitis', 'colite', 'rectocolite', 'ulcerative colitis', 'colite ulcereuse', 'colite ulcéreuse'],
+  'candida': ['candida', 'candidose', 'candidiasis', 'levures', 'mycose', 'yeast'],
+  'cataracte': ['cataracte', 'cataractes', 'cataract', 'cataracts'],
+  'glaucome': ['glaucome', 'glaucoma'],
+  'arthrite': ['arthrite', 'arthritis', 'arthrose', 'osteoarthritis', 'polyarthrite'],
+  'diabete': ['diabete', 'diabète', 'diabetes', 'glycemie', 'glycémie', 'insuline'],
+  'cancer': ['cancer', 'tumeur', 'tumor', 'tumour', 'carcinome', 'oncologie'],
+
+  // Organes & systèmes (traductions bilingues directes de haute précision)
+  'yeux': ['yeux', 'oeil', 'vision', 'eyes', 'sight', 'oculaire'],
+  'eyes': ['eyes', 'eye', 'vision', 'sight', 'yeux', 'oeil', 'ocular'],
+  'reins': ['reins', 'rein', 'kidney', 'kidneys', 'renal', 'filtration', 'nephron'],
+  'kidneys': ['kidneys', 'kidney', 'renal', 'reins', 'rein', 'filtration', 'nephron'],
+  'surrenales': ['surrenales', 'surrénale', 'surrénales', 'surrenale', 'adrenals', 'adrenal', 'medulla', 'cortex', 'aldosterone'],
+  'adrenals': ['adrenals', 'adrenal', 'surrenales', 'surrenale', 'surrénales', 'medulla', 'cortex', 'aldosterone'],
   'lymphe': ['lymphe', 'lymphatique', 'lymph', 'lymphatic', 'ganglions', 'nodes', 'interstitiel'],
   'lymph': ['lymph', 'lymphatic', 'lymphe', 'nodes', 'ganglions', 'interstitial'],
-  'intestins': ['intestin', 'intestins', 'colon', 'gut', 'bowel', 'côlon', 'grele', 'tractus'],
+  'intestins': ['intestin', 'intestins', 'colon', 'gut', 'bowel', 'côlon', 'grele', 'grêle', 'tractus', 'digestif'],
   'colon': ['colon', 'côlon', 'intestin', 'intestins', 'bowel', 'large intestine'],
   'gut': ['gut', 'bowel', 'gi tract', 'gastrointestinal', 'intestin', 'colon'],
   'jeune': ['jeune', 'jeûne', 'fasting', 'fast', 'autophagie', 'autophagy', 'abstinence', 'hydrique'],
   'fasting': ['fasting', 'fast', 'jeune', 'jeûne', 'water fast', 'juice fast', 'autophagy'],
-  'autophagie': ['autophagie', 'autophagy', 'autolyse', 'recyclage cellulaire', 'nobel ohsumi'],
-  'mucus': ['mucus', 'sans mucus', 'mucusless', 'mucogene', 'glaires', 'obstruction', 'ehret'],
-  'foie': ['foie', 'liver', 'hepatique', 'hepatic', 'bile', 'vesicule', 'biliary'],
+  'autophagie': ['autophagie', 'autophagy', 'autolyse', 'recyclage cellulaire'],
+  'mucus': ['mucus', 'sans mucus', 'mucusless', 'mucogene', 'mucogène', 'glaires', 'obstruction', 'ehret'],
+  'foie': ['foie', 'liver', 'hepatique', 'hépatique', 'hepatic', 'bile', 'vesicule', 'vésicule', 'gallbladder'],
   'liver': ['liver', 'hepatic', 'foie', 'bile', 'gallbladder', 'vesicule'],
   'poumons': ['poumons', 'poumon', 'lungs', 'lung', 'respiration', 'bronches', 'asthme'],
   'peau': ['peau', 'skin', 'dermatite', 'eczema', 'psoriasis', 'sudation', 'transpiration'],
   'plantes': ['plantes', 'plante', 'herbes', 'herbe', 'herbs', 'botanique', 'raintree', 'tisane', 'teinture'],
-  'sebi': ['sebi', 'dr sebi', 'bowman', 'bio-electrique', 'alcalin', 'electric', 'cell food'],
+  'sebi': ['sebi', 'dr sebi', 'bowman', 'bio-electrique', 'bio-électrique', 'alcalin', 'electric', 'cell food'],
   'morse': ['morse', 'robert morse', 'detox miracle', 'sourcebook', 'cellular regeneration', 'filtration renale'],
-  'ehret': ['ehret', 'arnold ehret', 'regime sans mucus', 'mucusless', 'jeune rationnel', 'v=p-o'],
+  'ehret': ['ehret', 'arnold ehret', 'regime sans mucus', 'régime sans mucus', 'mucusless', 'jeune rationnel', 'v=p-o'],
   'wolfe': ['wolfe', 'david wolfe', 'sunfood', 'alimentation vivante', 'raw food', 'superfoods'],
-  'wim hof': ['wim hof', 'hof', 'respiration', 'froid', 'glace', 'apnee', 'radboud', 'hyperventilation']
+  'wim hof': ['wim hof', 'hof', 'respiration', 'froid', 'glace', 'apnee', 'apnée', 'radboud', 'hyperventilation']
 };
 
 export function getExpandedSearchTokens(query) {
@@ -485,6 +493,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "lymphe",
       "lymphatic",
       "peau",
@@ -652,6 +661,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -736,6 +746,7 @@ export const MEDIA_SEARCH_DATABASE = [
     "topics": [
       "crohn",
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -1233,6 +1244,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret"
     ],
@@ -1621,6 +1633,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "poumons",
       "respiration",
       "mucus",
@@ -2047,7 +2060,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "donnant"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "Nos organes, désormais plus\nsensibles, se révoltèrent aussitôt contre leurs éléments indésirables et surtout contre les combinaisons,\ndonnant la preuve la plus convaincante que la cuisine moderne, avec ses mélanges, dont on connaissait\npeu leurs qualités, était la cause fondamentale de toutes les maladies.  Il est impo...",
     "fullText": "11Prof. — Nos organes, désormais plus\nsensibles, se révoltèrent aussitôt contre leurs éléments indésirables et surtout contre les combinaisons,\ndonnant la preuve la plus convaincante que la cuisine moderne, avec ses mélanges, dont on connaissait\npeu leurs qualités, était la cause fondamentale de toutes les maladies.  Il est impossible de savoir ce qu'est\nréellement la nourriture et ses effets tant que le corps n'a pas été purifié par la méthode naturelle, le\njeûne.  Je n'ai jamais entendu parler de telles expériences, et les faits acquis ont maintenant été si\nabondamment prouvés au cours de nombreuses années de pratique la plus approfondie et la plus difficile\nqu'ils ont élevé mes connaissances au-dessus de tous les doutes ou arguments sur les opinions\ndiététiques des autres.  Pour tester notre efficacité lors d'un travail exhaustif, nous avons fait un voyage à\ntravers le nord de l'Italie, marchant pendant 56 heures en continu sans dormir, sans repos, sans nourriture,\nseulement boire."
@@ -2114,6 +2128,7 @@ export const MEDIA_SEARCH_DATABASE = [
       "vision",
       "eyes",
       "colite",
+      "colitis",
       "mucus",
       "ehret"
     ],
@@ -2223,6 +2238,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "jeune",
       "fasting",
       "autophagie"
@@ -2259,7 +2275,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "deux"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "En Égypte, nous avons vu une race de personnes dʼune force et dʼune\nendurance extraordinaires, vivant pour la plupart dʼun régime végétarien maigre, mais avec deux soi-\ndisant mauvaises habitudes : fumer la cigarette et boire du café fort, mais nous nʼavons vu aucune\npersonne nerveuse ou toxémique.  Voir à quel point i...",
     "fullText": "12Prof. — En Égypte, nous avons vu une race de personnes dʼune force et dʼune\nendurance extraordinaires, vivant pour la plupart dʼun régime végétarien maigre, mais avec deux soi-\ndisant mauvaises habitudes : fumer la cigarette et boire du café fort, mais nous nʼavons vu aucune\npersonne nerveuse ou toxémique.  Voir à quel point ils mangeaient peu de sortes de nourriture, apprendre\nqu'ils mangeaient à peu près les mêmes sortes d'aliments que leurs ancêtres mangeaient, cela donne une\nraison pour les qualités supérieures de la vieille civilisation égyptienne.  Nous sommes restés en Palestine\nplusieurs mois, étudiant les coutumes locales, les archives et l'histoire des conditions passées, avec pour\nrésultat que ma conception de la signification réelle des évangiles du Nouveau Testament a été\nconsidérablement modifiée."
@@ -2331,7 +2348,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "yeux",
       "vision",
       "eyes",
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "Mon « livre à venir » déclarera, avec des preuves\nconvaincantes, que la filiation du Christ, les soi-disant miracles de guérison et les changements apparents\nde la loi naturelle, sa résurrection et son ascension au « Ciel », étaient en accord avec la loi naturelle, mais\npas alors, et pas entièrement maintenant, compris...",
     "fullText": "13Prof. — Mon « livre à venir » déclarera, avec des preuves\nconvaincantes, que la filiation du Christ, les soi-disant miracles de guérison et les changements apparents\nde la loi naturelle, sa résurrection et son ascension au « Ciel », étaient en accord avec la loi naturelle, mais\npas alors, et pas entièrement maintenant, compris.  Lʼignorance actuelle des lois qui sous-tendent la santé\nnormale est aujourdʼhui, dans ce siècle, la plus grande de tous les siècles passés, et est mise en évidence\npar la détérioration des peuples dits civilisés, du point de vue de la santé, bien quʼavancés à bien des\négards.  Ce que jʼai appris par mes recherches et mes expériences, ainsi que les possibilités de restaurer\nlʼhumanité à une santé supérieure, avec lʼavancée des temps modernes, cʼest comme ouvrir un « Livre des\nSept Sceaux »."
@@ -2462,6 +2480,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret"
     ],
@@ -2638,6 +2657,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret"
     ],
@@ -4183,7 +4203,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "urique"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "Mais pour moi, cela a\nprouvé que tout ce que la nature expulse, élimine, est un déchet ; qu'il s'agisse d'albumine, de sucre, de\nsel minéral ou d'acide urique.  Cela s'est produit il y a plus de vingt-quatre ans, mais ce docteur en nature\n(ancien médecin) croit toujours au remplacement de l'albumine par des aliments ri...",
     "fullText": "25Prof. — Mais pour moi, cela a\nprouvé que tout ce que la nature expulse, élimine, est un déchet ; qu'il s'agisse d'albumine, de sucre, de\nsel minéral ou d'acide urique.  Cela s'est produit il y a plus de vingt-quatre ans, mais ce docteur en nature\n(ancien médecin) croit toujours au remplacement de l'albumine par des aliments riches en protéines.  Le\ndiagnostic médical de la maladie de Bright, lorsque l'analyse chimique de l'urine révèle un pourcentage\nélevé d'albumine, est aussi trompeur que les autres.  Lʼélimination de lʼalbumine prouve que lʼorganisme\nnʼen a pas besoin.  Quʼil est suralimenté, surchargé de produits riches en protéines."
@@ -5741,6 +5762,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret"
     ],
@@ -6432,6 +6454,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "poumons",
       "respiration"
     ],
@@ -7305,6 +7328,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret",
       "jeune",
@@ -7344,6 +7368,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret",
       "plantes",
@@ -7452,6 +7477,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret"
     ],
@@ -7731,7 +7757,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "quete"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "Vous pouvez maintenant voir à quel point il peut être\npeu utile et préjudiciable pour le citoyen moyen en quête de santé de se gaver quotidiennement de\nterribles mélanges de « bonne nourriture », de « combinaisons dʼaliments crus » (dans la conviction que la\nnourriture crue seule restaurera la santé), sans aucun plan n...",
     "fullText": "50Prof. — Vous pouvez maintenant voir à quel point il peut être\npeu utile et préjudiciable pour le citoyen moyen en quête de santé de se gaver quotidiennement de\nterribles mélanges de « bonne nourriture », de « combinaisons dʼaliments crus » (dans la conviction que la\nnourriture crue seule restaurera la santé), sans aucun plan ni système – sans aucun égard à la maladie et à\nsa condition mentale ou physique.  Malgré mon antipathie envers les « faddistes », je présenterai une\nsélection de tableaux préparés par l'un des experts les plus avancés en chimie physiologique, Ragnar\nBerg, du laboratoire spécial pour la recherche alimentaire du sanatorium du Dr Lahmann en Allemagne."
@@ -7837,7 +7864,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "superphosphate"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "Une fertilisation ordinaire par des excréments animaux et humains,\nou même par une trop grande quantité de minéraux (acide sulfurique, ammoniac et superphosphate et par\nune irrigation excessive) transforme les bonnes propriétés positives en « mauvaises » négatives, ou du\nmoins diminue les bonnes qualités.  Le producteu...",
     "fullText": "50Prof. — Une fertilisation ordinaire par des excréments animaux et humains,\nou même par une trop grande quantité de minéraux (acide sulfurique, ammoniac et superphosphate et par\nune irrigation excessive) transforme les bonnes propriétés positives en « mauvaises » négatives, ou du\nmoins diminue les bonnes qualités.  Le producteur obtient un avantage car ils sont attrayants, sont de\nbonne taille et de bon poids et apportent par conséquent un bon prix sur le marché, ce qui coûte plus cher\nau consommateur pour des aliments réellement nocifs."
@@ -8484,6 +8512,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -10323,6 +10352,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret",
       "jeune",
@@ -11000,6 +11030,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret"
     ],
@@ -12611,6 +12642,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "poumons",
       "respiration"
     ],
@@ -12647,6 +12679,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "poumons",
       "respiration"
     ],
@@ -12792,6 +12825,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "poumons",
       "respiration"
     ],
@@ -13157,6 +13191,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "jeune",
       "fasting",
       "autophagie"
@@ -13829,6 +13864,7 @@ export const MEDIA_SEARCH_DATABASE = [
       "vision",
       "eyes",
       "colite",
+      "colitis",
       "david-wolfe",
       "sunfood"
     ],
@@ -14188,7 +14224,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "only"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "Disclaimer\n \nThis book, with the opinions, suggestions and references made within it, is\nbased on the author’s personal experience and is for personal study and\nresearch purposes only. This program is about health and vitality, not disease.\nThe author makes no medical claims, thank God. If you choose to use the\nmateria...",
     "fullText": "Disclaimer — Disclaimer\n \nThis book, with the opinions, suggestions and references made within it, is\nbased on the author’s personal experience and is for personal study and\nresearch purposes only. This program is about health and vitality, not disease.\nThe author makes no medical claims, thank God. If you choose to use the\nmaterial in this book on yourself, the author and publisher take no\nresponsibility for your actions and decisions or the consequences thereof.\nTake responsibility for yourself. You’ll be happy you did. Educate\nyourself in the truth. Remember, human beings created science, and our\nworld is a product of men and women using science instead of God. For their\nhealth, humans must learn that they cannot treat their symptoms, they must\neliminate the cause of these symptoms. Seek freedom from disease. Seek\ntruth.\nPreserve everyone’s Constitutional Rights, including your own. Always\nreserve them under the Uniform Commercial Code (UCC)."
@@ -14289,7 +14326,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "also"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "This book is dedicated first to God, which is all I live for and try to\nexpress in every moment. God is the greatest healing power of all. I\nacknowledge also the hierarchy of God, including all the living and\nascended masters, saints, saviors and angels who help keep God’s\ncreation in balance. Finally, it is dedicated ...",
     "fullText": "This book is dedicated first to God, which is all I live for and try to — This book is dedicated first to God, which is all I live for and try to\nexpress in every moment. God is the greatest healing power of all. I\nacknowledge also the hierarchy of God, including all the living and\nascended masters, saints, saviors and angels who help keep God’s\ncreation in balance. Finally, it is dedicated to my personal staff members\nwho have labored for hundreds of hours through the years to bring this\nbook to light."
@@ -14610,7 +14648,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "temple"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "Introduction\nW\nelcome to a fantastic journey into vitality.  Health is one of our greatest assets,\nand many refer to the body as a temple, or a vehicle that carries around the\ntrue Self while we’re on this planet.  However, we often treat our cars better\nthan we treat our bodies. \nThe information contained in this book...",
     "fullText": "Introduction — Introduction\nW\nelcome to a fantastic journey into vitality.  Health is one of our greatest assets,\nand many refer to the body as a temple, or a vehicle that carries around the\ntrue Self while we’re on this planet.  However, we often treat our cars better\nthan we treat our bodies. \nThe information contained in this book was not taken from double-blind\nstudies, from misconstrued facts and figures of treatment agencies, or from\n“bought-and-paid-for” scientific research.  I wrote this book based on thirty\nyears of self-experience, and from clinical observation of thousands of\npatients who used my programs to overcome their toxic conditions and\ndiseases. \nBasically, we have two choices to make when we develop a condition or\ndisease: Treatment or Detoxification.  If we choose treatment, we have two\nadditional choices.  The first choice is allopathic (pharmaceutical) medicine,\nwhich is the status-quo medical or chemical approach."
@@ -15834,7 +15873,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "world"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "of foods we generally eat or crave. Don’t make getting healthy complicated.\nKeep it simple. Foods can bind you to this world or set you free. If you have\nnever experienced this, then start the journey now into a new world of\nvitality. Seek to be free from the chains of food addictions that undermine\nyour health and cre...",
     "fullText": "of foods we generally eat or crave. — of foods we generally eat or crave. Don’t make getting healthy complicated.\nKeep it simple. Foods can bind you to this world or set you free. If you have\nnever experienced this, then start the journey now into a new world of\nvitality. Seek to be free from the chains of food addictions that undermine\nyour health and create bondage to the lower aspects of God.\nI invite you to become vital again and enjoy the rewards of life.\nRecondition your mind and retrain your emotions to enjoy the simplicity of\neating raw fruits, vegetables, nuts and seeds. Understand your species and eat\nthe foods that will make your body healthy.\n“The ancient Greeks, before the time of Lycurgus, ate nothing but fruit,”\n(Plutarch) and “each generation reached the age of 200 years.”\n— Onomacritus of Athens"
@@ -16005,6 +16045,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif"
@@ -17255,6 +17296,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -17434,6 +17476,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -17692,6 +17735,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif"
@@ -17729,6 +17773,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "foie",
       "liver"
     ],
@@ -20015,6 +20060,7 @@ export const MEDIA_SEARCH_DATABASE = [
       "vision",
       "eyes",
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif"
@@ -21795,7 +21841,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "building"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "All foods and their constituents (like proteins,\ncarbohydrates and fats) are mostly created from these basic elements, which\nare the building blocks that determine to what category molecules or\ncompounds, etc. , belong.  These categories of molecular structures (such as\nsugars, starches, proteins, fats) make up the foo...",
     "fullText": "than that of raw foods. — All foods and their constituents (like proteins,\ncarbohydrates and fats) are mostly created from these basic elements, which\nare the building blocks that determine to what category molecules or\ncompounds, etc. , belong.  These categories of molecular structures (such as\nsugars, starches, proteins, fats) make up the foods that sustain life on this\nplanet. \nThis chapter will view food and the process of eating from the\nperspective of chemistry and physics, and set it in the context of some\noverviews from God and nature.  Let’s first examine some of the most\nimportant constituents that your body requires to sustain, clean and repair\nitself. \n \nThere is among the Indians a heresy of those who philosophize among\nthe Brahmins, who live a self-sufficient life, abstaining from eating living\ncreatures and all cooked food. \n— Hippolytus, Rome, 225 A. D."
@@ -21829,7 +21876,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "outside"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "MODULE 3. 1\nCarbohydrates and Sugars and their Metabolism\n \nIn Chapter Two we learned that a cell is like a self-sustaining city, but that it\nbasically requires two outside factors.  First, it needs an energy source.  Just as\nour car needs fuel, so do our cells.  Secondly, they must be able to eliminate\nthe byproducts ...",
     "fullText": "MODULE 3.1 — MODULE 3. 1\nCarbohydrates and Sugars and their Metabolism\n \nIn Chapter Two we learned that a cell is like a self-sustaining city, but that it\nbasically requires two outside factors.  First, it needs an energy source.  Just as\nour car needs fuel, so do our cells.  Secondly, they must be able to eliminate\nthe byproducts of these burned fuels.  These by-products must be carried\naway from the cells, much like the plumbing and septic systems work in your\nhouse. \nCarbohydrates refer to a group of chemical substances made up of\ncarbon, oxygen and hydrogen (carbon and water).  They include starches,\nsugars, glycogen, dextrins and celluloses.  Carbohydrates are classified or\ngrouped by the number of carbon atoms they contain and by the\ncombinations of sugars.  Since organic carbon compounds supply the main\nenergy source for cells, these carbohydrates are used by your body for its\nprimary energy supply."
@@ -21864,6 +21912,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -22148,7 +22197,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "few"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "COMPLEX SUGARS\n \nComplex sugars are of two types—polysaccha-rides and disaccharides.\nPOLYSACCHARIDES — A chain or series of linked monosaccharides or\ndisaccharides. They can consist of a few or many saccharide bonds.\nPolysaccharides, when hydro lyzed, yield over twenty monosaccharides.\nPolysaccharides include two group...",
     "fullText": "COMPLEX SUGARS — COMPLEX SUGARS\n \nComplex sugars are of two types—polysaccha-rides and disaccharides.\nPOLYSACCHARIDES — A chain or series of linked monosaccharides or\ndisaccharides. They can consist of a few or many saccharide bonds.\nPolysaccharides, when hydro lyzed, yield over twenty monosaccharides.\nPolysaccharides include two groups, starch and cellulose.\nStarch: starch, glycogen, dextrin, insulin\nCellulose: cellulose, hemicelluloses (pento-saniek)\nDigestive and metabolic By-Products of Carbohydrates\nNUTRITIVE PRODUCTS\nGlucose = energy\nFructose = energy\nGalactose = energy (infancy)\nGlycogen = stored fat for future energy needs\nWater\nFatty acids = secondary response\nAmino acids = secondary response\nTOXIC BY-PRODUCTS\nPyretic acid\nLactic acid\nCarbon dioxide\nCARBON CAUSED ACIDOSIS ELIMINATION\noxidized by oxygen\nbonded to various mineral salts to form non-acid compounds\ncarbon dioxide conversion to bicarbonate\n \nDISACCHARIDES — Complex sugars having two monosaccharides linked\ntogether. Disaccharides include three groups, maltose, lactose, sucrose."
@@ -22483,6 +22533,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -22854,7 +22905,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "sugars"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "We have digestive enzymes starting in the mouth,\nsuch as amylase and ptyalin, which break down sugars and starches.  We also\nhave digestive enzymes in the stomach.  These enzymes are called inactive\nenzymes or pro-enzymes because they must be activated before they can\ncatalyze or affect a change.  Pepsinogen is an exam...",
     "fullText": "can affect the rate of this action or reaction. — We have digestive enzymes starting in the mouth,\nsuch as amylase and ptyalin, which break down sugars and starches.  We also\nhave digestive enzymes in the stomach.  These enzymes are called inactive\nenzymes or pro-enzymes because they must be activated before they can\ncatalyze or affect a change.  Pepsinogen is an example of a proenzyme that is\nchanged into pepsin by the action of HCL (hydrochloric acid).  Pepsin is\nacidic in nature and is designed primarily for initial protein breakdown."
@@ -22889,6 +22941,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -22928,6 +22981,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif"
@@ -23096,7 +23150,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "simultaneously"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "No matter from which angle we view health and disease, we cannot\nescape from being entangled in the conclusion that intractable disease is\nas old as cookery.  Disease and cookery originated simultaneously. \n— Dr.  Edward Howell, Enzyme Nutrition\n \nMODULE 3. 5\nVitamins (Co-Enzymes)\n \nFrom the beginning, humans ate prima...",
     "fullText": "No matter from which angle we view health and disease, we cannot — No matter from which angle we view health and disease, we cannot\nescape from being entangled in the conclusion that intractable disease is\nas old as cookery.  Disease and cookery originated simultaneously. \n— Dr.  Edward Howell, Enzyme Nutrition\n \nMODULE 3. 5\nVitamins (Co-Enzymes)\n \nFrom the beginning, humans ate primarily whole foods or so-called “natural”\nfoods, which underwent no processing.  The nutrient content of food is\ndecreased when it is processed.  Intensive animal rearing, manipulation of\ncrop production, and food processing have altered the qualitative and\nquantitative balance of nutrients of foods consumed by the Western world. \nThis change is possibly one of the reasons that chronic, debilitating diseases\nare rampant in our modern culture.  Modern research suggests that simply\ntaking a synthetic multi-vitamin/mineral formula does not change this."
@@ -23130,7 +23185,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "essential"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "Research from around the globe asserts that vitamins in their naturally-\nbalanced state are essential for better assimilation, synergistic action, and\nmaximum biological effect.  And yet most consumers buy vitamins and\nminerals that are synthetic, which their bodies usually can’t assimilate\nproperly.  The U. S.  Nation...",
     "fullText": "No matter from which angle we view health and disease, we cannot — Research from around the globe asserts that vitamins in their naturally-\nbalanced state are essential for better assimilation, synergistic action, and\nmaximum biological effect.  And yet most consumers buy vitamins and\nminerals that are synthetic, which their bodies usually can’t assimilate\nproperly.  The U. S.  National Academy of Science, Food and Nutrition Board,\nrecommends that people meet their daily nutritional needs through a varied\ndiet rather than through vitamin and mineral supplementation.  Vitamin and\nmineral supplements—even those with 100% of the Recommended Dietary\nAllowances (RDAs) for vitamins and minerals—cannot provide all the other\nnutrients that the body gets from a well-balanced diet. \nAbout Vitamins\n \nToo much vitamin supplementation causes acidosis. \nVitamin C is acidic, leaches out calcium, and lowers beneficial\ncholesterol."
@@ -24170,7 +24226,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "gallium"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "bodies, including: aluminum, arsenic, barium, bismuth, beryllium, bromine,\ncadmium, chromium, copper, folic acid, fluorine, gallium, germanium, gold,\niodine, iron, lead, lithium, manganese, mercury, molybdenum, quinine,\nselenium, silicon, silver, strontium, tin, titanium, tungsten, vanadium and\nzinc.  They play a major...",
     "fullText": "bodies, including: aluminum, arsenic, barium, bismuth, beryllium, bromine, — bodies, including: aluminum, arsenic, barium, bismuth, beryllium, bromine,\ncadmium, chromium, copper, folic acid, fluorine, gallium, germanium, gold,\niodine, iron, lead, lithium, manganese, mercury, molybdenum, quinine,\nselenium, silicon, silver, strontium, tin, titanium, tungsten, vanadium and\nzinc.  They play a major role in health and are essential in the assimilation and\nutilization of vitamins and other nutrients.  They aid in digestion and provide\nthe catalyst for many hormones, enzymes and essential body functions and\nreactions.  They also aid in replacing electrolytes lost through heavy\nperspiration or extended diarrhea and protect against toxic reactions and\nheavy metal poisoning.  Current research now proves that human beings\nshould get the required trace elements from their food in a balanced diet,\nespecially fresh fruits and vegetables. \nThe late Dr."
@@ -24480,6 +24537,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "peau",
       "skin"
     ],
@@ -24667,6 +24725,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "poumons",
       "respiration",
       "peau",
@@ -24850,6 +24909,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -25454,7 +25514,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "1838"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "TISSUE SALTS IN BIOCHEMISTRY\n \nTissue salts in biochemistry are the inorganic elements of the body.  In 1665\nan Englishman named Robert Hooke discovered what was called “the cell. ”\nIn 1838 and 1839 the German scientists Matthias Schleiden and Theodore\nSchwann, respectively, unfolded the cell theory.  In 1850, Virchow ...",
     "fullText": "TISSUE SALTS IN BIOCHEMISTRY — TISSUE SALTS IN BIOCHEMISTRY\n \nTissue salts in biochemistry are the inorganic elements of the body.  In 1665\nan Englishman named Robert Hooke discovered what was called “the cell. ”\nIn 1838 and 1839 the German scientists Matthias Schleiden and Theodore\nSchwann, respectively, unfolded the cell theory.  In 1850, Virchow unfolded\nhis own version of the biochemical theory of cellular treatment.  Moleschott of\nRome and W. H.  Schuessler of Oldenburg (Germany) focused upon what\nthey called inorganic chemistry, or biochemic treatment of disease through\ntissue salts. \nTissue salts, known as cell salts, are considered the workers and builders\nof the body, and are found mostly in the blood and tissues.  Water and\norganic substances are the inert matter used by salts (ions) in building and\nmaintaining the cells of the body. \nThe actions of cell salts inspire fluids, cells and tissues to respond,\ncausing polarization or depolarization."
@@ -26031,6 +26092,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "foie",
       "liver"
     ],
@@ -27304,6 +27366,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "peau",
       "skin"
     ],
@@ -27791,6 +27854,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -28737,6 +28801,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif"
@@ -28774,6 +28839,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -28813,6 +28879,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -29630,7 +29697,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "absolutely"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "She calls for studies to monitor the\nlong-term effects of mass vaccinations, and wants physicians to be absolutely\nsure that these vaccines are safe and not harming people.  (Good luck on that\none. )\nThere is overwhelming evidence now from research and reported cases\nfrom the United States, Great Britain, Africa, New Z...",
     "fullText": "(the World Health Organization). — She calls for studies to monitor the\nlong-term effects of mass vaccinations, and wants physicians to be absolutely\nsure that these vaccines are safe and not harming people.  (Good luck on that\none. )\nThere is overwhelming evidence now from research and reported cases\nfrom the United States, Great Britain, Africa, New Zealand and throughout\nthe world, that vaccinations are a toxic and deadly practice.  Ask yourself:\nWhy does your government and other agencies that were created to “protect”\nthe American public i. e. , Center for Disease Control (CDC), Food and Drug\nAdministration (FDA), Vaccines and Related Biological Products Advisory\nCommittee (VRBPAC), Advisory Committee on Immunization Practices\n(ACIP), Human Resource Services (HRS), knowingly allow such atrocities to\nexist?"
@@ -29664,7 +29732,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "now"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "occurred in Nazi Germany, where hundreds of thousands of Jews were\ndestroyed?  The difference is that it is legal and has spread worldwide.  It now\ninvolves millions of people.  The bottom line to this is simple: money.  These\nsame people probably go to church and think they won’t have to pay for such\natrocities.  If y...",
     "fullText": "occurred in Nazi Germany, where hundreds of thousands of Jews were — occurred in Nazi Germany, where hundreds of thousands of Jews were\ndestroyed?  The difference is that it is legal and has spread worldwide.  It now\ninvolves millions of people.  The bottom line to this is simple: money.  These\nsame people probably go to church and think they won’t have to pay for such\natrocities.  If you think this world is heaven, think again. \nMany medical journals (including the prestigious British Lancet) have\nreported some of the side effects of these “killer” vaccinations; including side\neffects of the measles vaccine, which has been linked to asthma and allergy-\ntype conditions.  The DPT (diphtheria-pertussis-tetanus) inoculation, which\nwas first used in the 1940s, had widespread and disastrous results, including\na multitude of deaths.  Yet, states still legalized it.  Japan outlawed it.  The DPT\nvaccine has especially been linked to brain damage and neurological injuries\n(MS, Parkinson’s, Lou Gehrig’s disease, etc. )."
@@ -29741,6 +29810,7 @@ export const MEDIA_SEARCH_DATABASE = [
       "vision",
       "eyes",
       "colite",
+      "colitis",
       "foie",
       "liver"
     ],
@@ -29809,6 +29879,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -30229,7 +30300,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "foods"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "The U. S.  Agriculture Department and independent research companies and\norganizations have reported that there are high amounts of pesticides and\nother pollutants on and in our foods.  Tomatoes, strawberries, peaches,\nspinach, turnips, squash and many other foods can have as much as 80 to 100\ndifferent pollutants, esp...",
     "fullText": "The U.S. — The U. S.  Agriculture Department and independent research companies and\norganizations have reported that there are high amounts of pesticides and\nother pollutants on and in our foods.  Tomatoes, strawberries, peaches,\nspinach, turnips, squash and many other foods can have as much as 80 to 100\ndifferent pollutants, especially pesticides, on or in them.  Peanuts have over\n180 pollutants, and raisins can have over 110. \nAs you read the potential and known side effects of pesticides, ask\nyourself if you’re really in favor of Bio-Tech Engineering—whereby\npesticides are genetically placed into the seeds of our foods.  This means, of\ncourse, that pesticide residues will be in the foods themselves, and that we\nwill have no way to remove them.  Pesticides are like sulfur drugs, they have a\ncumulative effect.  Once reaching toxic and deadly proportions they cause\nallergy reactions, inflammation, excessive immune responses and\nneurological failure."
@@ -30450,6 +30522,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "peau",
       "skin"
     ],
@@ -30710,6 +30783,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "plantes",
       "pharmacopee"
     ],
@@ -30857,7 +30931,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "released"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "Our houses are full of formaldehyde and other potentially\ntoxic and carcinogenic substances released from carpets, Formica-type\n(laminate) cabinets, plywood, glue, curtains, synthetic garments, etc.  Your\nclothes can be full of toxins, especially if they are dry cleaned. \nPerchloroethylene or “perc” —the chemical used ...",
     "fullText": "Radiation is another high source of our cancers. — Our houses are full of formaldehyde and other potentially\ntoxic and carcinogenic substances released from carpets, Formica-type\n(laminate) cabinets, plywood, glue, curtains, synthetic garments, etc.  Your\nclothes can be full of toxins, especially if they are dry cleaned. \nPerchloroethylene or “perc” —the chemical used in dry cleaning—is\nextremely toxic.  Spills at dry cleaners can necessitate the removal of the\nbuilding and the dirt beneath it. \nPlastics are another server of toxins and potential carcinogens.  Vinyls\n(phthalates) are found in PVC pipes, toys, baby teething objects, baby bottles\nand building materials.  Never buy distilled water in plastic containers.  As\ndistilled water is void of substances, it therefore creates diffusion, pulling\nother substances (like minerals and chemicals) into it. \nEven if we stopped using all chemicals today, it would still be too late. \nThe human species remains steeped in ignorance as it continues to destroy its\nown home."
@@ -30892,6 +30967,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "foie",
       "liver"
     ],
@@ -31599,6 +31675,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -31858,6 +31935,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -31896,7 +31974,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "acids"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "steroids is ludicrous and will eventually lead to further degeneration of your\ntissues.  It makes much better sense to alkalize and detoxify, that is, remove\nthe acids and foreign proteins that are causing the problem in the first place. \nCNN recently reported that researchers at various universities have proven\nthat t...",
     "fullText": "steroids is ludicrous and will eventually lead to further degeneration of your — steroids is ludicrous and will eventually lead to further degeneration of your\ntissues.  It makes much better sense to alkalize and detoxify, that is, remove\nthe acids and foreign proteins that are causing the problem in the first place. \nCNN recently reported that researchers at various universities have proven\nthat the genetic pattern of cells (DNA and chromosomes) can and is being\naltered by acidosis, which weakens a cell, causing many changes in its DNA\nand chromosome structure. \nABOUT CONSCIOUSNESS AND DISEASE\n \nCells respond to states of consciousness just as we do.  In other words, if\nsomeone walks up to you angry, you can get angry; if you hang around sick\npeople, you can get sick.  Everything is energy and everything gives off\nenergy. \nThere are unlimited levels to energy.  From a spiritual perspective, anger\nis a lower level of energy whereas love is a high level of energy.  In spiritual\ncircles we call energy “consciousness” or “awareness."
@@ -32298,6 +32377,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "lymphe",
       "lymphatic"
     ],
@@ -32432,7 +32512,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "local"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "She panicked and went to the Emergency Room of her local\nhospital where the ER doctor told her that “there is no such thing as parasites\nin Americans. ” The young lady insisted that the ER doctor have her stools\ntested, which he did after much apprehension and discussion.  The report\ncame back from the lab that this sa...",
     "fullText": "destroyed, just changed by different actions, including oxidation, ionization, — She panicked and went to the Emergency Room of her local\nhospital where the ER doctor told her that “there is no such thing as parasites\nin Americans. ” The young lady insisted that the ER doctor have her stools\ntested, which he did after much apprehension and discussion.  The report\ncame back from the lab that this sample was full of parasites. \nWe are a host to many parasites, mostly microbial.  However, I would\nguess that about 40 to 75 percent of homo sapiens have the larger ones that\nyou can see if you look for them.  There are many different types of parasites\nincluding yeasts, fungi, warts, viruses, bacteria, worms of all types, and\nflukes.  Most people have many of each of these types in their bodies.  All\npeople have yeast (Candida) or fungus in them.  Over thirty different strains\nof fungus can be found in most people.  The yeast-type fungus is mostly\nlocated in the mouth to aid sugar and starch digestion."
@@ -32467,6 +32548,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "lymphe",
       "lymphatic",
       "peau",
@@ -32702,6 +32784,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -35010,6 +35093,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -35048,7 +35132,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "into"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "All complex sugar molecules must be\nbroken down into simple sugars before cells can use them for energy.  The\nexcess is then converted into and stored as glycogen or as fat.  The average\nAmerican diet also includes a great many saturated fats which, in an acidic\nenvironment, saturate even further.  This makes them unav...",
     "fullText": "individuals give up and surrender to it, hiding their angers and anxieties deep — All complex sugar molecules must be\nbroken down into simple sugars before cells can use them for energy.  The\nexcess is then converted into and stored as glycogen or as fat.  The average\nAmerican diet also includes a great many saturated fats which, in an acidic\nenvironment, saturate even further.  This makes them unavailable to cells for\nnutrition and energy.  This also creates a glue-like condition within the blood\nand vascular system.  Stones, plaque formation and the sticking together of\nred blood cells are side effects. \nStarches, such as grains, have become very popular among homo\nsapiens.  Unsprouted grains are very low in available nutrition, acid-forming,\nfattening, hard to digest, and are a gluey starch.  The reason we feed grain to\ncattle and hogs is to fatten them up for market. \nGenetics, of course, play a large role in our body’s consciousness."
@@ -36094,6 +36179,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -37985,6 +38071,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -38454,6 +38541,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -40004,6 +40092,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -40150,6 +40239,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -40387,6 +40477,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif"
@@ -40685,6 +40776,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -40843,6 +40935,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -41317,6 +41410,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "jeune",
       "fasting",
       "autophagie"
@@ -41516,7 +41610,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "predominant"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "These\nsubstances are both acidic in nature. \nWhen a predominant starch combines in the stomach with a predominant\nprotein, you have a clash.  You know this by the bloating and the full feeling\nyou get after you eat a meal like this.  Fermentation of sugar creates alcohol.",
     "fullText": "The two most important food-combination tips are, first, to never mix — These\nsubstances are both acidic in nature. \nWhen a predominant starch combines in the stomach with a predominant\nprotein, you have a clash.  You know this by the bloating and the full feeling\nyou get after you eat a meal like this.  Fermentation of sugar creates alcohol."
@@ -41624,7 +41719,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "factors"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "I do not recommend any kind of animal products at all, due to their huge\ntoxicity and acidic factors.  They cause disease instead of rebuilding your\nbody.  If you are going to eat meat, you should not eat it more than three\ntimes a week, and only at lunch.  This will allow the bulk of the digestive\nprocess, which is ac...",
     "fullText": "The Detox Miracle Menus — I do not recommend any kind of animal products at all, due to their huge\ntoxicity and acidic factors.  They cause disease instead of rebuilding your\nbody.  If you are going to eat meat, you should not eat it more than three\ntimes a week, and only at lunch.  This will allow the bulk of the digestive\nprocess, which is acidic, to take place.  Some believe that the body\ndoesn’t produce hydrochloric acid after 2:00 P. M.  I personally have\nnever seen any scientific evidence to support this theory.  However, light\nalkaline meals in the evening will give you more energy, better sleeping,\nand better healing potential. \n2.  Never eat meat with a starch.  If you enjoy that heavy feeling, I suggest\nyou replace meat with a baked potato.  You can use real butter, or natural\noils like olive oil, but no salts, sour cream or cheese.  A baked sweet\npotato would be preferable to an ordinary potato. \n3."
@@ -41865,7 +41961,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "large"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "vegetables\n2. Fruit\n3. Melon\nBetween Meal Juice\nDrink an 8 oz. to 10 oz. glass of freshly juiced vegetable or fruit juice.\n \nDinner\nChoose one.\n \n1. Large Salad, with a side of: \nVegetables, steamed or raw Vegetable soup, no tomato Stir-fry\nvegetables\n2. Fruit\n3. Melon\nSnacks\nIn between meals, snacks must consist of fr...",
     "fullText": "vegetables — vegetables\n2. Fruit\n3. Melon\nBetween Meal Juice\nDrink an 8 oz. to 10 oz. glass of freshly juiced vegetable or fruit juice.\n \nDinner\nChoose one.\n \n1. Large Salad, with a side of: \nVegetables, steamed or raw Vegetable soup, no tomato Stir-fry\nvegetables\n2. Fruit\n3. Melon\nSnacks\nIn between meals, snacks must consist of fresh fruits, dried fruits and\nfruit or vegetable juices only.\n \n Do not mix starches and proteins at the same meal. Pick one or the other.\n \nMODULE 7.6\nThe Detox Menu for the Bold"
@@ -42076,6 +42173,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -42262,7 +42360,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "vegetables"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "detoxifiers. \nCarrot + Beet + Parsley\nCarrot + Beet + Spinach\nCarrot + Alfalfa Sprouts + Parsley\nCarrots + Spinach + Celery + Parsley\nWheat grass + Alfalfa sprouts\nJuicing cabbage and the cruciferous vegetables is very beneficial for\ncancer cases. \n \nMODULE 7. 8\nBeans and Grains: Good or Bad? \n \nBeans and grains are do...",
     "fullText": "detoxifiers. — detoxifiers. \nCarrot + Beet + Parsley\nCarrot + Beet + Spinach\nCarrot + Alfalfa Sprouts + Parsley\nCarrots + Spinach + Celery + Parsley\nWheat grass + Alfalfa sprouts\nJuicing cabbage and the cruciferous vegetables is very beneficial for\ncancer cases. \n \nMODULE 7. 8\nBeans and Grains: Good or Bad? \n \nBeans and grains are dormant foods.  Enzyme inhibitors block the\ngermination process by blocking enzyme action, which allows for long-term\nstorage without spoilage.  Even though beans are more protein-rich and grains\nare starches, they are both acid-forming and very hard to digest.  I have\nalways said that it takes more of your body’s systemic energy to digest,\nassimilate and excrete these foods than they give back to you.  Simply put,\nthey rob the body of energy in the final analysis. \nWhy do we give grains to hogs and cattle?  To fatten them up.  And these\nfoods will do the same to you.  Dried beans and grains are very concentrated,\nmaking digestion long and difficult."
@@ -42331,7 +42430,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "climates"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "If you want true bodily vitality and regeneration, avoid unsprouted beans\nand grains.  If you must eat them, do so in cold climates and never together, as\nyou don’t want to combine protein and starch at the same meal.  This causes\neven greater body enervation from fermentation and putrefaction (see Proper\nFood Combinat...",
     "fullText": "If you want true bodily vitality and regeneration, avoid unsprouted beans — If you want true bodily vitality and regeneration, avoid unsprouted beans\nand grains.  If you must eat them, do so in cold climates and never together, as\nyou don’t want to combine protein and starch at the same meal.  This causes\neven greater body enervation from fermentation and putrefaction (see Proper\nFood Combinations, Module 7. 3).  Animals in the wild do not consume such\nfoods.  If they did, it would make them sluggish and vulnerable as prey to\nother more robust animals. \nHealth is energy and energy comes from life, not death.  As you begin to\neat more “alive” foods you will know firsthand the effects that beans and\ngrains will have on your energy levels and your agility.  We must look\nbeyond our limited, culturally-determined, nutritional ideas to see the vast\narray of foods that nature supplies for us. \nThe seasons have a great impact upon us, especially in the northern\nclimates where more drastic weather changes are experienced."
@@ -42723,7 +42823,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "following"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "1/2 cup of maple syrup\n \n3 1/2 to 4 cups of distilled water\n \n1/2 tsp of almond extract (or vanilla extract)\n \nFor a spicy Indian version, add the following to the above ingredients:\n1/4 tsp of cardamom\n \n1/4 tsp of nutmeg\n \n1/2 tsp of cinnamon\n \nPlace all ingredients into a blender and blend on a high speed for three\n...",
     "fullText": "1/2 cup of maple syrup — 1/2 cup of maple syrup\n \n3 1/2 to 4 cups of distilled water\n \n1/2 tsp of almond extract (or vanilla extract)\n \nFor a spicy Indian version, add the following to the above ingredients:\n1/4 tsp of cardamom\n \n1/4 tsp of nutmeg\n \n1/2 tsp of cinnamon\n \nPlace all ingredients into a blender and blend on a high speed for three\nminutes. For a smoother consistency, strain through a large strainer layered\nwith a piece of cheesecloth.\nAlmond milk is a protein and should not be combined with starches. Use\nrice milk if you wish to combine with a starch.\nBanana Ice Cream\n4 to 6 bananas\n \n1 to 11/2 cups of apple juice\n \n1 tsp. of vanilla\n \n1/2 cup of raw almonds\n \nTo make any frozen treat you will need some frozen fruit and fresh fruit\njuice. Organic fresh juice and fruit is always preferred. However, glass-\nbottled organic juice may be substituted.\nPeel 4 to 6 bananas and freeze overnight in a zip-lock baggie. Put about 1\nto 11/2 cups of apple juice and 1 tsp of vanilla in a blender. Break off pieces"
@@ -42858,7 +42959,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "carrots"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "1/3 bunch parsley, chopped\n \nSauté onion until translucent in 2 tablespoons of olive oil, set aside. Add the\nsquash and carrots to water (make sure that they are covered) and bring to a\nboil. Cook over medium heat until carrots and squash are slightly soft. Add\nthe cooked onion. Add the chopped garlic and parsley and b...",
     "fullText": "1/3 bunch parsley, chopped — 1/3 bunch parsley, chopped\n \nSauté onion until translucent in 2 tablespoons of olive oil, set aside. Add the\nsquash and carrots to water (make sure that they are covered) and bring to a\nboil. Cook over medium heat until carrots and squash are slightly soft. Add\nthe cooked onion. Add the chopped garlic and parsley and boil for 1 minute\nlonger. Remove from heat. Serve.\nSteamed Veggies\nBroccoli\n \nCauliflower\n \nBell peppers (all colors)\n \nOnions\n \nAsparagus\n \nPea pods (optional)\n \nGreen beans (optional)\n \nPlace your desired veggies into a stainless steel steamer, and steam for 5 to 7\nminutes. You may wish to put these steamed vegetables over whole grain\nbrown rice with an onion or veggie sauce.\n Stainless steel “leaf” steamers are inexpensive and can be purchased at any\ndepartment store that carries kitchen utensils. They are made to fit down into\nsaucepans. Avoid all aluminum cookware.\nStir-Fried Veggies\n3 tablespoons olive oil"
@@ -43176,6 +43278,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -43290,6 +43393,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "plantes",
       "pharmacopee"
     ],
@@ -43702,7 +43806,6 @@ export const MEDIA_SEARCH_DATABASE = [
       "dried"
     ],
     "topics": [
-      "crohn",
       "plantes",
       "pharmacopee"
     ],
@@ -44108,6 +44211,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "foie",
       "liver",
       "poumons",
@@ -44964,6 +45068,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -45088,7 +45193,6 @@ export const MEDIA_SEARCH_DATABASE = [
       "anti"
     ],
     "topics": [
-      "crohn",
       "lymphe",
       "lymphatic",
       "poumons",
@@ -45376,7 +45480,6 @@ export const MEDIA_SEARCH_DATABASE = [
       "emollient"
     ],
     "topics": [
-      "crohn",
       "lymphe",
       "lymphatic",
       "foie",
@@ -45784,6 +45887,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -47064,6 +47168,7 @@ export const MEDIA_SEARCH_DATABASE = [
     "topics": [
       "crohn",
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -48221,7 +48326,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "rhizobia"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "(methicillin-\nresistant staphylococcus aureus), Sinorhizobium meliloti bacterium and the\nRhizobia (RMBPC) bacterium, just to name a few.  From these and many\nothers we see conditions like “hoof and mouth” disease, M. R. S. A.  infections,\nand “Mad Cow Disease. ” Many of these conditions lead to death. \nViruses are a wh...",
     "fullText": "Remember, parasites are God’s way of keeping your body clean. — (methicillin-\nresistant staphylococcus aureus), Sinorhizobium meliloti bacterium and the\nRhizobia (RMBPC) bacterium, just to name a few.  From these and many\nothers we see conditions like “hoof and mouth” disease, M. R. S. A.  infections,\nand “Mad Cow Disease. ” Many of these conditions lead to death. \nViruses are a whole different subject.  Many deadly and debilitating\nviruses have been created due to contamination; in the search for weapons of\nbiological warfare; and even as forms of simple population control.  For a\nfrightening look into the subject of viruses and their use by the scientific\ncommunity, refer to Emerging Viruses by Leonard G.  Horowitz. \nNow let’s look at antibiotics, both the pharmaceutically-manufactured\nand the natural. \nPHARMACEUTICAL ANTIBIOTICS\n \nPharmaceutical antibiotics are also known as sulfa drugs.  Most contain\nprimarily a sulfur derivative with additional highly toxic chemical\ncompounds."
@@ -48334,6 +48440,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif"
@@ -49159,6 +49266,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "peau",
       "skin",
       "plantes",
@@ -51044,6 +51152,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -51529,7 +51638,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "special"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "Birch, Sage or Lavender oil (see their properties and uses above). \nEssential oils can also be burned in oil lamps or special essential-oil\nburners.  They can be used in the bag of your vacuum cleaner, which allows\nthe essential oils to neutralize many toxic particles that escape from your\nsweeper.  This method also sp...",
     "fullText": "Birch, Sage or Lavender oil (see their properties and uses above). — Birch, Sage or Lavender oil (see their properties and uses above). \nEssential oils can also be burned in oil lamps or special essential-oil\nburners.  They can be used in the bag of your vacuum cleaner, which allows\nthe essential oils to neutralize many toxic particles that escape from your\nsweeper.  This method also spreads the oil throughout the area that you are\nvacuuming. \nLet the aroma of the oils invigorate you and enhance your life in endless\nways. \nCHIROPRACTIC AND KINESIOLOGY\n \nChiropractic is a therapeutic system based upon the interaction of the spine\nand the nervous system.  A trained chiropractor can use a variety of methods\nto manipulate the spinal column, making adjustments to specific vertebrae,\nand thereby opening energy pathways and releasing energy blockages to\nvarious parts of the body. \nKinesiology is a feedback system of diagnosis that involves testing the\nstrength of particular muscles."
@@ -51564,6 +51674,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "lymphe",
       "lymphatic",
       "peau",
@@ -51601,7 +51712,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "suffer"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "When your skeletal system is out of place, you can suffer severe pain and\ndiscomfort.  I have seen convulsions occur from spinal misalignments.  If you\nadd detoxification to chiropractic you could truly heal the muscular/skeletal\nsystem.",
     "fullText": "Birch, Sage or Lavender oil (see their properties and uses above). — When your skeletal system is out of place, you can suffer severe pain and\ndiscomfort.  I have seen convulsions occur from spinal misalignments.  If you\nadd detoxification to chiropractic you could truly heal the muscular/skeletal\nsystem."
@@ -52676,7 +52788,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "yeux",
       "vision",
       "eyes",
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "APPENDIX C\nResource Guide\n \nBOOKS AND VIDEO SOURCES\n \nNature’s First Law\nP.O. Box 900202\nSan Diego, CA 92190\n(619) 645-7282 (local)\n(619) 596-7997\nwww.rawfood.com\nCarries a great line of natural products and hard-to-find books by the old\nraw-food masters.\nNutri-Books\nA Division of Royal Publications\nP.O. Box 5793\nDenve...",
     "fullText": "APPENDIX C — APPENDIX C\nResource Guide\n \nBOOKS AND VIDEO SOURCES\n \nNature’s First Law\nP.O. Box 900202\nSan Diego, CA 92190\n(619) 645-7282 (local)\n(619) 596-7997\nwww.rawfood.com\nCarries a great line of natural products and hard-to-find books by the old\nraw-food masters.\nNutri-Books\nA Division of Royal Publications\nP.O. Box 5793\nDenver, CO 80217\n(303) 788-8383\nwww.nutribooks.com\nCarries an extensive line of natural health books. Wholesale only.\nHealth Research\nP.O. Box 70\nMokelumne Hill, CA 95245\nCarries an extensive line of old and hard-to-find health and spiritual books.\nCHILDREN’S PRODUCTS"
@@ -52958,6 +53071,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "peau",
       "skin",
       "plantes",
@@ -53101,6 +53215,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "plantes",
       "pharmacopee"
     ],
@@ -53137,6 +53252,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "plantes",
       "pharmacopee"
     ],
@@ -53173,6 +53289,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "plantes",
       "pharmacopee"
     ],
@@ -53275,7 +53392,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "0966"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "PREMIUM SUPPLEMENTS AND GLANDULARS\n \nProgressive Research Labs\n9396 Richmond, Suite 514\nHouston, TX 77963\n(800) 877-0966 (toll free)\nwww.prlab.com\nPremium supplements and glandulars (for sale to practitioners only).\nStandard Process\n1200 West Royal Lee Drive\nP.O. Box 904\nPalmyra, WI 53156-0904\n(800) 848-5061 (toll free...",
     "fullText": "PREMIUM SUPPLEMENTS AND GLANDULARS — PREMIUM SUPPLEMENTS AND GLANDULARS\n \nProgressive Research Labs\n9396 Richmond, Suite 514\nHouston, TX 77963\n(800) 877-0966 (toll free)\nwww.prlab.com\nPremium supplements and glandulars (for sale to practitioners only).\nStandard Process\n1200 West Royal Lee Drive\nP.O. Box 904\nPalmyra, WI 53156-0904\n(800) 848-5061 (toll free)\nwww.standardprocess.com\nPremium supplements and glandulars (for sale to practitioners only).\nNature’s Path & Naturopathic Research Labs\nP.O. Box 7862\nNorth Port, FL 34287-7862\n(941) 426-3375 (phone)\n(941) 426-6871 (fax)\ne-mail: orders@naturespathinc.com\nwww.naturespathinc.com\nCarries high-quality liquid crystalloid electrolytes, and more.\nForest Pharmaceuticals, Inc.\n2510 Metro Boulevard\nSt. Louis, MO 63043\n(314) 569-3610"
@@ -53412,6 +53530,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "plantes",
       "pharmacopee"
     ],
@@ -53551,7 +53670,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "products"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "(515) 472-2809 (phone)\n(515) 472-2011 (fax)\nProvides information on bio-technology, and is working to get genetically-\nengineered products labeled.\nNative Seeds/Search\n526 North 4th Avenue\nTucson, AZ 85705\n(520) 622-5561 (phone)\n(520) 622-5591 (fax)\nDedicated to preserving ancient desert crops and heirloom farming prac...",
     "fullText": "(515) 472-2809 (phone) — (515) 472-2809 (phone)\n(515) 472-2011 (fax)\nProvides information on bio-technology, and is working to get genetically-\nengineered products labeled.\nNative Seeds/Search\n526 North 4th Avenue\nTucson, AZ 85705\n(520) 622-5561 (phone)\n(520) 622-5591 (fax)\nDedicated to preserving ancient desert crops and heirloom farming practices.\nThey offer both heirloom and wild seeds for gardens.\nPrice-Pottenger Nutrition Foundation\nP.O. Box 2614\nLa Mesa, CA 91943-2614\n(619) 574-7763 (phone)\n(619) 574-1314 (fax)\nwww.price-pottenger.org\nCollects and disseminates information on a variety of health-related topics.\nOffers books, reprints, videos and audio tapes.\nSuper Sprouts\n205 Spadina Avenue\nToronto, Ontario M5T 2C8\nCanada\n(416) 997-7796\nRaw food resource center in Toronto, Canada.\nFood & Water, Inc.\n389 Vermont, Route 215\nWalden, VT 05873"
@@ -53960,6 +54080,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -54206,6 +54327,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -54761,6 +54883,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "foie",
       "liver"
     ],
@@ -54797,6 +54920,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "foie",
       "liver"
     ],
@@ -54832,7 +54956,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "helpful"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "RDW (RED BLOOD CELL DISTRIBUTION WIDTH) — This is a\nmeasurement of the width of the red blood cells.  This is helpful in classifying\nthe type of anemia that one might have. \nPLATELETS (THROMBOCYTES) — Platelets are essential to the ability\nof the blood to clot.  They are the bridges and spider webs for perforations of\n...",
     "fullText": "hemoglobin levels are called normochromic, high levels are hyperchromic, — RDW (RED BLOOD CELL DISTRIBUTION WIDTH) — This is a\nmeasurement of the width of the red blood cells.  This is helpful in classifying\nthe type of anemia that one might have. \nPLATELETS (THROMBOCYTES) — Platelets are essential to the ability\nof the blood to clot.  They are the bridges and spider webs for perforations of\ntissue.  They bind so the body can repair.  Low platelet levels are indicative of\nbone marrow and/or spleen weakness or disease.  Infections, drugs and\nhemorrhages are also related to low platelet counts.  Below 50,000 is critical."
@@ -54982,6 +55107,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "foie",
       "liver"
     ],
@@ -55750,7 +55876,6 @@ export const MEDIA_SEARCH_DATABASE = [
       "herbs"
     ],
     "topics": [
-      "crohn",
       "intestins",
       "colon",
       "digestif",
@@ -56086,6 +56211,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -56170,6 +56296,7 @@ export const MEDIA_SEARCH_DATABASE = [
       "vision",
       "eyes",
       "colite",
+      "colitis",
       "poumons",
       "respiration",
       "peau",
@@ -56210,6 +56337,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "lymphe",
       "lymphatic",
       "peau",
@@ -56450,6 +56578,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -56526,6 +56655,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -56760,6 +56890,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "peau",
       "skin",
       "plantes",
@@ -57616,6 +57747,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif"
@@ -59134,7 +59266,6 @@ export const MEDIA_SEARCH_DATABASE = [
       "kidneys"
     ],
     "topics": [
-      "crohn",
       "intestins",
       "colon",
       "digestif",
@@ -59721,6 +59852,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "plantes",
       "pharmacopee"
     ],
@@ -59795,6 +59927,7 @@ export const MEDIA_SEARCH_DATABASE = [
       "vision",
       "eyes",
       "colite",
+      "colitis",
       "plantes",
       "pharmacopee"
     ],
@@ -59939,6 +60072,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -60084,6 +60218,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "foie",
       "liver",
       "plantes",
@@ -60162,6 +60297,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "poumons",
       "respiration"
     ],
@@ -60271,6 +60407,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -61201,6 +61338,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "plantes",
       "pharmacopee"
     ],
@@ -61406,6 +61544,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "plantes",
       "pharmacopee"
     ],
@@ -61477,6 +61616,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -61715,6 +61855,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "david-wolfe",
       "sunfood"
     ],
@@ -61995,7 +62136,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "614"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "COM WEBSITE 607 \nABOUT THE AUTHOR 611 \nADDITIONAL COPIES OF THIS BOOK 613 \nNOTES 614 \nRESOURCES 623 \nA WORD FROM THE AUTHOR \nThe Age of Information is surrounding us, embracing us.  Through the \nfantastic information available to all of us through the internet, libraries and \ntransformed individuals we now have the abi...",
     "fullText": "LESSON 25 SATURATION POINT 363 — COM WEBSITE 607 \nABOUT THE AUTHOR 611 \nADDITIONAL COPIES OF THIS BOOK 613 \nNOTES 614 \nRESOURCES 623 \nA WORD FROM THE AUTHOR \nThe Age of Information is surrounding us, embracing us.  Through the \nfantastic information available to all of us through the internet, libraries and \ntransformed individuals we now have the ability to create a whole new paradigm \nof health, wealth, happiness, success, prosperity and possibility!  \nIt is my goal, in this book, to bring you up to speed on key transformational \ntechnologies, especially in the area of nutrition, now available to us all.  \nThroughout these pages we are going to participate together in an opening \nof opportunities that everywhere surround us.  \nThe material contained here is designed for all people, whether you are \nhealthy, sick, searching, curious, looking for the next level and/or seeking \nsuccess physically and spiritually."
@@ -62132,6 +62274,7 @@ export const MEDIA_SEARCH_DATABASE = [
       "vision",
       "eyes",
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration"
@@ -62437,6 +62580,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "david-wolfe",
       "sunfood"
     ],
@@ -62576,7 +62720,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "has"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "The distinctions provided in this book have \nbeen proven by real-life testing.  My own experience has made me a science \nproject for these facts.  Intense research has unlocked health secrets that can \nonly be called \"magical. \" \nNothing succeeds like success, and there is no better proof of something's \nworthiness tha...",
     "fullText": "Nature, there are no limits to what you can have, be or do. — The distinctions provided in this book have \nbeen proven by real-life testing.  My own experience has made me a science \nproject for these facts.  Intense research has unlocked health secrets that can \nonly be called \"magical. \" \nNothing succeeds like success, and there is no better proof of something's \nworthiness than good results.  The success, joy and exuberance for life I enjoy \neach moment is proof-positive of the incredible power of the concepts in this \nbook.  \nStop listening to anyone, in any field, who is not getting the results that you \ndesire.  Stop.  Read that sentence three times in a row.  Would you go to a beggar \nfor financial advice?  Only listen to those who are getting the results you desire \nin any given area of life.  I have achieved an extraordinary aliveness, and I will \nshow you how you can achieve it too by the lessons provided within these pages."
@@ -62610,7 +62755,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "possible"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "The information within this book is meant for you to not only read, but to study \nand act upon.  Expect the maximum possible value from each page.  As you read, \nsee, listen and feel this message.  Highlight your favorite passages.  Take notes.  \nSpecifically: first read the book through entirely; second, read each cha...",
     "fullText": "and act upon. — The information within this book is meant for you to not only read, but to study \nand act upon.  Expect the maximum possible value from each page.  As you read, \nsee, listen and feel this message.  Highlight your favorite passages.  Take notes.  \nSpecifically: first read the book through entirely; second, read each chapter twice \n(before moving on to the next chapter) and highlight your favorite passages; third, \nimmediately act upon the information by using the action steps provided at the \nend of each lesson; fourth, purchase and use a journal with which to record your \nprogress.  \nThe content of this book is revolutionary in scope.  Any given person can begin \nto function at extraordinary levels once they have realized in which way lies their \ntrue line of progress.  That line of progress is internal purification through the appli-\ncation of a success system - a methodology to achieving goals."
@@ -62680,6 +62826,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "david-wolfe",
       "sunfood"
     ],
@@ -62875,7 +63022,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "pointing"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "As the saying \ngoes: \"When you point your finger at someone, you have three fingers pointing \nback at you. \" People accuse others of what they themselves are guilty of.  \nWinners take full responsibility for everything that happens to them - even \nwhen those things seem remote and are not directly attributable to their...",
     "fullText": "of the inner crisis gripping us individually, and therefore collectively. — As the saying \ngoes: \"When you point your finger at someone, you have three fingers pointing \nback at you. \" People accuse others of what they themselves are guilty of.  \nWinners take full responsibility for everything that happens to them - even \nwhen those things seem remote and are not directly attributable to their actions.  \nTaking 100% responsibility for everything in your life transforms you into a new \ntype of person because it forces you to research all \"effects\" back to their \n\"causes. \" Understanding \"causes\" is the science of life transformation.  \nOur focus here in this book is vibrant, superior health.  If you are suffering from \nill health, there is only one person responsible - yourself.  Blaming others will \nnot empower you.  Concepts such as the germ/bad luck theory are the end \nproducts of efforts to put the blame of ill health on someone or something \noutside of oneself - to remove responsibility from the individual."
@@ -62909,7 +63057,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "anthony"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "THE PRINCIPLE OF LIFE TRANSFORMATION \n1 Purchase and begin writing in a journal to record your progress through this \nbook and beyond. Success philosopher Anthony Robbins says: \n\"If your life is worth living, it is worth recording.\" Write down your wonderful \nthoughts. Begin now to describe your health transformation. ...",
     "fullText": "THE PRINCIPLE OF LIFE TRANSFORMATION — THE PRINCIPLE OF LIFE TRANSFORMATION \n1 Purchase and begin writing in a journal to record your progress through this \nbook and beyond. Success philosopher Anthony Robbins says: \n\"If your life is worth living, it is worth recording.\" Write down your wonderful \nthoughts. Begin now to describe your health transformation. Release \nworries, doubts, and fears by writing them down. What an amazing gift \nyour journals can be to your children and their children - they can learn from \nyou and feel a connection with you even when you are gone! \n2 The first day you begin this book, take a \"before\" picture. \n3 Instead of trying to remedy everything \"out there,\" decide now to turn your \nfocus inward to beautify your physical, mental, emotional and spiritual poten-\ntial. Write down the answer to the following questions in your journal: \"What \ntype of person do I have to become to experience radiant health?\" \"How do \nI become that type of person as quickly as possible while enjoying the \nprocess?\" \n4 Say to yourself daily: \"I am fully responsible for my own great health. \nMy daily habits create my great health.\" Write this affirmation on the first \npage of your journal and on your bathroom mirror."
@@ -63770,7 +63919,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "self"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "A single thought can make you prosperous beyond belief.  Make your-\nself a powerful magnet by focusing your thoughts consistently on prosperity and \nhappiness.  Dwell only upon thoughts of health.  Be cheerful by entertaining only \ncheerful thoughts.  Your destiny is within your own hands.  You choose the seeds, \nThe f...",
     "fullText": "body, but first you must beautify your mind. — A single thought can make you prosperous beyond belief.  Make your-\nself a powerful magnet by focusing your thoughts consistently on prosperity and \nhappiness.  Dwell only upon thoughts of health.  Be cheerful by entertaining only \ncheerful thoughts.  Your destiny is within your own hands.  You choose the seeds, \nThe fabled Joshua Tree stands alone with one thought only: \nTo be pulled forth towards the Sun with joy.  \nplant them and harvest the crop.  You are the gardener of your future, you are \nthe forestal of orchards to come.  \nThe greatest seed of all - your limitless potential - is with you at all times.  \nNourish this seed of your divine greatness through concentration of thought.  \nThere is no limit to who or what you can be.  \nOne thing is certain in life, you have to think - thought is the very essence of \nthe life experience.  Since you are going to be thinking anyway, you may as well \nthink incredibly positive thoughts!  Great thoughts produce greatness."
@@ -64398,7 +64548,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "yeux",
       "vision",
       "eyes",
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "Through your \nimagination you can fly out amongst the stars, scale the majestic mountains of \nthe world, enjoy the lush abundance of the tropics.  Your imagination is the key \nto a brilliant life.  Just as you can visualize amazing landscapes, visualize your \ngoals clearly and consistently and they will begin to manife...",
     "fullText": "Identify the people whose cooperation you will require. — Through your \nimagination you can fly out amongst the stars, scale the majestic mountains of \nthe world, enjoy the lush abundance of the tropics.  Your imagination is the key \nto a brilliant life.  Just as you can visualize amazing landscapes, visualize your \ngoals clearly and consistently and they will begin to manifest now.  \nWhen goals are visualized creatively, the rest of life is assured to be intensely \ninteresting and endlessly exciting.  This is because the sharper and more vivid a \nvisualization, the quicker it will manifest.  \nThose who think about visionary goals, who use their garden-mnds to erect \nfantastic visions of beautiful orchards, brilliant island vacations, perfect days and \nradiant relationships, are living the most - they are getting the most enjoyment \nout of life.  \nA written goal describes clearly what we are seeking.  Writing down a goal is \nmaking our desires known to the universe and starts the flow of abundance \ntowards us."
@@ -64435,7 +64586,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "yeux",
       "vision",
       "eyes",
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "When we set down our visionary goals on paper, we give reality to \nthem and solidify their entrance from the realm of pure potential into our lives.  \nThose who set goals are those who achieve them.  \nAnthony Robbins cites a famous goal study in his book Unlimited Power: \n\"A study of the 1953 graduates of Yale Universi...",
     "fullText": "Identify the people whose cooperation you will require. — When we set down our visionary goals on paper, we give reality to \nthem and solidify their entrance from the realm of pure potential into our lives.  \nThose who set goals are those who achieve them.  \nAnthony Robbins cites a famous goal study in his book Unlimited Power: \n\"A study of the 1953 graduates of Yale University clearly demonstrates the \npower of goals.  The graduates interviewed were asked if they had a clear, \nspecific set of goals written down with a plan for achieving those goals.  Only 3 \npercent had such written goals.  Twenty years later, in 1973, the researchers \nwent back and interviewed the surviving members of the 1953 graduating class.  \nThey discovered that the 3 percent with written specific goals were worth more \nin financial terms than the entire other 97 percent put together..."
@@ -64697,7 +64849,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "like"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "We are journeying entities, traveling in the garden of life, drawn to those \ndestinations that are in harmony with our dominant thoughts.  Goals are like \norchards filled with ripe fruits, they pull us toward them.  They breathe in new \nfragrant sensations into our being.  They activate our imagination.  \nWe are design...",
     "fullText": "62 I COALS — We are journeying entities, traveling in the garden of life, drawn to those \ndestinations that are in harmony with our dominant thoughts.  Goals are like \norchards filled with ripe fruits, they pull us toward them.  They breathe in new \nfragrant sensations into our being.  They activate our imagination.  \nWe are designed to set and achieve goals with the content of our life being \nthe wonders we observe along the way.  \nThe ultimate quest has no ending, and that fact gives it incredible value.  The \ntrue value is not what we get, but what we become along the way.  We journey \nto a goal, and then realize the journey is the goal.  \nGOALS \n1 Set a health goal to continuously act upon the information contained \nwithin this book.  Record this goal in your journal.  \n2 In your journal, write down 100 goals that you want to attain within the \nnext year.  Review them daily.  \n3 Take your top 5 goals for this year."
@@ -64802,7 +64955,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "yeux",
       "vision",
       "eyes",
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "66 I COALS \nWith a cluster of sparks, \nThe air of'rudition, \nThat which is nourished, \nWill come to fruition. \nVision — the power, \nIt molds and makes. \nHold it true so long \nAnd evermore it shapes, \nThe reasons, minds, and the wills \nCalling forth a thousand joys, \nDisposing of a thousand ills. \nCherished in secret \nY...",
     "fullText": "66 I COALS — 66 I COALS \nWith a cluster of sparks, \nThe air of'rudition, \nThat which is nourished, \nWill come to fruition. \nVision — the power, \nIt molds and makes. \nHold it true so long \nAnd evermore it shapes, \nThe reasons, minds, and the wills \nCalling forth a thousand joys, \nDisposing of a thousand ills. \nCherished in secret \nYet coming to pass, \nVision — the calm \nIn a pool of glass. \nTempest tossed souls, \nWherever you be, \nRest under the wing \nOf the visionary. \nIn the Ocean of Life, \nIsles of Bliss lay smiling. \nThe Sunny shore of your ideal \nAwaits your arriving. \nKeep your hand firmly poised \nUpon the helm of thought. \nHold true to the vision \nAnd you'll find what you have sought. \nTHE VISIONARY'S EPILOGUE \nTo humanity: \nThe seekers, \nNever forget \nYour dreamers. \nTheir ideals \nMust never \nFade and die. \nThey live forever \nAnd carry us high. \nSee in them \nWhat you shall know. \nTake from them \nSome seeds to sow. \nFor musician, poet, painter, sage \nYou are the architects \nOf the golden age."
@@ -64836,7 +64990,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "dasadharma"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "LESSON \nFAITH \n\"JUST AS A GREEN SPROUT NEVER SPRINGS FROM SEEDS THAT \nHAVE BEEN SCORCHED BY FIRE, SO NO VIRTUES WILL ARISE \nIN PEOPLE WHO HAVE NO FAITH.\" — Dasadharma Sutra \nHave you ever wondered why an electron spinning around an atom nucleus \ndoes not run out of energy? How does it operate in perpetual motion? The \n...",
     "fullText": "LESSON — LESSON \nFAITH \n\"JUST AS A GREEN SPROUT NEVER SPRINGS FROM SEEDS THAT \nHAVE BEEN SCORCHED BY FIRE, SO NO VIRTUES WILL ARISE \nIN PEOPLE WHO HAVE NO FAITH.\" — Dasadharma Sutra \nHave you ever wondered why an electron spinning around an atom nucleus \ndoes not run out of energy? How does it operate in perpetual motion? The \nanswer coming from the foremost progressive scientific minds is that the elec-\ntron continually dips into the well of infinite energy and potential called the \n\"zero-point energy.\" The zero-point energy animates the universe. It provides life-\nforce and organizing principle to all living things through the superconductive \nproperties of monoatomic elements inside living cells which transform or reduce \naspects of zero-point energy into this dimension. \nThrough the great principle of faith we can tap the zero-point energy and \ndraw forth any tangible item or intangible idea into the physical world. Faith is a \nsuperconductor that allows us to consciously tap into the cosmic, divine energy. \nFaith allows us to create things in the material world. \nFaith is the ability to have trust in powers greater than yourself, to confidently \nstride into the unknown, and to believe in your own abilities - no matter what."
@@ -67481,6 +67636,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "plantes",
       "pharmacopee",
       "david-wolfe",
@@ -68355,7 +68511,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "unsuited"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "124 \nORIGINS \nINTRODUCTION \nLife is a mystery, so grand, so vast.  \nOrigins are hidden, deep in the past.  \nWorn out, eroded, \nAre they \nHopelessly unsuited?  \nNothing is more fantastic, \nIs anything more farfetched \nThan slates of fossil stone \nWhich reality once etched?  \nAny philosophy of diet leads, typically, to a...",
     "fullText": "ORIGINS — 124 \nORIGINS \nINTRODUCTION \nLife is a mystery, so grand, so vast.  \nOrigins are hidden, deep in the past.  \nWorn out, eroded, \nAre they \nHopelessly unsuited?  \nNothing is more fantastic, \nIs anything more farfetched \nThan slates of fossil stone \nWhich reality once etched?  \nAny philosophy of diet leads, typically, to a philosophy of human origins.  It \nseems reasonable that the diet humanity originated on, should be the diet that \nbest suits us or at least point us in the correct direction.  From research and \nexperience we see that primitive diets do actually work because they are \nsimpler, more natural and the body has less confusion to contend with.  Primitive \npeoples have more robust jaws and more beautiful teeth, which is reflective of \ntheir superior diet.  But even primitive diets do have their limits.  They contain \ncooked foods and animal foods that will only allow consciousness to reach a \ncertain level within a certain parameter of positive energy."
@@ -68426,6 +68583,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "david-wolfe",
       "sunfood"
     ],
@@ -68779,7 +68937,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "itself"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "He described that we can clearly see \n(through scientific/utility analysis) how the \"impressed living form\" works itself \nout in the individual samples, but we cannot see how the \"die was cut\" for each \nwhole genus.  We cannot see how the genus appeared.  Origins remain hidden \nfrom us.  \nWe cannot ascertain how the Ho...",
     "fullText": "ORICINS — He described that we can clearly see \n(through scientific/utility analysis) how the \"impressed living form\" works itself \nout in the individual samples, but we cannot see how the \"die was cut\" for each \nwhole genus.  We cannot see how the genus appeared.  Origins remain hidden \nfrom us.  \nWe cannot ascertain how the Homo genus (Homo habilis, Homo erectus, \nHomo ergaster, Homo neanderthalis, archaic Homo sapien, Cro-Magnon, Homo \nsapien, Homo sapien sapien) appeared, yet it was suddenly there in the fossil \nrecord.  \nEvolutionists continue to argue the tired line that humans smoothly transitioned \nfrom one form to another, and assume modern Homo sapiens arose merely \n100,000 to 200,000 years ago (based on the present questionable dating \nsystem).  In December 1997, Discover magazine reported the findings of a \nSpanish team working in Gran Dolina, Spain who uncovered an 800,000 year-\nold skull with remarkably modern features."
@@ -69012,7 +69171,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "own"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "During this period, they had also the occasion to \nobserve her own behavior and diet.  They are gifted imitators, so they were \nable to admire human ingenuity.  When she announced that some young \nchimpanzees in the group killed 4 monkeys, one antelope, and a pig, we saluted \nthis as a scientific contribution.  Alas, i...",
     "fullText": "Who could know or even guess at the great mystery — During this period, they had also the occasion to \nobserve her own behavior and diet.  They are gifted imitators, so they were \nable to admire human ingenuity.  When she announced that some young \nchimpanzees in the group killed 4 monkeys, one antelope, and a pig, we saluted \nthis as a scientific contribution.  Alas, it was only a deviation due to what our \ncivilization reflected on the chimpanzees. '\" \nThe point here is instructive.  Many chimpanzee groups - especially the \nbonobo chimps (the most genetically similar to humans) - do not engage in \nhunting behavior.  It is equally as likely as any other explanation that the chim-\npanzees of Gombe (Jane GoodalPs research group) and other chimp groups \nORIGINS 733 \nlearned their much-publicized killing and meat-eating behavior from humans; \nprobably originally deriving such practices from local human tribes with whom \nthey lived amongst for thousands of years."
@@ -69118,6 +69278,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "foie",
       "liver"
     ],
@@ -69621,7 +69782,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "independent"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "Consider the results of the \nfollowing experiments conducted on E.  Coli bacteria.  Researchers Dr.  John \nCairns and Dr.  Barry Hall independent of each other confirmed that when \nbacteria are deprived of certain nutrients, such as the amino acids tryptophan \nand cysteine, they are able to, under hostile conditions, g...",
     "fullText": "138 I ORIGINS — Consider the results of the \nfollowing experiments conducted on E.  Coli bacteria.  Researchers Dr.  John \nCairns and Dr.  Barry Hall independent of each other confirmed that when \nbacteria are deprived of certain nutrients, such as the amino acids tryptophan \nand cysteine, they are able to, under hostile conditions, give rise to offspring \nwhich can internally synthesize these nutrients.  This is a directed mutation.  (See \nCairns, J. , \"The origin of mutants,\" Nature, 335:142-145 and Hall, B. , \n\"Spontaneous point mutations that occur more often when advantageous than \nwhen neutral,\" Genetics, 126:5-16, September 1990).  If simple bacteria can \nsynthesize their own nutrients, imagine what humans can do!  \nEnvironmental factors directly affect the structure of living organisms - this \nphenomena is termed \"geographic morphism."
@@ -69787,7 +69949,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "bison"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "And what of an offspring of a horse and a donkey \n(a mule) that is fertile, even though most are not?  A bull can be crossed with \na bison to produce fertile offspring, and this also violates the definition.  \nEven defining a species by chromosomal similarities may prove impossible.  \nItalian researchers have discovere...",
     "fullText": "140 ORICI NS — And what of an offspring of a horse and a donkey \n(a mule) that is fertile, even though most are not?  A bull can be crossed with \na bison to produce fertile offspring, and this also violates the definition.  \nEven defining a species by chromosomal similarities may prove impossible.  \nItalian researchers have discovered a strain of mice with only 16 chromosomes \ninstead of 20.  But Silvia Garagna, a zoologist from the University of Pavia \ninvolved in the research, has stated: \"We have not found a new species.  We have \nORIGINS 141 \njust found a new chromosomal race within the mouse species. \" (The San Diego \nUnion Tribune, \"Of Mice And Scientists... \" Section E-1, December 17, 1996. ) \nWhen the definition of \"species\" is thrown up to the wind, then statements \nsuch as \"all the species of Galapagos finch have evolved from common ances-\ntors\" loses any value.  \nClaims of new species forming within the present day continue to be asserted \nby neo-darwinists."
@@ -69821,7 +69984,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "blurring"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "In all of the examples they offer, however, what we actually \nfind are two types of situations.  \nThe first type involves blurring the definition of what they have defined a \nspecies as and replacing it with a definition so poorly defined that any sub-\nspecies variation can be claimed as \"speciation. \" The Galapagos fi...",
     "fullText": "140 ORICI NS — In all of the examples they offer, however, what we actually \nfind are two types of situations.  \nThe first type involves blurring the definition of what they have defined a \nspecies as and replacing it with a definition so poorly defined that any sub-\nspecies variation can be claimed as \"speciation. \" The Galapagos finches are an \nexcellent example of sub-species variations claimed to be different species.  \nJonathan Weiner, in his Pulitzer-prize winning book The Beak Of The Finch, \ndescribes researchers Peter and Rosemary Grant's observations that different \nfinch \"species\" do breed together and produce fertile offspring.  \nThe second type involves chance mutations where the chromosomes \nsuddenly double (as in plants), or change in some other way, but these \nmutations have never been shown to reproduce themselves into a new species.  \nThe fact that a \"species\" cannot be precisely defined disassembles the entire \ndarwinian classification system which relies on categorization."
@@ -69887,7 +70051,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "anthropology"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "142 \nchallenged.  The present dating systems for organic material and rocks are so \ningrained into the present scientific consciousness in the fields of biology, \nanthropology, paleontology, etc. , that to question their veracity is bound to raise \nemotions.  As strange as it may sound, radioactive dating - the most cr...",
     "fullText": "challenged. — 142 \nchallenged.  The present dating systems for organic material and rocks are so \ningrained into the present scientific consciousness in the fields of biology, \nanthropology, paleontology, etc. , that to question their veracity is bound to raise \nemotions.  As strange as it may sound, radioactive dating - the most crucial leg \nof the neo-darwinian support structure - is perhaps the least scientific and the \nmost flawed of all evolutionary postulates.  \nRichard Milton, in his phenomenal book, Shattering the Myths of \nDarwinism, outlines the history of present-day dating systems and their flaws, \nsome of which I have outlined in the section below, along with my own research: \nIn the 1940s, American chemist Willard Libby developed the radiocarbon \nmethod of dating organic materials.  His system was based on carbon 14, a \nradioactive isotope of carbon 12.  Carbon 14 begins to decay as soon as it is \ncreated at a half-life rate of 5,700 years."
@@ -69921,7 +70086,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "while"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "When a plant or animal dies, it stops \ntaking in carbon 14 from the land and atmosphere, so the amount of carbon 14 \nin its body begins to decay, while the ordinary carbon 12 remains the same.  All \nother still-living organisms, argued Libby, still retain the same proportion of \ncarbon 14 to carbon 12.  This proportion...",
     "fullText": "challenged. — When a plant or animal dies, it stops \ntaking in carbon 14 from the land and atmosphere, so the amount of carbon 14 \nin its body begins to decay, while the ordinary carbon 12 remains the same.  All \nother still-living organisms, argued Libby, still retain the same proportion of \ncarbon 14 to carbon 12.  This proportion does not change as long as the \norganism is still alive, thus it can be determined, based on the proportion of \ncarbon 14 to carbon 12, how long ago the organism died.  \nWillard Libby made the crucial assumption that the total amount of carbon 14 \nin the atmosphere has remained constant over time.  \nStudies by researchers Richard Lingenfelter, Hans Suess, V.  Switzer, and \nMelvin Cook (done independently) have determined the proportion of carbon \n14 to carbon 12 in the atmosphere is increasing (see Lingenfelter, R. , \n\"Production of C-14 by cosmic ray neutrons\" Review of Geophysics, Feb.  \n1963, 1:51; Suess, H."
@@ -69956,6 +70122,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "jeune",
       "fasting",
       "autophagie"
@@ -69992,7 +70159,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "inorganic"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "Researcher Melvin Cook has also demonstrated that uranium-lead and potas-\nsium-argon methods for dating inorganic rocks are also severely flawed.  Cook's \nfindings have been supported by other reputable scientists in the peer-reviewed \nliterature.  Funkhouser and Naughton demonstrated the flaws in uranium-lead \nmethods...",
     "fullText": "challenged. — Researcher Melvin Cook has also demonstrated that uranium-lead and potas-\nsium-argon methods for dating inorganic rocks are also severely flawed.  Cook's \nfindings have been supported by other reputable scientists in the peer-reviewed \nliterature.  Funkhouser and Naughton demonstrated the flaws in uranium-lead \nmethods by dating volcanic material known to have been formed in a Hawaiian \nvolcanic eruption in 1801.  The dating system showed these new materials to be \nthree billion years old (see Funkhouser, J. , Naughton, J.  Journal of \nGeophysical Research, July 1968, 73: 4606).  In another related study, \nProfessor McDougall of Australian National University found, through potas-\nsium-argon dating, ages of up to 465,000 years for rocks known to be less than \n1,000 years old (see Nature, 20 March 1980, p.  230-232, 12 November 1981, \np.  123-124)."
@@ -70090,7 +70258,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "against"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "Here visible in bamboo is the cycloid spiral space curve \nthat animates all living things and causes them to levitate against gravity.  \nAlong the curve some ages are too old and some are too young, and ages are \nchosen subjectively often because they \"feel right\" within the context.  Consider \nthe McDougall study (cit...",
     "fullText": "Here visible in bamboo is the cycloid spiral space curve — Here visible in bamboo is the cycloid spiral space curve \nthat animates all living things and causes them to levitate against gravity.  \nAlong the curve some ages are too old and some are too young, and ages are \nchosen subjectively often because they \"feel right\" within the context.  Consider \nthe McDougall study (cited in Nature, also see and compare Nature, 18 April, \n1970; 20 September, 1974; 4 December, 1975; 28 October, 1976), where the \n\"scatter\" of dates conducted by different groups of researchers ranged from \n0. 52 million to 17. 5 million years ago for a sample of KBS Tuff rock material \nused to date the age of the Lake Turkana Man fossils.  The dates for rock \nsamples taken from the KBS Tuff were all over the place.  The date of 2. 6 million \nyears arrived at for the KBS Tuff sample was eventually chosen, to end the \nwhole debate, because it was apparently \"reasonable\" to the scientists involved."
@@ -70458,7 +70627,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "cremo"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "148 ORIGINS \nORIGINS \n1 For more information scientifically and specifically discounting the theory \nof evolution, please read Forbidden Archeology by Michael Cremo.  \n2 Exercise your skills in contrary thinking.  Write in your journal 10 state-\nments that peers told you were true.  These could be statements you still ...",
     "fullText": "148 ORIGINS — 148 ORIGINS \nORIGINS \n1 For more information scientifically and specifically discounting the theory \nof evolution, please read Forbidden Archeology by Michael Cremo.  \n2 Exercise your skills in contrary thinking.  Write in your journal 10 state-\nments that peers told you were true.  These could be statements you still \nbelieve are true.  After writing them all down, directly below them, reverse \nthe statement and review it.  For example, let's say you heard: \"Money \ndoesn't grow on trees. \" You would write down: \"Money does grow on trees\" \nand review it.  Ask yourself questions: Which statement is true?  Is one \nmore true than the other?  What are the short- and long-term conse-\nquences of believing these statements?  (By the way, cacao beans (raw \nchocolate) were used as money by the Olmecs, Mayans and Aztecs - and \nthey grow on trees."
@@ -71118,6 +71288,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -71160,6 +71331,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -71580,6 +71752,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "foie",
       "liver"
     ],
@@ -72748,6 +72921,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "foie",
       "liver"
     ],
@@ -73011,6 +73185,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "david-wolfe",
       "sunfood"
     ],
@@ -73163,6 +73338,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "lymphe",
       "lymphatic"
     ],
@@ -73337,7 +73513,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "empty"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "Many people who are new to raw diets and vegetarianism think they need \nprotein to fill the empty space left by eliminating animal food; what they need \nand want much of the time is fat.  Most people and nutritionists mistake the \ndesire for fat for the desire for protein as they cannot distinguish the difference \nbetw...",
     "fullText": "194 I THE SECRET REVEALED — Many people who are new to raw diets and vegetarianism think they need \nprotein to fill the empty space left by eliminating animal food; what they need \nand want much of the time is fat.  Most people and nutritionists mistake the \ndesire for fat for the desire for protein as they cannot distinguish the difference \nbetween the two.  Fats are soft, heavy and full; proteins are dense, abrasive and \nenergetic.  Protein alone will not fill the empty space when you stop eating \ncooked food.  \nNew vegetarians and vegans typically attempt to fill the space for fat with \ncooked vegetables.  Cooking densities vegetation and gives the body the illusion \nof \"fullness\" and satiation that fat provides.  Many non-raw-food vegans and \nvegetarians I have met, to me, look deficient in raw fat and overloaded on \ncooked vegetable starch."
@@ -73372,6 +73549,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret"
     ],
@@ -73444,7 +73622,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "kill"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "Saturated, Monounsaturated, And Polyunsaturated Fats \nResearch by Dr.  Howell in Enzyme Nutrition and Udo Erasmus in Fats That \nHeal, Fats That Kill indicates both saturated and unsaturated fats are greatly \nbeneficial as long as they are raw.  If the fats are cooked or oxidized, they are \naltered chemically and may be...",
     "fullText": "194 I THE SECRET REVEALED — Saturated, Monounsaturated, And Polyunsaturated Fats \nResearch by Dr.  Howell in Enzyme Nutrition and Udo Erasmus in Fats That \nHeal, Fats That Kill indicates both saturated and unsaturated fats are greatly \nbeneficial as long as they are raw.  If the fats are cooked or oxidized, they are \naltered chemically and may be devoid of lipase (the fat-splitting enzyme) which \ncan lead to health challenges.  \nThere are three major types of fats: saturated, monounsaturated and polyun-\nsaturated fats.  Typically all raw plant fats have some of all three; however, the \nratio of each to the other differs for each food.  \nSaturated fats are more stable than unsaturated fats and the most resistant to \nalterations due to heat.  The best saturated fats come from organic, cold-pressed \nmature coconuts in the form of coconut oil and organic, cold-pressed cacao oil \n(cocoa butter)."
@@ -73510,7 +73689,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "sensitive"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "Because of their \nability to bind with toxins, raw polyunsaturated fats are the most healing fats for \nthe body.  Polyunsaturated fats are highly sensitive and are the most subject \nto structural derangement through heating, hydrogenation and oxidation.  \nDeranged polyunsaturated fats (otherwise known as trans-fatty ac...",
     "fullText": "ig6 I THE SECRET REVEALED — Because of their \nability to bind with toxins, raw polyunsaturated fats are the most healing fats for \nthe body.  Polyunsaturated fats are highly sensitive and are the most subject \nto structural derangement through heating, hydrogenation and oxidation.  \nDeranged polyunsaturated fats (otherwise known as trans-fatty acids) are the \nmost damaging fats for the body and should be totally avoided.  \nBecause all oils are in some way sensitive to light, oxidation, rancidity and \ncontact with plastic, I recommend only purchasing oils that are packaged in dark \nglass.  Polyunsaturated oils such as flaxseed oil and hempseed oil should be \nrefrigerated.  \nFats And Longevity \nLiving a long and vibrant life is a matter of minimizing free radical damage to \nthe body through a diet rich in antioxidants.  A free radical is an electron-defi-\ncient oxygen molecule primarily produced when electrons are being stolen \nfrom the body by refined and cooked oils (corn oil, safflower oil, etc."
@@ -73679,6 +73859,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "jeune",
       "fasting",
       "autophagie"
@@ -73861,6 +74042,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret"
     ],
@@ -73935,6 +74117,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "lymphe",
       "lymphatic"
     ],
@@ -74066,7 +74249,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "food"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "Some prominent superfoods include: \n• Marine phytoplankton (this outstanding superfood forms the basis of the \nentire food chain for the whole planet.  Marine phytoplankton is a source of \nDHA, EPA, and phospholipids) \n• Spirulina (a spiral algae consumed for thousands of years by indigenous \npeople in Mexico and Afric...",
     "fullText": "202 THE SECRET REVEALED — Some prominent superfoods include: \n• Marine phytoplankton (this outstanding superfood forms the basis of the \nentire food chain for the whole planet.  Marine phytoplankton is a source of \nDHA, EPA, and phospholipids) \n• Spirulina (a spiral algae consumed for thousands of years by indigenous \npeople in Mexico and Africa.  The highest concentration of protein on Earth) \n• Blue-Green Algae (Klamath lake algae has a phenomenal reputation in the \nhealth field) \n• Chlorella (another high-protein algae that has the special property of detox-\nifying heavy metals from the brain when used in conjunction with cilantro) \n• Bee pollen (wild pollen, not orchard pollen, should be used and should \ncome from ethically harvested sources where bees are treated respectfully.  \nBee pollen is nature's most complete food) \n• Maca (a radish-family root that grows in the high Andes.  This root increases the \nproduction of progesterone in women and testosterone in men."
@@ -74232,6 +74416,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -74688,6 +74873,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "plantes",
       "pharmacopee"
     ],
@@ -74723,7 +74909,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "existed"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "By analyzing Genesis 1:29 after understanding the Bible Code it was \ndiscovered that it contains, in code, the seed-bearing plants which existed in the \nGarden of Eden.  The seven seed-bearing plants embedded in this verse are: \nbarley (grass), wheat (grass), vine (grapes), dates, olives, figs and pomegran-\nates.  The ...",
     "fullText": "210 I THE SECRET REVF.-.I.T p — By analyzing Genesis 1:29 after understanding the Bible Code it was \ndiscovered that it contains, in code, the seed-bearing plants which existed in the \nGarden of Eden.  The seven seed-bearing plants embedded in this verse are: \nbarley (grass), wheat (grass), vine (grapes), dates, olives, figs and pomegran-\nates.  The three food classes are there.  For more on this fascinating subject, \nplease see Cracking The Bible Code by Dr.  Jeffrey Satinover.  \nConsider how the Bible Code discovery mirrors the 8 most important bio-\nactive fruits of the ancient Essenes: grapes (vine), dates, olives, figs, \npomegranates, apricots, carob and small yellow apples.  The Essenes are a \nreligious group originally based in the Dead Sea region of Israel.  They are \nhistorically known for their raw-vegetarian dietary philosophy, well-developed \nwisdom and remarkable longevity.  The Essenes are still around today.  In fact, \nyour author has been involved with the Essene church since 1996."
@@ -74758,6 +74945,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "david-wolfe",
       "sunfood"
     ],
@@ -75190,7 +75378,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "after"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "Organic spinach contained 64-78% more vitamin C.  \n3.  Organic Savoy cabbage contained 76-91% more vitamin C.  \n4.  Organic crops had a dry weight (after dehydration) of 69-96% more than \nconventional crops, demonstrating a higher food-value content.  \nIn 1993, Bob Smith, a trace minerals laboratory analyst, began a sm...",
     "fullText": "222 | THE TRANSITION DIET — Organic spinach contained 64-78% more vitamin C.  \n3.  Organic Savoy cabbage contained 76-91% more vitamin C.  \n4.  Organic crops had a dry weight (after dehydration) of 69-96% more than \nconventional crops, demonstrating a higher food-value content.  \nIn 1993, Bob Smith, a trace minerals laboratory analyst, began a small exper-\niment.  For two years he visited stores in Chicago and purchased 4 to 15 \nsamples of both organic and commercial produce.  He brought these samples \nback to his laboratory and tested them for trace elements.  His conclusions were \nas follows: \n1.  Organically grown wheat had twice the calcium, four times more magne-\nsium, five times more manganese, and thirteen times more selenium than \nthe commercial wheat.  \n2.  Organically grown corn had twenty times more calcium and manganese, \nand two to five times more copper, magnesium, molybdenum, selenium and \nzinc.  \n3."
@@ -75701,7 +75890,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "etc"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "Food Combining Chart CHLOROPHYLL \nSUGARS \nFATS \nPlant or Animal Protein \nYES \nSOMETIMES \nSOMETIMES \nCruciferous Vegetables (Broccoli, etc. ) \nYES \nNO \nSOMETIMES \nNon Starchy Vegetables (Greens, etc. ) \nYES \nYES \nYES \nStarches (Baked potato, etc. ) \nYES \nNO \nSOMETIMES \nNon Sweet Fruits (Cucumber, etc. ) \nYES \nYES \nYES \n...",
     "fullText": "Food Combining Chart CHLOROPHYLL — Food Combining Chart CHLOROPHYLL \nSUGARS \nFATS \nPlant or Animal Protein \nYES \nSOMETIMES \nSOMETIMES \nCruciferous Vegetables (Broccoli, etc. ) \nYES \nNO \nSOMETIMES \nNon Starchy Vegetables (Greens, etc. ) \nYES \nYES \nYES \nStarches (Baked potato, etc. ) \nYES \nNO \nSOMETIMES \nNon Sweet Fruits (Cucumber, etc. ) \nYES \nYES \nYES \nAlkaline Fruit (Citrus, Figs, etc. ) \nYES \nYES \nYES \nSpicy Foods (Garlic, Cayenne, etc. ) \nYES \nSOMETIMES \nYES \nTHE TRANSITION DIET | 231 \nguidelines are not strict (but helpful! ) - eating should be fun.  Below, I have listed \nmy suggestions for superior food combining: \n1.  If cooked or dehydrated foods are eaten, try to eat only one type per meal \nand eat them with green vegetables.  \n2.  For beginners, fruit digests best on an empty stomach.  One may try eating \nsweet fruits with green vegetables and/or fats/oils; this is fine as long as no \ngas/flatulence is created.  Sweet fruits may be eaten with light green-leafy \nvegetables such as lettuce or mint leaves.  \n3."
@@ -75735,7 +75925,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "alkaline"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "The following fruits combine well with fat-dominant foods: bananas, apples, \ndried fruits and alkaline fruits (citrus, figs, papaya, berries).  Fat-dominant foods \ninclude: avocados, olives or olive oils, nuts, seeds or seed oils, coconuts, durian \nand raw dairy.  Combining sweet fruits and fats will allow the sugar fr...",
     "fullText": "Food Combining Chart CHLOROPHYLL — The following fruits combine well with fat-dominant foods: bananas, apples, \ndried fruits and alkaline fruits (citrus, figs, papaya, berries).  Fat-dominant foods \ninclude: avocados, olives or olive oils, nuts, seeds or seed oils, coconuts, durian \nand raw dairy.  Combining sweet fruits and fats will allow the sugar from the \nsweet fruit to be time-released, providing more long-term energy.  \n4.  If sweet fruits are eaten with cooked or steamed non-starchy vegetables \n(asparagus, cauliflower, broccoli), the fruit should be eaten first.  Combining \nsweet fruits and non-starchy cooked vegetables may allow the sugar from the \nsweet fruit to be time-released, again providing more long-term energy; this \ndoes not work for everybody.  Sweet fruits should otherwise not be mixed with \ncooked or dehydrated foods due to the potential for fermentation and gas.  \n5.  Initially, if you are very sensitive, stay with one type of sweet fruit at a time."
@@ -75769,7 +75960,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "increases"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "One may eat multiple types of sweet fruit together as the digestive strength \nincreases over weeks, months and years of eating raw plant foods.  \n6.  Green-leafy vegetables of different varieties may be eaten together.  \n7 Green-leafed vegetables should always be eaten with any cooked starches \n(bread, pasta, rice, cak...",
     "fullText": "Food Combining Chart CHLOROPHYLL — One may eat multiple types of sweet fruit together as the digestive strength \nincreases over weeks, months and years of eating raw plant foods.  \n6.  Green-leafy vegetables of different varieties may be eaten together.  \n7 Green-leafed vegetables should always be eaten with any cooked starches \n(bread, pasta, rice, cakes), except for crispy or crunchy starches (corn chips, \npotato chips, toast, popcorn), which should be eaten with fats (avocados, olives \nor their oil, young coconut, seed oils, etc. ).  Crispy or crunchy starch is very \ncoarse and harsh on the soft tissues of the body.  Fats soften the abrasive quality \nof these foods.  \n8."
@@ -76163,6 +76355,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "david-wolfe",
       "sunfood"
     ],
@@ -76330,6 +76523,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "david-wolfe",
       "sunfood"
     ],
@@ -76366,6 +76560,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "peau",
       "skin",
       "mucus",
@@ -76403,7 +76598,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "breakdown"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "For example, oranges can be eaten with avocado or apples with nuts.  \nThis simulates the gradual sugar release from the breakdown of complex carbo-\nhydrates (cooked starch) in digestion.  \nDehydrated Food \nDehydrated foods (foods heated below 118° Fahrenheit) are an excellent tool to \nhelp succeed with the raw-food app...",
     "fullText": "238 THE TRANSITION DIET — For example, oranges can be eaten with avocado or apples with nuts.  \nThis simulates the gradual sugar release from the breakdown of complex carbo-\nhydrates (cooked starch) in digestion.  \nDehydrated Food \nDehydrated foods (foods heated below 118° Fahrenheit) are an excellent tool to \nhelp succeed with the raw-food approach.  Dehydrated foods still have the enzymes \nintact and my experience has been that they do not dampen the raw-food \"high. \" \nHowever, I rarely eat dehydrated foods (except dehydrated flax crackers) and I \nimagine they could alter the raw-food \"high\" if overeaten regularly.  Many raw-food \nrecipe books describe how to make dehydrated foods.  I recommend Raw \nTransformation, Rawvolution, I Am Grateful, Raw Food Real World, and RAW: \nThe Uncook Book There are many other great recipe books on the subject.  \nFrozen Food \nGenerally, freezing food destroys anywhere from 30% to 66% of the enzymes \nin the food.  Freezing is not as damaging as cooking."
@@ -76619,7 +76815,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "sugar"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "A Candida overgrowth or another microbial/fungal imbalance of the diges-\ntive tract is occurring.  This can be overcome by an organic no-sugar, no-starch \ndiet, probiotics containing: acidophilus, bifidus and bulgaricus, supplemental \nenzymes (i. e.  Beauty Enzymes), more dietary greens, green juices, seeds, \nseaweeds,...",
     "fullText": "THE TRANSITION DI ET — A Candida overgrowth or another microbial/fungal imbalance of the diges-\ntive tract is occurring.  This can be overcome by an organic no-sugar, no-starch \ndiet, probiotics containing: acidophilus, bifidus and bulgaricus, supplemental \nenzymes (i. e.  Beauty Enzymes), more dietary greens, green juices, seeds, \nseaweeds, superfoods, grapefruit seed extract, olive leaf extract, vitamin C (from \npowdered berries), MSM powder (1-2 tablespoons per liter of water) and garlic.  \nIf one repeatedly experiences gas and fermentation from eating sweet fruit \nas a mono-diet, this could be a sign of a Candida overgrowth."
@@ -76720,7 +76917,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "contains"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "Choose dried fruit over candy.  Dried fruit is filled with natural sugar which the \nbody can recognize.  Candy contains refined sugar that the body does not \nrecognize and which acts as a powerful behavioral drug.  Eat green-leafy vegeta-\nbles with or following dried fruit to clean the teeth.  \nChoose cruelty-free, org...",
     "fullText": "The fabled queen of fruits — — Choose dried fruit over candy.  Dried fruit is filled with natural sugar which the \nbody can recognize.  Candy contains refined sugar that the body does not \nrecognize and which acts as a powerful behavioral drug.  Eat green-leafy vegeta-\nbles with or following dried fruit to clean the teeth.  \nChoose cruelty-free, organic, raw wild honey over conventional orchard \nhoney.  Because most farm bees are cruelly treated and have their honey (food) \ntaken away and replaced with sugar-water and antibiotics, I do not recommend \nconventional orchard honey.  I recommend cruelty free, organic, raw wild honey.  \nProblems with bread addiction may find relief by spreading a high quality honey \non their bread.  The enzymes (amylase in honey) will begin to predigest the \nbread starch.  \nChoose raw cacao beans (and agave nectar, raw honey or yacon root syrup) \nover cooked chocolate."
@@ -76822,6 +77020,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "foie",
       "liver"
     ],
@@ -76895,7 +77094,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "any"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "248 H \nEating For Weight Loss \nA diet of raw plant food easily takes off those unwanted pounds.  Any cooked \nfoods eaten should be properly combined.  This means that cooked starch \n(complex carbohydrates) should not be combined with cooked protein (fish, \nmeat), and any cooked foods should be eaten with a large green-...",
     "fullText": "248 H — 248 H \nEating For Weight Loss \nA diet of raw plant food easily takes off those unwanted pounds.  Any cooked \nfoods eaten should be properly combined.  This means that cooked starch \n(complex carbohydrates) should not be combined with cooked protein (fish, \nmeat), and any cooked foods should be eaten with a large green-leafy salad.  \nSpecifically target and minimize cooked fats (heated oils, pasteurized milk \nand cheese, cooked eggs, as well as fat-dominant meats, such as bacon) and \ncooked starch (bread, pasta, cakes, cookies) in the diet as they both put on the \nextra pounds.  Pizza and cooked ice cream both contain a high dosage of \ncooked starch and cooked fat, and are both particularly fattening."
@@ -76929,7 +77129,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "gain"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "Cooked fats, \ndevoid of lipase (the fat-splitting enzyme), accumulate in the body as they are \ndifficult to metabolize and this results in weight gain (raw fats, such as \nHow TO USE THE SUNFOOO TRIANGIE 249 \navocados, can actually help one lose weight as they contain lipase - which the \nbody can use to help metabolize ...",
     "fullText": "248 H — Cooked fats, \ndevoid of lipase (the fat-splitting enzyme), accumulate in the body as they are \ndifficult to metabolize and this results in weight gain (raw fats, such as \nHow TO USE THE SUNFOOO TRIANGIE 249 \navocados, can actually help one lose weight as they contain lipase - which the \nbody can use to help metabolize stores of cooked fats).  Cooked starch is essen-\ntially sugar, and if this sugar is not used as fuel, or urinated away by the body, it \nis converted to fat.  This is also true of all processed sugars including barley malt, \ncorn syrup, rice syrup and brown or white sugar which should also be avoided.  \nThe best strategy is to eat the raw fruits and vegetables that you like the best.  \nAs you progress, you will gradually decrease the amount of cooked food that \nyou are eating, and you will develop a taste for different raw, healthy fruits and \nvegetables."
@@ -76964,6 +77165,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "david-wolfe",
       "sunfood"
     ],
@@ -77032,6 +77234,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -77657,6 +77860,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "foie",
       "liver",
       "david-wolfe",
@@ -77873,6 +78077,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "david-wolfe",
       "sunfood"
     ],
@@ -78136,6 +78341,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "jeune",
       "fasting",
       "autophagie"
@@ -78172,7 +78378,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "broc"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "If \ncooked foods are eaten, they should be non-starchy vegetables (such as broc-\ncoli, cauliflower, asparagus, artichoke, etc. ).  \nSupplements that can be helpful with Candida include: olive leaf extract, \ngrapefruit seed extract, supplemental enzymes (Beauty Enzymes), MSM \n(methyl-sulfonyl-methane) powder, small amou...",
     "fullText": "264 I How TO USE THE SUM FOOD TRIANGLE — If \ncooked foods are eaten, they should be non-starchy vegetables (such as broc-\ncoli, cauliflower, asparagus, artichoke, etc. ).  \nSupplements that can be helpful with Candida include: olive leaf extract, \ngrapefruit seed extract, supplemental enzymes (Beauty Enzymes), MSM \n(methyl-sulfonyl-methane) powder, small amounts of fully-mineralized sea salt \nor rock salt, edible clays and powdered vitamin C-rich berries such as camu \ncamu berry powder.  MSM detoxifies mercury.  Mercury poisoning seems to be a \ncommon underlying factor in Candida."
@@ -78207,6 +78414,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -78326,7 +78534,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "eating"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "268 I How TO USE THE SUNFOOO TRIANCLE \nglycogen contains 27,000 units of glucose - all of which can be released at once.  \nEating For Athletics And Endurance \nI advise athletes to stay right in the center of the triangle by increasing all three \nfood classes equally.  This provides more calories to burn for endurance. ...",
     "fullText": "268 I How TO USE THE SUNFOOO TRIANCLE — 268 I How TO USE THE SUNFOOO TRIANCLE \nglycogen contains 27,000 units of glucose - all of which can be released at once.  \nEating For Athletics And Endurance \nI advise athletes to stay right in the center of the triangle by increasing all three \nfood classes equally.  This provides more calories to burn for endurance.  More \nsweet fruit, more fat, more green-leafed vegetables.  Instead of \"carbo-loading\" \n(loading up on cooked starch, such as pasta, bread, and baked potatoes), the \nathlete should be loading up on a wide variety of agreeable, nutrient-rich raw \nfoods and superfoods for several days leading up to the event.  From my experi-\nence with surfing, I have noted that pumpkin seeds, in particular, provide excellent \nendurance fuel for me.  Sweet fruits should be eaten regularly throughout compe-\ntition to keep the blood sugar up.  If the blood sugar bottoms out, the athlete can \nlose mental poise and quickly experience fatigue."
@@ -78906,6 +79115,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "david-wolfe",
       "sunfood"
     ],
@@ -78941,7 +79151,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "friend"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "Cherries are the richest, natural source of melatonin. \nLocate cherries on the CaPNaK chart! \nI recommend the book, Whole Foods Companion. It is written by my friend \nDianne Onstad, whom I first met while doing research at the Price-Pottenger \nNutrition Foundation many years ago. It is a wonderful book, and the best I ...",
     "fullText": "Cherries are the richest, natural source of melatonin. — Cherries are the richest, natural source of melatonin. \nLocate cherries on the CaPNaK chart! \nI recommend the book, Whole Foods Companion. It is written by my friend \nDianne Onstad, whom I first met while doing research at the Price-Pottenger \nNutrition Foundation many years ago. It is a wonderful book, and the best I \nhave seen in the field. \nSAPOTY BROOK'S CaPNaK CHART \n1 Review the CaPNaK chart. Gain understanding in its use. \n2 Memorize the locations of your favorite foods. \n3 Use the chart to balance foods in your diet. \n4 Sapoty Brook's Eco-Eating book is difficult to obtain, but his Eco-Eating \nDVD and CD are quite informative. A poster-size version of his chart is \nalso available. \n—"
@@ -79011,6 +79222,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "foie",
       "liver"
     ],
@@ -79375,7 +79587,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "should"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "206\" \nchilies, papayas, peaches, tomatoes, tomatilloes, olives, white sapotes and \nothers.  \nA good quality citrus fruit should contain 14-15 seeds, even if the fruit is small \nin size.  The more seeds in citrus, the better.  The less seeds in citrus, the more \nhybridized or grafted is the strain.  After you purchase o...",
     "fullText": "chilies, papayas, peaches, tomatoes, tomatilloes, olives, white sapotes and — 206\" \nchilies, papayas, peaches, tomatoes, tomatilloes, olives, white sapotes and \nothers.  \nA good quality citrus fruit should contain 14-15 seeds, even if the fruit is small \nin size.  The more seeds in citrus, the better.  The less seeds in citrus, the more \nhybridized or grafted is the strain.  After you purchase or pick them, keep citrus \nfruits in Sunlight or on the windowsill so they remain at their maximum nutritive \nvalue and quality.  The more ripe and Sun-exposed the citrus fruits, the sweeter \nand less acidic are its contents.  \nCommon vegetables which are close to the wild state and/or are extremely \nviable when grown from seed include: dandelion, garlic, kale, lamb's quarters, \nmalva, mint, mustard, onions, watercress, wintercress and others.  \nOne of my favorite wild foods is malva (mallow).  Malva seems to love growing \non the outskirts of civilization - in canyons, back alleys and back yards."
@@ -79409,7 +79622,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "incredible"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "Malva \nis one of those phenomenal greens that tastes incredible when eaten alone.  In \nthe winter I typically start off the morning with fruit blended with superfoods, \nthen eat malva for lunch and have a salad with some raw plant fats for dinner \nalong with vegetable juice.  \nCommon nuts and seeds which are close to t...",
     "fullText": "chilies, papayas, peaches, tomatoes, tomatilloes, olives, white sapotes and — Malva \nis one of those phenomenal greens that tastes incredible when eaten alone.  In \nthe winter I typically start off the morning with fruit blended with superfoods, \nthen eat malva for lunch and have a salad with some raw plant fats for dinner \nalong with vegetable juice.  \nCommon nuts and seeds which are close to the wild state and/or are \nextremely viable when grown from seed include: coconut, macadamia, quinoa \nand sunflower.  \n \nmineral-rich, wild, raw plant food, one stands ready to experience outstanding \nlevels of clarity, compassion, vitality, health and connection with nature.  \nBrian Clement, director of Hippocrates Health Institute in West Palm Beach, \nFlorida, has reported that, based on his research, wild greens have the highest \nenergy frequency of any food.  I have experienced their energy first-hand by \neating plenty of wild green salads.  They send me into a new plane of thought."
@@ -80390,6 +80604,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "plantes",
       "pharmacopee"
     ],
@@ -81025,7 +81240,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "eating"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "It is my \nbest approximation based on years of research and experience.  As long \nas we are conscious about our food choices, eating organic, mineral-rich \nraw food and seeking out that perfect health balance, we are making \nprogress.  An 80% raw plant diet seems to be a more workable approach \nto more people and is, i...",
     "fullText": "320 ioo% RAW — It is my \nbest approximation based on years of research and experience.  As long \nas we are conscious about our food choices, eating organic, mineral-rich \nraw food and seeking out that perfect health balance, we are making \nprogress.  An 80% raw plant diet seems to be a more workable approach \nto more people and is, in fact, enough to save the planet.  \n3) They require more education on the subject.  They don't realize the \nimportance of eating 100% raw plant foods and the magic in it.  \n4) They simply are not serious.  They talk, but never do.  They want to \nmake an improvement in their life, but they are not willing to make the \nnecessary effort.  \n5) They don't know how; they are confused by conflicting opinions on \ndiet.  They don't understand the idea of eating 100% raw plant food.  \n6) They haven't accepted 100% responsibility for their lives and their \nhealth, happiness and longevity.  They don't feel they are worthy enough to \nbe extraordinarily healthy."
@@ -81427,7 +81643,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "raw"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "\" — Hindu pTOVtrb \nThe yield, strength and mineral content of raw plant foods - whether they are \ncommercial, organic or wild - is improved by remineralization, Remineralization \nis the process of loading the soil with crushed and pulverized rocks which \nrestore the full spectrum of mineral elements.  The soil microbes...",
     "fullText": "Mineral trade-out signals to you that a deep cleaning and healing of the body — \" — Hindu pTOVtrb \nThe yield, strength and mineral content of raw plant foods - whether they are \ncommercial, organic or wild - is improved by remineralization, Remineralization \nis the process of loading the soil with crushed and pulverized rocks which \nrestore the full spectrum of mineral elements.  The soil microbes, earthworms \nand plant roots are directly nourished by an abundance of soil minerals.  \nThe research is in with soil expert and raw-foodist Don Weaver.  Don Weaver \nhas demonstrated conclusively in the book, The Survival Of Civilization, which \nhe co-authored with John Hamaker, that plants and trees depend far more on \nthe soil and its mineral content than they depend on climate to produce high \nquality leaves and fruits.  \nInsects always infest trees and other plants (as pathogens invade people) \nthat are weakened by malnutrition and no longer have resistance to their natural \nenemies."
@@ -82083,6 +82300,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "peau",
       "skin"
     ],
@@ -82232,6 +82450,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "peau",
       "skin",
       "david-wolfe",
@@ -83552,7 +83771,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "you"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "But when they advance towards it, they are struck by a bombardment of contra-\ndictory information and negativity that stumbles them.  This is the test you must \npass to achieve success.  Napoleon Hill discovered in researching his Laws Of \nSuccess that the greatest achievers he interviewed found their greatest \nsuccess...",
     "fullText": "THE INVERSE PARANOID — But when they advance towards it, they are struck by a bombardment of contra-\ndictory information and negativity that stumbles them.  This is the test you must \npass to achieve success.  Napoleon Hill discovered in researching his Laws Of \nSuccess that the greatest achievers he interviewed found their greatest \nsuccesses just beyond their greatest failures.  So, even following an enormous \nperceived failure, keep yourself in a state of total resourcefulness and you will \neventually succeed.  Success lies on the far side of failure.  \nThere is one unbeatable rule for mastering frustrations and disappointments, \nand that is to accept the lesson learned and continue to work diligently and \nintently towards one's goals.  Use strong emotions, whether positive or negative, \nto inspire the creation of ideas through your imagination, then take action upon \nthose ideas.  \nYou are in control.  You either make yourself miserable, or you make yourself \nstrong.  The amount of work is the same."
@@ -83782,7 +84002,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "region"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "The cleaner the body, the purer the instinct; instinct is infinite \nintelligence working through the living being.  \nBased on studies of the neocortex region of the brain, researchers at Stanford \nUniversity concluded the average person uses only about 2 percent of her or his \nmental powers!  Why are so few people tapp...",
     "fullText": "TAPPING INFINITE INTELLIGENCE — The cleaner the body, the purer the instinct; instinct is infinite \nintelligence working through the living being.  \nBased on studies of the neocortex region of the brain, researchers at Stanford \nUniversity concluded the average person uses only about 2 percent of her or his \nmental powers!  Why are so few people tapping their mental abilities?  Perhaps it \nis because they are constantly poisoning themselves with improper foods, asso-\nciations, thought patterns and ideas.  When you clean away the poison, you open \nup dormant areas of your brain capacity.  Your true potential is vast."
@@ -85167,7 +85388,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "filled"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "The dictated cry, that: \n\"Thin is in\" \nCan never bring forth \nThe beauty within. \n\"Fat's where it's at!\" \nSays the tribal man. \nA filled luscious body \nIs Nature's plan. \nSensual compassion \nThe Avocado transition; \nThe jungle fruit \nHas come to fruition. \nThe searching masses \nWith food to burn \nPerhaps one day \nWill ...",
     "fullText": "The dictated cry, that: — The dictated cry, that: \n\"Thin is in\" \nCan never bring forth \nThe beauty within. \n\"Fat's where it's at!\" \nSays the tribal man. \nA filled luscious body \nIs Nature's plan. \nSensual compassion \nThe Avocado transition; \nThe jungle fruit \nHas come to fruition. \nThe searching masses \nWith food to burn \nPerhaps one day \nWill listen then learn \nThat the golden secret \nOf El Dorado \nMay be found within \nThe Avocado."
@@ -88087,7 +88309,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "build"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "500 \nPOETRY \nThe desire for life, \nA cosmic imperium \nBegins a thought seeking: \nMind-world dominion. \nYou are the sculptor, \nYou build the worlds. \nFrom the font of a thought \nYour destiny unfurls. \nThe gehenna fire \nThe cosmic joke. \nDisintegrate now \nIts plume of smoke. \nExtinguish the fire \nIn which life burns; \nRe...",
     "fullText": "POETRY — 500 \nPOETRY \nThe desire for life, \nA cosmic imperium \nBegins a thought seeking: \nMind-world dominion. \nYou are the sculptor, \nYou build the worlds. \nFrom the font of a thought \nYour destiny unfurls. \nThe gehenna fire \nThe cosmic joke. \nDisintegrate now \nIts plume of smoke. \nExtinguish the fire \nIn which life burns; \nRelease pain's liar \nFrom whom one learns. \nHow many times \nWill you rise from the ashes? \nWith each death, \nThe Phoenix flashes: \nThe perception brighter, \nThe mind more alive, \nSensitive, elastic, \nA new call to thrive. \nDragon Mistress, \nThe ancient quest, \nPut down the flame, \nFor massive success. \nSELECTED POETRY \n507 \nAbundant life of \nArchaic Earth \nNow undergoes \nA Gothic rebirth. \nArchitect of archetypes \nIn the mind-world array. \nActualize your form \nTomorrow is today. \nIt's Twilight in Olympus. \nA mystic rage for order \nMagic-moment chaos: \nThe You World Order. \nIt's a trial by fire. \nNone excepted \nWho will pass? \nEach is tested. \nThe cosmic law: \nOf paradox shifting, \nThat which destroys \nIs also uplifting. \nThe flaming wings of divine tragedy. \nCan uplift you to a soaring Majesty. \nIt's the ineffable truth, \nThe eternal test, \nThat fire captures \nAll but the best."
@@ -88396,6 +88619,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "david-wolfe",
       "sunfood"
     ],
@@ -88577,6 +88801,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "jeune",
       "fasting",
       "autophagie",
@@ -88656,6 +88881,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "jeune",
       "fasting",
       "autophagie",
@@ -88735,6 +88961,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "david-wolfe",
       "sunfood"
     ],
@@ -88809,6 +89036,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "jeune",
       "fasting",
       "autophagie"
@@ -89065,6 +89293,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "jeune",
       "fasting",
       "autophagie"
@@ -92418,7 +92647,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "use"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "PERMISSIONS | 585 \nPERMISSIONS \nThe author and publisher wish to express thanks and appreciation to those listed \nbelow who granted permission to use the following material: \nAvery Publishing Croup for permission to quote from Enzyme Nutrition by Edward \nHowell, (c) 1985; published by Avery Publishing Croup, Inc. , Gar...",
     "fullText": "PERMISSIONS | 585 — PERMISSIONS | 585 \nPERMISSIONS \nThe author and publisher wish to express thanks and appreciation to those listed \nbelow who granted permission to use the following material: \nAvery Publishing Croup for permission to quote from Enzyme Nutrition by Edward \nHowell, (c) 1985; published by Avery Publishing Croup, Inc. , Garden City Park, New \nYork; (800) 548-5757.  \nCampbell Thomson & McLaughlin Ltd.  for permission outside of the United States \nand Canada to quote from Shattering The Myths Of Darwinism by Richard Milton.  \nChelsea Green Publishing Company for permission to quote from Whole Foods \nCompanion by Diane Onstad.  \nDell Books for permission to quote from Illusions by Richard Bach.  \nEssence Of Health for permission to quote from Fruit The Food And Medicine For Man \nand Diet, Health and Living on Air.  \nHealth Research for permission to quote from Man's Higher Consciousness by \nProfessor Hilton Hotema."
@@ -92686,7 +92916,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "264"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "5\"i 5'3 \ncooked food and the environment, 89 \ncooked grains, 189 \ncooked starches, 164, 194, 231, 238, 239, 248, 250, \n264, 266, 268,514, 515, 516, 517, 519,525 \ncooling the body (eating to cool), 100, 272 \nCordyceps mushroom, 81 \ncorn, 89,187,189, 196, 223, 231, 238, 243, 249, \n259, 280, 289, 290, 306, 334, 508,515, 5...",
     "fullText": "INDEX — 5\"i 5'3 \ncooked food and the environment, 89 \ncooked grains, 189 \ncooked starches, 164, 194, 231, 238, 239, 248, 250, \n264, 266, 268,514, 515, 516, 517, 519,525 \ncooling the body (eating to cool), 100, 272 \nCordyceps mushroom, 81 \ncorn, 89,187,189, 196, 223, 231, 238, 243, 249, \n259, 280, 289, 290, 306, 334, 508,515, 516,519, \n554 \ncorn syrup, 187, 249, 259,508 \ncosmic laws, 2, 364,392,398, 404, 460, 492, \n494.  495.  497, 499.  501 \nCosmic Pepperman's Raw Chocolate Chip Mint \nIce Cream, 537,539 \nCousens, Dr.  Gabriel, 86,134,178, 255, 264, 300, \n303 \ncows, 96,116,117,135,183,198,335,509 \nCracking The Bible Code, 211 \ncravings, 181, 236, 240, 280,551,552 \ncribriform plate, 349 \ncruciferous vegetables, 232, 233, 270,553,554 \nCrystal Energy, 311 \ncucumbers, 178,189, 204, 207, 210, 232, 233, 249, \n268, 272, 335, 408, 433,507,514,515,516,517,518, \n520,522,523,524,525,526,527,529,531,532,541, \n542,544."
@@ -93169,7 +93400,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "330"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "59^ I INDEX \n289, 290,293,295, 298, 299,301,303,312,313, \n316,325, 329, 330, 331, 339,340,359- 360,384, \n399, 409,504,509,548,583, 605, 606 \nplants (house), 313, 348 \nplastic, 196,311 \npleomorphic organisms, 140 \nPlutarch, 211 \nPMS (pre-menstrual syndrome), 261,551,552 \npneumonia, 146,301 \npoetry (selected), 79, 155, 4...",
     "fullText": "59^ I INDEX — 59^ I INDEX \n289, 290,293,295, 298, 299,301,303,312,313, \n316,325, 329, 330, 331, 339,340,359- 360,384, \n399, 409,504,509,548,583, 605, 606 \nplants (house), 313, 348 \nplastic, 196,311 \npleomorphic organisms, 140 \nPlutarch, 211 \nPMS (pre-menstrual syndrome), 261,551,552 \npneumonia, 146,301 \npoetry (selected), 79, 155, 477 \npollen, 40, 188, 189, 202, 232, 252, 257, 258, 268, \n291, 295, 308,325, 408, 410, 517, 523."
@@ -93725,6 +93957,7 @@ export const MEDIA_SEARCH_DATABASE = [
       "vision",
       "eyes",
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif"
@@ -93998,6 +94231,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "plantes",
       "pharmacopee",
       "david-wolfe",
@@ -94170,7 +94404,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "enhance"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "This site was created to give you immeciate access \nto leading edge information to help you instantly enhance the quality of your life.  \nThis is the first time in the history of my career as a peak-performance \nconsultant that I've packaged together so many compelling, life-changing \nprograms into one jam-packed websi...",
     "fullText": "608 | THEBESTDAYEVER.COM — This site was created to give you immeciate access \nto leading edge information to help you instantly enhance the quality of your life.  \nThis is the first time in the history of my career as a peak-performance \nconsultant that I've packaged together so many compelling, life-changing \nprograms into one jam-packed website.  Nothing like this website is available on \nthe internet.  This is truly a one-of-a-kind phenomenon.  The future is now!  \nwww. thebestdayever. com is constantly updated.  This is an ever-growing \nresource for you and your whole family to enjoy.  \nTHEBESTDAyEvER. coM I 609 \nIf you are inspired to achieve an exceptional state of health, success, beauty, \nfitness, awareness, joy, sensuality, accomplishment, peak performance and most \nimportant fun then these Peak-Performance Archives are for you!  \nCheck it out and HAVE THE BEST DAY EVER!!!  \nwww. thebestdayever."
@@ -94701,6 +94936,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret",
       "jeune",
@@ -94845,6 +95081,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret",
       "jeune",
@@ -94960,6 +95197,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret",
       "jeune",
@@ -95116,6 +95354,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -95498,6 +95737,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -95574,6 +95814,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -95813,6 +96054,7 @@ export const MEDIA_SEARCH_DATABASE = [
       "vision",
       "eyes",
       "colite",
+      "colitis",
       "peau",
       "skin"
     ],
@@ -95849,6 +96091,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "jeune",
       "fasting",
       "autophagie"
@@ -96190,6 +96433,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret"
     ],
@@ -96264,6 +96508,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret",
       "jeune",
@@ -96303,6 +96548,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret",
       "jeune",
@@ -96528,6 +96774,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -96888,6 +97135,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret"
     ],
@@ -96960,6 +97208,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret",
       "jeune",
@@ -97184,6 +97433,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret"
     ],
@@ -98206,6 +98456,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "jeune",
       "fasting",
       "autophagie"
@@ -98586,6 +98837,7 @@ export const MEDIA_SEARCH_DATABASE = [
       "vision",
       "eyes",
       "colite",
+      "colitis",
       "jeune",
       "fasting",
       "autophagie"
@@ -98773,6 +99025,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret",
       "jeune",
@@ -99280,6 +99533,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "jeune",
       "fasting",
       "autophagie",
@@ -99407,6 +99661,7 @@ export const MEDIA_SEARCH_DATABASE = [
       "vision",
       "eyes",
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -99491,6 +99746,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "jeune",
       "fasting",
       "autophagie"
@@ -99528,6 +99784,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -99959,6 +100216,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret",
       "jeune",
@@ -100763,6 +101021,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret"
     ],
@@ -100837,6 +101096,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret",
       "jeune",
@@ -100993,6 +101253,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -101430,6 +101691,7 @@ export const MEDIA_SEARCH_DATABASE = [
       "vision",
       "eyes",
       "colite",
+      "colitis",
       "mucus",
       "ehret"
     ],
@@ -101466,6 +101728,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret",
       "jeune",
@@ -101681,6 +101944,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret",
       "jeune",
@@ -101719,7 +101983,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "potatoes"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "Out of a single\nfig you will get more nutritive value than out of\none pound of bread, rice or potatoes.  Milk and\nstarchy foods are the stumbling block for the\nvegetarian glutton.  Dried beans, peas and lentils are\ncausing just as much gout and rheumatism as meat,\non account of their high percentage of albumen. \nLess h...",
     "fullText": "APPENDIX — Out of a single\nfig you will get more nutritive value than out of\none pound of bread, rice or potatoes.  Milk and\nstarchy foods are the stumbling block for the\nvegetarian glutton.  Dried beans, peas and lentils are\ncausing just as much gout and rheumatism as meat,\non account of their high percentage of albumen. \nLess harmful and more nutritious are all green\nvegetables, because they contain valuable mineral\nsalts.  I use those as a stepping stone to the highest,\nwhich is a fruit diet."
@@ -101906,6 +102171,7 @@ export const MEDIA_SEARCH_DATABASE = [
       "vision",
       "eyes",
       "colite",
+      "colitis",
       "jeune",
       "fasting",
       "autophagie"
@@ -102760,7 +103026,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "centrally"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "In the whole scale of living animal organisms up\nto and including man, I am located in the center, at\nthe point of gravity.  To methe Stomachbelongs\nthis centrally-located place; for I am the single\nbuilding spot; the organized working apparatus for\nraw material, and, at the same time, the master-\nbuilder.  I get my or...",
     "fullText": "APPENDIX — In the whole scale of living animal organisms up\nto and including man, I am located in the center, at\nthe point of gravity.  To methe Stomachbelongs\nthis centrally-located place; for I am the single\nbuilding spot; the organized working apparatus for\nraw material, and, at the same time, the master-\nbuilder.  I get my orders thru' the brainthe chief\nmanagementas unconscious instincts, from the\nworld's architect."
@@ -103078,6 +103345,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "peau",
       "skin",
       "jeune",
@@ -103117,6 +103385,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -103227,6 +103496,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "jeune",
       "fasting",
       "autophagie"
@@ -103415,6 +103685,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -103591,6 +103862,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif"
@@ -104305,6 +104577,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret"
     ],
@@ -104340,7 +104613,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "good"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "If an average meat\neater or a child fed mostly on starchy foods acci-\ndentally eats too freely of good, sweet fruits, a\n\"revolution\" in the alimentary canal, with diarrhea\nusually sets in (extreme cases are called dysentery\ncholera), and fever is caused through the increased\nfermentation. \nIn severe cases, if a doctor ...",
     "fullText": "APPENDIX — If an average meat\neater or a child fed mostly on starchy foods acci-\ndentally eats too freely of good, sweet fruits, a\n\"revolution\" in the alimentary canal, with diarrhea\nusually sets in (extreme cases are called dysentery\ncholera), and fever is caused through the increased\nfermentation. \nIn severe cases, if a doctor stops the diarrhea and\nfeeds, as is usually the procedure, the patient dies,\nbecause nature was kept from accomplishing the\ncleansing process, and the partly dissolved poisons\nremain in the system, causing death. \nThe patient literally suffocates in his own mire of\nfilth, accumulated during his life from wrong food\nmaterial and over-eating."
@@ -104526,6 +104800,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret",
       "jeune",
@@ -104685,6 +104960,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -104969,6 +105245,7 @@ export const MEDIA_SEARCH_DATABASE = [
       "vision",
       "eyes",
       "colite",
+      "colitis",
       "mucus",
       "ehret"
     ],
@@ -106219,7 +106496,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "singled"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "Self sympathy leads the\nsick one to mentally question the fairness of a divine omnipotence for being singled out\namong thousands of other sinners, some of whom are personally known to be much\ngreater “violators of man-made laws” recognized by the church as sins and yet permitted\nto go unpunished by an avenging God.  Th...",
     "fullText": "of specific ailments unnecessary. — Self sympathy leads the\nsick one to mentally question the fairness of a divine omnipotence for being singled out\namong thousands of other sinners, some of whom are personally known to be much\ngreater “violators of man-made laws” recognized by the church as sins and yet permitted\nto go unpunished by an avenging God.  The sins against Nature are inexcusable and the\ninevitable law of compensation must be met by everyone.  No pleading of “ignorance” is\nacceptable to Nature, a discontinuance of the wrong habits is the only method of\nexpiation!  It is extremely difficult to concentrate when suffering pain, hence the\nnecessity for re-educating your mind and brain while enjoying good health, rather than\nwaiting until you become ill.  You must learn how to operate the law of good health\nconstructively so that you may be prepared to face the unexpected foe, prepared for any\nemergency. \nWe need health and must have it in order to make the most of life here and now."
@@ -106476,6 +106754,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "jeune",
       "fasting",
       "autophagie"
@@ -106727,6 +107006,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "jeune",
       "fasting",
       "autophagie"
@@ -107008,6 +107288,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "jeune",
       "fasting",
       "autophagie"
@@ -107335,6 +107616,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret"
     ],
@@ -107482,6 +107764,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret",
       "jeune",
@@ -108142,7 +108425,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "general"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "The Diagnosis (Continued)\nLESSON IV. \nFat and Lean Types\nThe bodily mechanism of the fat type is, on the average, mechanically more\nobstructed, because he is in general an overeater of starchy foods.  In the lean type there\nis more physiological chemical interference with the organism, such as one being in\ngeneral a on...",
     "fullText": "The Diagnosis (Continued) — The Diagnosis (Continued)\nLESSON IV. \nFat and Lean Types\nThe bodily mechanism of the fat type is, on the average, mechanically more\nobstructed, because he is in general an overeater of starchy foods.  In the lean type there\nis more physiological chemical interference with the organism, such as one being in\ngeneral a one-sided meat eater, which condition produces especially, much acidity, uric\nacid, other poisons and pus. \nDisease Story\nAs a general rule I ask my prospective patients the following questions as the\nknowledge to be gained is of great importance:\n1.  How long have you been sick? \n2.  What did the doctor call your disease? \n3.  What was the nature of the treatment? \n4.  How much and what kinds of treatment taken? \n5.  Have you ever been operated upon? \n6.  What other kinds of treatment have you taken before? \n(Age, sex, whether a disease is inherited, etc. , are important points."
@@ -108596,6 +108880,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret",
       "jeune",
@@ -108635,6 +108920,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -109826,6 +110112,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret",
       "jeune",
@@ -110063,7 +110350,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "live"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "The reason a “one-sided” meat-eater can live a relatively longer, certain time than the\nvegetarian “starch-eater” is easy to understand after having learned Lesson 5.  The first\none produces less solid obstructions by smaller quantities of meat-foods than the starch\n“over-eater” but his later diseases are more dangerou...",
     "fullText": "vegetarian “starch-eater” is easy to understand after having learned Lesson 5. — The reason a “one-sided” meat-eater can live a relatively longer, certain time than the\nvegetarian “starch-eater” is easy to understand after having learned Lesson 5.  The first\none produces less solid obstructions by smaller quantities of meat-foods than the starch\n“over-eater” but his later diseases are more dangerous because he accumulates more\npoisons, pus and uric acid. \nIf you know the truth about human nourishment—and you are going to learn it later—\nyou will be amused to note how the physiologists grope in darkness—how they made up\na standard quantity of necessary albumen for the average man, which standard, by the\nway, is slowly getting smaller.  They, and even advanced “diet experts”, estimate without\nknowing the great unknown, i. e. , the waste in the human body.  For thousands of previous\nyears man has lived healthier without food value formulas and I doubt very much if a\nsingle one of these physiologists ever gave his “chef” a suggestion of food values."
@@ -110098,6 +110386,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret"
     ],
@@ -110133,7 +110422,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "factor"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "If nitrogen, the essential part of protein, is an important factor to keep the human\nmachine running, if vitality depends at all from nitrogen, then it seems to me that under\nthese ideal conditions nitrogen is assimilated from the air. \nFood from the Infinite!  “P” (power) as a source of nourishment!  What tremendous\np...",
     "fullText": "vegetarian “starch-eater” is easy to understand after having learned Lesson 5. — If nitrogen, the essential part of protein, is an important factor to keep the human\nmachine running, if vitality depends at all from nitrogen, then it seems to me that under\nthese ideal conditions nitrogen is assimilated from the air. \nFood from the Infinite!  “P” (power) as a source of nourishment!  What tremendous\npossibilities!  I suggest that you read Lesson 5 over again, and you will realize these two\nfacts:\n1.  The truth about human nourishment is still a “book with seven seals” to all\nmankind, all so-called diet experts and scientific experts included. \n2.  The error of high protein foods as a necessity of health, taught and suggested by\nmedical doctrines to mankind is in its consequences and in its effect just the\nopposite of what it should be, it is one of the main and general causes of all\ndisease; it is the most tragical phenomena of western degeneration."
@@ -110167,7 +110457,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "destructive"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "It produced\nat the same time the most dangerous, most destructive habit of gluttony; it\nproduced the greatest madness ever imposed on mankind, that is, to endeavor to\nheal a disease by eating more, and especially more high protein foods.  It is\nbeyond possibility to express in words what the error of high protein foods...",
     "fullText": "vegetarian “starch-eater” is easy to understand after having learned Lesson 5. — It produced\nat the same time the most dangerous, most destructive habit of gluttony; it\nproduced the greatest madness ever imposed on mankind, that is, to endeavor to\nheal a disease by eating more, and especially more high protein foods.  It is\nbeyond possibility to express in words what the error of high protein foods\nmeans.  Let me remind you that Medicine claims as the father of Medicine that\ngreat dietitian Hippocrates, who said: “The more you feed a sick person the\nmore you harm him”; also: “Your food shall be your remedies and your\nremedies your food”."
@@ -110234,6 +110525,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret"
     ],
@@ -110412,6 +110704,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret",
       "jeune",
@@ -111331,6 +111624,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret"
     ],
@@ -111475,6 +111769,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -111514,6 +111809,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret"
     ],
@@ -111627,6 +111923,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret",
       "jeune",
@@ -111981,6 +112278,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret"
     ],
@@ -112370,6 +112668,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -112966,6 +113265,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret"
     ],
@@ -113040,6 +113340,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret"
     ],
@@ -114403,6 +114704,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -114445,6 +114747,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret"
     ],
@@ -114594,6 +114897,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -114712,6 +115016,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -115168,6 +115473,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret",
       "plantes",
@@ -116416,7 +116722,8 @@ export const MEDIA_SEARCH_DATABASE = [
       "exercises"
     ],
     "topics": [
-      "colite"
+      "colite",
+      "colitis"
     ],
     "excerpt": "Exhale breath when relaxed.  Repeat this exercise slowly five times,\nand gradually increase to 20 times. \nDo not exhaust yourself in any of the exercises.  If the exercises make you stiff at first\nit is a sure sign that you needed them, and that they are doing you good.  The soreness\nwill soon wear off if you continue ...",
     "fullText": "Exercise No. — Exhale breath when relaxed.  Repeat this exercise slowly five times,\nand gradually increase to 20 times. \nDo not exhaust yourself in any of the exercises.  If the exercises make you stiff at first\nit is a sure sign that you needed them, and that they are doing you good.  The soreness\nwill soon wear off if you continue the exercises persistently.  You may add other\nexercises to these, but be sure they have the deep breathing.  Play your phonograph when\nexercising.  Any snappy march piece will do.  The vibrations from the music are\nwonderful.  It is preferable to exercise the first thing in the morning—immediately upon\narising.  If clothing is worn it should be loose.  Start with a few at first and gradually\nincrease, but above all things, do not consider it a duty, but put fun into them."
@@ -116673,6 +116980,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret",
       "jeune",
@@ -116750,6 +117058,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret"
     ],
@@ -117002,6 +117311,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "dr-sebi",
       "bio-electrique"
     ],
@@ -117038,6 +117348,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -117079,6 +117390,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "plantes",
       "pharmacopee",
       "dr-sebi",
@@ -117117,6 +117429,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "plantes",
       "pharmacopee",
       "dr-sebi",
@@ -117155,6 +117468,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "plantes",
       "pharmacopee",
       "dr-sebi",
@@ -117193,6 +117507,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "plantes",
       "pharmacopee"
     ],
@@ -117229,6 +117544,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "plantes",
       "pharmacopee"
     ],
@@ -118087,7 +118403,6 @@ export const MEDIA_SEARCH_DATABASE = [
       "cysts"
     ],
     "topics": [
-      "crohn",
       "lymphe",
       "lymphatic",
       "mucus",
@@ -118535,6 +118850,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "plantes",
       "pharmacopee"
     ],
@@ -118571,6 +118887,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "plantes",
       "pharmacopee",
       "plantes",
@@ -118659,6 +118976,7 @@ export const MEDIA_SEARCH_DATABASE = [
       "vision",
       "eyes",
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -118705,6 +119023,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -118752,6 +119071,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -118798,6 +119118,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -118843,6 +119164,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "mucus",
       "ehret",
       "plantes",
@@ -118884,6 +119206,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "plantes",
       "pharmacopee",
       "plantes",
@@ -118923,6 +119246,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -118967,6 +119291,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -119011,6 +119336,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -119058,6 +119384,7 @@ export const MEDIA_SEARCH_DATABASE = [
       "vision",
       "eyes",
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -119100,6 +119427,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "foie",
       "liver",
       "peau",
@@ -119143,6 +119471,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -119192,6 +119521,7 @@ export const MEDIA_SEARCH_DATABASE = [
       "vision",
       "eyes",
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -119238,6 +119568,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "poumons",
       "respiration",
       "peau",
@@ -119281,6 +119612,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "lymphe",
       "lymphatic",
       "peau",
@@ -119324,6 +119656,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -119369,6 +119702,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "plantes",
       "pharmacopee",
       "plantes",
@@ -119411,6 +119745,7 @@ export const MEDIA_SEARCH_DATABASE = [
       "vision",
       "eyes",
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -119455,6 +119790,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -119499,6 +119835,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -119541,6 +119878,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -119583,6 +119921,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "plantes",
       "pharmacopee",
       "plantes",
@@ -119622,6 +119961,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -119666,6 +120006,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -119710,6 +120051,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -119752,6 +120094,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -119797,6 +120140,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "foie",
       "liver",
       "plantes",
@@ -119838,6 +120182,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -119884,6 +120229,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -119926,6 +120272,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -119968,6 +120315,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -120012,6 +120360,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -120054,6 +120403,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "foie",
       "liver",
       "plantes",
@@ -120095,6 +120445,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -120137,6 +120488,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -120181,6 +120533,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -120223,6 +120576,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "plantes",
       "pharmacopee",
       "plantes",
@@ -120262,6 +120616,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -120308,6 +120663,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -120352,6 +120708,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -120399,6 +120756,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "plantes",
       "pharmacopee",
       "plantes",
@@ -120438,6 +120796,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -120480,6 +120839,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -120527,6 +120887,7 @@ export const MEDIA_SEARCH_DATABASE = [
       "vision",
       "eyes",
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -120571,6 +120932,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "plantes",
       "pharmacopee",
       "plantes",
@@ -120610,6 +120972,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "foie",
       "liver",
       "poumons",
@@ -120655,6 +121018,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "plantes",
       "pharmacopee",
       "plantes",
@@ -120697,6 +121061,7 @@ export const MEDIA_SEARCH_DATABASE = [
       "vision",
       "eyes",
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -120739,6 +121104,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -120783,6 +121149,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "plantes",
       "pharmacopee",
       "plantes",
@@ -120822,6 +121189,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -120864,6 +121232,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -120906,6 +121275,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -120950,6 +121320,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -121003,6 +121374,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -121047,6 +121419,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -121092,6 +121465,7 @@ export const MEDIA_SEARCH_DATABASE = [
       "vision",
       "eyes",
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -121136,6 +121510,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -121178,6 +121553,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -121225,6 +121601,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -121269,6 +121646,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "plantes",
       "pharmacopee",
       "plantes",
@@ -121308,6 +121686,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -121354,6 +121733,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -121400,6 +121780,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -121444,6 +121825,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -121486,6 +121868,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -121528,6 +121911,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -121573,6 +121957,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -121617,6 +122002,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "plantes",
       "pharmacopee",
       "plantes",
@@ -121656,6 +122042,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -121704,6 +122091,7 @@ export const MEDIA_SEARCH_DATABASE = [
       "vision",
       "eyes",
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -121750,6 +122138,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "plantes",
       "pharmacopee",
       "plantes",
@@ -121789,6 +122178,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -121831,6 +122221,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -121873,6 +122264,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -121920,6 +122312,7 @@ export const MEDIA_SEARCH_DATABASE = [
       "vision",
       "eyes",
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -121966,6 +122359,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "plantes",
       "pharmacopee",
       "plantes",
@@ -122005,6 +122399,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -122047,6 +122442,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -122089,6 +122485,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -122136,6 +122533,7 @@ export const MEDIA_SEARCH_DATABASE = [
       "vision",
       "eyes",
       "colite",
+      "colitis",
       "plantes",
       "pharmacopee",
       "plantes",
@@ -122175,6 +122573,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -122222,6 +122621,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -122269,6 +122669,7 @@ export const MEDIA_SEARCH_DATABASE = [
       "vision",
       "eyes",
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -122313,6 +122714,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "plantes",
       "pharmacopee",
       "plantes",
@@ -122352,6 +122754,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -122394,6 +122797,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -122436,6 +122840,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "peau",
       "skin",
       "plantes",
@@ -122480,6 +122885,7 @@ export const MEDIA_SEARCH_DATABASE = [
       "vision",
       "eyes",
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -122524,6 +122930,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -122570,6 +122977,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -122617,6 +123025,7 @@ export const MEDIA_SEARCH_DATABASE = [
       "vision",
       "eyes",
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -122661,6 +123070,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "plantes",
       "pharmacopee",
       "plantes",
@@ -122700,6 +123110,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -122742,6 +123153,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -122787,6 +123199,7 @@ export const MEDIA_SEARCH_DATABASE = [
       "vision",
       "eyes",
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -122831,6 +123244,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -122882,6 +123296,7 @@ export const MEDIA_SEARCH_DATABASE = [
       "vision",
       "eyes",
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -122924,6 +123339,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "plantes",
       "pharmacopee",
       "plantes",
@@ -122963,6 +123379,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "plantes",
       "pharmacopee",
       "plantes",
@@ -123002,6 +123419,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "plantes",
       "pharmacopee",
       "plantes",
@@ -123041,6 +123459,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "plantes",
       "pharmacopee",
       "plantes",
@@ -123080,6 +123499,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -123124,6 +123544,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -123166,6 +123587,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -123210,6 +123632,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -123256,6 +123679,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "plantes",
       "pharmacopee",
       "plantes",
@@ -123295,6 +123719,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "plantes",
       "pharmacopee",
       "plantes",
@@ -123334,6 +123759,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -123378,6 +123804,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -123422,6 +123849,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -123466,6 +123894,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -123508,6 +123937,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -123554,6 +123984,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -123596,6 +124027,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "lymphe",
       "lymphatic",
       "foie",
@@ -123639,6 +124071,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "foie",
       "liver",
       "plantes",
@@ -123683,6 +124116,7 @@ export const MEDIA_SEARCH_DATABASE = [
       "vision",
       "eyes",
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -123730,6 +124164,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -123780,6 +124215,7 @@ export const MEDIA_SEARCH_DATABASE = [
       "vision",
       "eyes",
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -123825,6 +124261,7 @@ export const MEDIA_SEARCH_DATABASE = [
       "vision",
       "eyes",
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -123867,6 +124304,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "plantes",
       "pharmacopee",
       "plantes",
@@ -123906,6 +124344,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -123955,6 +124394,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "foie",
       "liver",
       "plantes",
@@ -123996,6 +124436,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",
@@ -124040,6 +124481,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -124082,6 +124524,7 @@ export const MEDIA_SEARCH_DATABASE = [
     ],
     "topics": [
       "colite",
+      "colitis",
       "intestins",
       "colon",
       "digestif",
@@ -124130,6 +124573,7 @@ export const MEDIA_SEARCH_DATABASE = [
       "vision",
       "eyes",
       "colite",
+      "colitis",
       "reins",
       "kidneys",
       "filtration",

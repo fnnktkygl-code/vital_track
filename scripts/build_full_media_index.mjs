@@ -208,12 +208,12 @@ function getTopicsForText(heading, text) {
     topics.push('yeux', 'vision', 'eyes');
   }
   
-  if (low.includes('crohn') || low.includes("crohn's") || low.includes('mici') || low.includes('ibd')) {
+  if (low.includes('crohn') || low.includes("crohn's")) {
     topics.push('crohn');
   }
 
   if (low.includes('colite') || low.includes('colitis') || low.includes('rectocolite') || low.includes('rch')) {
-    topics.push('colite');
+    topics.push('colite', 'colitis');
   }
 
   if (low.includes('intestin') || low.includes('colon') || low.includes('bowel') || low.includes('gut') || low.includes('côlon') || low.includes('grele') || low.includes('tractus')) {
@@ -532,35 +532,43 @@ async function processAllMediaAndPdfs() {
  */
 
 export const SYNONYMS = {
-  // Pathologies & conditions spécifiques
-  'crohn': ['crohn', 'maladie de crohn', "crohn's", 'colite', 'colitis', 'mici', 'ibd'],
-  'colite': ['colite', 'colitis', 'rectocolite', 'inflammation intestinale', 'rch'],
-  'candida': ['candida', 'candidose', 'levures', 'mycose', 'fungal', 'yeast'],
-  'yeux': ['yeux', 'oeil', 'vision', 'eyes', 'sight', 'oculaire', 'cataracte', 'glaucome'],
-  'eyes': ['eyes', 'eye', 'vision', 'sight', 'yeux', 'oeil', 'glaucoma', 'cataracts'],
-  'reins': ['reins', 'rein', 'kidney', 'kidneys', 'renal', 'filtration', 'nephron', 'surrenales', 'adrenals'],
-  'kidneys': ['kidneys', 'kidney', 'renal', 'reins', 'rein', 'filtration', 'adrenals', 'surrenales'],
-  'surrenales': ['surrenales', 'surrenale', 'adrenals', 'adrenal', 'medulla', 'cortex', 'aldosterone'],
-  'adrenals': ['adrenals', 'adrenal', 'surrenales', 'surrenale', 'medulla', 'cortex'],
+  // Pathologies & conditions spécifiques (strictes et dissociées)
+  'crohn': ['crohn', 'maladie de crohn', "crohn's", "crohn's disease"],
+  'colite': ['colite', 'colitis', 'rectocolite', 'colite ulcéreuse', 'colite ulcereuse', 'ulcerative colitis'],
+  'colitis': ['colitis', 'colite', 'rectocolite', 'ulcerative colitis', 'colite ulcereuse', 'colite ulcéreuse'],
+  'candida': ['candida', 'candidose', 'candidiasis', 'levures', 'mycose', 'yeast'],
+  'cataracte': ['cataracte', 'cataractes', 'cataract', 'cataracts'],
+  'glaucome': ['glaucome', 'glaucoma'],
+  'arthrite': ['arthrite', 'arthritis', 'arthrose', 'osteoarthritis', 'polyarthrite'],
+  'diabete': ['diabete', 'diabète', 'diabetes', 'glycemie', 'glycémie', 'insuline'],
+  'cancer': ['cancer', 'tumeur', 'tumor', 'tumour', 'carcinome', 'oncologie'],
+
+  // Organes & systèmes (traductions bilingues directes de haute précision)
+  'yeux': ['yeux', 'oeil', 'vision', 'eyes', 'sight', 'oculaire'],
+  'eyes': ['eyes', 'eye', 'vision', 'sight', 'yeux', 'oeil', 'ocular'],
+  'reins': ['reins', 'rein', 'kidney', 'kidneys', 'renal', 'filtration', 'nephron'],
+  'kidneys': ['kidneys', 'kidney', 'renal', 'reins', 'rein', 'filtration', 'nephron'],
+  'surrenales': ['surrenales', 'surrénale', 'surrénales', 'surrenale', 'adrenals', 'adrenal', 'medulla', 'cortex', 'aldosterone'],
+  'adrenals': ['adrenals', 'adrenal', 'surrenales', 'surrenale', 'surrénales', 'medulla', 'cortex', 'aldosterone'],
   'lymphe': ['lymphe', 'lymphatique', 'lymph', 'lymphatic', 'ganglions', 'nodes', 'interstitiel'],
   'lymph': ['lymph', 'lymphatic', 'lymphe', 'nodes', 'ganglions', 'interstitial'],
-  'intestins': ['intestin', 'intestins', 'colon', 'gut', 'bowel', 'côlon', 'grele', 'tractus'],
+  'intestins': ['intestin', 'intestins', 'colon', 'gut', 'bowel', 'côlon', 'grele', 'grêle', 'tractus', 'digestif'],
   'colon': ['colon', 'côlon', 'intestin', 'intestins', 'bowel', 'large intestine'],
   'gut': ['gut', 'bowel', 'gi tract', 'gastrointestinal', 'intestin', 'colon'],
   'jeune': ['jeune', 'jeûne', 'fasting', 'fast', 'autophagie', 'autophagy', 'abstinence', 'hydrique'],
   'fasting': ['fasting', 'fast', 'jeune', 'jeûne', 'water fast', 'juice fast', 'autophagy'],
-  'autophagie': ['autophagie', 'autophagy', 'autolyse', 'recyclage cellulaire', 'nobel ohsumi'],
-  'mucus': ['mucus', 'sans mucus', 'mucusless', 'mucogene', 'glaires', 'obstruction', 'ehret'],
-  'foie': ['foie', 'liver', 'hepatique', 'hepatic', 'bile', 'vesicule', 'biliary'],
+  'autophagie': ['autophagie', 'autophagy', 'autolyse', 'recyclage cellulaire'],
+  'mucus': ['mucus', 'sans mucus', 'mucusless', 'mucogene', 'mucogène', 'glaires', 'obstruction', 'ehret'],
+  'foie': ['foie', 'liver', 'hepatique', 'hépatique', 'hepatic', 'bile', 'vesicule', 'vésicule', 'gallbladder'],
   'liver': ['liver', 'hepatic', 'foie', 'bile', 'gallbladder', 'vesicule'],
   'poumons': ['poumons', 'poumon', 'lungs', 'lung', 'respiration', 'bronches', 'asthme'],
   'peau': ['peau', 'skin', 'dermatite', 'eczema', 'psoriasis', 'sudation', 'transpiration'],
   'plantes': ['plantes', 'plante', 'herbes', 'herbe', 'herbs', 'botanique', 'raintree', 'tisane', 'teinture'],
-  'sebi': ['sebi', 'dr sebi', 'bowman', 'bio-electrique', 'alcalin', 'electric', 'cell food'],
+  'sebi': ['sebi', 'dr sebi', 'bowman', 'bio-electrique', 'bio-électrique', 'alcalin', 'electric', 'cell food'],
   'morse': ['morse', 'robert morse', 'detox miracle', 'sourcebook', 'cellular regeneration', 'filtration renale'],
-  'ehret': ['ehret', 'arnold ehret', 'regime sans mucus', 'mucusless', 'jeune rationnel', 'v=p-o'],
+  'ehret': ['ehret', 'arnold ehret', 'regime sans mucus', 'régime sans mucus', 'mucusless', 'jeune rationnel', 'v=p-o'],
   'wolfe': ['wolfe', 'david wolfe', 'sunfood', 'alimentation vivante', 'raw food', 'superfoods'],
-  'wim hof': ['wim hof', 'hof', 'respiration', 'froid', 'glace', 'apnee', 'radboud', 'hyperventilation']
+  'wim hof': ['wim hof', 'hof', 'respiration', 'froid', 'glace', 'apnee', 'apnée', 'radboud', 'hyperventilation']
 };
 
 export function getExpandedSearchTokens(query) {
