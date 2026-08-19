@@ -568,22 +568,26 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
 /* --- Timer Hero --- */
 .jn-hero-inner {
   display: flex;
-  gap: 40px;
+  gap: 36px;
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
   padding: 12px 0;
+  width: 100%;
 }
 .jn-ring-wrap {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 12px;
+  margin: 0 auto;
 }
 .jn-ring {
   position: relative;
   width: 220px;
   height: 220px;
+  margin: 0 auto;
 }
 .jn-ring svg {
   width: 100%;
@@ -931,7 +935,9 @@ input.jn-field-control { padding-right: 14px; }
 /* --- Responsive --- */
 @media (max-width: 640px) {
   .jn-stats-grid { grid-template-columns: repeat(2, 1fr); }
-  .jn-hero-inner { justify-content: flex-start; }
+  .jn-hero-inner { justify-content: center; align-items: center; text-align: center; }
+  .jn-ring-wrap { margin: 0 auto; align-items: center; }
+  .jn-controls { margin: 0 auto; width: 100%; max-width: 100%; }
   .jn-program-grid { grid-template-columns: repeat(2, 1fr); }
   .jn-expert-body-inner { padding-left: 18px; }
 }
