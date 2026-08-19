@@ -1771,8 +1771,14 @@
         <canvas id="inAppMascotCanvas" width="220" height="260" style="width:220px; height:260px; filter:drop-shadow(0 10px 20px rgba(0,0,0,0.4));"></canvas>
       </div>
 
-      <div id="inAppMascotBubble" style="padding:10px 14px; background:rgba(52,211,153,0.08); border:1px solid rgba(52,211,153,0.25); border-radius:12px; font-size:0.84rem; color:#a7f3d0; margin-bottom:16px; line-height:1.4;">
+      <div id="inAppMascotBubble" style="padding:10px 14px; background:rgba(52,211,153,0.08); border:1px solid rgba(52,211,153,0.25); border-radius:12px; font-size:0.84rem; color:#a7f3d0; margin-bottom:12px; line-height:1.4;">
         🐦 « Roucouuu ! Je veille sur ton équilibre acido-basique et ta filtration ! »
+      </div>
+
+      <div style="display:flex; justify-content:center; margin-bottom:12px;">
+        <button id="inAppSoundToggleBtn" type="button" class="btn-secondary" style="font-size:0.75rem; padding:4px 12px; border-radius:20px; display:inline-flex; align-items:center; gap:6px;" onclick="toggleInAppAudioFx()">
+          <i class="ri-volume-up-fill" id="inAppSoundIcon"></i> <span id="inAppSoundLabel">Sons Aviaires : Activés</span>
+        </button>
       </div>
 
       <!-- Action Chips Grid -->

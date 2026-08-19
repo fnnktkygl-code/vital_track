@@ -1,45 +1,49 @@
 /**
  * Mascot.js — Pigeon Biset VitalTrack 3D / Organique & Fluide
- * Moteur de rendu Canvas haute fidélité avec cinématique réaliste
- * Actions : idle, walk (head-bobbing), fly, laugh, coo (jabot), think, peck, celebrate, sleep
+ * Moteur de rendu Canvas haute fidélité avec cinématique réaliste & Moteur Audio Web
+ * 
+ * Modèle unifié sans coutures (tête, cou, jabot, tronc intégrés)
+ * Ailes articulées à 5 rémiges individuelles déployables
+ * Cinématique de picorage réaliste (bascule complète du corps & relevé de queue)
+ * Moteur Audio Web natif procédural (roucoulement "Rooou-coo-coo", battements d'ailes, picorages)
  */
 
 // ─────────────────────────────────────────────────────────────
-// PALETTE BIOMÉCANIQUE & SHADING 3D
+// PALETTE BIOMÉCANIQUE & SHADING 3D ORGANIC CLAY
 // ─────────────────────────────────────────────────────────────
-const clayBase = '#8D97AE';
-const clayShadow = '#555E75';
-const clayDeep = '#3B4254';
-const clayLight = '#CBD5E1';
+const clayBase = '#8A95AC';
+const clayShadow = '#505970';
+const clayDeep = '#353C4D';
+const clayLight = '#C5CFE2';
 const clayHi = '#F1F5F9';
 
 // Col iridescent dynamique (émeraude, sarcelle, indigo, améthyste)
-const IRID_COLORS = [
-  '#4ADE80', // Émeraude vif
+const IRID_GRAD = [
+  '#34D399', // Vert émeraude vif
   '#2DD4BF', // Sarcelle lagon
   '#818CF8', // Indigo doux
-  '#C084FC'  // Améthyste violet
+  '#C084FC'  // Améthyste violette
 ];
 
 // Bec & Cire
-const beakBase = '#3E424B';
-const beakShadow = '#242730';
-const beakLight = '#5C606E';
-const cereC = '#FAF8F5';
-const cereShadow = '#D4CECA';
+const beakBase = '#353942';
+const beakShadow = '#1E2128';
+const beakLight = '#545967';
+const cereC = '#F5F2EB';
+const cereShadow = '#CDC7BF';
 
 // Yeux (Iris orange concentrique & pupille vitreuse)
 const irisOuter = '#FB923C';
 const irisInner = '#EA580C';
-const pupilC = '#18181B';
+const pupilC = '#141416';
 
 // Pattes & Griffes
-const footBase = '#E27C72';
-const footShadow = '#B54C43';
-const clawC = '#27272A';
+const footBase = '#E0756A';
+const footShadow = '#B3453B';
+const clawC = '#222328';
 
 // Barres alaires & Nuances
-const barDark = '#2B303C';
+const barDark = '#252934';
 const blushC = 'rgba(255, 115, 130, 0.35)';
 
 // ─────────────────────────────────────────────────────────────
@@ -65,7 +69,272 @@ function linear(ctx, x0, y0, x1, y1, c1, c2) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// PIGEON RENDERER (Canvas 100 x 125 normalised coordinate space)
+// MOTEUR AUDIO WEB PROCÉDURAL (Pigeon Synthesizer)
+// ─────────────────────────────────────────────────────────────
+class PigeonAudioEngine {
+  constructor() {
+    this.ctx = null;
+    this.enabled = true;
+  }
+
+  _init() {
+    if (!this.ctx && typeof window !== 'undefined') {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (AudioCtx) {
+        this.ctx = new AudioCtx();
+      }
+    }
+    if (this.ctx && this.ctx.state === 'suspended') {
+      this.ctx.resume();
+    }
+  }
+
+  toggleSound() {
+    this.enabled = !this.enabled;
+    return this.enabled;
+  }
+
+  // 1. Roucoulement authentique de pigeon ("Rooou-coo-coo-roou")
+  playCoo() {
+    if (!this.enabled) return;
+    this._init();
+    if (!this.ctx) return;
+
+    const ctx = this.ctx;
+    const now = ctx.currentTime;
+
+    // Dual Formant Filter for avian throat resonance
+    const formant = ctx.createBiquadFilter();
+    formant.type = 'bandpass';
+    formant.frequency.setValueAtTime(520, now);
+    formant.Q.setValueAtTime(4.0, now);
+
+    const masterGain = ctx.createGain();
+    masterGain.gain.setValueAtTime(0, now);
+    masterGain.connect(ctx.destination);
+    formant.connect(masterGain);
+
+    // Oscillator 1 : Throat Fundamental
+    const osc1 = ctx.createOscillator();
+    osc1.type = 'sine';
+
+    // Oscillator 2 : Modulator / Harmonics
+    const osc2 = ctx.createOscillator();
+    osc2.type = 'triangle';
+    const osc2Gain = ctx.createGain();
+    osc2Gain.gain.setValueAtTime(0.35, now);
+    osc2.connect(osc2Gain);
+    osc2Gain.connect(formant);
+    osc1.connect(formant);
+
+    // Pitch envelope : Starts low, swells with vibrato, pulses in 3 syllables
+    // Syllable 1 : "Rooou"
+    osc1.frequency.setValueAtTime(260, now);
+    osc1.frequency.exponentialRampToValueAtTime(360, now + 0.25);
+    osc1.frequency.exponentialRampToValueAtTime(310, now + 0.55);
+
+    // Syllable 2 : "Coo"
+    osc1.frequency.setValueAtTime(380, now + 0.62);
+    osc1.frequency.exponentialRampToValueAtTime(320, now + 0.85);
+
+    // Syllable 3 : "Coo-roou"
+    osc1.frequency.setValueAtTime(390, now + 0.92);
+    osc1.frequency.exponentialRampToValueAtTime(270, now + 1.35);
+
+    // Sync osc2 pitch
+    osc2.frequency.setValueAtTime(520, now);
+    osc2.frequency.exponentialRampToValueAtTime(720, now + 0.25);
+    osc2.frequency.exponentialRampToValueAtTime(540, now + 1.35);
+
+    // Amplitude envelope
+    masterGain.gain.setValueAtTime(0.01, now);
+    masterGain.gain.linearRampToValueAtTime(0.32, now + 0.2);
+    masterGain.gain.linearRampToValueAtTime(0.12, now + 0.55);
+    masterGain.gain.linearRampToValueAtTime(0.35, now + 0.7);
+    masterGain.gain.linearRampToValueAtTime(0.14, now + 0.88);
+    masterGain.gain.linearRampToValueAtTime(0.38, now + 1.05);
+    masterGain.gain.exponentialRampToValueAtTime(0.001, now + 1.45);
+
+    osc1.start(now);
+    osc2.start(now);
+    osc1.stop(now + 1.5);
+    osc2.stop(now + 1.5);
+  }
+
+  // 2. Battements d'ailes réalistes (Air whooshes & feather rustle)
+  playFlap() {
+    if (!this.enabled) return;
+    this._init();
+    if (!this.ctx) return;
+
+    const ctx = this.ctx;
+    const now = ctx.currentTime;
+
+    // Buffer noise generation for feather flutter
+    const bufferSize = ctx.sampleRate * 1.2;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const output = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      output[i] = Math.random() * 2 - 1;
+    }
+
+    const noise = ctx.createBufferSource();
+    noise.buffer = buffer;
+
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(450, now);
+    filter.Q.setValueAtTime(2.5, now);
+
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0, now);
+
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+
+    // 4 successive wing strokes
+    [0, 0.2, 0.42, 0.65].forEach((tOffset, idx) => {
+      const t = now + tOffset;
+      filter.frequency.setValueAtTime(300, t);
+      filter.frequency.exponentialRampToValueAtTime(1100, t + 0.08);
+      filter.frequency.exponentialRampToValueAtTime(250, t + 0.18);
+
+      gain.gain.setValueAtTime(0.01, t);
+      gain.gain.linearRampToValueAtTime(0.28 / (1 + idx * 0.15), t + 0.06);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+    });
+
+    noise.start(now);
+    noise.stop(now + 0.9);
+  }
+
+  // 3. Picorage franc au sol (Double tap-tap percussif)
+  playPeck() {
+    if (!this.enabled) return;
+    this._init();
+    if (!this.ctx) return;
+
+    const ctx = this.ctx;
+    const now = ctx.currentTime;
+
+    [0, 0.12].forEach(tOffset => {
+      const t = now + tOffset;
+      const osc = ctx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(680, t);
+      osc.frequency.exponentialRampToValueAtTime(160, t + 0.04);
+
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.setValueAtTime(800, t);
+      filter.Q.setValueAtTime(4.0, t);
+
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(0.4, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
+
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(t);
+      osc.stop(t + 0.06);
+    });
+  }
+
+  // 4. Rire et gazouillis joyeux
+  playLaugh() {
+    if (!this.enabled) return;
+    this._init();
+    if (!this.ctx) return;
+
+    const ctx = this.ctx;
+    const now = ctx.currentTime;
+
+    const notes = [380, 480, 560, 480, 590, 680];
+    notes.forEach((freq, idx) => {
+      const t = now + idx * 0.11;
+      const osc = ctx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, t);
+      osc.frequency.exponentialRampToValueAtTime(freq * 1.15, t + 0.08);
+
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(0.01, t);
+      gain.gain.linearRampToValueAtTime(0.25, t + 0.04);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(t);
+      osc.stop(t + 0.11);
+    });
+  }
+
+  // 5. Célébration (Carillon ascendant)
+  playCelebrate() {
+    if (!this.enabled) return;
+    this._init();
+    if (!this.ctx) return;
+
+    const ctx = this.ctx;
+    const now = ctx.currentTime;
+
+    const chord = [440, 554, 659, 880, 1108];
+    chord.forEach((freq, idx) => {
+      const t = now + idx * 0.07;
+      const osc = ctx.createOscillator();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, t);
+
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(0.01, t);
+      gain.gain.linearRampToValueAtTime(0.2, t + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.8);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(t);
+      osc.stop(t + 0.85);
+    });
+  }
+
+  // 6. Son de pas légers (Marche)
+  playStep() {
+    if (!this.enabled) return;
+    this._init();
+    if (!this.ctx) return;
+
+    const ctx = this.ctx;
+    const now = ctx.currentTime;
+
+    const osc = ctx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(220, now);
+    osc.frequency.exponentialRampToValueAtTime(90, now + 0.03);
+
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.15, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.035);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.04);
+  }
+}
+
+export const pigeonAudio = new PigeonAudioEngine();
+if (typeof window !== 'undefined') {
+  window.pigeonAudio = pigeonAudio;
+}
+
+// ─────────────────────────────────────────────────────────────
+// PIGEON RENDERER — ARCHITECTURE ANATOMIQUE UNIFIÉE 3D
 // ─────────────────────────────────────────────────────────────
 export class Pigeon {
   constructor(canvas) {
@@ -78,9 +347,7 @@ export class Pigeon {
     this.iridescenceIntensity = 1.0;
     this.transStart = 0;
     this.transDur = 0.35;
-    this.fromAction = 'idle';
-    this.toAction = 'idle';
-    this.transitioning = false;
+    this.lastStepTime = 0;
     this.particles = [];
   }
 
@@ -89,21 +356,31 @@ export class Pigeon {
     if (tNow === undefined) tNow = performance.now() / 1000;
     if (action === this.action && isSpeaking === this.isSpeaking) return;
 
-    this.fromAction = this.action;
     this.action = action;
-    this.toAction = action;
     this.isSpeaking = isSpeaking;
     this.transStart = tNow;
-    this.transitioning = true;
 
-    // Spawn burst particles on celebrate / laugh
+    // Trigger Audio Sound FX matching the action!
+    if (action === 'coo') {
+      pigeonAudio.playCoo();
+    } else if (action === 'fly') {
+      pigeonAudio.playFlap();
+    } else if (action === 'peck') {
+      pigeonAudio.playPeck();
+    } else if (action === 'laugh') {
+      pigeonAudio.playLaugh();
+    } else if (action === 'celebrate') {
+      pigeonAudio.playCelebrate();
+    } else if (action === 'walk') {
+      pigeonAudio.playStep();
+    }
+
     if (action === 'celebrate' || action === 'laugh') {
       this._spawnParticles(action);
     }
   }
 
   setMood(mood, isSpeaking = false) {
-    // Backward compatibility with previous mood names
     const map = {
       neutral: 'idle',
       talking: 'coo',
@@ -129,18 +406,18 @@ export class Pigeon {
 
   _spawnParticles(type) {
     this.particles = [];
-    const count = type === 'celebrate' ? 12 : 6;
+    const count = type === 'celebrate' ? 14 : 7;
     for (let i = 0; i < count; i++) {
       this.particles.push({
-        x: 50 + (Math.random() - 0.5) * 40,
-        y: 60 + (Math.random() - 0.5) * 30,
-        vx: (Math.random() - 0.5) * 45,
-        vy: -20 - Math.random() * 35,
-        size: 2.5 + Math.random() * 3.5,
+        x: 50 + (Math.random() - 0.5) * 36,
+        y: 55 + (Math.random() - 0.5) * 26,
+        vx: (Math.random() - 0.5) * 50,
+        vy: -25 - Math.random() * 38,
+        size: 2.8 + Math.random() * 3.2,
         life: 1.0,
-        decay: 0.6 + Math.random() * 0.4,
+        decay: 0.65 + Math.random() * 0.4,
         type: type === 'celebrate' ? (Math.random() > 0.5 ? 'star' : 'sparkle') : 'note',
-        color: ['#FBBF24', '#34D399', '#60A5FA', '#F472B6'][Math.floor(Math.random() * 4)]
+        color: ['#FBBF24', '#34D399', '#60A5FA', '#F472B6', '#A78BFA'][Math.floor(Math.random() * 5)]
       });
     }
   }
@@ -163,22 +440,20 @@ export class Pigeon {
     const W = this.canvas.width, H = this.canvas.height;
     const scale = W / 100;
 
-    // Base time scaled by speed
     const t = tNow * this.speed;
     const dt = 0.016 * this.speed;
     this._updateParticles(dt);
 
-    // Dynamic animation parameters based on active action
     const act = this.action;
-    let bodyY = 0, bodyTilt = 0, bodyRoll = 0;
-    let headX = 0, headY = 0, headTilt = 0, headScale = 1.0;
-    let wingAngleL = 0, wingAngleR = 0, wingSpan = 1.0;
+    let bodyY = 0, bodyPitch = 0, bodyRoll = 0;
+    let headX = 0, headY = 0, headPitch = 0, headYaw = 0;
+    let wingSpread = 0, wingFlapAngle = 0;
     let footL_Y = 0, footL_Rot = 0, footR_Y = 0, footR_Rot = 0;
-    let tailAngle = 0, tailSpread = 1.0;
-    let cropPuff = 0; // Gonflement du jabot / gorge
+    let tailPitch = 0, tailFan = 1.0;
+    let cropPuff = 0;
     let eyeBlinkL = 0, eyeBlinkR = 0, eyeShape = 'round';
     let mouthOpen = 0;
-    let shadowScale = 1.0, shadowAlpha = 0.18;
+    let shadowScale = 1.0, shadowAlpha = 0.2;
 
     // Natural blinking
     const blinkCycle = (t % 3.6);
@@ -189,119 +464,123 @@ export class Pigeon {
     }
 
     // ───────────────────────────────────────────────
-    // ACTION CINEMATICS
+    // CINÉMATIQUES & BIOMÉCANIQUE DE POSE
     // ───────────────────────────────────────────────
     if (act === 'idle') {
-      // Gentle breathing & micro-bobs
-      const breathe = Math.sin(t * Math.PI * 2 / 2.4);
-      bodyY = breathe * 0.8;
-      headY = Math.sin(t * Math.PI * 2 / 2.4 + 0.8) * 1.2;
-      wingAngleL = -5 + Math.sin(t * Math.PI * 2 / 2.0) * 2;
-      wingAngleR = 5 - Math.sin(t * Math.PI * 2 / 2.0) * 2;
-      tailAngle = Math.sin(t * Math.PI * 2 / 3.2) * 2.5;
+      // Respiration calme & micro-hochements
+      const breathe = Math.sin(t * Math.PI * 2 / 2.5);
+      bodyY = breathe * 0.9;
+      headY = Math.sin(t * Math.PI * 2 / 2.5 + 0.8) * 1.3;
+      wingSpread = 0;
+      wingFlapAngle = 0;
+      tailPitch = Math.sin(t * Math.PI * 2 / 3.2) * 3;
     } else if (act === 'walk') {
-      // Realistic pigeon gait : head thrusts forward then stays fixed as body moves
-      const walkCycle = (t * 2.8) % (Math.PI * 2);
-      const walkPhase = Math.sin(walkCycle);
+      // Démarche authentique de pigeon (Head-thrusting synchronisé)
+      const walkCycle = (t * 3.2) % (Math.PI * 2);
+      const walkSin = Math.sin(walkCycle);
       const walkCos = Math.cos(walkCycle);
 
-      // Head-bobbing characteristic of Columba livia
-      headX = Math.max(0, Math.sin(walkCycle * 2)) * 4.5;
-      headY = Math.sin(walkCycle * 2) * 1.8;
-      bodyY = Math.abs(walkPhase) * 2.2;
-      bodyTilt = walkCos * 3.5;
+      // Phase d'extension avant de la tête (poussée) puis rétention
+      headX = Math.max(0, Math.sin(walkCycle * 2)) * 5.0;
+      headY = Math.sin(walkCycle * 2) * 1.5;
+      bodyY = Math.abs(walkSin) * 2.5;
+      bodyPitch = walkCos * 4.0;
 
-      // Alternating footsteps with knee bend and foot lift
-      footL_Y = Math.max(0, -walkPhase) * 6;
-      footL_Rot = -walkPhase * 25;
-      footR_Y = Math.max(0, walkPhase) * 6;
-      footR_Rot = walkPhase * 25;
+      // Pattes alternées avec flexion du tarse
+      footL_Y = Math.max(0, -walkSin) * 7.5;
+      footL_Rot = -walkSin * 28;
+      footR_Y = Math.max(0, walkSin) * 7.5;
+      footR_Rot = walkSin * 28;
 
-      wingAngleL = -8 + walkPhase * 4;
-      wingAngleR = 8 + walkPhase * 4;
-      tailAngle = walkCos * 6;
+      tailPitch = walkCos * 6.0;
+      wingSpread = 0.05;
+
+      // Sound step rhythm
+      if (Math.abs(walkSin) < 0.1 && (t - this.lastStepTime) > 0.35) {
+        this.lastStepTime = t;
+        pigeonAudio.playStep();
+      }
     } else if (act === 'fly') {
-      // In-flight hovering with wide wing flapping
-      const flapFreq = t * 6.5;
-      const flap = Math.sin(flapFreq);
-      bodyY = -12 + flap * 3.5;
-      headY = -12 + flap * 1.5;
-      shadowScale = 0.55 - flap * 0.1;
-      shadowAlpha = 0.08;
+      // Vol & Battements d'ailes amples et souples
+      const flapSpeed = t * 7.5;
+      const flap = Math.sin(flapSpeed);
+      bodyY = -14 + flap * 3.8;
+      headY = -14 + flap * 1.5;
+      shadowScale = 0.5 - flap * 0.12;
+      shadowAlpha = 0.07;
 
-      wingAngleL = flap * 75 - 15;
-      wingAngleR = -flap * 75 + 15;
-      wingSpan = 1.35;
+      // Déploiement des 5 rémiges en arc de cercle
+      wingSpread = 1.0;
+      wingFlapAngle = flap * 68; // -68° à +68°
 
       footL_Y = -6; footL_Rot = 35;
       footR_Y = -6; footR_Rot = 35;
-      tailAngle = Math.sin(t * 3) * 4;
-      tailSpread = 1.3;
-    } else if (act === 'laugh') {
-      // Bouncy joyful laughter
-      const laughFreq = t * 7.0;
-      const bounce = Math.abs(Math.sin(laughFreq));
-      bodyY = -bounce * 4.5;
-      headY = -bounce * 6.0;
-      headTilt = Math.sin(t * 3.5) * 5;
-      mouthOpen = 0.4 + bounce * 0.45;
-      eyeShape = 'happy';
-      wingAngleL = -30 - bounce * 25;
-      wingAngleR = 30 + bounce * 25;
-      tailAngle = Math.sin(laughFreq) * 8;
+      tailPitch = 12 + Math.sin(t * 3) * 4;
+      tailFan = 1.4;
+    } else if (act === 'peck') {
+      // Picorage réaliste : bascule complète du corps vers l'avant !
+      const peckPeriod = 1.1;
+      const peckPhase = (t % peckPeriod) / peckPeriod;
+      let pT = 0;
+
+      if (peckPhase < 0.45) {
+        // Descente plongeante rapide et double coup au sol
+        pT = Math.sin((peckPhase / 0.45) * Math.PI);
+      }
+
+      bodyPitch = pT * 36; // Le corps bascule de 36° vers l'avant
+      bodyY = pT * 8;
+      headX = pT * 10;
+      headY = pT * 26; // La tête plonge vers le sol
+      headPitch = pT * 38;
+      tailPitch = -pT * 32; // La queue se relève en contre-poids !
+      mouthOpen = pT * 0.4;
+      wingSpread = pT * 0.15;
     } else if (act === 'coo') {
-      // Cooing / Talking with puffed crop (throat)
-      const cooCycle = Math.sin(t * 3.2);
-      cropPuff = Math.max(0, cooCycle) * 7.0;
-      headY = -cooCycle * 2.0;
-      headTilt = -cooCycle * 4.0;
-      mouthOpen = 0.25 + Math.max(0, cooCycle) * 0.5;
-      wingAngleL = -15 + cooCycle * 6;
-      wingAngleR = 15 - cooCycle * 6;
-      tailAngle = cooCycle * 4;
+      // Roucoulement avec gonflement fier de la gorge (jabot)
+      const cooCycle = Math.sin(t * 3.4);
+      cropPuff = Math.max(0, cooCycle) * 8.5;
+      headY = -cooCycle * 2.5;
+      headPitch = -cooCycle * 5.0;
+      mouthOpen = 0.25 + Math.max(0, cooCycle) * 0.55;
+      tailPitch = cooCycle * 4.0;
+      wingSpread = 0.08;
+    } else if (act === 'laugh') {
+      // Rire & bonds allègres
+      const bounce = Math.abs(Math.sin(t * 7.5));
+      bodyY = -bounce * 5.0;
+      headY = -bounce * 6.5;
+      headPitch = Math.sin(t * 4) * 6;
+      mouthOpen = 0.45 + bounce * 0.45;
+      eyeShape = 'happy';
+      wingSpread = 0.45;
+      wingFlapAngle = Math.sin(t * 12) * 22;
+      tailPitch = Math.sin(t * 8) * 8;
     } else if (act === 'think') {
-      // Inquisitive head tilt
-      headTilt = 22;
-      headX = 2.5;
+      // Observation curieuse (inclinaison nette de la tête)
+      headPitch = 22;
+      headX = 3.0;
       headY = -1.5;
       eyeShape = 'inquisitive';
-      wingAngleL = -18;
-      wingAngleR = 8;
-      tailAngle = 3;
-    } else if (act === 'peck') {
-      // Fast downward pecking cycle
-      const peckCycle = (t * 2.2) % 1.0;
-      let peckT = 0;
-      if (peckCycle < 0.35) {
-        peckT = Math.sin((peckCycle / 0.35) * Math.PI);
-      }
-      headY = peckT * 22;
-      headX = peckT * 8;
-      headTilt = peckT * 42;
-      bodyTilt = peckT * 12;
-      tailAngle = -peckT * 18;
-      mouthOpen = peckT * 0.3;
+      tailPitch = 4;
     } else if (act === 'celebrate') {
-      // Victory leap & star burst
-      const jumpCycle = Math.sin(t * 4.5);
-      const jump = Math.max(0, jumpCycle);
-      bodyY = -jump * 9.0;
-      headY = -jump * 11.0;
-      wingAngleL = -85 + jump * 20;
-      wingAngleR = 85 - jump * 20;
-      wingSpan = 1.3;
+      // Célébration & saut en V
+      const jump = Math.max(0, Math.sin(t * 4.5));
+      bodyY = -jump * 10.0;
+      headY = -jump * 12.0;
+      wingSpread = 0.95;
+      wingFlapAngle = 55 - jump * 30;
       eyeShape = 'happy';
       mouthOpen = 0.7;
-      shadowScale = 0.65;
+      shadowScale = 0.6;
     } else if (act === 'sleep') {
-      // Sleep & calm breathing
-      const sleepBreathe = Math.sin(t * Math.PI * 2 / 4.0);
-      bodyY = 3 + sleepBreathe * 0.6;
-      headY = 5 + sleepBreathe * 0.8;
+      // Sommeil apaisé
+      const sleepBreathe = Math.sin(t * Math.PI * 2 / 4.2);
+      bodyY = 3.5 + sleepBreathe * 0.6;
+      headY = 5.5 + sleepBreathe * 0.8;
       eyeShape = 'sleep';
       eyeBlinkL = 1.0; eyeBlinkR = 1.0;
-      wingAngleL = -4; wingAngleR = 4;
-      tailAngle = 0;
+      tailPitch = -5;
     }
 
     if (this.isSpeaking && act !== 'sleep') {
@@ -309,37 +588,34 @@ export class Pigeon {
     }
 
     // ───────────────────────────────────────────────
-    // CANVAS DRAW EXECUTION
+    // EXÉCUTION DU RENDU CANVAS
     // ───────────────────────────────────────────────
     ctx.save();
     ctx.clearRect(0, 0, W, H);
     ctx.scale(scale, scale);
 
-    // Ground Shadow
+    // 1. Ombre au sol
     this._drawGroundShadow(ctx, shadowScale, shadowAlpha);
 
-    // Tail Feathers (behind body)
-    this._drawTail(ctx, tailAngle, tailSpread, bodyY);
+    // 2. Queue (Rectrices)
+    this._drawTail(ctx, tailPitch, tailFan, bodyY, bodyPitch);
 
-    // Feet (articulated)
-    this._drawFeet(ctx, footL_Y, footL_Rot, footR_Y, footR_Rot, bodyY);
+    // 3. Pattes articulées
+    this._drawFeet(ctx, footL_Y, footL_Rot, footR_Y, footR_Rot, bodyY, bodyPitch);
 
-    // Left Wing (back)
-    this._drawWing(ctx, 'L', wingAngleL, wingSpan, bodyY);
+    // 4. Aile Gauche (arrière)
+    this._drawWing(ctx, 'L', wingSpread, wingFlapAngle, bodyY, bodyPitch);
 
-    // Body & Crop (Pectoral muscle & belly)
-    this._drawBody(ctx, bodyY, bodyTilt, bodyRoll, cropPuff);
+    // 5. Tronc & Cou Unifié (Monolithique 3D sans coupure)
+    this._drawUnifiedBodyAndNeck(ctx, bodyY, bodyPitch, cropPuff, headX, headY, headPitch, t);
 
-    // Iridescent Neck Collar
-    this._drawCollar(ctx, bodyY, headX, headY, headTilt, cropPuff, t);
+    // 6. Aile Droite (avant)
+    this._drawWing(ctx, 'R', wingSpread, wingFlapAngle, bodyY, bodyPitch);
 
-    // Right Wing (front)
-    this._drawWing(ctx, 'R', wingAngleR, wingSpan, bodyY);
+    // 7. Tête & Yeux & Bec (Scellés à la nuque)
+    this._drawHead(ctx, headX, headY, headPitch, eyeBlinkL, eyeBlinkR, eyeShape, mouthOpen, bodyY, bodyPitch, cropPuff);
 
-    // Head & Facial Features
-    this._drawHead(ctx, headX, headY, headTilt, eyeBlinkL, eyeBlinkR, eyeShape, mouthOpen, bodyY, cropPuff);
-
-    // Particle FX
+    // 8. Particules
     this._drawParticles(ctx);
 
     ctx.restore();
@@ -347,74 +623,65 @@ export class Pigeon {
 
   _drawGroundShadow(ctx, scaleRatio, alpha) {
     ctx.save();
-    ctx.filter = 'blur(3px)';
+    ctx.filter = 'blur(3.5px)';
     ctx.fillStyle = `rgba(0, 0, 0, ${alpha})`;
     ctx.beginPath();
-    ctx.ellipse(50, 118, 26 * scaleRatio, 6 * scaleRatio, 0, 0, Math.PI * 2);
+    ctx.ellipse(50, 118, 25 * scaleRatio, 6.5 * scaleRatio, 0, 0, Math.PI * 2);
     ctx.fill();
     ctx.restore();
   }
 
-  _drawTail(ctx, angleDeg, spread, bodyY) {
+  _drawTail(ctx, pitchDeg, fanRatio, bodyY, bodyPitch) {
     ctx.save();
-    ctx.translate(50, 94 + bodyY);
-    ctx.rotate(angleDeg * Math.PI / 180);
-    ctx.scale(spread, 1.0);
+    const pivotX = 50, pivotY = 94 + bodyY;
+    ctx.translate(pivotX, pivotY);
+    ctx.rotate((pitchDeg - bodyPitch * 0.4) * Math.PI / 180);
+    ctx.scale(fanRatio, 1.0);
 
-    // 3 layered rectrices (tail feathers)
-    const g = linear(ctx, 0, 0, 0, 26, clayBase, clayDeep);
+    // 3 layered curved rectrices
+    const g = linear(ctx, 0, 0, 0, 28, clayBase, clayDeep);
     ctx.fillStyle = g;
 
-    // Central feather
     ctx.beginPath();
     ctx.moveTo(-16, -2);
-    ctx.bezierCurveTo(-18, 14, -10, 26, -4, 28);
+    ctx.bezierCurveTo(-18, 14, -11, 26, -4, 28);
     ctx.quadraticCurveTo(0, 30, 4, 28);
-    ctx.bezierCurveTo(10, 26, 18, 14, 16, -2);
+    ctx.bezierCurveTo(11, 26, 18, 14, 16, -2);
     ctx.closePath();
     ctx.fill();
 
-    // Dark terminal band (barre caudale sombre)
+    // Dark terminal band
     ctx.save();
     ctx.clip();
     ctx.fillStyle = barDark;
-    ctx.globalAlpha = 0.75;
+    ctx.globalAlpha = 0.78;
     ctx.beginPath();
-    ctx.ellipse(0, 26, 16, 7, 0, 0, Math.PI * 2);
+    ctx.ellipse(0, 26, 16, 7.5, 0, 0, Math.PI * 2);
     ctx.fill();
-
-    // Feather shafts (rachis)
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
-    ctx.lineWidth = 1.0;
-    ctx.beginPath();
-    ctx.moveTo(0, 0); ctx.lineTo(0, 28);
-    ctx.moveTo(-7, 2); ctx.lineTo(-6, 26);
-    ctx.moveTo(7, 2); ctx.lineTo(6, 26);
-    ctx.stroke();
     ctx.restore();
 
     ctx.restore();
   }
 
-  _drawFeet(ctx, lY, lRot, rY, rRot, bodyY) {
+  _drawFeet(ctx, lY, lRot, rY, rRot, bodyY, bodyPitch) {
     const drawSingleFoot = (cx, cy, yOffset, rotDeg) => {
       ctx.save();
       ctx.translate(cx, cy + bodyY - yOffset);
-      ctx.rotate(rotDeg * Math.PI / 180);
+      ctx.rotate((rotDeg + bodyPitch * 0.3) * Math.PI / 180);
 
-      // Thigh plume shadow
+      // Thigh base plume
       ctx.fillStyle = clayShadow;
       ctx.beginPath();
-      ctx.ellipse(0, -11, 4, 3, 0, 0, Math.PI * 2);
+      ctx.ellipse(0, -11, 4.2, 3.2, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // Tarsus (jambe écailleuse)
+      // Scaled Tarsus
       ctx.fillStyle = linear(ctx, -2, -10, 2, 0, footBase, footShadow);
       ctx.beginPath();
       ctx.roundRect ? ctx.roundRect(-2.2, -10, 4.4, 11, 2.2) : ctx.rect(-2.2, -10, 4.4, 11);
       ctx.fill();
 
-      // 3 Toes with claws (3 doigts antérieurs)
+      // 3 Toes with claws
       const toes = [
         { dx: -4.5, dy: 3.5, rot: -0.25, len: 4.8 },
         { dx: 0, dy: 5.2, rot: 0, len: 5.4 },
@@ -427,14 +694,14 @@ export class Pigeon {
         ctx.ellipse(t.dx, t.dy, 2.2, t.len * 0.6, t.rot, 0, Math.PI * 2);
         ctx.fill();
 
-        // Claw tip (griffe noire)
+        // Dark claw tip
         ctx.fillStyle = clawC;
         ctx.beginPath();
         ctx.ellipse(t.dx + Math.sin(t.rot) * 2.8, t.dy + Math.cos(t.rot) * 2.8, 1.1, 1.4, t.rot, 0, Math.PI * 2);
         ctx.fill();
       });
 
-      // Posterior toe (hallux)
+      // Hallux
       ctx.fillStyle = footShadow;
       ctx.beginPath();
       ctx.ellipse(0, -1.5, 1.8, 2.8, 0, 0, Math.PI * 2);
@@ -447,188 +714,189 @@ export class Pigeon {
     drawSingleFoot(61, 109, rY, rRot);
   }
 
-  _drawBody(ctx, bodyY, tilt, roll, cropPuff) {
+  // ─────────────────────────────────────────────────────────────
+  // TRONC & COU UNIFIÉ 3D SANS COUTURES (Plus d'écharpe découpée)
+  // ─────────────────────────────────────────────────────────────
+  _drawUnifiedBodyAndNeck(ctx, bodyY, bodyPitch, cropPuff, hX, hY, hPitch, t) {
     ctx.save();
     const cx = 50, cy = 82 + bodyY;
     ctx.translate(cx, cy);
-    ctx.rotate(tilt * Math.PI / 180);
+    ctx.rotate(bodyPitch * Math.PI / 180);
     ctx.translate(-cx, -cy);
 
-    // Main 3D clay body egg silhouette
+    // Silhouette monocoque : Fusion fluide du dos, du poitrail et du cou
     ctx.beginPath();
-    ctx.moveTo(cx - 27 - cropPuff * 0.3, cy - 8);
-    ctx.bezierCurveTo(cx - 28 - cropPuff * 0.5, cy - 26, cx - 15, cy - 34, cx, cy - 34);
-    ctx.bezierCurveTo(cx + 15, cy - 34, cx + 28 + cropPuff * 0.5, cy - 26, cx + 27 + cropPuff * 0.3, cy - 8);
-    ctx.bezierCurveTo(cx + 26, cy + 14, cx + 15, cy + 31, cx, cy + 32);
-    ctx.bezierCurveTo(cx - 15, cy + 31, cx - 26, cy + 14, cx - 27 - cropPuff * 0.3, cy - 8);
+    // Base gauche
+    ctx.moveTo(cx - 26, cy + 12);
+    // Hanches et ventre doux
+    ctx.bezierCurveTo(cx - 28, cy - 6, cx - 27 - cropPuff * 0.4, cy - 24, cx - 18 - cropPuff * 0.4, cy - 36);
+    // Cou gauche montant
+    ctx.bezierCurveTo(cx - 15, cy - 44, cx - 14, cy - 50, cx, cy - 50);
+    // Cou droit descendant
+    ctx.bezierCurveTo(cx + 14, cy - 50, cx + 15, cy - 44, cx + 18 + cropPuff * 0.4, cy - 36);
+    // Poitrail droit et flanc
+    ctx.bezierCurveTo(cx + 27 + cropPuff * 0.4, cy - 24, cx + 28, cy - 6, cx + 26, cy + 12);
+    // Bas-ventre arrondi
+    ctx.bezierCurveTo(cx + 15, cy + 31, cx - 15, cy + 31, cx - 26, cy + 12);
     ctx.closePath();
 
-    ctx.fillStyle = radial(ctx, cx - 7, cy - 18, 50, clayLight, clayShadow, -0.3, -0.4);
+    // 3D Soft Clay Gradient (Zénithal continu)
+    ctx.fillStyle = radial(ctx, cx - 7, cy - 18, 52, clayLight, clayShadow, -0.3, -0.4);
     ctx.fill();
 
-    // Belly soft ambient warmth (ventre légèrement plus clair)
+    // ── Vraie zone d'Iridescence Naturelle (Intégrée au volume du cou) ──
     ctx.save();
-    ctx.clip();
+    ctx.clip(); // Clip strict à l'intérieur du corps
+
+    // Dégradé iridescent doux épousant la courbure de la gorge
+    const iridG = ctx.createLinearGradient(cx - 15, cy - 48, cx + 15, cy - 24);
+    const phase = Math.sin(t * 1.8) * 0.15;
+    iridG.addColorStop(0, IRID_GRAD[0]);
+    iridG.addColorStop(clamp01(0.35 + phase), IRID_GRAD[1]);
+    iridG.addColorStop(clamp01(0.68 + phase), IRID_GRAD[2]);
+    iridG.addColorStop(1, IRID_GRAD[3]);
+
+    ctx.globalAlpha = 0.85 * this.iridescenceIntensity;
+    ctx.fillStyle = iridG;
+    ctx.beginPath();
+    // Torus / Cowl naturel de la gorge
+    ctx.ellipse(cx, cy - 36, 19 + cropPuff * 0.4, 13 + cropPuff * 0.3, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Reflet de brillance soyeuse sur le col
+    ctx.globalAlpha = 0.45;
+    ctx.strokeStyle = '#FFFFFF';
+    ctx.lineWidth = 1.6;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.arc(cx, cy - 37, 14, 0.2 * Math.PI, 0.8 * Math.PI, false);
+    ctx.stroke();
+
+    // Ventre plus clair & dégradé d'ambiance
     const bellyG = ctx.createRadialGradient(cx, cy + 14, 4, cx, cy + 14, 26);
     bellyG.addColorStop(0, 'rgba(241, 245, 249, 0.45)');
-    bellyG.addColorStop(1, 'rgba(141, 151, 174, 0)');
+    bellyG.addColorStop(1, 'rgba(138, 149, 172, 0)');
     ctx.fillStyle = bellyG;
     ctx.beginPath();
     ctx.ellipse(cx, cy + 12, 22, 18, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    // Pectoral specular highlight (reflet modelé 3D)
-    ctx.globalAlpha = 0.35;
+    // Reflet spéculaire sur le poitrail
+    ctx.globalAlpha = 0.3;
     const specG = linear(ctx, cx - 22, cy - 28, cx + 4, cy - 4, clayHi, 'rgba(255,255,255,0)');
     ctx.fillStyle = specG;
     ctx.beginPath();
-    ctx.ellipse(cx - 10, cy - 18, 16, 24, -0.45, 0, Math.PI * 2);
+    ctx.ellipse(cx - 10, cy - 16, 16, 22, -0.45, 0, Math.PI * 2);
     ctx.fill();
-    ctx.restore();
 
+    ctx.restore(); // Fin du clip intérieur
     ctx.restore();
   }
 
-  _drawWing(ctx, side, angleDeg, span, bodyY) {
+  // ─────────────────────────────────────────────────────────────
+  // SYSTÈME D'AILES ARTICULÉES À 5 RÉMIGES INDIVIDUELLES
+  // ─────────────────────────────────────────────────────────────
+  _drawWing(ctx, side, spreadAmt, flapAngleDeg, bodyY, bodyPitch) {
     const right = side === 'R';
     const m = right ? 1 : -1;
-    const px = right ? 70 : 30, py = 56 + bodyY;
+    const shoulderX = right ? 68 : 32;
+    const shoulderY = 56 + bodyY;
 
     ctx.save();
-    ctx.translate(px, py);
-    ctx.rotate(angleDeg * Math.PI / 180);
-    ctx.scale(m * span, span);
+    ctx.translate(shoulderX, shoulderY);
+    ctx.rotate((bodyPitch * 0.6 + m * flapAngleDeg * (0.8 + spreadAmt * 0.4)) * Math.PI / 180);
+    ctx.scale(m, 1.0);
 
-    // Anatomical wing contour (épaule, coude et pennes rémiges)
+    // ── 5 Rémiges individuelles flexibles (Plumes de vol) ──
+    const feathers = [
+      { len: 52, w: 9, rot: 0.12 + spreadAmt * 0.38, col: clayDeep },
+      { len: 48, w: 8.5, rot: 0.06 + spreadAmt * 0.26, col: clayShadow },
+      { len: 44, w: 8, rot: 0.0 + spreadAmt * 0.15, col: clayBase },
+      { len: 39, w: 7.5, rot: -0.05 + spreadAmt * 0.05, col: clayLight },
+      { len: 33, w: 7, rot: -0.1 - spreadAmt * 0.05, col: clayLight }
+    ];
+
+    feathers.forEach((f, idx) => {
+      ctx.save();
+      ctx.rotate(f.rot);
+
+      ctx.fillStyle = linear(ctx, 0, 0, 0, f.len, clayLight, f.col);
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.bezierCurveTo(f.w * 0.8, f.len * 0.35, f.w * 0.9, f.len * 0.75, 0, f.len);
+      ctx.bezierCurveTo(-f.w * 0.4, f.len * 0.75, -f.w * 0.3, f.len * 0.35, 0, 0);
+      ctx.closePath();
+      ctx.fill();
+
+      // Rachis (tige centrale de la plume)
+      ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+      ctx.lineWidth = 0.8;
+      ctx.beginPath();
+      ctx.moveTo(0, 2);
+      ctx.lineTo(0, f.len - 3);
+      ctx.stroke();
+
+      ctx.restore();
+    });
+
+    // ── Couverture alaire douce (Épaule arrondie) ──
     ctx.beginPath();
-    ctx.moveTo(2, -10);
-    ctx.bezierCurveTo(14, -11, 20, -2, 19, 16);
-    ctx.bezierCurveTo(18, 34, 15, 52, 9, 62);
-    ctx.bezierCurveTo(3, 56, 1, 42, 1, 26);
-    ctx.bezierCurveTo(1, 10, 0, -2, 2, -10);
+    ctx.moveTo(0, -6);
+    ctx.bezierCurveTo(14, -6, 18, 10, 15, 26);
+    ctx.bezierCurveTo(12, 34, 4, 38, -2, 36);
+    ctx.bezierCurveTo(-8, 28, -6, 8, 0, -6);
     ctx.closePath();
-
-    ctx.fillStyle = linear(ctx, 0, -10, 0, 60, clayLight, clayShadow);
+    ctx.fillStyle = linear(ctx, 0, -6, 0, 36, clayHi, clayShadow);
     ctx.fill();
 
-    // Dual black wing bars (les 2 barres alaires noires caractéristiques)
+    // ── 2 Barres alaires noires authentiques (subtiles et estompées) ──
     ctx.save();
     ctx.clip();
-
     ctx.fillStyle = barDark;
-    ctx.globalAlpha = 0.88;
+    ctx.globalAlpha = 0.82;
 
-    // Bar 1 (haute)
+    // Barre 1
     ctx.beginPath();
-    ctx.moveTo(1, 21);
-    ctx.bezierCurveTo(10, 19, 17, 22, 17, 28);
-    ctx.bezierCurveTo(10, 26, 2, 27, 1, 30);
-    ctx.closePath();
+    ctx.ellipse(8, 18, 10, 2.8, 0.25, 0, Math.PI * 2);
     ctx.fill();
 
-    // Bar 2 (basse)
+    // Barre 2
     ctx.beginPath();
-    ctx.moveTo(1, 37);
-    ctx.bezierCurveTo(9, 35, 14, 38, 13, 44);
-    ctx.bezierCurveTo(8, 42, 2, 43, 1, 46);
-    ctx.closePath();
+    ctx.ellipse(7, 28, 9, 2.6, 0.25, 0, Math.PI * 2);
     ctx.fill();
 
-    // Wingtip primary flight feathers gradient
-    ctx.globalAlpha = 0.5;
-    ctx.fillStyle = barDark;
-    ctx.beginPath();
-    ctx.ellipse(8, 58, 8, 10, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
-
-    // Feather separator ridge (relief 3D)
-    ctx.strokeStyle = 'rgba(0,0,0,0.14)';
-    ctx.lineWidth = 1.2;
-    ctx.beginPath();
-    ctx.moveTo(1, -8);
-    ctx.quadraticCurveTo(0, 25, 4, 58);
-    ctx.stroke();
-
-    // Wing shoulder specular edge (lumière rasante)
-    ctx.globalAlpha = 0.5;
-    ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+    // Reflet doux sur l'arête d'épaule
+    ctx.globalAlpha = 0.55;
+    ctx.strokeStyle = '#FFFFFF';
     ctx.lineWidth = 1.4;
     ctx.lineCap = 'round';
     ctx.beginPath();
-    ctx.moveTo(3, -8);
-    ctx.quadraticCurveTo(15, -8, 18, 4);
+    ctx.moveTo(0, -4);
+    ctx.quadraticCurveTo(12, -4, 14, 12);
     ctx.stroke();
 
+    ctx.restore();
     ctx.restore();
   }
 
-  _drawCollar(ctx, bodyY, headX, headY, headTilt, cropPuff, t) {
+  // ─────────────────────────────────────────────────────────────
+  // TÊTE & FACIAL FEATURES (Parfaitement intégrés au cou)
+  // ─────────────────────────────────────────────────────────────
+  _drawHead(ctx, hX, hY, hPitch, blinkL, blinkR, eyeShape, mouthOpen, bodyY, bodyPitch, cropPuff) {
     ctx.save();
-    const cx = 50 + headX * 0.5, cy = 56 + bodyY;
+    const cx = 50 + hX;
+    const cy = 40 + hY + bodyY * 0.5;
     ctx.translate(cx, cy);
-    ctx.rotate(headTilt * 0.3 * Math.PI / 180);
+    ctx.rotate((hPitch + bodyPitch * 0.4) * Math.PI / 180);
     ctx.translate(-cx, -cy);
 
-    // Organic wavy neck collar boundary
-    ctx.beginPath();
-    ctx.moveTo(26 - cropPuff * 0.4, 55);
-    ctx.bezierCurveTo(23 - cropPuff * 0.5, 64, 26, 73, 33, 75);
-    ctx.bezierCurveTo(37, 76.5, 39, 70, 42, 66);
-    ctx.bezierCurveTo(45, 70, 46, 77 + cropPuff * 0.3, 50, 83 + cropPuff * 0.4);
-    ctx.bezierCurveTo(54, 77 + cropPuff * 0.3, 55, 70, 58, 66);
-    ctx.bezierCurveTo(61, 70, 63, 76.5, 67, 75);
-    ctx.bezierCurveTo(74, 73, 77 + cropPuff * 0.5, 64, 74 + cropPuff * 0.4, 55);
-    ctx.quadraticCurveTo(50, 62 + cropPuff * 0.2, 26 - cropPuff * 0.4, 55);
-    ctx.closePath();
-
-    // Dynamic Iridescent Multi-Stop Gradient (shifts with time and motion)
-    const phase = (Math.sin(t * 1.5) * 0.15);
-    const g = ctx.createLinearGradient(cx, 50, cx, 83 + cropPuff * 0.4);
-    g.addColorStop(0, IRID_COLORS[0]);
-    g.addColorStop(clamp01(0.38 + phase), IRID_COLORS[1]);
-    g.addColorStop(clamp01(0.68 + phase), IRID_COLORS[2]);
-    g.addColorStop(1, IRID_COLORS[3]);
-
-    ctx.fillStyle = g;
-    ctx.globalAlpha = 0.85 * this.iridescenceIntensity + 0.15;
-    ctx.fill();
-
-    // Shimmering feather barbules
-    ctx.save();
-    ctx.clip();
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
-    ctx.lineWidth = 1.2;
-    ctx.lineCap = 'round';
-    ctx.beginPath();
-    ctx.moveTo(32, 64);
-    ctx.quadraticCurveTo(50, 70 + cropPuff * 0.3, 68, 64);
-    ctx.stroke();
-
-    ctx.strokeStyle = 'rgba(0, 0, 0, 0.12)';
-    ctx.beginPath();
-    ctx.moveTo(42, 66); ctx.quadraticCurveTo(43, 73, 40, 79);
-    ctx.moveTo(58, 66); ctx.quadraticCurveTo(57, 73, 60, 79);
-    ctx.stroke();
-    ctx.restore();
-
-    ctx.restore();
-  }
-
-  _drawHead(ctx, hX, hY, hTilt, blinkL, blinkR, eyeShape, mouthOpen, bodyY, cropPuff) {
-    ctx.save();
-    const cx = 50 + hX, cy = 40 + hY + bodyY * 0.5;
-    ctx.translate(cx, cy);
-    ctx.rotate(hTilt * Math.PI / 180);
-    ctx.translate(-cx, -cy);
-
-    // Cranial silhouette (tête ronde en argile douce 3D)
+    // Tête 3D en argile douce
     ctx.beginPath();
     ctx.ellipse(cx, cy, 21.0, 22.0, 0, 0, Math.PI * 2);
     ctx.fillStyle = radial(ctx, cx - 6, cy - 7, 28, clayHi, clayShadow, -0.35, -0.4);
     ctx.fill();
 
-    // Cheeks subtle blush
+    // Joues roses en cas de rire / joie
     if (eyeShape === 'happy') {
       ctx.save();
       ctx.fillStyle = blushC;
@@ -638,25 +906,25 @@ export class Pigeon {
       ctx.restore();
     }
 
-    // Cere (Cire blanche crayeuse au-dessus du bec)
+    // Cire douce (Cere)
     ctx.beginPath();
     ctx.ellipse(cx, cy + 6.2, 6.2, 3.6, 0, 0, Math.PI * 2);
     ctx.fillStyle = radial(ctx, cx - 1, cy + 5, 8, cereC, cereShadow, -0.2, -0.3);
     ctx.fill();
 
-    // Nostril notches (narines délicates)
+    // Narines fines
     ctx.fillStyle = '#A39E96';
     ctx.beginPath(); ctx.ellipse(cx - 2.4, cy + 6.8, 0.8, 1.2, -0.3, 0, Math.PI * 2); ctx.fill();
     ctx.beginPath(); ctx.ellipse(cx + 2.4, cy + 6.8, 0.8, 1.2, 0.3, 0, Math.PI * 2); ctx.fill();
 
-    // Beak (Bec)
+    // Bec articulé
     this._drawBeak(ctx, cx, cy + 11, mouthOpen);
 
-    // Eyes (Yeux vivants)
+    // Yeux vivants
     this._drawEye(ctx, cx - 15, cy - 3, blinkL, eyeShape, 'L');
     this._drawEye(ctx, cx + 15, cy - 3, blinkR, eyeShape, 'R');
 
-    // Subtle brow expression
+    // Sourcil expressif
     this._drawEyebrows(ctx, cx, cy, eyeShape);
 
     ctx.restore();
@@ -666,7 +934,7 @@ export class Pigeon {
     const gape = mouthOpen * 6.5;
     ctx.save();
 
-    // Upper mandible (mandibule supérieure)
+    // Mandibule supérieure
     ctx.beginPath();
     ctx.moveTo(cx - 5.8, top);
     ctx.quadraticCurveTo(cx, top - 6.5, cx + 5.8, top);
@@ -676,7 +944,7 @@ export class Pigeon {
     ctx.fillStyle = radial(ctx, cx, top - 1, 9, beakLight, beakShadow, 0, -0.5);
     ctx.fill();
 
-    // Beak interior / tongue if open
+    // Intérieur du bec & langue
     if (mouthOpen > 0.04) {
       ctx.beginPath();
       ctx.moveTo(cx - 3.8, top + 6.5);
@@ -685,14 +953,14 @@ export class Pigeon {
       ctx.fillStyle = '#6B2121';
       ctx.fill();
 
-      // Tongue tip (langue rose)
+      // Langue
       ctx.fillStyle = '#F43F5E';
       ctx.beginPath();
       ctx.ellipse(cx, top + 7.5 + gape * 0.4, 1.6, 2.2, 0, 0, Math.PI * 2);
       ctx.fill();
     }
 
-    // Lower mandible (mandibule inférieure)
+    // Mandibule inférieure
     ctx.beginPath();
     const dy = 7.5 + gape;
     ctx.moveTo(cx - 4.9, top + 2 + gape * 0.5);
@@ -701,7 +969,7 @@ export class Pigeon {
     ctx.fillStyle = linear(ctx, cx, top, cx, top + dy, beakBase, beakShadow);
     ctx.fill();
 
-    // Specular shine on beak culmen (arête dorsale brillante)
+    // Reflet sur l'arête
     ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
     ctx.beginPath();
     ctx.ellipse(cx - 1.5, top - 2.2, 2.0, 1.1, -0.3, 0, Math.PI * 2);
@@ -714,20 +982,18 @@ export class Pigeon {
     const r = 8.8;
     ctx.save();
 
-    // Eye socket ambient shadow
+    // Ombre sous orbite
     ctx.fillStyle = 'rgba(0,0,0,0.12)';
     ctx.beginPath();
     ctx.arc(cx, cy + 0.5, r + 0.8, 0, Math.PI * 2);
     ctx.fill();
 
-    // Clip to eyeball circle
     ctx.save();
     ctx.beginPath();
     ctx.arc(cx, cy, r, 0, Math.PI * 2);
     ctx.clip();
 
     if (shape === 'sleep' || blinkAmt >= 0.95) {
-      // Eyelids fully closed (paupières avec cils doux)
       ctx.fillStyle = radial(ctx, cx, cy - r * 0.5, r * 1.5, clayHi, clayShadow, -0.2, -0.4);
       ctx.fill();
       ctx.strokeStyle = '#475569';
@@ -738,7 +1004,6 @@ export class Pigeon {
       ctx.quadraticCurveTo(cx, cy + 3.5, cx + 7, cy);
       ctx.stroke();
     } else if (shape === 'happy') {
-      // Crescent happy eye (^ ^)
       ctx.fillStyle = radial(ctx, cx, cy, r, cereC, cereShadow);
       ctx.fill();
       ctx.fillStyle = radial(ctx, cx, cy, r * 0.85, irisOuter, irisInner);
@@ -746,7 +1011,7 @@ export class Pigeon {
       ctx.fillStyle = pupilC;
       ctx.beginPath(); ctx.arc(cx, cy, r * 0.5, 0, Math.PI * 2); ctx.fill();
 
-      // Curved happy lid
+      // Paupière souriante
       ctx.fillStyle = radial(ctx, cx, cy - r * 0.4, r * 1.4, clayHi, clayShadow);
       ctx.beginPath();
       ctx.moveTo(cx - r - 1, cy - r - 1);
@@ -756,19 +1021,18 @@ export class Pigeon {
       ctx.closePath();
       ctx.fill();
     } else {
-      // Standard / Inquisitive Eye with dual concentric iris rings
-      // Sclera (blanc doux)
+      // Sclère blanche
       ctx.fillStyle = radial(ctx, cx, cy, r, cereC, cereShadow, -0.3, -0.3);
       ctx.fill();
 
-      // Outer vibrant orange iris ring
+      // Anneau d'iris orange
       const irisR = r * 0.82;
       ctx.beginPath();
       ctx.arc(cx, cy, irisR, 0, Math.PI * 2);
       ctx.fillStyle = radial(ctx, cx, cy, irisR, irisOuter, irisInner, -0.25, -0.3);
       ctx.fill();
 
-      // Deep dark pupil
+      // Pupille
       const pr = irisR * (shape === 'inquisitive' ? 0.44 : 0.52);
       const pOffsetX = shape === 'inquisitive' ? (side === 'L' ? 1.2 : -1.2) : 0.4;
       const pOffsetY = shape === 'inquisitive' ? -0.8 : 0.5;
@@ -778,19 +1042,18 @@ export class Pigeon {
       ctx.fillStyle = pupilC;
       ctx.fill();
 
-      // Primary crisp white catchlight (reflet vitreux principal)
+      // Catchlights
       ctx.fillStyle = '#FFFFFF';
       ctx.beginPath();
       ctx.arc(cx + pOffsetX - pr * 0.36, cy + pOffsetY - pr * 0.38, pr * 0.38, 0, Math.PI * 2);
       ctx.fill();
 
-      // Secondary specular glint (micro-reflet diffus)
       ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
       ctx.beginPath();
       ctx.arc(cx + pOffsetX + pr * 0.4, cy + pOffsetY + pr * 0.4, pr * 0.2, 0, Math.PI * 2);
       ctx.fill();
 
-      // Upper eyelid blink overlay if partially blinking
+      // Clignement
       if (blinkAmt > 0.05) {
         const lidY = cy - r + blinkAmt * (r * 2);
         ctx.fillStyle = radial(ctx, cx, cy - r * 0.6, r * 1.5, clayHi, clayShadow, -0.2, -0.5);
@@ -817,7 +1080,6 @@ export class Pigeon {
     ctx.lineCap = 'round';
 
     if (shape === 'inquisitive') {
-      // One brow raised
       ctx.beginPath();
       ctx.moveTo(cx - 20, cy - 14);
       ctx.quadraticCurveTo(cx - 15, cy - 18, cx - 10, cy - 14);
@@ -892,7 +1154,6 @@ export class PigeonRenderer {
   }
 
   resize() {
-    // Re-render immediately on scale change
     if (this.pigeon) {
       const elapsed = (performance.now() - this.startTime) / 1000;
       this.pigeon.draw(elapsed);
@@ -1004,4 +1265,3 @@ if (typeof window !== 'undefined') {
     return portrait.toDataURL();
   };
 }
-

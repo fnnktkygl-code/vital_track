@@ -361,6 +361,15 @@
 
       <div>
         <div class="control-group-title">
+          <i class="ri-volume-up-line"></i> Effets Sonores Aviaires (Web Audio)
+        </div>
+        <button id="soundToggleBtn" class="action-btn active" style="width:100%; justify-content:center;" onclick="toggleAudioFx()">
+          <i class="ri-volume-up-fill" id="soundIcon"></i> <span id="soundLabel">Sons Aviaires : Activés (Roucoulement, Vol, Picorage)</span>
+        </button>
+      </div>
+
+      <div>
+        <div class="control-group-title">
           <i class="ri-eye-line"></i> Échelle de Rendu
         </div>
         <div class="toggle-pill-row">
@@ -455,6 +464,18 @@
     window.updateIridescence = function(val) {
       document.getElementById('iridVal').textContent = val + '%';
       if (pigeonInstance) pigeonInstance.setIridescence(parseFloat(val) / 100);
+    };
+
+    window.toggleAudioFx = function() {
+      if (window.pigeonAudio) {
+        const enabled = window.pigeonAudio.toggleSound();
+        const btn = document.getElementById('soundToggleBtn');
+        const icon = document.getElementById('soundIcon');
+        const label = document.getElementById('soundLabel');
+        if (btn) btn.classList.toggle('active', enabled);
+        if (icon) icon.className = enabled ? 'ri-volume-up-fill' : 'ri-volume-mute-fill';
+        if (label) label.textContent = enabled ? 'Sons Aviaires : Activés (Roucoulement, Vol, Picorage)' : 'Sons Aviaires : Désactivés (Muet)';
+      }
     };
 
     window.setCanvasScale = function(w, h, btn) {

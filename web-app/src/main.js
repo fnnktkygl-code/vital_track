@@ -7488,3 +7488,13 @@ window.triggerInAppPigeonAction = function() {
   window.setInAppMascotAction(next);
 };
 
+window.toggleInAppAudioFx = function() {
+  if (window.pigeonAudio) {
+    const enabled = window.pigeonAudio.toggleSound();
+    const icon = document.getElementById('inAppSoundIcon');
+    const label = document.getElementById('inAppSoundLabel');
+    if (icon) icon.className = enabled ? 'ri-volume-up-fill' : 'ri-volume-mute-fill';
+    if (label) label.textContent = enabled ? 'Sons Aviaires : Activés' : 'Sons Aviaires : Désactivés';
+  }
+};
+
