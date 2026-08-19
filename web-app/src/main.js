@@ -552,7 +552,7 @@ window.initVitalSelect = function(selectEl) {
 };
 
 window.initAllVitalSelects = function() {
-  document.querySelectorAll('select.custom-vital-select, select.sort-select, #fastingType, #searchSortSelect, #profileGoal').forEach(sel => {
+  document.querySelectorAll('select.custom-vital-select, select.sort-select, #fastingType, #searchSortSelect, #profileGoal, #profileTransitionLevel, #profileActivity, #profileBioregion').forEach(sel => {
     window.initVitalSelect(sel);
   });
 };
@@ -762,6 +762,12 @@ function loadProfile() {
   document.querySelectorAll('#emonctoireChipsContainer .emonctoire-chip').forEach(chip => {
     const organ = chip.dataset.organ;
     chip.classList.toggle('active', activeOrgans.includes(organ));
+  });
+
+  // Refresh all custom vital-select UI triggers
+  ['profileGoal', 'profileTransitionLevel', 'profileActivity', 'profileBioregion'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el._updateVitalSelect) el._updateVitalSelect();
   });
 
   if (document.getElementById('greetName')) document.getElementById('greetName').textContent = p.name ? `Salut ${p.name} ! 👋` : 'Salut ! 👋';

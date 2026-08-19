@@ -3507,17 +3507,19 @@ input[type=number] {
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  min-height: 44px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 12px 16px;
-  font-size: 0.92rem;
+  padding: 10px 14px;
+  font-size: 0.88rem;
   font-weight: 600;
   color: var(--text);
   font-family: inherit;
   cursor: pointer;
   transition: all 0.2s ease;
   user-select: none;
+  gap: 8px;
 }
 .vital-select-trigger:hover, .vital-select-trigger.active {
   border-color: var(--accent);
@@ -3527,15 +3529,19 @@ input[type=number] {
 .vital-select-trigger-text {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+  text-align: left;
 }
 .vital-select-chevron {
   color: var(--text-dim);
   font-size: 1.1rem;
   transition: transform 0.2s ease;
+  flex-shrink: 0;
 }
 .vital-select-trigger.active .vital-select-chevron {
   transform: rotate(180deg);
@@ -3546,16 +3552,19 @@ input[type=number] {
   position: absolute;
   top: calc(100% + 6px);
   left: 0;
-  right: 0;
+  min-width: 100%;
+  width: max-content;
+  max-width: min(92vw, 520px);
   z-index: 10060;
-  max-height: 280px;
+  max-height: 320px;
   overflow-y: auto;
-  background: rgba(15, 23, 42, 0.96);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(15, 23, 42, 0.98);
+  border: 1px solid rgba(52, 211, 153, 0.3);
   border-radius: 14px;
   padding: 6px;
-  backdrop-filter: blur(24px);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7), 0 0 20px rgba(52, 211, 153, 0.1);
   animation: popoverFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .vital-select-option {
@@ -3565,10 +3574,13 @@ input[type=number] {
   padding: 10px 14px;
   border-radius: 10px;
   color: var(--text);
-  font-size: 0.88rem;
+  font-size: 0.86rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.15s ease;
+  gap: 12px;
+  white-space: normal;
+  line-height: 1.35;
 }
 .vital-select-option:hover {
   background: rgba(255, 255, 255, 0.08);

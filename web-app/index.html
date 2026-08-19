@@ -1258,12 +1258,12 @@
             <h4 style="font-size:0.92rem; font-weight:700; color:var(--text); margin:0 0 12px 0; display:flex; align-items:center; gap:8px;">
               <span style="font-size:1.1rem;">🎯</span> Objectif Principal &amp; Niveau de Transition
             </h4>
-            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px;">
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:14px;">
               <label>Nom ou Prénom
                 <input type="text" id="profileName" placeholder="Votre nom ou prénom..." class="form-input" oninput="updateLiveAiPreview()">
               </label>
               <label>Objectif Majeur
-                <select id="profileGoal" class="form-input" onchange="updateLiveAiPreview()">
+                <select id="profileGoal" class="form-input custom-vital-select" onchange="updateLiveAiPreview()">
                   <option value="detox">🧹 Détox &amp; Nettoyage lymphatique</option>
                   <option value="weight">⚖️ Perte de poids &amp; Affinement</option>
                   <option value="energy">⚡ Énergie &amp; Vitalité maximale</option>
@@ -1273,7 +1273,7 @@
                 </select>
               </label>
               <label style="grid-column:1/-1;">Niveau de Transition Actuel (Capital pour la sécurité selon Arnold Ehret)
-                <select id="profileTransitionLevel" class="form-input" onchange="updateLiveAiPreview()">
+                <select id="profileTransitionLevel" class="form-input custom-vital-select" onchange="updateLiveAiPreview()">
                   <option value="beginner">🌱 Débutant (Alimentation mixte / transition douce vers le végétal)</option>
                   <option value="intermediate" selected>🌿 Intermédiaire (Alimentation végétale, sans mucus, jeûnes réguliers)</option>
                   <option value="advanced">🍇 Avancé (Frugivore, jeûneur expérimenté, herboristerie active)</option>
@@ -1287,25 +1287,27 @@
             <h4 style="font-size:0.92rem; font-weight:700; color:var(--text); margin:0 0 12px 0; display:flex; align-items:center; gap:8px;">
               <span style="font-size:1.1rem;">⚖️</span> Morphologie &amp; Métabolisme
             </h4>
-            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:12px;">
-              <label>Taille (cm)
-                <input type="number" id="profileHeight" placeholder="175" class="form-input" oninput="updateLiveAiPreview()">
-              </label>
-              <label>Poids Actuel (kg)
-                <input type="number" step="0.1" id="profileCurrentWeight" placeholder="70.0" class="form-input" oninput="updateLiveAiPreview()">
-              </label>
-              <label>Poids Cible (kg)
-                <input type="number" step="0.1" id="profileTargetWeight" placeholder="65.0" class="form-input" oninput="updateLiveAiPreview()">
-              </label>
-              <label>Âge (ans)
-                <input type="number" id="profileAge" placeholder="32" class="form-input" oninput="updateLiveAiPreview()">
-              </label>
+            <div style="display:flex; flex-direction:column; gap:14px;">
+              <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(110px, 1fr)); gap:12px;">
+                <label>Taille (cm)
+                  <input type="number" id="profileHeight" placeholder="175" class="form-input" oninput="updateLiveAiPreview()">
+                </label>
+                <label>Poids Actuel (kg)
+                  <input type="number" step="0.1" id="profileCurrentWeight" placeholder="70.0" class="form-input" oninput="updateLiveAiPreview()">
+                </label>
+                <label>Poids Cible (kg)
+                  <input type="number" step="0.1" id="profileTargetWeight" placeholder="65.0" class="form-input" oninput="updateLiveAiPreview()">
+                </label>
+                <label>Âge (ans)
+                  <input type="number" id="profileAge" placeholder="32" class="form-input" oninput="updateLiveAiPreview()">
+                </label>
+              </div>
               <label>Niveau d'Activité
-                <select id="profileActivity" class="form-input" onchange="updateLiveAiPreview()">
-                  <option value="sedentary">🛋️ Sédentaire (Bureau)</option>
-                  <option value="moderate" selected>🚶 Modéré (Marche, yoga)</option>
-                  <option value="active">🏃 Actif (Sport 3-4x/sem)</option>
-                  <option value="athlete">⚡ Athlète / Métier physique</option>
+                <select id="profileActivity" class="form-input custom-vital-select" onchange="updateLiveAiPreview()">
+                  <option value="sedentary">🛋️ Sédentaire (Bureau, peu de déplacements)</option>
+                  <option value="moderate" selected>🚶 Modéré (Marche quotidienne, yoga, étirements)</option>
+                  <option value="active">🏃 Actif (Sport 3-4x/semaine, travail debout)</option>
+                  <option value="athlete">⚡ Athlète (Entraînement quotidien / Métier physique)</option>
                 </select>
               </label>
             </div>
@@ -1337,6 +1339,8 @@
                 <span>☀️</span><span>Peau &amp; Transpiration</span>
               </div>
             </div>
+          </div>
+
           <!-- Bloc Mascotte & Compagnonnage -->
           <div style="padding:16px; border-radius:14px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); margin-bottom:12px;">
             <h4 style="font-size:0.92rem; font-weight:700; color:var(--text); margin:0 0 4px 0; display:flex; align-items:center; gap:8px;">
@@ -1373,23 +1377,23 @@
             <h4 style="font-size:0.92rem; font-weight:700; color:var(--text); margin:0 0 12px 0; display:flex; align-items:center; gap:8px;">
               <span style="font-size:1.1rem;">🌍</span> Biorégion, Climat &amp; Saisonnalité
             </h4>
-            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px;">
-              <label>Pays
-                <input type="text" id="profileCountry" placeholder="Canada 🍁" class="form-input" oninput="updateLiveAiPreview()">
-              </label>
-              <label>Ville
-                <input type="text" id="profileCity" placeholder="Montréal" class="form-input" oninput="updateLiveAiPreview()">
-              </label>
+            <div style="display:flex; flex-direction:column; gap:14px;">
+              <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px;">
+                <label>Pays
+                  <input type="text" id="profileCountry" placeholder="Canada 🍁" class="form-input" oninput="updateLiveAiPreview()">
+                </label>
+                <label>Ville
+                  <input type="text" id="profileCity" placeholder="Montréal" class="form-input" oninput="updateLiveAiPreview()">
+                </label>
+              </div>
               <label>Biorégion / Climat
-                <select id="profileBioregion" class="form-input" onchange="updateLiveAiPreview()">
-                  <option value="boreal" selected>🌲 Boréale / Nordique (Canada, Scandinavie)</option>
-                  <option value="temperate">🌳 Tempérée européenne (France, Belgique, Suisse)</option>
-                  <option value="mediterranean">🍋 Méditerranéenne (Sud Europe, Maghreb)</option>
-                  <option value="tropical">🌴 Tropicale / Amazonienne (Antilles, Guyane, Brésil)</option>
-                  <option value="west_african">☀️ Subsaharienne / Ouest-Africaine</option>
-                  <option value="arid">🏜️ Aride / Désertique</option>
+                <select id="profileBioregion" class="form-input custom-vital-select" onchange="updateLiveAiPreview()">
+                  <option value="boreal" selected>🌲 Boréale / Nordique (Canada, Scandinavie, Russie)</option>
+                  <option value="temperate">🍂 Tempérée Océanique / Continentale (France, Europe Centrale)</option>
+                  <option value="mediterranean">☀️ Méditerranéenne / Subtropicale (Sud Europe, Californie)</option>
+                  <option value="tropical">🌴 Tropicale / Équatoriale (Antilles, Amazonie, Afrique, Asie du Sud-Est)</option>
+                  <option value="arid">🌵 Aride / Désertique (Maghreb, Moyen-Orient, Sud-Ouest USA)</option>
                 </select>
-              </label>
             </div>
           </div>
 
