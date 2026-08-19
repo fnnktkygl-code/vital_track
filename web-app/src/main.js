@@ -7431,3 +7431,60 @@ window.updateCircadianWidget = function() {
 updateCircadianWidget();
 setInterval(updateCircadianWidget, 30000);
 document.addEventListener('DOMContentLoaded', updateCircadianWidget);
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// MASCOT STUDIO HD MODAL CONTROLLER
+// ═══════════════════════════════════════════════════════════════════════════════
+let _inAppMascotRenderer = null;
+const _mascotQuotes = {
+  idle: "« Prêt à explorer la vitalité naturelle et drainer les acides ! »",
+  walk: "« En route pour stimuler la lymphe et activer la motilité péristaltique ! 🚶 »",
+  fly: "« L'énergie vitale est à son apogée (V = P - O) ! 🪽 »",
+  laugh: "« Hahaha ! La joie et la respiration profonde alcalinisent le terrain ! 😄 »",
+  coo: "« Roucouuu ! Écoute le chant de tes cellules régénérées. 🐦 »",
+  think: "« J'analyse les flavonoïdes, le PRAL et la charge en mucus... 🧐 »",
+  peck: "« Une alimentation vivante, brute, gorgée d'eau structurée ! 🌾 »",
+  celebrate: "« Félicitations pour tes victoires vitalistes ! 🎉 »",
+  sleep: "« Réparation cellulaire et autolyse des déchets... Bonne nuit ! 😴 »"
+};
+
+window.openMascotStudioModal = function() {
+  const modal = document.getElementById('mascotStudioModal');
+  if (!modal) return;
+  modal.style.display = 'flex';
+  
+  const canvas = document.getElementById('inAppMascotCanvas');
+  if (canvas && window.PigeonRenderer) {
+    if (!_inAppMascotRenderer) {
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = 220 * dpr;
+      canvas.height = 260 * dpr;
+      canvas.style.width = '220px';
+      canvas.style.height = '260px';
+      _inAppMascotRenderer = new window.PigeonRenderer(canvas);
+    }
+    _inAppMascotRenderer.setAction('idle');
+  }
+};
+
+window.closeMascotStudioModal = function() {
+  const modal = document.getElementById('mascotStudioModal');
+  if (modal) modal.style.display = 'none';
+};
+
+window.setInAppMascotAction = function(action) {
+  if (_inAppMascotRenderer) {
+    _inAppMascotRenderer.setAction(action);
+  }
+  const bubble = document.getElementById('inAppMascotBubble');
+  if (bubble && _mascotQuotes[action]) {
+    bubble.textContent = `🐦 ${_mascotQuotes[action]}`;
+  }
+};
+
+window.triggerInAppPigeonAction = function() {
+  const actions = ['laugh', 'celebrate', 'coo', 'peck', 'fly', 'walk'];
+  const next = actions[Math.floor(Math.random() * actions.length)];
+  window.setInAppMascotAction(next);
+};
+

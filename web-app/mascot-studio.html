@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VitalTrack — Studio Mascotte Pigeon 3D HD</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: rgba(18, 24, 38, 0.85);
+      --border: rgba(255, 255, 255, 0.08);
+      --accent: #34d399;
+      --accent-glow: rgba(52, 211, 153, 0.35);
+      --text: #f8fafc;
+      --text-dim: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: radial-gradient(circle at 50% 20%, #172033 0%, #080c14 100%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px 20px;
+    }
+
+    .studio-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .studio-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: rgba(52, 211, 153, 0.12);
+      border: 1px solid rgba(52, 211, 153, 0.3);
+      border-radius: 999px;
+      color: var(--accent);
+      font-size: 0.82rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .studio-title {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #ffffff 40%, #a7f3d0 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .studio-subtitle {
+      font-size: 0.92rem;
+      color: var(--text-dim);
+      margin-top: 6px;
+    }
+
+    .studio-container {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 24px;
+      max-width: 960px;
+      width: 100%;
+    }
+
+    @media (max-width: 820px) {
+      .studio-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* VIEWPORT */
+    .viewport-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    }
+
+    .viewport-bg-glow {
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+      animation: pulseGlow 4s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulseGlow {
+      0% { transform: scale(0.9); opacity: 0.5; }
+      100% { transform: scale(1.15); opacity: 0.85; }
+    }
+
+    .mascot-stage {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    #mascotStudioCanvas {
+      display: block;
+      filter: drop-shadow(0 15px 25px rgba(0,0,0,0.4));
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    #mascotStudioCanvas:hover {
+      transform: scale(1.03);
+    }
+
+    .active-state-tag {
+      margin-top: 16px;
+      padding: 6px 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* CONTROLS */
+    .controls-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      backdrop-filter: blur(20px);
+    }
+
+    .control-group-title {
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .actions-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .action-btn {
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      color: var(--text);
+      font-size: 0.84rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .action-btn:hover {
+      background: rgba(52, 211, 153, 0.12);
+      border-color: rgba(52, 211, 153, 0.35);
+      color: #fff;
+      transform: translateY(-2px);
+    }
+
+    .action-btn.active {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      border-color: #34d399;
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35);
+    }
+
+    .slider-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .slider-label-wrap {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      font-weight: 600;
+    }
+
+    .slider-input {
+      width: 100%;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .toggle-pill-row {
+      display: flex;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 4px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .toggle-pill {
+      flex: 1;
+      padding: 8px;
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      font-size: 0.8rem;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .toggle-pill.active {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+    }
+
+    .speech-bubble {
+      margin-top: 12px;
+      padding: 12px 14px;
+      background: rgba(52, 211, 153, 0.08);
+      border: 1px solid rgba(52, 211, 153, 0.25);
+      border-radius: 14px;
+      font-size: 0.84rem;
+      color: #a7f3d0;
+      line-height: 1.4;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="studio-header">
+    <div class="studio-badge">
+      <i class="ri-sparkling-fill"></i> Laboratoire Visuel Antigravity
+    </div>
+    <h1 class="studio-title">Pigeon Biset VitalTrack — Studio HD</h1>
+    <p class="studio-subtitle">Moteur d'animation 3D Canvas • Shading organique & cinématique fluide</p>
+  </header>
+
+  <div class="studio-container">
+    <!-- VIEWPORT DE RENDU -->
+    <div class="viewport-card">
+      <div class="viewport-bg-glow"></div>
+      <div class="mascot-stage" onclick="triggerPigeonClick()">
+        <canvas id="mascotStudioCanvas" width="280" height="340"></canvas>
+      </div>
+      <div class="active-state-tag">
+        <span id="stateIcon">🕊️</span>
+        <span id="stateLabel">État : Respiration (Idle)</span>
+      </div>
+      <div class="speech-bubble" id="pigeonCooMessage">
+        <span>🐦</span> <span id="cooText">« Roucouuu ! Je suis ton guide vitaliste. »</span>
+      </div>
+    </div>
+
+    <!-- PANNEAU DE CONTRÔLES -->
+    <div class="controls-card">
+      <div>
+        <div class="control-group-title">
+          <i class="ri-play-circle-line"></i> Déclencher une Action / Animation
+        </div>
+        <div class="actions-grid">
+          <button class="action-btn active" data-action="idle" onclick="setStudioAction('idle')">
+            <span>🕊️</span> Respiration
+          </button>
+          <button class="action-btn" data-action="walk" onclick="setStudioAction('walk')">
+            <span>🚶</span> Marcher
+          </button>
+          <button class="action-btn" data-action="fly" onclick="setStudioAction('fly')">
+            <span>🪽</span> S'envoler
+          </button>
+          <button class="action-btn" data-action="laugh" onclick="setStudioAction('laugh')">
+            <span>😄</span> Rire / Joie
+          </button>
+          <button class="action-btn" data-action="coo" onclick="setStudioAction('coo')">
+            <span>🐦</span> Roucouler
+          </button>
+          <button class="action-btn" data-action="think" onclick="setStudioAction('think')">
+            <span>🧐</span> Observer
+          </button>
+          <button class="action-btn" data-action="peck" onclick="setStudioAction('peck')">
+            <span>🌾</span> Picorer
+          </button>
+          <button class="action-btn" data-action="celebrate" onclick="setStudioAction('celebrate')">
+            <span>🌟</span> Célébrer
+          </button>
+          <button class="action-btn" data-action="sleep" onclick="setStudioAction('sleep')">
+            <span>😴</span> Dormir
+          </button>
+          <button class="action-btn" data-action="speak" onclick="toggleSpeaking()">
+            <span>💬</span> Parler (On/Off)
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <div class="control-group-title">
+          <i class="ri-equalizer-line"></i> Paramètres Moteurs
+        </div>
+        <div style="display:flex; flex-direction:column; gap:14px;">
+          <div class="slider-row">
+            <div class="slider-label-wrap">
+              <span>Vitesse d'animation</span>
+              <span id="speedVal">1.0x</span>
+            </div>
+            <input type="range" class="slider-input" id="speedSlider" min="0.3" max="2.5" step="0.1" value="1.0" oninput="updateSpeed(this.value)">
+          </div>
+
+          <div class="slider-row">
+            <div class="slider-label-wrap">
+              <span>Intensité de l'Iridescence</span>
+              <span id="iridVal">100%</span>
+            </div>
+            <input type="range" class="slider-input" id="iridSlider" min="0" max="100" step="5" value="100" oninput="updateIridescence(this.value)">
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="control-group-title">
+          <i class="ri-eye-line"></i> Échelle de Rendu
+        </div>
+        <div class="toggle-pill-row">
+          <button class="toggle-pill" onclick="setCanvasScale(160, 200, this)">Compact (160px)</button>
+          <button class="toggle-pill active" onclick="setCanvasScale(280, 340, this)">HD Standard (280px)</button>
+          <button class="toggle-pill" onclick="setCanvasScale(360, 440, this)">Ultra Grand (360px)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/mascot.js"></script>
+
+  <script>
+    let currentAction = 'idle';
+    let isSpeaking = false;
+    let animSpeed = 1.0;
+    let pigeonInstance = null;
+
+    const actionQuotes = {
+      idle: "« Prêt à explorer la vitalité naturelle ! »",
+      walk: "« En route pour drainer la lymphe et activer la motilité ! »",
+      fly: "« L'énergie vitale est au plus haut (V = P - O) ! »",
+      laugh: "« Hahaha ! La joie alcalinise le corps en quelques secondes ! »",
+      coo: "« Roucouuu ! Écoute le chant de tes cellules régénérées. »",
+      think: "« J'analyse les flavonoïdes et la charge en mucus... »",
+      peck: "« Une alimentation vivante, brute et pleine d'enzymes ! »",
+      celebrate: "« Félicitations ! Palier d'autophagie validé ! 🎉 »",
+      sleep: "« Réparation cellulaire et autolyse nocturne... Zzz »"
+    };
+
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(initStudio, 150);
+    });
+
+    function initStudio() {
+      const canvas = document.getElementById('mascotStudioCanvas');
+      if (!canvas || !window.PigeonRenderer) {
+        setTimeout(initStudio, 100);
+        return;
+      }
+      pigeonInstance = new window.PigeonRenderer(canvas);
+      pigeonInstance.setAction('idle');
+    }
+
+    window.setStudioAction = function(action) {
+      currentAction = action;
+      document.querySelectorAll('.action-btn').forEach(b => {
+        if (b.dataset.action !== 'speak') {
+          b.classList.toggle('active', b.dataset.action === action);
+        }
+      });
+      if (pigeonInstance) {
+        pigeonInstance.setAction(action, isSpeaking);
+      }
+      const labelMap = {
+        idle: 'Respiration (Idle)',
+        walk: 'Marche avec Head-Bobbing 🚶',
+        fly: 'Vol & Battement d\'Ailes 🪽',
+        laugh: 'Rire & Allégresse 😄',
+        coo: 'Roucoulement & Jabot gonflé 🐦',
+        think: 'Observation Inquisitrice 🧐',
+        peck: 'Picorage au sol 🌾',
+        celebrate: 'Célébration & Saut 🌟',
+        sleep: 'Sommeil & Repos profond 😴'
+      };
+      document.getElementById('stateLabel').textContent = 'Action : ' + (labelMap[action] || action);
+      document.getElementById('cooText').textContent = actionQuotes[action] || "« Roucouuu ! »";
+    };
+
+    window.toggleSpeaking = function() {
+      isSpeaking = !isSpeaking;
+      const speakBtn = document.querySelector('[data-action="speak"]');
+      if (speakBtn) speakBtn.classList.toggle('active', isSpeaking);
+      if (pigeonInstance) {
+        pigeonInstance.setAction(currentAction, isSpeaking);
+      }
+    };
+
+    window.triggerPigeonClick = function() {
+      const actions = ['laugh', 'celebrate', 'coo', 'peck', 'fly', 'walk'];
+      const next = actions[Math.floor(Math.random() * actions.length)];
+      setStudioAction(next);
+    };
+
+    window.updateSpeed = function(val) {
+      animSpeed = parseFloat(val);
+      document.getElementById('speedVal').textContent = animSpeed.toFixed(1) + 'x';
+      if (pigeonInstance) pigeonInstance.setSpeed(animSpeed);
+    };
+
+    window.updateIridescence = function(val) {
+      document.getElementById('iridVal').textContent = val + '%';
+      if (pigeonInstance) pigeonInstance.setIridescence(parseFloat(val) / 100);
+    };
+
+    window.setCanvasScale = function(w, h, btn) {
+      const canvas = document.getElementById('mascotStudioCanvas');
+      if (!canvas) return;
+      document.querySelectorAll('.toggle-pill').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      canvas.style.width = w + 'px';
+      canvas.style.height = h + 'px';
+      if (pigeonInstance) pigeonInstance.resize();
+    };
+  </script>
+</body>
+</html>
