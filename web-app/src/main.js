@@ -1177,9 +1177,9 @@ function getUserProfile() {
     age: p.age || '',
     activityLevel: p.activityLevel || 'moderate',
     targetOrgans: organs,
-    country: p.country || 'Canada 🍁',
-    city: p.city || 'Montréal',
-    bioregion: p.bioregion || 'boreal',
+    country: p.country || 'France 🇫🇷',
+    city: p.city || 'Paris',
+    bioregion: p.bioregion || 'temperate',
     season: p.season || defaultSeason,
     restrictions: p.restrictions || '',
     memories: mems
@@ -1349,6 +1349,13 @@ function renderDashboard() {
   document.getElementById('statFasts').textContent = weekFasts.length;
   document.getElementById('statBreaths').textContent = weekBreaths.length;
   document.getElementById('statFavs').textContent = favs.length;
+
+  // Greeting
+  const greetEl = document.getElementById('greetName');
+  if (greetEl) {
+    const p = getUserProfile();
+    greetEl.textContent = p.name ? `${t('dashboard.greeting')} ${p.name} ! 👋` : `${t('dashboard.greeting')} ! 👋`;
+  }
 
   // Date
   const dateEl = document.getElementById('dashboardDate');

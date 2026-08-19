@@ -14,7 +14,10 @@ export const LANG_CONFIG = {
 };
 
 let currentLang = localStorage.getItem(STORAGE_KEY) || 'fr';
-if (!SUPPORTED_LANGS.includes(currentLang)) currentLang = 'fr';
+if (!SUPPORTED_LANGS.includes(currentLang) || currentLang === 'fr-CA') {
+  currentLang = 'fr';
+  localStorage.setItem(STORAGE_KEY, 'fr');
+}
 
 const listeners = new Set();
 
@@ -369,7 +372,7 @@ export const TRANSLATIONS = {
       themeToggleTitle: 'Basculer le mode sombre/clair'
     },
     dashboard: {
-      greeting: 'Bon matin',
+      greeting: 'Bonjour',
       scoreTitle: 'Score de Vitalité Biologique',
       scoreSub: 'Équilibre PRAL, hydratation boréale et élimination lymphatique',
       circadianTitle: 'Horloge Circadienne & Rythme Boréal',
@@ -951,7 +954,7 @@ export function setLanguage(lang) {
 }
 
 export function toggleLanguage() {
-  const order = ['fr', 'fr-CA', 'en', 'es'];
+  const order = ['fr', 'en', 'es', 'fr-CA'];
   const nextIdx = (order.indexOf(currentLang) + 1) % order.length;
   const next = order[nextIdx];
   setLanguage(next);
