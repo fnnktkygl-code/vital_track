@@ -4408,7 +4408,7 @@ const ehretMasterclassData = [
     pill: 'Exécution',
     content: [
       '<p>Ehret rejette les jeûnes uniformes de très longue durée, leur préférant une approche séquentielle et individualisée :</p>',
-      '<ul class="mc-list"><li><span class="mc-bullet">●</span><div><strong>Non-Breakfast Plan (Quotidien) :</strong> Abstention de nourriture solide le matin. Prolonge l\'élimination nocturne. La sensation de malaise au réveil est le travail d\'élimination ; manger l\'interrompt.</div></li><li><span class="mc-bullet">●</span><div><strong>24 Heures (1-2 fois/semaine) :</strong> Repas unique vers 15h (fruits, puis légumes).</div></li><li><span class="mc-bullet">●</span><div><strong>36 Heures :</strong> Sauter le souper, jeûner le lendemain, rompre le surlendemain matin. Dissout le mucus incrusté.</div></li><li><span class="mc-bullet">●</span><div><strong>Jeûnes Courts Intermittents (2-5 jours) :</strong> Prise de limonade légère. Régénère le sang sans auto-intoxication.</div></li></ul>'
+      '<ul class="mc-list"><li><span class="mc-bullet">●</span><div><strong>Plan sans petit-déjeuner (Quotidien) :</strong> Abstention de nourriture solide le matin. Prolonge l\'élimination nocturne. La sensation de malaise au réveil est le travail d\'élimination ; manger l\'interrompt.</div></li><li><span class="mc-bullet">●</span><div><strong>24 Heures (1-2 fois/semaine) :</strong> Repas unique vers 15h (fruits, puis légumes).</div></li><li><span class="mc-bullet">●</span><div><strong>36 Heures :</strong> Sauter le souper, jeûner le lendemain, rompre le surlendemain matin. Dissout le mucus incrusté.</div></li><li><span class="mc-bullet">●</span><div><strong>Jeûnes Courts Intermittents (2-5 jours) :</strong> Prise de limonade légère. Régénère le sang sans auto-intoxication.</div></li></ul>'
     ]
   },
   {
@@ -4533,7 +4533,7 @@ function initExpertAccordion() {
     {
       id: 'ehret',
       name: 'Arnold Ehret',
-      title: 'Rational Fasting',
+      title: 'Le Jeûne Rationnel',
       icon: 'ri-leaf-line',
       color: '#facc15',
       tips: [
@@ -6127,8 +6127,8 @@ window.renderResources = function() {
       description: "Le guide complet de référence sur la nutrition vitaliste, le jeûne intermittent, les combinaisons alimentaires et les protocoles de détoxification."
     },
     {
-      title: "Mucusless Diet Healing System",
-      subtitle: "Système de Guérison du Régime Sans Mucus",
+      title: "Système de Guérison du Régime Sans Mucus",
+      subtitle: "Arnold Ehret — Mucusless Diet Healing System",
       url: "/pdfs/arnold-ehret-mucusless-diet-healing-system.pdf",
       author: "Prof. Arnold Ehret",
       source: "Arnold Ehret (PDF Intégral)",
@@ -6139,8 +6139,8 @@ window.renderResources = function() {
       description: "L'ouvrage fondateur d'Arnold Ehret exposant la cause première de l'encrassement cellulaire (mucus, toxines), la transition sans mucus et l'équation fondamentale V = P - O."
     },
     {
-      title: "Rational Fasting",
-      subtitle: "Le Jeûne Rationnel & Régénération",
+      title: "Le Jeûne Rationnel & Régénération",
+      subtitle: "Arnold Ehret — Rational Fasting",
       url: "/pdfs/arnold-ehret-rational-fasting.pdf",
       author: "Prof. Arnold Ehret",
       source: "Arnold Ehret (PDF Intégral)",
@@ -6151,8 +6151,8 @@ window.renderResources = function() {
       description: "Manuel pratique d'Arnold Ehret sur la conduite progressive et sûre du jeûne, l'autolyse des dépôts métaboliques et la maîtrise des crises d'élimination."
     },
     {
-      title: "The Detox Miracle Sourcebook",
-      subtitle: "Guide Complet de Régénération Cellulaire",
+      title: "Guide de Régénération & Détoxification Cellulaire",
+      subtitle: "Dr. Robert Morse — The Detox Miracle Sourcebook",
       url: "/pdfs/robert-morse-detox-miracle-sourcebook.pdf",
       author: "Dr. Robert Morse, N.D.",
       source: "Dr. Robert Morse (PDF Intégral)",
@@ -6163,8 +6163,8 @@ window.renderResources = function() {
       description: "La bible de la régénération cellulaire : filtration rénale, grand système lymphatique, pouvoir dissolvant des fruits et herboristerie clinique."
     },
     {
-      title: "The Sunfood Diet Success System",
-      subtitle: "Nutrition Vivante & Force Vitale",
+      title: "Le Système de Réussite de l'Alimentation Vivante",
+      subtitle: "David Wolfe — The Sunfood Diet Success System",
       url: "/pdfs/david-wolfe-sunfood-diet-success-system.pdf",
       author: "David Wolfe",
       source: "David Wolfe (PDF Intégral)",
@@ -6175,8 +6175,8 @@ window.renderResources = function() {
       description: "L'encyclopédie de l'alimentation crue vivante, des superaliments sauvages, de la biophotonique et de la revitalisation enzymatique globale."
     },
     {
-      title: "The Bio-Electric Cell Food",
-      subtitle: "Intra-Cellular Cleansing Guide",
+      title: "L'Alimentation Cellulaire Bio-Électrique",
+      subtitle: "Dr. Sebi — The Bio-Electric Cell Food Cleansing Guide",
       url: "/pdfs/dr-sebi-bio-electric-cell-food-cleansing-guide.pdf",
       author: "Dr. Sebi (Alfredo Bowman)",
       source: "Dr. Sebi (PDF Intégral)",
