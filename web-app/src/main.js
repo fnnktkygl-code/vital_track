@@ -7392,27 +7392,36 @@ window.openPdfPassageModal = function (itemId) {
   if (!item || !modal || !content) return;
 
   content.innerHTML = `
-    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; padding-right:36px;">
-      <div>
-        <span class="badge ${item.badgeClass || 'badge-success'}" style="margin-bottom:6px; display:inline-block;">📚 Ouvrage Fondateur</span>
-        <h3 style="margin:0; font-size:1.15rem; color:#fff; font-weight:700;">${esc(item.title)}</h3>
-        <div style="font-size:0.82rem; color:var(--accent); font-weight:600; margin-top:2px;">Auteur : ${esc(item.author || 'Inconnu')}</div>
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; padding-right:48px; gap:12px; flex-wrap:wrap;">
+      <div style="flex:1; min-width:220px;">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px; flex-wrap:wrap;">
+          <span class="badge ${item.badgeClass || 'badge-success'}">📚 Ouvrage Fondateur</span>
+          <span class="badge" style="background:${item.lang === 'fr' ? 'rgba(52,211,153,0.14)' : 'rgba(56,189,248,0.14)'}; color:${item.lang === 'fr' ? '#34d399' : '#38bdf8'}; border:1px solid ${item.lang === 'fr' ? 'rgba(52,211,153,0.3)' : 'rgba(56,189,248,0.3)'}; font-size:0.75rem; font-weight:700;">
+            ${item.lang === 'fr' ? '🇫🇷 Français' : '🇬🇧 English'}
+          </span>
+        </div>
+        <h3 style="margin:0 0 4px 0; font-size:1.15rem; color:#fff; font-weight:800; line-height:1.3;">${esc(item.title)}</h3>
+        <div style="font-size:0.82rem; color:var(--accent); font-weight:600;"><i class="ri-quill-pen-line"></i> Auteur : <span style="color:#fff;">${esc(item.author || 'Inconnu')}</span></div>
       </div>
-      <span class="pdf-page-pill" style="font-size:0.85rem;"><i class="ri-book-open-line"></i> Page ${item.pageNumber}</span>
+      <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
+        <span class="pdf-page-pill" style="font-size:0.85rem; padding:6px 14px; white-space:nowrap; flex-shrink:0;">
+          <i class="ri-book-open-line"></i> Page ${item.pageNumber}
+        </span>
+      </div>
     </div>
 
-    <div style="background:rgba(16,185,129,0.08); border-left:3px solid var(--accent); padding:14px 16px; border-radius:10px; margin-bottom:16px;">
-      <div style="font-size:0.85rem; font-weight:700; color:#fff; margin-bottom:6px;">${esc(item.chapterTitle || '')}</div>
+    <div style="background:rgba(16,185,129,0.08); border-left:3px solid var(--accent); padding:14px 16px; border-radius:12px; margin-bottom:18px;">
+      <div style="font-size:0.88rem; font-weight:700; color:#fff; margin-bottom:6px;">${esc(item.chapterTitle || '')}</div>
       <p style="font-size:0.92rem; color:var(--text); line-height:1.6; margin:0; font-style:italic;">
-        ${esc(item.excerpt)}
+        « ${esc(item.excerpt)} »
       </p>
     </div>
 
     <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:20px;">
-      <a href="${item.pdfUrl}#page=${item.pageNumber}" target="_blank" rel="noopener noreferrer" class="btn-primary" style="flex:1; min-width:180px; text-align:center; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:10px 14px; font-weight:700;">
+      <a href="${item.pdfUrl}#page=${item.pageNumber}" target="_blank" rel="noopener noreferrer" class="btn-primary" style="flex:1; min-width:180px; text-align:center; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:10px 16px; font-weight:700; border-radius:10px;">
         <i class="ri-file-pdf-fill"></i> Ouvrir le PDF à la Page ${item.pageNumber}
       </a>
-      <a href="${item.pdfUrl}" download class="btn-secondary" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:10px 14px;">
+      <a href="${item.pdfUrl}" download class="btn-secondary" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:10px 16px; font-weight:600; border-radius:10px;" title="Télécharger le fichier PDF">
         <i class="ri-download-2-line"></i> Télécharger
       </a>
     </div>
