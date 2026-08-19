@@ -401,8 +401,16 @@ async function processAllMediaAndPdfs() {
     const pages = [];
 
     const render_page = (pageData) => {
-      return pageData.getTextContent().then(textContent => {
-        const text = textContent.items.map(item => item.str).join(' ');
+      return pageData.getTextContent({ normalizeWhitespace: true }).then(textContent => {
+        let lastY, text = '';
+        for (let item of textContent.items) {
+          if (lastY == item.transform[5] || !lastY) {
+            text += item.str;
+          } else {
+            text += '\n' + item.str;
+          }
+          lastY = item.transform[5];
+        }
         pages.push({
           pageNumber: pageData.pageIndex + 1,
           rawText: text

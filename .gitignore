@@ -21,3 +21,5 @@ dist/
 
 # Scratch temporary files
 scratch/
+.vercel
+.env*
