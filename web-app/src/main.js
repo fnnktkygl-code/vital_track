@@ -7490,7 +7490,6 @@ let _inAppMascotRenderer = null;
 const _mascotQuotes = {
   idle: "« Prêt à explorer la vitalité naturelle et drainer les acides ! »",
   walk: "« En route pour stimuler la lymphe et activer la motilité péristaltique ! 🚶 »",
-  fly: "« L'énergie vitale est à son apogée (V = P - O) ! 🪽 »",
   laugh: "« Hahaha ! La joie et la respiration profonde alcalinisent le terrain ! 😄 »",
   coo: "« Roucouuu ! Écoute le chant de tes cellules régénérées. 🐦 »",
   think: "« J'analyse les flavonoïdes, le PRAL et la charge en mucus... 🧐 »",
@@ -7526,6 +7525,10 @@ window.setInAppMascotAction = function(action) {
   if (_inAppMascotRenderer) {
     _inAppMascotRenderer.setAction(action);
   }
+  // Jouer le vrai son de pigeon UNIQUEMENT lors d'un clic explicite sur Roucouler dans la modale
+  if (action === 'coo' && window.pigeonAudio) {
+    window.pigeonAudio.playRealCoo();
+  }
   const bubble = document.getElementById('inAppMascotBubble');
   if (bubble && _mascotQuotes[action]) {
     bubble.textContent = `🐦 ${_mascotQuotes[action]}`;
@@ -7533,7 +7536,7 @@ window.setInAppMascotAction = function(action) {
 };
 
 window.triggerInAppPigeonAction = function() {
-  const actions = ['laugh', 'celebrate', 'coo', 'fly', 'walk', 'think'];
+  const actions = ['laugh', 'celebrate', 'coo', 'walk', 'think'];
   const next = actions[Math.floor(Math.random() * actions.length)];
   window.setInAppMascotAction(next);
 };

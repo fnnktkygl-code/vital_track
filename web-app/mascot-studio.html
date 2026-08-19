@@ -417,6 +417,9 @@
       if (pigeonInstance) {
         pigeonInstance.setAction(action, isSpeaking);
       }
+      if (action === 'coo' && window.pigeonAudio) {
+        window.pigeonAudio.playRealCoo();
+      }
       const labelMap = {
         idle: 'Respiration (Idle)',
         walk: 'Marche avec Head-Bobbing 🚶',

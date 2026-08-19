@@ -128,11 +128,6 @@ export class Pigeon {
     this.action = action;
     this.isSpeaking = isSpeaking;
 
-    // Déclencher le vrai chant de pigeon UNIQUEMENT lors du roucoulement
-    if (action === 'coo') {
-      pigeonAudio.playRealCoo();
-    }
-
     if (action === 'celebrate' || action === 'laugh') {
       this._spawnParticles(action);
     }
