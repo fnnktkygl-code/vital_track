@@ -6,9 +6,11 @@
 
 import { RAINTREE_HERBS, RAINTREE_PROTOCOLS } from './raintree-data.js';
 import { t, getLanguage, setLanguage, toggleLanguage, onLanguageChange } from './i18n.js';
+import { pigeonNudges } from './mascot-nudges.js';
 
 // Exposer globalement pour l'interface utilisateur
 window.vitalTrackI18n = { t, getLanguage, setLanguage, toggleLanguage, onLanguageChange };
+window.pigeonNudges = pigeonNudges;
 
 // ═══════ CONFIG ═══════
 const API_BASE = window.location.origin;
@@ -584,6 +586,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   updateProactiveMascot();
 
+  // Évaluation circadienne initiale après chargement (non-intrusive)
+  setTimeout(() => {
+    if (window.pigeonNudges) window.pigeonNudges.evaluateCircadian();
+  }, 7000);
+
   // Render welcome pigeon portrait
   const welcomeEl = document.getElementById('welcomeMascotPortrait');
   if (welcomeEl && window.renderPigeonPortrait) {
@@ -669,7 +676,22 @@ window.showPage = function(page) {
   if (page === 'meals') renderMeals();
   if (page === 'calendar') renderCalendar();
   if (page === 'materia-medica') renderRaintreeExplorer();
+  if (page === 'chat') initChatMascot();
 };
+
+let _chatMascotRenderer = null;
+function initChatMascot() {
+  const canvas = document.getElementById('chatMascotCanvas');
+  if (canvas && window.PigeonRenderer && !_chatMascotRenderer) {
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = 40 * dpr;
+    canvas.height = 48 * dpr;
+    canvas.style.width = '40px';
+    canvas.style.height = '48px';
+    _chatMascotRenderer = new window.PigeonRenderer(canvas);
+    _chatMascotRenderer.setAction('idle');
+  }
+}
 
 window.toggleMobileNav = function() { document.getElementById('mobileNav').classList.toggle('open'); };
 
@@ -1397,6 +1419,11 @@ window.sendChat = async function(e) {
   sendBtn.disabled = true;
   const typingEl = addTypingIndicator();
 
+  // Le Pigeon passe en mode réflexion / analyse
+  if (_chatMascotRenderer) {
+    _chatMascotRenderer.setAction('think', true);
+  }
+
   try {
     const profile = getUserProfile();
     const reqBody = {
@@ -1494,9 +1521,11 @@ window.sendChat = async function(e) {
   } catch (err) { 
     typingEl.remove(); 
     addMessage(`❌ Erreur : ${err.message}`, false); 
+    if (_chatMascotRenderer) _chatMascotRenderer.setAction('idle', false);
   } finally { 
     sendBtn.disabled = false; 
     input.focus();
+    if (_chatMascotRenderer) _chatMascotRenderer.setAction('coo', false);
   }
 };
 
@@ -4989,6 +5018,14 @@ function updateFastingUI() {
   // Update live stages visual
   updateLiveFastingStages(elapsedHours, targetHours);
 
+  // Détection des paliers de jeûne pour le micro-nudge du Pigeon
+  const wholeHours = Math.floor(elapsedHours);
+  if ((wholeHours === 14 || wholeHours === 16 || wholeHours === 20) && !window._triggeredMilestones?.has(wholeHours)) {
+    if (!window._triggeredMilestones) window._triggeredMilestones = new Set();
+    window._triggeredMilestones.add(wholeHours);
+    if (window.pigeonNudges) window.pigeonNudges.onFastingMilestone(wholeHours);
+  }
+
   // Dashboard mirror
   const dt = document.getElementById('dashFastTimer');
   if (dt && timerDigits) { dt.textContent = timerDigits.textContent; }
@@ -6517,6 +6554,14 @@ function saveMealModal() {
   closeMealModal();
   renderCalendar();
   showToast('Repas sauvegardé dans le calendrier !', 'success');
+
+  // Micro-nudge bienveillant du Pigeon selon la nature du repas
+  if (window.pigeonNudges) {
+    const lower = input.toLowerCase();
+    const isAcidic = lower.includes('viande') || lower.includes('fromage') || lower.includes('pain') || lower.includes('café') || lower.includes('sucre') || lower.includes('lait');
+    const isLiving = lower.includes('pomme') || lower.includes('jus') || lower.includes('salade') || lower.includes('fruit') || lower.includes('cru') || lower.includes('orange') || lower.includes('raisin');
+    window.pigeonNudges.onMealLogged({ name: input, isAcidic, isLiving });
+  }
 }
 
 window.deleteCalendarMeal = function(id) {

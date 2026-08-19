@@ -346,6 +346,11 @@
       <div class="chat-main">
         <div class="chat-header glass">
           <button class="icon-btn sidebar-toggle" onclick="toggleSidebar()" data-tooltip="Historique des conversations" class="tooltip-bottom"><i class="ri-menu-line"></i></button>
+          
+          <div class="chat-mascot-badge" onclick="window.openMascotStudioModal()" style="cursor:pointer; display:flex; align-items:center; margin-right:10px;" title="Mascotte Vitale">
+            <canvas id="chatMascotCanvas" width="40" height="48" style="width:40px; height:48px; filter:drop-shadow(0 2px 8px rgba(52,211,153,0.25));"></canvas>
+          </div>
+
           <div class="chat-header-info" style="position:relative">
             <h2 id="chatTitle" style="margin-bottom:2px">Coach Vitaliste</h2>
             <div class="model-selector" onclick="toggleModelList(event)" style="cursor:pointer;display:inline-flex;align-items:center;font-size:0.75rem;color:var(--text-dim);background:var(--bg-glass);padding:3px 10px;border-radius:12px;border:1px solid rgba(255,255,255,0.1);transition:all 0.2s">
@@ -1331,6 +1336,35 @@
               <div class="emonctoire-chip" data-organ="peau" onclick="toggleEmonctoireChip(this)">
                 <span>☀️</span><span>Peau &amp; Transpiration</span>
               </div>
+            </div>
+          <!-- Bloc Mascotte & Compagnonnage -->
+          <div style="padding:16px; border-radius:14px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); margin-bottom:12px;">
+            <h4 style="font-size:0.92rem; font-weight:700; color:var(--text); margin:0 0 4px 0; display:flex; align-items:center; gap:8px;">
+              <span style="font-size:1.1rem;">🕊️</span> Compagnon Mascotte Vitale
+            </h4>
+            <p style="font-size:0.78rem; color:var(--text-dim); margin:0 0 10px 0;">Personnalisez la présence et le comportement du Pigeon Biset dans l'application</p>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:10px;">
+              <label style="cursor:pointer; display:flex; align-items:flex-start; gap:8px; padding:10px 12px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:10px;">
+                <input type="radio" name="mascotPref" value="active" checked onchange="window.pigeonNudges && window.pigeonNudges.setPreference('active')">
+                <div>
+                  <div style="font-weight:700; font-size:0.84rem; color:#34d399;">🌟 Compagnon Actif</div>
+                  <div style="font-size:0.74rem; color:var(--text-dim);">Conseils circadiens, nudges après repas, paliers de jeûne</div>
+                </div>
+              </label>
+              <label style="cursor:pointer; display:flex; align-items:flex-start; gap:8px; padding:10px 12px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:10px;">
+                <input type="radio" name="mascotPref" value="zen" onchange="window.pigeonNudges && window.pigeonNudges.setPreference('zen')">
+                <div>
+                  <div style="font-weight:700; font-size:0.84rem; color:#60a5fa;">🌿 Compagnon Zen</div>
+                  <div style="font-size:0.74rem; color:var(--text-dim);">Présence calme, aucun pop-up spontané, réactif au clic</div>
+                </div>
+              </label>
+              <label style="cursor:pointer; display:flex; align-items:flex-start; gap:8px; padding:10px 12px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:10px;">
+                <input type="radio" name="mascotPref" value="quiet" onchange="window.pigeonNudges && window.pigeonNudges.setPreference('quiet')">
+                <div>
+                  <div style="font-weight:700; font-size:0.84rem; color:#94a3b8;">🔇 Discret</div>
+                  <div style="font-size:0.74rem; color:var(--text-dim);">Désactive tous les nudges flottants</div>
+                </div>
+              </label>
             </div>
           </div>
 

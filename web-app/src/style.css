@@ -4261,5 +4261,126 @@ input[type=number] {
   overflow-y: auto;
 }
 
+/* ═══════════════════════════════════════════════════════════
+   PIGEON VITAL NUDGES (Toast Flottant Non-Intrusif)
+   ═══════════════════════════════════════════════════════════ */
+.pigeon-nudge-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9990;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.pigeon-nudge-toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(52, 211, 153, 0.3);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45), 0 0 20px rgba(52, 211, 153, 0.12);
+  border-radius: 20px;
+  padding: 12px 16px;
+  max-width: 360px;
+  opacity: 0;
+  transform: translateY(20px) scale(0.96);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pigeon-nudge-toast.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.pigeon-nudge-avatar-wrap {
+  width: 56px;
+  height: 70px;
+  flex-shrink: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.pigeon-nudge-avatar-wrap:hover {
+  transform: scale(1.06);
+  transition: transform 0.2s ease;
+}
+
+.pigeon-nudge-content {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+}
+
+.pigeon-nudge-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.pigeon-nudge-badge {
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #34d399;
+  background: rgba(52, 211, 153, 0.14);
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(52, 211, 153, 0.25);
+}
+
+.pigeon-nudge-close {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  border-radius: 4px;
+  transition: color 0.15s ease;
+}
+
+.pigeon-nudge-close:hover {
+  color: var(--text);
+}
+
+.pigeon-nudge-title {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.pigeon-nudge-text {
+  font-size: 0.78rem;
+  color: rgba(226, 232, 240, 0.9);
+  line-height: 1.35;
+}
+
+@media (max-width: 600px) {
+  .pigeon-nudge-container {
+    bottom: 80px;
+    right: 12px;
+    left: 12px;
+  }
+  .pigeon-nudge-toast {
+    max-width: 100%;
+  }
+}
+
+
 
 
