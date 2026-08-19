@@ -658,46 +658,89 @@ window.initAllVitalSelects = function () {
 
 // ═══════ AUTH UI & RGPD DROIT À L'OUBLI ═══════
 function updateAuthUI(user) {
-  const container = document.getElementById('googleAuthBtnContainer');
-  const dashAvatarBtn = document.getElementById('dashUserProfileBtn');
+  const containers = [
+    document.getElementById('googleAuthBtnContainer'),
+    document.getElementById('desktopGoogleAuthContainer')
+  ].filter(Boolean);
+
+  const avatarButtons = [
+    document.getElementById('dashUserProfileBtn'),
+    document.getElementById('desktopUserAvatarBtn')
+  ].filter(Boolean);
 
   if (user && user.uid) {
-    if (container) {
-      container.innerHTML = `
-        <div class="user-profile-badge" title="${user.email || user.name}">
-          <img src="${user.picture || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + user.uid}" alt="${user.name}" class="user-avatar-mini" />
-          <span class="user-name-label">${user.name}</span>
-          <button class="user-logout-btn" title="${t('auth.signOut', {}, 'Se déconnecter')}" onclick="window.vitalTrackAuth?.signOut()"><i class="ri-logout-box-r-line"></i></button>
-        </div>
-      `;
-    }
-    if (dashAvatarBtn) {
-      dashAvatarBtn.innerHTML = `<img src="${user.picture || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + user.uid}" style="width:100%; height:100%; border-radius:12px; object-fit:cover;" />`;
-      dashAvatarBtn.style.padding = '0';
-      dashAvatarBtn.title = `${user.name} - Mon Profil & Badges`;
-    }
+    containers.forEach(container => {
+      const isCompact = container.id === 'googleAuthBtnContainer';
+      if (isCompact) {
+        container.innerHTML = `
+          <div class="mobile-user-avatar-wrap" onclick="window.openUserProfileModal()" title="${user.name} (Mon Profil)">
+            <img src="${user.picture || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + user.uid}" alt="${user.name}" class="user-avatar-mini" />
+          </div>
+        `;
+      } else {
+        container.innerHTML = `
+          <div class="user-profile-badge" title="${user.email || user.name}" onclick="window.openUserProfileModal()" style="cursor:pointer;">
+            <img src="${user.picture || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + user.uid}" alt="${user.name}" class="user-avatar-mini" />
+            <span class="user-name-label">${user.name}</span>
+            <button class="user-logout-btn" title="${t('auth.signOut', {}, 'Se déconnecter')}" onclick="event.stopPropagation(); window.vitalTrackAuth?.signOut()"><i class="ri-logout-box-r-line"></i></button>
+          </div>
+        `;
+      }
+    });
+
+    avatarButtons.forEach(btn => {
+      btn.innerHTML = `<img src="${user.picture || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + user.uid}" style="width:100%; height:100%; border-radius:inherit; object-fit:cover;" />`;
+      btn.style.padding = '0';
+      btn.title = `${user.name} - Mon Profil & Badges`;
+      btn.onclick = () => window.openUserProfileModal();
+    });
   } else {
-    if (container) {
+    containers.forEach(container => {
+      const isCompact = container.id === 'googleAuthBtnContainer';
       container.innerHTML = `
-        <button class="google-auth-btn" onclick="window.vitalTrackAuth?.signInWithGoogle()" title="${t('auth.signInWithGoogle', {}, 'Se connecter avec Google')}">
-          <svg class="google-icon-svg" viewBox="0 0 24 24" width="16" height="16"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
-          <span data-i18n="auth.signInWithGoogle">${t('auth.signInWithGoogle', {}, 'Connexion Google')}</span>
+        <button class="google-auth-btn ${isCompact ? 'compact' : ''}" onclick="window.openGoogleAuthModal()" title="${t('auth.signInWithGoogle', {}, 'Se connecter avec Google')}">
+          <svg class="google-icon-svg" viewBox="0 0 24 24" width="${isCompact ? '15' : '16'}" height="${isCompact ? '15' : '16'}"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+          <span class="${isCompact ? 'auth-btn-label-mobile' : 'auth-btn-label'}" data-i18n="auth.signInWithGoogle">${isCompact ? 'Connexion' : t('auth.signInWithGoogle', {}, 'Connexion Google')}</span>
         </button>
       `;
-    }
-    if (dashAvatarBtn) {
+    });
+
+    avatarButtons.forEach(btn => {
       const p = typeof getUserProfile === 'function' ? getUserProfile() : {};
-      const initial = (p.name && p.name[0]) ? p.name[0].toUpperCase() : 'V';
-      dashAvatarBtn.textContent = initial;
-      dashAvatarBtn.style.padding = '';
-      dashAvatarBtn.title = 'Mon Profil & Badges Vitalistes';
-      dashAvatarBtn.onclick = () => window.openUserProfileModal();
-    }
-  }
-  if (dashAvatarBtn) {
-    dashAvatarBtn.onclick = () => window.openUserProfileModal();
+      const initial = (p.name && p.name[0]) ? p.name[0].toUpperCase() : '<i class="ri-user-3-line"></i>';
+      btn.innerHTML = initial;
+      btn.style.padding = '';
+      btn.title = 'Mon Profil & Badges Vitalistes';
+      btn.onclick = () => window.openUserProfileModal();
+    });
   }
 }
+
+// ═══════ GOOGLE AUTH MODAL CONTROLLERS ═══════
+window.openGoogleAuthModal = function () {
+  const modal = document.getElementById('googleAuthModal');
+  if (modal) modal.style.display = 'flex';
+};
+
+window.closeGoogleAuthModal = function (e) {
+  if (e && e.target && e.target !== e.currentTarget && !e.target.classList.contains('modal-close-btn') && !e.target.closest('.modal-close-btn')) {
+    return;
+  }
+  const modal = document.getElementById('googleAuthModal');
+  if (modal) modal.style.display = 'none';
+};
+
+window.handleGoogleAuthForm = function (e) {
+  if (e) e.preventDefault();
+  const input = document.getElementById('googleAuthEmailInput');
+  if (!input || !input.value.trim()) return;
+
+  const email = input.value.trim();
+  if (window.vitalTrackAuth) {
+    window.vitalTrackAuth.signInWithEmail(email);
+  }
+  window.closeGoogleAuthModal(null);
+};
 
 // ═══════ USER PROFILE & VITALIST ACHIEVEMENTS HUB ═══════
 window.openUserProfileModal = function () {
@@ -966,13 +1009,15 @@ window.renderUserProfileModal = function () {
 };
 
 // ═══════ INIT ═══════
-document.addEventListener('DOMContentLoaded', async () => {
+async function initApp() {
   // Init Google Auth & Listeners
   if (window.vitalTrackAuth) {
     window.vitalTrackAuth.initGSI();
     window.vitalTrackAuth.onAuthStateChanged((user) => {
       updateAuthUI(user);
     });
+  } else {
+    updateAuthUI(null);
   }
 
   loadTheme();
@@ -1054,7 +1099,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       renderRaintreeExplorer();
     }
   } catch (e) { console.warn('Could not load food database:', e); }
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initApp);
+} else {
+  initApp();
+}
 
 function populateVitalApprovedFoods() {
   if (!Array.isArray(vitalDb) || vitalDb.length === 0) return;
@@ -1174,10 +1225,24 @@ window.toggleMobileNav = function () { document.getElementById('mobileNav').clas
 // ═══════ THEME ═══════
 window.toggleTheme = function () {
   const isDark = !document.documentElement.hasAttribute('data-theme');
-  if (isDark) { document.documentElement.setAttribute('data-theme', 'light'); store.set('theme', 'light'); document.getElementById('themeIcon').className = 'ri-sun-line'; }
-  else { document.documentElement.removeAttribute('data-theme'); store.set('theme', 'dark'); document.getElementById('themeIcon').className = 'ri-moon-line'; }
+  if (isDark) {
+    document.documentElement.setAttribute('data-theme', 'light');
+    store.set('theme', 'light');
+    document.querySelectorAll('.theme-icon, #themeIcon, #themeIconMobile, #desktopThemeIcon').forEach(i => i.className = 'ri-sun-line theme-icon');
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+    store.set('theme', 'dark');
+    document.querySelectorAll('.theme-icon, #themeIcon, #themeIconMobile, #desktopThemeIcon').forEach(i => i.className = 'ri-moon-line theme-icon');
+  }
 };
-function loadTheme() { if (store.get('theme') === 'light') { document.documentElement.setAttribute('data-theme', 'light'); document.getElementById('themeIcon').className = 'ri-sun-line'; } }
+function loadTheme() {
+  if (store.get('theme') === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.querySelectorAll('.theme-icon, #themeIcon, #themeIconMobile, #desktopThemeIcon').forEach(i => i.className = 'ri-sun-line theme-icon');
+  } else {
+    document.querySelectorAll('.theme-icon, #themeIcon, #themeIconMobile, #desktopThemeIcon').forEach(i => i.className = 'ri-moon-line theme-icon');
+  }
+}
 
 // ═══════ PROFILE & BIO-MEMORY ENGINE ═══════
 function getUserProfile() {
@@ -1925,7 +1990,15 @@ window.toggleVoiceInput = function (forceState, e) {
     try {
       _speechRecognition = new SpeechRecognition();
       window._speechRecognition = _speechRecognition;
-      _speechRecognition.lang = 'fr-FR';
+
+      const activeLang = window.vitalTrackI18n?.getLanguage ? window.vitalTrackI18n.getLanguage() : 'fr';
+      const langMap = {
+        'fr': 'fr-FR',
+        'fr-CA': 'fr-CA',
+        'en': 'en-US',
+        'es': 'es-ES'
+      };
+      _speechRecognition.lang = langMap[activeLang] || 'fr-FR';
       _speechRecognition.continuous = true;
       _speechRecognition.interimResults = true;
       _speechRecognition.maxAlternatives = 1;
@@ -1966,10 +2039,24 @@ window.toggleVoiceInput = function (forceState, e) {
       };
 
       _speechRecognition.onerror = (event) => {
-        console.warn('Speech recognition warning:', event.error);
+        console.warn('[Voice] Speech recognition error/warning:', event.error);
         if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
           if (window.showToast) {
-            window.showToast("⚠️ Accès au micro refusé. Veuillez autoriser le micro.", "error");
+            window.showToast("⚠️ Accès au micro refusé. Veuillez autoriser le microphone dans votre navigateur.", "error");
+          }
+          window.toggleVoiceInput(false);
+          return;
+        }
+        if (event.error === 'network') {
+          if (window.showToast) {
+            window.showToast("⚠️ Service vocal réseau momentanément indisponible.", "info");
+          }
+          window.toggleVoiceInput(false);
+          return;
+        }
+        if (event.error === 'audio-capture') {
+          if (window.showToast) {
+            window.showToast("⚠️ Aucun microphone détecté sur cet appareil.", "error");
           }
           window.toggleVoiceInput(false);
           return;

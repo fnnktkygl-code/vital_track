@@ -1036,19 +1036,12 @@ export function updateDOMTranslations() {
     }
   });
 
-  // Update language selector buttons if present
+  // Update all language selector buttons across the DOM uniformly
   const cfg = LANG_CONFIG[currentLang] || LANG_CONFIG.fr;
-  const langToggleBtn = document.getElementById('globalLangToggleBtn');
-  if (langToggleBtn) {
-    langToggleBtn.innerHTML = `${cfg.flag} <span style="font-weight:700;">${cfg.short}</span>`;
-    langToggleBtn.setAttribute('title', cfg.name);
-  }
-
-  const dashLangBtn = document.getElementById('dashHeaderLangBtn');
-  if (dashLangBtn) {
-    dashLangBtn.innerHTML = `${cfg.flag} <span style="font-weight:700;">${cfg.short}</span>`;
-    dashLangBtn.setAttribute('title', cfg.name);
-  }
+  document.querySelectorAll('.lang-toggle-btn').forEach(btn => {
+    btn.innerHTML = `${cfg.flag} <span style="font-weight:700;">${cfg.short}</span>`;
+    btn.setAttribute('title', `${cfg.name} (Changer de langue)`);
+  });
 
   const langSelect = document.getElementById('globalLangSelect');
   if (langSelect && langSelect.value !== currentLang) {

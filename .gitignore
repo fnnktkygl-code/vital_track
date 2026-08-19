@@ -23,3 +23,5 @@ dist/
 scratch/
 .vercel
 .env*
+test-results/
+web-app/test-results/

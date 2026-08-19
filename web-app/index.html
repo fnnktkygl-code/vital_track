@@ -89,7 +89,7 @@
       </div>
     </aside>
 
-  <!-- ═══════ NAV ═══════ -->
+  <!-- ═══════ NAV (Mobile Top Bar) ═══════ -->
   <nav class="navbar" id="navbar">
     <div class="nav-inner">
       <a href="#" class="logo" onclick="showPage('dashboard')" style="display:flex; align-items:center; gap:8px;">
@@ -124,23 +124,12 @@
         </span>
         Vital<span class="accent">Track</span>
       </a>
-      <div class="nav-links" id="navLinks">
-        <a href="#" class="nav-link active" data-page="dashboard" onclick="showPage('dashboard')"><i class="ri-dashboard-line"></i> <span data-i18n="nav.dashboard">Tableau</span></a>
-        <a href="#" class="nav-link" data-page="chat" onclick="showPage('chat')"><i class="ri-chat-smile-3-line"></i> <span data-i18n="nav.chat">Chat</span></a>
-        <a href="#" class="nav-link" data-page="scan" onclick="showPage('scan')"><i class="ri-camera-lens-fill"></i> <span data-i18n="nav.scanner">Scanner</span></a>
-        <a href="#" class="nav-link" data-page="search" onclick="showPage('search')"><i class="ri-search-line"></i> <span data-i18n="search.pageTitle">Aliments</span></a>
-        <a href="#" class="nav-link" data-page="materia-medica" onclick="showPage('materia-medica')"><i class="ri-plant-line"></i> <span data-i18n="nav.materiaMedica">Pharmacopée</span></a>
-        <a href="#" class="nav-link" data-page="meals" onclick="showPage('meals')"><i class="ri-restaurant-line"></i> <span data-i18n="meals.addMeal">Repas</span></a>
-        <a href="#" class="nav-link" data-page="calendar" onclick="showPage('calendar')"><i class="ri-calendar-check-line"></i> <span data-i18n="nav.calendar">Calendrier</span></a>
-        <a href="#" class="nav-link" data-page="fasting" onclick="showPage('fasting')"><i class="ri-fire-line"></i> <span data-i18n="nav.fasting">Jeûne</span></a>
-        <a href="#" class="nav-link" data-page="breathing" onclick="showPage('breathing')"><i class="ri-windy-line"></i> <span data-i18n="nav.breathing">Respir.</span></a>
-        <a href="#" class="nav-link" data-page="resources" onclick="showPage('resources')"><i class="ri-play-circle-line"></i> <span data-i18n="nav.resources">Médias</span></a>
-        <a href="#" class="nav-link" data-page="modes" onclick="showPage('modes')"><i class="ri-settings-3-line"></i> <span data-i18n="nav.settings">Plus</span></a>
+      <div class="nav-right-actions">
+        <div id="googleAuthBtnContainer" class="google-auth-container"></div>
+        <button class="lang-toggle-btn compact" id="globalLangToggleBtn" onclick="window.vitalTrackI18n?.toggleLanguage()" title="Changer de langue">🇫🇷 <span style="font-weight:700;">FR</span></button>
+        <button class="theme-toggle compact" id="globalThemeToggleBtn" onclick="toggleTheme()" data-tooltip="Mode sombre/clair"><i class="ri-moon-line theme-icon" id="themeIconMobile"></i></button>
+        <button class="hamburger" onclick="toggleMobileNav()" aria-label="Menu"><i class="ri-menu-3-line"></i></button>
       </div>
-      <div id="googleAuthBtnContainer" class="google-auth-container"></div>
-      <button class="lang-toggle-btn" id="globalLangToggleBtn" onclick="window.vitalTrackI18n?.toggleLanguage()" title="Changer de langue">🇫🇷 <span style="font-weight:700;">FR</span></button>
-      <button class="theme-toggle" onclick="toggleTheme()" data-tooltip="Mode sombre/clair"><i class="ri-moon-line" id="themeIcon"></i></button>
-      <button class="hamburger" onclick="toggleMobileNav()"><i class="ri-menu-3-line"></i></button>
     </div>
   </nav>
   <div class="mobile-nav" id="mobileNav">
@@ -258,24 +247,44 @@
     <a href="#" class="bnav-item" id="bnavMoreBtn" onclick="window.toggleMoreDrawer(); event.preventDefault();"><i class="ri-apps-line"></i><span data-i18n="bnav.more">Plus</span></a>
   </nav>
 
-  <!-- ═══════ DASHBOARD ═══════ -->
+  <!-- ═══════ MAIN CONTENT ═══════ -->
   <div class="main-content">
-  <main class="page active" id="page-dashboard">
-    <div class="dash-container">
-      
-      <!-- Top Header -->
-      <div class="dashboard-header">
-        <div>
-          <h1 style="font-size: 1.8rem; font-weight: 700; color: var(--text); margin-bottom:4px;">Tableau de bord</h1>
-          <p id="dashboardDate" style="color: var(--text-dim); font-size: 0.9rem;">Lundi 10 Août</p>
-        </div>
-        <div style="display:flex; gap: 8px; align-items:center;">
-          <button class="lang-toggle-btn" id="dashHeaderLangBtn" onclick="window.vitalTrackI18n?.toggleLanguage()" title="Changer de langue">🇫🇷 <span style="font-weight:700;">FR</span></button>
-          <button class="icon-btn glass" onclick="toggleTheme()" data-tooltip="Mode sombre/clair"><i class="ri-moon-fill" id="themeIcon"></i></button>
-          <button class="icon-btn glass" onclick="showPage('modes')" title="Paramètres &amp; RGPD"><i class="ri-settings-3-fill"></i></button>
-          <button class="icon-btn user-avatar-btn" id="dashUserProfileBtn" onclick="openUserProfileModal()" title="Mon Profil &amp; Badges Vitalistes" style="background: var(--accent); color:#0f172a; border:none; font-weight:800; width:40px; height:40px; border-radius:12px; font-size:1rem; cursor:pointer;">F</button>
+    <!-- Desktop Topbar with Global Controls -->
+    <header class="desktop-topbar" id="desktopTopbar">
+      <div class="topbar-left">
+        <div class="topbar-status-pill">
+          <span class="status-pulse-dot"></span>
+          <span class="status-title">VitalTrack Coach Pro</span>
         </div>
       </div>
+      <div class="topbar-right">
+        <div id="desktopGoogleAuthContainer" class="google-auth-container"></div>
+        <button class="lang-toggle-btn" id="desktopLangToggleBtn" onclick="window.vitalTrackI18n?.toggleLanguage()" title="Changer de langue">
+          🇫🇷 <span style="font-weight:700;">FR</span>
+        </button>
+        <button class="icon-btn theme-toggle glass" onclick="toggleTheme()" title="Mode sombre/clair">
+          <i class="ri-moon-line theme-icon" id="desktopThemeIcon"></i>
+        </button>
+        <button class="icon-btn glass" onclick="showPage('modes')" title="Paramètres & RGPD">
+          <i class="ri-settings-3-line"></i>
+        </button>
+        <button class="icon-btn user-avatar-btn glass" id="desktopUserAvatarBtn" onclick="openUserProfileModal()" title="Mon Profil & Badges Vitalistes">
+          <i class="ri-user-3-line"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- ═══════ DASHBOARD ═══════ -->
+    <main class="page active" id="page-dashboard">
+      <div class="dash-container">
+        
+        <!-- Top Header (Clean, no duplicate controls) -->
+        <div class="dashboard-header">
+          <div>
+            <h1 style="font-size: 1.8rem; font-weight: 700; color: var(--text); margin-bottom:4px;" data-i18n="dashboard.title">Tableau de bord</h1>
+            <p id="dashboardDate" style="color: var(--text-dim); font-size: 0.9rem;">Lundi 10 Août</p>
+          </div>
+        </div>
 
       <!-- Greeting Card -->
       <div class="dash-greeting-card glass" style="display:flex; justify-content:space-between; align-items:center; padding:20px 24px; margin-bottom:24px; border-radius:var(--radius); border:1px solid var(--border); flex-wrap:wrap; gap:16px;">
@@ -2269,6 +2278,60 @@
           </button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- ═══════ MODALE PROFIL UTILISATEUR & BADGES VITALISTES ═══════ -->
+  <div id="userProfileModal" class="modal-overlay" onclick="closeUserProfileModal(event)" style="display:none; z-index:99999;">
+    <div class="modal-card glass" onclick="event.stopPropagation()" style="max-width:560px; width:92%; max-height:88vh; overflow-y:auto; padding:28px 24px; border-radius:24px; border:1px solid rgba(52,211,153,0.3); box-shadow:0 20px 60px rgba(0,0,0,0.85); position:relative;">
+      <button class="modal-close-btn" onclick="closeUserProfileModal(null)" style="position:absolute; top:18px; right:18px; background:rgba(255,255,255,0.08); border:none; color:var(--text); width:34px; height:34px; border-radius:50%; cursor:pointer; font-size:1.2rem; display:flex; align-items:center; justify-content:center;">
+        <i class="ri-close-line"></i>
+      </button>
+      <div id="userProfileModalContent">
+        <!-- Injected dynamically via renderUserProfileModal() -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ MODALE DE CONNEXION GOOGLE & RGPD ═══════ -->
+  <div id="googleAuthModal" class="modal-overlay" onclick="closeGoogleAuthModal(event)" style="display:none; z-index:99999;">
+    <div class="modal-card glass" onclick="event.stopPropagation()" style="max-width:460px; width:92%; text-align:center; padding:32px 24px; border-radius:24px; border:1px solid rgba(66,133,244,0.4); box-shadow:0 20px 60px rgba(0,0,0,0.85); position:relative;">
+      <button class="modal-close-btn" onclick="closeGoogleAuthModal(null)" style="position:absolute; top:18px; right:18px; background:rgba(255,255,255,0.08); border:none; color:var(--text); width:34px; height:34px; border-radius:50%; cursor:pointer; font-size:1.2rem; display:flex; align-items:center; justify-content:center;">
+        <i class="ri-close-line"></i>
+      </button>
+      
+      <div style="width:64px; height:64px; margin:0 auto 16px; background:rgba(66,133,244,0.12); border:1px solid rgba(66,133,244,0.3); border-radius:50%; display:flex; align-items:center; justify-content:center;">
+        <svg width="32" height="32" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+      </div>
+
+      <h3 style="font-size:1.35rem; font-weight:800; margin-bottom:6px; color:var(--text);">Connexion Google VitalTrack</h3>
+      <p style="color:var(--text-dim); font-size:0.88rem; line-height:1.5; margin-bottom:20px;">
+        Synchronisez vos repas, vos cycles de jeûne et vos conversations avec l'IA en toute sécurité sur tous vos appareils.
+      </p>
+
+      <!-- Bouton One-Click Google -->
+      <button type="button" class="btn-google-login" onclick="window.vitalTrackAuth?.signInWithGoogle(); closeGoogleAuthModal(null);" style="width:100%; display:flex; align-items:center; justify-content:center; gap:10px; padding:14px; background:#fff; color:#1f2937; border:none; border-radius:14px; font-weight:700; font-size:0.95rem; cursor:pointer; box-shadow:0 4px 16px rgba(0,0,0,0.3); transition:all 0.2s ease; margin-bottom:16px;">
+        <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+        <span>Continuer avec Google</span>
+      </button>
+
+      <!-- Saisie alternative email Google -->
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
+        <div style="flex:1; height:1px; background:rgba(255,255,255,0.1);"></div>
+        <span style="font-size:0.75rem; color:var(--text-dim); text-transform:uppercase;">ou adresse email</span>
+        <div style="flex:1; height:1px; background:rgba(255,255,255,0.1);"></div>
+      </div>
+
+      <form onsubmit="handleGoogleAuthForm(event)" style="margin-bottom:16px;">
+        <input type="email" id="googleAuthEmailInput" placeholder="nom@gmail.com" required style="width:100%; padding:12px 14px; background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:12px; color:var(--text); font-size:0.92rem; font-family:var(--font); margin-bottom:10px; box-sizing:border-box;">
+        <button type="submit" class="btn-primary" style="width:100%; padding:12px; font-weight:700; border-radius:12px;">
+          Valider la connexion
+        </button>
+      </form>
+
+      <div style="font-size:0.75rem; color:var(--text-dim); line-height:1.4;">
+        🔒 Conforme RGPD : Isolation locale hermétique par compte &amp; Droit à l'oubli intégral.
+      </div>
     </div>
   </div>
 

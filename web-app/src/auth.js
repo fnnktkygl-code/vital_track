@@ -126,44 +126,60 @@ class VitalTrackAuth {
   }
 
   /**
-   * Connexion explicite Google (Prompt ou simulation sécurisée)
+   * Connexion explicite Google (Prompt ou modal sécurisée)
    */
   async signInWithGoogle() {
     if (typeof window !== 'undefined' && window.google && window.google.accounts && window.google.accounts.id) {
-      window.google.accounts.id.prompt((notification) => {
-        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-          this._openGoogleFallbackDialog();
-        }
-      });
-    } else {
-      this._openGoogleFallbackDialog();
+      try {
+        window.google.accounts.id.prompt((notification) => {
+          if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+            this._openGoogleFallbackDialog();
+          }
+        });
+        return;
+      } catch (err) {
+        console.warn('[Auth] GSI prompt error, opening fallback modal:', err);
+      }
     }
+    this._openGoogleFallbackDialog();
   }
 
   /**
    * Boîte de dialogue de connexion Google (pour démo / offline / fallback sans popup bloqué)
    */
   _openGoogleFallbackDialog() {
+    if (typeof window !== 'undefined' && typeof window.openGoogleAuthModal === 'function') {
+      window.openGoogleAuthModal();
+      return;
+    }
     const modal = document.getElementById('googleAuthModal');
     if (modal) {
       modal.style.display = 'flex';
       return;
     }
 
-    // Connexion par défaut avec profil Google standard
-    const email = prompt(t('auth.enterEmailPrompt', {}, 'Connectez-vous avec votre adresse Google (@gmail.com) :'), 'utilisateur@gmail.com');
-    if (!email) return;
+    // Connexion par défaut avec profil Google standard si la modale n'est pas encore rendue
+    this.signInWithEmail('utilisateur@gmail.com', 'Utilisateur Google');
+  }
 
-    const name = email.split('@')[0].replace('.', ' ').replace(/\b\w/g, l => l.toUpperCase());
-    const pseudoUid = 'g_' + btoa(email.toLowerCase()).replace(/[^a-zA-Z0-9]/g, '').slice(0, 16);
+  /**
+   * Connexion directe avec une adresse email
+   * @param {string} email
+   * @param {string} [customName]
+   */
+  signInWithEmail(email, customName) {
+    if (!email) return null;
+    const cleanEmail = email.trim();
+    const name = customName || cleanEmail.split('@')[0].replace('.', ' ').replace(/\b\w/g, l => l.toUpperCase());
+    const pseudoUid = 'g_' + btoa(cleanEmail.toLowerCase()).replace(/[^a-zA-Z0-9]/g, '').slice(0, 16);
 
     const user = {
       uid: pseudoUid,
-      email: email.trim(),
+      email: cleanEmail,
       name: name,
-      picture: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(email)}`,
+      picture: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(cleanEmail)}`,
       provider: 'google',
-      createdAt: Date.now(),
+      createdAt: this.currentUser?.createdAt || Date.now(),
       lastLogin: Date.now()
     };
 
@@ -171,6 +187,7 @@ class VitalTrackAuth {
     if (window.showToast) {
       window.showToast(`✨ ${t('auth.loginSuccess', { name: user.name }, `Connecté avec succès : ${user.name}`)}`, 'success');
     }
+    return user;
   }
 
   /**
