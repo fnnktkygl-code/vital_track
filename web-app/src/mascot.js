@@ -900,7 +900,7 @@ if (typeof window !== 'undefined') {
   // ─────────────────────────────────────────────────────────────
   // STATIC PORTRAIT RENDERER (Circle clipped head for chat avatars)
   // ─────────────────────────────────────────────────────────────
-  window.renderPigeonPortrait = function(size = 28, mood = 'talking') {
+  window.renderPigeonPortrait = function(size = 28, mood = 'talking', asImgTag = true) {
     const dpr = window.devicePixelRatio || 1;
     const offscreen = document.createElement('canvas');
     offscreen.width = 100 * dpr;
@@ -927,6 +927,9 @@ if (typeof window !== 'undefined') {
       0, 0, pSize, pSize
     );
 
-    return portrait.toDataURL();
+    const dataUrl = portrait.toDataURL();
+    if (!asImgTag) return dataUrl;
+
+    return `<img src="${dataUrl}" alt="Pigeon" style="width:${size}px; height:${size}px; border-radius:50%; object-fit:cover; display:inline-block; vertical-align:middle; filter:drop-shadow(0 2px 6px rgba(0,0,0,0.3));">`;
   };
 }
