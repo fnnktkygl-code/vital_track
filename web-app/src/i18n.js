@@ -276,7 +276,7 @@ export const TRANSLATIONS = {
     chat: {
       welcomeTitle: 'Roucouuu ! 🌿',
       welcomeSub: 'Je suis Vital, ton coach vitaliste IA. Pose-moi une question sur la nutrition, le jeûne, les plantes ou la santé naturelle.',
-      inputPlaceholder: 'Pose ta question ou décris tes symptômes...',
+      inputPlaceholder: 'Pose une question, explore un sujet santé, un repas, un protocole...',
       thinkingStatus: 'Vital inspecte la mémoire & analyse...',
       autoModel: 'Rotateur Auto',
       sendBtn: 'Envoyer'
@@ -474,7 +474,7 @@ export const TRANSLATIONS = {
     chat: {
       welcomeTitle: 'Roucouuu ! 🌿',
       welcomeSub: 'Je suis Vital, ton coach vitaliste IA. Pose-moi une question sur la nutrition, le jeûne, les plantes boréales ou la santé naturelle.',
-      inputPlaceholder: 'Pose ta question ou décris tes aliments...',
+      inputPlaceholder: 'Pose une question, explore un sujet santé, un repas, un protocole...',
       thinkingStatus: 'Vital inspecte la mémoire & analyse...',
       autoModel: 'Rotateur Auto',
       sendBtn: 'Envoyer'
@@ -672,7 +672,7 @@ export const TRANSLATIONS = {
     chat: {
       welcomeTitle: 'Coo-coo! 🌿',
       welcomeSub: 'I am Vital, your AI Vitalist Coach. Ask me anything about nutrition, fasting, botanicals, or natural healing.',
-      inputPlaceholder: 'Ask a question or describe your meal...',
+      inputPlaceholder: 'Ask a question, explore health topics, meals, protocols...',
       thinkingStatus: 'Vital is inspecting memories & analyzing...',
       autoModel: 'Auto Rotator',
       sendBtn: 'Send'
@@ -870,7 +870,7 @@ export const TRANSLATIONS = {
     chat: {
       welcomeTitle: '¡Rucuuu! 🌿',
       welcomeSub: 'Soy Vital, tu coach vitalista con IA. Pregúntame sobre nutrición, ayuno, plantas medicinales o regeneración natural.',
-      inputPlaceholder: 'Haz tu pregunta o describe tus alimentos...',
+      inputPlaceholder: 'Haz una pregunta, explora temas de salud, comidas, protocolos...',
       thinkingStatus: 'Vital está inspeccionando la memoria y analizando...',
       autoModel: 'Rotador Automático',
       sendBtn: 'Enviar'
