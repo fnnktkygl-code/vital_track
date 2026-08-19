@@ -4851,14 +4851,24 @@ mark.search-highlight {
   transition: opacity 0.25s ease;
 }
 
-.chat-sidebar-backdrop.active {
+/* Strictly hide sidebar and backdrop if page-chat is NOT active */
+#page-chat:not(.active) .chat-sidebar,
+#page-chat:not(.active) .chat-sidebar-backdrop {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  transform: translateX(-100%) !important;
+}
+
+#page-chat.active .chat-sidebar-backdrop.active {
   display: block;
   opacity: 1;
   pointer-events: auto;
 }
 
 @media (max-width: 900px) {
-  .chat-sidebar {
+  #page-chat.active .chat-sidebar {
+    display: flex;
     position: fixed;
     top: 0;
     left: 0;
@@ -4875,12 +4885,13 @@ mark.search-highlight {
     transform: translateX(0);
   }
 
-  .chat-sidebar.hidden {
+  #page-chat.active .chat-sidebar.hidden {
     transform: translateX(-100%);
     margin-left: 0;
     opacity: 1;
     width: 290px;
     min-width: 0;
+    pointer-events: none;
   }
 }
 

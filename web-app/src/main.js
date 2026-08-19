@@ -1073,6 +1073,10 @@ window.showPage = function (page) {
   const el = document.getElementById(`page-${page}`);
   if (el) el.classList.add('active');
   document.querySelectorAll(`[data-page="${page}"]`).forEach(l => l.classList.add('active'));
+
+  // Toujours fermer la sidebar de chat quand on change de page
+  if (window.toggleSidebar) window.toggleSidebar(false);
+
   if (page === 'dashboard') renderDashboard();
   if (page === 'meals') renderMeals();
   if (page === 'calendar') renderCalendar();
