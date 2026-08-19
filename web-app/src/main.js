@@ -70,21 +70,50 @@ const store = {
 };
 window.store = store;
 
-// ═══════ TOAST NOTIFICATIONS ═══════
+// ═══════ TOAST NOTIFICATIONS (UNIFIED STACK) ═══════
 window.showToast = function (msg, type = 'success', duration = 3500) {
-  const container = document.getElementById('appToastContainer');
-  if (!container) return;
+  let container = document.getElementById('appToastContainer');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'appToastContainer';
+    container.className = 'app-toast-container';
+    document.body.appendChild(container);
+  }
+
+  // Limit simultaneous toasts in stack to prevent visual clutter
+  const existing = container.querySelectorAll('.app-toast, .pigeon-nudge-toast');
+  if (existing.length >= 3) {
+    const oldest = existing[0];
+    oldest.classList.add('toast-hiding');
+    setTimeout(() => { if (oldest.parentNode) oldest.remove(); }, 250);
+  }
 
   const toast = document.createElement('div');
   toast.className = `app-toast toast-${type}`;
   const iconClass = type === 'success' ? 'ri-checkbox-circle-fill' : (type === 'error' ? 'ri-error-warning-fill' : 'ri-information-fill');
-  toast.innerHTML = `<i class="${iconClass}"></i><span>${msg}</span>`;
+  toast.innerHTML = `
+    <div style="display:flex; align-items:center; gap:10px; flex:1; min-width:0;">
+      <i class="${iconClass}"></i>
+      <span style="line-height:1.35; font-size:0.86rem; word-break:break-word;">${msg}</span>
+    </div>
+    <button type="button" class="app-toast-close" onclick="this.closest('.app-toast').remove()" title="Fermer">&times;</button>
+  `;
   container.appendChild(toast);
 
-  setTimeout(() => {
+  let hideTimer = setTimeout(() => {
     toast.classList.add('toast-hiding');
-    setTimeout(() => toast.remove(), 300);
+    setTimeout(() => { if (toast.parentNode) toast.remove(); }, 300);
   }, duration);
+
+  toast.addEventListener('mouseenter', () => {
+    clearTimeout(hideTimer);
+  });
+  toast.addEventListener('mouseleave', () => {
+    hideTimer = setTimeout(() => {
+      toast.classList.add('toast-hiding');
+      setTimeout(() => { if (toast.parentNode) toast.remove(); }, 300);
+    }, 2000);
+  });
 };
 
 // ═══════ GLOBAL VITAL CONFIRM MODAL ═══════

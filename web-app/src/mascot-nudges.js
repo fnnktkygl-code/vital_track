@@ -34,11 +34,11 @@ class PigeonNudgeEngine {
 
   init() {
     if (typeof document === 'undefined') return;
-    this.container = document.getElementById('pigeonNudgeContainer');
+    this.container = document.getElementById('appToastContainer');
     if (!this.container) {
       this.container = document.createElement('div');
-      this.container.id = 'pigeonNudgeContainer';
-      this.container.className = 'pigeon-nudge-container';
+      this.container.id = 'appToastContainer';
+      this.container.className = 'app-toast-container';
       document.body.appendChild(this.container);
     }
   }
@@ -60,79 +60,80 @@ class PigeonNudgeEngine {
     this.init();
     if (!this.container) return;
 
-    if (this.hideTimeout) {
-      clearTimeout(this.hideTimeout);
-      this.hideTimeout = null;
+    // Limiter le nombre de notifications simultanées pour éviter l'encombrement
+    const existing = this.container.querySelectorAll('.app-toast, .pigeon-nudge-toast');
+    if (existing.length >= 3) {
+      const oldest = existing[0];
+      oldest.classList.add('toast-hiding');
+      setTimeout(() => { if (oldest.parentNode) oldest.remove(); }, 250);
     }
 
-    // Créer ou réutiliser l'élément toast
-    this.container.innerHTML = `
-      <div class="pigeon-nudge-toast" id="pigeonNudgeToast">
-        <div class="pigeon-nudge-avatar-wrap" onclick="if(window.openMascotStudioModal) window.openMascotStudioModal();">
-          <canvas id="miniNudgeCanvas" width="56" height="70"></canvas>
+    const toastId = 'nudge_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
+    const toast = document.createElement('div');
+    toast.className = 'pigeon-nudge-toast';
+    toast.id = toastId;
+
+    toast.innerHTML = `
+      <div class="pigeon-nudge-avatar-wrap" onclick="if(window.openMascotStudioModal) window.openMascotStudioModal();" title="Ouvrir le Mascotte Studio">
+        <canvas class="mini-nudge-canvas" width="56" height="70"></canvas>
+      </div>
+      <div class="pigeon-nudge-content">
+        <div class="pigeon-nudge-header">
+          <span class="pigeon-nudge-badge">${badge}</span>
+          <button type="button" class="pigeon-nudge-close" onclick="window.pigeonNudges.dismissElement(this.closest('.pigeon-nudge-toast'))" title="Fermer">&times;</button>
         </div>
-        <div class="pigeon-nudge-content">
-          <div class="pigeon-nudge-header">
-            <span class="pigeon-nudge-badge">${badge}</span>
-            <button type="button" class="pigeon-nudge-close" onclick="window.pigeonNudges.dismiss()">&times;</button>
-          </div>
-          ${title ? `<div class="pigeon-nudge-title">${title}</div>` : ''}
-          <div class="pigeon-nudge-text">${message}</div>
-        </div>
+        ${title ? `<div class="pigeon-nudge-title">${title}</div>` : ''}
+        <div class="pigeon-nudge-text">${message}</div>
       </div>
     `;
 
-    const canvas = document.getElementById('miniNudgeCanvas');
+    this.container.appendChild(toast);
+
+    const canvas = toast.querySelector('.mini-nudge-canvas');
     if (canvas) {
       const dpr = window.devicePixelRatio || 1;
       canvas.width = 56 * dpr;
       canvas.height = 70 * dpr;
       canvas.style.width = '56px';
       canvas.style.height = '70px';
-      this.miniPigeon = new Pigeon(canvas);
-      this.miniPigeon.setMood(mood);
-      this.miniPigeon.draw(0.5);
+      const miniPigeon = new Pigeon(canvas);
+      miniPigeon.setMood(mood);
+      miniPigeon.draw(0.5);
     }
 
     // Animation d'entrée
-    const toast = document.getElementById('pigeonNudgeToast');
-    if (toast) {
-      requestAnimationFrame(() => {
-        toast.classList.add('visible');
-      });
+    requestAnimationFrame(() => {
+      toast.classList.add('visible');
+    });
 
-      // Pause auto-dismiss on hover (Industry best practice)
-      toast.addEventListener('mouseenter', () => {
-        if (this.hideTimeout) {
-          clearTimeout(this.hideTimeout);
-          this.hideTimeout = null;
-        }
-      });
-      toast.addEventListener('mouseleave', () => {
-        if (!this.hideTimeout) {
-          this.hideTimeout = setTimeout(() => this.dismiss(), 3000);
-        }
-      });
-    }
+    let dismissTimer = setTimeout(() => {
+      this.dismissElement(toast);
+    }, 7000);
 
-    // Auto-dismiss après 6.5 secondes
-    this.hideTimeout = setTimeout(() => {
-      this.dismiss();
-    }, 6500);
+    // Pause auto-dismiss on hover
+    toast.addEventListener('mouseenter', () => {
+      clearTimeout(dismissTimer);
+    });
+    toast.addEventListener('mouseleave', () => {
+      dismissTimer = setTimeout(() => {
+        this.dismissElement(toast);
+      }, 3000);
+    });
+  }
+
+  dismissElement(toastEl) {
+    if (!toastEl) return;
+    toastEl.classList.remove('visible');
+    toastEl.classList.add('toast-hiding');
+    setTimeout(() => {
+      if (toastEl.parentNode) toastEl.remove();
+    }, 350);
   }
 
   dismiss() {
-    if (this.hideTimeout) {
-      clearTimeout(this.hideTimeout);
-      this.hideTimeout = null;
-    }
-    const toast = document.getElementById('pigeonNudgeToast');
-    if (toast) {
-      toast.classList.remove('visible');
-      setTimeout(() => {
-        if (this.container) this.container.innerHTML = '';
-      }, 350);
-    }
+    if (!this.container) return;
+    const toasts = this.container.querySelectorAll('.pigeon-nudge-toast');
+    toasts.forEach(t => this.dismissElement(t));
   }
 
   /**
