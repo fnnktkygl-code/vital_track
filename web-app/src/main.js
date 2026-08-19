@@ -72,7 +72,7 @@ const store = {
 window.store = store;
 
 // ═══════ TOAST NOTIFICATIONS (UNIFIED STACK) ═══════
-window.showToast = function (msg, type = 'success', duration = 3500) {
+function showToast(msg, type = 'success', duration = 3500) {
   let container = document.getElementById('appToastContainer');
   if (!container) {
     container = document.createElement('div');
@@ -118,7 +118,7 @@ window.showToast = function (msg, type = 'success', duration = 3500) {
 };
 
 // ═══════ GLOBAL VITAL CONFIRM MODAL ═══════
-window.showVitalConfirm = function ({
+function showVitalConfirm({
   title = 'Confirmation',
   message = 'Voulez-vous vraiment continuer ?',
   icon = 'ri-alert-fill',
@@ -194,7 +194,7 @@ const MONTH_NAMES_FR = [
 ];
 const WEEKDAYS_SHORT_FR = ['Lu', 'Ma', 'Me', 'Je', 'Ve', 'Sa', 'Di'];
 
-window.initVitalDatePicker = function (inputEl) {
+function initVitalDatePicker(inputEl) {
   if (!inputEl || inputEl._vitalDatePickerInitialized) return;
   inputEl._vitalDatePickerInitialized = true;
 
@@ -543,14 +543,14 @@ window.initVitalDatePicker = function (inputEl) {
   updateTrigger();
 };
 
-window.initAllVitalDatePickers = function () {
+function initAllVitalDatePickers() {
   document.querySelectorAll('input[type="date"], input.vital-datepicker-input, #calMealDate, #weightDateInput').forEach(input => {
     window.initVitalDatePicker(input);
   });
 };
 
 // ═══════ VITAL CUSTOM SELECT / DROPDOWN ═══════
-window.initVitalSelect = function (selectEl) {
+function initVitalSelect(selectEl) {
   if (!selectEl || selectEl._vitalSelectInitialized) return;
   selectEl._vitalSelectInitialized = true;
 
@@ -650,7 +650,7 @@ window.initVitalSelect = function (selectEl) {
   updateTrigger();
 };
 
-window.initAllVitalSelects = function () {
+function initAllVitalSelects() {
   document.querySelectorAll('select.custom-vital-select, select.sort-select, #fastingType, #searchSortSelect, #profileGoal, #profileTransitionLevel, #profileLanguage, #profileActivity, #profileBioregion').forEach(sel => {
     window.initVitalSelect(sel);
   });
@@ -717,12 +717,12 @@ function updateAuthUI(user) {
 }
 
 // ═══════ GOOGLE AUTH MODAL CONTROLLERS ═══════
-window.openGoogleAuthModal = function () {
+function openGoogleAuthModal() {
   const modal = document.getElementById('googleAuthModal');
   if (modal) modal.style.display = 'flex';
 };
 
-window.closeGoogleAuthModal = function (e) {
+function closeGoogleAuthModal(e) {
   if (e && e.target && e.target !== e.currentTarget && !e.target.classList.contains('modal-close-btn') && !e.target.closest('.modal-close-btn')) {
     return;
   }
@@ -730,7 +730,7 @@ window.closeGoogleAuthModal = function (e) {
   if (modal) modal.style.display = 'none';
 };
 
-window.handleGoogleAuthForm = function (e) {
+function handleGoogleAuthForm(e) {
   if (e) e.preventDefault();
   const input = document.getElementById('googleAuthEmailInput');
   if (!input || !input.value.trim()) return;
@@ -743,14 +743,14 @@ window.handleGoogleAuthForm = function (e) {
 };
 
 // ═══════ USER PROFILE & VITALIST ACHIEVEMENTS HUB ═══════
-window.openUserProfileModal = function () {
+function openUserProfileModal() {
   const modal = document.getElementById('userProfileModal');
   if (!modal) return;
   renderUserProfileModal();
   modal.style.display = 'flex';
 };
 
-window.closeUserProfileModal = function (e) {
+function closeUserProfileModal(e) {
   if (e && e.target && e.target !== e.currentTarget && !e.target.classList.contains('modal-close-btn') && !e.target.closest('.modal-close-btn')) {
     return;
   }
@@ -758,7 +758,7 @@ window.closeUserProfileModal = function (e) {
   if (modal) modal.style.display = 'none';
 };
 
-window.renderUserProfileModal = function () {
+function renderUserProfileModal() {
   const content = document.getElementById('userProfileModalContent');
   if (!content) return;
 
@@ -1101,12 +1101,6 @@ async function initApp() {
   } catch (e) { console.warn('Could not load food database:', e); }
 }
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initApp);
-} else {
-  initApp();
-}
-
 function populateVitalApprovedFoods() {
   if (!Array.isArray(vitalDb) || vitalDb.length === 0) return;
   const approved = {
@@ -1153,7 +1147,7 @@ function populateVitalApprovedFoods() {
 }
 
 // ═══════ NAVIGATION ═══════
-window.showPage = function (page) {
+function showPage(page) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-link, .bnav-item, .sidebar-link').forEach(l => l.classList.remove('active'));
   const el = document.getElementById(`page-${page}`);
@@ -1179,7 +1173,7 @@ window.showPage = function (page) {
   if (page === 'chat') initChatMascot();
 };
 
-window.toggleMoreDrawer = function (forceOpen) {
+function toggleMoreDrawer(forceOpen) {
   const drawer = document.getElementById('moreDrawer');
   const backdrop = document.getElementById('moreDrawerBackdrop');
   if (!drawer) return;
@@ -1220,10 +1214,10 @@ function initChatMascot() {
   }
 }
 
-window.toggleMobileNav = function () { document.getElementById('mobileNav').classList.toggle('open'); };
+function toggleMobileNav() { document.getElementById('mobileNav').classList.toggle('open'); };
 
 // ═══════ THEME ═══════
-window.toggleTheme = function () {
+function toggleTheme() {
   const isDark = !document.documentElement.hasAttribute('data-theme');
   if (isDark) {
     document.documentElement.setAttribute('data-theme', 'light');
@@ -1317,13 +1311,13 @@ function loadProfile() {
   updateLiveAiPreview();
 }
 
-window.toggleEmonctoireChip = function (el) {
+function toggleEmonctoireChip(el) {
   if (!el) return;
   el.classList.toggle('active');
   updateLiveAiPreview();
 };
 
-window.toggleAiPreviewBox = function () {
+function toggleAiPreviewBox() {
   const box = document.getElementById('aiPreviewBox');
   const chevron = document.getElementById('aiPreviewChevron');
   if (!box) return;
@@ -1332,7 +1326,7 @@ window.toggleAiPreviewBox = function () {
   if (chevron) chevron.style.transform = isHidden ? 'rotate(0deg)' : 'rotate(-90deg)';
 };
 
-window.updateLiveAiPreview = function () {
+function updateLiveAiPreview() {
   const preview = document.getElementById('aiPreviewBox');
   if (!preview) return;
 
@@ -1376,7 +1370,7 @@ Restrictions Strictes: ${restrictions}${rawMems ? `\nHabitudes Mémorisées:\n- 
   preview.textContent = generatedPrompt;
 };
 
-window.saveProfile = function () {
+function saveProfile() {
   const rawMems = document.getElementById('profileMemories') ? document.getElementById('profileMemories').value : '';
   const mems = rawMems.split('\n').map(s => s.trim()).filter(Boolean);
 
@@ -1418,7 +1412,7 @@ function loadProtocol() {
   currentProtocol = store.get('protocol', 'vitalist');
   updateProtocolUI();
 }
-window.setProtocol = function (mode) {
+function setProtocol(mode) {
   currentProtocol = mode;
   store.set('protocol', mode);
   updateProtocolUI();
@@ -1681,11 +1675,11 @@ function calculateVitalityScore(meals) {
   return breakdown.overallScore;
 }
 
-window.openVitalityInfoModal = function () {
+function openVitalityInfoModal() {
   document.getElementById('vitalityInfoModal')?.classList.add('open');
 };
 
-window.closeVitalityInfoModal = function (e) {
+function closeVitalityInfoModal(e) {
   if (!e || e.target === document.getElementById('vitalityInfoModal')) {
     document.getElementById('vitalityInfoModal')?.classList.remove('open');
   }
@@ -1720,14 +1714,14 @@ function saveConversations() {
   renderSidebar();
 }
 
-window.newConversation = function () {
+function newConversation() {
   activeConvId = null;
   saveConversations();
   renderActiveConversation();
   if (window.innerWidth <= 900) window.toggleSidebar(false);
 };
 
-window.switchConversation = function (id) {
+function switchConversation(id) {
   activeConvId = id;
   saveConversations();
   renderActiveConversation();
@@ -1736,7 +1730,7 @@ window.switchConversation = function (id) {
 
 let _pendingDeleteConvId = null;
 
-window.confirmDeleteConversation = function (id, e, rawTitle) {
+function confirmDeleteConversation(id, e, rawTitle) {
   if (e) {
     e.stopPropagation();
     e.preventDefault();
@@ -1756,7 +1750,7 @@ window.confirmDeleteConversation = function (id, e, rawTitle) {
   }
 };
 
-window.closeDeleteConvModal = function (e) {
+function closeDeleteConvModal(e) {
   if (e && e.target && e.target !== e.currentTarget && !e.target.classList.contains('modal-overlay')) {
     return;
   }
@@ -1767,7 +1761,7 @@ window.closeDeleteConvModal = function (e) {
   }
 };
 
-window.executeDeleteConversation = function () {
+function executeDeleteConversation() {
   if (!_pendingDeleteConvId) return;
   const idToDelete = _pendingDeleteConvId;
   _pendingDeleteConvId = null;
@@ -1790,15 +1784,15 @@ window.executeDeleteConversation = function () {
   }
 };
 
-window.deleteConversation = function (id, e) {
+function deleteConversation(id, e) {
   window.confirmDeleteConversation(id, e);
 };
 
-window.filterConversations = function (query) {
+function filterConversations(query) {
   renderSidebar(query);
 };
 
-window.toggleSidebar = function (forceOpen) {
+function toggleSidebar(forceOpen) {
   const sidebar = document.getElementById('chatSidebar');
   const backdrop = document.getElementById('chatSidebarBackdrop');
   if (!sidebar) return;
@@ -1912,7 +1906,7 @@ function _updateVoiceUI(listening) {
   }
 }
 
-window.toggleVoiceInput = function (forceState, e) {
+function toggleVoiceInput(forceState, e) {
   if (e && typeof e.preventDefault === 'function') {
     e.preventDefault();
     e.stopPropagation();
@@ -2099,7 +2093,7 @@ window.toggleVoiceInput = function (forceState, e) {
   startRecognitionSession();
 };
 
-window.cancelVoiceInput = function (e) {
+function cancelVoiceInput(e) {
   if (e && typeof e.preventDefault === 'function') {
     e.preventDefault();
     e.stopPropagation();
@@ -2139,7 +2133,7 @@ window.cancelVoiceInput = function (e) {
 // ═══════ IMAGE UPLOAD & PREVIEW ═══════
 let pendingChatImage = null; // { mimeType, data, dataUri }
 
-window.handleChatImageSelected = function (e) {
+function handleChatImageSelected(e) {
   const file = e.target.files && e.target.files[0];
   if (!file) return;
 
@@ -2175,7 +2169,7 @@ window.handleChatImageSelected = function (e) {
   reader.readAsDataURL(file);
 };
 
-window.removeChatImage = function () {
+function removeChatImage() {
   pendingChatImage = null;
   const preview = document.getElementById('chatAttachmentPreview');
   const fileInput = document.getElementById('chatImageInput');
@@ -2183,12 +2177,12 @@ window.removeChatImage = function () {
   if (fileInput) fileInput.value = '';
 };
 
-window.quickChat = function (query) {
+function quickChat(query) {
   document.getElementById('chatInput').value = query;
   document.getElementById('chatForm').dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
 };
 
-window.sendChat = async function (e) {
+async function sendChat(e) {
   e.preventDefault();
   const input = document.getElementById('chatInput');
   const query = input.value.trim();
@@ -2426,7 +2420,7 @@ const MODEL_TAXONOMY = [
   }
 ];
 
-window.renderModelPicker = function () {
+function renderModelPicker() {
   const container = document.getElementById('modelDropdown');
   if (!container) return;
 
@@ -2482,7 +2476,7 @@ window.renderModelPicker = function () {
   updateModelHeaderBadge();
 };
 
-window.selectModel = function (modelId, modelName, iconClass, iconColor) {
+function selectModel(modelId, modelName, iconClass, iconColor) {
   store.set('selected_model', modelId);
   const dropdown = document.getElementById('modelDropdown');
   if (dropdown) dropdown.style.display = 'none';
@@ -2513,7 +2507,7 @@ function updateModelHeaderBadge() {
   }
 }
 
-window.toggleModelList = function (e) {
+function toggleModelList(e) {
   if (e) e.stopPropagation();
   const dropdown = document.getElementById('modelDropdown');
   if (!dropdown) return;
@@ -2743,11 +2737,11 @@ function applySortItems(items) {
 }
 
 // Re-render with current sort (called by sort select change)
-window.applySortAndRender = function () {
+function applySortAndRender() {
   if (_lastSearchResults.length > 0) renderSearchResults(_lastSearchResults, _lastSearchQuery);
 };
 
-window.setSearchFilter = function (filter) {
+function setSearchFilter(filter) {
   currentSearchFilter = filter;
   document.querySelectorAll('.filter-chip').forEach(c => c.classList.toggle('active', c.dataset.filter === filter));
   const q = (document.getElementById('searchInput')?.value || '').trim();
@@ -2759,7 +2753,7 @@ window.setSearchFilter = function (filter) {
 };
 
 // Debounced search entry point
-window.searchFoods = function (query) {
+function searchFoods(query) {
   const q = (query || '').trim();
   // Show/hide clear and AI search buttons
   const clearBtn = document.getElementById('searchClearBtn');
@@ -2772,7 +2766,7 @@ window.searchFoods = function (query) {
 };
 
 // Direct AI Search trigger from input button
-window.triggerDirectAISearch = function () {
+function triggerDirectAISearch() {
   const isAuth = window.vitalTrackAuth ? window.vitalTrackAuth.isAuthenticated() : false;
   if (!isAuth) {
     let guestAiCount = parseInt(localStorage.getItem('vt_guest_ai_count') || '0', 10);
@@ -2990,7 +2984,7 @@ function renderFoodCard(item, compact = false) {
 }
 
 // ─── Quick Actions directly from food card ───
-window.quickAddFoodToMeal = function (idxOrFood) {
+function quickAddFoodToMeal(idxOrFood) {
   let item = null;
   if (typeof idxOrFood === 'number' || (!isNaN(Number(idxOrFood)) && typeof idxOrFood !== 'object')) {
     item = vitalDb[Number(idxOrFood)];
@@ -3038,7 +3032,7 @@ window.quickAddFoodToMeal = function (idxOrFood) {
   showToast(`✅ « ${name} » ajouté directement à vos repas du jour !`, 'success');
 };
 
-window.quickToggleFavorite = function (idxOrFood) {
+function quickToggleFavorite(idxOrFood) {
   let item = null;
   if (typeof idxOrFood === 'number' || (!isNaN(Number(idxOrFood)) && typeof idxOrFood !== 'object')) {
     item = vitalDb[Number(idxOrFood)];
@@ -3110,18 +3104,18 @@ function renderRecentSearches() {
   `).join('');
 }
 
-window.applyRecentSearch = function (q) {
+function applyRecentSearch(q) {
   const input = document.getElementById('searchInput');
   if (input) { input.value = q; input.focus(); }
   searchFoods(q);
 };
 
-window.clearRecentSearches = function () {
+function clearRecentSearches() {
   store.set('search-recents', []);
   renderRecentSearches();
 };
 
-window.clearSearch = function () {
+function clearSearch() {
   const input = document.getElementById('searchInput');
   if (input) { input.value = ''; input.focus(); }
   searchFoods('');
@@ -3154,7 +3148,7 @@ function renderCategoryBrowse() {
   }).join('');
 }
 
-window.browseFoodsByCategory = function (cat) {
+function browseFoodsByCategory(cat) {
   const input = document.getElementById('searchInput');
   if (input) { input.value = cat; }
   const clearBtn = document.getElementById('searchClearBtn');
@@ -3167,7 +3161,7 @@ window.browseFoodsByCategory = function (cat) {
 };
 
 // ─── AI search cache ───
-window.askAIToFindFood = async function (query) {
+async function askAIToFindFood(query) {
   const q = (query || '').trim();
   if (!q) return;
 
@@ -3401,7 +3395,7 @@ function renderProtocolsList() {
   }).join('');
 }
 
-window.toggleProtocolsAccordion = function () {
+function toggleProtocolsAccordion() {
   const grid = document.getElementById('protocolsGrid');
   const icon = document.getElementById('protocolsToggleIcon');
   if (!grid) return;
@@ -3535,7 +3529,7 @@ function filterAndRenderHerbs() {
   }).join('');
 }
 
-window.handleHerbSearchInput = function () {
+function handleHerbSearchInput() {
   const input = document.getElementById('herbSearchInput');
   const clearBtn = document.getElementById('herbClearBtn');
   if (!input) return;
@@ -3544,7 +3538,7 @@ window.handleHerbSearchInput = function () {
   filterAndRenderHerbs();
 };
 
-window.clearHerbSearch = function () {
+function clearHerbSearch() {
   const input = document.getElementById('herbSearchInput');
   const clearBtn = document.getElementById('herbClearBtn');
   if (input) input.value = '';
@@ -3557,7 +3551,7 @@ window.clearHerbSearch = function () {
   filterAndRenderHerbs();
 };
 
-window.setHerbFilter = function (filterId) {
+function setHerbFilter(filterId) {
   _currentHerbFilter = filterId;
   document.querySelectorAll('.materia-chip').forEach(c => {
     c.classList.toggle('active', c.getAttribute('data-filter') === filterId);
@@ -3565,7 +3559,7 @@ window.setHerbFilter = function (filterId) {
   filterAndRenderHerbs();
 };
 
-window.filterByTag = function (tag) {
+function filterByTag(tag) {
   const input = document.getElementById('herbSearchInput');
   const clearBtn = document.getElementById('herbClearBtn');
   if (input) input.value = tag;
@@ -3578,7 +3572,7 @@ window.filterByTag = function (tag) {
   filterAndRenderHerbs();
 };
 
-window.setHerbFilterByHerbs = function (herbIds) {
+function setHerbFilterByHerbs(herbIds) {
   const grid = document.getElementById('materiaHerbsGrid');
   if (!grid) return;
   const filtered = RAINTREE_HERBS.filter(h => herbIds.includes(h.id));
@@ -3627,7 +3621,7 @@ window.setHerbFilterByHerbs = function (herbIds) {
   }).join('');
 };
 
-window.toggleHerbMonograph = function () {
+function toggleHerbMonograph() {
   const drawer = document.getElementById('herbMonographDrawer');
   const btn = document.getElementById('herbMonographBtn');
   const icon = document.getElementById('herbMonographIcon');
@@ -3646,7 +3640,7 @@ window.toggleHerbMonograph = function () {
   }
 };
 
-window.openHerbModal = function (herbId) {
+function openHerbModal(herbId) {
   const herb = RAINTREE_HERBS.find(h => h.id === herbId);
   if (!herb) return;
   _currentSelectedHerb = herb;
@@ -3802,12 +3796,12 @@ window.openHerbModal = function (herbId) {
   if (modal) modal.style.display = 'flex';
 };
 
-window.closeHerbModal = function () {
+function closeHerbModal() {
   const modal = document.getElementById('herbModal');
   if (modal) modal.style.display = 'none';
 };
 
-window.askAIAboutCurrentHerb = function () {
+function askAIAboutCurrentHerb() {
   if (!_currentSelectedHerb) return;
   const herb = _currentSelectedHerb;
   closeHerbModal();
@@ -3820,7 +3814,7 @@ window.askAIAboutCurrentHerb = function () {
 };
 
 // ═══════ FOOD & MEAL MODAL (DIFFÉRENCIATION ALIMENT / REPAS COMPOSÉ) ═══════
-window.openFoodModal = function (idxOrFood) {
+function openFoodModal(idxOrFood) {
   let item = null;
   let isMealContext = false;
   let isMealSelection = false;
@@ -3996,7 +3990,7 @@ window.openFoodModal = function (idxOrFood) {
   document.getElementById('foodModal').classList.add('open');
 };
 
-window.switchAnalyzedFoodInModal = function (idx) {
+function switchAnalyzedFoodInModal(idx) {
   if (!currentModalFood || !currentModalFood.allAnalyzedItems || !currentModalFood.allAnalyzedItems[idx]) return;
   const target = currentModalFood.allAnalyzedItems[idx];
   openFoodModal({
@@ -4006,12 +4000,12 @@ window.switchAnalyzedFoodInModal = function (idx) {
   });
 };
 
-window.confirmAddMealFromModal = function () {
+function confirmAddMealFromModal() {
   closeFoodModal();
   confirmAddMeal();
 };
 
-window.openFoodModalFromSelection = function (id) {
+function openFoodModalFromSelection(id) {
   const item = selectedMealFoods.find(f => f.id === id);
   if (!item) return;
   const dbMatch = vitalDb.find(f => f.id === id || (f.names || []).some(n => n.toLowerCase() === (item.name || '').toLowerCase()));
@@ -4107,7 +4101,7 @@ const OIL_QUALITIES = {
   }
 };
 
-window.setMealCookingMethod = function (methodId) {
+function setMealCookingMethod(methodId) {
   if (!currentModalFood || !currentModalFood._parsed) return;
   currentModalFood._parsed.cookingMethod = methodId;
   if (currentModalFood._parsed.item) currentModalFood._parsed.item.cookingMethod = methodId;
@@ -4123,7 +4117,7 @@ window.setMealCookingMethod = function (methodId) {
   setModalTab('meal_balance');
 };
 
-window.setMealOilQuality = function (oilId) {
+function setMealOilQuality(oilId) {
   if (!currentModalFood || !currentModalFood._parsed) return;
   currentModalFood._parsed.oilQuality = oilId;
   if (currentModalFood._parsed.item) currentModalFood._parsed.item.oilQuality = oilId;
@@ -4139,7 +4133,7 @@ window.setMealOilQuality = function (oilId) {
   setModalTab('meal_balance');
 };
 
-window.openFoodModalFromMeal = function (idx) {
+function openFoodModalFromMeal(idx) {
   const meals = store.get('meals', []);
   const todayMeals = meals.filter(m => isToday(m.timestamp));
   if (idx >= 0 && idx < todayMeals.length) {
@@ -4196,7 +4190,7 @@ window.openFoodModalFromMeal = function (idx) {
   }
 };
 
-window.removeMealAndCloseModal = function (idx) {
+function removeMealAndCloseModal(idx) {
   if (typeof idx === 'number') {
     removeMeal(idx);
     closeFoodModal();
@@ -4204,7 +4198,7 @@ window.removeMealAndCloseModal = function (idx) {
   }
 };
 
-window.saveAIFoodToDB = function () {
+function saveAIFoodToDB() {
   const item = currentModalFood;
   if (!item) return;
   delete item.isNewFromAI;
@@ -4246,7 +4240,7 @@ window.saveAIFoodToDB = function () {
   }
 };
 
-window.addFoodToMealFromModal = function (idx) {
+function addFoodToMealFromModal(idx) {
   let f = (idx >= 0 && vitalDb[idx]) ? vitalDb[idx] : currentModalFood;
   if (!f) return;
   const name = (f.names?.[0] || f.name || '?').replace(/^./, c => c.toUpperCase());
@@ -4288,13 +4282,13 @@ window.addFoodToMealFromModal = function (idx) {
   showToast(`✅ « ${name} » ajouté directement à vos repas du jour !`, 'success');
 };
 
-window.closeFoodModal = function (e) {
+function closeFoodModal(e) {
   if (!e || e.target === document.getElementById('foodModal')) {
     document.getElementById('foodModal').classList.remove('open');
   }
 };
 
-window.setModalTab = function (tab) {
+function setModalTab(tab) {
   document.querySelectorAll('.modal-tabs .tab, #modalTabsBar .tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
   const content = document.getElementById('modalTabContent');
   if (!currentModalFood) return;
@@ -4646,7 +4640,7 @@ window.setModalTab = function (tab) {
 };
 
 // ═══════ FAVORITES ═══════
-window.toggleFavorite = function () {
+function toggleFavorite() {
   if (!currentModalFood) return;
   let favs = store.get('favorites', []);
   const targetId = currentModalFood.id;
@@ -4696,7 +4690,7 @@ window.toggleFavorite = function () {
 // ═══════ FAVORITES & CUSTOM DISHES ═══════
 let currentFavFilter = 'all';
 
-window.setFavFilter = function (filter) {
+function setFavFilter(filter) {
   currentFavFilter = filter;
   document.querySelectorAll('.favs-folders .filter-chip').forEach(c => c.classList.remove('active'));
   const activeBtn = document.getElementById(`favFilter${filter.charAt(0).toUpperCase() + filter.slice(1)}`) || document.getElementById('favFilterAll');
@@ -4704,7 +4698,7 @@ window.setFavFilter = function (filter) {
   renderFavorites();
 };
 
-window.openCreateDishModal = function () {
+function openCreateDishModal() {
   const form = document.getElementById('createDishForm');
   if (form) form.reset();
   const preview = document.getElementById('dishEmojiPreview');
@@ -4716,7 +4710,7 @@ window.openCreateDishModal = function () {
   if (modal) modal.style.display = 'flex';
 };
 
-window.closeCreateDishModal = function (e) {
+function closeCreateDishModal(e) {
   if (e && e.target && e.target !== e.currentTarget && !e.target.classList.contains('modal-overlay')) {
     return;
   }
@@ -4724,14 +4718,14 @@ window.closeCreateDishModal = function (e) {
   if (modal) modal.style.display = 'none';
 };
 
-window.selectDishEmoji = function (emoji, btn) {
+function selectDishEmoji(emoji, btn) {
   const preview = document.getElementById('dishEmojiPreview');
   if (preview) preview.textContent = emoji;
   document.querySelectorAll('.dish-emoji-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
 };
 
-window.handleSaveCustomDish = function (e) {
+function handleSaveCustomDish(e) {
   if (e) e.preventDefault();
   const name = document.getElementById('dishNameInput')?.value?.trim();
   if (!name) return;
@@ -4769,7 +4763,7 @@ window.handleSaveCustomDish = function (e) {
   showToast(`✨ Plat « ${name} » enregistré avec succès dans vos Favoris !`, 'success', 3500);
 };
 
-window.addFavoriteDishToMeals = function (dishId) {
+function addFavoriteDishToMeals(dishId) {
   const favs = store.get('favorites', []);
   const dish = favs.find(f => f.id === dishId);
   if (!dish) return;
@@ -4798,7 +4792,7 @@ window.addFavoriteDishToMeals = function (dishId) {
   showToast(`🥗 « ${dish.name} » ajouté avec succès à votre journal du jour !`, 'success', 3500);
 };
 
-window.chatAboutDish = function (dishId) {
+function chatAboutDish(dishId) {
   const favs = store.get('favorites', []);
   const dish = favs.find(f => f.id === dishId);
   if (!dish) return;
@@ -4812,7 +4806,7 @@ window.chatAboutDish = function (dishId) {
   }, 400);
 };
 
-window.saveMealAsFavoriteDish = function (idx) {
+function saveMealAsFavoriteDish(idx) {
   const meals = store.get('meals', []);
   const todayMeals = meals.filter(m => isToday(m.timestamp));
   if (idx >= todayMeals.length) return;
@@ -4966,8 +4960,8 @@ function renderFavorites() {
 window.renderFavorites = renderFavorites;
 
 // ═══════ MEALS ═══════
-window.showAddMealModal = function () { selectedMealFoods = []; renderSelectedMealFoods(); document.getElementById('mealSearchResults').innerHTML = ''; document.getElementById('mealSearchInput').value = ''; const aiInput = document.getElementById('aiDishInput'); if (aiInput) aiInput.value = ''; document.getElementById('addMealModal').classList.add('open'); };
-window.closeAddMealModal = function (e) { if (!e || e.target === document.getElementById('addMealModal')) document.getElementById('addMealModal').classList.remove('open'); };
+function showAddMealModal() { selectedMealFoods = []; renderSelectedMealFoods(); document.getElementById('mealSearchResults').innerHTML = ''; document.getElementById('mealSearchInput').value = ''; const aiInput = document.getElementById('aiDishInput'); if (aiInput) aiInput.value = ''; document.getElementById('addMealModal').classList.add('open'); };
+function closeAddMealModal(e) { if (!e || e.target === document.getElementById('addMealModal')) document.getElementById('addMealModal').classList.remove('open'); };
 
 function classifyFoodLocally(token) {
   const clean = (token || '').trim();
@@ -5149,7 +5143,7 @@ function classifyFoodLocally(token) {
   };
 }
 
-window.analyzeDishWithAI = async function () {
+async function analyzeDishWithAI() {
   const input = document.getElementById('aiDishInput');
   const btn = document.getElementById('btnAnalyzeDish');
   const q = (input?.value || '').trim();
@@ -5259,7 +5253,7 @@ window.analyzeDishWithAI = async function () {
   }
 };
 
-window.searchMealFoods = function (query) {
+function searchMealFoods(query) {
   const q = (query || '').toLowerCase().trim();
   const results = document.getElementById('mealSearchResults');
   if (!q) { results.innerHTML = ''; return; }
@@ -5283,7 +5277,7 @@ window.searchMealFoods = function (query) {
   }).join('');
 };
 
-window.askAIToAddMealFood = async function (query) {
+async function askAIToAddMealFood(query) {
   const q = (query || '').trim();
   if (!q) return;
 
@@ -5387,7 +5381,7 @@ window.askAIToAddMealFood = async function (query) {
 
 
 
-window.searchEditMealFoods = function (query) {
+function searchEditMealFoods(query) {
   const q = (query || '').toLowerCase().trim();
   const results = document.getElementById('editMealSearchResults');
   if (!results) return;
@@ -5403,7 +5397,7 @@ window.searchEditMealFoods = function (query) {
   }).join('');
 };
 
-window.selectMealFood = function (idx) {
+function selectMealFood(idx) {
   const item = vitalDb[idx]; if (!item) return;
   const name = (item.names?.[0] || '?').replace(/^./, c => c.toUpperCase());
   let target = selectedMealFoods.find(f => f.id === item.id || f.name.toLowerCase() === name.toLowerCase());
@@ -5440,7 +5434,7 @@ window.selectMealFood = function (idx) {
   });
 };
 
-window.removeSelectedFood = function (id) {
+function removeSelectedFood(id) {
   selectedMealFoods = selectedMealFoods.filter(f => f.id !== id);
   renderSelectedMealFoods();
 };
@@ -5456,7 +5450,7 @@ function renderSelectedMealFoods() {
   `).join('');
 }
 
-window.confirmAddMeal = function () {
+function confirmAddMeal() {
   if (selectedMealFoods.length === 0) return;
   const meals = store.get('meals', []);
   selectedMealFoods.forEach(f => meals.push({ ...f, timestamp: Date.now() }));
@@ -5466,7 +5460,7 @@ window.confirmAddMeal = function () {
   renderDashboard();
 };
 
-window.addFoodToMeal = function () {
+function addFoodToMeal() {
   if (!currentModalFood) return;
   const name = (currentModalFood.names?.[0] || '?').replace(/^./, c => c.toUpperCase());
   const meals = store.get('meals', []);
@@ -5534,7 +5528,7 @@ function renderMeals() {
 }
 window.renderMeals = renderMeals;
 
-window.removeMeal = function (idx) {
+function removeMeal(idx) {
   const meals = store.get('meals', []);
   const todayMeals = meals.filter(m => isToday(m.timestamp));
   if (idx < todayMeals.length) {
@@ -5571,7 +5565,7 @@ function initFastingPrograms() {
   ).join('');
 }
 
-window.selectProgram = function (id) {
+function selectProgram(id) {
   const p = FASTING_PROGRAMS.find(x => x.id === id);
   if (!p) return;
   document.getElementById('fastingDuration').value = p.hours;
@@ -5687,7 +5681,7 @@ function initMasterclass() {
   }).join('');
 }
 
-window.openMasterclass = function (index) {
+function openMasterclass(index) {
   const mc = ehretMasterclassData[index];
   document.getElementById('mcHeader').innerHTML = `
     <div style="display:flex; align-items:center; gap:16px; margin-bottom:12px;">
@@ -5714,7 +5708,7 @@ window.openMasterclass = function (index) {
   document.getElementById('masterclassModal').classList.add('open');
 };
 
-window.askAIAboutMasterclass = function (title) {
+function askAIAboutMasterclass(title) {
   document.getElementById('masterclassModal').classList.remove('open');
   showPage('chat');
   const chatInput = document.getElementById('chatInput');
@@ -5724,7 +5718,7 @@ window.askAIAboutMasterclass = function (title) {
   }
 };
 
-window.closeMasterclass = function (e) {
+function closeMasterclass(e) {
   if (e && e.target !== document.getElementById('masterclassModal')) return;
   document.getElementById('masterclassModal').classList.remove('open');
 };
@@ -5825,7 +5819,7 @@ function initExpertAccordion() {
   }).join('');
 }
 
-window.toggleExpertAccordion = function (headEl) {
+function toggleExpertAccordion(headEl) {
   const row = headEl.closest('.jn-expert-row');
   const wasOpen = row.classList.contains('open');
   // Close all
@@ -5835,7 +5829,7 @@ window.toggleExpertAccordion = function (headEl) {
 };
 
 // ═══════ FASTING TIMER & CONTROLS ═══════
-window.stepFastingDuration = function (delta) {
+function stepFastingDuration(delta) {
   if (fastingState?.active) return;
   const input = document.getElementById('fastingDuration');
   if (!input) return;
@@ -5845,7 +5839,7 @@ window.stepFastingDuration = function (delta) {
   window.onFastingDurationChange();
 };
 
-window.setFastingDurationPreset = function (hours) {
+function setFastingDurationPreset(hours) {
   if (fastingState?.active) return;
   const input = document.getElementById('fastingDuration');
   if (input) {
@@ -5854,7 +5848,7 @@ window.setFastingDurationPreset = function (hours) {
   }
 };
 
-window.onFastingDurationChange = function () {
+function onFastingDurationChange() {
   const input = document.getElementById('fastingDuration');
   if (!input) return;
   let hours = parseInt(input.value) || 16;
@@ -5876,7 +5870,7 @@ window.onFastingDurationChange = function () {
   if (goalEl) goalEl.textContent = `Objectif : ${hours}h`;
 };
 
-window.initFastingDurationControls = function () {
+function initFastingDurationControls() {
   const select = document.getElementById('fastingType');
   if (select) {
     select.addEventListener('change', () => {
@@ -5890,7 +5884,7 @@ window.initFastingDurationControls = function () {
   window.onFastingDurationChange();
 };
 
-window.toggleFasting = async function () {
+async function toggleFasting() {
   if (fastingState.active) {
     await stopFasting();
   } else {
@@ -6012,7 +6006,7 @@ function updateLiveFastingStages(elapsedHours, targetHours) {
   });
 }
 
-window.openFastEndModal = function (elapsedMs, targetMs, type) {
+function openFastEndModal(elapsedMs, targetMs, type) {
   const modal = document.getElementById('fastEndModal');
   if (!modal) return;
 
@@ -6072,13 +6066,13 @@ window.openFastEndModal = function (elapsedMs, targetMs, type) {
   modal.style.display = 'flex';
 };
 
-window.closeFastEndModal = function () {
+function closeFastEndModal() {
   const modal = document.getElementById('fastEndModal');
   if (modal) modal.style.display = 'none';
   pendingFastDebrief = null;
 };
 
-window.setFastRating = function (type, val) {
+function setFastRating(type, val) {
   currentFastRating[type] = parseInt(val);
   const containerId = type === 'energy' ? 'fastRatingEnergy' : 'fastRatingClarity';
   document.querySelectorAll(`#${containerId} .star-rating-btn`).forEach(btn => {
@@ -6086,7 +6080,7 @@ window.setFastRating = function (type, val) {
   });
 };
 
-window.toggleElimTag = function (el) {
+function toggleElimTag(el) {
   if (!el) return;
   el.classList.toggle('active');
   const tag = el.dataset.tag;
@@ -6097,7 +6091,7 @@ window.toggleElimTag = function (el) {
   }
 };
 
-window.confirmSaveFastDebrief = function () {
+function confirmSaveFastDebrief() {
   if (!pendingFastDebrief) {
     closeFastEndModal();
     return;
@@ -6257,7 +6251,7 @@ function loadFastingState() {
   }
 }
 
-window.deleteFastingEntry = function (index) {
+function deleteFastingEntry(index) {
   const history = store.get('fasting-history', []);
   if (index >= 0 && index < history.length) {
     history.splice(index, 1);
@@ -6268,7 +6262,7 @@ window.deleteFastingEntry = function (index) {
   }
 };
 
-window.showFastingRefeedAdvice = function (hours, type) {
+function showFastingRefeedAdvice(hours, type) {
   const protocolHtml = getRefeedingProtocol(hours, type);
   if (window.showVitalConfirm) {
     window.showVitalConfirm({
@@ -6381,7 +6375,7 @@ const breathModes = {
   sleep: { name: '4-7-8 Sommeil Profond', inhale: 4, exhale: 8, hold: 7, breaths: 6, retentionAfter: false },
 };
 
-window.switchBreathingTab = function (tabName) {
+function switchBreathingTab(tabName) {
   const btnTimer = document.getElementById('tabBtnBreathingTimer');
   const btnVideos = document.getElementById('tabBtnBreathingVideos');
   const btnGuide = document.getElementById('tabBtnBreathingGuide');
@@ -6444,7 +6438,7 @@ const WIM_HOF_VIDEOS = {
   }
 };
 
-window.loadBreathingVideo = function (videoKey, btnEl) {
+function loadBreathingVideo(videoKey, btnEl) {
   const videoData = WIM_HOF_VIDEOS[videoKey] || WIM_HOF_VIDEOS['3-rounds'];
   const videoPlayer = document.getElementById('wimHofVideoPlayer');
   const sourceEl = document.getElementById('wimHofVideoSource');
@@ -6477,7 +6471,7 @@ window.loadBreathingVideo = function (videoKey, btnEl) {
   }
 };
 
-window.setBreathMode = function (mode) {
+function setBreathMode(mode) {
   currentBreathMode = mode;
   document.querySelectorAll('.breath-mode').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
   const desc = breathModes[mode] ? `${breathModes[mode].name} — ${breathModes[mode].breaths} respirations/tour` : '';
@@ -6485,7 +6479,7 @@ window.setBreathMode = function (mode) {
   if (info) info.innerHTML = `<p>${desc}</p>`;
 };
 
-window.setBreathRounds = function (n) {
+function setBreathRounds(n) {
   const val = Math.max(1, Math.min(10, parseInt(n) || 3));
   const input = document.getElementById('breathRounds');
   const display = document.getElementById('breathRoundsDisplay');
@@ -6500,21 +6494,21 @@ window.setBreathRounds = function (n) {
   });
 };
 
-window.adjustBreathRounds = function (delta) {
+function adjustBreathRounds(delta) {
   const input = document.getElementById('breathRounds');
   const current = parseInt(input?.value || '3');
   window.setBreathRounds(current + delta);
 };
 
 let _retentionResolve = null;
-window.triggerRecoveryBreath = function () {
+function triggerRecoveryBreath() {
   if (_retentionResolve) {
     _retentionResolve();
     _retentionResolve = null;
   }
 };
 
-window.startBreathing = async function () {
+async function startBreathing() {
   if (breathingActive) {
     breathingActive = false;
     if (_retentionResolve) { _retentionResolve(); _retentionResolve = null; }
@@ -6702,7 +6696,7 @@ function initSmartInsight() {
 
 // ═══════ SCANNER IA ═══════
 let _scanMascotRenderer = null;
-window.handleScanUpload = function (event) {
+function handleScanUpload(event) {
   const file = event.target.files[0];
   if (!file) return;
 
@@ -7186,7 +7180,7 @@ function renderScanResult(aiText) {
 }
 window.renderScanResult = renderScanResult;
 
-window.askAIAboutScannedDish = function (dishName) {
+function askAIAboutScannedDish(dishName) {
   showPage('chat');
   const chatInput = document.getElementById('chatInput');
   if (chatInput) {
@@ -7394,7 +7388,7 @@ function highlightMatches(text, query) {
 }
 
 // ═══════ PROACTIVE MASCOT ═══════
-window.updateProactiveMascot = function (actionContext = null) {
+function updateProactiveMascot(actionContext = null) {
   const bubble = document.getElementById('mascotSpeechBubble') || document.getElementById('greetingContext');
   if (!bubble) return;
 
@@ -7454,7 +7448,7 @@ function formatSeconds(secs) {
   return `${mins < 10 ? '0' : ''}${mins}:${remSecs < 10 ? '0' : ''}${remSecs}`;
 }
 
-window.searchMediaResources = function (query) {
+function searchMediaResources(query) {
   const q = (query || '').trim();
   _mediaSearchQuery = q;
 
@@ -7467,12 +7461,12 @@ window.searchMediaResources = function (query) {
   }, 180);
 };
 
-window.setMediaSearchFilter = function (filter) {
+function setMediaSearchFilter(filter) {
   _mediaSearchFilter = filter;
   _renderMediaSearchResults();
 };
 
-window.applyMediaTopicTag = function (tag) {
+function applyMediaTopicTag(tag) {
   const input = document.getElementById('mediaSearchInput');
   if (input) {
     input.value = tag;
@@ -7481,7 +7475,7 @@ window.applyMediaTopicTag = function (tag) {
   }
 };
 
-window.clearMediaSearch = function () {
+function clearMediaSearch() {
   const input = document.getElementById('mediaSearchInput');
   if (input) {
     input.value = '';
@@ -7657,7 +7651,7 @@ function renderMediaResultCard(item, query) {
 }
 
 // ═══════ VIDEO TIMESTAMP PLAYER MODAL ═══════
-window.playVideoAtTimestamp = function (mediaUrl, seconds = 0, title = '', type = 'local', youtubeId = '', chapter = '', source = '') {
+function playVideoAtTimestamp(mediaUrl, seconds = 0, title = '', type = 'local', youtubeId = '', chapter = '', source = '') {
   const modal = document.getElementById('mediaVideoModal');
   const modalSource = document.getElementById('mediaVideoModalSource');
   const modalTitle = document.getElementById('mediaVideoModalTitle');
@@ -7728,7 +7722,7 @@ window.playVideoAtTimestamp = function (mediaUrl, seconds = 0, title = '', type 
   document.body.style.overflow = 'hidden';
 };
 
-window.closeMediaVideoModal = function (e) {
+function closeMediaVideoModal(e) {
   if (e && e.target && e.target.closest('.media-video-modal-content') && !e.target.closest('.modal-close-btn')) {
     return;
   }
@@ -7747,7 +7741,7 @@ window.closeMediaVideoModal = function (e) {
 };
 
 // ═══════ PDF PASSAGE MODAL ═══════
-window.openPdfPassageModal = function (itemId) {
+function openPdfPassageModal(itemId) {
   const item = MEDIA_SEARCH_DATABASE.find(i => i.id === itemId);
   const modal = document.getElementById('pdfPassageModal');
   const content = document.getElementById('pdfPassageModalContent');
@@ -7795,7 +7789,7 @@ window.openPdfPassageModal = function (itemId) {
   document.body.style.overflow = 'hidden';
 };
 
-window.closePdfPassageModal = function (e) {
+function closePdfPassageModal(e) {
   if (e && e.target && e.target.closest('.modal-card') && !e.target.closest('.modal-close-btn')) {
     return;
   }
@@ -7806,13 +7800,13 @@ window.closePdfPassageModal = function (e) {
 
 let _resourcesCatalogTab = 'all';
 
-window.setResourcesCatalogTab = function (tab) {
+function setResourcesCatalogTab(tab) {
   _resourcesCatalogTab = tab;
   window.renderResources();
 };
 
 // ═══════ RESOURCES HUB ═══════
-window.renderResources = function () {
+function renderResources() {
   const container = document.getElementById('resourcesContainer');
   if (!container) return;
 
@@ -8291,7 +8285,7 @@ function getWeekDates(offsetWeeks = 0) {
   return days;
 }
 
-window.changeCalendarWeek = function (delta) {
+function changeCalendarWeek(delta) {
   currentDateOffset += delta;
   renderCalendar();
 };
@@ -8370,7 +8364,7 @@ function renderCalendar() {
 // ── CRUD Actions ──
 let currentEditMeal = null; // { dateStr, id, slot, text }
 
-window.openMealModal = function (dateStr, mealId = null) {
+function openMealModal(dateStr, mealId = null) {
   const scrim = document.getElementById('mealModalScrim');
   const modal = document.getElementById('mealModal');
   const title = document.getElementById('mealModalTitle');
@@ -8411,7 +8405,7 @@ window.openMealModal = function (dateStr, mealId = null) {
   modal.classList.add('active');
 };
 
-window.closeMealModal = function () {
+function closeMealModal() {
   document.getElementById('mealModalScrim').classList.remove('active');
   document.getElementById('mealModal').classList.remove('active');
 };
@@ -8445,7 +8439,7 @@ function saveMealModal() {
   }
 }
 
-window.deleteCalendarMeal = function (id) {
+function deleteCalendarMeal(id) {
   let meals = store.get('calendar_meals', []);
   meals = meals.filter(x => x.id !== id);
   store.set('calendar_meals', meals);
@@ -8453,21 +8447,21 @@ window.deleteCalendarMeal = function (id) {
   showToast('Repas supprimé du calendrier.', 'info');
 };
 
-window.promptAIFixMeal = function (id) {
+function promptAIFixMeal(id) {
   showPage('chat');
   const chatInput = document.getElementById('chatInput');
   chatInput.value = "IA, j'aimerais changer ce repas. Propose-moi une alternative cohérente. (ID: " + id + ")";
   chatInput.focus();
 };
 
-window.promptAIPlan = function () {
+function promptAIPlan() {
   showPage('chat');
   const chatInput = document.getElementById('chatInput');
   chatInput.value = "IA, propose-moi un plan alimentaire de 3 jours pour mon calendrier.";
   chatInput.focus();
 };
 
-window.handleApplyDietPlanRequest = function (encodedReq, mode) {
+function handleApplyDietPlanRequest(encodedReq, mode) {
   try {
     const req = JSON.parse(decodeURIComponent(escape(atob(encodedReq))));
     if (!window.applyDietPlanRequest) {
@@ -8508,7 +8502,7 @@ window.handleApplyDietPlanRequest = function (encodedReq, mode) {
   }
 };
 
-window.addMealsToCalendar = function (mealsJson) {
+function addMealsToCalendar(mealsJson) {
   try {
     const newMeals = JSON.parse(decodeURIComponent(escape(atob(mealsJson))));
     let meals = store.get('calendar_meals', []);
@@ -8544,7 +8538,7 @@ window.addMealsToCalendar = function (mealsJson) {
   }
 };
 
-window.handleAddActionMeal = function (encodedMeal) {
+function handleAddActionMeal(encodedMeal) {
   try {
     const meal = JSON.parse(decodeURIComponent(escape(atob(encodedMeal))));
     const meals = store.get('meals', []);
@@ -8620,7 +8614,7 @@ window.handleAddActionMeal = function (encodedMeal) {
   }
 };
 
-window.handleApplyFastingProgram = function (encodedProgram) {
+function handleApplyFastingProgram(encodedProgram) {
   try {
     const p = JSON.parse(decodeURIComponent(escape(atob(encodedProgram))));
     const firstConfig = (p.configs && p.configs[0]) || { type: 'waterFast', durationMinutes: 1440 };
@@ -8645,7 +8639,7 @@ window.handleApplyFastingProgram = function (encodedProgram) {
   }
 };
 
-window.addSuggestedFood = function (btn, foodName) {
+function addSuggestedFood(btn, foodName) {
   const meals = store.get('meals', []);
   const match = vitalDb.find(item => item.names && item.names.some(n => n.toLowerCase() === foodName.toLowerCase()));
   meals.push({
@@ -8684,7 +8678,7 @@ function detectQuickReplies(text) {
   return [];
 }
 
-window.sendQuickReply = function (btn, text) {
+function sendQuickReply(btn, text) {
   const parent = btn.closest('.quick-replies');
   if (parent) {
     parent.querySelectorAll('.quick-reply-chip').forEach(c => { c.disabled = true; c.style.opacity = '0.4'; });
@@ -8698,7 +8692,7 @@ window.sendQuickReply = function (btn, text) {
 // ═══════ WEIGHT TRACKING & MODAL ═══════
 window._editingWeightId = null;
 
-window.openWeightModal = function () {
+function openWeightModal() {
   const modal = document.getElementById('weightModal');
   if (!modal) return;
 
@@ -8739,14 +8733,14 @@ window.openWeightModal = function () {
   modal.classList.add('open');
 };
 
-window.closeWeightModal = function (e) {
+function closeWeightModal(e) {
   if (!e || e.target === document.getElementById('weightModal') || e.target.closest?.('.modal-close')) {
     window._editingWeightId = null;
     document.getElementById('weightModal')?.classList.remove('open');
   }
 };
 
-window.cancelWeightEdit = function () {
+function cancelWeightEdit() {
   window._editingWeightId = null;
   const dateInput = document.getElementById('weightDateInput');
   const valInput = document.getElementById('weightValInput');
@@ -8777,7 +8771,7 @@ window.cancelWeightEdit = function () {
   renderWeightHistoryInModal();
 };
 
-window.editWeightEntry = function (entryId) {
+function editWeightEntry(entryId) {
   const history = store.get('weight_history', []);
   const entry = history.find(h => h.id === entryId);
   if (!entry) return;
@@ -8811,7 +8805,7 @@ window.editWeightEntry = function (entryId) {
   renderWeightHistoryInModal();
 };
 
-window.stepWeight = function (delta) {
+function stepWeight(delta) {
   const valInput = document.getElementById('weightValInput');
   if (!valInput) return;
   let curr = parseFloat(valInput.value) || 70.0;
@@ -8821,7 +8815,7 @@ window.stepWeight = function (delta) {
   valInput.value = curr.toFixed(1);
 };
 
-window.saveWeightEntry = function () {
+function saveWeightEntry() {
   const dateInput = document.getElementById('weightDateInput');
   const valInput = document.getElementById('weightValInput');
   const noteInput = document.getElementById('weightNoteInput');
@@ -8871,7 +8865,7 @@ window.saveWeightEntry = function () {
   document.getElementById('weightModal')?.classList.remove('open');
 };
 
-window.deleteWeightEntry = async function (idOrIdx) {
+async function deleteWeightEntry(idOrIdx) {
   let history = store.get('weight_history', []);
   let idx = typeof idOrIdx === 'string' ? history.findIndex(h => h.id === idOrIdx) : idOrIdx;
   if (idx < 0 || idx >= history.length) return;
@@ -8901,7 +8895,7 @@ window.deleteWeightEntry = async function (idOrIdx) {
   renderWeightHistoryInModal();
 };
 
-window.renderWeightHistoryInModal = function () {
+function renderWeightHistoryInModal() {
   const listEl = document.getElementById('weightHistoryList');
   const countEl = document.getElementById('weightHistoryCount');
   if (!listEl) return;
@@ -8946,7 +8940,7 @@ window.renderWeightHistoryInModal = function () {
 // ═══════ MODERN WEIGHT ANALYTICS & INTERACTIVE CHART ═══════
 let currentWeightPeriod = 'all';
 
-window.setWeightPeriod = function (period) {
+function setWeightPeriod(period) {
   currentWeightPeriod = period;
   document.querySelectorAll('#weightPeriodBar .period-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.period === period);
@@ -8976,7 +8970,7 @@ function getSmoothSplinePath(points) {
   return d;
 }
 
-window.renderWeightChart = function () {
+function renderWeightChart() {
   const container = document.getElementById('weightChartContainer');
   const empty = document.getElementById('weightChartEmpty');
   const svg = document.getElementById('weightChartSvg');
@@ -9296,14 +9290,14 @@ window.addEventListener('resize', () => {
 
 // Hook renderWeightChart into app init
 const originalUpdateDash = window.updateDashStats;
-window.updateDashStats = function () {
+function updateDashStats() {
   if (originalUpdateDash) originalUpdateDash();
   renderWeightChart();
   updateCircadianWidget();
 };
 
 // ═══════ CIRCADIAN RHYTHM ═══════
-window.updateCircadianWidget = function () {
+function updateCircadianWidget() {
   const timeEl = document.getElementById('circadianTimePill');
   const clockTime = document.getElementById('clockTime');
   const clockPhase = document.getElementById('clockPhase');
@@ -9390,7 +9384,7 @@ const _mascotQuotes = {
   sleep: "« Réparation cellulaire et autolyse des déchets... Bonne nuit ! 😴 »"
 };
 
-window.openMascotStudioModal = function () {
+function openMascotStudioModal() {
   const modal = document.getElementById('mascotStudioModal');
   if (!modal) return;
   modal.style.display = 'flex';
@@ -9409,12 +9403,12 @@ window.openMascotStudioModal = function () {
   }
 };
 
-window.closeMascotStudioModal = function () {
+function closeMascotStudioModal() {
   const modal = document.getElementById('mascotStudioModal');
   if (modal) modal.style.display = 'none';
 };
 
-window.setInAppMascotAction = function (action) {
+function setInAppMascotAction(action) {
   if (_inAppMascotRenderer) {
     _inAppMascotRenderer.setAction(action);
   }
@@ -9428,13 +9422,13 @@ window.setInAppMascotAction = function (action) {
   }
 };
 
-window.triggerInAppPigeonAction = function () {
+function triggerInAppPigeonAction() {
   const actions = ['laugh', 'celebrate', 'coo', 'walk', 'think'];
   const next = actions[Math.floor(Math.random() * actions.length)];
   window.setInAppMascotAction(next);
 };
 
-window.toggleInAppAudioFx = function () {
+function toggleInAppAudioFx() {
   if (window.pigeonAudio) {
     const enabled = window.pigeonAudio.toggleSound();
     const icon = document.getElementById('inAppSoundIcon');
@@ -9448,18 +9442,18 @@ window.toggleInAppAudioFx = function () {
 // 🔐 AI ACCESS GATE MODAL CONTROLLERS (Google Authentication Enforcement)
 // ═══════════════════════════════════════════════════════════════════════════
 
-window.openAiAuthGateModal = function () {
+function openAiAuthGateModal() {
   const modal = document.getElementById('aiAuthGateModal');
   if (modal) modal.style.display = 'flex';
 };
 
-window.closeAiAuthGateModal = function (e) {
+function closeAiAuthGateModal(e) {
   if (e && e.target && e.target !== e.currentTarget) return;
   const modal = document.getElementById('aiAuthGateModal');
   if (modal) modal.style.display = 'none';
 };
 
-window.loginWithGoogleFromGate = async function () {
+async function loginWithGoogleFromGate() {
   window.closeAiAuthGateModal(null);
   if (window.vitalTrackAuth) {
     await window.vitalTrackAuth.signInWithGoogle();
@@ -9508,7 +9502,7 @@ if (typeof window !== 'undefined') {
   });
 }
 
-window.triggerPwaInstall = async function () {
+async function triggerPwaInstall() {
   if (_deferredPwaPrompt) {
     _deferredPwaPrompt.prompt();
     const choice = await _deferredPwaPrompt.userChoice;
@@ -9533,14 +9527,14 @@ window.triggerPwaInstall = async function () {
   }
 };
 
-window.dismissPwaBanner = function () {
+function dismissPwaBanner() {
   const banner = document.getElementById('pwaInstallBanner');
   if (banner) banner.style.display = 'none';
   localStorage.setItem('vt_pwa_dismissed', Date.now().toString());
 };
 
 // ═══════ APP LOGOS WITH VITAL MASCOT HEAD ═══════
-window.initAppLogos = function () {
+function initAppLogos() {
   const desktop = document.getElementById('desktopLogoIcon');
   const mobile = document.getElementById('mobileLogoIcon');
   if (window.renderPigeonPortrait) {
@@ -9554,7 +9548,7 @@ window.initAppLogos = function () {
 // ═══════ SCREENSHOT HANDLING & PRIVACY NOTIFICATION ═══════
 let lastScreenshotToastTime = 0;
 
-window.initScreenshotProtection = function () {
+function initScreenshotProtection() {
   document.body.classList.remove('screenshot-privacy-active');
   const isEnabled = store.get('screenshotProtection', false) === true;
   const toggle = document.getElementById('toggleScreenshotProtection');
@@ -9568,7 +9562,7 @@ function handleScreenshotEvent() {
   document.body.classList.remove('screenshot-privacy-active');
 }
 
-window.setScreenshotProtection = function (enabled) {
+function setScreenshotProtection(enabled) {
   store.set('screenshotProtection', !!enabled);
   document.body.classList.remove('screenshot-privacy-active');
   if (window.showToast) {
@@ -9581,3 +9575,181 @@ window.setScreenshotProtection = function (enabled) {
 };
 
 
+
+
+// ═══════ GLOBAL WINDOW EXPORTS ═══════
+if (typeof window !== "undefined") window.showToast = showToast;
+if (typeof window !== "undefined") window.showVitalConfirm = showVitalConfirm;
+if (typeof window !== "undefined") window.initVitalDatePicker = initVitalDatePicker;
+if (typeof window !== "undefined") window.initAllVitalDatePickers = initAllVitalDatePickers;
+if (typeof window !== "undefined") window.initVitalSelect = initVitalSelect;
+if (typeof window !== "undefined") window.initAllVitalSelects = initAllVitalSelects;
+if (typeof window !== "undefined") window.openGoogleAuthModal = openGoogleAuthModal;
+if (typeof window !== "undefined") window.closeGoogleAuthModal = closeGoogleAuthModal;
+if (typeof window !== "undefined") window.handleGoogleAuthForm = handleGoogleAuthForm;
+if (typeof window !== "undefined") window.openUserProfileModal = openUserProfileModal;
+if (typeof window !== "undefined") window.closeUserProfileModal = closeUserProfileModal;
+if (typeof window !== "undefined") window.renderUserProfileModal = renderUserProfileModal;
+if (typeof window !== "undefined") window.showPage = showPage;
+if (typeof window !== "undefined") window.toggleMoreDrawer = toggleMoreDrawer;
+if (typeof window !== "undefined") window.toggleMobileNav = toggleMobileNav;
+if (typeof window !== "undefined") window.toggleTheme = toggleTheme;
+if (typeof window !== "undefined") window.toggleEmonctoireChip = toggleEmonctoireChip;
+if (typeof window !== "undefined") window.toggleAiPreviewBox = toggleAiPreviewBox;
+if (typeof window !== "undefined") window.updateLiveAiPreview = updateLiveAiPreview;
+if (typeof window !== "undefined") window.saveProfile = saveProfile;
+if (typeof window !== "undefined") window.setProtocol = setProtocol;
+if (typeof window !== "undefined") window.openVitalityInfoModal = openVitalityInfoModal;
+if (typeof window !== "undefined") window.closeVitalityInfoModal = closeVitalityInfoModal;
+if (typeof window !== "undefined") window.newConversation = newConversation;
+if (typeof window !== "undefined") window.switchConversation = switchConversation;
+if (typeof window !== "undefined") window.confirmDeleteConversation = confirmDeleteConversation;
+if (typeof window !== "undefined") window.closeDeleteConvModal = closeDeleteConvModal;
+if (typeof window !== "undefined") window.executeDeleteConversation = executeDeleteConversation;
+if (typeof window !== "undefined") window.deleteConversation = deleteConversation;
+if (typeof window !== "undefined") window.filterConversations = filterConversations;
+if (typeof window !== "undefined") window.toggleSidebar = toggleSidebar;
+if (typeof window !== "undefined") window.toggleVoiceInput = toggleVoiceInput;
+if (typeof window !== "undefined") window.cancelVoiceInput = cancelVoiceInput;
+if (typeof window !== "undefined") window.handleChatImageSelected = handleChatImageSelected;
+if (typeof window !== "undefined") window.removeChatImage = removeChatImage;
+if (typeof window !== "undefined") window.quickChat = quickChat;
+if (typeof window !== "undefined") window.sendChat = sendChat;
+if (typeof window !== "undefined") window.renderModelPicker = renderModelPicker;
+if (typeof window !== "undefined") window.selectModel = selectModel;
+if (typeof window !== "undefined") window.toggleModelList = toggleModelList;
+if (typeof window !== "undefined") window.applySortAndRender = applySortAndRender;
+if (typeof window !== "undefined") window.setSearchFilter = setSearchFilter;
+if (typeof window !== "undefined") window.searchFoods = searchFoods;
+if (typeof window !== "undefined") window.triggerDirectAISearch = triggerDirectAISearch;
+if (typeof window !== "undefined") window.quickAddFoodToMeal = quickAddFoodToMeal;
+if (typeof window !== "undefined") window.quickToggleFavorite = quickToggleFavorite;
+if (typeof window !== "undefined") window.applyRecentSearch = applyRecentSearch;
+if (typeof window !== "undefined") window.clearRecentSearches = clearRecentSearches;
+if (typeof window !== "undefined") window.clearSearch = clearSearch;
+if (typeof window !== "undefined") window.browseFoodsByCategory = browseFoodsByCategory;
+if (typeof window !== "undefined") window.askAIToFindFood = askAIToFindFood;
+if (typeof window !== "undefined") window.toggleProtocolsAccordion = toggleProtocolsAccordion;
+if (typeof window !== "undefined") window.handleHerbSearchInput = handleHerbSearchInput;
+if (typeof window !== "undefined") window.clearHerbSearch = clearHerbSearch;
+if (typeof window !== "undefined") window.setHerbFilter = setHerbFilter;
+if (typeof window !== "undefined") window.filterByTag = filterByTag;
+if (typeof window !== "undefined") window.setHerbFilterByHerbs = setHerbFilterByHerbs;
+if (typeof window !== "undefined") window.toggleHerbMonograph = toggleHerbMonograph;
+if (typeof window !== "undefined") window.openHerbModal = openHerbModal;
+if (typeof window !== "undefined") window.closeHerbModal = closeHerbModal;
+if (typeof window !== "undefined") window.askAIAboutCurrentHerb = askAIAboutCurrentHerb;
+if (typeof window !== "undefined") window.openFoodModal = openFoodModal;
+if (typeof window !== "undefined") window.switchAnalyzedFoodInModal = switchAnalyzedFoodInModal;
+if (typeof window !== "undefined") window.confirmAddMealFromModal = confirmAddMealFromModal;
+if (typeof window !== "undefined") window.openFoodModalFromSelection = openFoodModalFromSelection;
+if (typeof window !== "undefined") window.setMealCookingMethod = setMealCookingMethod;
+if (typeof window !== "undefined") window.setMealOilQuality = setMealOilQuality;
+if (typeof window !== "undefined") window.openFoodModalFromMeal = openFoodModalFromMeal;
+if (typeof window !== "undefined") window.removeMealAndCloseModal = removeMealAndCloseModal;
+if (typeof window !== "undefined") window.saveAIFoodToDB = saveAIFoodToDB;
+if (typeof window !== "undefined") window.addFoodToMealFromModal = addFoodToMealFromModal;
+if (typeof window !== "undefined") window.closeFoodModal = closeFoodModal;
+if (typeof window !== "undefined") window.setModalTab = setModalTab;
+if (typeof window !== "undefined") window.toggleFavorite = toggleFavorite;
+if (typeof window !== "undefined") window.setFavFilter = setFavFilter;
+if (typeof window !== "undefined") window.openCreateDishModal = openCreateDishModal;
+if (typeof window !== "undefined") window.closeCreateDishModal = closeCreateDishModal;
+if (typeof window !== "undefined") window.selectDishEmoji = selectDishEmoji;
+if (typeof window !== "undefined") window.handleSaveCustomDish = handleSaveCustomDish;
+if (typeof window !== "undefined") window.addFavoriteDishToMeals = addFavoriteDishToMeals;
+if (typeof window !== "undefined") window.chatAboutDish = chatAboutDish;
+if (typeof window !== "undefined") window.saveMealAsFavoriteDish = saveMealAsFavoriteDish;
+if (typeof window !== "undefined") window.showAddMealModal = showAddMealModal;
+if (typeof window !== "undefined") window.closeAddMealModal = closeAddMealModal;
+if (typeof window !== "undefined") window.analyzeDishWithAI = analyzeDishWithAI;
+if (typeof window !== "undefined") window.searchMealFoods = searchMealFoods;
+if (typeof window !== "undefined") window.askAIToAddMealFood = askAIToAddMealFood;
+if (typeof window !== "undefined") window.searchEditMealFoods = searchEditMealFoods;
+if (typeof window !== "undefined") window.selectMealFood = selectMealFood;
+if (typeof window !== "undefined") window.removeSelectedFood = removeSelectedFood;
+if (typeof window !== "undefined") window.confirmAddMeal = confirmAddMeal;
+if (typeof window !== "undefined") window.addFoodToMeal = addFoodToMeal;
+if (typeof window !== "undefined") window.removeMeal = removeMeal;
+if (typeof window !== "undefined") window.selectProgram = selectProgram;
+if (typeof window !== "undefined") window.openMasterclass = openMasterclass;
+if (typeof window !== "undefined") window.askAIAboutMasterclass = askAIAboutMasterclass;
+if (typeof window !== "undefined") window.closeMasterclass = closeMasterclass;
+if (typeof window !== "undefined") window.toggleExpertAccordion = toggleExpertAccordion;
+if (typeof window !== "undefined") window.stepFastingDuration = stepFastingDuration;
+if (typeof window !== "undefined") window.setFastingDurationPreset = setFastingDurationPreset;
+if (typeof window !== "undefined") window.onFastingDurationChange = onFastingDurationChange;
+if (typeof window !== "undefined") window.initFastingDurationControls = initFastingDurationControls;
+if (typeof window !== "undefined") window.toggleFasting = toggleFasting;
+if (typeof window !== "undefined") window.openFastEndModal = openFastEndModal;
+if (typeof window !== "undefined") window.closeFastEndModal = closeFastEndModal;
+if (typeof window !== "undefined") window.setFastRating = setFastRating;
+if (typeof window !== "undefined") window.toggleElimTag = toggleElimTag;
+if (typeof window !== "undefined") window.confirmSaveFastDebrief = confirmSaveFastDebrief;
+if (typeof window !== "undefined") window.deleteFastingEntry = deleteFastingEntry;
+if (typeof window !== "undefined") window.showFastingRefeedAdvice = showFastingRefeedAdvice;
+if (typeof window !== "undefined") window.switchBreathingTab = switchBreathingTab;
+if (typeof window !== "undefined") window.loadBreathingVideo = loadBreathingVideo;
+if (typeof window !== "undefined") window.setBreathMode = setBreathMode;
+if (typeof window !== "undefined") window.setBreathRounds = setBreathRounds;
+if (typeof window !== "undefined") window.adjustBreathRounds = adjustBreathRounds;
+if (typeof window !== "undefined") window.triggerRecoveryBreath = triggerRecoveryBreath;
+if (typeof window !== "undefined") window.startBreathing = startBreathing;
+if (typeof window !== "undefined") window.handleScanUpload = handleScanUpload;
+if (typeof window !== "undefined") window.askAIAboutScannedDish = askAIAboutScannedDish;
+if (typeof window !== "undefined") window.updateProactiveMascot = updateProactiveMascot;
+if (typeof window !== "undefined") window.searchMediaResources = searchMediaResources;
+if (typeof window !== "undefined") window.setMediaSearchFilter = setMediaSearchFilter;
+if (typeof window !== "undefined") window.applyMediaTopicTag = applyMediaTopicTag;
+if (typeof window !== "undefined") window.clearMediaSearch = clearMediaSearch;
+if (typeof window !== "undefined") window.playVideoAtTimestamp = playVideoAtTimestamp;
+if (typeof window !== "undefined") window.closeMediaVideoModal = closeMediaVideoModal;
+if (typeof window !== "undefined") window.openPdfPassageModal = openPdfPassageModal;
+if (typeof window !== "undefined") window.closePdfPassageModal = closePdfPassageModal;
+if (typeof window !== "undefined") window.setResourcesCatalogTab = setResourcesCatalogTab;
+if (typeof window !== "undefined") window.renderResources = renderResources;
+if (typeof window !== "undefined") window.changeCalendarWeek = changeCalendarWeek;
+if (typeof window !== "undefined") window.openMealModal = openMealModal;
+if (typeof window !== "undefined") window.closeMealModal = closeMealModal;
+if (typeof window !== "undefined") window.deleteCalendarMeal = deleteCalendarMeal;
+if (typeof window !== "undefined") window.promptAIFixMeal = promptAIFixMeal;
+if (typeof window !== "undefined") window.promptAIPlan = promptAIPlan;
+if (typeof window !== "undefined") window.handleApplyDietPlanRequest = handleApplyDietPlanRequest;
+if (typeof window !== "undefined") window.addMealsToCalendar = addMealsToCalendar;
+if (typeof window !== "undefined") window.handleAddActionMeal = handleAddActionMeal;
+if (typeof window !== "undefined") window.handleApplyFastingProgram = handleApplyFastingProgram;
+if (typeof window !== "undefined") window.addSuggestedFood = addSuggestedFood;
+if (typeof window !== "undefined") window.sendQuickReply = sendQuickReply;
+if (typeof window !== "undefined") window.openWeightModal = openWeightModal;
+if (typeof window !== "undefined") window.closeWeightModal = closeWeightModal;
+if (typeof window !== "undefined") window.cancelWeightEdit = cancelWeightEdit;
+if (typeof window !== "undefined") window.editWeightEntry = editWeightEntry;
+if (typeof window !== "undefined") window.stepWeight = stepWeight;
+if (typeof window !== "undefined") window.saveWeightEntry = saveWeightEntry;
+if (typeof window !== "undefined") window.deleteWeightEntry = deleteWeightEntry;
+if (typeof window !== "undefined") window.renderWeightHistoryInModal = renderWeightHistoryInModal;
+if (typeof window !== "undefined") window.setWeightPeriod = setWeightPeriod;
+if (typeof window !== "undefined") window.renderWeightChart = renderWeightChart;
+if (typeof window !== "undefined") window.updateDashStats = updateDashStats;
+if (typeof window !== "undefined") window.updateCircadianWidget = updateCircadianWidget;
+if (typeof window !== "undefined") window.openMascotStudioModal = openMascotStudioModal;
+if (typeof window !== "undefined") window.closeMascotStudioModal = closeMascotStudioModal;
+if (typeof window !== "undefined") window.setInAppMascotAction = setInAppMascotAction;
+if (typeof window !== "undefined") window.triggerInAppPigeonAction = triggerInAppPigeonAction;
+if (typeof window !== "undefined") window.toggleInAppAudioFx = toggleInAppAudioFx;
+if (typeof window !== "undefined") window.openAiAuthGateModal = openAiAuthGateModal;
+if (typeof window !== "undefined") window.closeAiAuthGateModal = closeAiAuthGateModal;
+if (typeof window !== "undefined") window.loginWithGoogleFromGate = loginWithGoogleFromGate;
+if (typeof window !== "undefined") window.triggerPwaInstall = triggerPwaInstall;
+if (typeof window !== "undefined") window.dismissPwaBanner = dismissPwaBanner;
+if (typeof window !== "undefined") window.initScreenshotProtection = initScreenshotProtection;
+if (typeof window !== "undefined") window.setScreenshotProtection = setScreenshotProtection;
+
+// ═══════ BOOTSTRAP INITIALIZATION ═══════
+if (typeof document !== "undefined") {
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initApp);
+  } else {
+    initApp();
+  }
+}
