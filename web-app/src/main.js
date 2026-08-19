@@ -1576,14 +1576,14 @@ window.newConversation = function () {
   activeConvId = null;
   saveConversations();
   renderActiveConversation();
-  if (window.innerWidth <= 900) toggleSidebar();
+  if (window.innerWidth <= 900) window.toggleSidebar(false);
 };
 
 window.switchConversation = function (id) {
   activeConvId = id;
   saveConversations();
   renderActiveConversation();
-  if (window.innerWidth <= 900) toggleSidebar();
+  if (window.innerWidth <= 900) window.toggleSidebar(false);
 };
 
 window.deleteConversation = function (id, e) {
@@ -1600,9 +1600,30 @@ window.filterConversations = function (query) {
   renderSidebar(query);
 };
 
-window.toggleSidebar = function () {
+window.toggleSidebar = function (forceOpen) {
   const sidebar = document.getElementById('chatSidebar');
-  sidebar.classList.toggle('hidden');
+  const backdrop = document.getElementById('chatSidebarBackdrop');
+  if (!sidebar) return;
+
+  if (typeof forceOpen === 'boolean') {
+    if (forceOpen) {
+      sidebar.classList.remove('hidden');
+      if (backdrop) backdrop.classList.add('active');
+    } else {
+      sidebar.classList.add('hidden');
+      if (backdrop) backdrop.classList.remove('active');
+    }
+    return;
+  }
+
+  const isHidden = sidebar.classList.contains('hidden');
+  if (isHidden) {
+    sidebar.classList.remove('hidden');
+    if (backdrop) backdrop.classList.add('active');
+  } else {
+    sidebar.classList.add('hidden');
+    if (backdrop) backdrop.classList.remove('active');
+  }
 };
 
 function renderSidebar(filterQuery = '') {
@@ -1797,6 +1818,28 @@ window.sendChat = async function (e) {
   const attachedImage = pendingChatImage;
 
   if (!query && !attachedImage) return;
+
+  // 🛡️ Contrôle d'Accès IA : 3 Requêtes d'Essai pour Invités puis Connexion Google Obligatoire
+  const isAuth = window.vitalTrackAuth ? window.vitalTrackAuth.isAuthenticated() : false;
+  if (!isAuth) {
+    let guestAiCount = parseInt(localStorage.getItem('vt_guest_ai_count') || '0', 10);
+    if (guestAiCount >= 3) {
+      window.openAiAuthGateModal();
+      return;
+    }
+    guestAiCount++;
+    localStorage.setItem('vt_guest_ai_count', guestAiCount.toString());
+    const remaining = 3 - guestAiCount;
+    if (remaining > 0) {
+      if (window.showToast) {
+        window.showToast(`✨ Requête IA d'essai ${guestAiCount}/3 (${remaining} restante${remaining > 1 ? 's' : ''} avant connexion Google)`, 'info', 4000);
+      }
+    } else {
+      if (window.showToast) {
+        window.showToast(`⚠️ Dernière requête IA d'essai (3/3). Connectez-vous avec Google pour continuer en illimité !`, 'info', 5000);
+      }
+    }
+  }
 
   if (_isListening) {
     window.toggleVoiceInput(false);
@@ -2353,6 +2396,27 @@ window.searchFoods = function (query) {
 
 // Direct AI Search trigger from input button
 window.triggerDirectAISearch = function () {
+  const isAuth = window.vitalTrackAuth ? window.vitalTrackAuth.isAuthenticated() : false;
+  if (!isAuth) {
+    let guestAiCount = parseInt(localStorage.getItem('vt_guest_ai_count') || '0', 10);
+    if (guestAiCount >= 3) {
+      window.openAiAuthGateModal();
+      return;
+    }
+    guestAiCount++;
+    localStorage.setItem('vt_guest_ai_count', guestAiCount.toString());
+    const remaining = 3 - guestAiCount;
+    if (remaining > 0) {
+      if (window.showToast) {
+        window.showToast(`✨ Requête IA d'essai ${guestAiCount}/3 (${remaining} restante${remaining > 1 ? 's' : ''} avant connexion Google)`, 'info', 4000);
+      }
+    } else {
+      if (window.showToast) {
+        window.showToast(`⚠️ Dernière requête IA d'essai (3/3). Connectez-vous avec Google pour continuer en illimité !`, 'info', 5000);
+      }
+    }
+  }
+
   const input = document.getElementById('searchInput');
   const q = (input?.value || '').trim();
   if (q) {
@@ -8477,5 +8541,100 @@ window.toggleInAppAudioFx = function () {
     if (icon) icon.className = enabled ? 'ri-volume-up-fill' : 'ri-volume-mute-fill';
     if (label) label.textContent = enabled ? 'Sons Aviaires : Activés' : 'Sons Aviaires : Désactivés';
   }
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 🔐 AI ACCESS GATE MODAL CONTROLLERS (Google Authentication Enforcement)
+// ═══════════════════════════════════════════════════════════════════════════
+
+window.openAiAuthGateModal = function () {
+  const modal = document.getElementById('aiAuthGateModal');
+  if (modal) modal.style.display = 'flex';
+};
+
+window.closeAiAuthGateModal = function (e) {
+  if (e && e.target && e.target !== e.currentTarget) return;
+  const modal = document.getElementById('aiAuthGateModal');
+  if (modal) modal.style.display = 'none';
+};
+
+window.loginWithGoogleFromGate = async function () {
+  window.closeAiAuthGateModal(null);
+  if (window.vitalTrackAuth) {
+    await window.vitalTrackAuth.signInWithGoogle();
+  }
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 📲 PWA INSTALLATION PROMPT CONTROLLER (Add to Home Screen)
+// ═══════════════════════════════════════════════════════════════════════════
+
+let _deferredPwaPrompt = null;
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    _deferredPwaPrompt = e;
+
+    // Check if dismissed recently (< 7 days)
+    const lastDismissed = parseInt(localStorage.getItem('vt_pwa_dismissed') || '0', 10);
+    const sevenDays = 7 * 24 * 60 * 60 * 1000;
+    if (Date.now() - lastDismissed < sevenDays) return;
+
+    // Show banner after 2.5 seconds on mobile
+    setTimeout(() => {
+      const banner = document.getElementById('pwaInstallBanner');
+      if (banner) banner.style.display = 'block';
+    }, 2500);
+  });
+
+  // Check on load for iOS Safari mobile devices
+  window.addEventListener('DOMContentLoaded', () => {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+    if (isIOS && !isStandalone) {
+      const lastDismissed = parseInt(localStorage.getItem('vt_pwa_dismissed') || '0', 10);
+      const sevenDays = 7 * 24 * 60 * 60 * 1000;
+      if (Date.now() - lastDismissed >= sevenDays) {
+        setTimeout(() => {
+          const banner = document.getElementById('pwaInstallBanner');
+          const desc = document.getElementById('pwaBannerDesc');
+          if (desc) desc.textContent = 'Ajoutez VitalTrack à votre écran d\'accueil pour un accès hors-ligne instantané.';
+          if (banner) banner.style.display = 'block';
+        }, 3000);
+      }
+    }
+  });
+}
+
+window.triggerPwaInstall = async function () {
+  if (_deferredPwaPrompt) {
+    _deferredPwaPrompt.prompt();
+    const choice = await _deferredPwaPrompt.userChoice;
+    if (choice && choice.outcome === 'accepted') {
+      if (window.showToast) window.showToast('🎉 Merci d\'avoir installé VitalTrack !', 'success');
+    }
+    _deferredPwaPrompt = null;
+    window.dismissPwaBanner();
+  } else {
+    // Safari / iOS fallback instructions
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    if (isIOS) {
+      if (window.showToast) {
+        window.showToast('📲 Pour installer sur iPhone : Appuyez sur Partager ⎋ puis "Sur l\'écran d\'accueil" ➕', 'info', 7000);
+      }
+    } else {
+      if (window.showToast) {
+        window.showToast('ℹ️ Ouvrez le menu de votre navigateur (⋮) et choisissez "Installer l\'application"', 'info', 5000);
+      }
+    }
+    window.dismissPwaBanner();
+  }
+};
+
+window.dismissPwaBanner = function () {
+  const banner = document.getElementById('pwaInstallBanner');
+  if (banner) banner.style.display = 'none';
+  localStorage.setItem('vt_pwa_dismissed', Date.now().toString());
 };
 

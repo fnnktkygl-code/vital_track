@@ -337,6 +337,7 @@
   <main class="page" id="page-chat">
     <div class="chat-layout">
       <!-- ── Sidebar ── -->
+      <div class="chat-sidebar-backdrop" id="chatSidebarBackdrop" onclick="toggleSidebar()"></div>
       <aside class="chat-sidebar glass" id="chatSidebar">
         <div class="sidebar-top">
           <button class="btn-new-chat" onclick="newConversation()"><i class="ri-add-line"></i> Nouveau chat</button>
@@ -1932,6 +1933,55 @@
 
   <!-- ═══════ APP TOAST CONTAINER ═══════ -->
   <div id="appToastContainer" class="app-toast-container"></div>
+
+  <!-- ═══════ BANNIÈRE INSTALLATION PWA MOBILE ═══════ -->
+  <div id="pwaInstallBanner" class="pwa-install-banner" style="display:none;">
+    <div class="pwa-banner-inner glass">
+      <div class="pwa-banner-icon">
+        <img src="/icon-192.png" alt="VitalTrack" width="40" height="40" style="border-radius:10px; box-shadow: 0 4px 12px rgba(52,211,153,0.3);">
+      </div>
+      <div class="pwa-banner-text">
+        <strong>Installer l'App VitalTrack</strong>
+        <p id="pwaBannerDesc">Installez l'application sur votre écran d'accueil pour un accès instantané hors-ligne.</p>
+      </div>
+      <div class="pwa-banner-actions">
+        <button type="button" class="btn-pwa-install" id="pwaInstallBtn" onclick="triggerPwaInstall()">
+          <i class="ri-download-cloud-line"></i> Installer
+        </button>
+        <button type="button" class="btn-pwa-dismiss" onclick="dismissPwaBanner()" title="Plus tard" aria-label="Fermer la bannière">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ MODALE AUTHENTIFICATION GOOGLE OBLIGATOIRE (AI ACCESS GATE) ═══════ -->
+  <div id="aiAuthGateModal" class="modal-overlay" onclick="closeAiAuthGateModal(event)" style="display:none; z-index:99999;">
+    <div class="modal-card glass" onclick="event.stopPropagation()" style="max-width:440px; width:92%; text-align:center; padding:32px 24px; border-radius:24px; border:1px solid rgba(52,211,153,0.3); box-shadow:0 20px 60px rgba(0,0,0,0.8);">
+      <div style="width:64px; height:64px; margin:0 auto 16px; background:rgba(52,211,153,0.12); border:1px solid var(--accent); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:2rem; color:var(--accent);">
+        <i class="ri-sparkling-fill"></i>
+      </div>
+      <h3 style="font-size:1.35rem; font-weight:800; margin-bottom:8px; color:var(--text);">Connexion Requise</h3>
+      <p style="color:var(--text-dim); font-size:0.9rem; line-height:1.5; margin-bottom:20px;">
+        Vous avez utilisé vos <strong>3 requêtes IA gratuites</strong> d'essai. Pour continuer à échanger en illimité avec le Coach Vitaliste et accéder à l'ensemble des modèles IA, connectez-vous avec votre compte Google.
+      </p>
+
+      <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:12px; margin-bottom:20px; text-align:left; font-size:0.8rem; color:var(--text-dim);">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;"><i class="ri-check-line" style="color:var(--accent);"></i> Échanges illimités avec les modèles IA</div>
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;"><i class="ri-check-line" style="color:var(--accent);"></i> Sauvegarde automatique de vos conversations</div>
+        <div style="display:flex; align-items:center; gap:8px;"><i class="ri-check-line" style="color:var(--accent);"></i> 100% Sécurisé & respectueux de votre vie privée</div>
+      </div>
+
+      <button type="button" class="btn-google-login" onclick="loginWithGoogleFromGate()" style="width:100%; display:flex; align-items:center; justify-content:center; gap:10px; padding:14px; background:#fff; color:#1f2937; border:none; border-radius:14px; font-weight:700; font-size:0.95rem; cursor:pointer; box-shadow:0 4px 16px rgba(0,0,0,0.3); transition:all 0.2s ease; margin-bottom:10px;">
+        <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+        <span>Se connecter avec Google</span>
+      </button>
+
+      <button type="button" class="btn-cancel-plain" onclick="closeAiAuthGateModal(null)" style="background:none; border:none; color:var(--text-dim); font-size:0.85rem; cursor:pointer; padding:6px 12px;">
+        Plus tard (navigation seule)
+      </button>
+    </div>
+  </div>
 
   <script type="module" src="/src/mascot.js"></script>
   <script type="module" src="/src/diet-plan-engine.js"></script>

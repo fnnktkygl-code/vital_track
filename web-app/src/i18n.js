@@ -350,7 +350,7 @@ export const TRANSLATIONS = {
       themeToggleTitle: 'Basculer le mode sombre/clair'
     },
     dashboard: {
-      greeting: 'Bonjour',
+      greeting: 'Bon matin',
       scoreTitle: 'Score de Vitalité Biologique',
       scoreSub: 'Équilibre PRAL, hydratation boréale et élimination lymphatique',
       circadianTitle: 'Horloge Circadienne & Rythme Boréal',

@@ -27,12 +27,15 @@
 
 /* ═══════ RESET & BASE LAYOUT ═══════ */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;transition:background var(--transition),color var(--transition);}
+html{scroll-behavior:smooth;overflow-x:hidden;max-width:100vw;width:100%}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;max-width:100vw;width:100%;transition:background var(--transition),color var(--transition);}
 
 .app-container {
   display: flex;
   min-height: 100vh;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 .sidebar-desktop {
   width: 260px;
@@ -51,10 +54,21 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
   margin-left: 260px;
   padding: 32px;
   max-width: 1400px;
+  width: calc(100% - 260px);
+  box-sizing: border-box;
 }
 @media (max-width: 768px) {
   .sidebar-desktop { display: none; }
-  .main-content { margin-left: 0; padding: 16px; padding-bottom: 90px; padding-top: 70px; }
+  .main-content {
+    margin-left: 0;
+    padding: 12px;
+    padding-bottom: 100px;
+    padding-top: 65px;
+    width: 100%;
+    max-width: 100vw;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
 }
 .sidebar-logo { font-family: var(--font); font-weight: 700; font-size: 1.4rem; color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 8px; margin-bottom: 32px; }
 .sidebar-logo .logo-icon { width: 32px; height: 32px; background: var(--accent); color: #000; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; }
@@ -4818,4 +4832,318 @@ mark.search-highlight {
   color: #000;
   border-color: var(--accent);
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   📱 COMPREHENSIVE MOBILE RESPONSIVENESS & TOUCH EXPERIENCE (320px - 768px)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Chat Sidebar Overlay & Dismissal */
+.chat-sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 145;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.chat-sidebar-backdrop.active {
+  display: block;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (max-width: 900px) {
+  .chat-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 150;
+    border-radius: 0;
+    width: 290px;
+    max-width: 82vw;
+    min-width: 0;
+    background: var(--bg-card);
+    border-right: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 12px 0 40px rgba(0, 0, 0, 0.7);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    transform: translateX(0);
+  }
+
+  .chat-sidebar.hidden {
+    transform: translateX(-100%);
+    margin-left: 0;
+    opacity: 1;
+    width: 290px;
+    min-width: 0;
+  }
+}
+
+/* Responsive Bottom Navigation & Text Wrapping */
+.bottom-nav {
+  padding-bottom: max(10px, env(safe-area-inset-bottom));
+  gap: 2px;
+}
+
+.bnav-item {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 4px 2px;
+  overflow: hidden;
+  text-align: center;
+}
+
+.bnav-item span {
+  display: block;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.68rem;
+  line-height: 1.2;
+}
+
+@media (max-width: 380px) {
+  .bnav-item span {
+    font-size: 0.58rem;
+    letter-spacing: -0.2px;
+  }
+  .bnav-item i {
+    font-size: 1.15rem;
+  }
+}
+
+/* Responsive Mobile Chat View (Prevent Cut-off) */
+@media (max-width: 768px) {
+  #page-chat {
+    min-height: unset;
+    height: calc(100dvh - 125px);
+    display: flex;
+    flex-direction: column;
+    margin: -12px -12px 0 -12px;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  #page-chat .chat-layout {
+    height: 100%;
+    max-height: 100%;
+    margin: 0;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+
+  #page-chat .chat-main {
+    height: 100%;
+    min-height: 0;
+  }
+
+  #page-chat .chat-messages {
+    flex: 1;
+    min-height: 0;
+    padding: 12px 10px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #page-chat .chat-input-bar {
+    padding: 8px 10px;
+    background: rgba(15, 23, 42, 0.96);
+    border-top: 1px solid var(--border);
+  }
+
+  /* Model Dropdown Mobile Adaptive Layout */
+  .model-dropdown-card {
+    position: fixed;
+    top: auto;
+    bottom: 75px;
+    left: 10px;
+    right: 10px;
+    width: auto;
+    max-height: 65vh;
+    overflow-y: auto;
+    z-index: 1000;
+    border-radius: 20px;
+    background: rgba(15, 23, 42, 0.98);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.15);
+  }
+
+  .model-cat-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .model-sub-dropdown {
+    position: static;
+    display: block !important;
+    width: 100%;
+    margin: 6px 0 0 0;
+    box-shadow: none;
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 4px;
+    animation: none;
+  }
+
+  .model-dropdown-card.flip-sub .model-sub-dropdown {
+    right: auto;
+    margin-right: 0;
+  }
+
+  .model-sub-item {
+    padding: 7px 10px;
+  }
+}
+
+/* Search Mode Switcher on Mobile */
+@media (max-width: 600px) {
+  .search-mode-switcher {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+    gap: 4px;
+    padding: 3px;
+    border-radius: 12px;
+    scrollbar-width: none;
+  }
+  .search-mode-switcher::-webkit-scrollbar {
+    display: none;
+  }
+  .search-mode-btn {
+    padding: 6px 12px;
+    font-size: 0.74rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   📲 PWA INSTALLATION BANNER (Add to Home Screen)
+   ═══════════════════════════════════════════════════════════════════════════ */
+.pwa-install-banner {
+  position: fixed;
+  bottom: 74px;
+  left: 12px;
+  right: 12px;
+  z-index: 999;
+  animation: pwaSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes pwaSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.pwa-banner-inner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(52, 211, 153, 0.4);
+  border-radius: 18px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.pwa-banner-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.pwa-banner-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.pwa-banner-text strong {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.pwa-banner-text p {
+  font-size: 0.74rem;
+  color: var(--text-dim);
+  line-height: 1.3;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.pwa-banner-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.btn-pwa-install {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--accent);
+  color: #000;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 12px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.btn-pwa-install:active {
+  transform: scale(0.96);
+}
+
+.btn-pwa-dismiss {
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  color: var(--text-dim);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.btn-pwa-dismiss:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--text);
+}
+
+@media (min-width: 769px) {
+  .pwa-install-banner {
+    left: auto;
+    right: 24px;
+    bottom: 24px;
+    max-width: 380px;
+  }
+}
+
 
