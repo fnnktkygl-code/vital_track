@@ -8,7 +8,7 @@
  *   node harnesses/run_e2e_audit.mjs --url https://your-production-app.vercel.app
  */
 
-import puppeteer from 'puppeteer-core';
+import puppeteer from '/Users/richard/Developer/vital_track/web-app/node_modules/puppeteer-core/lib/esm/puppeteer/puppeteer-core.js';
 
 // Parse arguments
 const args = process.argv.slice(2);

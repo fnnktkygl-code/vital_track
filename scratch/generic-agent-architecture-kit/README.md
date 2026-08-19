@@ -13,13 +13,19 @@ Ce kit fournit le socle architectural complet, réutilisable pour tout nouveau p
 │   ├── GEMINI.md                     # Directives maîtresses, honnêteté radicale, zéro-fake, zéro dette
 │   ├── SECURITY_AND_PERF.md          # Standards OWASP, protection des clés, memory leaks, budget perfs
 │   ├── UI_UX_DESIGN_SYSTEM.md        # Palette sémantique, WCAG AAA, états des boutons, feedback toasts
-│   └── AI_MODEL_CASCADE_RULES.md     # Gestion des cascades LLM, streaming SSE, anti-timeout serverless
+│   ├── AI_MODEL_CASCADE_RULES.md     # Gestion des cascades LLM, streaming SSE, anti-timeout serverless
+│   ├── GIT_AND_CI_CD.md              # Branching, commits conventionnels, pré-requis de merge & tags
+│   ├── ERROR_HANDLING_AND_RECOVERY.md # Gestion d'erreurs frontend, retry backoff, mode offline
+│   ├── NAMING_AND_CODE_CONVENTIONS.md # Nommage fichiers/variables, structure répertoires, style de code
+│   ├── SEO_AND_META.md               # Meta tags, Open Graph, HTML sémantique, robots.txt, sitemap
+│   └── I18N_AND_LOCALIZATION.md      # Fichiers de traduction JSON, détection locale, interpolation
 ├── skills/
 │   ├── radical-truth-and-rigor/      # Protocole d'intégrité factuelle et contre-vérification entre agents
 │   ├── e2e-system-audit/             # Protocole d'audit automatisé de bout en bout (Puppeteer/Playwright)
 │   ├── api-resilience-cascade/       # Ingénierie des cascades d'APIs et cooldown RPM/TPM
 │   ├── ui-ux-accessibility-auditor/  # Contrôle des contrastes, navigation clavier et micro-interactions
-│   └── feature-pruning-and-utility/  # Chasse aux gadgets superflus, maximisation de l'utilité clinique
+│   ├── feature-pruning-and-utility/  # Chasse aux gadgets superflus, maximisation de l'utilité clinique
+│   └── responsive-mobile-auditor/    # Audit responsive mobile-first, breakpoints, zones tactiles
 ├── harnesses/
 │   ├── run_e2e_audit.mjs             # Moteur de test E2E Puppeteer générique et paramétrable
 │   ├── test_api_resilience.mjs       # Suite de test de résilience API (200, 400, 401, 405, SSE streaming)

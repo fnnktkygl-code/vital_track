@@ -7,7 +7,7 @@
  *   node harnesses/audit_contrast_and_ux.mjs --url http://localhost:5173
  */
 
-import puppeteer from 'puppeteer-core';
+import puppeteer from '/Users/richard/Developer/vital_track/web-app/node_modules/puppeteer-core/lib/esm/puppeteer/puppeteer-core.js';
 
 const args = process.argv.slice(2);
 let targetUrl = 'http://localhost:5173';
