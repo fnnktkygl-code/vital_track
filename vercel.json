@@ -2,9 +2,9 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
   "framework": null,
-  "buildCommand": "npm run build",
+  "buildCommand": "node scripts/build-knowledge.js && cd web-app && npm run build",
   "outputDirectory": "web-app/dist",
-  "installCommand": "cd api && npm install",
+  "installCommand": "npm install && cd web-app && npm install && cd ../api && npm install",
   "functions": {
     "api/**/*.js": {
       "memory": 256,
