@@ -1574,6 +1574,7 @@ function loadChatHistory() {
   renderSidebar();
   renderActiveConversation();
 }
+window.loadChatHistory = loadChatHistory;
 
 function saveConversations() {
   store.set('conversations', conversations);
@@ -1595,14 +1596,64 @@ window.switchConversation = function (id) {
   if (window.innerWidth <= 900) window.toggleSidebar(false);
 };
 
-window.deleteConversation = function (id, e) {
-  e.stopPropagation();
-  conversations = conversations.filter(c => c.id !== id);
-  if (activeConvId === id) {
+let _pendingDeleteConvId = null;
+
+window.confirmDeleteConversation = function (id, e, rawTitle) {
+  if (e) {
+    e.stopPropagation();
+    e.preventDefault();
+  }
+  _pendingDeleteConvId = id;
+  const target = conversations.find(c => c.id === id);
+  const displayTitle = rawTitle || (target ? target.title : 'cette conversation');
+
+  const titlePreview = document.getElementById('deleteConvTitlePreview');
+  if (titlePreview) {
+    titlePreview.textContent = `« ${displayTitle} »`;
+  }
+
+  const modal = document.getElementById('deleteConvModal');
+  if (modal) {
+    modal.style.display = 'flex';
+  }
+};
+
+window.closeDeleteConvModal = function (e) {
+  if (e && e.target && e.target !== e.currentTarget && !e.target.classList.contains('modal-overlay')) {
+    return;
+  }
+  _pendingDeleteConvId = null;
+  const modal = document.getElementById('deleteConvModal');
+  if (modal) {
+    modal.style.display = 'none';
+  }
+};
+
+window.executeDeleteConversation = function () {
+  if (!_pendingDeleteConvId) return;
+  const idToDelete = _pendingDeleteConvId;
+  _pendingDeleteConvId = null;
+
+  conversations = conversations.filter(c => c.id !== idToDelete);
+  if (activeConvId === idToDelete) {
     activeConvId = conversations.length ? conversations[0].id : null;
   }
   saveConversations();
+  renderSidebar();
   renderActiveConversation();
+
+  const modal = document.getElementById('deleteConvModal');
+  if (modal) {
+    modal.style.display = 'none';
+  }
+
+  if (window.showToast) {
+    window.showToast('🗑️ Conversation supprimée avec succès.', 'info', 3000);
+  }
+};
+
+window.deleteConversation = function (id, e) {
+  window.confirmDeleteConversation(id, e);
 };
 
 window.filterConversations = function (query) {
@@ -1647,18 +1698,21 @@ function renderSidebar(filterQuery = '') {
     return;
   }
 
-  list.innerHTML = filtered.sort((a, b) => b.updated - a.updated).map(c => `
+  list.innerHTML = filtered.sort((a, b) => b.updated - a.updated).map(c => {
+    const escapedTitle = esc(c.title).replace(/'/g, "\\'");
+    return `
     <div class="conv-item ${c.id === activeConvId ? 'active' : ''}" onclick="switchConversation('${c.id}')">
       <i class="ri-chat-3-line" style="color:var(--text-dim)"></i>
       <div class="conv-item-info">
         <div class="conv-item-title">${esc(c.title)}</div>
         <div class="conv-item-date">${new Date(c.updated).toLocaleDateString('fr-FR', { month: 'short', day: 'numeric' })}</div>
       </div>
-      <button class="conv-item-delete" onclick="deleteConversation('${c.id}', event)" data-tooltip="Supprimer">
+      <button class="conv-item-delete" onclick="confirmDeleteConversation('${c.id}', event, '${escapedTitle}')" data-tooltip="Supprimer la discussion" aria-label="Supprimer la discussion">
         <i class="ri-delete-bin-line"></i>
       </button>
     </div>
-  `).join('');
+  `;
+  }).join('');
 }
 
 function renderActiveConversation() {
