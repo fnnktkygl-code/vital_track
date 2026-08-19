@@ -235,6 +235,8 @@ window.initVitalDatePicker = function(inputEl) {
     closePopover();
   }
 
+  let viewMode = 'days'; // 'days' | 'months' | 'years'
+
   function renderCalendar() {
     const today = new Date();
     const selectedVal = inputEl.value;
@@ -260,15 +262,12 @@ window.initVitalDatePicker = function(inputEl) {
         </div>
 
         <div class="vital-datepicker-selectors">
-          <select class="vital-dp-select vital-dp-select-month" aria-label="Choisir le mois">
-            ${MONTH_NAMES_FR.map((name, i) => `<option value="${i}" ${i === viewMonth ? 'selected' : ''}>${name}</option>`).join('')}
-          </select>
-          <select class="vital-dp-select vital-dp-select-year" aria-label="Choisir l'année">
-            ${Array.from({ length: 30 }, (_, k) => {
-              const y = (new Date().getFullYear() - 15) + k;
-              return `<option value="${y}" ${y === viewYear ? 'selected' : ''}>${y}</option>`;
-            }).join('')}
-          </select>
+          <button type="button" class="vital-dp-pill-btn ${viewMode === 'months' ? 'active' : ''}" data-toggle-mode="months">
+            <span>${MONTH_NAMES_FR[viewMonth]}</span> <i class="ri-arrow-down-s-line"></i>
+          </button>
+          <button type="button" class="vital-dp-pill-btn ${viewMode === 'years' ? 'active' : ''}" data-toggle-mode="years">
+            <span>${viewYear}</span> <i class="ri-arrow-down-s-line"></i>
+          </button>
         </div>
 
         <div class="vital-datepicker-nav-group">
@@ -276,47 +275,76 @@ window.initVitalDatePicker = function(inputEl) {
           <button type="button" class="vital-datepicker-nav" data-nav="next-year" title="Année suivante"><i class="ri-skip-forward-line"></i></button>
         </div>
       </div>
-
-      <div class="vital-datepicker-weekdays">
-        ${WEEKDAYS_SHORT_FR.map(w => `<div class="vital-datepicker-wd">${w}</div>`).join('')}
-      </div>
-
-      <div class="vital-datepicker-days">
     `;
 
-    const firstDay = new Date(viewYear, viewMonth, 1);
-    let startDayOfWeek = firstDay.getDay();
-    startDayOfWeek = (startDayOfWeek + 6) % 7;
+    if (viewMode === 'months') {
+      html += `
+        <div class="vital-dp-months-grid">
+          ${MONTH_NAMES_FR.map((name, i) => `
+            <button type="button" class="vital-dp-month-chip ${i === viewMonth ? 'active' : ''}" data-pick-month="${i}">
+              ${name}
+            </button>
+          `).join('')}
+        </div>
+      `;
+    } else if (viewMode === 'years') {
+      const currentYear = new Date().getFullYear();
+      const years = Array.from({ length: 25 }, (_, k) => (currentYear - 15) + k);
+      html += `
+        <div class="vital-dp-years-grid">
+          ${years.map(y => `
+            <button type="button" class="vital-dp-year-chip ${y === viewYear ? 'active' : ''}" data-pick-year="${y}">
+              ${y}
+            </button>
+          `).join('')}
+        </div>
+      `;
+    } else {
+      // Days View
+      html += `
+        <div class="vital-datepicker-weekdays">
+          ${WEEKDAYS_SHORT_FR.map(w => `<div class="vital-datepicker-wd">${w}</div>`).join('')}
+        </div>
 
-    const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
-    const daysInPrevMonth = new Date(viewYear, viewMonth, 0).getDate();
+        <div class="vital-datepicker-days">
+      `;
 
-    for (let i = startDayOfWeek - 1; i >= 0; i--) {
-      const pDay = daysInPrevMonth - i;
-      html += `<button type="button" class="vital-datepicker-day other-month" data-action="prev-month-day" data-day="${pDay}">${pDay}</button>`;
+      const firstDay = new Date(viewYear, viewMonth, 1);
+      let startDayOfWeek = firstDay.getDay();
+      startDayOfWeek = (startDayOfWeek + 6) % 7;
+
+      const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+      const daysInPrevMonth = new Date(viewYear, viewMonth, 0).getDate();
+
+      for (let i = startDayOfWeek - 1; i >= 0; i--) {
+        const pDay = daysInPrevMonth - i;
+        html += `<button type="button" class="vital-datepicker-day other-month" data-action="prev-month-day" data-day="${pDay}">${pDay}</button>`;
+      }
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const d = new Date(viewYear, viewMonth, day);
+        const isCurrentToday = d.toDateString() === today.toDateString();
+        const isSelected = selectedDate && d.toDateString() === selectedDate.toDateString();
+        
+        let classes = ['vital-datepicker-day'];
+        if (isCurrentToday) classes.push('today');
+        if (isSelected) classes.push('selected');
+
+        html += `<button type="button" class="${classes.join(' ')}" data-action="pick-day" data-day="${day}">${day}</button>`;
+      }
+
+      const totalCells = startDayOfWeek + daysInMonth;
+      const remainingCells = (7 - (totalCells % 7)) % 7;
+      for (let day = 1; day <= remainingCells; day++) {
+        html += `<button type="button" class="vital-datepicker-day other-month" data-action="next-month-day" data-day="${day}">${day}</button>`;
+      }
+
+      html += `</div>`;
     }
 
-    for (let day = 1; day <= daysInMonth; day++) {
-      const d = new Date(viewYear, viewMonth, day);
-      const isCurrentToday = d.toDateString() === today.toDateString();
-      const isSelected = selectedDate && d.toDateString() === selectedDate.toDateString();
-      
-      let classes = ['vital-datepicker-day'];
-      if (isCurrentToday) classes.push('today');
-      if (isSelected) classes.push('selected');
-
-      html += `<button type="button" class="${classes.join(' ')}" data-action="pick-day" data-day="${day}">${day}</button>`;
-    }
-
-    const totalCells = startDayOfWeek + daysInMonth;
-    const remainingCells = (7 - (totalCells % 7)) % 7;
-    for (let day = 1; day <= remainingCells; day++) {
-      html += `<button type="button" class="vital-datepicker-day other-month" data-action="next-month-day" data-day="${day}">${day}</button>`;
-    }
-
-    html += `</div>`;
     popover.innerHTML = html;
 
+    // Attach listeners
     popover.querySelectorAll('[data-preset]').forEach(btn => {
       btn.onclick = (e) => {
         e.stopPropagation();
@@ -328,25 +356,32 @@ window.initVitalDatePicker = function(inputEl) {
       };
     });
 
-    const monthSel = popover.querySelector('.vital-dp-select-month');
-    if (monthSel) {
-      monthSel.onchange = (e) => {
+    popover.querySelectorAll('[data-toggle-mode]').forEach(btn => {
+      btn.onclick = (e) => {
         e.stopPropagation();
-        viewMonth = parseInt(e.target.value);
+        const m = btn.dataset.toggleMode;
+        viewMode = (viewMode === m) ? 'days' : m;
         renderCalendar();
       };
-      monthSel.onclick = (e) => e.stopPropagation();
-    }
+    });
 
-    const yearSel = popover.querySelector('.vital-dp-select-year');
-    if (yearSel) {
-      yearSel.onchange = (e) => {
+    popover.querySelectorAll('[data-pick-month]').forEach(btn => {
+      btn.onclick = (e) => {
         e.stopPropagation();
-        viewYear = parseInt(e.target.value);
+        viewMonth = parseInt(btn.dataset.pickMonth);
+        viewMode = 'days';
         renderCalendar();
       };
-      yearSel.onclick = (e) => e.stopPropagation();
-    }
+    });
+
+    popover.querySelectorAll('[data-pick-year]').forEach(btn => {
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        viewYear = parseInt(btn.dataset.pickYear);
+        viewMode = 'days';
+        renderCalendar();
+      };
+    });
 
     const prevYearBtn = popover.querySelector('[data-nav="prev-year"]');
     if (prevYearBtn) {
@@ -591,42 +626,310 @@ window.initAllVitalSelects = function() {
 // ═══════ AUTH UI & RGPD DROIT À L'OUBLI ═══════
 function updateAuthUI(user) {
   const container = document.getElementById('googleAuthBtnContainer');
-  if (!container) return;
+  const dashAvatarBtn = document.getElementById('dashUserProfileBtn');
 
   if (user && user.uid) {
-    container.innerHTML = `
-      <div class="user-profile-badge" title="${user.email || user.name}">
-        <img src="${user.picture || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + user.uid}" alt="${user.name}" class="user-avatar-mini" />
-        <span class="user-name-label">${user.name}</span>
-        <button class="user-logout-btn" title="${t('auth.signOut', {}, 'Se déconnecter')}" onclick="window.vitalTrackAuth?.signOut()"><i class="ri-logout-box-r-line"></i></button>
-      </div>
-    `;
+    if (container) {
+      container.innerHTML = `
+        <div class="user-profile-badge" title="${user.email || user.name}">
+          <img src="${user.picture || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + user.uid}" alt="${user.name}" class="user-avatar-mini" />
+          <span class="user-name-label">${user.name}</span>
+          <button class="user-logout-btn" title="${t('auth.signOut', {}, 'Se déconnecter')}" onclick="window.vitalTrackAuth?.signOut()"><i class="ri-logout-box-r-line"></i></button>
+        </div>
+      `;
+    }
+    if (dashAvatarBtn) {
+      dashAvatarBtn.innerHTML = `<img src="${user.picture || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + user.uid}" style="width:100%; height:100%; border-radius:12px; object-fit:cover;" />`;
+      dashAvatarBtn.style.padding = '0';
+      dashAvatarBtn.title = `${user.name} - Mon Profil & Badges`;
+    }
   } else {
-    container.innerHTML = `
-      <button class="google-auth-btn" onclick="window.vitalTrackAuth?.signInWithGoogle()" title="${t('auth.signInWithGoogle', {}, 'Se connecter avec Google')}">
-        <svg class="google-icon-svg" viewBox="0 0 24 24" width="16" height="16"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
-        <span data-i18n="auth.signInWithGoogle">${t('auth.signInWithGoogle', {}, 'Connexion Google')}</span>
-      </button>
-    `;
+    if (container) {
+      container.innerHTML = `
+        <button class="google-auth-btn" onclick="window.vitalTrackAuth?.signInWithGoogle()" title="${t('auth.signInWithGoogle', {}, 'Se connecter avec Google')}">
+          <svg class="google-icon-svg" viewBox="0 0 24 24" width="16" height="16"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+          <span data-i18n="auth.signInWithGoogle">${t('auth.signInWithGoogle', {}, 'Connexion Google')}</span>
+        </button>
+      `;
+    }
+    if (dashAvatarBtn) {
+      const p = typeof getUserProfile === 'function' ? getUserProfile() : {};
+      const initial = (p.name && p.name[0]) ? p.name[0].toUpperCase() : 'V';
+      dashAvatarBtn.textContent = initial;
+      dashAvatarBtn.style.padding = '';
+      dashAvatarBtn.title = 'Mon Profil & Badges Vitalistes';
+      dashAvatarBtn.onclick = () => window.openUserProfileModal();
+    }
+  }
+  if (dashAvatarBtn) {
+    dashAvatarBtn.onclick = () => window.openUserProfileModal();
   }
 }
 
-window.confirmResetHealthData = function() {
-  if (confirm(t('rgpd.confirmResetText', {}, 'Cette action supprimera tous vos historiques de repas, de jeûne, de respiration et de poids. Votre compte reste conservé. Confirmer ?'))) {
-    window.vitalTrackAuth?.resetHealthData();
-  }
+// ═══════ USER PROFILE & VITALIST ACHIEVEMENTS HUB ═══════
+window.openUserProfileModal = function() {
+  const modal = document.getElementById('userProfileModal');
+  if (!modal) return;
+  renderUserProfileModal();
+  modal.style.display = 'flex';
 };
 
-window.confirmDeleteAccount = function() {
-  const confirmed = confirm(t('rgpd.confirmDeleteText', {}, 'Cette action est IRRÉVERSIBLE. L\'intégralité de vos données, profil, historiques, conversations et compte sera définitivement effacée du système. Êtes-vous certain ?'));
-  if (confirmed) {
-    const doubleConfirm = prompt('Tapez "SUPPRIMER" pour confirmer l\'effacement définitif de toutes vos données (Droit à l\'oubli RGPD) :');
-    if (doubleConfirm === 'SUPPRIMER' || doubleConfirm === 'DELETE' || doubleConfirm === 'supprimer') {
-      window.vitalTrackAuth?.deleteAccountAndAllData();
-    } else {
-      showToast('Suppression annulée.', 'info');
-    }
+window.closeUserProfileModal = function(e) {
+  if (e && e.target && e.target !== e.currentTarget && !e.target.classList.contains('modal-close-btn') && !e.target.closest('.modal-close-btn')) {
+    return;
   }
+  const modal = document.getElementById('userProfileModal');
+  if (modal) modal.style.display = 'none';
+};
+
+window.renderUserProfileModal = function() {
+  const content = document.getElementById('userProfileModalContent');
+  if (!content) return;
+
+  const authUser = window.vitalTrackAuth ? window.vitalTrackAuth.getCurrentUser() : null;
+  const profile = typeof getUserProfile === 'function' ? getUserProfile() : {};
+  const meals = store.get('meals', []);
+  const fastingHistory = store.get('fasting-history', []);
+  const breathingHistory = store.get('breathing-history', []);
+  const viewedPlants = store.get('viewed_plants', []);
+  const dailyWater = store.get('daily_water', 0);
+
+  const displayName = (authUser && authUser.name) || profile.name || 'Adepte Vitaliste';
+  const displayEmail = (authUser && authUser.email) || 'Espace Local Sécurisé';
+  const avatarUrl = (authUser && authUser.picture) || `https://api.dicebear.com/7.x/bottts/svg?seed=${displayName}`;
+
+  // KPI Calculations
+  const totalFastHours = fastingHistory.reduce((acc, f) => acc + (f.actualHours || f.targetHours || 0), 0);
+  const alkalineMeals = meals.filter(m => (m.pral || 0) < 0 || m.foods?.some(f => f.isElectric || f.isRaw));
+  const livingMealsCount = alkalineMeals.length;
+  const avgVitality = typeof calculateVitalityScore === 'function' ? calculateVitalityScore() : 75;
+
+  // 8 Vitalist Badges State & Progress
+  const badges = [
+    {
+      id: 'mucusless_starter',
+      icon: '🍇',
+      title: 'Pionnier Sans Mucus',
+      desc: 'Consigner son 1er repas vivant ou dissolvant de mucus (Ehret)',
+      unlocked: meals.length > 0,
+      current: Math.min(1, meals.length),
+      target: 1
+    },
+    {
+      id: 'electric_cells',
+      icon: '⚡',
+      title: 'Électrification Cellulaire',
+      desc: 'Enregistrer 5 repas alcalins à PRAL négatif (Dr. Sebi)',
+      unlocked: livingMealsCount >= 5,
+      current: Math.min(5, livingMealsCount),
+      target: 5
+    },
+    {
+      id: 'autophagy_flame',
+      icon: '🔥',
+      title: 'Flamme de l\'Autophagie',
+      desc: 'Valider un 1er jeûne intermittent de 16h ou plus',
+      unlocked: fastingHistory.some(f => (f.actualHours || f.targetHours || 0) >= 16),
+      current: fastingHistory.some(f => (f.actualHours || f.targetHours || 0) >= 16) ? 1 : 0,
+      target: 1
+    },
+    {
+      id: 'deep_fasting_master',
+      icon: '👑',
+      title: 'Maître du Jeûne Profond',
+      desc: 'Accomplir un jeûne de régénération de 24h ou plus',
+      unlocked: fastingHistory.some(f => (f.actualHours || f.targetHours || 0) >= 24),
+      current: fastingHistory.some(f => (f.actualHours || f.targetHours || 0) >= 24) ? 1 : 0,
+      target: 1
+    },
+    {
+      id: 'raintree_explorer',
+      icon: '🌿',
+      title: 'Herboriste Amazonien',
+      desc: 'Étudier 5 monographies de la Pharmacopée Raintree',
+      unlocked: viewedPlants.length >= 5,
+      current: Math.min(5, viewedPlants.length),
+      target: 5
+    },
+    {
+      id: 'prana_master',
+      icon: '🧘',
+      title: 'Maître du Prāna',
+      desc: 'Compléter 3 sessions de respiration consciente (Wim Hof / Cohérence)',
+      unlocked: breathingHistory.length >= 3,
+      current: Math.min(3, breathingHistory.length),
+      target: 3
+    },
+    {
+      id: 'acid_base_harmony',
+      icon: '⚖️',
+      title: 'Harmonie Acido-Basique',
+      desc: 'Atteindre un Score de Vitalité Biologique supérieur à 80',
+      unlocked: avgVitality >= 80,
+      current: avgVitality,
+      target: 80,
+      unit: '/100'
+    },
+    {
+      id: 'living_water',
+      icon: '💧',
+      title: 'Source Vivante H3O2',
+      desc: 'Atteindre l\'objectif quotidien de 2L d\'eau vivante structurée',
+      unlocked: dailyWater >= 2000,
+      current: Math.min(2000, dailyWater),
+      target: 2000,
+      unit: 'ml'
+    }
+  ];
+
+  const unlockedCount = badges.filter(b => b.unlocked).length;
+
+  // Level computation
+  const totalXp = (meals.length * 15) + (totalFastHours * 5) + (breathingHistory.length * 20) + (unlockedCount * 50);
+  let userLevel = 1;
+  let levelTitle = 'Initié Vitaliste 🌱';
+  let nextLevelXp = 150;
+  let prevLevelXp = 0;
+
+  if (totalXp >= 750) {
+    userLevel = 5;
+    levelTitle = 'Sage de la Régénération 👑';
+    nextLevelXp = 1500;
+    prevLevelXp = 750;
+  } else if (totalXp >= 400) {
+    userLevel = 4;
+    levelTitle = 'Maître de l\'Autophagie 🔥';
+    nextLevelXp = 750;
+    prevLevelXp = 400;
+  } else if (totalXp >= 200) {
+    userLevel = 3;
+    levelTitle = 'Alchimiste Électrique ⚡';
+    nextLevelXp = 400;
+    prevLevelXp = 200;
+  } else if (totalXp >= 75) {
+    userLevel = 2;
+    levelTitle = 'Praticien Sans Mucus 🌿';
+    nextLevelXp = 200;
+    prevLevelXp = 75;
+  }
+
+  const levelProgressPct = Math.min(100, Math.round(((totalXp - prevLevelXp) / Math.max(1, nextLevelXp - prevLevelXp)) * 100));
+
+  content.innerHTML = `
+    <!-- Header Profil Card -->
+    <div style="display:flex; align-items:center; gap:18px; padding-bottom:20px; border-bottom:1px solid rgba(255,255,255,0.08); margin-bottom:20px; flex-wrap:wrap;">
+      <div style="position:relative;">
+        <img src="${avatarUrl}" alt="${displayName}" style="width:72px; height:72px; border-radius:50%; object-fit:cover; border:2.5px solid var(--accent); box-shadow:0 0 16px rgba(52,211,153,0.3);" />
+        <div style="position:absolute; bottom:-4px; right:-4px; background:#0f172a; border:1px solid var(--accent); border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:800; color:var(--accent);">
+          ${userLevel}
+        </div>
+      </div>
+      <div style="flex:1; min-width:200px;">
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <h2 style="font-size:1.35rem; font-weight:800; color:var(--text); margin:0;">${displayName}</h2>
+          <span style="background:rgba(52,211,153,0.15); border:1px solid rgba(52,211,153,0.3); color:var(--accent); font-size:0.75rem; font-weight:700; padding:2px 8px; border-radius:20px;">
+            ${levelTitle}
+          </span>
+        </div>
+        <p style="font-size:0.82rem; color:var(--text-dim); margin:4px 0 10px 0;">${displayEmail}</p>
+
+        <!-- XP & Level Progress Bar -->
+        <div style="display:flex; align-items:center; justify-content:space-between; font-size:0.74rem; font-weight:700; color:var(--text-dim); margin-bottom:4px;">
+          <span>Niveau ${userLevel}</span>
+          <span style="color:var(--accent);">${totalXp} / ${nextLevelXp} XP</span>
+        </div>
+        <div style="width:100%; height:7px; background:rgba(255,255,255,0.08); border-radius:10px; overflow:hidden;">
+          <div style="width:${levelProgressPct}%; height:100%; background:linear-gradient(90deg, #34d399, #60a5fa); border-radius:10px; transition:width 0.4s ease;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI Summary Grid -->
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:12px; margin-bottom:24px;">
+      <div style="background:rgba(255,255,255,0.03); border:1px solid var(--border); padding:12px 14px; border-radius:14px; text-align:center;">
+        <div style="font-size:1.2rem; margin-bottom:2px;">🔥</div>
+        <div style="font-size:1.1rem; font-weight:800; color:var(--text);">${Math.round(totalFastHours)} h</div>
+        <div style="font-size:0.72rem; color:var(--text-dim); font-weight:600;">Autophagie Totale</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.03); border:1px solid var(--border); padding:12px 14px; border-radius:14px; text-align:center;">
+        <div style="font-size:1.2rem; margin-bottom:2px;">🥗</div>
+        <div style="font-size:1.1rem; font-weight:800; color:var(--text);">${livingMealsCount}</div>
+        <div style="font-size:0.72rem; color:var(--text-dim); font-weight:600;">Repas Vivants</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.03); border:1px solid var(--border); padding:12px 14px; border-radius:14px; text-align:center;">
+        <div style="font-size:1.2rem; margin-bottom:2px;">✨</div>
+        <div style="font-size:1.1rem; font-weight:800; color:var(--accent);">${avgVitality}/100</div>
+        <div style="font-size:0.72rem; color:var(--text-dim); font-weight:600;">Score Vitalité</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.03); border:1px solid var(--border); padding:12px 14px; border-radius:14px; text-align:center;">
+        <div style="font-size:1.2rem; margin-bottom:2px;">🧘</div>
+        <div style="font-size:1.1rem; font-weight:800; color:#60a5fa;">${breathingHistory.length}</div>
+        <div style="font-size:0.72rem; color:var(--text-dim); font-weight:600;">Respirations</div>
+      </div>
+    </div>
+
+    <!-- Section Badges & Quêtes Vitalistes -->
+    <div style="margin-bottom:24px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <h3 style="font-size:1.05rem; font-weight:800; color:var(--text); margin:0; display:flex; align-items:center; gap:8px;">
+          <i class="ri-medal-fill" style="color:var(--accent);"></i> Badges &amp; Quêtes Vitalistes
+        </h3>
+        <span style="font-size:0.78rem; font-weight:700; color:var(--accent); background:rgba(52,211,153,0.1); border:1px solid rgba(52,211,153,0.25); padding:3px 10px; border-radius:20px;">
+          ${unlockedCount} / ${badges.length} Débloqués
+        </span>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:12px;">
+        ${badges.map(b => `
+          <div style="display:flex; gap:12px; padding:12px 14px; border-radius:14px; background:${b.unlocked ? 'rgba(52,211,153,0.06)' : 'rgba(255,255,255,0.02)'}; border:1px solid ${b.unlocked ? 'rgba(52,211,153,0.3)' : 'rgba(255,255,255,0.06)'}; position:relative; overflow:hidden;">
+            <div style="font-size:1.8rem; flex-shrink:0; line-height:1; filter:${b.unlocked ? 'none' : 'grayscale(1) opacity(0.5)'};">
+              ${b.icon}
+            </div>
+            <div style="flex:1;">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:6px; margin-bottom:3px;">
+                <h4 style="font-size:0.88rem; font-weight:700; color:${b.unlocked ? 'var(--text)' : 'var(--text-dim)'}; margin:0;">${b.title}</h4>
+                <span style="font-size:0.68rem; font-weight:700; padding:2px 6px; border-radius:6px; background:${b.unlocked ? 'rgba(52,211,153,0.2)' : 'rgba(255,255,255,0.06)'}; color:${b.unlocked ? 'var(--accent)' : 'var(--text-dim)'};">
+                  ${b.unlocked ? '✨ DÉBLOQUÉ' : '🔒 EN COURS'}
+                </span>
+              </div>
+              <p style="font-size:0.75rem; color:var(--text-dim); margin:0 0 6px 0; line-height:1.35;">${b.desc}</p>
+              
+              <!-- Progress Bar -->
+              ${!b.unlocked ? `
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <div style="flex:1; height:4px; background:rgba(255,255,255,0.06); border-radius:4px; overflow:hidden;">
+                    <div style="width:${Math.min(100, Math.round((b.current / b.target) * 100))}%; height:100%; background:var(--accent); border-radius:4px;"></div>
+                  </div>
+                  <span style="font-size:0.68rem; font-weight:700; color:var(--text-dim);">${b.current}/${b.target}${b.unit || ''}</span>
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <!-- Quick Action Footer -->
+    <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; border-top:1px solid rgba(255,255,255,0.08); padding-top:16px; flex-wrap:wrap;">
+      <div style="display:flex; gap:8px;">
+        <button type="button" class="btn-secondary" style="font-size:0.82rem; padding:8px 12px; border-radius:10px;" onclick="closeUserProfileModal(null); showPage('modes');">
+          <i class="ri-settings-3-line"></i> Paramètres &amp; RGPD
+        </button>
+        <button type="button" class="btn-secondary" style="font-size:0.82rem; padding:8px 12px; border-radius:10px;" onclick="window.vitalTrackAuth?.exportAllUserData()">
+          <i class="ri-download-cloud-line"></i> Export RGPD
+        </button>
+      </div>
+      ${authUser ? `
+        <button type="button" class="btn-danger" style="font-size:0.82rem; padding:8px 12px; border-radius:10px; background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.4); color:#ef4444;" onclick="closeUserProfileModal(null); window.vitalTrackAuth?.signOut();">
+          <i class="ri-logout-box-r-line"></i> Se déconnecter
+        </button>
+      ` : `
+        <button type="button" class="btn-primary" style="font-size:0.82rem; padding:8px 14px; border-radius:10px;" onclick="closeUserProfileModal(null); window.vitalTrackAuth?.signInWithGoogle();">
+          <i class="ri-google-fill"></i> Connexion Google
+        </button>
+      `}
+    </div>
+  `;
 };
 
 // ═══════ INIT ═══════
@@ -1124,7 +1427,8 @@ function renderDashboard() {
   if(typeof renderWeightChart === 'function') renderWeightChart();
 }
 
-function calculateVitalityBreakdown(meals) {
+function calculateVitalityBreakdown(mealsInput) {
+  const meals = (mealsInput && Array.isArray(mealsInput)) ? mealsInput : store.get('meals', []);
   // 1. Nutrition Score (0-100)
   let nutritionScore = 0;
   if (meals.length > 0) {
@@ -7413,9 +7717,9 @@ window.renderWeightChart = function() {
   empty.style.display = 'none';
 
   const svgWidth = Math.max(320, container.clientWidth || 600);
-  const svgHeight = 240;
+  const svgHeight = 260;
 
-  const margin = { top: 25, right: 35, bottom: 40, left: 60 };
+  const margin = { top: 32, right: 35, bottom: 48, left: 68 };
   const chartW = svgWidth - margin.left - margin.right;
   const chartH = svgHeight - margin.top - margin.bottom;
 
@@ -7439,14 +7743,16 @@ window.renderWeightChart = function() {
   if (yMax === yMin) { yMax += step; yMin = Math.max(0, yMin - step); }
   const yRange = yMax - yMin;
 
-  // Grid lines
+  // Grid lines & Y Axis Labels (Sophisticated VitalTrack Theme)
   let gridLinesHtml = '';
-  let yLabelsHtml = '';
+  let yLabelsHtml = `
+    <text x="${margin.left - 14}" y="${margin.top - 12}" fill="var(--accent, #34d399)" font-size="10" font-weight="800" letter-spacing="0.5px" text-anchor="end">POIDS (KG)</text>
+  `;
   for (let v = yMin; v <= yMax + 0.001; v += step) {
     const rounded = Math.round(v * 10) / 10;
     const yPos = margin.top + chartH - ((rounded - yMin) / yRange) * chartH;
     gridLinesHtml += `<line x1="${margin.left}" y1="${yPos}" x2="${margin.left + chartW}" y2="${yPos}" stroke="rgba(255,255,255,0.06)" stroke-dasharray="4,4" />`;
-    yLabelsHtml += `<text x="${margin.left - 12}" y="${yPos + 4}" fill="var(--text-dim, #94a3b8)" font-size="11" font-weight="600" text-anchor="end">${rounded} kg</text>`;
+    yLabelsHtml += `<text x="${margin.left - 14}" y="${yPos + 4}" fill="var(--text-dim, #94a3b8)" font-size="11" font-weight="600" font-family="'Outfit', 'Inter', -apple-system, sans-serif" text-anchor="end">${rounded}</text>`;
   }
 
   // Calculate coordinates with proportional time spacing
@@ -7479,32 +7785,45 @@ window.renderWeightChart = function() {
     targetLineHtml = `
       <g>
         <line x1="${margin.left}" y1="${targetY}" x2="${margin.left + chartW}" y2="${targetY}" stroke="#60a5fa" stroke-dasharray="6,4" stroke-width="1.5" opacity="0.75" />
-        <text x="${margin.left + chartW}" y="${targetY - 6}" fill="#60a5fa" font-size="10" font-weight="700" text-anchor="end">Objectif ${targetW} kg</text>
+        <text x="${margin.left + chartW}" y="${targetY - 8}" fill="#60a5fa" font-size="10" font-weight="700" font-family="'Outfit', 'Inter', sans-serif" text-anchor="end">Cible ${targetW} kg</text>
       </g>
     `;
   }
 
-  // Points and smart X date labels
+  // Points and Non-Overlapping X date labels
   let pointsHtml = '';
   let xLabelsHtml = '';
-  const stride = Math.ceil(coords.length / 5);
+  const stride = Math.max(1, Math.ceil(coords.length / 5));
 
   coords.forEach((pt, i) => {
-    const isMajor = (i === 0 || i === coords.length - 1 || i % stride === 0);
+    const isFirst = (i === 0);
+    const isLast = (i === coords.length - 1);
+    const isMajor = isFirst || isLast || (i % stride === 0);
     const d = new Date(pt.entry.date);
-    const dateFormatted = isNaN(d.getTime()) ? pt.entry.date : d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' });
+    const dateFormatted = isNaN(d.getTime()) ? pt.entry.date : d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
 
-    // Subtle point marker
+    // Sophisticated point marker with glow
     pointsHtml += `
       <g class="chart-point-group" data-idx="${i}">
-        <circle cx="${pt.x}" cy="${pt.y}" r="6" fill="var(--accent)" opacity="0.2" />
-        <circle cx="${pt.x}" cy="${pt.y}" r="3.5" fill="var(--accent)" stroke="#0f172a" stroke-width="2" />
+        <circle cx="${pt.x}" cy="${pt.y}" r="7" fill="var(--accent, #34d399)" opacity="0.18" />
+        <circle cx="${pt.x}" cy="${pt.y}" r="4" fill="var(--accent, #34d399)" stroke="#0f172a" stroke-width="2" />
       </g>
     `;
 
     if (isMajor) {
+      // Prevent label collision at origins
+      let anchor = 'middle';
+      let xPos = pt.x;
+      if (isFirst) {
+        anchor = 'start';
+        xPos = Math.max(margin.left, pt.x - 2);
+      } else if (isLast) {
+        anchor = 'end';
+        xPos = Math.min(margin.left + chartW, pt.x + 2);
+      }
+
       xLabelsHtml += `
-        <text x="${pt.x}" y="${margin.top + chartH + 18}" fill="var(--text-dim, #94a3b8)" font-size="10" font-weight="600" text-anchor="middle">${dateFormatted}</text>
+        <text x="${xPos}" y="${margin.top + chartH + 22}" fill="var(--text-dim, #94a3b8)" font-size="10.5" font-weight="600" font-family="'Outfit', 'Inter', -apple-system, sans-serif" text-anchor="${anchor}">${dateFormatted}</text>
       `;
     }
   });
@@ -7513,16 +7832,19 @@ window.renderWeightChart = function() {
   svg.innerHTML = `
     <defs>
       <linearGradient id="weightAreaGradient" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.32" />
-        <stop offset="100%" stop-color="var(--accent)" stop-opacity="0.0" />
+        <stop offset="0%" stop-color="var(--accent, #34d399)" stop-opacity="0.28" />
+        <stop offset="100%" stop-color="var(--accent, #34d399)" stop-opacity="0.0" />
       </linearGradient>
+      <filter id="glowLine" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="rgba(52, 211, 153, 0.4)" />
+      </filter>
     </defs>
     ${gridLinesHtml}
     ${yLabelsHtml}
     ${targetLineHtml}
     <line x1="${margin.left}" y1="${margin.top + chartH}" x2="${margin.left + chartW}" y2="${margin.top + chartH}" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" />
     ${coords.length > 1 ? `<path d="${areaPathD}" fill="url(#weightAreaGradient)" />` : ''}
-    ${coords.length > 1 ? `<path d="${linePathD}" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />` : ''}
+    ${coords.length > 1 ? `<path d="${linePathD}" fill="none" stroke="var(--accent, #34d399)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#glowLine)" />` : ''}
     ${pointsHtml}
     ${xLabelsHtml}
     <!-- Interactive crosshair line -->

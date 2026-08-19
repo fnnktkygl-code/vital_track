@@ -3505,28 +3505,70 @@ input[type=number] {
   flex: 1;
   justify-content: center;
 }
-.vital-dp-select {
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+.vital-dp-pill-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   color: var(--text, #f1f5f9);
-  padding: 4px 6px;
+  padding: 5px 10px;
   border-radius: 8px;
-  font-size: 0.84rem;
+  font-size: 0.86rem;
   font-weight: 700;
-  font-family: inherit;
   cursor: pointer;
-  outline: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   transition: all 0.15s ease;
-  color-scheme: dark;
 }
-.vital-dp-select:hover, .vital-dp-select:focus {
-  background: rgba(255, 255, 255, 0.12);
+
+.vital-dp-pill-btn:hover, .vital-dp-pill-btn.active {
+  background: rgba(52, 211, 153, 0.15);
   border-color: var(--accent);
   color: var(--accent);
 }
-.vital-dp-select option {
-  background: #0f172a;
-  color: #f1f5f9;
+
+.vital-dp-months-grid, .vital-dp-years-grid {
+  display: grid;
+  gap: 8px;
+  padding: 10px 0;
+  animation: fadeIn 0.2s ease;
+}
+
+.vital-dp-months-grid {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.vital-dp-years-grid {
+  grid-template-columns: repeat(4, 1fr);
+  max-height: 200px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.vital-dp-month-chip, .vital-dp-year-chip {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text, #f1f5f9);
+  padding: 8px 4px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: center;
+}
+
+.vital-dp-month-chip:hover, .vital-dp-year-chip:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: scale(1.03);
+}
+
+.vital-dp-month-chip.active, .vital-dp-year-chip.active {
+  background: var(--accent);
+  color: #0f172a;
+  border-color: var(--accent);
+  font-weight: 700;
 }
 
 /* Calendar Grid */

@@ -992,12 +992,18 @@ export function updateDOMTranslations() {
     }
   });
 
-  // Update language selector dropdown / button if present
+  // Update language selector buttons if present
   const cfg = LANG_CONFIG[currentLang] || LANG_CONFIG.fr;
   const langToggleBtn = document.getElementById('globalLangToggleBtn');
   if (langToggleBtn) {
     langToggleBtn.innerHTML = `${cfg.flag} <span style="font-weight:700;">${cfg.short}</span>`;
     langToggleBtn.setAttribute('title', cfg.name);
+  }
+
+  const dashLangBtn = document.getElementById('dashHeaderLangBtn');
+  if (dashLangBtn) {
+    dashLangBtn.innerHTML = `${cfg.flag} <span style="font-weight:700;">${cfg.short}</span>`;
+    dashLangBtn.setAttribute('title', cfg.name);
   }
 
   const langSelect = document.getElementById('globalLangSelect');
