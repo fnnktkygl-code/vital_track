@@ -8,11 +8,14 @@ import { RAINTREE_HERBS, RAINTREE_PROTOCOLS } from './raintree-data.js';
 import { t, getLanguage, setLanguage, toggleLanguage, onLanguageChange } from './i18n.js';
 import { pigeonNudges } from './mascot-nudges.js';
 import { auth } from './auth.js';
+import { MEDIA_SEARCH_DATABASE, searchMediaKnowledge } from './data/mediaSearchIndex.js';
 
 // Exposer globalement pour l'interface utilisateur
 window.vitalTrackI18n = { t, getLanguage, setLanguage, toggleLanguage, onLanguageChange };
 window.pigeonNudges = pigeonNudges;
 window.vitalTrackAuth = auth;
+window.MEDIA_SEARCH_DATABASE = MEDIA_SEARCH_DATABASE;
+window.searchMediaKnowledge = searchMediaKnowledge;
 
 // ═══════ CONFIG ═══════
 const API_BASE = window.location.origin;
@@ -6663,6 +6666,321 @@ window.updateProactiveMascot = function (actionContext = null) {
   }
 };
 
+// ═══════ MULTIMEDIA & PDF DEEP-SEARCH ENGINE ═══════
+
+let _mediaSearchQuery = '';
+let _mediaSearchFilter = 'all';
+let _mediaSearchDebounceTimer = null;
+
+function formatSeconds(secs) {
+  const s = Math.max(0, Math.floor(secs || 0));
+  const hrs = Math.floor(s / 3600);
+  const mins = Math.floor((s % 3600) / 60);
+  const remSecs = s % 60;
+  if (hrs > 0) {
+    return `${hrs}:${mins < 10 ? '0' : ''}${mins}:${remSecs < 10 ? '0' : ''}${remSecs}`;
+  }
+  return `${mins < 10 ? '0' : ''}${mins}:${remSecs < 10 ? '0' : ''}${remSecs}`;
+}
+
+function highlightMatches(text, query) {
+  if (!text) return '';
+  if (!query || !query.trim()) return esc(text);
+  const cleanTokens = query.trim().split(/\s+/).filter(t => t.length > 1);
+  if (cleanTokens.length === 0) return esc(text);
+
+  let escapedText = esc(text);
+  cleanTokens.forEach(token => {
+    const regex = new RegExp(`(${token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+    escapedText = escapedText.replace(regex, '<mark class="search-highlight">$1</mark>');
+  });
+  return escapedText;
+}
+
+window.searchMediaResources = function (query) {
+  const q = (query || '').trim();
+  _mediaSearchQuery = q;
+
+  const clearBtn = document.getElementById('mediaSearchClearBtn');
+  if (clearBtn) clearBtn.style.display = q ? 'flex' : 'none';
+
+  clearTimeout(_mediaSearchDebounceTimer);
+  _mediaSearchDebounceTimer = setTimeout(() => {
+    _renderMediaSearchResults();
+  }, 180);
+};
+
+window.setMediaSearchFilter = function (filter) {
+  _mediaSearchFilter = filter;
+  document.querySelectorAll('.media-filter-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.filter === filter);
+  });
+  _renderMediaSearchResults();
+};
+
+window.applyMediaTopicTag = function (tag) {
+  const input = document.getElementById('mediaSearchInput');
+  if (input) {
+    input.value = tag;
+    window.searchMediaResources(tag);
+    input.focus();
+  }
+};
+
+window.clearMediaSearch = function () {
+  const input = document.getElementById('mediaSearchInput');
+  if (input) {
+    input.value = '';
+    window.searchMediaResources('');
+    input.focus();
+  }
+};
+
+function _renderMediaSearchResults() {
+  const resultsContainer = document.getElementById('mediaSearchResultsContainer');
+  const standardCatalog = document.getElementById('mediaStandardCatalog');
+  const countBadge = document.getElementById('mediaResultCountBadge');
+
+  if (!_mediaSearchQuery && _mediaSearchFilter === 'all') {
+    if (resultsContainer) resultsContainer.style.display = 'none';
+    if (standardCatalog) standardCatalog.style.display = 'block';
+    if (countBadge) countBadge.style.display = 'none';
+    return;
+  }
+
+  if (standardCatalog) standardCatalog.style.display = 'none';
+  if (resultsContainer) resultsContainer.style.display = 'block';
+
+  const results = searchMediaKnowledge(_mediaSearchQuery, _mediaSearchFilter);
+
+  if (countBadge) {
+    countBadge.style.display = 'inline-block';
+    countBadge.textContent = `${results.length} résultat${results.length > 1 ? 's' : ''} trouvé${results.length > 1 ? 's' : ''}`;
+  }
+
+  if (!results || results.length === 0) {
+    resultsContainer.innerHTML = `
+      <div class="dash-card glass" style="text-align:center; padding:40px 20px;">
+        <div style="font-size:2.4rem; margin-bottom:10px;">🔍</div>
+        <h3 style="color:#fff; font-size:1.1rem; margin-bottom:6px;">Aucun passage ou vidéo trouvé</h3>
+        <p style="color:var(--text-dim); font-size:0.85rem; max-width:460px; margin:0 auto 16px;">
+          Aucun résultat ne correspond à « <strong>${esc(_mediaSearchQuery)}</strong> ». Essayez avec des termes plus généraux comme <em>mucus, jeûne, wim hof, dr sebi, autophagie, reins</em>.
+        </p>
+        <button class="btn-secondary" onclick="clearMediaSearch()" style="display:inline-flex; align-items:center; gap:6px;">
+          <i class="ri-refresh-line"></i> Réinitialiser la recherche
+        </button>
+      </div>
+    `;
+    return;
+  }
+
+  resultsContainer.innerHTML = `
+    <div class="media-results-grid">
+      ${results.map(item => renderMediaResultCard(item, _mediaSearchQuery)).join('')}
+    </div>
+  `;
+}
+
+function renderMediaResultCard(item, query) {
+  if (item.type === 'video') {
+    return `
+      <div class="media-result-card glass" style="border-left: 3px solid var(--accent);">
+        <div>
+          <div class="media-card-type-header">
+            <span class="media-card-source"><i class="ri-video-fill" style="color:var(--accent);"></i> ${esc(item.source)}</span>
+            <span class="timestamp-pill" onclick="playVideoAtTimestamp('${esc(item.mediaUrl)}', ${item.timeSeconds}, '${esc(item.title)}', '${item.videoType}', '${item.youtubeId || ''}', '${esc(item.chapter)}', '${esc(item.source)}')">
+              <i class="ri-play-fill"></i> ${item.timeFormatted}
+            </span>
+          </div>
+
+          <h3 class="media-card-title">${highlightMatches(item.title, query)}</h3>
+          <div class="media-card-chapter">
+            <i class="ri-movie-line"></i> ${highlightMatches(item.chapter, query)}
+          </div>
+
+          <div class="media-card-excerpt">
+            ${highlightMatches(item.excerpt, query)}
+          </div>
+        </div>
+
+        <div style="display:flex; gap:8px; margin-top:auto; align-items:center;">
+          <button type="button" class="btn-primary" style="flex:1; padding:8px 12px; font-size:0.82rem; font-weight:700; display:inline-flex; align-items:center; justify-content:center; gap:6px;" onclick="playVideoAtTimestamp('${esc(item.mediaUrl)}', ${item.timeSeconds}, '${esc(item.title)}', '${item.videoType}', '${item.youtubeId || ''}', '${esc(item.chapter)}', '${esc(item.source)}')">
+            <i class="ri-play-circle-fill"></i> Sauter à ${item.timeFormatted}
+          </button>
+          ${item.mediaUrl.startsWith('http') ? `
+            <a href="${item.mediaUrl}&t=${item.timeSeconds}s" target="_blank" rel="noopener noreferrer" class="btn-secondary" style="padding:8px 10px; font-size:0.8rem; text-decoration:none;" title="Ouvrir sur YouTube">
+              <i class="ri-external-link-line"></i>
+            </a>
+          ` : ''}
+        </div>
+      </div>
+    `;
+  } else {
+    // PDF Card
+    return `
+      <div class="media-result-card glass" style="border-left: 3px solid #38bdf8;">
+        <div>
+          <div class="media-card-type-header">
+            <span class="media-card-source" style="color:#38bdf8;"><i class="ri-book-2-fill"></i> Ouvrage Fondateur</span>
+            <span class="pdf-page-pill" onclick="openPdfPassageModal('${item.id}')">
+              <i class="ri-file-pdf-line"></i> Page ${item.pageNumber}
+            </span>
+          </div>
+
+          <h3 class="media-card-title">${highlightMatches(item.title, query)}</h3>
+          <div class="media-card-chapter" style="color:#38bdf8;">
+            <i class="ri-bookmark-3-line"></i> ${highlightMatches(item.chapterTitle || '', query)}
+          </div>
+
+          <div class="media-card-excerpt" style="border-left-color:#38bdf8;">
+            ${highlightMatches(item.excerpt, query)}
+          </div>
+        </div>
+
+        <div style="display:flex; gap:8px; margin-top:auto; align-items:center;">
+          <button type="button" class="btn-secondary" style="flex:1; padding:8px 12px; font-size:0.82rem; font-weight:600; display:inline-flex; align-items:center; justify-content:center; gap:6px;" onclick="openPdfPassageModal('${item.id}')">
+            <i class="ri-eye-line"></i> Lire le passage
+          </button>
+          <a href="${item.pdfUrl}#page=${item.pageNumber}" target="_blank" rel="noopener noreferrer" class="btn-primary" style="flex:1; padding:8px 12px; font-size:0.82rem; font-weight:700; text-decoration:none; text-align:center; display:inline-flex; align-items:center; justify-content:center; gap:6px; background:#0284c7; border-color:#0284c7;">
+            <i class="ri-file-pdf-fill"></i> Page ${item.pageNumber} <i class="ri-arrow-right-up-line"></i>
+          </a>
+        </div>
+      </div>
+    `;
+  }
+}
+
+// ═══════ VIDEO TIMESTAMP PLAYER MODAL ═══════
+window.playVideoAtTimestamp = function (mediaUrl, seconds = 0, title = '', type = 'local', youtubeId = '', chapter = '', source = '') {
+  const modal = document.getElementById('mediaVideoModal');
+  const modalSource = document.getElementById('mediaVideoModalSource');
+  const modalTitle = document.getElementById('mediaVideoModalTitle');
+  const modalChapter = document.getElementById('mediaVideoModalChapter');
+  const playerContainer = document.getElementById('mediaVideoPlayerContainer');
+  const timelineContainer = document.getElementById('mediaVideoTimelineChapters');
+
+  if (!modal || !playerContainer) return;
+
+  if (modalSource) modalSource.textContent = source || (type === 'youtube' ? 'Documentaire YouTube' : 'Média Local HD');
+  if (modalTitle) modalTitle.textContent = title || 'Lecture Vidéo';
+  if (modalChapter) modalChapter.innerHTML = `<span class="timestamp-pill" style="margin-right:6px;"><i class="ri-play-fill"></i> ${formatSeconds(seconds)}</span> ${esc(chapter)}`;
+
+  // Find all chapters of this media in database for the scrubber bar
+  const relatedChapters = MEDIA_SEARCH_DATABASE.filter(item => 
+    item.type === 'video' && ((youtubeId && item.youtubeId === youtubeId) || (mediaUrl && item.mediaUrl === mediaUrl))
+  ).sort((a, b) => a.timeSeconds - b.timeSeconds);
+
+  if (timelineContainer) {
+    if (relatedChapters.length > 0) {
+      timelineContainer.innerHTML = relatedChapters.map(c => `
+        <button type="button" class="media-chapter-btn ${c.timeSeconds === seconds ? 'active' : ''}" onclick="playVideoAtTimestamp('${esc(c.mediaUrl)}', ${c.timeSeconds}, '${esc(c.title)}', '${c.videoType}', '${c.youtubeId || ''}', '${esc(c.chapter)}', '${esc(c.source)}')">
+          ▶ ${c.timeFormatted} · ${esc(c.chapter)}
+        </button>
+      `).join('');
+    } else {
+      timelineContainer.innerHTML = `<div style="font-size:0.75rem; color:var(--text-dim);">Chapitre unique à ${formatSeconds(seconds)}</div>`;
+    }
+  }
+
+  if (type === 'youtube' && youtubeId) {
+    playerContainer.innerHTML = `
+      <div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden;">
+        <iframe src="https://www.youtube-nocookie.com/embed/${youtubeId}?start=${seconds}&autoplay=1" style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>
+      </div>
+    `;
+  } else {
+    playerContainer.innerHTML = `
+      <video id="modalMainVideoPlayer" controls autoplay playsinline preload="auto" style="width:100%; height:auto; max-height:460px; background:#000; display:block;">
+        <source src="${mediaUrl}" type="video/mp4">
+        Votre navigateur ne supporte pas la lecture directe.
+      </video>
+    `;
+    const vid = document.getElementById('modalMainVideoPlayer');
+    if (vid) {
+      const applyTime = () => {
+        try {
+          vid.currentTime = Number(seconds) || 0;
+          vid.play().catch(() => {});
+        } catch (e) {}
+      };
+      if (vid.readyState >= 1) {
+        applyTime();
+      } else {
+        vid.addEventListener('loadedmetadata', applyTime, { once: true });
+        vid.addEventListener('canplay', applyTime, { once: true });
+      }
+    }
+  }
+
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+};
+
+window.closeMediaVideoModal = function (e) {
+  if (e && e.target && e.target.closest('.media-video-modal-content') && !e.target.closest('.modal-close-btn')) {
+    return;
+  }
+  const modal = document.getElementById('mediaVideoModal');
+  const playerContainer = document.getElementById('mediaVideoPlayerContainer');
+  if (playerContainer) {
+    const vid = playerContainer.querySelector('video');
+    if (vid) {
+      vid.pause();
+      vid.src = '';
+    }
+    playerContainer.innerHTML = '';
+  }
+  if (modal) modal.style.display = 'none';
+  document.body.style.overflow = '';
+};
+
+// ═══════ PDF PASSAGE MODAL ═══════
+window.openPdfPassageModal = function (itemId) {
+  const item = MEDIA_SEARCH_DATABASE.find(i => i.id === itemId);
+  const modal = document.getElementById('pdfPassageModal');
+  const content = document.getElementById('pdfPassageModalContent');
+  if (!item || !modal || !content) return;
+
+  content.innerHTML = `
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; padding-right:36px;">
+      <div>
+        <span class="badge ${item.badgeClass || 'badge-success'}" style="margin-bottom:6px; display:inline-block;">📚 Ouvrage Fondateur</span>
+        <h3 style="margin:0; font-size:1.15rem; color:#fff; font-weight:700;">${esc(item.title)}</h3>
+        <div style="font-size:0.82rem; color:var(--accent); font-weight:600; margin-top:2px;">Auteur : ${esc(item.author || 'Inconnu')}</div>
+      </div>
+      <span class="pdf-page-pill" style="font-size:0.85rem;"><i class="ri-book-open-line"></i> Page ${item.pageNumber}</span>
+    </div>
+
+    <div style="background:rgba(16,185,129,0.08); border-left:3px solid var(--accent); padding:14px 16px; border-radius:10px; margin-bottom:16px;">
+      <div style="font-size:0.85rem; font-weight:700; color:#fff; margin-bottom:6px;">${esc(item.chapterTitle || '')}</div>
+      <p style="font-size:0.92rem; color:var(--text); line-height:1.6; margin:0; font-style:italic;">
+        ${esc(item.excerpt)}
+      </p>
+    </div>
+
+    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:20px;">
+      <a href="${item.pdfUrl}#page=${item.pageNumber}" target="_blank" rel="noopener noreferrer" class="btn-primary" style="flex:1; min-width:180px; text-align:center; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:10px 14px; font-weight:700;">
+        <i class="ri-file-pdf-fill"></i> Ouvrir le PDF à la Page ${item.pageNumber}
+      </a>
+      <a href="${item.pdfUrl}" download class="btn-secondary" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:10px 14px;">
+        <i class="ri-download-2-line"></i> Télécharger
+      </a>
+    </div>
+  `;
+
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+};
+
+window.closePdfPassageModal = function (e) {
+  if (e && e.target && e.target.closest('.modal-card') && !e.target.closest('.modal-close-btn')) {
+    return;
+  }
+  const modal = document.getElementById('pdfPassageModal');
+  if (modal) modal.style.display = 'none';
+  document.body.style.overflow = '';
+};
+
 // ═══════ RESOURCES HUB ═══════
 window.renderResources = function () {
   const container = document.getElementById('resourcesContainer');
@@ -6798,117 +7116,179 @@ window.renderResources = function () {
   ];
 
   let html = `
-    <!-- Section Livres & Guides PDF -->
-    <div style="margin-bottom:8px;">
-      <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
-        <span style="font-size:1.4rem;">📚</span>
-        <div>
-          <h2 style="font-size:1.15rem; font-weight:800; margin:0; color:#fff;">Ouvrages & Guides PDF Fondateurs</h2>
-          <p style="font-size:0.8rem; color:var(--text-dim); margin:0;">Tous les textes intégraux téléchargeables et consultables directement en local (sans lien tiers)</p>
-        </div>
-      </div>
-
-      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:16px;">
-        ${books.map(b => `
-          <div class="dash-card glass" style="padding:18px; display:flex; flex-direction:column; justify-content:space-between; border-left:3px solid ${b.color};">
-            <div>
-              <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:8px;">
-                <div style="display:flex; align-items:center; gap:8px;">
-                  <div style="width:36px; height:36px; border-radius:10px; background:rgba(255,255,255,0.06); color:${b.color}; display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0;">
-                    <i class="${b.icon}"></i>
-                  </div>
-                  <div>
-                    <h3 style="margin:0; font-size:0.96rem; font-weight:700; color:#fff; line-height:1.2;">${esc(b.title)}</h3>
-                    <div style="font-size:0.75rem; color:${b.color}; font-weight:600; margin-top:2px;">${esc(b.subtitle)}</div>
-                  </div>
-                </div>
-                <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
-                  <span class="badge ${b.badgeClass}" style="white-space:nowrap; font-size:0.7rem;">${esc(b.size)}</span>
-                  ${b.badgeText ? `<span style="white-space:nowrap; font-size:0.68rem; font-weight:700; color:#34d399; background:rgba(52,211,153,0.12); padding:2px 6px; border-radius:6px; border:1px solid rgba(52,211,153,0.25);">${esc(b.badgeText)}</span>` : ''}
-                </div>
-              </div>
-              <div style="font-size:0.78rem; color:var(--accent); font-weight:600; margin-bottom:6px;">Auteur : ${esc(b.author)}</div>
-              <p style="font-size:0.82rem; color:var(--text-dim); line-height:1.45; margin:0 0 14px 0;">${esc(b.description)}</p>
-            </div>
-            <div style="display:flex; gap:8px; margin-top:auto;">
-              <a href="${b.url}" target="_blank" rel="noopener noreferrer" class="btn-primary" style="flex:1; text-align:center; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:6px; font-size:0.82rem; padding:8px 12px;">
-                <i class="ri-file-pdf-line"></i> Consulter
-              </a>
-              <a href="${b.url}" download class="btn-secondary" style="text-align:center; text-decoration:none; padding:8px 12px; display:inline-flex; align-items:center; justify-content:center; gap:4px; font-size:0.82rem;" title="Télécharger le fichier PDF">
-                <i class="ri-download-2-line"></i> Télécharger
-              </a>
-            </div>
+    <!-- Module Moteur de Recherche Multimédia & Deep Search -->
+    <div class="media-search-container">
+      <div class="dash-card glass" style="padding:20px; margin-bottom:20px; border:1px solid rgba(52,211,153,0.3); background:linear-gradient(135deg,rgba(16,185,129,0.06),rgba(15,23,42,0.85));">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+          <div>
+            <h2 style="font-size:1.15rem; font-weight:800; margin:0; color:#fff; display:flex; align-items:center; gap:8px;">
+              <span>🔍</span> Recherche Transversale & Horodatée
+            </h2>
+            <p style="font-size:0.8rem; color:var(--text-dim); margin:2px 0 0 0;">Recherchez un concept ou mot-clé dans tous les livres PDF et documentaires vidéo</p>
           </div>
-        `).join('')}
+          <span id="mediaResultCountBadge" class="badge badge-success" style="display:none; font-size:0.75rem;"></span>
+        </div>
+
+        <div class="media-search-box-wrap">
+          <i class="ri-search-line search-icon"></i>
+          <input type="text" id="mediaSearchInput" placeholder="Chercher un sujet (ex: autophagie, mucus, V=P-O, rétention, chimiothérapie, reins)..." value="${esc(_mediaSearchQuery)}" oninput="searchMediaResources(this.value)" autocomplete="off" spellcheck="false">
+          <button type="button" class="clear-btn" id="mediaSearchClearBtn" onclick="clearMediaSearch()" style="${_mediaSearchQuery ? 'display:flex' : 'display:none'}" aria-label="Effacer la recherche">
+            <i class="ri-close-circle-fill"></i>
+          </button>
+        </div>
+
+        <!-- Filtres par format -->
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button type="button" class="media-tag-chip media-filter-btn ${_mediaSearchFilter === 'all' ? 'active' : ''}" data-filter="all" onclick="setMediaSearchFilter('all')">
+              <i class="ri-apps-line"></i> Tout (${MEDIA_SEARCH_DATABASE.length})
+            </button>
+            <button type="button" class="media-tag-chip media-filter-btn ${_mediaSearchFilter === 'videos' ? 'active' : ''}" data-filter="videos" onclick="setMediaSearchFilter('videos')">
+              <i class="ri-video-line"></i> Vidéos Horodatées (${MEDIA_SEARCH_DATABASE.filter(i => i.type === 'video').length})
+            </button>
+            <button type="button" class="media-tag-chip media-filter-btn ${_mediaSearchFilter === 'pdfs' ? 'active' : ''}" data-filter="pdfs" onclick="setMediaSearchFilter('pdfs')">
+              <i class="ri-file-pdf-line"></i> Livres & Guides PDF (${MEDIA_SEARCH_DATABASE.filter(i => i.type === 'pdf').length})
+            </button>
+          </div>
+        </div>
+
+        <!-- Suggestions de Mots-Clés Rapides -->
+        <div class="media-quick-tags">
+          <span style="font-size:0.75rem; color:var(--text-dim); display:flex; align-items:center; gap:4px; font-weight:600;"><i class="ri-price-tag-3-line"></i> Thématiques :</span>
+          <button type="button" class="media-tag-chip" onclick="applyMediaTopicTag('mucus')">🍎 Mucus & Toxines</button>
+          <button type="button" class="media-tag-chip" onclick="applyMediaTopicTag('autophagie')">🧬 Autophagie</button>
+          <button type="button" class="media-tag-chip" onclick="applyMediaTopicTag('dr sebi')">⚡ Dr. Sebi</button>
+          <button type="button" class="media-tag-chip" onclick="applyMediaTopicTag('wim hof')">🌬️ Respiration Wim Hof</button>
+          <button type="button" class="media-tag-chip" onclick="applyMediaTopicTag('v=p-o')">📐 Formule V = P - O</button>
+          <button type="button" class="media-tag-chip" onclick="applyMediaTopicTag('reins')">🫘 Filtration Rénale</button>
+          <button type="button" class="media-tag-chip" onclick="applyMediaTopicTag('chimiothérapie')">🛡️ Jeûne & Chimiothérapie</button>
+          <button type="button" class="media-tag-chip" onclick="applyMediaTopicTag('biophotonique')">☀️ Biophotons</button>
+        </div>
       </div>
     </div>
 
-    <!-- Section Vidéos & Documentaires -->
-    <div style="margin-top:24px;">
-      <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
-        <span style="font-size:1.4rem;">🎬</span>
-        <div>
-          <h2 style="font-size:1.15rem; font-weight:800; margin:0; color:#fff;">Documentaires & Médias Vidéo</h2>
-          <p style="font-size:0.8rem; color:var(--text-dim); margin:0;">Enquêtes, conférences et entretiens de référence sur la régénération cellulaire</p>
+    <!-- Conteneur des Résultats Dynamiques de Recherche -->
+    <div id="mediaSearchResultsContainer" style="display:none; margin-bottom:24px;"></div>
+
+    <!-- Catalogue Standard (visible quand aucune recherche active) -->
+    <div id="mediaStandardCatalog">
+      <!-- Section Livres & Guides PDF -->
+      <div style="margin-bottom:8px;">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
+          <span style="font-size:1.4rem;">📚</span>
+          <div>
+            <h2 style="font-size:1.15rem; font-weight:800; margin:0; color:#fff;">Ouvrages & Guides PDF Fondateurs</h2>
+            <p style="font-size:0.8rem; color:var(--text-dim); margin:0;">Tous les textes intégraux téléchargeables et consultables directement en local (sans lien tiers)</p>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:16px;">
+          ${books.map(b => `
+            <div class="dash-card glass" style="padding:18px; display:flex; flex-direction:column; justify-content:space-between; border-left:3px solid ${b.color};">
+              <div>
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:8px;">
+                  <div style="display:flex; align-items:center; gap:8px;">
+                    <div style="width:36px; height:36px; border-radius:10px; background:rgba(255,255,255,0.06); color:${b.color}; display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0;">
+                      <i class="${b.icon}"></i>
+                    </div>
+                    <div>
+                      <h3 style="margin:0; font-size:0.96rem; font-weight:700; color:#fff; line-height:1.2;">${esc(b.title)}</h3>
+                      <div style="font-size:0.75rem; color:${b.color}; font-weight:600; margin-top:2px;">${esc(b.subtitle)}</div>
+                    </div>
+                  </div>
+                  <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+                    <span class="badge ${b.badgeClass}" style="white-space:nowrap; font-size:0.7rem;">${esc(b.size)}</span>
+                    ${b.badgeText ? `<span style="white-space:nowrap; font-size:0.68rem; font-weight:700; color:#34d399; background:rgba(52,211,153,0.12); padding:2px 6px; border-radius:6px; border:1px solid rgba(52,211,153,0.25);">${esc(b.badgeText)}</span>` : ''}
+                  </div>
+                </div>
+                <div style="font-size:0.78rem; color:var(--accent); font-weight:600; margin-bottom:6px;">Auteur : ${esc(b.author)}</div>
+                <p style="font-size:0.82rem; color:var(--text-dim); line-height:1.45; margin:0 0 14px 0;">${esc(b.description)}</p>
+              </div>
+              <div style="display:flex; gap:8px; margin-top:auto;">
+                <a href="${b.url}" target="_blank" rel="noopener noreferrer" class="btn-primary" style="flex:1; text-align:center; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:6px; font-size:0.82rem; padding:8px 12px;">
+                  <i class="ri-file-pdf-line"></i> Consulter
+                </a>
+                <a href="${b.url}" download class="btn-secondary" style="text-align:center; text-decoration:none; padding:8px 12px; display:inline-flex; align-items:center; justify-content:center; gap:4px; font-size:0.82rem;" title="Télécharger le fichier PDF">
+                  <i class="ri-download-2-line"></i> Télécharger
+                </a>
+              </div>
+            </div>
+          `).join('')}
         </div>
       </div>
 
-      <div style="display:grid; grid-template-columns:1fr; gap:18px;">
-        ${videos.map(r => {
-    if (r.type === 'local-video') {
-      return `
-              <div class="dash-card glass" style="padding:18px;">
-                <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
-                  <h3 style="margin:0; font-size:1.05rem; font-weight:700; color:#fff;">${esc(r.title)}</h3>
-                  <span class="badge ${r.badgeClass || 'badge-success'}">${esc(r.source)}</span>
-                </div>
-                <div style="position:relative; width:100%; border-radius:12px; overflow:hidden; border:1px solid var(--border); background:#000; box-shadow:0 6px 24px rgba(0,0,0,0.4); margin-bottom:12px;">
-                  <video controls playsinline preload="metadata" poster="${r.poster}" style="width:100%; height:auto; display:block; max-height:420px; background:#000;">
-                    <source src="${r.localSrc}" type="video/mp4">
-                    Votre navigateur ne supporte pas la lecture directe de cette vidéo.
-                  </video>
-                </div>
-                <p style="font-size:0.85rem; color:var(--text-dim); line-height:1.5; margin:0;">${esc(r.description)}</p>
-              </div>
-            `;
-    } else {
-      return `
-              <div class="dash-card glass" style="padding:18px;">
-                <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
-                  <h3 style="margin:0; font-size:1.05rem; font-weight:700; color:#fff;">${esc(r.title)}</h3>
-                  <span class="badge ${r.badgeClass || 'badge-warning'}">${esc(r.source)}</span>
-                </div>
-                <div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:12px; border:1px solid var(--border); background:#000; box-shadow:0 6px 24px rgba(0,0,0,0.4); margin-bottom:12px;">
-                  <iframe src="${r.url}" style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;" allowfullscreen loading="lazy"></iframe>
-                </div>
-                <p style="font-size:0.85rem; color:var(--text-dim); line-height:1.5; margin-bottom:10px;">${esc(r.description)}</p>
-                ${r.watchUrl ? `
-                  <div style="text-align:right;">
-                    <a href="${r.watchUrl}" target="_blank" rel="noopener noreferrer" style="font-size:0.8rem; color:var(--accent); text-decoration:none; display:inline-flex; align-items:center; gap:4px;">
-                      <i class="ri-external-link-line"></i> Ouvrir dans un nouvel onglet
-                    </a>
-                  </div>
-                ` : ''}
-              </div>
-            `;
-    }
-  }).join('')}
-      </div>
-    </div>
+      <!-- Section Vidéos & Documentaires -->
+      <div style="margin-top:24px;">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
+          <span style="font-size:1.4rem;">🎬</span>
+          <div>
+            <h2 style="font-size:1.15rem; font-weight:800; margin:0; color:#fff;">Documentaires & Médias Vidéo</h2>
+            <p style="font-size:0.8rem; color:var(--text-dim); margin:0;">Enquêtes, conférences et entretiens de référence sur la régénération cellulaire</p>
+          </div>
+        </div>
 
-    <!-- Bannière Souveraineté & Pérennité -->
-    <div class="dash-card glass" style="margin-top:20px; padding:16px 20px; background:linear-gradient(135deg,rgba(16,185,129,0.06),rgba(59,130,246,0.04)); border:1px dashed var(--border); display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
-      <div style="font-size:1.8rem; color:var(--accent);"><i class="ri-shield-check-line"></i></div>
-      <div style="flex:1; min-width:260px;">
-        <h4 style="margin:0 0 4px 0; font-size:0.92rem; color:var(--text);">Conservation & Souveraineté des Savoirs</h4>
-        <p style="margin:0; font-size:0.8rem; color:var(--text-dim); line-height:1.4;">
-          Les ouvrages originaux et les documentaires clés sont directement hébergés et servis en local pour vous garantir un accès perpétuel, hors-ligne et sans dépendance à des plateformes tierces.
-        </p>
+        <div style="display:grid; grid-template-columns:1fr; gap:18px;">
+          ${videos.map(r => {
+      if (r.type === 'local-video') {
+        return `
+                <div class="dash-card glass" style="padding:18px;">
+                  <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+                    <h3 style="margin:0; font-size:1.05rem; font-weight:700; color:#fff;">${esc(r.title)}</h3>
+                    <span class="badge ${r.badgeClass || 'badge-success'}">${esc(r.source)}</span>
+                  </div>
+                  <div style="position:relative; width:100%; border-radius:12px; overflow:hidden; border:1px solid var(--border); background:#000; box-shadow:0 6px 24px rgba(0,0,0,0.4); margin-bottom:12px;">
+                    <video controls playsinline preload="metadata" poster="${r.poster}" style="width:100%; height:auto; display:block; max-height:420px; background:#000;">
+                      <source src="${r.localSrc}" type="video/mp4">
+                      Votre navigateur ne supporte pas la lecture directe de cette vidéo.
+                    </video>
+                  </div>
+                  <p style="font-size:0.85rem; color:var(--text-dim); line-height:1.5; margin:0;">${esc(r.description)}</p>
+                </div>
+              `;
+      } else {
+        return `
+                <div class="dash-card glass" style="padding:18px;">
+                  <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+                    <h3 style="margin:0; font-size:1.05rem; font-weight:700; color:#fff;">${esc(r.title)}</h3>
+                    <span class="badge ${r.badgeClass || 'badge-warning'}">${esc(r.source)}</span>
+                  </div>
+                  <div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:12px; border:1px solid var(--border); background:#000; box-shadow:0 6px 24px rgba(0,0,0,0.4); margin-bottom:12px;">
+                    <iframe src="${r.url}" style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;" allowfullscreen loading="lazy"></iframe>
+                  </div>
+                  <p style="font-size:0.85rem; color:var(--text-dim); line-height:1.5; margin-bottom:10px;">${esc(r.description)}</p>
+                  ${r.watchUrl ? `
+                    <div style="text-align:right;">
+                      <a href="${r.watchUrl}" target="_blank" rel="noopener noreferrer" style="font-size:0.8rem; color:var(--accent); text-decoration:none; display:inline-flex; align-items:center; gap:4px;">
+                        <i class="ri-external-link-line"></i> Ouvrir dans un nouvel onglet
+                      </a>
+                    </div>
+                  ` : ''}
+                </div>
+              `;
+      }
+    }).join('')}
+        </div>
+      </div>
+
+      <!-- Bannière Souveraineté & Pérennité -->
+      <div class="dash-card glass" style="margin-top:20px; padding:16px 20px; background:linear-gradient(135deg,rgba(16,185,129,0.06),rgba(59,130,246,0.04)); border:1px dashed var(--border); display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+        <div style="font-size:1.8rem; color:var(--accent);"><i class="ri-shield-check-line"></i></div>
+        <div style="flex:1; min-width:260px;">
+          <h4 style="margin:0 0 4px 0; font-size:0.92rem; color:var(--text);">Conservation & Souveraineté des Savoirs</h4>
+          <p style="margin:0; font-size:0.8rem; color:var(--text-dim); line-height:1.4;">
+            Les ouvrages originaux et les documentaires clés sont directement hébergés et servis en local pour vous garantir un accès perpétuel, hors-ligne et sans dépendance à des plateformes tierces.
+          </p>
+        </div>
       </div>
     </div>
   `;
 
   container.innerHTML = html;
+
+  // Restore active search if any
+  if (_mediaSearchQuery || _mediaSearchFilter !== 'all') {
+    _renderMediaSearchResults();
+  }
 };
 
 // ═══════ DIET PLAN CALENDAR ═══════
