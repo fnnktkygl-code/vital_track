@@ -6685,15 +6685,29 @@ window.renderResources = function() {
     },
     {
       title: "Système de Guérison du Régime Sans Mucus",
-      subtitle: "Arnold Ehret — Mucusless Diet Healing System",
+      subtitle: "Édition Intégrale & Moderne en Français · Prof. Arnold Ehret",
+      url: "/pdfs/arnold-ehret-systeme-de-guerison-du-regime-sans-mucus-fr.pdf",
+      author: "Prof. Arnold Ehret",
+      source: "Édition Française Haute Définition",
+      size: "800 Ko",
+      badgeClass: "badge-success",
+      badgeText: "🇫🇷 Édition Française Moderne",
+      icon: "ri-book-open-fill",
+      color: "#10b981",
+      description: "Traduction intégrale fidèle en français moderne du chef-d'œuvre d'Arnold Ehret (25 Leçons, V = P - O, Diagnostic, Transition, Jeûne Rationnel et Recettes)."
+    },
+    {
+      title: "Mucusless Diet Healing System (Original)",
+      subtitle: "Authentic 1922 Original English Edition",
       url: "/pdfs/arnold-ehret-mucusless-diet-healing-system.pdf",
       author: "Prof. Arnold Ehret",
-      source: "Arnold Ehret (PDF Intégral)",
+      source: "Original English Edition",
       size: "1.0 Mo",
       badgeClass: "badge-success",
+      badgeText: "🇬🇧 Original English",
       icon: "ri-book-2-line",
       color: "#38bdf8",
-      description: "L'ouvrage fondateur d'Arnold Ehret exposant la cause première de l'encrassement cellulaire (mucus, toxines), la transition sans mucus et l'équation fondamentale V = P - O."
+      description: "The historical original English edition by Prof. Arnold Ehret establishing the fundamental law V = P - O and the physiological truth of mucusless healing."
     },
     {
       title: "Le Jeûne Rationnel & Régénération",
@@ -6809,7 +6823,10 @@ window.renderResources = function() {
                     <div style="font-size:0.75rem; color:${b.color}; font-weight:600; margin-top:2px;">${esc(b.subtitle)}</div>
                   </div>
                 </div>
-                <span class="badge ${b.badgeClass}" style="white-space:nowrap; font-size:0.7rem;">${esc(b.size)}</span>
+                <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+                  <span class="badge ${b.badgeClass}" style="white-space:nowrap; font-size:0.7rem;">${esc(b.size)}</span>
+                  ${b.badgeText ? `<span style="white-space:nowrap; font-size:0.68rem; font-weight:700; color:#34d399; background:rgba(52,211,153,0.12); padding:2px 6px; border-radius:6px; border:1px solid rgba(52,211,153,0.25);">${esc(b.badgeText)}</span>` : ''}
+                </div>
               </div>
               <div style="font-size:0.78rem; color:var(--accent); font-weight:600; margin-bottom:6px;">Auteur : ${esc(b.author)}</div>
               <p style="font-size:0.82rem; color:var(--text-dim); line-height:1.45; margin:0 0 14px 0;">${esc(b.description)}</p>
