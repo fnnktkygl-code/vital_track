@@ -5745,23 +5745,90 @@ window.renderResources = function() {
   if (!container) return;
   
   // High-availability verified media and official local documents
-  const resources = [
+  const books = [
     {
       title: "Guide Nutritionnel Officiel VitalTrack",
+      subtitle: "Guide Méthodologique & Pratique",
       url: "/Nutrional-Guide.pdf",
+      author: "VitalTrack",
       source: "VitalTrack (PDF Local)",
+      size: "3.9 Mo",
       badgeClass: "badge-success",
-      type: "pdf",
-      description: "Le guide complet de référence sur la nutrition vitaliste, le jeûne intermittent et les associations alimentaires optimales."
+      icon: "ri-booklet-line",
+      color: "#10b981",
+      description: "Le guide complet de référence sur la nutrition vitaliste, le jeûne intermittent, les combinaisons alimentaires et les protocoles de détoxification."
     },
     {
-      title: "Documentaire : Dr. Sebi & la Guérison Cellulaire",
+      title: "Mucusless Diet Healing System",
+      subtitle: "Système de Guérison du Régime Sans Mucus",
+      url: "/pdfs/arnold-ehret-mucusless-diet-healing-system.pdf",
+      author: "Prof. Arnold Ehret",
+      source: "Arnold Ehret (PDF Intégral)",
+      size: "1.0 Mo",
+      badgeClass: "badge-success",
+      icon: "ri-book-2-line",
+      color: "#38bdf8",
+      description: "L'ouvrage fondateur d'Arnold Ehret exposant la cause première de l'encrassement cellulaire (mucus, toxines), la transition sans mucus et l'équation fondamentale V = P - O."
+    },
+    {
+      title: "Rational Fasting",
+      subtitle: "Le Jeûne Rationnel & Régénération",
+      url: "/pdfs/arnold-ehret-rational-fasting.pdf",
+      author: "Prof. Arnold Ehret",
+      source: "Arnold Ehret (PDF Intégral)",
+      size: "8.8 Mo",
+      badgeClass: "badge-success",
+      icon: "ri-book-read-line",
+      color: "#f59e0b",
+      description: "Manuel pratique d'Arnold Ehret sur la conduite progressive et sûre du jeûne, l'autolyse des dépôts métaboliques et la maîtrise des crises d'élimination."
+    },
+    {
+      title: "The Detox Miracle Sourcebook",
+      subtitle: "Guide Complet de Régénération Cellulaire",
+      url: "/pdfs/robert-morse-detox-miracle-sourcebook.pdf",
+      author: "Dr. Robert Morse, N.D.",
+      source: "Dr. Robert Morse (PDF Intégral)",
+      size: "5.3 Mo",
+      badgeClass: "badge-success",
+      icon: "ri-leaf-line",
+      color: "#a78bfa",
+      description: "La bible de la régénération cellulaire : filtration rénale, grand système lymphatique, pouvoir dissolvant des fruits et herboristerie clinique."
+    },
+    {
+      title: "The Sunfood Diet Success System",
+      subtitle: "Nutrition Vivante & Force Vitale",
+      url: "/pdfs/david-wolfe-sunfood-diet-success-system.pdf",
+      author: "David Wolfe",
+      source: "David Wolfe (PDF Intégral)",
+      size: "16.5 Mo",
+      badgeClass: "badge-success",
+      icon: "ri-sun-line",
+      color: "#f43f5e",
+      description: "L'encyclopédie de l'alimentation crue vivante, des superaliments sauvages, de la biophotonique et de la revitalisation enzymatique globale."
+    },
+    {
+      title: "The Bio-Electric Cell Food",
+      subtitle: "Intra-Cellular Cleansing Guide",
+      url: "/pdfs/dr-sebi-bio-electric-cell-food-cleansing-guide.pdf",
+      author: "Dr. Sebi (Alfredo Bowman)",
+      source: "Dr. Sebi (PDF Intégral)",
+      size: "240 Ko",
+      badgeClass: "badge-success",
+      icon: "ri-flashlight-line",
+      color: "#34d399",
+      description: "Le protocole authentique du Dr. Sebi sur l'équilibre bio-minéral, l'alcalinité cellulaire et les complexes botaniques d'épuration intra-cellulaire."
+    }
+  ];
+
+  const videos = [
+    {
+      title: "Documentaire : The Rock Newman Show ft. Dr. Sebi",
       localSrc: "/videos/dr-sebi-documentary.mp4",
       poster: "/videos/posters/dr-sebi-documentary.jpg",
-      source: "Dr. Sebi (Média Local HD)",
+      source: "WHUT TV / Dr. Sebi (Média Local HD • 56 min)",
       badgeClass: "badge-success",
       type: "local-video",
-      description: "Documentaire complet (40 min) sur la biochimie alcaline, l'élimination du mucus et les remèdes naturels du Dr. Sebi."
+      description: "L'entretien télévisé et documentaire historique (56 min) avec le Dr. Sebi sur Howard University Television : explications détaillées sur la biochimie alcaline, la nutrition électrique cellulaire, le nettoyage du mucus et les protocoles thérapeutiques naturels."
     },
     {
       title: "Le jeûne, une nouvelle thérapie ?",
@@ -5788,111 +5855,119 @@ window.renderResources = function() {
       source: "Forks Over Knives (1h36)",
       badgeClass: "badge-warning",
       type: "video",
-      description: "Documentaire pionnier mené par les Drs Campbell et Esselstyn démontrant comment inverser les maladies cardiovasculaires par l'alimentation."
-    },
-    {
-      title: "Le Système de Guérison du Régime Sans Mucus",
-      url: "https://www.amazon.fr/Syst%C3%A8me-gu%C3%A9rison-r%C3%A9gime-sans-mucus/dp/2889241512",
-      source: "Arnold Ehret (Livre Fondateur)",
-      badgeClass: "badge-accent",
-      type: "link",
-      description: "L'ouvrage classique d'Arnold Ehret sur la transition sans mucus, la détoxification profonde et l'équation V = P - O."
-    },
-    {
-      title: "The Detox Miracle Sourcebook",
-      url: "https://www.amazon.fr/Detox-Miracle-Sourcebook-Complete-Regeneration/dp/1935826190",
-      source: "Dr. Robert Morse, N.D. (Guide Complet)",
-      badgeClass: "badge-accent",
-      type: "link",
-      description: "La bible de la régénération cellulaire, du système lymphatique et des plantes médicinales par le Dr. Robert Morse."
+      description: "Documentaire pionnier mené par les Drs Campbell et Esselstyn démontrant comment inverser les maladies chroniques par l'alimentation végétale vivante."
     }
   ];
-  
-  container.innerHTML = resources.map(r => {
-    if (r.type === 'local-video') {
-      return `
-        <div class="dash-card glass" style="padding:18px;">
-          <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
-            <h3 style="margin:0; font-size:1.05rem; font-weight:700;">${esc(r.title)}</h3>
-            <span class="badge ${r.badgeClass || 'badge-success'}">${esc(r.source)}</span>
-          </div>
-          <div style="position:relative; width:100%; border-radius:12px; overflow:hidden; border:1px solid var(--border); background:#000; box-shadow:0 6px 24px rgba(0,0,0,0.4); margin-bottom:12px;">
-            <video controls playsinline preload="metadata" poster="${r.poster}" style="width:100%; height:auto; display:block; max-height:360px; background:#000;">
-              <source src="${r.localSrc}" type="video/mp4">
-              Votre navigateur ne supporte pas la vidéo locale directe.
-            </video>
-          </div>
-          <p style="font-size:0.85rem; color:var(--text-dim); line-height:1.5; margin:0;">${esc(r.description)}</p>
+
+  let html = `
+    <!-- Section Livres & Guides PDF -->
+    <div style="margin-bottom:8px;">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
+        <span style="font-size:1.4rem;">📚</span>
+        <div>
+          <h2 style="font-size:1.15rem; font-weight:800; margin:0; color:#fff;">Ouvrages & Guides PDF Fondateurs</h2>
+          <p style="font-size:0.8rem; color:var(--text-dim); margin:0;">Tous les textes intégraux téléchargeables et consultables directement en local (sans lien tiers)</p>
         </div>
-      `;
-    } else if (r.type === 'video') {
-      return `
-        <div class="dash-card glass" style="padding:18px;">
-          <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
-            <h3 style="margin:0; font-size:1.05rem; font-weight:700;">${esc(r.title)}</h3>
-            <span class="badge ${r.badgeClass || 'badge-warning'}">${esc(r.source)}</span>
-          </div>
-          <div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:12px; border:1px solid var(--border); background:#000; box-shadow:0 6px 24px rgba(0,0,0,0.4); margin-bottom:12px;">
-            <iframe src="${r.url}" style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;" allowfullscreen loading="lazy"></iframe>
-          </div>
-          <p style="font-size:0.85rem; color:var(--text-dim); line-height:1.5; margin-bottom:10px;">${esc(r.description)}</p>
-          ${r.watchUrl ? `
-            <div style="text-align:right;">
-              <a href="${r.watchUrl}" target="_blank" rel="noopener noreferrer" style="font-size:0.8rem; color:var(--accent); text-decoration:none; display:inline-flex; align-items:center; gap:4px;">
-                <i class="ri-external-link-line"></i> Ouvrir dans un nouvel onglet
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:16px;">
+        ${books.map(b => `
+          <div class="dash-card glass" style="padding:18px; display:flex; flex-direction:column; justify-content:space-between; border-left:3px solid ${b.color};">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:8px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <div style="width:36px; height:36px; border-radius:10px; background:rgba(255,255,255,0.06); color:${b.color}; display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0;">
+                    <i class="${b.icon}"></i>
+                  </div>
+                  <div>
+                    <h3 style="margin:0; font-size:0.96rem; font-weight:700; color:#fff; line-height:1.2;">${esc(b.title)}</h3>
+                    <div style="font-size:0.75rem; color:${b.color}; font-weight:600; margin-top:2px;">${esc(b.subtitle)}</div>
+                  </div>
+                </div>
+                <span class="badge ${b.badgeClass}" style="white-space:nowrap; font-size:0.7rem;">${esc(b.size)}</span>
+              </div>
+              <div style="font-size:0.78rem; color:var(--accent); font-weight:600; margin-bottom:6px;">Auteur : ${esc(b.author)}</div>
+              <p style="font-size:0.82rem; color:var(--text-dim); line-height:1.45; margin:0 0 14px 0;">${esc(b.description)}</p>
+            </div>
+            <div style="display:flex; gap:8px; margin-top:auto;">
+              <a href="${b.url}" target="_blank" rel="noopener noreferrer" class="btn-primary" style="flex:1; text-align:center; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:6px; font-size:0.82rem; padding:8px 12px;">
+                <i class="ri-file-pdf-line"></i> Consulter
+              </a>
+              <a href="${b.url}" download class="btn-secondary" style="text-align:center; text-decoration:none; padding:8px 12px; display:inline-flex; align-items:center; justify-content:center; gap:4px; font-size:0.82rem;" title="Télécharger le fichier PDF">
+                <i class="ri-download-2-line"></i> Télécharger
               </a>
             </div>
-          ` : ''}
-        </div>
-      `;
-    } else if (r.type === 'pdf') {
-      return `
-        <div class="dash-card glass" style="padding:18px; display:flex; flex-direction:column; justify-content:space-between;">
-          <div>
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
-              <h3 style="margin:0; font-size:1.05rem; font-weight:700;">${esc(r.title)}</h3>
-              <span class="badge ${r.badgeClass || 'badge-success'}">${esc(r.source)}</span>
-            </div>
-            <p style="font-size:0.85rem; color:var(--text-dim); line-height:1.5; margin-bottom:16px;">${esc(r.description)}</p>
           </div>
-          <div style="display:flex; gap:10px; flex-wrap:wrap;">
-            <a href="${r.url}" target="_blank" rel="noopener noreferrer" class="btn-primary" style="text-align:center; text-decoration:none; flex:1; display:inline-flex; align-items:center; justify-content:center; gap:6px;">
-              <i class="ri-file-pdf-line"></i> Consulter le Guide PDF
-            </a>
-            <a href="${r.url}" download class="btn-secondary" style="text-align:center; text-decoration:none; padding:10px 14px; display:inline-flex; align-items:center; justify-content:center; gap:4px;" title="Télécharger pour consultation hors-ligne">
-              <i class="ri-download-2-line"></i>
-            </a>
-          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <!-- Section Vidéos & Documentaires -->
+    <div style="margin-top:24px;">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
+        <span style="font-size:1.4rem;">🎬</span>
+        <div>
+          <h2 style="font-size:1.15rem; font-weight:800; margin:0; color:#fff;">Documentaires & Médias Vidéo</h2>
+          <p style="font-size:0.8rem; color:var(--text-dim); margin:0;">Enquêtes, conférences et entretiens de référence sur la régénération cellulaire</p>
         </div>
-      `;
-    } else {
-      // Books / external links
-      return `
-        <div class="dash-card glass" style="padding:18px; display:flex; flex-direction:column; justify-content:space-between;">
-          <div>
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
-              <h3 style="margin:0; font-size:1.05rem; font-weight:700;">${esc(r.title)}</h3>
-              <span class="badge ${r.badgeClass || 'badge-accent'}">${esc(r.source)}</span>
-            </div>
-            <p style="font-size:0.85rem; color:var(--text-dim); line-height:1.5; margin-bottom:16px;">${esc(r.description)}</p>
-          </div>
-          <a href="${r.url}" target="_blank" rel="noopener noreferrer" class="btn-secondary" style="text-align:center; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:6px;">
-            <i class="ri-book-open-line"></i> Découvrir l'ouvrage
-          </a>
-        </div>
-      `;
-    }
-  }).join('') + `
-    <div class="dash-card glass" style="grid-column:1/-1; padding:16px 20px; background:linear-gradient(135deg,rgba(16,185,129,0.06),rgba(59,130,246,0.04)); border:1px dashed var(--border); display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr; gap:18px;">
+        ${videos.map(r => {
+          if (r.type === 'local-video') {
+            return `
+              <div class="dash-card glass" style="padding:18px;">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+                  <h3 style="margin:0; font-size:1.05rem; font-weight:700; color:#fff;">${esc(r.title)}</h3>
+                  <span class="badge ${r.badgeClass || 'badge-success'}">${esc(r.source)}</span>
+                </div>
+                <div style="position:relative; width:100%; border-radius:12px; overflow:hidden; border:1px solid var(--border); background:#000; box-shadow:0 6px 24px rgba(0,0,0,0.4); margin-bottom:12px;">
+                  <video controls playsinline preload="metadata" poster="${r.poster}" style="width:100%; height:auto; display:block; max-height:420px; background:#000;">
+                    <source src="${r.localSrc}" type="video/mp4">
+                    Votre navigateur ne supporte pas la lecture directe de cette vidéo.
+                  </video>
+                </div>
+                <p style="font-size:0.85rem; color:var(--text-dim); line-height:1.5; margin:0;">${esc(r.description)}</p>
+              </div>
+            `;
+          } else {
+            return `
+              <div class="dash-card glass" style="padding:18px;">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+                  <h3 style="margin:0; font-size:1.05rem; font-weight:700; color:#fff;">${esc(r.title)}</h3>
+                  <span class="badge ${r.badgeClass || 'badge-warning'}">${esc(r.source)}</span>
+                </div>
+                <div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:12px; border:1px solid var(--border); background:#000; box-shadow:0 6px 24px rgba(0,0,0,0.4); margin-bottom:12px;">
+                  <iframe src="${r.url}" style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;" allowfullscreen loading="lazy"></iframe>
+                </div>
+                <p style="font-size:0.85rem; color:var(--text-dim); line-height:1.5; margin-bottom:10px;">${esc(r.description)}</p>
+                ${r.watchUrl ? `
+                  <div style="text-align:right;">
+                    <a href="${r.watchUrl}" target="_blank" rel="noopener noreferrer" style="font-size:0.8rem; color:var(--accent); text-decoration:none; display:inline-flex; align-items:center; gap:4px;">
+                      <i class="ri-external-link-line"></i> Ouvrir dans un nouvel onglet
+                    </a>
+                  </div>
+                ` : ''}
+              </div>
+            `;
+          }
+        }).join('')}
+      </div>
+    </div>
+
+    <!-- Bannière Souveraineté & Pérennité -->
+    <div class="dash-card glass" style="margin-top:20px; padding:16px 20px; background:linear-gradient(135deg,rgba(16,185,129,0.06),rgba(59,130,246,0.04)); border:1px dashed var(--border); display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
       <div style="font-size:1.8rem; color:var(--accent);"><i class="ri-shield-check-line"></i></div>
       <div style="flex:1; min-width:260px;">
-        <h4 style="margin:0 0 4px 0; font-size:0.92rem; color:var(--text);">Conservation & Souveraineté des Médias</h4>
+        <h4 style="margin:0 0 4px 0; font-size:0.92rem; color:var(--text);">Conservation & Souveraineté des Savoirs</h4>
         <p style="margin:0; font-size:0.8rem; color:var(--text-dim); line-height:1.4;">
-          Les vidéos et documents clés sont directement hébergés et optimisés en local pour vous garantir un accès permanent, sans publicité ni risque de suppression.
+          Les ouvrages originaux et les documentaires clés sont directement hébergés et servis en local pour vous garantir un accès perpétuel, hors-ligne et sans dépendance à des plateformes tierces.
         </p>
       </div>
     </div>
   `;
+
+  container.innerHTML = html;
 };
 
 // ═══════ DIET PLAN CALENDAR ═══════
