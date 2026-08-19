@@ -40,8 +40,8 @@ const getUserStorageKey = (k) => {
 };
 
 const store = {
-  get: (k, def) => { 
-    try { 
+  get: (k, def) => {
+    try {
       const key = getUserStorageKey(k);
       const val = localStorage.getItem(key);
       if (val !== null) return JSON.parse(val) ?? def;
@@ -50,14 +50,14 @@ const store = {
       if (legacyVal !== null) {
         return JSON.parse(legacyVal) ?? def;
       }
-      return def; 
-    } catch { return def; } 
+      return def;
+    } catch { return def; }
   },
-  set: (k, v) => { 
-    try { 
+  set: (k, v) => {
+    try {
       const key = getUserStorageKey(k);
-      localStorage.setItem(key, JSON.stringify(v)); 
-    } catch {} 
+      localStorage.setItem(key, JSON.stringify(v));
+    } catch { }
   },
   del: (k) => {
     const key = getUserStorageKey(k);
@@ -68,7 +68,7 @@ const store = {
 window.store = store;
 
 // ═══════ TOAST NOTIFICATIONS ═══════
-window.showToast = function(msg, type = 'success', duration = 3500) {
+window.showToast = function (msg, type = 'success', duration = 3500) {
   const container = document.getElementById('appToastContainer');
   if (!container) return;
 
@@ -85,7 +85,7 @@ window.showToast = function(msg, type = 'success', duration = 3500) {
 };
 
 // ═══════ GLOBAL VITAL CONFIRM MODAL ═══════
-window.showVitalConfirm = function({
+window.showVitalConfirm = function ({
   title = 'Confirmation',
   message = 'Voulez-vous vraiment continuer ?',
   icon = 'ri-alert-fill',
@@ -161,7 +161,7 @@ const MONTH_NAMES_FR = [
 ];
 const WEEKDAYS_SHORT_FR = ['Lu', 'Ma', 'Me', 'Je', 'Ve', 'Sa', 'Di'];
 
-window.initVitalDatePicker = function(inputEl) {
+window.initVitalDatePicker = function (inputEl) {
   if (!inputEl || inputEl._vitalDatePickerInitialized) return;
   inputEl._vitalDatePickerInitialized = true;
 
@@ -190,7 +190,7 @@ window.initVitalDatePicker = function(inputEl) {
   function formatDisplayDate(d) {
     const today = new Date();
     const isToday = d.toDateString() === today.toDateString();
-    
+
     const yesterday = new Date();
     yesterday.setDate(today.getDate() - 1);
     const isYesterday = d.toDateString() === yesterday.toDateString();
@@ -325,7 +325,7 @@ window.initVitalDatePicker = function(inputEl) {
         const d = new Date(viewYear, viewMonth, day);
         const isCurrentToday = d.toDateString() === today.toDateString();
         const isSelected = selectedDate && d.toDateString() === selectedDate.toDateString();
-        
+
         let classes = ['vital-datepicker-day'];
         if (isCurrentToday) classes.push('today');
         if (isSelected) classes.push('selected');
@@ -510,14 +510,14 @@ window.initVitalDatePicker = function(inputEl) {
   updateTrigger();
 };
 
-window.initAllVitalDatePickers = function() {
+window.initAllVitalDatePickers = function () {
   document.querySelectorAll('input[type="date"], input.vital-datepicker-input, #calMealDate, #weightDateInput').forEach(input => {
     window.initVitalDatePicker(input);
   });
 };
 
 // ═══════ VITAL CUSTOM SELECT / DROPDOWN ═══════
-window.initVitalSelect = function(selectEl) {
+window.initVitalSelect = function (selectEl) {
   if (!selectEl || selectEl._vitalSelectInitialized) return;
   selectEl._vitalSelectInitialized = true;
 
@@ -617,7 +617,7 @@ window.initVitalSelect = function(selectEl) {
   updateTrigger();
 };
 
-window.initAllVitalSelects = function() {
+window.initAllVitalSelects = function () {
   document.querySelectorAll('select.custom-vital-select, select.sort-select, #fastingType, #searchSortSelect, #profileGoal, #profileTransitionLevel, #profileLanguage, #profileActivity, #profileBioregion').forEach(sel => {
     window.initVitalSelect(sel);
   });
@@ -667,14 +667,14 @@ function updateAuthUI(user) {
 }
 
 // ═══════ USER PROFILE & VITALIST ACHIEVEMENTS HUB ═══════
-window.openUserProfileModal = function() {
+window.openUserProfileModal = function () {
   const modal = document.getElementById('userProfileModal');
   if (!modal) return;
   renderUserProfileModal();
   modal.style.display = 'flex';
 };
 
-window.closeUserProfileModal = function(e) {
+window.closeUserProfileModal = function (e) {
   if (e && e.target && e.target !== e.currentTarget && !e.target.classList.contains('modal-close-btn') && !e.target.closest('.modal-close-btn')) {
     return;
   }
@@ -682,7 +682,7 @@ window.closeUserProfileModal = function(e) {
   if (modal) modal.style.display = 'none';
 };
 
-window.renderUserProfileModal = function() {
+window.renderUserProfileModal = function () {
   const content = document.getElementById('userProfileModalContent');
   if (!content) return;
 
@@ -977,7 +977,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderDashboard();
     renderMeals();
   });
-  
+
   if (window.VitalMascot) {
     window.appMascot = new window.VitalMascot('mascotCanvas');
   }
@@ -1064,7 +1064,7 @@ function populateVitalApprovedFoods() {
 }
 
 // ═══════ NAVIGATION ═══════
-window.showPage = function(page) {
+window.showPage = function (page) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-link, .bnav-item, .sidebar-link').forEach(l => l.classList.remove('active'));
   const el = document.getElementById(`page-${page}`);
@@ -1091,10 +1091,10 @@ function initChatMascot() {
   }
 }
 
-window.toggleMobileNav = function() { document.getElementById('mobileNav').classList.toggle('open'); };
+window.toggleMobileNav = function () { document.getElementById('mobileNav').classList.toggle('open'); };
 
 // ═══════ THEME ═══════
-window.toggleTheme = function() {
+window.toggleTheme = function () {
   const isDark = !document.documentElement.hasAttribute('data-theme');
   if (isDark) { document.documentElement.setAttribute('data-theme', 'light'); store.set('theme', 'light'); document.getElementById('themeIcon').className = 'ri-sun-line'; }
   else { document.documentElement.removeAttribute('data-theme'); store.set('theme', 'dark'); document.getElementById('themeIcon').className = 'ri-moon-line'; }
@@ -1174,13 +1174,13 @@ function loadProfile() {
   updateLiveAiPreview();
 }
 
-window.toggleEmonctoireChip = function(el) {
+window.toggleEmonctoireChip = function (el) {
   if (!el) return;
   el.classList.toggle('active');
   updateLiveAiPreview();
 };
 
-window.toggleAiPreviewBox = function() {
+window.toggleAiPreviewBox = function () {
   const box = document.getElementById('aiPreviewBox');
   const chevron = document.getElementById('aiPreviewChevron');
   if (!box) return;
@@ -1189,7 +1189,7 @@ window.toggleAiPreviewBox = function() {
   if (chevron) chevron.style.transform = isHidden ? 'rotate(0deg)' : 'rotate(-90deg)';
 };
 
-window.updateLiveAiPreview = function() {
+window.updateLiveAiPreview = function () {
   const preview = document.getElementById('aiPreviewBox');
   if (!preview) return;
 
@@ -1233,7 +1233,7 @@ Restrictions Strictes: ${restrictions}${rawMems ? `\nHabitudes Mémorisées:\n- 
   preview.textContent = generatedPrompt;
 };
 
-window.saveProfile = function() {
+window.saveProfile = function () {
   const rawMems = document.getElementById('profileMemories') ? document.getElementById('profileMemories').value : '';
   const mems = rawMems.split('\n').map(s => s.trim()).filter(Boolean);
 
@@ -1275,7 +1275,7 @@ function loadProtocol() {
   currentProtocol = store.get('protocol', 'vitalist');
   updateProtocolUI();
 }
-window.setProtocol = function(mode) {
+window.setProtocol = function (mode) {
   currentProtocol = mode;
   store.set('protocol', mode);
   updateProtocolUI();
@@ -1316,7 +1316,7 @@ function renderDashboard() {
 
   const arcScoreEl = document.getElementById('arcScore');
   if (arcScoreEl) arcScoreEl.textContent = (todayMeals.length === 0 && !breakdown.hasFasting && !breakdown.hasBreathing) ? '0' : score;
-  
+
   const arcProgress = document.getElementById('arcProgress');
   if (arcProgress) {
     const isZero = todayMeals.length === 0 && !breakdown.hasFasting && !breakdown.hasBreathing;
@@ -1389,11 +1389,11 @@ function renderDashboard() {
   // Today's meals with clickable 3-tab modal trigger
   const dashList = document.getElementById('dashMealList');
   if (dashList) {
-    if (todayMeals.length === 0) { 
+    if (todayMeals.length === 0) {
       dashList.innerHTML = `<div class="empty-state-card">
                               <i class="ri-restaurant-2-line"></i>
                               <p>Aucun repas enregistré aujourd'hui.</p>
-                            </div>`; 
+                            </div>`;
     }
     else {
       dashList.innerHTML = todayMeals.slice(0, 5).map((m, idx) => {
@@ -1423,8 +1423,8 @@ function renderDashboard() {
   }
 
   // Also update widgets
-  if(typeof updateCircadianWidget === 'function') updateCircadianWidget();
-  if(typeof renderWeightChart === 'function') renderWeightChart();
+  if (typeof updateCircadianWidget === 'function') updateCircadianWidget();
+  if (typeof renderWeightChart === 'function') renderWeightChart();
 }
 
 function calculateVitalityBreakdown(mealsInput) {
@@ -1435,7 +1435,7 @@ function calculateVitalityBreakdown(mealsInput) {
     let totalScore = 0;
     meals.forEach(item => {
       let itemScore = item.freshness ?? (item.vitality?.freshness ?? (item.nova === 1 ? 95 : item.nova === 2 ? 65 : item.nova === 3 ? 40 : 15));
-      
+
       if (item.electric === true || item.approved === true) {
         itemScore += 15;
       } else if (item.hybrid === true) {
@@ -1531,11 +1531,11 @@ function calculateVitalityScore(meals) {
   return breakdown.overallScore;
 }
 
-window.openVitalityInfoModal = function() {
+window.openVitalityInfoModal = function () {
   document.getElementById('vitalityInfoModal')?.classList.add('open');
 };
 
-window.closeVitalityInfoModal = function(e) {
+window.closeVitalityInfoModal = function (e) {
   if (!e || e.target === document.getElementById('vitalityInfoModal')) {
     document.getElementById('vitalityInfoModal')?.classList.remove('open');
   }
@@ -1550,7 +1550,7 @@ let activeConvId = null;
 function loadChatHistory() {
   conversations = store.get('conversations', []);
   activeConvId = store.get('activeConvId', null);
-  
+
   if (conversations.length > 0) {
     if (!activeConvId || !conversations.find(c => c.id === activeConvId)) {
       activeConvId = conversations[0].id;
@@ -1558,7 +1558,7 @@ function loadChatHistory() {
   } else {
     activeConvId = null;
   }
-  
+
   renderSidebar();
   renderActiveConversation();
 }
@@ -1569,21 +1569,21 @@ function saveConversations() {
   renderSidebar();
 }
 
-window.newConversation = function() {
+window.newConversation = function () {
   activeConvId = null;
   saveConversations();
   renderActiveConversation();
   if (window.innerWidth <= 900) toggleSidebar();
 };
 
-window.switchConversation = function(id) {
+window.switchConversation = function (id) {
   activeConvId = id;
   saveConversations();
   renderActiveConversation();
   if (window.innerWidth <= 900) toggleSidebar();
 };
 
-window.deleteConversation = function(id, e) {
+window.deleteConversation = function (id, e) {
   e.stopPropagation();
   conversations = conversations.filter(c => c.id !== id);
   if (activeConvId === id) {
@@ -1593,11 +1593,11 @@ window.deleteConversation = function(id, e) {
   renderActiveConversation();
 };
 
-window.filterConversations = function(query) {
+window.filterConversations = function (query) {
   renderSidebar(query);
 };
 
-window.toggleSidebar = function() {
+window.toggleSidebar = function () {
   const sidebar = document.getElementById('chatSidebar');
   sidebar.classList.toggle('hidden');
 };
@@ -1605,21 +1605,21 @@ window.toggleSidebar = function() {
 function renderSidebar(filterQuery = '') {
   const list = document.getElementById('sidebarList');
   if (!list) return;
-  
+
   const q = filterQuery.toLowerCase().trim();
   const filtered = q ? conversations.filter(c => c.title.toLowerCase().includes(q)) : conversations;
-  
+
   if (filtered.length === 0) {
     list.innerHTML = '<p class="empty-state-sm" style="color:var(--text-dim);text-align:center;margin-top:20px">Aucun historique</p>';
     return;
   }
-  
+
   list.innerHTML = filtered.sort((a, b) => b.updated - a.updated).map(c => `
     <div class="conv-item ${c.id === activeConvId ? 'active' : ''}" onclick="switchConversation('${c.id}')">
       <i class="ri-chat-3-line" style="color:var(--text-dim)"></i>
       <div class="conv-item-info">
         <div class="conv-item-title">${esc(c.title)}</div>
-        <div class="conv-item-date">${new Date(c.updated).toLocaleDateString('fr-FR', {month:'short', day:'numeric'})}</div>
+        <div class="conv-item-date">${new Date(c.updated).toLocaleDateString('fr-FR', { month: 'short', day: 'numeric' })}</div>
       </div>
       <button class="conv-item-delete" onclick="deleteConversation('${c.id}', event)" data-tooltip="Supprimer">
         <i class="ri-delete-bin-line"></i>
@@ -1633,7 +1633,7 @@ function renderActiveConversation() {
   const title = document.getElementById('chatTitle');
   const input = document.getElementById('chatInput');
   const welcome = document.getElementById('chatWelcome');
-  
+
   if (!activeConvId) {
     title.textContent = 'Nouveau chat';
     container.innerHTML = '';
@@ -1648,7 +1648,7 @@ function renderActiveConversation() {
 
   title.textContent = conv.title;
   container.innerHTML = '';
-  
+
   conv.messages.forEach(m => addMessage(m.text, m.role === 'user', m.model, m.image));
 }
 
@@ -1656,7 +1656,7 @@ function renderActiveConversation() {
 let _speechRecognition = null;
 let _isListening = false;
 
-window.toggleVoiceInput = function(forceState) {
+window.toggleVoiceInput = function (forceState) {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   const voiceBtn = document.getElementById('chatVoiceBtn');
   const indicator = document.getElementById('chatVoiceIndicator');
@@ -1671,7 +1671,7 @@ window.toggleVoiceInput = function(forceState) {
 
   if (!shouldStart) {
     if (_speechRecognition) {
-      try { _speechRecognition.stop(); } catch(e) {}
+      try { _speechRecognition.stop(); } catch (e) { }
     }
     _isListening = false;
     if (voiceBtn) voiceBtn.classList.remove('recording');
@@ -1681,7 +1681,7 @@ window.toggleVoiceInput = function(forceState) {
 
   try {
     if (_speechRecognition) {
-      try { _speechRecognition.abort(); } catch(e) {}
+      try { _speechRecognition.abort(); } catch (e) { }
     }
     _speechRecognition = new SpeechRecognition();
     _speechRecognition.lang = 'fr-FR';
@@ -1738,7 +1738,7 @@ window.toggleVoiceInput = function(forceState) {
 // ═══════ IMAGE UPLOAD & PREVIEW ═══════
 let pendingChatImage = null; // { mimeType, data, dataUri }
 
-window.handleChatImageSelected = function(e) {
+window.handleChatImageSelected = function (e) {
   const file = e.target.files && e.target.files[0];
   if (!file) return;
 
@@ -1753,7 +1753,7 @@ window.handleChatImageSelected = function(e) {
   }
 
   const reader = new FileReader();
-  reader.onload = function(evt) {
+  reader.onload = function (evt) {
     const dataUri = evt.target.result;
     const base64Data = dataUri.split(',')[1];
     pendingChatImage = {
@@ -1774,7 +1774,7 @@ window.handleChatImageSelected = function(e) {
   reader.readAsDataURL(file);
 };
 
-window.removeChatImage = function() {
+window.removeChatImage = function () {
   pendingChatImage = null;
   const preview = document.getElementById('chatAttachmentPreview');
   const fileInput = document.getElementById('chatImageInput');
@@ -1782,12 +1782,12 @@ window.removeChatImage = function() {
   if (fileInput) fileInput.value = '';
 };
 
-window.quickChat = function(query) {
+window.quickChat = function (query) {
   document.getElementById('chatInput').value = query;
   document.getElementById('chatForm').dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
 };
 
-window.sendChat = async function(e) {
+window.sendChat = async function (e) {
   e.preventDefault();
   const input = document.getElementById('chatInput');
   const query = input.value.trim();
@@ -1802,7 +1802,7 @@ window.sendChat = async function(e) {
   const messageText = query || "Analyse cette photo et donne-moi ton avis vitaliste détaillé.";
   input.value = '';
   window.removeChatImage();
-  
+
   const welcome = document.getElementById('chatWelcome');
   if (welcome) welcome.style.display = 'none';
 
@@ -1853,26 +1853,26 @@ window.sendChat = async function(e) {
         }
       }];
     }
-    
+
     // Call the backend with stream=true to bypass the 10s Vercel timeout
     const resp = await fetch(`${API_BASE}/api/chat?stream=true`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...(VT_APP_KEY ? { 'X-VT-API-Key': VT_APP_KEY } : {}) },
       body: JSON.stringify(reqBody),
     });
-    
+
     typingEl.remove();
-    if (!resp.ok) { 
-      const err = await resp.json().catch(() => ({})); 
-      throw new Error(err.error || `HTTP ${resp.status}`); 
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      throw new Error(err.error || `HTTP ${resp.status}`);
     }
-    
+
     let aiText = '';
     let modelUsed = 'Inconnu';
     const reader = resp.body.getReader();
     const decoder = new TextDecoder('utf-8');
     let buffer = '';
-    
+
     // Create the streaming bubble
     const container = document.getElementById('chatMessages');
     const msgDiv = document.createElement('div');
@@ -1881,17 +1881,17 @@ window.sendChat = async function(e) {
     const avatarHtml = window.renderPigeonPortrait ? window.renderPigeonPortrait(24, 'talking') : '🐦';
     msgDiv.innerHTML = `<div class="message-avatar">${avatarHtml}</div><div class="message-bubble" id="streaming-bubble">...</div>`;
     container.appendChild(msgDiv);
-    
+
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
       buffer += decoder.decode(value, { stream: true });
-      
+
       let newlineIdx;
       while ((newlineIdx = buffer.indexOf('\n')) >= 0) {
         const line = buffer.slice(0, newlineIdx).trim();
         buffer = buffer.slice(newlineIdx + 1);
-        
+
         if (line.startsWith('data: ')) {
           try {
             const dataObj = JSON.parse(line.substring(6));
@@ -1902,15 +1902,15 @@ window.sendChat = async function(e) {
               if (streamingBubble) streamingBubble.innerHTML = renderMarkdown(aiText);
               container.scrollTop = container.scrollHeight;
             }
-          } catch (e) {}
+          } catch (e) { }
         }
       }
     }
-    
+
     // Finalize message UI by replacing the streaming bubble with a normal addMessage call
     const streamingContainer = document.getElementById('streaming-bubble-container');
     if (streamingContainer) streamingContainer.remove();
-    
+
     // Update badge UI
     const badge = document.getElementById('currentModelBadge');
     if (badge) {
@@ -1924,18 +1924,18 @@ window.sendChat = async function(e) {
         badge.innerHTML = `<i class="ri-flashlight-fill" style="color:#4ade80"></i> ${modelUsed}`;
       }
     }
-    
+
     conv.messages.push({ role: 'model', text: aiText, model: modelUsed });
     conv.updated = Date.now();
     saveConversations();
     addMessage(aiText, false, modelUsed);
-    
-  } catch (err) { 
-    typingEl.remove(); 
-    addMessage(`❌ Erreur : ${err.message}`, false); 
+
+  } catch (err) {
+    typingEl.remove();
+    addMessage(`❌ Erreur : ${err.message}`, false);
     if (_chatMascotRenderer) _chatMascotRenderer.setAction('idle', false);
-  } finally { 
-    sendBtn.disabled = false; 
+  } finally {
+    sendBtn.disabled = false;
     input.focus();
     if (_chatMascotRenderer) _chatMascotRenderer.setAction('coo', false);
   }
@@ -1960,51 +1960,37 @@ const MODEL_TAXONOMY = [
     name: 'Flash (Ultra Rapide)',
     icon: 'ri-flashlight-fill',
     iconColor: '#4ade80',
-    tagline: 'Vitesse maximale & réponse immédiate',
+    tagline: 'Vitesse maximale & réponse instantanée',
     models: [
-      { id: 'gemini-3.7-flash', name: 'Gemini 3.7 Flash', badge: 'Fastest & Smartest ⚡', tagline: 'Dernière génération hybride, multimodal & réactivité instantanée' },
-      { id: 'gemini-3.6-flash', name: 'Gemini 3.6 Flash', badge: 'Ultra Rapide', tagline: 'Modèle réactif de haute précision pour le chat instantané' },
-      { id: 'gemini-3.5-flash', name: 'Gemini 3.5 Flash', badge: 'Équilibré', tagline: 'Vitesse élevée et excellente précision nutritionnelle' },
-      { id: 'gemini-flash-latest', name: 'Gemini Flash Latest', badge: 'Auto-Update', tagline: 'Pointé sur la version Flash stable la plus récente' }
+      { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash', badge: 'Recommandé ⚡', tagline: 'Dernière génération multimodale, rapide et précise' },
+      { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash', badge: 'Ultra Rapide', tagline: 'Haute réactivité pour le coaching instantané' },
+      { id: 'gemini-1.5-flash', name: 'Gemini 1.5 Flash', badge: 'Éprouvé', tagline: 'Excellente précision et stabilité diététique' }
     ]
   },
   {
     id: 'premium',
-    name: 'Premium (Raisonnement)',
+    name: 'Pro (Raisonnement Scientifique)',
     icon: 'ri-brain-line',
     iconColor: '#fbbf24',
-    tagline: 'Analyse approfondie & requêtes complexes',
+    tagline: 'Analyse approfondie & protocoles complexes',
     models: [
-      { id: 'gemini-3.1-pro-preview', name: 'Gemini 3.1 Pro', badge: 'Raisonnement', tagline: 'Réfléchit en profondeur pour les cas médicaux et protocoles' },
-      { id: 'gemini-pro-latest', name: 'Gemini Pro Latest', badge: 'Pro Stable', tagline: 'Pro puissant pour la synthèse et les plans avancés' }
+      { id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro', badge: 'Raisonnement', tagline: 'Analyse complexe des terrains biologiques et pathologies' },
+      { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro', badge: 'Grand Contexte', tagline: 'Fenêtre étendue pour synthèses et longs historiques' }
     ]
   },
   {
     id: 'lite',
-    name: 'Lite (Haute Capacité)',
+    name: 'Lite (Haute Vélocité)',
     icon: 'ri-bolt-line',
     iconColor: '#a78bfa',
-    tagline: 'Grande fenêtre de contexte & légèreté',
+    tagline: 'Léger et optimisé pour le mobile',
     models: [
-      { id: 'gemini-3.1-flash-lite', name: 'Gemini 3.1 Flash Lite', badge: 'Grand Contexte', tagline: 'Idéal pour absorber de longs documents ou fichiers PDF' },
-      { id: 'gemini-3.5-flash-lite', name: 'Gemini 3.5 Flash Lite', badge: 'Économe', tagline: 'Traitement fluide à consommation optimisée' },
-      { id: 'gemini-flash-lite-latest', name: 'Gemini Flash Lite', badge: 'Lite Stable', tagline: 'Modèle léger ultra-rapide' }
-    ]
-  },
-  {
-    id: 'gemma',
-    name: 'Open Weights (Gemma)',
-    icon: 'ri-cpu-line',
-    iconColor: '#22d3ee',
-    tagline: 'Modèles ouverts Google DeepMind',
-    models: [
-      { id: 'gemma-4-31b-it', name: 'Gemma 4 31B', badge: '31B Params', tagline: 'Grand modèle open-weights à haute fiabilité' },
-      { id: 'gemma-4-26b-a4b-it', name: 'Gemma 4 26B', badge: '26B Params', tagline: 'Modèle ouvert rapide et agile' }
+      { id: 'gemini-2.0-flash-lite', name: 'Gemini 2.0 Flash Lite', badge: 'Économe', tagline: 'Traitement fluide à consommation minimale' }
     ]
   }
 ];
 
-window.renderModelPicker = function() {
+window.renderModelPicker = function () {
   const container = document.getElementById('modelDropdown');
   if (!container) return;
 
@@ -2060,7 +2046,7 @@ window.renderModelPicker = function() {
   updateModelHeaderBadge();
 };
 
-window.selectModel = function(modelId, modelName, iconClass, iconColor) {
+window.selectModel = function (modelId, modelName, iconClass, iconColor) {
   store.set('selected_model', modelId);
   const dropdown = document.getElementById('modelDropdown');
   if (dropdown) dropdown.style.display = 'none';
@@ -2091,7 +2077,7 @@ function updateModelHeaderBadge() {
   }
 }
 
-window.toggleModelList = function(e) {
+window.toggleModelList = function (e) {
   if (e) e.stopPropagation();
   const dropdown = document.getElementById('modelDropdown');
   if (!dropdown) return;
@@ -2126,12 +2112,12 @@ function addMessage(text, isUser, modelUsed = null, imageUri = null) {
   const container = document.getElementById('chatMessages');
   const div = document.createElement('div');
   div.className = `message ${isUser ? 'user' : 'bot'}`;
-  
+
   let badgeHtml = '';
   if (!isUser && modelUsed) {
     badgeHtml = `<div style="margin-top:8px;font-size:0.65rem;color:var(--text-dim);opacity:0.7;display:flex;align-items:center;gap:4px;border-top:1px solid rgba(255,255,255,0.1);padding-top:4px"><i class="ri-braces-line"></i> ${esc(modelUsed)}</div>`;
   }
-  
+
   // Generate quick-reply chips for AI messages
   let quickReplies = '';
   if (!isUser) {
@@ -2144,7 +2130,7 @@ function addMessage(text, isUser, modelUsed = null, imageUri = null) {
       </div>`;
     }
   }
-  
+
   const avatarHtml = !isUser ? `<div class="message-avatar">${window.renderPigeonPortrait ? window.renderPigeonPortrait(24, 'talking') : '🐦'}</div>` : '';
   const imgHtml = imageUri ? `<img src="${imageUri}" class="message-image" alt="Photo jointe">` : '';
   div.innerHTML = `${avatarHtml}<div class="message-bubble">${imgHtml}${isUser ? esc(text) : renderMarkdown(text)}${quickReplies}${badgeHtml}</div>`;
@@ -2229,7 +2215,7 @@ function fuzzySearch(q) {
     const names = item.names || [item.name || ''];
     for (const name of names) {
       const lower = name.toLowerCase();
-      
+
       // 1. Substring exact match of the entire search query
       if (lower.includes(qClean)) {
         matched.add(idx);
@@ -2321,11 +2307,11 @@ function applySortItems(items) {
 }
 
 // Re-render with current sort (called by sort select change)
-window.applySortAndRender = function() {
+window.applySortAndRender = function () {
   if (_lastSearchResults.length > 0) renderSearchResults(_lastSearchResults, _lastSearchQuery);
 };
 
-window.setSearchFilter = function(filter) {
+window.setSearchFilter = function (filter) {
   currentSearchFilter = filter;
   document.querySelectorAll('.filter-chip').forEach(c => c.classList.toggle('active', c.dataset.filter === filter));
   const q = (document.getElementById('searchInput')?.value || '').trim();
@@ -2337,7 +2323,7 @@ window.setSearchFilter = function(filter) {
 };
 
 // Debounced search entry point
-window.searchFoods = function(query) {
+window.searchFoods = function (query) {
   const q = (query || '').trim();
   // Show/hide clear and AI search buttons
   const clearBtn = document.getElementById('searchClearBtn');
@@ -2350,7 +2336,7 @@ window.searchFoods = function(query) {
 };
 
 // Direct AI Search trigger from input button
-window.triggerDirectAISearch = function() {
+window.triggerDirectAISearch = function () {
   const input = document.getElementById('searchInput');
   const q = (input?.value || '').trim();
   if (q) {
@@ -2364,38 +2350,38 @@ function _doSearch(q) {
   const statsBar = document.getElementById('searchStatsBar');
 
   if (!q) {
-    if (currentSearchFilter === 'favorites') {
-      const favs = store.get('favorites', []);
+    if (currentSearchFilter !== 'all') {
+      let filtered = [];
+      if (currentSearchFilter === 'favorites') {
+        const favs = store.get('favorites', []);
+        filtered = favs.map(f => vitalDb.find(item => (f.id && item.id === f.id) || (item.names || []).some(n => n.toLowerCase() === (f.name || '').toLowerCase())) || f);
+      } else if (currentSearchFilter === 'electric') {
+        filtered = vitalDb.filter(f => f.specific?.electric === true || f.electric === true || f.approved === true);
+      } else if (currentSearchFilter === 'hybrid') {
+        filtered = vitalDb.filter(f => f.specific?.hybrid === true || f.hybrid === true);
+      } else if (currentSearchFilter === 'mucusless') {
+        const mm = (f) => (f.specific?.mucus || f.mucus || '').toLowerCase();
+        filtered = vitalDb.filter(f => mm(f).includes('sans mucus') || mm(f).includes('dissolvant') || mm(f).includes('non-muc') || (f.scientific_defaults?.pral ?? f.pral ?? 0) < -2.0);
+      } else if (currentSearchFilter === 'acid') {
+        filtered = vitalDb.filter(f => (f.scientific_defaults?.pral ?? f.pral ?? 0) > 0);
+      }
+
       if (emptyState) emptyState.style.display = 'none';
       if (resultsEl) resultsEl.style.display = 'flex';
-      
+
       const countEl = document.getElementById('searchResultCount');
-      if (favs.length === 0) {
-        if (statsBar) statsBar.style.display = 'none';
-        resultsEl.innerHTML = `
-          <div class="empty-state" style="text-align:center; padding:36px 16px; width:100%;">
-            <div style="font-size:2.8rem; margin-bottom:10px;">❤️</div>
-            <p style="font-weight:700; font-size:1.05rem; color:var(--text); margin-bottom:6px;">Aucun aliment dans vos favoris</p>
-            <p style="font-size:0.88rem; color:var(--text-dim); max-width:360px; margin:0 auto;">Recherchez un aliment et cliquez sur le bouton "❤️ Favori" dans sa fiche pour l'ajouter instantanément à vos favoris.</p>
-          </div>
-        `;
-      } else {
-        if (statsBar) {
-          statsBar.style.display = 'flex';
-          if (countEl) countEl.textContent = favs.length === 1 ? '1 favori' : `${favs.length} favoris`;
-        }
-        const fullFavs = favs.map(f => {
-          return vitalDb.find(item => (f.id && item.id === f.id) || (item.names || []).some(n => n.toLowerCase() === (f.name || '').toLowerCase())) || f;
-        });
-        _lastSearchResults = fullFavs;
-        _lastSearchQuery = '';
-        const sorted = applySortItems(fullFavs);
-        resultsEl.innerHTML = sorted.map(item => renderFoodCard(item)).join('');
+      if (statsBar) {
+        statsBar.style.display = 'flex';
+        if (countEl) countEl.textContent = `${filtered.length} aliment${filtered.length > 1 ? 's' : ''}`;
       }
+      _lastSearchResults = filtered;
+      _lastSearchQuery = '';
+      const sorted = applySortItems(filtered);
+      resultsEl.innerHTML = sorted.map(item => renderFoodCard(item)).join('');
       return;
     }
 
-    // No query → show empty state (category browse + popular)
+    // No query and filter is all → show empty state (category browse + popular)
     if (resultsEl) { resultsEl.innerHTML = ''; resultsEl.style.display = 'none'; }
     if (emptyState) emptyState.style.display = '';
     if (statsBar) statsBar.style.display = 'none';
@@ -2492,7 +2478,7 @@ function renderFoodCard(item, compact = false) {
   const isAlcalin = pral < 0 || isDissolvant;
   const nova = vt.nova ?? (item.nova ?? (isE ? 1 : isH ? 2 : 3));
   const freshness = vt.freshness ?? (item.freshness ?? 70);
-  
+
   let bc, bt;
   if (isE) {
     bc = 'badge-electric';
@@ -2547,7 +2533,7 @@ function renderFoodCard(item, compact = false) {
 }
 
 // ─── Quick Actions directly from food card ───
-window.quickAddFoodToMeal = function(idxOrFood) {
+window.quickAddFoodToMeal = function (idxOrFood) {
   let item = null;
   if (typeof idxOrFood === 'number' || (!isNaN(Number(idxOrFood)) && typeof idxOrFood !== 'object')) {
     item = vitalDb[Number(idxOrFood)];
@@ -2563,7 +2549,7 @@ window.quickAddFoodToMeal = function(idxOrFood) {
   const sc = item.scientific_defaults || item.scientific || {};
   const vt = item.vitality || {};
   const sp = item.specific || {};
-  
+
   const isElec = sp.electric === true || item.electric === true || item.approved === true;
   const isHyb = sp.hybrid === true || item.hybrid === true;
   const pral = sc.pral ?? (item.pral ?? 0);
@@ -2595,7 +2581,7 @@ window.quickAddFoodToMeal = function(idxOrFood) {
   showToast(`✅ « ${name} » ajouté directement à vos repas du jour !`, 'success');
 };
 
-window.quickToggleFavorite = function(idxOrFood) {
+window.quickToggleFavorite = function (idxOrFood) {
   let item = null;
   if (typeof idxOrFood === 'number' || (!isNaN(Number(idxOrFood)) && typeof idxOrFood !== 'object')) {
     item = vitalDb[Number(idxOrFood)];
@@ -2667,18 +2653,18 @@ function renderRecentSearches() {
   `).join('');
 }
 
-window.applyRecentSearch = function(q) {
+window.applyRecentSearch = function (q) {
   const input = document.getElementById('searchInput');
   if (input) { input.value = q; input.focus(); }
   searchFoods(q);
 };
 
-window.clearRecentSearches = function() {
+window.clearRecentSearches = function () {
   store.set('search-recents', []);
   renderRecentSearches();
 };
 
-window.clearSearch = function() {
+window.clearSearch = function () {
   const input = document.getElementById('searchInput');
   if (input) { input.value = ''; input.focus(); }
   searchFoods('');
@@ -2711,7 +2697,7 @@ function renderCategoryBrowse() {
   }).join('');
 }
 
-window.browseFoodsByCategory = function(cat) {
+window.browseFoodsByCategory = function (cat) {
   const input = document.getElementById('searchInput');
   if (input) { input.value = cat; }
   const clearBtn = document.getElementById('searchClearBtn');
@@ -2724,7 +2710,7 @@ window.browseFoodsByCategory = function(cat) {
 };
 
 // ─── AI search cache ───
-window.askAIToFindFood = async function(query) {
+window.askAIToFindFood = async function (query) {
   const q = (query || '').trim();
   if (!q) return;
 
@@ -2843,7 +2829,7 @@ window.askAIToFindFood = async function(query) {
     try {
       const res = await fetch('/api/searchFood', {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           'X-VT-API-Key': VT_APP_KEY
         },
@@ -2958,7 +2944,7 @@ function renderProtocolsList() {
   }).join('');
 }
 
-window.toggleProtocolsAccordion = function() {
+window.toggleProtocolsAccordion = function () {
   const grid = document.getElementById('protocolsGrid');
   const icon = document.getElementById('protocolsToggleIcon');
   if (!grid) return;
@@ -2977,8 +2963,8 @@ function filterAndRenderHerbs() {
     // 1. Tag / Category filter
     if (filter !== 'all') {
       const matchesFilter = (herb.category && herb.category.toLowerCase().includes(filter)) ||
-                            (herb.tags && herb.tags.some(t => t.toLowerCase().includes(filter))) ||
-                            (herb.id && herb.id.toLowerCase().includes(filter));
+        (herb.tags && herb.tags.some(t => t.toLowerCase().includes(filter))) ||
+        (herb.id && herb.id.toLowerCase().includes(filter));
       if (!matchesFilter) return false;
     }
 
@@ -3036,10 +3022,10 @@ function filterAndRenderHerbs() {
   grid.innerHTML = results.map(herb => {
     const badgeColorClass = `badge-${herb.tropismBadge?.color || 'emerald'}`;
     const plantImg = herb.image || `/plants/${herb.id === 'boldo-amazonie' ? 'boldo' : herb.id}.jpg`;
-    
+
     // Extrait immédiat et percutant pour l'utilisateur
     const primaryIndications = (herb.indications || []).slice(0, 2).map(ind => esc(ind)).join(' • ');
-    
+
     // Posologie courte pour aperçu
     let quickDose = '';
     if (herb.posology) {
@@ -3092,7 +3078,7 @@ function filterAndRenderHerbs() {
   }).join('');
 }
 
-window.handleHerbSearchInput = function() {
+window.handleHerbSearchInput = function () {
   const input = document.getElementById('herbSearchInput');
   const clearBtn = document.getElementById('herbClearBtn');
   if (!input) return;
@@ -3101,7 +3087,7 @@ window.handleHerbSearchInput = function() {
   filterAndRenderHerbs();
 };
 
-window.clearHerbSearch = function() {
+window.clearHerbSearch = function () {
   const input = document.getElementById('herbSearchInput');
   const clearBtn = document.getElementById('herbClearBtn');
   if (input) input.value = '';
@@ -3114,7 +3100,7 @@ window.clearHerbSearch = function() {
   filterAndRenderHerbs();
 };
 
-window.setHerbFilter = function(filterId) {
+window.setHerbFilter = function (filterId) {
   _currentHerbFilter = filterId;
   document.querySelectorAll('.materia-chip').forEach(c => {
     c.classList.toggle('active', c.getAttribute('data-filter') === filterId);
@@ -3122,7 +3108,7 @@ window.setHerbFilter = function(filterId) {
   filterAndRenderHerbs();
 };
 
-window.filterByTag = function(tag) {
+window.filterByTag = function (tag) {
   const input = document.getElementById('herbSearchInput');
   const clearBtn = document.getElementById('herbClearBtn');
   if (input) input.value = tag;
@@ -3135,13 +3121,13 @@ window.filterByTag = function(tag) {
   filterAndRenderHerbs();
 };
 
-window.setHerbFilterByHerbs = function(herbIds) {
+window.setHerbFilterByHerbs = function (herbIds) {
   const grid = document.getElementById('materiaHerbsGrid');
   if (!grid) return;
   const filtered = RAINTREE_HERBS.filter(h => herbIds.includes(h.id));
   const countEl = document.getElementById('herbResultCount');
   if (countEl) countEl.textContent = `${filtered.length} plantes du protocole`;
-  
+
   grid.innerHTML = filtered.map(herb => {
     const badgeColorClass = `badge-${herb.tropismBadge?.color || 'emerald'}`;
     const plantImg = herb.image || `/plants/${herb.id === 'boldo-amazonie' ? 'boldo' : herb.id}.jpg`;
@@ -3184,7 +3170,7 @@ window.setHerbFilterByHerbs = function(herbIds) {
   }).join('');
 };
 
-window.toggleHerbMonograph = function() {
+window.toggleHerbMonograph = function () {
   const drawer = document.getElementById('herbMonographDrawer');
   const btn = document.getElementById('herbMonographBtn');
   const icon = document.getElementById('herbMonographIcon');
@@ -3203,7 +3189,7 @@ window.toggleHerbMonograph = function() {
   }
 };
 
-window.openHerbModal = function(herbId) {
+window.openHerbModal = function (herbId) {
   const herb = RAINTREE_HERBS.find(h => h.id === herbId);
   if (!herb) return;
   _currentSelectedHerb = herb;
@@ -3224,7 +3210,7 @@ window.openHerbModal = function(herbId) {
   }
   if (nameEl) nameEl.textContent = herb.name;
   if (latinEl) latinEl.textContent = `${herb.latinName} — Famille des ${herb.family}`;
-  
+
   if (tropismBadge && herb.tropismBadge) {
     tropismBadge.className = `herb-card-tropism-chip badge-${herb.tropismBadge.color || 'emerald'}`;
     if (tropismLabel) tropismLabel.textContent = herb.tropismBadge.label || herb.category;
@@ -3240,7 +3226,7 @@ window.openHerbModal = function(herbId) {
         <span>${esc(ind)}</span>
       </li>
     `).join('');
-    
+
     let posologyHtml = '';
     if (herb.posology) {
       if (herb.posology.decoction) posologyHtml += `<div class="herb-posology-item"><span class="herb-posology-type">🔥 Décoction :</span> ${esc(herb.posology.decoction)}</div>`;
@@ -3359,12 +3345,12 @@ window.openHerbModal = function(herbId) {
   if (modal) modal.style.display = 'flex';
 };
 
-window.closeHerbModal = function() {
+window.closeHerbModal = function () {
   const modal = document.getElementById('herbModal');
   if (modal) modal.style.display = 'none';
 };
 
-window.askAIAboutCurrentHerb = function() {
+window.askAIAboutCurrentHerb = function () {
   if (!_currentSelectedHerb) return;
   const herb = _currentSelectedHerb;
   closeHerbModal();
@@ -3377,7 +3363,7 @@ window.askAIAboutCurrentHerb = function() {
 };
 
 // ═══════ FOOD & MEAL MODAL (DIFFÉRENCIATION ALIMENT / REPAS COMPOSÉ) ═══════
-window.openFoodModal = function(idxOrFood) {
+window.openFoodModal = function (idxOrFood) {
   let item = null;
   let isMealContext = false;
   let isMealSelection = false;
@@ -3400,13 +3386,13 @@ window.openFoodModal = function(idxOrFood) {
   const isAddingMeal = isMealSelection || (document.getElementById('addMealModal')?.classList.contains('open'));
 
   const name = (item.names?.[0] || item.name || 'Aliment').replace(/^./, c => c.toUpperCase());
-  
+
   const sc = item.scientific_defaults || item.scientific || {
     pral: item.pral ?? 0,
     density: item.density ?? ((item.pral ?? 0) < 0 ? 80 : 35),
     label: (item.pral ?? 0) < 0 ? 'Alcalinisant' : 'Acidifiant'
   };
-  
+
   const vt = item.vitality || {
     nova: item.nova ?? (item.electric ? 1 : 2),
     freshness: item.freshness ?? ((item.nova === 1 || item.electric) ? 95 : item.nova === 4 ? 15 : 60),
@@ -3446,12 +3432,12 @@ window.openFoodModal = function(idxOrFood) {
           <i class="ri-sparkling-fill" style="color:var(--accent)"></i> ${item.allAnalyzedItems.length} aliments analysés dans ce plat :
         </span>
         ${item.allAnalyzedItems.map((it, i) => {
-          const itName = (it.name || it.names?.[0] || 'Aliment').replace(/^./, c => c.toUpperCase());
-          const isCurrent = itName.toLowerCase() === name.toLowerCase();
-          return `<button type="button" class="tab ${isCurrent ? 'active' : ''}" onclick="switchAnalyzedFoodInModal(${i})" style="padding:4px 10px; font-size:0.8rem; border-radius:20px;">
+      const itName = (it.name || it.names?.[0] || 'Aliment').replace(/^./, c => c.toUpperCase());
+      const isCurrent = itName.toLowerCase() === name.toLowerCase();
+      return `<button type="button" class="tab ${isCurrent ? 'active' : ''}" onclick="switchAnalyzedFoodInModal(${i})" style="padding:4px 10px; font-size:0.8rem; border-radius:20px;">
             ${it.emoji || '🍽️'} ${esc(itName)}
           </button>`;
-        }).join('')}
+    }).join('')}
       </div>
     `;
   }
@@ -3493,19 +3479,19 @@ window.openFoodModal = function(idxOrFood) {
     }
   }
 
-  currentModalFood._parsed = { 
-    name, 
-    sc, 
-    vt, 
-    sp, 
-    item, 
-    isComposedMeal, 
-    mealIndex, 
+  currentModalFood._parsed = {
+    name,
+    sc,
+    vt,
+    sp,
+    item,
+    isComposedMeal,
+    mealIndex,
     isMealContext,
     cookingMethod: item.cookingMethod || (isE ? 'steam' : 'bake'),
     oilQuality: item.oilQuality || (isE ? 'raw_olive' : 'none')
   };
-  
+
   if (isComposedMeal) {
     setModalTab('meal_ingredients');
   } else {
@@ -3553,7 +3539,7 @@ window.openFoodModal = function(idxOrFood) {
   document.getElementById('foodModal').classList.add('open');
 };
 
-window.switchAnalyzedFoodInModal = function(idx) {
+window.switchAnalyzedFoodInModal = function (idx) {
   if (!currentModalFood || !currentModalFood.allAnalyzedItems || !currentModalFood.allAnalyzedItems[idx]) return;
   const target = currentModalFood.allAnalyzedItems[idx];
   openFoodModal({
@@ -3563,12 +3549,12 @@ window.switchAnalyzedFoodInModal = function(idx) {
   });
 };
 
-window.confirmAddMealFromModal = function() {
+window.confirmAddMealFromModal = function () {
   closeFoodModal();
   confirmAddMeal();
 };
 
-window.openFoodModalFromSelection = function(id) {
+window.openFoodModalFromSelection = function (id) {
   const item = selectedMealFoods.find(f => f.id === id);
   if (!item) return;
   const dbMatch = vitalDb.find(f => f.id === id || (f.names || []).some(n => n.toLowerCase() === (item.name || '').toLowerCase()));
@@ -3664,7 +3650,7 @@ const OIL_QUALITIES = {
   }
 };
 
-window.setMealCookingMethod = function(methodId) {
+window.setMealCookingMethod = function (methodId) {
   if (!currentModalFood || !currentModalFood._parsed) return;
   currentModalFood._parsed.cookingMethod = methodId;
   if (currentModalFood._parsed.item) currentModalFood._parsed.item.cookingMethod = methodId;
@@ -3680,7 +3666,7 @@ window.setMealCookingMethod = function(methodId) {
   setModalTab('meal_balance');
 };
 
-window.setMealOilQuality = function(oilId) {
+window.setMealOilQuality = function (oilId) {
   if (!currentModalFood || !currentModalFood._parsed) return;
   currentModalFood._parsed.oilQuality = oilId;
   if (currentModalFood._parsed.item) currentModalFood._parsed.item.oilQuality = oilId;
@@ -3696,7 +3682,7 @@ window.setMealOilQuality = function(oilId) {
   setModalTab('meal_balance');
 };
 
-window.openFoodModalFromMeal = function(idx) {
+window.openFoodModalFromMeal = function (idx) {
   const meals = store.get('meals', []);
   const todayMeals = meals.filter(m => isToday(m.timestamp));
   if (idx >= 0 && idx < todayMeals.length) {
@@ -3705,12 +3691,12 @@ window.openFoodModalFromMeal = function(idx) {
     const isHyb = m.hybrid === true;
     const nova = m.nova ?? (isElec ? 1 : 2);
     const pral = m.pral ?? 0;
-    
+
     // Check if composed meal or has items
     const rawItems = m.items || m.ingredients;
     const hasItems = Array.isArray(rawItems) && rawItems.length > 0;
     const match = vitalDb.find(f => f.id === m.id || (f.names || []).some(n => n.toLowerCase() === (m.name || '').toLowerCase()));
-    
+
     // If it is a pure raw food item from DB with no custom ingredients/note
     if (match && !hasItems && !m.note && !m.isComposedMeal) {
       openFoodModal({ ...match, isMealItem: true, mealIndex: idx, cookingMethod: m.cookingMethod || 'raw', oilQuality: m.oilQuality || 'none' });
@@ -3753,7 +3739,7 @@ window.openFoodModalFromMeal = function(idx) {
   }
 };
 
-window.removeMealAndCloseModal = function(idx) {
+window.removeMealAndCloseModal = function (idx) {
   if (typeof idx === 'number') {
     removeMeal(idx);
     closeFoodModal();
@@ -3761,11 +3747,11 @@ window.removeMealAndCloseModal = function(idx) {
   }
 };
 
-window.saveAIFoodToDB = function() {
+window.saveAIFoodToDB = function () {
   const item = currentModalFood;
   if (!item) return;
   delete item.isNewFromAI;
-  
+
   const customDb = store.get('customFoods', []);
   const existingIdx = customDb.findIndex(f => (item.id && f.id === item.id) || (f.names && f.names[0] === item.names?.[0]));
   if (existingIdx >= 0) {
@@ -3774,16 +3760,16 @@ window.saveAIFoodToDB = function() {
     customDb.push(item);
   }
   store.set('customFoods', customDb);
-  
+
   if (!vitalDb.some(f => (item.id && f.id === item.id) || (f.names && f.names[0] === item.names?.[0]))) {
     vitalDb.push(item);
   }
-  
+
   buildSearchIndex();
   renderCategoryBrowse();
-  
+
   showToast('✅ Aliment sauvegardé définitivement dans votre base !', 'success');
-  
+
   const actionsContainer = document.getElementById('modalActionsContainer');
   if (actionsContainer) {
     const idx = vitalDb.indexOf(item);
@@ -3803,7 +3789,7 @@ window.saveAIFoodToDB = function() {
   }
 };
 
-window.addFoodToMealFromModal = function(idx) {
+window.addFoodToMealFromModal = function (idx) {
   let f = (idx >= 0 && vitalDb[idx]) ? vitalDb[idx] : currentModalFood;
   if (!f) return;
   const name = (f.names?.[0] || f.name || '?').replace(/^./, c => c.toUpperCase());
@@ -3811,12 +3797,12 @@ window.addFoodToMealFromModal = function(idx) {
   const sc = f.scientific_defaults || f.scientific || {};
   const vt = f.vitality || {};
   const sp = f.specific || {};
-  
+
   const isElec = sp.electric === true || f.electric === true || f.approved === true;
   const isHyb = sp.hybrid === true || f.hybrid === true;
   const pral = sc.pral ?? (f.pral ?? 0);
   const nova = vt.nova ?? (f.nova ?? (isElec ? 1 : isHyb ? 2 : 3));
-  
+
   const meals = store.get('meals', []);
   meals.push({
     id,
@@ -3838,20 +3824,20 @@ window.addFoodToMealFromModal = function(idx) {
     timestamp: Date.now()
   });
   store.set('meals', meals);
-  
+
   window.closeFoodModal();
   renderMeals();
   renderDashboard();
   showToast(`✅ « ${name} » ajouté directement à vos repas du jour !`, 'success');
 };
 
-window.closeFoodModal = function(e) { 
+window.closeFoodModal = function (e) {
   if (!e || e.target === document.getElementById('foodModal')) {
-    document.getElementById('foodModal').classList.remove('open'); 
+    document.getElementById('foodModal').classList.remove('open');
   }
 };
 
-window.setModalTab = function(tab) {
+window.setModalTab = function (tab) {
   document.querySelectorAll('.modal-tabs .tab, #modalTabsBar .tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
   const content = document.getElementById('modalTabContent');
   if (!currentModalFood) return;
@@ -3867,40 +3853,40 @@ window.setModalTab = function(tab) {
   if (tab === 'meal_ingredients') {
     const rawItems = item?.items || item?.ingredients || [];
     const items = Array.isArray(rawItems) ? rawItems : (typeof rawItems === 'string' ? rawItems.split(/,\s*|\s*·\s*/).filter(Boolean) : [rawItems]);
-    
+
     content.innerHTML = `
       <div style="margin-bottom:12px; font-size:0.85rem; color:var(--text-dim); display:flex; align-items:center; justify-content:space-between;">
         <span><i class="ri-restaurant-line" style="color:var(--accent);"></i> <strong>${items.length} ingrédients</strong> composent ce repas :</span>
       </div>
       <div class="meal-ingredients-list" style="display:flex; flex-direction:column; gap:8px; max-height:260px; overflow-y:auto; padding-right:4px;">
         ${items.map(it => {
-          const itName = typeof it === 'string' ? it : (it.name || 'Ingrédient');
-          // Match in DB if possible
-          const matched = vitalDb.find(f => (f.names || []).some(n => n.toLowerCase() === itName.toLowerCase()) || f.id === itName.toLowerCase() || (f.name && f.name.toLowerCase() === itName.toLowerCase()) || (f.names && f.names.some(n => itName.toLowerCase().includes(n.toLowerCase()))));
-          
-          let itEmoji = it.emoji;
-          if (!itEmoji && matched) itEmoji = matched.emoji;
-          if (!itEmoji) {
-            const lower = itName.toLowerCase();
-            if (lower.includes('moule')) itEmoji = '🦪';
-            else if (lower.includes('sardine') || lower.includes('poisson')) itEmoji = '🐟';
-            else if (lower.includes('concombre')) itEmoji = '🥒';
-            else if (lower.includes('olive')) itEmoji = '🫒';
-            else if (lower.includes('basilic') || lower.includes('persil') || lower.includes('herbe')) itEmoji = '🌿';
-            else if (lower.includes('citron')) itEmoji = '🍋';
-            else if (lower.includes('avocat')) itEmoji = '🥑';
-            else if (lower.includes('tomate')) itEmoji = '🍅';
-            else if (lower.includes('salade') || lower.includes('romaine')) itEmoji = '🥬';
-            else itEmoji = '🌱';
-          }
+      const itName = typeof it === 'string' ? it : (it.name || 'Ingrédient');
+      // Match in DB if possible
+      const matched = vitalDb.find(f => (f.names || []).some(n => n.toLowerCase() === itName.toLowerCase()) || f.id === itName.toLowerCase() || (f.name && f.name.toLowerCase() === itName.toLowerCase()) || (f.names && f.names.some(n => itName.toLowerCase().includes(n.toLowerCase()))));
 
-          const isElec = matched ? (matched.specific?.electric || matched.electric || matched.approved) : true;
-          const pralVal = matched ? (matched.scientific_defaults?.pral ?? -2.0) : -2.0;
-          const pralLabel = pralVal < 0 ? `PRAL ${pralVal.toFixed(1)} (Alcalin)` : `PRAL +${pralVal.toFixed(1)}`;
-          const badgeClass = isElec ? 'badge-electric' : 'badge-hybrid';
-          const badgeText = isElec ? '⚡ Électrique' : '🔀 Hybride';
-          
-          return `
+      let itEmoji = it.emoji;
+      if (!itEmoji && matched) itEmoji = matched.emoji;
+      if (!itEmoji) {
+        const lower = itName.toLowerCase();
+        if (lower.includes('moule')) itEmoji = '🦪';
+        else if (lower.includes('sardine') || lower.includes('poisson')) itEmoji = '🐟';
+        else if (lower.includes('concombre')) itEmoji = '🥒';
+        else if (lower.includes('olive')) itEmoji = '🫒';
+        else if (lower.includes('basilic') || lower.includes('persil') || lower.includes('herbe')) itEmoji = '🌿';
+        else if (lower.includes('citron')) itEmoji = '🍋';
+        else if (lower.includes('avocat')) itEmoji = '🥑';
+        else if (lower.includes('tomate')) itEmoji = '🍅';
+        else if (lower.includes('salade') || lower.includes('romaine')) itEmoji = '🥬';
+        else itEmoji = '🌱';
+      }
+
+      const isElec = matched ? (matched.specific?.electric || matched.electric || matched.approved) : true;
+      const pralVal = matched ? (matched.scientific_defaults?.pral ?? -2.0) : -2.0;
+      const pralLabel = pralVal < 0 ? `PRAL ${pralVal.toFixed(1)} (Alcalin)` : `PRAL +${pralVal.toFixed(1)}`;
+      const badgeClass = isElec ? 'badge-electric' : 'badge-hybrid';
+      const badgeText = isElec ? '⚡ Électrique' : '🔀 Hybride';
+
+      return `
             <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 12px; background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:10px;">
               <div style="display:flex; align-items:center; gap:10px;">
                 <span style="font-size:1.3rem;">${itEmoji}</span>
@@ -3915,7 +3901,7 @@ window.setModalTab = function(tab) {
               </div>
             </div>
           `;
-        }).join('')}
+    }).join('')}
       </div>
       <div style="margin-top:14px; padding:10px 12px; background:rgba(55,211,153,0.06); border:1px solid rgba(55,211,153,0.2); border-radius:8px; font-size:0.8rem; color:var(--text-dim); line-height:1.4;">
         <strong style="color:var(--accent);">💡 Astuce Vitaliste :</strong> Chaque aliment apporte ses propres biominéraux vivants. Cliquez sur <i class="ri-information-line"></i> pour inspecter la fiche d'un ingrédient spécifique.
@@ -3932,7 +3918,7 @@ window.setModalTab = function(tab) {
     const basePral = Number((sc?.pral ?? (item?.pral ?? 0)).toFixed(1));
     const adjustedPral = Number((basePral + cooking.pralModifier + (oil.isPositive ? -0.2 : 0.8)).toFixed(1));
     const adjustedIsAlkaline = adjustedPral < 0;
-    
+
     // Bio-enzymatic vitality score
     const vitalityScore = Math.max(20, Math.min(100, Math.round(cooking.vitalityRetention * (oil.isPositive ? 1.0 : 0.8))));
     const vitalityColor = vitalityScore >= 85 ? '#4ade80' : vitalityScore >= 60 ? '#facc15' : '#ef4444';
@@ -4017,7 +4003,7 @@ window.setModalTab = function(tab) {
     const coachNote = item?.note || currentModalFood.note || 'Repas vitaliste équilibré conçu pour maximiser l\'hydratation cellulaire et régénérer le système digestif.';
     const categoryLabels = { breakfast: 'Petit-déjeuner', lunch: 'Déjeuner', dinner: 'Dîner', snack: 'Collation' };
     const catName = categoryLabels[item?.category] || (item?.category || 'Repas');
-    
+
     content.innerHTML = `
       <div style="padding:14px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:10px; margin-bottom:12px;">
         <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
@@ -4073,7 +4059,7 @@ window.setModalTab = function(tab) {
   } else if (tab === 'vitality') {
     const novaColor = nova === 1 ? '#4ade80' : nova === 2 ? '#38bdf8' : nova === 3 ? '#facc15' : '#ef4444';
     const novaDesc = nova === 1 ? 'Groupe 1 · Non transformé ou minimalement transformé' : nova === 2 ? 'Groupe 2 · Ingrédient culinaire' : nova === 3 ? 'Groupe 3 · Aliment transformé' : 'Groupe 4 · Produit ultra-transformé';
-    
+
     content.innerHTML = `
       <div class="data-row">
         <span class="data-label">Degré de transformation NOVA</span>
@@ -4103,12 +4089,12 @@ window.setModalTab = function(tab) {
     const lbl = (sp?.label || item?.specific?.label || '').toLowerCase();
     const foodName = (currentModalFood.names?.[0] || currentModalFood.name || '').toLowerCase();
 
-    const isAnimal = cat.includes('poisson') || cat.includes('viande') || cat.includes('lait') || 
-                     cat.includes('oeuf') || cat.includes('charcut') || cat.includes('fruit de mer') || 
-                     fam.includes('clupeidae') || fam.includes('bov') || fam.includes('suid') || 
-                     lbl.includes('animal') || foodName.includes('sardine') || foodName.includes('thon') || 
-                     foodName.includes('saumon') || foodName.includes('viande') || foodName.includes('poulet') || 
-                     foodName.includes('boeuf') || foodName.includes('porc') || foodName.includes('fromage');
+    const isAnimal = cat.includes('poisson') || cat.includes('viande') || cat.includes('lait') ||
+      cat.includes('oeuf') || cat.includes('charcut') || cat.includes('fruit de mer') ||
+      fam.includes('clupeidae') || fam.includes('bov') || fam.includes('suid') ||
+      lbl.includes('animal') || foodName.includes('sardine') || foodName.includes('thon') ||
+      foodName.includes('saumon') || foodName.includes('viande') || foodName.includes('poulet') ||
+      foodName.includes('boeuf') || foodName.includes('porc') || foodName.includes('fromage');
 
     const isMineral = cat.includes('sel') || cat.includes('eau') || cat.includes('miner') || foodName.includes('sel marin');
 
@@ -4116,7 +4102,7 @@ window.setModalTab = function(tab) {
     const isDissolvant = !isAnimal && (mucusStr.includes('dissolvant') || mucusStr.includes('non-muc'));
     const isAlcalinFood = !isAnimal && ((sc?.pral ?? 0) < 0 || isDissolvant);
     const sebiStatus = sp?.sebiStatus || item?.sebiStatus;
-    
+
     let sebiLabel = '❌ Non Recommandé / Acidifiant';
     let sebiColor = '#ef4444';
     let hybridLabel = isHybrid ? '⚠️ Hybride / Amilacé' : '✅ Végétal Originel & Brut';
@@ -4203,29 +4189,29 @@ window.setModalTab = function(tab) {
 };
 
 // ═══════ FAVORITES ═══════
-window.toggleFavorite = function() {
+window.toggleFavorite = function () {
   if (!currentModalFood) return;
   let favs = store.get('favorites', []);
   const targetId = currentModalFood.id;
   const name = (currentModalFood.names?.[0] || currentModalFood.name || 'Inconnu').replace(/^./, c => c.toUpperCase());
   const idx = favs.findIndex(f => (targetId && f.id === targetId) || f.name?.toLowerCase() === name.toLowerCase());
-  
+
   const sc = currentModalFood.scientific_defaults || currentModalFood.scientific || {};
   const pral = sc.pral ?? (currentModalFood.pral ?? 0);
   const isElec = currentModalFood.specific?.electric === true || currentModalFood.electric === true || currentModalFood.approved === true;
 
-  if (idx >= 0) { 
-    favs.splice(idx, 1); 
+  if (idx >= 0) {
+    favs.splice(idx, 1);
     showToast(`💔 "${name}" retiré des favoris`, 'info');
   } else {
-    favs.push({ 
-      id: targetId || `fav_${Date.now()}`, 
-      name, 
+    favs.push({
+      id: targetId || `fav_${Date.now()}`,
+      name,
       names: currentModalFood.names || [name],
-      emoji: currentModalFood.emoji || '🍽️', 
-      family: currentModalFood.family || currentModalFood.category || 'Alimentation', 
-      category: currentModalFood.category || currentModalFood.family || 'Alimentation', 
-      electric: isElec, 
+      emoji: currentModalFood.emoji || '🍽️',
+      family: currentModalFood.family || currentModalFood.category || 'Alimentation',
+      category: currentModalFood.category || currentModalFood.family || 'Alimentation',
+      electric: isElec,
       pral,
       scientific_defaults: sc,
       vitality: currentModalFood.vitality || {},
@@ -4278,8 +4264,8 @@ function renderFavorites() {
 }
 
 // ═══════ MEALS ═══════
-window.showAddMealModal = function() { selectedMealFoods = []; renderSelectedMealFoods(); document.getElementById('mealSearchResults').innerHTML = ''; document.getElementById('mealSearchInput').value = ''; const aiInput = document.getElementById('aiDishInput'); if (aiInput) aiInput.value = ''; document.getElementById('addMealModal').classList.add('open'); };
-window.closeAddMealModal = function(e) { if (!e || e.target === document.getElementById('addMealModal')) document.getElementById('addMealModal').classList.remove('open'); };
+window.showAddMealModal = function () { selectedMealFoods = []; renderSelectedMealFoods(); document.getElementById('mealSearchResults').innerHTML = ''; document.getElementById('mealSearchInput').value = ''; const aiInput = document.getElementById('aiDishInput'); if (aiInput) aiInput.value = ''; document.getElementById('addMealModal').classList.add('open'); };
+window.closeAddMealModal = function (e) { if (!e || e.target === document.getElementById('addMealModal')) document.getElementById('addMealModal').classList.remove('open'); };
 
 function classifyFoodLocally(token) {
   const clean = (token || '').trim();
@@ -4294,16 +4280,16 @@ function classifyFoodLocally(token) {
 
   // 2. Fast Food / Junk Food / Ultra-Processed / Complex Dishes
   const isUltraProcessed = /burrito|wrap|tacos|fajita|quesadilla|nachos|poutine|burger|hamburger|cheeseburger|pizza|frite|frites|hot-?dog|kebab|shawarma|nugget|nuggets|chips|raclette|fondue|tartiflette|bacon|saucisse|soda|coca|donut|croissant|gaufre|biscuit|snack|fast-?food|croque-?monsieur|lasagne|quiche|p[aâ]t[eé]|p[aâ]t[eé]\s*chinois|hachis|hachis\s*parmentier|tourti[eè]re|gratin|moussaka|shepherd|cottage\s*pie|boeuf\s*bourguignon|chili\s*con\s*carne|cordon\s*bleu/i.test(lower);
-  
+
   // 3. Electric & Wild Original Foods (Dr. Sebi + African/Amazonian/Nordic Wild Superfoods)
   const isElectric = !isUltraProcessed && /avocat|concombre|mangue|papaye|melon|pasteque|pastèque|datte|figue|pomme|poire|cerise|prune|raisin|citron|citron vert|lime|kale|amarante|fonio|quinoa|kamut|teff|courgette|lin|chia|sésame|sesame|olive|roquette|cresson|mache|mâche|gingembre|aneth|basilic|coriandre|origan|romarin|thym|sauvage|spiruline|clémentine|mandarine|mûre|framboise|myrtille|fraise|strawberry|raspberry|blueberry|blackberry|moringa|baobab|bouye|bissap|hibiscus|bleuet|canneberge|argousier|ortie|pissenlit|ditakh|dettarium|madd|saba|gombo|soursop|corossol|sureau|aronia|camu|acai|acerola|pousse|germe/i.test(lower);
-  
+
   // 4. Natural Living Plant Foods / Fresh Fruits & Raw Greens (Non-Sebi living foods: PRAL negative, NOVA 1, Mucus Dissolving)
   const isNaturalPlantAlkaline = !isUltraProcessed && !isElectric && /fruit|baie|berry|goyave|guava|lychee|litchi|passion|maracuja|grenade|pomegranate|kiwi|abricot|apricot|peche|pêche|nectarine|ananas|pineapple|mangoustan|mangosteen|kaki|persimmon|pitaya|dragon|tamarin|tamarind|agrumes|orange|mandarine|clementine|pamplemousse|salade|laitue|verdure|epinard|épinard|tisane|infusion/i.test(lower);
 
   // 5. Hybridized / Acidifying Starchy Foods
   const isHybrid = !isUltraProcessed && !isElectric && !isNaturalPlantAlkaline && /carotte|mais|maïs|pomme de terre|patate|riz|ble|blé|soja|tofu|seitan|haricot|lentille|pois|aubergine|champignon/i.test(lower);
-  
+
   // 6. Animal Products / Dairy / Standard Mucus-forming
   const isAnimalMucus = !isUltraProcessed && !isElectric && !isNaturalPlantAlkaline && !isHybrid && /viande|poulet|boeuf|bœuf|porc|veau|agneau|canard|dinde|fromage|lait|creme|crème|beurre|oeuf|œuf|poisson|saumon|thon|crevette/i.test(lower);
 
@@ -4461,7 +4447,7 @@ function classifyFoodLocally(token) {
   };
 }
 
-window.analyzeDishWithAI = async function() {
+window.analyzeDishWithAI = async function () {
   const input = document.getElementById('aiDishInput');
   const btn = document.getElementById('btnAnalyzeDish');
   const q = (input?.value || '').trim();
@@ -4503,7 +4489,7 @@ window.analyzeDishWithAI = async function() {
       const name = (item.name || item.names?.[0] || 'Aliment').replace(/^./, c => c.toUpperCase());
       const id = item.id || ('dish_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6));
       const existing = selectedMealFoods.find(f => f.name.toLowerCase() === name.toLowerCase());
-      
+
       const sc = item.scientific_defaults || item.scientific || {
         pral: item.pral ?? 0,
         density: item.density ?? ((item.pral ?? 0) < 0 ? 80 : 35),
@@ -4571,12 +4557,12 @@ window.analyzeDishWithAI = async function() {
   }
 };
 
-window.searchMealFoods = function(query) {
+window.searchMealFoods = function (query) {
   const q = (query || '').toLowerCase().trim();
   const results = document.getElementById('mealSearchResults');
   if (!q) { results.innerHTML = ''; return; }
   const matches = vitalDb.filter(item => (item.names || []).some(n => n.toLowerCase().includes(q))).slice(0, 10);
-  
+
   if (matches.length === 0) {
     results.innerHTML = `
       <div style="padding: 12px 0; text-align: center;">
@@ -4588,14 +4574,14 @@ window.searchMealFoods = function(query) {
     `;
     return;
   }
-  
+
   results.innerHTML = matches.map(item => {
     const name = (item.names?.[0] || '?').replace(/^./, c => c.toUpperCase());
     return `<div class="food-card" onclick="selectMealFood(${vitalDb.indexOf(item)})"><div class="food-emoji">${item.emoji || '🍽️'}</div><div class="food-info"><div class="food-name">${esc(name)}</div></div></div>`;
   }).join('');
 };
 
-window.askAIToAddMealFood = async function(query) {
+window.askAIToAddMealFood = async function (query) {
   const q = (query || '').trim();
   if (!q) return;
 
@@ -4682,7 +4668,7 @@ window.askAIToAddMealFood = async function(query) {
     renderSelectedMealFoods();
     if (results) results.innerHTML = '';
     if (searchInput) searchInput.value = '';
-    
+
     if (processedItems.length > 0) {
       openFoodModal({
         ...processedItems[0],
@@ -4699,7 +4685,7 @@ window.askAIToAddMealFood = async function(query) {
 
 
 
-window.searchEditMealFoods = function(query) {
+window.searchEditMealFoods = function (query) {
   const q = (query || '').toLowerCase().trim();
   const results = document.getElementById('editMealSearchResults');
   if (!results) return;
@@ -4715,7 +4701,7 @@ window.searchEditMealFoods = function(query) {
   }).join('');
 };
 
-window.selectMealFood = function(idx) {
+window.selectMealFood = function (idx) {
   const item = vitalDb[idx]; if (!item) return;
   const name = (item.names?.[0] || '?').replace(/^./, c => c.toUpperCase());
   let target = selectedMealFoods.find(f => f.id === item.id || f.name.toLowerCase() === name.toLowerCase());
@@ -4752,7 +4738,7 @@ window.selectMealFood = function(idx) {
   });
 };
 
-window.removeSelectedFood = function(id) {
+window.removeSelectedFood = function (id) {
   selectedMealFoods = selectedMealFoods.filter(f => f.id !== id);
   renderSelectedMealFoods();
 };
@@ -4768,7 +4754,7 @@ function renderSelectedMealFoods() {
   `).join('');
 }
 
-window.confirmAddMeal = function() {
+window.confirmAddMeal = function () {
   if (selectedMealFoods.length === 0) return;
   const meals = store.get('meals', []);
   selectedMealFoods.forEach(f => meals.push({ ...f, timestamp: Date.now() }));
@@ -4778,7 +4764,7 @@ window.confirmAddMeal = function() {
   renderDashboard();
 };
 
-window.addFoodToMeal = function() {
+window.addFoodToMeal = function () {
   if (!currentModalFood) return;
   const name = (currentModalFood.names?.[0] || '?').replace(/^./, c => c.toUpperCase());
   const meals = store.get('meals', []);
@@ -4795,10 +4781,10 @@ function renderMeals() {
   const list = document.getElementById('mealsList');
   if (!list) return;
 
-  if (todayMeals.length === 0) { 
-    list.innerHTML = '<p class="empty-state">Aucun repas enregistré. Ajoutez votre premier repas !</p>'; 
-    document.getElementById('mealAxisRow').style.display = 'none'; 
-    return; 
+  if (todayMeals.length === 0) {
+    list.innerHTML = '<p class="empty-state">Aucun repas enregistré. Ajoutez votre premier repas !</p>';
+    document.getElementById('mealAxisRow').style.display = 'none';
+    return;
   }
 
   document.getElementById('mealAxisRow').style.display = 'grid';
@@ -4843,7 +4829,7 @@ function renderMeals() {
 }
 window.renderMeals = renderMeals;
 
-window.removeMeal = function(idx) {
+window.removeMeal = function (idx) {
   const meals = store.get('meals', []);
   const todayMeals = meals.filter(m => isToday(m.timestamp));
   if (idx < todayMeals.length) {
@@ -4880,7 +4866,7 @@ function initFastingPrograms() {
   ).join('');
 }
 
-window.selectProgram = function(id) {
+window.selectProgram = function (id) {
   const p = FASTING_PROGRAMS.find(x => x.id === id);
   if (!p) return;
   document.getElementById('fastingDuration').value = p.hours;
@@ -4889,7 +4875,7 @@ window.selectProgram = function(id) {
   document.getElementById('fastingSafetyWarning').style.display = p.hours > 24 ? 'block' : 'none';
   document.querySelectorAll('.jn-program-tile').forEach(c => c.classList.toggle('selected', c.dataset.id === id));
   // Sync select dropdown
-  const typeMap = { intermittent:'intermittent', warrior:'warrior', waterFast24:'waterFast', juiceFast:'juiceFast', fruitFast:'fruitFast', grapeCure:'grapeCure', drySunFast:'drySunFast', ramadan:'ramadan' };
+  const typeMap = { intermittent: 'intermittent', warrior: 'warrior', waterFast24: 'waterFast', juiceFast: 'juiceFast', fruitFast: 'fruitFast', grapeCure: 'grapeCure', drySunFast: 'drySunFast', ramadan: 'ramadan' };
   const sel = document.getElementById('fastingType');
   sel.value = typeMap[id] || 'intermittent';
 };
@@ -4969,12 +4955,12 @@ function initMasterclass() {
   if (!container) return;
 
   const tagColors = [
-    { bg:'rgba(240,112,156,.14)', color:'#f0709c' },
-    { bg:'rgba(55,211,153,.14)', color:'var(--accent)' },
-    { bg:'rgba(76,195,240,.14)', color:'#4cc3f0' },
-    { bg:'rgba(167,139,250,.14)', color:'#a78bfa' },
-    { bg:'rgba(250,204,21,.14)', color:'#facc15' },
-    { bg:'rgba(236,72,153,.14)', color:'#ec4899' },
+    { bg: 'rgba(240,112,156,.14)', color: '#f0709c' },
+    { bg: 'rgba(55,211,153,.14)', color: 'var(--accent)' },
+    { bg: 'rgba(76,195,240,.14)', color: '#4cc3f0' },
+    { bg: 'rgba(167,139,250,.14)', color: '#a78bfa' },
+    { bg: 'rgba(250,204,21,.14)', color: '#facc15' },
+    { bg: 'rgba(236,72,153,.14)', color: '#ec4899' },
   ];
 
   container.innerHTML = ehretMasterclassData.map((mc, i) => {
@@ -4996,7 +4982,7 @@ function initMasterclass() {
   }).join('');
 }
 
-window.openMasterclass = function(index) {
+window.openMasterclass = function (index) {
   const mc = ehretMasterclassData[index];
   document.getElementById('mcHeader').innerHTML = `
     <div style="display:flex; align-items:center; gap:16px; margin-bottom:12px;">
@@ -5010,7 +4996,7 @@ window.openMasterclass = function(index) {
     </div>
     <p style="margin:0; color:var(--text-dim); font-size:0.95rem;">${mc.shortDesc}</p>
   `;
-  
+
   const footerBtn = `
     <div class="mc-footer-actions">
       <button class="herb-ask-ai-btn" onclick="askAIAboutMasterclass('${esc(mc.title.replace(/'/g, "\\'"))}')">
@@ -5018,12 +5004,12 @@ window.openMasterclass = function(index) {
       </button>
     </div>
   `;
-  
+
   document.getElementById('mcBody').innerHTML = mc.content.join('') + footerBtn;
   document.getElementById('masterclassModal').classList.add('open');
 };
 
-window.askAIAboutMasterclass = function(title) {
+window.askAIAboutMasterclass = function (title) {
   document.getElementById('masterclassModal').classList.remove('open');
   showPage('chat');
   const chatInput = document.getElementById('chatInput');
@@ -5033,7 +5019,7 @@ window.askAIAboutMasterclass = function(title) {
   }
 };
 
-window.closeMasterclass = function(e) {
+window.closeMasterclass = function (e) {
   if (e && e.target !== document.getElementById('masterclassModal')) return;
   document.getElementById('masterclassModal').classList.remove('open');
 };
@@ -5041,11 +5027,11 @@ window.closeMasterclass = function(e) {
 // ═══════ EXPERT ADVICE ═══════
 function initExpertAccordion() {
   const expertColors = [
-    { bg:'rgba(246,185,59,.14)', color:'#f6b93b' },
-    { bg:'rgba(55,211,153,.14)', color:'var(--accent)' },
-    { bg:'rgba(246,185,59,.14)', color:'#f6b93b' },
-    { bg:'rgba(76,195,240,.14)', color:'#4cc3f0' },
-    { bg:'rgba(255,255,255,.06)', color:'var(--text-dim)' },
+    { bg: 'rgba(246,185,59,.14)', color: '#f6b93b' },
+    { bg: 'rgba(55,211,153,.14)', color: 'var(--accent)' },
+    { bg: 'rgba(246,185,59,.14)', color: '#f6b93b' },
+    { bg: 'rgba(76,195,240,.14)', color: '#4cc3f0' },
+    { bg: 'rgba(255,255,255,.06)', color: 'var(--text-dim)' },
   ];
   const experts = [
     {
@@ -5134,7 +5120,7 @@ function initExpertAccordion() {
   }).join('');
 }
 
-window.toggleExpertAccordion = function(headEl) {
+window.toggleExpertAccordion = function (headEl) {
   const row = headEl.closest('.jn-expert-row');
   const wasOpen = row.classList.contains('open');
   // Close all
@@ -5144,7 +5130,7 @@ window.toggleExpertAccordion = function(headEl) {
 };
 
 // ═══════ FASTING TIMER & CONTROLS ═══════
-window.stepFastingDuration = function(delta) {
+window.stepFastingDuration = function (delta) {
   if (fastingState?.active) return;
   const input = document.getElementById('fastingDuration');
   if (!input) return;
@@ -5154,7 +5140,7 @@ window.stepFastingDuration = function(delta) {
   window.onFastingDurationChange();
 };
 
-window.setFastingDurationPreset = function(hours) {
+window.setFastingDurationPreset = function (hours) {
   if (fastingState?.active) return;
   const input = document.getElementById('fastingDuration');
   if (input) {
@@ -5163,7 +5149,7 @@ window.setFastingDurationPreset = function(hours) {
   }
 };
 
-window.onFastingDurationChange = function() {
+window.onFastingDurationChange = function () {
   const input = document.getElementById('fastingDuration');
   if (!input) return;
   let hours = parseInt(input.value) || 16;
@@ -5185,7 +5171,7 @@ window.onFastingDurationChange = function() {
   if (goalEl) goalEl.textContent = `Objectif : ${hours}h`;
 };
 
-window.initFastingDurationControls = function() {
+window.initFastingDurationControls = function () {
   const select = document.getElementById('fastingType');
   if (select) {
     select.addEventListener('change', () => {
@@ -5199,7 +5185,7 @@ window.initFastingDurationControls = function() {
   window.onFastingDurationChange();
 };
 
-window.toggleFasting = async function() {
+window.toggleFasting = async function () {
   if (fastingState.active) {
     await stopFasting();
   } else {
@@ -5321,7 +5307,7 @@ function updateLiveFastingStages(elapsedHours, targetHours) {
   });
 }
 
-window.openFastEndModal = function(elapsedMs, targetMs, type) {
+window.openFastEndModal = function (elapsedMs, targetMs, type) {
   const modal = document.getElementById('fastEndModal');
   if (!modal) return;
 
@@ -5381,13 +5367,13 @@ window.openFastEndModal = function(elapsedMs, targetMs, type) {
   modal.style.display = 'flex';
 };
 
-window.closeFastEndModal = function() {
+window.closeFastEndModal = function () {
   const modal = document.getElementById('fastEndModal');
   if (modal) modal.style.display = 'none';
   pendingFastDebrief = null;
 };
 
-window.setFastRating = function(type, val) {
+window.setFastRating = function (type, val) {
   currentFastRating[type] = parseInt(val);
   const containerId = type === 'energy' ? 'fastRatingEnergy' : 'fastRatingClarity';
   document.querySelectorAll(`#${containerId} .star-rating-btn`).forEach(btn => {
@@ -5395,7 +5381,7 @@ window.setFastRating = function(type, val) {
   });
 };
 
-window.toggleElimTag = function(el) {
+window.toggleElimTag = function (el) {
   if (!el) return;
   el.classList.toggle('active');
   const tag = el.dataset.tag;
@@ -5406,7 +5392,7 @@ window.toggleElimTag = function(el) {
   }
 };
 
-window.confirmSaveFastDebrief = function() {
+window.confirmSaveFastDebrief = function () {
   if (!pendingFastDebrief) {
     closeFastEndModal();
     return;
@@ -5488,7 +5474,7 @@ function updateFastingUI() {
 
   const timerDigits = document.getElementById('timerDigits');
   if (timerDigits) {
-    timerDigits.textContent = `${String(Math.floor(ts/3600)).padStart(2,'0')}:${String(Math.floor((ts%3600)/60)).padStart(2,'0')}:${String(ts%60).padStart(2,'0')}`;
+    timerDigits.textContent = `${String(Math.floor(ts / 3600)).padStart(2, '0')}:${String(Math.floor((ts % 3600) / 60)).padStart(2, '0')}:${String(ts % 60).padStart(2, '0')}`;
   }
   const prog = document.getElementById('timerProgress');
   if (prog) {
@@ -5500,7 +5486,7 @@ function updateFastingUI() {
       statusEl.textContent = '🎉 OBJECTIF ATTEINT !';
       statusEl.classList.add('active');
     } else {
-      statusEl.textContent = `Reste ${Math.floor(remaining/3600000)}h ${Math.floor((remaining%3600000)/60000)}min`;
+      statusEl.textContent = `Reste ${Math.floor(remaining / 3600000)}h ${Math.floor((remaining % 3600000) / 60000)}min`;
     }
   }
 
@@ -5522,7 +5508,7 @@ function updateFastingUI() {
   if (df) { df.style.width = `${progress * 100}%`; }
   const dft = document.getElementById('dashFastType');
   if (dft) {
-    const tl = { intermittent:'⏰ Intermittent', warrior:'⚔️ Warrior', waterFast:'💧 Hydrique', juiceFast:'🧃 Jus', fruitFast:'🍎 Fruits', grapeCure:'🍇 Raisin', drySunFast:'☀️ Sec', ramadan:'🌙 Ramadan' };
+    const tl = { intermittent: '⏰ Intermittent', warrior: '⚔️ Warrior', waterFast: '💧 Hydrique', juiceFast: '🧃 Jus', fruitFast: '🍎 Fruits', grapeCure: '🍇 Raisin', drySunFast: '☀️ Sec', ramadan: '🌙 Ramadan' };
     dft.textContent = tl[fastingState.type] || fastingState.type;
   }
 }
@@ -5566,7 +5552,7 @@ function loadFastingState() {
   }
 }
 
-window.deleteFastingEntry = function(index) {
+window.deleteFastingEntry = function (index) {
   const history = store.get('fasting-history', []);
   if (index >= 0 && index < history.length) {
     history.splice(index, 1);
@@ -5577,7 +5563,7 @@ window.deleteFastingEntry = function(index) {
   }
 };
 
-window.showFastingRefeedAdvice = function(hours, type) {
+window.showFastingRefeedAdvice = function (hours, type) {
   const protocolHtml = getRefeedingProtocol(hours, type);
   if (window.showVitalConfirm) {
     window.showVitalConfirm({
@@ -5602,7 +5588,7 @@ function renderFastingHistory() {
     return;
   }
 
-  const tl = { intermittent:'⏰ Intermittent', warrior:'⚔️ Warrior', waterFast:'💧 Hydrique', juiceFast:'🧃 Jus', fruitFast:'🍎 Fruits', grapeCure:'🍇 Raisin', drySunFast:'☀️ Sec', ramadan:'🌙 Ramadan' };
+  const tl = { intermittent: '⏰ Intermittent', warrior: '⚔️ Warrior', waterFast: '💧 Hydrique', juiceFast: '🧃 Jus', fruitFast: '🍎 Fruits', grapeCure: '🍇 Raisin', drySunFast: '☀️ Sec', ramadan: '🌙 Ramadan' };
   const tagLabels = { tongue: '👅 Langue', lightness: '🕊️ Légèreté', sweat: '💦 Transpiration', thirst: '💧 Soif', euphoria: '✨ Clarté' };
 
   list.innerHTML = history.slice(0, 20).map((h, idx) => {
@@ -5690,7 +5676,7 @@ const breathModes = {
   sleep: { name: '4-7-8 Sommeil Profond', inhale: 4, exhale: 8, hold: 7, breaths: 6, retentionAfter: false },
 };
 
-window.switchBreathingTab = function(tabName) {
+window.switchBreathingTab = function (tabName) {
   const btnTimer = document.getElementById('tabBtnBreathingTimer');
   const btnVideos = document.getElementById('tabBtnBreathingVideos');
   const btnGuide = document.getElementById('tabBtnBreathingGuide');
@@ -5753,7 +5739,7 @@ const WIM_HOF_VIDEOS = {
   }
 };
 
-window.loadBreathingVideo = function(videoKey, btnEl) {
+window.loadBreathingVideo = function (videoKey, btnEl) {
   const videoData = WIM_HOF_VIDEOS[videoKey] || WIM_HOF_VIDEOS['3-rounds'];
   const videoPlayer = document.getElementById('wimHofVideoPlayer');
   const sourceEl = document.getElementById('wimHofVideoSource');
@@ -5776,7 +5762,7 @@ window.loadBreathingVideo = function(videoKey, btnEl) {
     videoPlayer.poster = videoData.poster;
     videoPlayer.load();
     if (wasPlaying) {
-      videoPlayer.play().catch(() => {});
+      videoPlayer.play().catch(() => { });
     }
   }
 
@@ -5786,15 +5772,15 @@ window.loadBreathingVideo = function(videoKey, btnEl) {
   }
 };
 
-window.setBreathMode = function(mode) { 
-  currentBreathMode = mode; 
-  document.querySelectorAll('.breath-mode').forEach(b => b.classList.toggle('active', b.dataset.mode === mode)); 
+window.setBreathMode = function (mode) {
+  currentBreathMode = mode;
+  document.querySelectorAll('.breath-mode').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
   const desc = breathModes[mode] ? `${breathModes[mode].name} — ${breathModes[mode].breaths} respirations/tour` : '';
   const info = document.getElementById('breathInfo');
-  if (info) info.innerHTML = `<p>${desc}</p>`; 
+  if (info) info.innerHTML = `<p>${desc}</p>`;
 };
 
-window.setBreathRounds = function(n) {
+window.setBreathRounds = function (n) {
   const val = Math.max(1, Math.min(10, parseInt(n) || 3));
   const input = document.getElementById('breathRounds');
   const display = document.getElementById('breathRoundsDisplay');
@@ -5809,31 +5795,31 @@ window.setBreathRounds = function(n) {
   });
 };
 
-window.adjustBreathRounds = function(delta) {
+window.adjustBreathRounds = function (delta) {
   const input = document.getElementById('breathRounds');
   const current = parseInt(input?.value || '3');
   window.setBreathRounds(current + delta);
 };
 
 let _retentionResolve = null;
-window.triggerRecoveryBreath = function() {
+window.triggerRecoveryBreath = function () {
   if (_retentionResolve) {
     _retentionResolve();
     _retentionResolve = null;
   }
 };
 
-window.startBreathing = async function() {
-  if (breathingActive) { 
-    breathingActive = false; 
+window.startBreathing = async function () {
+  if (breathingActive) {
+    breathingActive = false;
     if (_retentionResolve) { _retentionResolve(); _retentionResolve = null; }
-    resetBreathUI(); 
-    return; 
+    resetBreathUI();
+    return;
   }
   breathingActive = true;
-  const btn = document.getElementById('breathStartBtn'); 
+  const btn = document.getElementById('breathStartBtn');
   if (btn) { btn.innerHTML = '<i class="ri-stop-fill"></i> Arrêter la session'; btn.classList.add('danger'); }
-  
+
   const mode = breathModes[currentBreathMode] || breathModes.wimhof;
   const rounds = parseInt(document.getElementById('breathRounds')?.value) || 3;
   const circle = document.getElementById('breathCircle');
@@ -5841,42 +5827,42 @@ window.startBreathing = async function() {
   const subText = document.getElementById('breathSubText');
   const info = document.getElementById('breathInfo');
   const retAction = document.getElementById('breathRetentionAction');
-  
+
   const startTime = Date.now();
   const sessionRetentions = [];
 
   try {
     for (let r = 1; r <= rounds && breathingActive; r++) {
       if (info) info.innerHTML = `<p style="color:var(--accent); font-weight:700;">Tour ${r} sur ${rounds}</p>`;
-      
+
       // Phase 1: Guided Breaths
       for (let b = 1; b <= mode.breaths && breathingActive; b++) {
-        if (circle) circle.className = 'breath-circle inhale'; 
+        if (circle) circle.className = 'breath-circle inhale';
         if (text) text.textContent = `${b}`;
         if (subText) subText.textContent = `Inspirez à fond (${b}/${mode.breaths})`;
-        await sleep(mode.inhale * 1000); 
+        await sleep(mode.inhale * 1000);
         if (!breathingActive) break;
 
-        if (mode.hold > 0) { 
-          if (circle) circle.className = 'breath-circle hold'; 
-          if (subText) subText.textContent = 'Bloquez'; 
-          await sleep(mode.hold * 1000); 
-          if (!breathingActive) break; 
+        if (mode.hold > 0) {
+          if (circle) circle.className = 'breath-circle hold';
+          if (subText) subText.textContent = 'Bloquez';
+          await sleep(mode.hold * 1000);
+          if (!breathingActive) break;
         }
 
-        if (circle) circle.className = 'breath-circle exhale'; 
-        if (subText) subText.textContent = 'Relâchez le souffle'; 
-        await sleep(mode.exhale * 1000); 
+        if (circle) circle.className = 'breath-circle exhale';
+        if (subText) subText.textContent = 'Relâchez le souffle';
+        await sleep(mode.exhale * 1000);
         if (!breathingActive) break;
       }
 
       // Phase 2: Retention on empty lungs (Wim Hof)
       if (mode.retentionAfter && breathingActive) {
-        if (circle) circle.className = 'breath-circle hold'; 
+        if (circle) circle.className = 'breath-circle hold';
         if (subText) subText.textContent = 'Poumons vides · Retenez';
         if (retAction) retAction.style.display = 'block';
         if (info) info.innerHTML = `<p style="color:#38bdf8;">Tour ${r}/${rounds} — Rétention Poumons Vides</p>`;
-        
+
         let retentionSec = 0;
         let isHolding = true;
 
@@ -5902,10 +5888,10 @@ window.startBreathing = async function() {
 
         // Phase 3: Recovery Breath (15 seconds)
         if (breathingActive) {
-          if (circle) circle.className = 'breath-circle inhale'; 
+          if (circle) circle.className = 'breath-circle inhale';
           if (subText) subText.textContent = 'Inspirez à fond & Bloquez (15s)';
           if (info) info.innerHTML = `<p style="color:#10b981;">Tour ${r}/${rounds} — Récupération (15s)</p>`;
-          
+
           for (let s = 15; s > 0 && breathingActive; s--) {
             if (text) text.textContent = `${s}s`;
             await sleep(1000);
@@ -5920,16 +5906,16 @@ window.startBreathing = async function() {
   // Save session
   const elapsed = Date.now() - startTime;
   const bh = store.get('breathing-history', []);
-  bh.unshift({ 
-    mode: currentBreathMode, 
-    rounds, 
-    elapsed, 
+  bh.unshift({
+    mode: currentBreathMode,
+    rounds,
+    elapsed,
     retentions: sessionRetentions,
-    timestamp: Date.now() 
+    timestamp: Date.now()
   });
   store.set('breathing-history', bh.slice(0, 30));
-  resetBreathUI(); 
-  renderBreathingHistory(); 
+  resetBreathUI();
+  renderBreathingHistory();
   renderDashboard();
   if (breathingActive === false) {
     showToast('✨ Félicitations pour votre session de respiration !', 'success');
@@ -5954,14 +5940,14 @@ function resetBreathUI() {
 }
 
 function renderBreathingHistory() {
-  const el = document.getElementById('breathHistory'); 
+  const el = document.getElementById('breathHistory');
   if (!el) return;
   const bh = store.get('breathing-history', []);
-  if (bh.length === 0) { 
-    el.innerHTML = '<p class="empty-state-sm">Aucune session enregistrée.</p>'; 
-    return; 
+  if (bh.length === 0) {
+    el.innerHTML = '<p class="empty-state-sm">Aucune session enregistrée.</p>';
+    return;
   }
-  
+
   el.innerHTML = bh.slice(0, 8).map(s => {
     const d = new Date(s.timestamp).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' });
     const mn = { wimhof: '❄️ Wim Hof', relax: '🧘 Relaxation', box: '📦 Box Breathing', sleep: '🌙 4-7-8 Sommeil' };
@@ -5969,7 +5955,7 @@ function renderBreathingHistory() {
     let retentionsBadge = '';
     if (Array.isArray(s.retentions) && s.retentions.length > 0) {
       retentionsBadge = `<div style="font-size:0.78rem; color:var(--accent); margin-top:4px; display:flex; gap:6px; flex-wrap:wrap;">
-        ${s.retentions.map((sec, idx) => `<span style="background:rgba(55,211,153,0.1); border:1px solid rgba(55,211,153,0.25); border-radius:6px; padding:2px 6px;">T${idx+1}: <strong>${Math.floor(sec/60)}m${(sec%60).toString().padStart(2, '0')}s</strong></span>`).join('')}
+        ${s.retentions.map((sec, idx) => `<span style="background:rgba(55,211,153,0.1); border:1px solid rgba(55,211,153,0.25); border-radius:6px; padding:2px 6px;">T${idx + 1}: <strong>${Math.floor(sec / 60)}m${(sec % 60).toString().padStart(2, '0')}s</strong></span>`).join('')}
       </div>`;
     }
     return `
@@ -6011,14 +5997,14 @@ function initSmartInsight() {
 
 // ═══════ SCANNER IA ═══════
 let _scanMascotRenderer = null;
-window.handleScanUpload = function(event) {
+window.handleScanUpload = function (event) {
   const file = event.target.files[0];
   if (!file) return;
 
   const reader = new FileReader();
-  reader.onload = async function(e) {
+  reader.onload = async function (e) {
     const base64Url = e.target.result;
-    
+
     // Show preview & activate laser scan animation
     const previewContainer = document.getElementById('scanPreviewContainer');
     const promptZone = document.getElementById('scanPromptZone');
@@ -6061,16 +6047,16 @@ window.handleScanUpload = function(event) {
       stepIdx = (stepIdx + 1) % statusSteps.length;
       if (loadingStatus) loadingStatus.textContent = statusSteps[stepIdx];
     }, 1800);
-    
+
     // Extract base64 without prefix
     const base64Data = base64Url.split(',')[1];
-    
+
     try {
       const userLang = getLanguage();
       let query = `Analyse cette photo de repas/aliment avec une rigueur absolue.
 Identifie clairement les ingrédients visibles, leur statut vitaliste (Dr. Sebi / Arnold Ehret : mucogène, hybride ou électrique), l'indice PRAL estimé (+/- mEq/100g), l'impact sur la lymphe et les reins, et propose des substituts vivants pour électriser le plat.
 Inclus un bloc json avec "actionMeal" (avec nom, catégorie, emoji, items, note) et "suggestFoods" (tableau des 5 ingrédients vivants recommandés).`;
-      
+
       if (userLang === 'en') {
         query = `Analyze this meal/food photo with absolute scientific and vitalist rigor.
 Clearly identify visible ingredients, their vitalist classification (Dr. Sebi / Arnold Ehret: mucus-forming, hybrid, or electric), estimated renal PRAL (+/- mEq/100g), lymphatic impact, and suggest living substitutes to electrify the dish.
@@ -6084,39 +6070,39 @@ Incluye un bloque json con "actionMeal" (nombre, categoría, emoji, items, nota)
 Identifie clairement les ingrédients visibles, leur statut vitaliste (Dr. Sebi / Arnold Ehret : mucogène, hybride ou électrique), l'indice PRAL estimé (+/- mEq/100g), l'impact sur la lymphe et les reins, et propose des substituts vivants pour électriser le plat.
 Inclus un bloc json avec "actionMeal" (avec nom, catégorie, emoji, items, note) et "suggestFoods" (tableau des 5 ingrédients vivants recommandés).`;
       }
-      
+
       const profile = getUserProfile();
-      
+
       const resp = await fetch(`${API_BASE}/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...(VT_APP_KEY ? { 'X-VT-API-Key': VT_APP_KEY } : {}) },
-        body: JSON.stringify({ 
-          query, 
+        body: JSON.stringify({
+          query,
           profile,
           language: userLang,
-          history: [], 
+          history: [],
           fileParts: [{
             inlineData: {
               data: base64Data,
               mimeType: file.type || 'image/jpeg'
             }
-          }] 
+          }]
         }),
       });
-      
+
       clearInterval(statusInterval);
       if (imageWrapper) imageWrapper.classList.remove('scanning');
       if (scanLoading) scanLoading.style.display = 'none';
-      
+
       if (!resp.ok) {
         throw new Error(`Erreur serveur (${resp.status})`);
       }
-      
+
       const data = await resp.json();
       const aiText = data.text || 'Aucune réponse.';
-      
+
       renderScanResult(aiText);
-      
+
     } catch (err) {
       clearInterval(statusInterval);
       if (imageWrapper) imageWrapper.classList.remove('scanning');
@@ -6351,7 +6337,7 @@ function renderScanResult(aiText) {
   // Build Suggest Foods chips HTML
   let suggestChipsHtml = '';
   if (suggestedFoods && suggestedFoods.length > 0) {
-    const chips = suggestedFoods.map(f => 
+    const chips = suggestedFoods.map(f =>
       `<button class="food-chip" onclick="addSuggestedFood(this, '${esc(f)}')" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;margin:4px;border-radius:20px;border:1px solid var(--accent);background:rgba(55,211,153,0.08);color:var(--text);cursor:pointer;font-size:0.84rem;font-weight:600;transition:all 0.2s">
         <i class="ri-add-circle-line" style="color:var(--accent)"></i> ${esc(f)}
       </button>`
@@ -6495,7 +6481,7 @@ function renderScanResult(aiText) {
 }
 window.renderScanResult = renderScanResult;
 
-window.askAIAboutScannedDish = function(dishName) {
+window.askAIAboutScannedDish = function (dishName) {
   showPage('chat');
   const chatInput = document.getElementById('chatInput');
   if (chatInput) {
@@ -6585,7 +6571,7 @@ function renderMarkdown(text) {
 
       // 4. Food suggestion chips
       if (obj.suggestFoods && Array.isArray(obj.suggestFoods)) {
-        const chips = obj.suggestFoods.map(f => 
+        const chips = obj.suggestFoods.map(f =>
           `<button class="food-chip" onclick="addSuggestedFood(this, '${esc(f)}')" style="display:inline-flex;align-items:center;gap:4px;padding:6px 14px;margin:4px;border-radius:20px;border:1px solid var(--accent);background:transparent;color:var(--text);cursor:pointer;font-size:0.85rem;transition:all 0.2s">
             <i class="ri-add-circle-line"></i> ${esc(f)}
           </button>`
@@ -6621,14 +6607,14 @@ function renderMarkdown(text) {
 }
 
 // ═══════ PROACTIVE MASCOT ═══════
-window.updateProactiveMascot = function(actionContext = null) {
+window.updateProactiveMascot = function (actionContext = null) {
   const bubble = document.getElementById('mascotSpeechBubble') || document.getElementById('greetingContext');
   if (!bubble) return;
-  
+
   const hour = new Date().getHours();
   let msg = '';
   let mood = 'talking';
-  
+
   if (actionContext === 'scan') {
     msg = "💬 <strong>Bravo pour ce scan !</strong> Vérifie bien l'indice PRAL (acidité) de cet aliment. 🍎";
     mood = 'excited';
@@ -6641,7 +6627,7 @@ window.updateProactiveMascot = function(actionContext = null) {
   } else {
     // Time-based circadian messages
     if (hour >= 4 && hour < 12) {
-      msg = currentProtocol === 'vitalist' 
+      msg = currentProtocol === 'vitalist'
         ? "💬 <strong>Matin (Élimination) :</strong> L'organisme élimine les toxines. Privilégie l'hydratation, les tisanes et les fruits aqueux. 🍋"
         : "💬 <strong>Bonjour !</strong> Pense à bien t'hydrater dès le réveil. 💧";
       mood = 'excited';
@@ -6653,9 +6639,9 @@ window.updateProactiveMascot = function(actionContext = null) {
       mood = 'sleepy';
     }
   }
-  
+
   bubble.innerHTML = msg;
-  
+
   if (window.appMascot) {
     window.appMascot.setMood(mood, true);
     setTimeout(() => {
@@ -6665,17 +6651,17 @@ window.updateProactiveMascot = function(actionContext = null) {
 };
 
 // ═══════ RESOURCES HUB ═══════
-window.renderResources = function() {
+window.renderResources = function () {
   const container = document.getElementById('resourcesContainer');
   if (!container) return;
-  
+
   // High-availability verified media and official local documents
   const books = [
     {
       title: "Guide Nutritionnel Officiel VitalTrack",
       subtitle: "Guide Méthodologique & Pratique",
       url: "/Nutrional-Guide.pdf",
-      author: "VitalTrack",
+      author: "Dr. Sebi",
       source: "VitalTrack (PDF Local)",
       size: "3.9 Mo",
       badgeClass: "badge-success",
@@ -6856,8 +6842,8 @@ window.renderResources = function() {
 
       <div style="display:grid; grid-template-columns:1fr; gap:18px;">
         ${videos.map(r => {
-          if (r.type === 'local-video') {
-            return `
+    if (r.type === 'local-video') {
+      return `
               <div class="dash-card glass" style="padding:18px;">
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
                   <h3 style="margin:0; font-size:1.05rem; font-weight:700; color:#fff;">${esc(r.title)}</h3>
@@ -6872,8 +6858,8 @@ window.renderResources = function() {
                 <p style="font-size:0.85rem; color:var(--text-dim); line-height:1.5; margin:0;">${esc(r.description)}</p>
               </div>
             `;
-          } else {
-            return `
+    } else {
+      return `
               <div class="dash-card glass" style="padding:18px;">
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
                   <h3 style="margin:0; font-size:1.05rem; font-weight:700; color:#fff;">${esc(r.title)}</h3>
@@ -6892,8 +6878,8 @@ window.renderResources = function() {
                 ` : ''}
               </div>
             `;
-          }
-        }).join('')}
+    }
+  }).join('')}
       </div>
     </div>
 
@@ -6914,15 +6900,15 @@ window.renderResources = function() {
 
 // ═══════ DIET PLAN CALENDAR ═══════
 
-const MONTHS_FR = ['jan','fév','mar','avr','mai','juin','juil','août','sep','oct','nov','déc'];
-const DAYS_FR = ['dim','lun','mar','mer','jeu','ven','sam'];
-const DAYS_FULL_FR = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+const MONTHS_FR = ['jan', 'fév', 'mar', 'avr', 'mai', 'juin', 'juil', 'août', 'sep', 'oct', 'nov', 'déc'];
+const DAYS_FR = ['dim', 'lun', 'mar', 'mer', 'jeu', 'ven', 'sam'];
+const DAYS_FULL_FR = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
 const SLOT_META = {
-  'Réveil':           { emoji: '🌅', time: '6h–7h',   color: '#f59e0b', gradient: 'linear-gradient(135deg,rgba(245,158,11,0.15),rgba(245,158,11,0.03))' },
-  'Petit-déjeuner':   { emoji: '🍽️', time: '8h–9h',   color: '#4ade80', gradient: 'linear-gradient(135deg,rgba(74,222,128,0.15),rgba(74,222,128,0.03))' },
-  'Déjeuner':         { emoji: '🥗', time: '12h–13h', color: '#22d3ee', gradient: 'linear-gradient(135deg,rgba(34,211,238,0.15),rgba(34,211,238,0.03))' },
-  'Collation':        { emoji: '🫐', time: '16h',     color: '#a78bfa', gradient: 'linear-gradient(135deg,rgba(167,139,250,0.15),rgba(167,139,250,0.03))' },
-  'Dîner':            { emoji: '🌙', time: '19h–20h', color: '#f472b6', gradient: 'linear-gradient(135deg,rgba(244,114,182,0.15),rgba(244,114,182,0.03))' },
+  'Réveil': { emoji: '🌅', time: '6h–7h', color: '#f59e0b', gradient: 'linear-gradient(135deg,rgba(245,158,11,0.15),rgba(245,158,11,0.03))' },
+  'Petit-déjeuner': { emoji: '🍽️', time: '8h–9h', color: '#4ade80', gradient: 'linear-gradient(135deg,rgba(74,222,128,0.15),rgba(74,222,128,0.03))' },
+  'Déjeuner': { emoji: '🥗', time: '12h–13h', color: '#22d3ee', gradient: 'linear-gradient(135deg,rgba(34,211,238,0.15),rgba(34,211,238,0.03))' },
+  'Collation': { emoji: '🫐', time: '16h', color: '#a78bfa', gradient: 'linear-gradient(135deg,rgba(167,139,250,0.15),rgba(167,139,250,0.03))' },
+  'Dîner': { emoji: '🌙', time: '19h–20h', color: '#f472b6', gradient: 'linear-gradient(135deg,rgba(244,114,182,0.15),rgba(244,114,182,0.03))' },
 };
 
 function formatDateShort(d) { return `${d.getDate()} ${MONTHS_FR[d.getMonth()]}`; }
@@ -6936,10 +6922,10 @@ function getWeekDates(offsetWeeks = 0) {
   const dayOfWeek = now.getDay() === 0 ? 6 : now.getDay() - 1; // Monday = 0
   const monday = new Date(now);
   monday.setDate(now.getDate() - dayOfWeek + (offsetWeeks * 7));
-  monday.setHours(0,0,0,0);
-  
+  monday.setHours(0, 0, 0, 0);
+
   const days = [];
-  for(let i=0; i<7; i++) {
+  for (let i = 0; i < 7; i++) {
     const d = new Date(monday);
     d.setDate(monday.getDate() + i);
     days.push(d);
@@ -6947,7 +6933,7 @@ function getWeekDates(offsetWeeks = 0) {
   return days;
 }
 
-window.changeCalendarWeek = function(delta) {
+window.changeCalendarWeek = function (delta) {
   currentDateOffset += delta;
   renderCalendar();
 };
@@ -6955,25 +6941,25 @@ window.changeCalendarWeek = function(delta) {
 function renderCalendar() {
   const grid = document.getElementById('calendarWeekGrid');
   if (!grid) return;
-  
+
   const weekDays = getWeekDates(currentDateOffset);
   const meals = store.get('calendar_meals', []); // { id, dateStr, slot, text, done }
   const today = new Date();
-  
+
   // Update header label
   const wStart = weekDays[0];
   const wEnd = weekDays[6];
-  document.getElementById('calendarWeekLabel').textContent = 
+  document.getElementById('calendarWeekLabel').textContent =
     `Du ${wStart.getDate()} ${MONTHS_FR[wStart.getMonth()]} au ${wEnd.getDate()} ${MONTHS_FR[wEnd.getMonth()]}`;
 
   grid.innerHTML = weekDays.map(date => {
     const dateStr = date.toISOString().split('T')[0];
     const isToday = isSameDay(date, today);
     const dayMeals = meals.filter(m => m.dateStr === dateStr);
-    
+
     // Sort meals logically
     const slotOrder = { 'Petit-déjeuner': 1, 'Déjeuner': 2, 'Collation': 3, 'Dîner': 4 };
-    dayMeals.sort((a,b) => (slotOrder[a.slot]||99) - (slotOrder[b.slot]||99));
+    dayMeals.sort((a, b) => (slotOrder[a.slot] || 99) - (slotOrder[b.slot] || 99));
 
     return `
       <div class="cal-day-block">
@@ -6994,8 +6980,8 @@ function renderCalendar() {
               <a href="#" onclick="openMealModal('${dateStr}'); return false;" style="color:var(--accent); text-decoration:none; margin-top:8px; display:inline-block;">+ Ajouter</a>
             </div>
           ` : dayMeals.map(m => {
-            const meta = SLOT_META[m.slot] || { emoji: '🍽️', color: '#4ade80' };
-            return `
+      const meta = SLOT_META[m.slot] || { emoji: '🍽️', color: '#4ade80' };
+      return `
             <div class="cal-meal-card">
               <div style="flex:1;">
                 <div class="cal-meal-slot" style="background:${meta.color}22; color:${meta.color}">
@@ -7016,7 +7002,7 @@ function renderCalendar() {
               </div>
             </div>
             `;
-          }).join('')}
+    }).join('')}
         </div>
       </div>
     `;
@@ -7026,16 +7012,16 @@ function renderCalendar() {
 // ── CRUD Actions ──
 let currentEditMeal = null; // { dateStr, id, slot, text }
 
-window.openMealModal = function(dateStr, mealId = null) {
+window.openMealModal = function (dateStr, mealId = null) {
   const scrim = document.getElementById('mealModalScrim');
   const modal = document.getElementById('mealModal');
   const title = document.getElementById('mealModalTitle');
   const input = document.getElementById('mealModalContent');
   const saveBtn = document.getElementById('saveMealBtn');
-  
+
   // Set context
   currentEditMeal = { dateStr, id: mealId, slot: 'Déjeuner', text: '' };
-  
+
   if (mealId) {
     title.textContent = 'Modifier le repas';
     const meals = store.get('calendar_meals', []);
@@ -7047,9 +7033,9 @@ window.openMealModal = function(dateStr, mealId = null) {
   } else {
     title.textContent = 'Ajouter un repas';
   }
-  
+
   input.value = currentEditMeal.text;
-  
+
   // UI Selectors
   document.querySelectorAll('#mealSlotSelector .chip-btn').forEach(btn => {
     btn.onclick = () => {
@@ -7060,14 +7046,14 @@ window.openMealModal = function(dateStr, mealId = null) {
     if (btn.dataset.slot === currentEditMeal.slot) btn.classList.add('active');
     else btn.classList.remove('active');
   });
-  
+
   saveBtn.onclick = saveMealModal;
-  
+
   scrim.classList.add('active');
   modal.classList.add('active');
 };
 
-window.closeMealModal = function() {
+window.closeMealModal = function () {
   document.getElementById('mealModalScrim').classList.remove('active');
   document.getElementById('mealModal').classList.remove('active');
 };
@@ -7075,10 +7061,10 @@ window.closeMealModal = function() {
 function saveMealModal() {
   const input = document.getElementById('mealModalContent').value.trim();
   if (!input) return showToast('Le repas ne peut pas être vide.', 'error');
-  
+
   currentEditMeal.text = input;
   let meals = store.get('calendar_meals', []);
-  
+
   if (currentEditMeal.id) {
     const idx = meals.findIndex(x => x.id === currentEditMeal.id);
     if (idx > -1) meals[idx] = currentEditMeal;
@@ -7086,7 +7072,7 @@ function saveMealModal() {
     currentEditMeal.id = 'meal_' + Date.now();
     meals.push(currentEditMeal);
   }
-  
+
   store.set('calendar_meals', meals);
   closeMealModal();
   renderCalendar();
@@ -7101,7 +7087,7 @@ function saveMealModal() {
   }
 }
 
-window.deleteCalendarMeal = function(id) {
+window.deleteCalendarMeal = function (id) {
   let meals = store.get('calendar_meals', []);
   meals = meals.filter(x => x.id !== id);
   store.set('calendar_meals', meals);
@@ -7109,21 +7095,21 @@ window.deleteCalendarMeal = function(id) {
   showToast('Repas supprimé du calendrier.', 'info');
 };
 
-window.promptAIFixMeal = function(id) {
+window.promptAIFixMeal = function (id) {
   showPage('chat');
   const chatInput = document.getElementById('chatInput');
   chatInput.value = "IA, j'aimerais changer ce repas. Propose-moi une alternative cohérente. (ID: " + id + ")";
   chatInput.focus();
 };
 
-window.promptAIPlan = function() {
+window.promptAIPlan = function () {
   showPage('chat');
   const chatInput = document.getElementById('chatInput');
   chatInput.value = "IA, propose-moi un plan alimentaire de 3 jours pour mon calendrier.";
   chatInput.focus();
 };
 
-window.handleApplyDietPlanRequest = function(encodedReq, mode) {
+window.handleApplyDietPlanRequest = function (encodedReq, mode) {
   try {
     const req = JSON.parse(decodeURIComponent(escape(atob(encodedReq))));
     if (!window.applyDietPlanRequest) {
@@ -7164,17 +7150,17 @@ window.handleApplyDietPlanRequest = function(encodedReq, mode) {
   }
 };
 
-window.addMealsToCalendar = function(mealsJson) {
+window.addMealsToCalendar = function (mealsJson) {
   try {
     const newMeals = JSON.parse(decodeURIComponent(escape(atob(mealsJson))));
     let meals = store.get('calendar_meals', []);
-    
+
     newMeals.forEach(m => {
       // Calculate date based on dayOffset from today
       const d = new Date();
       d.setDate(d.getDate() + (m.dayOffset || 0));
       const dateStr = d.toISOString().split('T')[0];
-      
+
       meals.push({
         id: 'meal_' + Date.now() + Math.random().toString(36).substr(2, 5),
         dateStr: dateStr,
@@ -7189,7 +7175,7 @@ window.addMealsToCalendar = function(mealsJson) {
         done: false
       });
     });
-    
+
     store.set('calendar_meals', meals);
     showToast(`✅ ${newMeals.length} repas ajoutés à ton calendrier !`, 'success');
     showPage('calendar');
@@ -7200,16 +7186,16 @@ window.addMealsToCalendar = function(mealsJson) {
   }
 };
 
-window.handleAddActionMeal = function(encodedMeal) {
+window.handleAddActionMeal = function (encodedMeal) {
   try {
     const meal = JSON.parse(decodeURIComponent(escape(atob(encodedMeal))));
     const meals = store.get('meals', []);
-    
+
     // Calculate PRAL and scores based on items if available
     let totalPral = 0;
     let itemCount = 0;
     const rawItems = Array.isArray(meal.items) ? meal.items : (Array.isArray(meal.ingredients) ? meal.ingredients : typeof (meal.items || meal.ingredients) === 'string' ? (meal.items || meal.ingredients).split(/,\s*|\s*·\s*/).filter(Boolean) : [meal.name || 'Repas']);
-    
+
     rawItems.forEach(itemEntry => {
       const itemName = typeof itemEntry === 'string' ? itemEntry : (itemEntry.name || '');
       const match = vitalDb.find(f => (f.names || []).some(n => n.toLowerCase() === itemName.toLowerCase()) || f.id === itemName.toLowerCase());
@@ -7268,7 +7254,7 @@ window.handleAddActionMeal = function(encodedMeal) {
     if (window.renderMeals) renderMeals();
     if (window.renderDashboard) renderDashboard();
     if (window.updateProactiveMascot) updateProactiveMascot('meal');
-    
+
     showToast(`🍽️ Repas "${newMeal.name}" enregistré dans votre journal !`, 'success');
   } catch (err) {
     console.error('Erreur handleAddActionMeal:', err);
@@ -7276,13 +7262,13 @@ window.handleAddActionMeal = function(encodedMeal) {
   }
 };
 
-window.handleApplyFastingProgram = function(encodedProgram) {
+window.handleApplyFastingProgram = function (encodedProgram) {
   try {
     const p = JSON.parse(decodeURIComponent(escape(atob(encodedProgram))));
     const firstConfig = (p.configs && p.configs[0]) || { type: 'waterFast', durationMinutes: 1440 };
     const durationHours = Math.round((firstConfig.durationMinutes || 960) / 60);
     const fastType = firstConfig.type || 'waterFast';
-    
+
     const typeSelect = document.getElementById('fastingType');
     const durationSelect = document.getElementById('fastingDuration');
     if (typeSelect) typeSelect.value = fastType;
@@ -7301,20 +7287,20 @@ window.handleApplyFastingProgram = function(encodedProgram) {
   }
 };
 
-window.addSuggestedFood = function(btn, foodName) {
+window.addSuggestedFood = function (btn, foodName) {
   const meals = store.get('meals', []);
   const match = vitalDb.find(item => item.names && item.names.some(n => n.toLowerCase() === foodName.toLowerCase()));
-  meals.push({ 
+  meals.push({
     id: match?.id || Date.now().toString(),
-    name: foodName, 
-    emoji: match?.emoji || '🌱', 
-    family: match?.category || match?.family || 'Suggestion IA', 
+    name: foodName,
+    emoji: match?.emoji || '🌱',
+    family: match?.category || match?.family || 'Suggestion IA',
     approved: match?.specific?.electric === true,
     electric: match?.specific?.electric === true,
     hybrid: match?.specific?.hybrid === true,
     pral: match?.scientific_defaults?.pral ?? 0,
     nova: match?.vitality?.nova ?? 4,
-    timestamp: Date.now() 
+    timestamp: Date.now()
   });
   store.set('meals', meals);
   btn.innerHTML = `<i class="ri-check-line"></i> ${foodName}`;
@@ -7340,7 +7326,7 @@ function detectQuickReplies(text) {
   return [];
 }
 
-window.sendQuickReply = function(btn, text) {
+window.sendQuickReply = function (btn, text) {
   const parent = btn.closest('.quick-replies');
   if (parent) {
     parent.querySelectorAll('.quick-reply-chip').forEach(c => { c.disabled = true; c.style.opacity = '0.4'; });
@@ -7354,7 +7340,7 @@ window.sendQuickReply = function(btn, text) {
 // ═══════ WEIGHT TRACKING & MODAL ═══════
 window._editingWeightId = null;
 
-window.openWeightModal = function() {
+window.openWeightModal = function () {
   const modal = document.getElementById('weightModal');
   if (!modal) return;
 
@@ -7395,14 +7381,14 @@ window.openWeightModal = function() {
   modal.classList.add('open');
 };
 
-window.closeWeightModal = function(e) {
+window.closeWeightModal = function (e) {
   if (!e || e.target === document.getElementById('weightModal') || e.target.closest?.('.modal-close')) {
     window._editingWeightId = null;
     document.getElementById('weightModal')?.classList.remove('open');
   }
 };
 
-window.cancelWeightEdit = function() {
+window.cancelWeightEdit = function () {
   window._editingWeightId = null;
   const dateInput = document.getElementById('weightDateInput');
   const valInput = document.getElementById('weightValInput');
@@ -7433,7 +7419,7 @@ window.cancelWeightEdit = function() {
   renderWeightHistoryInModal();
 };
 
-window.editWeightEntry = function(entryId) {
+window.editWeightEntry = function (entryId) {
   const history = store.get('weight_history', []);
   const entry = history.find(h => h.id === entryId);
   if (!entry) return;
@@ -7467,7 +7453,7 @@ window.editWeightEntry = function(entryId) {
   renderWeightHistoryInModal();
 };
 
-window.stepWeight = function(delta) {
+window.stepWeight = function (delta) {
   const valInput = document.getElementById('weightValInput');
   if (!valInput) return;
   let curr = parseFloat(valInput.value) || 70.0;
@@ -7477,7 +7463,7 @@ window.stepWeight = function(delta) {
   valInput.value = curr.toFixed(1);
 };
 
-window.saveWeightEntry = function() {
+window.saveWeightEntry = function () {
   const dateInput = document.getElementById('weightDateInput');
   const valInput = document.getElementById('weightValInput');
   const noteInput = document.getElementById('weightNoteInput');
@@ -7527,7 +7513,7 @@ window.saveWeightEntry = function() {
   document.getElementById('weightModal')?.classList.remove('open');
 };
 
-window.deleteWeightEntry = async function(idOrIdx) {
+window.deleteWeightEntry = async function (idOrIdx) {
   let history = store.get('weight_history', []);
   let idx = typeof idOrIdx === 'string' ? history.findIndex(h => h.id === idOrIdx) : idOrIdx;
   if (idx < 0 || idx >= history.length) return;
@@ -7557,7 +7543,7 @@ window.deleteWeightEntry = async function(idOrIdx) {
   renderWeightHistoryInModal();
 };
 
-window.renderWeightHistoryInModal = function() {
+window.renderWeightHistoryInModal = function () {
   const listEl = document.getElementById('weightHistoryList');
   const countEl = document.getElementById('weightHistoryCount');
   if (!listEl) return;
@@ -7602,7 +7588,7 @@ window.renderWeightHistoryInModal = function() {
 // ═══════ MODERN WEIGHT ANALYTICS & INTERACTIVE CHART ═══════
 let currentWeightPeriod = 'all';
 
-window.setWeightPeriod = function(period) {
+window.setWeightPeriod = function (period) {
   currentWeightPeriod = period;
   document.querySelectorAll('#weightPeriodBar .period-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.period === period);
@@ -7632,7 +7618,7 @@ function getSmoothSplinePath(points) {
   return d;
 }
 
-window.renderWeightChart = function() {
+window.renderWeightChart = function () {
   const container = document.getElementById('weightChartContainer');
   const empty = document.getElementById('weightChartEmpty');
   const svg = document.getElementById('weightChartSvg');
@@ -7952,14 +7938,14 @@ window.addEventListener('resize', () => {
 
 // Hook renderWeightChart into app init
 const originalUpdateDash = window.updateDashStats;
-window.updateDashStats = function() {
-  if(originalUpdateDash) originalUpdateDash();
+window.updateDashStats = function () {
+  if (originalUpdateDash) originalUpdateDash();
   renderWeightChart();
   updateCircadianWidget();
 };
 
 // ═══════ CIRCADIAN RHYTHM ═══════
-window.updateCircadianWidget = function() {
+window.updateCircadianWidget = function () {
   const timeEl = document.getElementById('circadianTimePill');
   const clockTime = document.getElementById('clockTime');
   const clockPhase = document.getElementById('clockPhase');
@@ -7967,7 +7953,7 @@ window.updateCircadianWidget = function() {
   const phaseIcon = document.getElementById('phaseIcon');
   const phaseTitle = document.getElementById('phaseTitle');
   const phaseDesc = document.getElementById('phaseDesc');
-  
+
   if (!timeEl) return; // Not on dashboard
 
   const now = new Date();
@@ -7982,7 +7968,7 @@ window.updateCircadianWidget = function() {
   let iconClass = '';
   let descText = '';
   let phaseColor = '';
-  
+
   if (h >= 4 && h < 12) {
     shortCycle = 'ÉLIMINATION';
     fullCycle = 'ÉLIMINATION';
@@ -8046,11 +8032,11 @@ const _mascotQuotes = {
   sleep: "« Réparation cellulaire et autolyse des déchets... Bonne nuit ! 😴 »"
 };
 
-window.openMascotStudioModal = function() {
+window.openMascotStudioModal = function () {
   const modal = document.getElementById('mascotStudioModal');
   if (!modal) return;
   modal.style.display = 'flex';
-  
+
   const canvas = document.getElementById('inAppMascotCanvas');
   if (canvas && window.PigeonRenderer) {
     if (!_inAppMascotRenderer) {
@@ -8065,12 +8051,12 @@ window.openMascotStudioModal = function() {
   }
 };
 
-window.closeMascotStudioModal = function() {
+window.closeMascotStudioModal = function () {
   const modal = document.getElementById('mascotStudioModal');
   if (modal) modal.style.display = 'none';
 };
 
-window.setInAppMascotAction = function(action) {
+window.setInAppMascotAction = function (action) {
   if (_inAppMascotRenderer) {
     _inAppMascotRenderer.setAction(action);
   }
@@ -8084,13 +8070,13 @@ window.setInAppMascotAction = function(action) {
   }
 };
 
-window.triggerInAppPigeonAction = function() {
+window.triggerInAppPigeonAction = function () {
   const actions = ['laugh', 'celebrate', 'coo', 'walk', 'think'];
   const next = actions[Math.floor(Math.random() * actions.length)];
   window.setInAppMascotAction(next);
 };
 
-window.toggleInAppAudioFx = function() {
+window.toggleInAppAudioFx = function () {
   if (window.pigeonAudio) {
     const enabled = window.pigeonAudio.toggleSound();
     const icon = document.getElementById('inAppSoundIcon');
