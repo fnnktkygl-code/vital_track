@@ -5244,9 +5244,11 @@ mark.search-highlight {
 }
 
 /* Privacy Mode (Optional when explicitly enabled by user) */
-.screenshot-privacy-active .dash-card {
-  filter: blur(12px);
-  transition: filter 0.2s ease;
+.screenshot-privacy-active .dash-card,
+.screenshot-privacy-active .meal-card,
+.screenshot-privacy-active .food-card {
+  filter: blur(8px);
+  transition: filter 0.15s ease;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════

@@ -9005,35 +9005,39 @@ window.initAppLogos = function () {
 };
 
 // ═══════ SCREENSHOT PROTECTION & PRIVACY NOTIFICATION ═══════
+let lastScreenshotToastTime = 0;
+
 window.initScreenshotProtection = function () {
-  const isEnabled = store.get('screenshotProtection', false);
+  document.body.classList.remove('screenshot-privacy-active');
+  const isEnabled = store.get('screenshotProtection', false) === true;
   const toggle = document.getElementById('toggleScreenshotProtection');
   if (toggle) {
     toggle.checked = isEnabled;
   }
 
-  // Global screenshot shortcut detection (PrintScreen, Meta+Shift+3/4/S)
+  // Global screenshot shortcut detection (PrintScreen, Meta+Shift+3/4/5/S, Windows Snip)
   window.addEventListener('keydown', (e) => {
-    const isPrintScreen = e.key === 'PrintScreen' || e.keyCode === 44;
-    const isMacScreenshot = (e.metaKey || e.ctrlKey) && e.shiftKey && (e.key === '3' || e.key === '4' || e.key === '5' || e.key === 'S' || e.key === 's');
-    
-    if (isPrintScreen || isMacScreenshot) {
+    const isPrintScreen = e.key === 'PrintScreen' || e.keyCode === 44 || e.code === 'PrintScreen';
+    const isMacScreenshot = (e.metaKey || e.ctrlKey) && e.shiftKey && (['3', '4', '5', 'S', 's', 'p', 'P'].includes(e.key) || ['Digit3', 'Digit4', 'Digit5', 'KeyS', 'KeyP'].includes(e.code));
+    const isWinScreenshot = e.key === 'Snapshot' || ((e.key === 'S' || e.code === 'KeyS') && (e.metaKey || e.ctrlKey));
+
+    if (isPrintScreen || isMacScreenshot || isWinScreenshot) {
       handleScreenshotEvent();
     }
   });
 };
 
 function handleScreenshotEvent() {
-  // First time screenshot prompt (purely informational toast)
-  if (!store.get('screenshot_notice_shown', false)) {
-    store.set('screenshot_notice_shown', true);
+  const now = Date.now();
+  if (now - lastScreenshotToastTime > 2500) {
+    lastScreenshotToastTime = now;
     if (window.showToast) {
-      window.showToast(t('settings.screenshotToast', {}, '📸 Capture d\'écran — Vous pouvez activer ou désactiver la protection anti-capture à tout moment dans Paramètres.'), 'info', 6000);
+      window.showToast(t('settings.screenshotToast', {}, '📸 Capture d\'écran détectée — Vous pouvez activer ou désactiver la protection anti-capture à tout moment dans Paramètres.'), 'info', 5000);
     }
   }
 
   // Only if explicitly enabled by user in settings:
-  if (store.get('screenshotProtection', false)) {
+  if (store.get('screenshotProtection', false) === true) {
     document.body.classList.add('screenshot-privacy-active');
     setTimeout(() => {
       document.body.classList.remove('screenshot-privacy-active');
@@ -9043,11 +9047,14 @@ function handleScreenshotEvent() {
 
 window.setScreenshotProtection = function (enabled) {
   store.set('screenshotProtection', !!enabled);
+  if (!enabled) {
+    document.body.classList.remove('screenshot-privacy-active');
+  }
   if (window.showToast) {
     if (enabled) {
-      window.showToast('🛡️ Protection anti-capture activée : Vos données de santé sont protégées lors des captures.', 'info', 4000);
+      window.showToast('🛡️ Protection anti-capture activée : Vos données de santé seront masquées lors des captures.', 'info', 4000);
     } else {
-      window.showToast('🔓 Protection anti-capture désactivée : Vos captures d\'écran sont autorisées sans masquage.', 'info', 4000);
+      window.showToast('🔓 Protection anti-capture désactivée : Vos captures d\'écran sont désormais autorisées et nettes.', 'info', 4000);
     }
   }
 };
