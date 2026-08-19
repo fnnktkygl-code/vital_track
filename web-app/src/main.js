@@ -2356,9 +2356,78 @@ window.askAIToFindFood = async function(query) {
     return;
   }
 
+  let searchMascotRenderer = null;
+  let tipInterval = null;
+
+  const VITAL_EDUCATIONAL_TIPS = [
+    "🌿 Les aliments à PRAL négatif (alcalins) facilitent le travail de filtration rénale et dissolvent les acides uriques.",
+    "🔬 Arnold le Détective ausculte les bases botaniques : analyse des alcaloïdes, flavonoïdes et minéraux colloïdaux...",
+    "💧 Les fruits frais mûrs apportent une eau biologique hautement structurée (H3O2), optimale pour la lymphe.",
+    "⚖️ Selon Arnold Ehret (V = P - O), éliminer l'obstruction digestive libère immédiatement la vitalité naturelle.",
+    "🌱 Les graines ancestrales (amarante, fonio, teff, quinoa) conservent leur charge électrique native sans gluten.",
+    "🧹 En transition, les légumes racines cuits à la vapeur douce balayent les mucosités intestinales sans choc éliminatif.",
+    "🍋 Le citron, bien qu'acide au palais, est un puissant alcalinisant et dissout les dépôts de mucus gastrique.",
+    "🌳 La pharmacopée amazonienne Raintree répertorie des plantes majeures pour le drainage hépatique et rénal.",
+    "🍇 Les raisins noirs et baies sauvages sont les nettoyants lymphatiques les plus puissants identifiés par le Dr. Morse."
+  ];
+
   if (resultsEl) {
     resultsEl.style.display = 'flex';
-    resultsEl.innerHTML = `<p class="empty-state" style="padding:20px;text-align:center;width:100%;"><i class="ri-loader-4-line ri-spin" style="font-size:1.4rem;vertical-align:middle;margin-right:8px;color:var(--accent)"></i> Analyse scientifique & vitaliste de "${esc(q)}" via l'IA...</p>`;
+    const randTip = VITAL_EDUCATIONAL_TIPS[Math.floor(Math.random() * VITAL_EDUCATIONAL_TIPS.length)];
+    resultsEl.innerHTML = `
+      <div class="search-mascot-loader glass" style="width:100%; text-align:center; padding:32px 20px; border-radius:18px; border:1px solid rgba(52,211,153,0.3); background:rgba(15,23,42,0.75); backdrop-filter:blur(20px); margin:12px 0;">
+        <div style="position:relative; width:110px; height:130px; margin:0 auto 16px auto; display:flex; align-items:center; justify-content:center;">
+          <div class="scan-spinner-ring" style="width:125px; height:125px; top:-5px; left:-7px; border-color:rgba(52,211,153,0.15); border-top-color:#34d399;"></div>
+          <canvas id="searchMascotCanvas" width="110" height="130" style="width:110px; height:130px; filter:drop-shadow(0 4px 16px rgba(52,211,153,0.35));"></canvas>
+        </div>
+        <div style="display:inline-flex; align-items:center; gap:6px; background:rgba(52,211,153,0.12); border:1px solid rgba(52,211,153,0.3); color:#34d399; font-size:0.82rem; font-weight:700; padding:5px 14px; border-radius:20px; margin-bottom:12px;">
+          <i class="ri-search-eye-line"></i> Arnold le Détective ausculte « ${esc(q)} »
+        </div>
+        <h3 style="font-size:1.15rem; font-weight:800; color:var(--text); margin:0 0 8px 0;">Analyse biochimique &amp; statut vitaliste...</h3>
+        
+        <div id="searchMascotTipBox" style="min-height:56px; max-width:520px; margin:0 auto 18px auto; padding:12px 16px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:12px; font-size:0.86rem; color:var(--text); line-height:1.45; display:flex; align-items:center; justify-content:center; text-align:center; transition:opacity 0.3s ease;">
+          ${randTip}
+        </div>
+
+        <div class="scan-loading-progress-bar" style="max-width:360px; margin:0 auto 12px auto;">
+          <div class="scan-loading-progress-fill"></div>
+        </div>
+        <span id="searchMascotStep" style="font-size:0.76rem; color:var(--text-dim); font-weight:600;">Étape 1/3 : Identification taxonomique et charge colloïdale...</span>
+      </div>
+    `;
+
+    const canvas = document.getElementById('searchMascotCanvas');
+    if (canvas && window.PigeonRenderer) {
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = 110 * dpr;
+      canvas.height = 130 * dpr;
+      canvas.style.width = '110px';
+      canvas.style.height = '130px';
+      searchMascotRenderer = new window.PigeonRenderer(canvas);
+      searchMascotRenderer.setInspecting(true);
+    }
+
+    const steps = [
+      'Étape 1/3 : Identification taxonomique et charge colloïdale...',
+      'Étape 2/3 : Calcul de l\'indice PRAL rénal et statut Dr. Sebi...',
+      'Étape 3/3 : Synthèse bio-électrique et recommandations vivantes...'
+    ];
+    let tipIdx = 0;
+    let stepIdx = 0;
+    tipInterval = setInterval(() => {
+      tipIdx = (tipIdx + 1) % VITAL_EDUCATIONAL_TIPS.length;
+      stepIdx = (stepIdx + 1) % steps.length;
+      const tipBox = document.getElementById('searchMascotTipBox');
+      const stepEl = document.getElementById('searchMascotStep');
+      if (tipBox) {
+        tipBox.style.opacity = '0';
+        setTimeout(() => {
+          tipBox.innerHTML = VITAL_EDUCATIONAL_TIPS[tipIdx];
+          tipBox.style.opacity = '1';
+        }, 200);
+      }
+      if (stepEl) stepEl.textContent = steps[stepIdx];
+    }, 2500);
   }
   if (emptyState) emptyState.style.display = 'none';
   if (statsBar) statsBar.style.display = 'none';
@@ -2416,6 +2485,9 @@ window.askAIToFindFood = async function(query) {
   } catch (e) {
     if (resultsEl) resultsEl.innerHTML = `<p class="empty-state text-danger">${esc(e.message)}</p>`;
     showToast('Recherche IA terminée avec estimation locale.', 'info');
+  } finally {
+    if (tipInterval) clearInterval(tipInterval);
+    if (searchMascotRenderer) searchMascotRenderer.destroy();
   }
 };
 
