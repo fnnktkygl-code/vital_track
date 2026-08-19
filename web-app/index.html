@@ -252,18 +252,56 @@
       <div style="display:flex; flex-direction:column; gap:24px; margin-top:24px;">
         <!-- Weight Tracker -->
         <div class="dash-card glass" id="dashWeightCard">
-        <div class="card-head">
-          <h3><i class="ri-scales-3-line"></i> Évolution du Poids</h3>
-          <button class="chip-btn" onclick="openWeightModal()"><i class="ri-add-line"></i> Pesée</button>
+          <div class="card-head" style="margin-bottom:12px;">
+            <div>
+              <h3 style="margin:0;"><i class="ri-scales-3-line"></i> Évolution du Poids</h3>
+              <p style="font-size:0.82rem; color:var(--text-dim); margin:4px 0 0 0;">Analyse chronologique &amp; indicateurs de tendance</p>
+            </div>
+            <button class="chip-btn" onclick="openWeightModal()"><i class="ri-add-line"></i> Pesée</button>
+          </div>
+
+          <!-- Weight KPI Summary Cards -->
+          <div class="weight-kpi-grid" id="weightKpiGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:10px; margin-bottom:14px;">
+            <div class="weight-kpi-card" style="padding:10px 14px; border-radius:12px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06);">
+              <div style="font-size:0.72rem; color:var(--text-dim); text-transform:uppercase; font-weight:600;">Poids Actuel</div>
+              <div style="display:flex; align-items:baseline; gap:6px; margin-top:3px;">
+                <span id="kpiCurrentWeight" style="font-size:1.35rem; font-weight:800; color:var(--text);">-- kg</span>
+                <span id="kpiDeltaBadge" class="trend-badge" style="font-size:0.72rem; font-weight:700; padding:2px 6px; border-radius:6px;"></span>
+              </div>
+            </div>
+            <div class="weight-kpi-card" style="padding:10px 14px; border-radius:12px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06);">
+              <div style="font-size:0.72rem; color:var(--text-dim); text-transform:uppercase; font-weight:600;">Variation Totale</div>
+              <div id="kpiTotalDelta" style="font-size:1.35rem; font-weight:800; color:var(--text); margin-top:3px;">-- kg</div>
+            </div>
+            <div class="weight-kpi-card" style="padding:10px 14px; border-radius:12px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06);">
+              <div style="font-size:0.72rem; color:var(--text-dim); text-transform:uppercase; font-weight:600;">Moyenne 7 Jours</div>
+              <div id="kpiAvg7d" style="font-size:1.35rem; font-weight:800; color:var(--accent); margin-top:3px;">-- kg</div>
+            </div>
+            <div class="weight-kpi-card" style="padding:10px 14px; border-radius:12px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06);">
+              <div style="font-size:0.72rem; color:var(--text-dim); text-transform:uppercase; font-weight:600;">Poids Cible</div>
+              <div id="kpiTargetWeight" style="font-size:1.35rem; font-weight:800; color:#60a5fa; margin-top:3px;">-- kg</div>
+            </div>
+          </div>
+
+          <!-- Time Range Selector -->
+          <div class="weight-period-bar" id="weightPeriodBar" style="display:flex; gap:6px; margin-bottom:12px; overflow-x:auto;">
+            <button type="button" class="period-btn" data-period="7d" onclick="setWeightPeriod('7d')">1S</button>
+            <button type="button" class="period-btn" data-period="1m" onclick="setWeightPeriod('1m')">1M</button>
+            <button type="button" class="period-btn" data-period="3m" onclick="setWeightPeriod('3m')">3M</button>
+            <button type="button" class="period-btn" data-period="6m" onclick="setWeightPeriod('6m')">6M</button>
+            <button type="button" class="period-btn" data-period="1y" onclick="setWeightPeriod('1y')">1A</button>
+            <button type="button" class="period-btn active" data-period="all" onclick="setWeightPeriod('all')">Tout</button>
+          </div>
+
+          <div id="weightChartEmpty" class="empty-state-card">
+            <i class="ri-scales-3-line"></i>
+            <p>Ajoutez votre première pesée pour voir l'évolution.</p>
+          </div>
+          <div id="weightChartContainer" style="min-height: 240px; height: 240px; width: 100%; position: relative; display: none;">
+            <svg id="weightChartSvg" width="100%" height="100%" style="overflow: visible; cursor: crosshair;"></svg>
+            <div id="weightChartTooltip" class="weight-tooltip" style="display:none; position:absolute; pointer-events:none; z-index:20; background:rgba(15,23,42,0.96); backdrop-filter:blur(12px); border:1px solid rgba(52,211,153,0.4); border-radius:10px; padding:10px 14px; box-shadow:0 12px 30px rgba(0,0,0,0.65); font-size:0.8rem; color:#fff;"></div>
+          </div>
         </div>
-        <div id="weightChartEmpty" class="empty-state-card">
-          <i class="ri-scales-3-line"></i>
-          <p>Ajoutez votre première pesée pour voir l'évolution.</p>
-        </div>
-        <div id="weightChartContainer" style="min-height: 220px; height: 220px; width: 100%; margin-top: 16px; position: relative; display: none;">
-           <svg id="weightChartSvg" width="100%" height="100%" style="overflow: visible;"></svg>
-        </div>
-      </div>
 
       <!-- Active Fasting Card -->
       <div class="dash-card glass" id="dashFastingCard" style="display:none">
@@ -842,6 +880,49 @@
             </button>
           </div>
         </div>
+
+        <!-- Live Metabolic Phases Tracker -->
+        <div class="fasting-stages-wrapper" id="fastingStagesWrapper">
+          <div class="stages-header">
+            <span class="stages-title"><i class="ri-pulse-line" style="color:var(--accent)"></i> Paliers Physiologiques &amp; Métaboliques</span>
+            <span class="stages-current-badge" id="currentStageBadge"><i class="ri-loader-4-line"></i> Phase 1 : Assimilation</span>
+          </div>
+          <div class="stages-progress-bar">
+            <div class="stages-progress-fill" id="stagesProgressFill" style="width: 15%;"></div>
+          </div>
+          <div class="stages-timeline-grid" id="stagesTimelineGrid">
+            <div class="stage-step-card active" id="stageCard1">
+              <div class="stage-step-top"><span class="stage-step-hours">0h - 4h</span><span class="stage-step-icon">🥗</span></div>
+              <div class="stage-step-name">Digestion</div>
+              <div class="stage-step-desc">Assimilation des nutriments &amp; glycémie</div>
+            </div>
+            <div class="stage-step-card" id="stageCard2">
+              <div class="stage-step-top"><span class="stage-step-hours">4h - 8h</span><span class="stage-step-icon">📉</span></div>
+              <div class="stage-step-name">Chute Insuline</div>
+              <div class="stage-step-desc">Stabilisation &amp; repos pancréatique</div>
+            </div>
+            <div class="stage-step-card" id="stageCard3">
+              <div class="stage-step-top"><span class="stage-step-hours">8h - 12h</span><span class="stage-step-icon">⚡</span></div>
+              <div class="stage-step-name">Bascule Cétose</div>
+              <div class="stage-step-desc">Déplétion glycogène hépatique</div>
+            </div>
+            <div class="stage-step-card" id="stageCard4">
+              <div class="stage-step-top"><span class="stage-step-hours">12h - 16h</span><span class="stage-step-icon">🔥</span></div>
+              <div class="stage-step-name">Brûlage Graisses</div>
+              <div class="stage-step-desc">Production de corps cétoniques</div>
+            </div>
+            <div class="stage-step-card" id="stageCard5">
+              <div class="stage-step-top"><span class="stage-step-hours">16h - 24h</span><span class="stage-step-icon">🧬</span></div>
+              <div class="stage-step-name">Autophagie</div>
+              <div class="stage-step-desc">Nettoyage &amp; recyclage cellulaire</div>
+            </div>
+            <div class="stage-step-card" id="stageCard6">
+              <div class="stage-step-top"><span class="stage-step-hours">24h - 48h+</span><span class="stage-step-icon">🌟</span></div>
+              <div class="stage-step-name">Régénération</div>
+              <div class="stage-step-desc">Drainage lymphatique &amp; cellules souches</div>
+            </div>
+          </div>
+        </div>
       </section>
 
       <!-- ===== MASTERCLASS ===== -->
@@ -884,17 +965,18 @@
           </div>
           <div>
             <div class="jn-section-title" data-i18n="fasting.historyTitle">Historique &amp; Statistiques</div>
+            <div class="jn-section-sub">Journal de bord, paliers atteints &amp; régularité</div>
           </div>
         </div>
 
         <div class="jn-stats-grid">
           <div class="jn-stat-card"><div class="jn-stat-num" id="analyticTotal">0</div><div class="jn-stat-label" data-i18n="fasting.totalSessions">Total sessions</div></div>
           <div class="jn-stat-card"><div class="jn-stat-num" id="analyticHours">0h</div><div class="jn-stat-label" data-i18n="fasting.cumulatedHours">Heures cumulées</div></div>
-          <div class="jn-stat-card"><div class="jn-stat-num" style="color:var(--accent);" id="analyticLongest">0h</div><div class="jn-stat-label" data-i18n="fasting.longestFast">Plus long</div></div>
-          <div class="jn-stat-card"><div class="jn-stat-num" style="color:var(--accent);" id="analyticCompletion">0%</div><div class="jn-stat-label" data-i18n="fasting.completionRate">Taux complétion</div></div>
+          <div class="jn-stat-card"><div class="jn-stat-num" style="color:var(--accent);" id="analyticAutophagy">0</div><div class="jn-stat-label">Autophagies (16h+)</div></div>
+          <div class="jn-stat-card"><div class="jn-stat-num" style="color:#60a5fa;" id="analyticLongest">0h</div><div class="jn-stat-label" data-i18n="fasting.longestFast">Plus long jeûne</div></div>
         </div>
 
-        <div class="jn-history-list" id="historyList">
+        <div class="jn-history-list" id="historyList" style="margin-top:16px;">
           <p class="empty-state-sm" data-i18n="fasting.noHistory">Aucune session enregistrée.</p>
         </div>
       </section>
@@ -1155,32 +1237,163 @@
       </div>
 
       <!-- Profile -->
-      <div class="dash-card glass">
-        <h3><i class="ri-user-line"></i> Profil & Localisation</h3>
-        <div class="profile-form">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-            <label>Nom<input type="text" id="profileName" placeholder="Votre nom..." class="form-input"></label>
-            <label>Objectif
-              <select id="profileGoal" class="form-input">
-                <option value="detox">🧹 Détox & Nettoyage</option>
-                <option value="weight">⚖️ Perte de poids</option>
-                <option value="energy">⚡ Énergie & Vitalité</option>
-                <option value="spiritual">🕊️ Jeûne spirituel</option>
-                <option value="healing">💚 Guérison</option>
-              </select>
+      <!-- Profile & Bio-Contexte IA -->
+      <div class="dash-card glass" style="margin-bottom:20px;">
+        <div class="card-head" style="margin-bottom:8px;">
+          <div>
+            <h3 style="margin:0;"><i class="ri-user-heart-line"></i> Bio-Profil &amp; Contexte IA</h3>
+            <p style="font-size:0.82rem; color:var(--text-dim); margin:4px 0 0 0;">Chaque paramètre est utilisé par l'IA pour calibrer vos cures, tisanes et jeûnes</p>
+          </div>
+          <span class="badge-emerald" style="font-size:0.75rem; padding:4px 10px; border-radius:20px;"><i class="ri-brain-line"></i> Mémoire Active</span>
+        </div>
+
+        <div class="profile-card-group">
+          <!-- Bloc 1 : Identité, Objectif & Niveau de Transition -->
+          <div style="padding:16px; border-radius:14px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06);">
+            <h4 style="font-size:0.92rem; font-weight:700; color:var(--text); margin:0 0 12px 0; display:flex; align-items:center; gap:8px;">
+              <span style="font-size:1.1rem;">🎯</span> Objectif Principal &amp; Niveau de Transition
+            </h4>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px;">
+              <label>Nom ou Prénom
+                <input type="text" id="profileName" placeholder="Votre nom ou prénom..." class="form-input" oninput="updateLiveAiPreview()">
+              </label>
+              <label>Objectif Majeur
+                <select id="profileGoal" class="form-input" onchange="updateLiveAiPreview()">
+                  <option value="detox">🧹 Détox &amp; Nettoyage lymphatique</option>
+                  <option value="weight">⚖️ Perte de poids &amp; Affinement</option>
+                  <option value="energy">⚡ Énergie &amp; Vitalité maximale</option>
+                  <option value="transition">🌱 Transition vers le régime sans mucus</option>
+                  <option value="healing">💚 Régénération tissulaire &amp; Auto-guérison</option>
+                  <option value="spiritual">🕊️ Clarté mentale &amp; Jeûne spirituel</option>
+                </select>
+              </label>
+              <label style="grid-column:1/-1;">Niveau de Transition Actuel (Capital pour la sécurité selon Arnold Ehret)
+                <select id="profileTransitionLevel" class="form-input" onchange="updateLiveAiPreview()">
+                  <option value="beginner">🌱 Débutant (Alimentation mixte / transition douce vers le végétal)</option>
+                  <option value="intermediate" selected>🌿 Intermédiaire (Alimentation végétale, sans mucus, jeûnes réguliers)</option>
+                  <option value="advanced">🍇 Avancé (Frugivore, jeûneur expérimenté, herboristerie active)</option>
+                </select>
+              </label>
+            </div>
+          </div>
+
+          <!-- Bloc 2 : Morphologie, Métabolisme & Hydratation -->
+          <div style="padding:16px; border-radius:14px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06);">
+            <h4 style="font-size:0.92rem; font-weight:700; color:var(--text); margin:0 0 12px 0; display:flex; align-items:center; gap:8px;">
+              <span style="font-size:1.1rem;">⚖️</span> Morphologie &amp; Métabolisme
+            </h4>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:12px;">
+              <label>Taille (cm)
+                <input type="number" id="profileHeight" placeholder="175" class="form-input" oninput="updateLiveAiPreview()">
+              </label>
+              <label>Poids Actuel (kg)
+                <input type="number" step="0.1" id="profileCurrentWeight" placeholder="70.0" class="form-input" oninput="updateLiveAiPreview()">
+              </label>
+              <label>Poids Cible (kg)
+                <input type="number" step="0.1" id="profileTargetWeight" placeholder="65.0" class="form-input" oninput="updateLiveAiPreview()">
+              </label>
+              <label>Âge (ans)
+                <input type="number" id="profileAge" placeholder="32" class="form-input" oninput="updateLiveAiPreview()">
+              </label>
+              <label>Niveau d'Activité
+                <select id="profileActivity" class="form-input" onchange="updateLiveAiPreview()">
+                  <option value="sedentary">🛋️ Sédentaire (Bureau)</option>
+                  <option value="moderate" selected>🚶 Modéré (Marche, yoga)</option>
+                  <option value="active">🏃 Actif (Sport 3-4x/sem)</option>
+                  <option value="athlete">⚡ Athlète / Métier physique</option>
+                </select>
+              </label>
+            </div>
+          </div>
+
+          <!-- Bloc 3 : Émonctoires & Terrains Prioritaires -->
+          <div style="padding:16px; border-radius:14px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06);">
+            <h4 style="font-size:0.92rem; font-weight:700; color:var(--text); margin:0 0 4px 0; display:flex; align-items:center; gap:8px;">
+              <span style="font-size:1.1rem;">🌿</span> Émonctoires &amp; Terrains Prioritaires à Soutenir
+            </h4>
+            <p style="font-size:0.78rem; color:var(--text-dim); margin:0 0 10px 0;">Sélectionnez les organes cibles pour orienter les tisanes et plantes Raintree recommandées par l'IA</p>
+            <div class="emonctoire-chip-grid" id="emonctoireChipsContainer">
+              <div class="emonctoire-chip active" data-organ="reins" onclick="toggleEmonctoireChip(this)">
+                <span>💧</span><span>Reins &amp; Filtration</span>
+              </div>
+              <div class="emonctoire-chip active" data-organ="lymphe" onclick="toggleEmonctoireChip(this)">
+                <span>🌊</span><span>Système Lymphatique</span>
+              </div>
+              <div class="emonctoire-chip" data-organ="foie" onclick="toggleEmonctoireChip(this)">
+                <span>🌿</span><span>Foie &amp; Vésicule</span>
+              </div>
+              <div class="emonctoire-chip" data-organ="colon" onclick="toggleEmonctoireChip(this)">
+                <span>🧹</span><span>Côlon &amp; Intestins</span>
+              </div>
+              <div class="emonctoire-chip" data-organ="poumons" onclick="toggleEmonctoireChip(this)">
+                <span>🌬️</span><span>Poumons &amp; Voies resp.</span>
+              </div>
+              <div class="emonctoire-chip" data-organ="peau" onclick="toggleEmonctoireChip(this)">
+                <span>☀️</span><span>Peau &amp; Transpiration</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bloc 4 : Localisation & Biorégion Climat -->
+          <div style="padding:16px; border-radius:14px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06);">
+            <h4 style="font-size:0.92rem; font-weight:700; color:var(--text); margin:0 0 12px 0; display:flex; align-items:center; gap:8px;">
+              <span style="font-size:1.1rem;">🌍</span> Biorégion, Climat &amp; Saisonnalité
+            </h4>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px;">
+              <label>Pays
+                <input type="text" id="profileCountry" placeholder="Canada 🍁" class="form-input" oninput="updateLiveAiPreview()">
+              </label>
+              <label>Ville
+                <input type="text" id="profileCity" placeholder="Montréal" class="form-input" oninput="updateLiveAiPreview()">
+              </label>
+              <label>Biorégion / Climat
+                <select id="profileBioregion" class="form-input" onchange="updateLiveAiPreview()">
+                  <option value="boreal" selected>🌲 Boréale / Nordique (Canada, Scandinavie)</option>
+                  <option value="temperate">🌳 Tempérée européenne (France, Belgique, Suisse)</option>
+                  <option value="mediterranean">🍋 Méditerranéenne (Sud Europe, Maghreb)</option>
+                  <option value="tropical">🌴 Tropicale / Amazonienne (Antilles, Guyane, Brésil)</option>
+                  <option value="west_african">☀️ Subsaharienne / Ouest-Africaine</option>
+                  <option value="arid">🏜️ Aride / Désertique</option>
+                </select>
+              </label>
+            </div>
+          </div>
+
+          <!-- Bloc 5 : Restrictions & Allergies -->
+          <div style="padding:16px; border-radius:14px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06);">
+            <h4 style="font-size:0.92rem; font-weight:700; color:var(--text); margin:0 0 12px 0; display:flex; align-items:center; gap:8px;">
+              <span style="font-size:1.1rem;">🚫</span> Sécurité, Allergies &amp; Restrictions Strictes
+            </h4>
+            <label>Restrictions alimentaires absolues (ex: sans solanacées, sans gluten, sans arachides, sans soja...)
+              <input type="text" id="profileRestrictions" placeholder="Ex: sans noix, sans gluten, intolérance aux solanacées..." class="form-input" oninput="updateLiveAiPreview()">
             </label>
           </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px">
-            <label>Pays<input type="text" id="profileCountry" placeholder="Canada 🍁" class="form-input"></label>
-            <label>Ville<input type="text" id="profileCity" placeholder="Montréal" class="form-input"></label>
+
+          <!-- Bloc 6 : Mémoire Sémantique IA & Habitudes -->
+          <div style="padding:16px; border-radius:14px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06);">
+            <h4 style="font-size:0.92rem; font-weight:700; color:var(--text); margin:0 0 12px 0; display:flex; align-items:center; gap:8px;">
+              <span style="font-size:1.1rem;">🧠</span> Directives &amp; Mémoire Personnelle du Coach IA
+            </h4>
+            <label>Habitudes quotidiennes, goûts et consignes libres pour l'IA :
+              <textarea id="profileMemories" placeholder="Ex: Ne mange rien avant 13h, préfère les infusions tièdes en hiver, sensibilité digestive aux agrumes acides le matin..." class="form-input" style="min-height:75px; resize:vertical" oninput="updateLiveAiPreview()"></textarea>
+            </label>
           </div>
-          <label style="margin-top:8px">Restrictions & Allergies (ex: sans arachides, sans solanacées...)
-            <input type="text" id="profileRestrictions" placeholder="Ex: sans noix, sans gluten..." class="form-input">
-          </label>
-          <label style="margin-top:8px">Mémoire & Habitudes (préférences retenues par l'IA)
-            <textarea id="profileMemories" placeholder="Ex: aime les smoothies le matin, préfère les repas tièdes en hiver..." class="form-input" style="min-height:60px;resize:vertical"></textarea>
-          </label>
-          <button class="btn-primary" onclick="saveProfile()" style="margin-top:12px"><i class="ri-save-line"></i> Sauvegarder mon profil</button>
+
+          <!-- Bloc 7 : Transparence Totale (Live Context Preview) -->
+          <div style="padding:16px; border-radius:14px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06);">
+            <div style="display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="toggleAiPreviewBox()">
+              <h4 style="font-size:0.92rem; font-weight:700; color:#60a5fa; margin:0; display:flex; align-items:center; gap:8px;">
+                <i class="ri-eye-line"></i> Transparence Totale : Aperçu du Bio-Contexte IA
+              </h4>
+              <span id="aiPreviewChevron" style="font-size:1.1rem; color:var(--text-dim); transition:transform 0.2s;"><i class="ri-arrow-down-s-line"></i></span>
+            </div>
+            <p style="font-size:0.78rem; color:var(--text-dim); margin:6px 0 10px 0;">Voici mot pour mot les instructions contextuelles injectées à chaque question posée au Coach IA.</p>
+            <div id="aiPreviewBox" class="ai-preview-box"></div>
+          </div>
+
+          <button class="btn-primary" onclick="saveProfile()" style="padding:14px; font-size:1rem; font-weight:700; border-radius:12px; margin-top:4px;">
+            <i class="ri-save-line"></i> Sauvegarder mon Bio-Profil Vitaliste
+          </button>
         </div>
       </div>
 
@@ -1425,6 +1638,117 @@
       <div class="vital-confirm-actions">
         <button type="button" class="vital-confirm-btn-cancel" id="vitalConfirmCancelBtn">Annuler</button>
         <button type="button" class="vital-confirm-btn-action" id="vitalConfirmActionBtn">Confirmer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ POST-FAST DEBRIEF & CELEBRATION MODAL ═══════ -->
+  <div class="fast-debrief-overlay" id="fastEndModal" style="display:none" onclick="if(event.target===this) closeFastEndModal()">
+    <div class="fast-debrief-modal" onclick="event.stopPropagation()">
+      <div class="fast-debrief-header">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <h3 style="margin:0; font-size:1.25rem; font-weight:800; color:var(--text); display:flex; align-items:center; gap:8px;">
+              <span>🎉</span> <span id="fastDebriefTitle">Bilan &amp; Clôture de Jeûne</span>
+            </h3>
+            <p style="margin:4px 0 0 0; font-size:0.82rem; color:var(--text-dim);">Paliers biologiques atteints, protocole de reprise &amp; journal de ressenti</p>
+          </div>
+          <button class="modal-close" onclick="closeFastEndModal()" style="position:static;"><i class="ri-close-line"></i></button>
+        </div>
+      </div>
+
+      <div class="fast-debrief-scroll">
+        <!-- Session KPIs -->
+        <div class="fast-debrief-kpis">
+          <div class="fast-kpi-pill">
+            <div class="fast-kpi-label">Durée Effectuée</div>
+            <div class="fast-kpi-val" id="fastDebriefElapsed">16.0h</div>
+          </div>
+          <div class="fast-kpi-pill">
+            <div class="fast-kpi-label">Objectif Initial</div>
+            <div class="fast-kpi-val" id="fastDebriefGoal" style="color:var(--text);">16h</div>
+          </div>
+          <div class="fast-kpi-pill">
+            <div class="fast-kpi-label">Statut</div>
+            <div class="fast-kpi-val" id="fastDebriefStatus" style="font-size:1rem; color:#34d399;">Accompli ✅</div>
+          </div>
+        </div>
+
+        <!-- Metabolic Stages Reached -->
+        <div>
+          <div style="font-size:0.84rem; font-weight:700; color:var(--text); margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+            <i class="ri-medal-fill" style="color:#facc15"></i> Paliers Physiologiques Validés
+          </div>
+          <div class="jn-rich-badges" id="fastDebriefStagesBadges">
+            <!-- Injected via JS -->
+          </div>
+        </div>
+
+        <!-- Refeeding Protocol (Breaking the fast) -->
+        <div class="refeed-protocol-box" id="fastDebriefRefeedBox">
+          <div class="refeed-title">
+            <i class="ri-restaurant-2-line"></i> Protocole de Rupture Conseillé (Règle d'Arnold Ehret)
+          </div>
+          <div id="fastDebriefRefeedContent">
+            <!-- Injected via JS -->
+          </div>
+        </div>
+
+        <!-- Feelings Logger -->
+        <div style="display:flex; flex-direction:column; gap:12px; background:rgba(255,255,255,0.02); padding:14px; border-radius:14px; border:1px solid rgba(255,255,255,0.06);">
+          <div style="font-size:0.84rem; font-weight:700; color:var(--text);">
+            🌿 Journal de Ressenti &amp; Vitalité
+          </div>
+
+          <!-- Energy rating -->
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+            <span style="font-size:0.8rem; color:var(--text-dim);">Niveau d'énergie vitale :</span>
+            <div class="feeling-rating-row" id="fastRatingEnergy">
+              <button type="button" class="star-rating-btn" data-val="1" onclick="setFastRating('energy', 1)">⚡ 1</button>
+              <button type="button" class="star-rating-btn" data-val="2" onclick="setFastRating('energy', 2)">⚡ 2</button>
+              <button type="button" class="star-rating-btn selected" data-val="3" onclick="setFastRating('energy', 3)">⚡ 3</button>
+              <button type="button" class="star-rating-btn" data-val="4" onclick="setFastRating('energy', 4)">⚡ 4</button>
+              <button type="button" class="star-rating-btn" data-val="5" onclick="setFastRating('energy', 5)">⚡ 5</button>
+            </div>
+          </div>
+
+          <!-- Mental clarity rating -->
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+            <span style="font-size:0.8rem; color:var(--text-dim);">Clarté mentale &amp; focus :</span>
+            <div class="feeling-rating-row" id="fastRatingClarity">
+              <button type="button" class="star-rating-btn" data-val="1" onclick="setFastRating('clarity', 1)">🧠 1</button>
+              <button type="button" class="star-rating-btn" data-val="2" onclick="setFastRating('clarity', 2)">🧠 2</button>
+              <button type="button" class="star-rating-btn" data-val="3" onclick="setFastRating('clarity', 3)">🧠 3</button>
+              <button type="button" class="star-rating-btn selected" data-val="4" onclick="setFastRating('energy', 4)">🧠 4</button>
+              <button type="button" class="star-rating-btn" data-val="5" onclick="setFastRating('clarity', 5)">🧠 5</button>
+            </div>
+          </div>
+
+          <!-- Elimination signs checklist -->
+          <div>
+            <span style="font-size:0.8rem; color:var(--text-dim); display:block; margin-bottom:6px;">Signes d'élimination observés (Miroir Magique) :</span>
+            <div class="elim-tags-grid" id="fastElimTags">
+              <span class="elim-tag-chip" data-tag="tongue" onclick="toggleElimTag(this)">👅 Langue chargée (mucus)</span>
+              <span class="elim-tag-chip" data-tag="lightness" onclick="toggleElimTag(this)">🕊️ Sensation de légèreté</span>
+              <span class="elim-tag-chip" data-tag="sweat" onclick="toggleElimTag(this)">💦 Transpiration / Chaleur</span>
+              <span class="elim-tag-chip" data-tag="thirst" onclick="toggleElimTag(this)">💧 Soif d'eau structurée</span>
+              <span class="elim-tag-chip" data-tag="euphoria" onclick="toggleElimTag(this)">✨ Clarté / Euphorie</span>
+            </div>
+          </div>
+
+          <!-- Notes -->
+          <div>
+            <label style="font-size:0.8rem; color:var(--text-dim); display:block; margin-bottom:4px;">Notes personnelles &amp; observations :</label>
+            <input type="text" id="fastDebriefNote" class="form-input" placeholder="Ex: Première fois à 20h, faim dissipée après 14h, excellente énergie..." />
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:6px;">
+          <button type="button" class="btn-secondary" style="flex:1;" onclick="closeFastEndModal()">Annuler &amp; Poursuivre</button>
+          <button type="button" class="btn-primary" style="flex:2; font-weight:700;" onclick="confirmSaveFastDebrief()">
+            <i class="ri-check-double-line"></i> Enregistrer la session
+          </button>
+        </div>
       </div>
     </div>
   </div>

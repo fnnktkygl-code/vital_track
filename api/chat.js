@@ -56,17 +56,41 @@ module.exports = async function handler(req, res) {
     if (profile && typeof profile === 'object' && Object.keys(profile).length > 0) {
       const country = profile.country || 'Canada 🍁';
       const city = profile.city || 'Montréal';
+      const bioregion = profile.bioregion || 'Boréale / Tempérée froide';
       const season = profile.season || 'Hiver';
       const restrictions = profile.restrictions || 'Aucune restriction déclarée';
+      const transitionLevel = profile.transitionLevel || 'Intermédiaire (Alimentation végétale / transition sans mucus)';
+      const targetOrgans = Array.isArray(profile.targetOrgans) && profile.targetOrgans.length > 0
+        ? profile.targetOrgans.join(', ')
+        : (profile.targetOrgans || 'Système global (Reins & Lymphe)');
       
-      let memoriesText = '';
-      if (Array.isArray(profile.memories) && profile.memories.length > 0) {
-        memoriesText = `\nHabitudes et préférences mémorisées :\n${profile.memories.map(m => `- ${m}`).join('\n')}`;
-      } else if (typeof profile.memories === 'string' && profile.memories.trim()) {
-        memoriesText = `\nHabitudes et préférences mémorisées : ${profile.memories.trim()}`;
+      let morphologyText = '';
+      if (profile.height || profile.currentWeight || profile.targetWeight || profile.age || profile.activityLevel) {
+        const parts = [];
+        if (profile.height) parts.push(`Taille: ${profile.height} cm`);
+        if (profile.currentWeight) parts.push(`Poids actuel: ${profile.currentWeight} kg`);
+        if (profile.targetWeight) parts.push(`Poids cible: ${profile.targetWeight} kg`);
+        if (profile.age) parts.push(`Âge: ${profile.age} ans`);
+        if (profile.activityLevel) parts.push(`Activité: ${profile.activityLevel}`);
+        morphologyText = `\nMorphologie & Métabolisme: ${parts.join(' | ')}`;
       }
 
-      profileContext = `\n\n[CONTEXTE DE L'UTILISATEUR ACTUEL]\nNom: ${profile.name || 'Inconnu'}\nLocalisation: ${city}, ${country}\nSaison locale: ${season}\nObjectif: ${profile.goal || 'vitalité'}\nProtocole: ${profile.protocol || 'vitalist'}\nRestrictions: ${restrictions}${memoriesText}`;
+      let memoriesText = '';
+      if (Array.isArray(profile.memories) && profile.memories.length > 0) {
+        memoriesText = `\nHabitudes & Préférences mémorisées :\n${profile.memories.map(m => `- ${m}`).join('\n')}`;
+      } else if (typeof profile.memories === 'string' && profile.memories.trim()) {
+        memoriesText = `\nHabitudes & Préférences mémorisées : ${profile.memories.trim()}`;
+      }
+
+      profileContext = `\n\n[CONTEXTE & BIO-PROFIL DE L'UTILISATEUR]
+Nom: ${profile.name || 'Inconnu'}
+Localisation: ${city}, ${country} (Biorégion: ${bioregion}, Saison: ${season})
+Objectif Majeur: ${profile.goal || 'Détox & Vitalité'}
+Protocole / École: ${profile.protocol || 'vitalist'}
+Niveau de Transition: ${transitionLevel}
+Émonctoires & Terrains prioritaires à soutenir: ${targetOrgans}${morphologyText}
+Restrictions & Allergies strictes: ${restrictions}${memoriesText}
+[DIRECTIVE COACHING PROFILE] : Adapte TOUJOURS tes conseils botaniques (plantes Raintree, tisanes, aliments), l'intensité des détox et les protocoles de jeûne en fonction directe du niveau de transition et des émonctoires prioritaires déclarés par l'utilisateur.`;
     }
 
     const isContinuing = Array.isArray(history) && history.length > 0;

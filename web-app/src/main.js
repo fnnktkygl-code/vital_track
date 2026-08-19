@@ -681,7 +681,7 @@ window.toggleTheme = function() {
 };
 function loadTheme() { if (store.get('theme') === 'light') { document.documentElement.setAttribute('data-theme', 'light'); document.getElementById('themeIcon').className = 'ri-sun-line'; } }
 
-// ═══════ PROFILE & GEO MEMORY ═══════
+// ═══════ PROFILE & BIO-MEMORY ENGINE ═══════
 function getUserProfile() {
   const p = store.get('profile', {});
   const month = new Date().getMonth();
@@ -694,12 +694,23 @@ function getUserProfile() {
   if (Array.isArray(p.memories)) mems = p.memories;
   else if (typeof p.memories === 'string' && p.memories.trim()) mems = p.memories.split('\n').map(s => s.trim()).filter(Boolean);
 
+  let organs = ['reins', 'lymphe'];
+  if (Array.isArray(p.targetOrgans) && p.targetOrgans.length > 0) organs = p.targetOrgans;
+
   return {
     name: p.name || '',
     goal: p.goal || 'detox',
     protocol: currentProtocol || p.protocol || 'vitalist',
+    transitionLevel: p.transitionLevel || 'intermediate',
+    height: p.height || '',
+    currentWeight: p.currentWeight || '',
+    targetWeight: p.targetWeight || '',
+    age: p.age || '',
+    activityLevel: p.activityLevel || 'moderate',
+    targetOrgans: organs,
     country: p.country || 'Canada 🍁',
     city: p.city || 'Montréal',
+    bioregion: p.bioregion || 'boreal',
     season: p.season || defaultSeason,
     restrictions: p.restrictions || '',
     memories: mems
@@ -710,30 +721,121 @@ function loadProfile() {
   const p = getUserProfile();
   if (document.getElementById('profileName')) document.getElementById('profileName').value = p.name || '';
   if (document.getElementById('profileGoal')) document.getElementById('profileGoal').value = p.goal || 'detox';
+  if (document.getElementById('profileTransitionLevel')) document.getElementById('profileTransitionLevel').value = p.transitionLevel || 'intermediate';
+  if (document.getElementById('profileHeight')) document.getElementById('profileHeight').value = p.height || '';
+  if (document.getElementById('profileCurrentWeight')) document.getElementById('profileCurrentWeight').value = p.currentWeight || '';
+  if (document.getElementById('profileTargetWeight')) document.getElementById('profileTargetWeight').value = p.targetWeight || '';
+  if (document.getElementById('profileAge')) document.getElementById('profileAge').value = p.age || '';
+  if (document.getElementById('profileActivity')) document.getElementById('profileActivity').value = p.activityLevel || 'moderate';
   if (document.getElementById('profileCountry')) document.getElementById('profileCountry').value = p.country || 'Canada 🍁';
   if (document.getElementById('profileCity')) document.getElementById('profileCity').value = p.city || 'Montréal';
+  if (document.getElementById('profileBioregion')) document.getElementById('profileBioregion').value = p.bioregion || 'boreal';
   if (document.getElementById('profileRestrictions')) document.getElementById('profileRestrictions').value = p.restrictions || '';
   if (document.getElementById('profileMemories')) {
     document.getElementById('profileMemories').value = Array.isArray(p.memories) ? p.memories.join('\n') : (p.memories || '');
   }
+
+  // Restore emonctoires chips
+  const activeOrgans = p.targetOrgans || ['reins', 'lymphe'];
+  document.querySelectorAll('#emonctoireChipsContainer .emonctoire-chip').forEach(chip => {
+    const organ = chip.dataset.organ;
+    chip.classList.toggle('active', activeOrgans.includes(organ));
+  });
+
   if (document.getElementById('greetName')) document.getElementById('greetName').textContent = p.name ? `Salut ${p.name} ! 👋` : 'Salut ! 👋';
+  updateLiveAiPreview();
 }
+
+window.toggleEmonctoireChip = function(el) {
+  if (!el) return;
+  el.classList.toggle('active');
+  updateLiveAiPreview();
+};
+
+window.toggleAiPreviewBox = function() {
+  const box = document.getElementById('aiPreviewBox');
+  const chevron = document.getElementById('aiPreviewChevron');
+  if (!box) return;
+  const isHidden = box.style.display === 'none';
+  box.style.display = isHidden ? 'block' : 'none';
+  if (chevron) chevron.style.transform = isHidden ? 'rotate(0deg)' : 'rotate(-90deg)';
+};
+
+window.updateLiveAiPreview = function() {
+  const preview = document.getElementById('aiPreviewBox');
+  if (!preview) return;
+
+  const name = document.getElementById('profileName')?.value.trim() || 'Inconnu';
+  const goalEl = document.getElementById('profileGoal');
+  const goal = goalEl ? goalEl.options[goalEl.selectedIndex]?.text : 'Détox & Vitalité';
+  const transEl = document.getElementById('profileTransitionLevel');
+  const transLevel = transEl ? transEl.options[transEl.selectedIndex]?.text : 'Intermédiaire';
+  const city = document.getElementById('profileCity')?.value.trim() || 'Montréal';
+  const country = document.getElementById('profileCountry')?.value.trim() || 'Canada 🍁';
+  const bioregionEl = document.getElementById('profileBioregion');
+  const bioregion = bioregionEl ? bioregionEl.options[bioregionEl.selectedIndex]?.text : 'Boréale';
+
+  const activeChips = Array.from(document.querySelectorAll('#emonctoireChipsContainer .emonctoire-chip.active'));
+  const organs = activeChips.map(c => c.textContent.trim()).join(', ') || 'Système global (Reins & Lymphe)';
+
+  const height = document.getElementById('profileHeight')?.value.trim();
+  const curW = document.getElementById('profileCurrentWeight')?.value.trim();
+  const tarW = document.getElementById('profileTargetWeight')?.value.trim();
+  const age = document.getElementById('profileAge')?.value.trim();
+  const actEl = document.getElementById('profileActivity');
+  const activity = actEl ? actEl.options[actEl.selectedIndex]?.text : 'Modéré';
+
+  let morpho = [];
+  if (height) morpho.push(`Taille: ${height}cm`);
+  if (curW) morpho.push(`Poids: ${curW}kg`);
+  if (tarW) morpho.push(`Cible: ${tarW}kg`);
+  if (age) morpho.push(`Âge: ${age}ans`);
+  if (activity) morpho.push(`Activité: ${activity}`);
+
+  const restrictions = document.getElementById('profileRestrictions')?.value.trim() || 'Aucune restriction déclarée';
+  const rawMems = document.getElementById('profileMemories')?.value.trim() || '';
+
+  const generatedPrompt = `[CONTEXTE & BIO-PROFIL DE L'UTILISATEUR]
+Nom: ${name}
+Localisation: ${city}, ${country} (Biorégion: ${bioregion})
+Objectif Majeur: ${goal}
+Niveau de Transition: ${transLevel}
+Émonctoires Prioritaires: ${organs}${morpho.length > 0 ? `\nMorphologie & Métabolisme: ${morpho.join(' | ')}` : ''}
+Restrictions Strictes: ${restrictions}${rawMems ? `\nHabitudes Mémorisées:\n- ${rawMems.split('\n').join('\n- ')}` : ''}
+[DIRECTIVE COACHING] : Adapter systématiquement l'agressivité des détox, le protocole de jeûne et les plantes médicinales Raintree aux émonctoires prioritaires et au niveau de transition.`;
+
+  preview.textContent = generatedPrompt;
+};
 
 window.saveProfile = function() {
   const rawMems = document.getElementById('profileMemories') ? document.getElementById('profileMemories').value : '';
   const mems = rawMems.split('\n').map(s => s.trim()).filter(Boolean);
 
+  const activeChips = Array.from(document.querySelectorAll('#emonctoireChipsContainer .emonctoire-chip.active'));
+  const targetOrgans = activeChips.map(c => c.dataset.organ);
+
   const p = {
     name: document.getElementById('profileName') ? document.getElementById('profileName').value.trim() : '',
     goal: document.getElementById('profileGoal') ? document.getElementById('profileGoal').value : 'detox',
+    transitionLevel: document.getElementById('profileTransitionLevel') ? document.getElementById('profileTransitionLevel').value : 'intermediate',
+    height: document.getElementById('profileHeight') ? document.getElementById('profileHeight').value.trim() : '',
+    currentWeight: document.getElementById('profileCurrentWeight') ? document.getElementById('profileCurrentWeight').value.trim() : '',
+    targetWeight: document.getElementById('profileTargetWeight') ? document.getElementById('profileTargetWeight').value.trim() : '',
+    age: document.getElementById('profileAge') ? document.getElementById('profileAge').value.trim() : '',
+    activityLevel: document.getElementById('profileActivity') ? document.getElementById('profileActivity').value : 'moderate',
+    targetOrgans: targetOrgans.length > 0 ? targetOrgans : ['reins', 'lymphe'],
     country: document.getElementById('profileCountry') ? document.getElementById('profileCountry').value.trim() : 'Canada 🍁',
     city: document.getElementById('profileCity') ? document.getElementById('profileCity').value.trim() : 'Montréal',
+    bioregion: document.getElementById('profileBioregion') ? document.getElementById('profileBioregion').value : 'boreal',
     restrictions: document.getElementById('profileRestrictions') ? document.getElementById('profileRestrictions').value.trim() : '',
     memories: mems
   };
   store.set('profile', p);
+
   if (document.getElementById('greetName')) document.getElementById('greetName').textContent = p.name ? `Salut ${p.name} ! 👋` : 'Salut ! 👋';
-  showToast('✅ Profil & préférences sauvegardés !', 'success');
+  updateLiveAiPreview();
+  if (window.renderWeightChart) window.renderWeightChart();
+  showToast('✅ Bio-Profil & Directives IA sauvegardés !', 'success');
 };
 
 // ═══════ PROTOCOL ═══════
@@ -4622,32 +4724,195 @@ function startFasting() {
   renderDashboard();
 }
 
-async function stopFasting() {
-  if (!fastingState.active) return;
-  const elapsed = Date.now() - fastingState.startTime;
-  const elapsedH = (elapsed / 3600000).toFixed(1);
+// ═══════ FASTING METABOLIC STAGES & DEBRIEF ENGINE ═══════
+const FASTING_METABOLIC_STAGES = [
+  { id: 1, minH: 0, maxH: 4, name: "Digestion & Glycémie", icon: "🥗", desc: "Assimilation des nutriments, insuline active." },
+  { id: 2, minH: 4, maxH: 8, name: "Chute de l'Insuline", icon: "📉", desc: "Stabilisation du sucre sanguin, repos pancréatique." },
+  { id: 3, minH: 8, maxH: 12, name: "Bascule en Cétose", icon: "⚡", desc: "Déplétion glycogène du foie, bascule lipidique." },
+  { id: 4, minH: 12, maxH: 16, name: "Brûlage des Graisses", icon: "🔥", desc: "Production active de corps cétoniques, détox initiale." },
+  { id: 5, minH: 16, maxH: 24, name: "Autophagie Active", icon: "🧬", desc: "Nettoyage cellulaire profond & recyclage des protéines." },
+  { id: 6, minH: 24, maxH: 999, name: "Régénération Profonde", icon: "🌟", desc: "Drainage lymphatique, élimination mucus & cellules souches." }
+];
 
-  // Custom confirmation dialog
-  const ok = await (window.showVitalConfirm ? window.showVitalConfirm({
-    title: 'Arrêter la session de jeûne ?',
-    message: `Vous êtes en jeûne depuis <strong>${elapsedH}h</strong> (objectif : ${(fastingState.durationMs/3600000).toFixed(0)}h). Souhaitez-vous enregistrer et arrêter cette session ?`,
-    icon: 'ri-stop-circle-line',
-    confirmText: 'Arrêter et enregistrer',
-    cancelText: 'Poursuivre le jeûne',
-    isDanger: true
-  }) : Promise.resolve(confirm(`Arrêter le jeûne en cours ? (${elapsedH}h)`)));
+let pendingFastDebrief = null;
+let currentFastRating = { energy: 3, clarity: 4, tags: [] };
 
-  if (!ok) return;
+function getUnlockedStages(hours) {
+  return FASTING_METABOLIC_STAGES.filter(s => hours >= s.minH);
+}
+
+function getRefeedingProtocol(hours, type) {
+  if (hours < 16) {
+    return `
+      <ul class="refeed-list">
+        <li><strong>Premier apport :</strong> Un grand verre d'eau tempérée avec un filet de citron jaune ou d'eau de coco fraîche.</li>
+        <li><strong>Repas de rupture :</strong> Fruits aqueux de saison (pomme douce, pastèque, raisin ou papaye) ou salade de jeunes pousses avec concombre.</li>
+        <li><strong>Conseil d'Arnold Ehret :</strong> Mangez lentement et mastiquez jusqu'à liquéfaction complète pour réveiller la motilité intestinale en douceur.</li>
+      </ul>
+    `;
+  } else if (hours < 24) {
+    return `
+      <ul class="refeed-list">
+        <li><strong>1. Hydratation réveil :</strong> Eau citronnée tiède (alcalinisante) 20 minutes avant le premier aliment.</li>
+        <li><strong>2. Repas balai d'Ehret :</strong> Pomme râpée crue ou salade de carottes râpées assaisonnées d'un filet de citron (sans huile lourde) pour balayer les toxines libérées dans le tube digestif.</li>
+        <li><strong>3. À éviter absolument :</strong> Féculents lourds (pains, pâtes, riz dense), produits laitiers ou protéines animales qui bloqueraient brutalement l'élimination en cours.</li>
+      </ul>
+    `;
+  } else if (hours < 48) {
+    return `
+      <ul class="refeed-list">
+        <li><strong>1. Rupture progressive :</strong> 250ml de jus vert fraîchement extrait (concombre, céleri, pomme, épinards) ou eau de source pure.</li>
+        <li><strong>2. Première assiette (1h après) :</strong> Légumes non féculents légèrement étuvés (courgettes, épinards, blettes) ou compote de pommes maison sans sucre.</li>
+        <li><strong>3. Règle d'or de Morse & Ehret :</strong> La durée de la reprise doit être au moins égale à la moitié de la durée du jeûne pour éviter toute crise d'auto-intoxication.</li>
+      </ul>
+    `;
+  } else {
+    return `
+      <ul class="refeed-list">
+        <li><strong>⚠️ Phase ultra-délicate (Jeûne prolongé de ${hours.toFixed(0)}h) :</strong> Votre système digestif est en sommeil réparateur profond.</li>
+        <li><strong>1. Jour 1 :</strong> Exclusivement des jus de fruits sub-acides dilués (raisin ou pomme 50/50 avec eau de source) par petites gorgées espacées de 2h.</li>
+        <li><strong>2. Jour 2 :</strong> Fruits aqueux mous mûrs à point (figues fraîches, raisins, melon, papaye).</li>
+        <li><strong>3. Interdiction stricte :</strong> Jamais de noix, graines, féculents denses, sel ou aliments cuits gras avant 72h de reprise.</li>
+      </ul>
+    `;
+  }
+}
+
+function updateLiveFastingStages(elapsedHours, targetHours) {
+  const currentStage = FASTING_METABOLIC_STAGES.slice().reverse().find(s => elapsedHours >= s.minH) || FASTING_METABOLIC_STAGES[0];
+  const badge = document.getElementById('currentStageBadge');
+  if (badge) {
+    badge.innerHTML = `${currentStage.icon} Phase ${currentStage.id} : ${currentStage.name}`;
+  }
+
+  const fill = document.getElementById('stagesProgressFill');
+  if (fill) {
+    const maxReference = Math.max(targetHours || 16, 24);
+    const pct = Math.min(100, (elapsedHours / maxReference) * 100);
+    fill.style.width = `${Math.max(5, pct)}%`;
+  }
+
+  FASTING_METABOLIC_STAGES.forEach(stg => {
+    const el = document.getElementById(`stageCard${stg.id}`);
+    if (el) {
+      const isReached = elapsedHours >= stg.minH;
+      const isCurrent = currentStage.id === stg.id;
+      el.classList.toggle('completed', isReached && !isCurrent);
+      el.classList.toggle('active', isCurrent);
+    }
+  });
+}
+
+window.openFastEndModal = function(elapsedMs, targetMs, type) {
+  const modal = document.getElementById('fastEndModal');
+  if (!modal) return;
+
+  const elapsedHours = elapsedMs / 3600000;
+  const targetHours = targetMs / 3600000;
+  const completed = elapsedMs >= targetMs;
+
+  pendingFastDebrief = {
+    elapsedMs,
+    targetMs,
+    type,
+    startTime: fastingState.startTime || Date.now() - elapsedMs,
+    completed
+  };
+
+  currentFastRating = { energy: 3, clarity: 4, tags: [] };
+
+  document.getElementById('fastDebriefElapsed').textContent = `${elapsedHours.toFixed(1)}h`;
+  document.getElementById('fastDebriefGoal').textContent = `${targetHours.toFixed(0)}h`;
+  const statEl = document.getElementById('fastDebriefStatus');
+  if (statEl) {
+    statEl.textContent = completed ? 'Accompli 🎉' : 'Arrêté plus tôt ⏱️';
+    statEl.style.color = completed ? '#34d399' : '#f59e0b';
+  }
+
+  // Stages badges
+  const unlocked = getUnlockedStages(elapsedHours);
+  const badgesContainer = document.getElementById('fastDebriefStagesBadges');
+  if (badgesContainer) {
+    badgesContainer.innerHTML = unlocked.map(u => `
+      <span class="jn-stage-badge-sm" style="background:rgba(52,211,153,0.15); border-color:rgba(52,211,153,0.4); color:var(--accent);">
+        ${u.icon} ${u.name} (${u.minH}h+)
+      </span>
+    `).join('');
+  }
+
+  // Refeeding guide
+  const refeedContainer = document.getElementById('fastDebriefRefeedContent');
+  if (refeedContainer) {
+    refeedContainer.innerHTML = getRefeedingProtocol(elapsedHours, type);
+  }
+
+  // Reset ratings UI
+  document.querySelectorAll('#fastRatingEnergy .star-rating-btn').forEach(btn => {
+    btn.classList.toggle('selected', btn.dataset.val === '3');
+  });
+  document.querySelectorAll('#fastRatingClarity .star-rating-btn').forEach(btn => {
+    btn.classList.toggle('selected', btn.dataset.val === '4');
+  });
+  document.querySelectorAll('#fastElimTags .elim-tag-chip').forEach(chip => {
+    chip.classList.remove('active');
+  });
+  if (document.getElementById('fastDebriefNote')) {
+    document.getElementById('fastDebriefNote').value = '';
+  }
+
+  modal.style.display = 'flex';
+};
+
+window.closeFastEndModal = function() {
+  const modal = document.getElementById('fastEndModal');
+  if (modal) modal.style.display = 'none';
+  pendingFastDebrief = null;
+};
+
+window.setFastRating = function(type, val) {
+  currentFastRating[type] = parseInt(val);
+  const containerId = type === 'energy' ? 'fastRatingEnergy' : 'fastRatingClarity';
+  document.querySelectorAll(`#${containerId} .star-rating-btn`).forEach(btn => {
+    btn.classList.toggle('selected', parseInt(btn.dataset.val) === parseInt(val));
+  });
+};
+
+window.toggleElimTag = function(el) {
+  if (!el) return;
+  el.classList.toggle('active');
+  const tag = el.dataset.tag;
+  if (el.classList.contains('active')) {
+    if (!currentFastRating.tags.includes(tag)) currentFastRating.tags.push(tag);
+  } else {
+    currentFastRating.tags = currentFastRating.tags.filter(t => t !== tag);
+  }
+};
+
+window.confirmSaveFastDebrief = function() {
+  if (!pendingFastDebrief) {
+    closeFastEndModal();
+    return;
+  }
+
+  const note = document.getElementById('fastDebriefNote')?.value.trim() || '';
+  const elapsedH = (pendingFastDebrief.elapsedMs / 3600000).toFixed(1);
+  const unlocked = getUnlockedStages(pendingFastDebrief.elapsedMs / 3600000);
 
   const history = store.get('fasting-history', []);
   history.unshift({
-    type: fastingState.type,
-    startTime: fastingState.startTime,
-    elapsed,
-    targetMs: fastingState.durationMs,
-    completed: elapsed >= fastingState.durationMs
+    type: pendingFastDebrief.type,
+    startTime: pendingFastDebrief.startTime,
+    elapsed: pendingFastDebrief.elapsedMs,
+    targetMs: pendingFastDebrief.targetMs,
+    completed: pendingFastDebrief.completed,
+    energy: currentFastRating.energy,
+    clarity: currentFastRating.clarity,
+    tags: currentFastRating.tags,
+    note: note,
+    stagesCount: unlocked.length
   });
   store.set('fasting-history', history.slice(0, 50));
+
   clearInterval(fastingState.interval);
   fastingState = { active: false, startTime: null, durationMs: 0, type: '', interval: null };
   store.del('fasting-active');
@@ -4656,9 +4921,7 @@ async function stopFasting() {
   const btn = document.getElementById('fastStartBtn');
   const icon = document.getElementById('fastBtnIcon');
   const label = document.getElementById('fastBtnLabel');
-  if (btn) {
-    btn.className = 'jn-btn-start idle';
-  }
+  if (btn) btn.className = 'jn-btn-start idle';
   if (icon) icon.className = 'ri-play-fill';
   if (label) label.textContent = 'Démarrer le jeûne';
 
@@ -4679,19 +4942,32 @@ async function stopFasting() {
   const lockBadge = document.getElementById('jnTypeLockBadge');
   if (lockBadge) lockBadge.style.display = 'none';
 
-  if (window.showToast) window.showToast(`Session enregistrée avec succès (${elapsedH}h effectuées) !`, 'success');
+  closeFastEndModal();
+  if (window.showToast) window.showToast(`🎉 Session de ${elapsedH}h enregistrée dans votre journal !`, 'success');
 
   renderFastingHistory();
   renderFastingAnalytics();
   renderDashboard();
+};
+
+async function stopFasting() {
+  if (!fastingState.active) return;
+  const elapsed = Date.now() - fastingState.startTime;
+  openFastEndModal(elapsed, fastingState.durationMs, fastingState.type);
 }
 
 function updateFastingUI() {
-  if (!fastingState.active) return;
+  if (!fastingState.active) {
+    updateLiveFastingStages(0, 16);
+    return;
+  }
   const elapsed = Date.now() - fastingState.startTime;
+  const elapsedHours = elapsed / 3600000;
+  const targetHours = fastingState.durationMs / 3600000;
   const remaining = Math.max(0, fastingState.durationMs - elapsed);
   const progress = Math.min(1, elapsed / fastingState.durationMs);
   const ts = Math.floor(elapsed / 1000);
+
   const timerDigits = document.getElementById('timerDigits');
   if (timerDigits) {
     timerDigits.textContent = `${String(Math.floor(ts/3600)).padStart(2,'0')}:${String(Math.floor((ts%3600)/60)).padStart(2,'0')}:${String(ts%60).padStart(2,'0')}`;
@@ -4709,6 +4985,9 @@ function updateFastingUI() {
       statusEl.textContent = `Reste ${Math.floor(remaining/3600000)}h ${Math.floor((remaining%3600000)/60000)}min`;
     }
   }
+
+  // Update live stages visual
+  updateLiveFastingStages(elapsedHours, targetHours);
 
   // Dashboard mirror
   const dt = document.getElementById('dashFastTimer');
@@ -4757,35 +5036,124 @@ function loadFastingState() {
     document.getElementById('jnFieldType')?.classList.remove('locked');
     document.getElementById('jnFieldDuration')?.classList.remove('locked');
     if (lockBadge) lockBadge.style.display = 'none';
+    updateLiveFastingStages(0, 16);
   }
 }
-function renderFastingHistory() {
-  const list = document.getElementById('historyList'); if (!list) return;
+
+window.deleteFastingEntry = function(index) {
   const history = store.get('fasting-history', []);
-  if (history.length === 0) { list.innerHTML = '<p class="empty-state-sm">Aucune session enregistrée.</p>'; return; }
-  const tl = { intermittent:'🍅', warrior:'⚔️', waterFast:'💧', juiceFast:'🧃', fruitFast:'🍎', grapeCure:'🍇', drySunFast:'☀️', ramadan:'🌙' };
-  list.innerHTML = history.slice(0, 10).map(h => {
-    const d = new Date(h.startTime).toLocaleDateString('fr-FR',{day:'2-digit',month:'short'});
+  if (index >= 0 && index < history.length) {
+    history.splice(index, 1);
+    store.set('fasting-history', history);
+    renderFastingHistory();
+    renderFastingAnalytics();
+    if (window.showToast) window.showToast('Session supprimée de l\'historique', 'info');
+  }
+};
+
+window.showFastingRefeedAdvice = function(hours, type) {
+  const protocolHtml = getRefeedingProtocol(hours, type);
+  if (window.showVitalConfirm) {
+    window.showVitalConfirm({
+      title: `Protocole de Rupture (${hours.toFixed(1)}h)`,
+      message: protocolHtml,
+      icon: 'ri-restaurant-2-line',
+      confirmText: 'Compris !',
+      cancelText: 'Fermer',
+      isPrimary: true
+    });
+  } else {
+    alert(`Protocole de rupture conseillé pour ${hours.toFixed(1)}h de jeûne.`);
+  }
+};
+
+function renderFastingHistory() {
+  const list = document.getElementById('historyList');
+  if (!list) return;
+  const history = store.get('fasting-history', []);
+  if (history.length === 0) {
+    list.innerHTML = '<p class="empty-state-sm" data-i18n="fasting.noHistory">Aucune session enregistrée.</p>';
+    return;
+  }
+
+  const tl = { intermittent:'⏰ Intermittent', warrior:'⚔️ Warrior', waterFast:'💧 Hydrique', juiceFast:'🧃 Jus', fruitFast:'🍎 Fruits', grapeCure:'🍇 Raisin', drySunFast:'☀️ Sec', ramadan:'🌙 Ramadan' };
+  const tagLabels = { tongue: '👅 Langue', lightness: '🕊️ Légèreté', sweat: '💦 Transpiration', thirst: '💧 Soif', euphoria: '✨ Clarté' };
+
+  list.innerHTML = history.slice(0, 20).map((h, idx) => {
+    const d = new Date(h.startTime).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
+    const hours = h.elapsed / 3600000;
+    const stages = getUnlockedStages(hours);
+    const highestStage = stages[stages.length - 1] || FASTING_METABOLIC_STAGES[0];
+
+    const tagsHtml = (h.tags && Array.isArray(h.tags) && h.tags.length > 0)
+      ? h.tags.map(t => `<span class="jn-stage-badge-sm" style="background:rgba(96,165,250,0.1); border-color:rgba(96,165,250,0.25); color:#93c5fd;">${tagLabels[t] || t}</span>`).join('')
+      : '';
+
+    const feelingsText = (h.energy || h.clarity)
+      ? `<span style="font-size:0.75rem; color:var(--text-dim);">⚡ Énergie : ${h.energy || '?'}/5 · 🧠 Clarté : ${h.clarity || '?'}/5</span>`
+      : '';
+
     return `
-    <div class="jn-history-row">
-      <div class="jn-history-icon">${tl[h.type]||'✨'}</div>
-      <div class="jn-history-info">
-        <div class="jn-history-title">${(h.elapsed/3600000).toFixed(1)}h</div>
-        <div class="jn-history-sub">${h.completed ? '✅ Objectif atteint' : '⊙ Arrêté plus tôt'}</div>
+    <div class="jn-rich-card">
+      <div class="jn-rich-top">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="font-size:1.5rem; width:42px; height:42px; border-radius:12px; background:rgba(52,211,153,0.1); display:flex; align-items:center; justify-content:center; border:1px solid rgba(52,211,153,0.25);">
+            ${highestStage.icon}
+          </div>
+          <div>
+            <div style="display:flex; align-items:baseline; gap:8px;">
+              <span style="font-size:1.15rem; font-weight:800; color:var(--text);">${hours.toFixed(1)}h</span>
+              <span style="font-size:0.78rem; font-weight:700; color:${h.completed ? '#34d399' : '#f59e0b'};">
+                ${h.completed ? '✅ Objectif validé' : '⊙ Arrêté avant'}
+              </span>
+            </div>
+            <div style="font-size:0.78rem; color:var(--text-dim); margin-top:2px;">
+              ${tl[h.type] || h.type} · ${d}
+            </div>
+          </div>
+        </div>
+        <div style="display:flex; gap:6px;">
+          <button class="weight-history-btn edit" onclick="showFastingRefeedAdvice(${hours}, '${h.type}')" title="Voir les conseils de reprise alimentaire">
+            <i class="ri-restaurant-line"></i>
+          </button>
+          <button class="weight-history-btn del" onclick="deleteFastingEntry(${idx})" title="Supprimer cette entrée">
+            <i class="ri-delete-bin-line"></i>
+          </button>
+        </div>
       </div>
-      <div class="jn-history-date">${d}</div>
+
+      <div class="jn-rich-badges">
+        <span class="jn-stage-badge-sm">${highestStage.name}</span>
+        ${hours >= 16 ? '<span class="jn-stage-badge-sm" style="color:#facc15; border-color:rgba(250,204,21,0.3); background:rgba(250,204,21,0.1);">🧬 Autophagie Validée</span>' : ''}
+        ${tagsHtml}
+      </div>
+
+      ${feelingsText || h.note ? `
+        <div style="margin-top:8px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.05); display:flex; flex-direction:column; gap:4px;">
+          ${feelingsText}
+          ${h.note ? `<div style="font-size:0.78rem; color:var(--text); font-style:italic;">« ${esc(h.note)} »</div>` : ''}
+        </div>
+      ` : ''}
     </div>`;
   }).join('');
 }
+
 function renderFastingAnalytics() {
   const history = store.get('fasting-history', []);
-  document.getElementById('analyticTotal').textContent = history.length;
-  const totalH = history.reduce((s, h) => s + h.elapsed, 0) / 3600000;
-  document.getElementById('analyticHours').textContent = `${totalH.toFixed(0)}h`;
-  const longest = history.length ? Math.max(...history.map(h => h.elapsed)) / 3600000 : 0;
-  document.getElementById('analyticLongest').textContent = `${longest.toFixed(0)}h`;
-  const completed = history.filter(h => h.completed).length;
-  document.getElementById('analyticCompletion').textContent = history.length ? `${Math.round(completed / history.length * 100)}%` : '0%';
+  const totalEl = document.getElementById('analyticTotal');
+  const hoursEl = document.getElementById('analyticHours');
+  const autophEl = document.getElementById('analyticAutophagy');
+  const longestEl = document.getElementById('analyticLongest');
+
+  if (totalEl) totalEl.textContent = history.length;
+  const totalH = history.reduce((s, h) => s + (h.elapsed || 0), 0) / 3600000;
+  if (hoursEl) hoursEl.textContent = `${totalH.toFixed(0)}h`;
+
+  const autophagyCycles = history.filter(h => (h.elapsed / 3600000) >= 16).length;
+  if (autophEl) autophEl.textContent = autophagyCycles;
+
+  const longest = history.length ? Math.max(...history.map(h => h.elapsed || 0)) / 3600000 : 0;
+  if (longestEl) longestEl.textContent = `${longest.toFixed(0)}h`;
 }
 
 // ═══════ BREATHING & WIM HOF ENGINE ═══════
@@ -6649,155 +7017,329 @@ window.renderWeightHistoryInModal = function() {
   }).join('');
 };
 
+// ═══════ MODERN WEIGHT ANALYTICS & INTERACTIVE CHART ═══════
+let currentWeightPeriod = 'all';
+
+window.setWeightPeriod = function(period) {
+  currentWeightPeriod = period;
+  document.querySelectorAll('#weightPeriodBar .period-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.period === period);
+  });
+  renderWeightChart();
+};
+
+function getSmoothSplinePath(points) {
+  if (!points || points.length === 0) return '';
+  if (points.length === 1) return `M ${points[0].x} ${points[0].y}`;
+  if (points.length === 2) return `M ${points[0].x} ${points[0].y} L ${points[1].x} ${points[1].y}`;
+
+  let d = `M ${points[0].x} ${points[0].y}`;
+  for (let i = 0; i < points.length - 1; i++) {
+    const p0 = points[i === 0 ? 0 : i - 1];
+    const p1 = points[i];
+    const p2 = points[i + 1];
+    const p3 = points[i + 2] || p2;
+
+    const cp1x = p1.x + (p2.x - p0.x) / 6;
+    const cp1y = p1.y + (p2.y - p0.y) / 6;
+    const cp2x = p2.x - (p3.x - p1.x) / 6;
+    const cp2y = p2.y - (p3.y - p1.y) / 6;
+
+    d += ` C ${cp1x.toFixed(1)} ${cp1y.toFixed(1)}, ${cp2x.toFixed(1)} ${cp2y.toFixed(1)}, ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`;
+  }
+  return d;
+}
+
 window.renderWeightChart = function() {
   const container = document.getElementById('weightChartContainer');
   const empty = document.getElementById('weightChartEmpty');
   const svg = document.getElementById('weightChartSvg');
+  const tooltip = document.getElementById('weightChartTooltip');
   if (!container || !empty || !svg) return;
-  
+
   const history = store.get('weight_history', []);
+  const profile = typeof getUserProfile === 'function' ? getUserProfile() : {};
+
+  // Sort all entries chronologically
+  const allSorted = [...history].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+  // Update KPI cards regardless of filter
+  const curWeightEl = document.getElementById('kpiCurrentWeight');
+  const deltaBadgeEl = document.getElementById('kpiDeltaBadge');
+  const totalDeltaEl = document.getElementById('kpiTotalDelta');
+  const avg7dEl = document.getElementById('kpiAvg7d');
+  const targetWeightEl = document.getElementById('kpiTargetWeight');
+
+  if (allSorted.length > 0) {
+    const latest = allSorted[allSorted.length - 1];
+    const first = allSorted[0];
+    const prev = allSorted.length > 1 ? allSorted[allSorted.length - 2] : null;
+
+    if (curWeightEl) curWeightEl.textContent = `${latest.weight} kg`;
+
+    if (deltaBadgeEl) {
+      if (prev) {
+        const diff = Math.round((latest.weight - prev.weight) * 10) / 10;
+        if (diff < 0) {
+          deltaBadgeEl.textContent = `📉 ${diff} kg`;
+          deltaBadgeEl.style.background = 'rgba(52,211,153,0.15)';
+          deltaBadgeEl.style.color = '#34d399';
+        } else if (diff > 0) {
+          deltaBadgeEl.textContent = `📈 +${diff} kg`;
+          deltaBadgeEl.style.background = 'rgba(239,68,68,0.15)';
+          deltaBadgeEl.style.color = '#f87171';
+        } else {
+          deltaBadgeEl.textContent = `➡️ 0.0 kg`;
+          deltaBadgeEl.style.background = 'rgba(255,255,255,0.08)';
+          deltaBadgeEl.style.color = 'var(--text-dim)';
+        }
+      } else {
+        deltaBadgeEl.textContent = 'Départ';
+        deltaBadgeEl.style.background = 'rgba(255,255,255,0.08)';
+        deltaBadgeEl.style.color = 'var(--text-dim)';
+      }
+    }
+
+    if (totalDeltaEl) {
+      const totDiff = Math.round((latest.weight - first.weight) * 10) / 10;
+      totalDeltaEl.textContent = totDiff <= 0 ? `${totDiff} kg` : `+${totDiff} kg`;
+      totalDeltaEl.style.color = totDiff <= 0 ? 'var(--accent)' : '#f87171';
+    }
+
+    // 7-day average
+    const now = Date.now();
+    const last7dEntries = allSorted.filter(h => (now - new Date(h.date).getTime()) <= 7 * 86400000);
+    if (avg7dEl) {
+      if (last7dEntries.length > 0) {
+        const avg = last7dEntries.reduce((s, h) => s + h.weight, 0) / last7dEntries.length;
+        avg7dEl.textContent = `${avg.toFixed(1)} kg`;
+      } else {
+        avg7dEl.textContent = `${latest.weight.toFixed(1)} kg`;
+      }
+    }
+  } else {
+    if (curWeightEl) curWeightEl.textContent = '-- kg';
+    if (deltaBadgeEl) deltaBadgeEl.textContent = '';
+    if (totalDeltaEl) totalDeltaEl.textContent = '-- kg';
+    if (avg7dEl) avg7dEl.textContent = '-- kg';
+  }
+
+  if (targetWeightEl) {
+    targetWeightEl.textContent = profile.targetWeight ? `${profile.targetWeight} kg` : 'Non défini';
+  }
+
   if (!history || history.length === 0) {
     container.style.display = 'none';
     empty.style.display = 'block';
     return;
   }
-  
+
+  // Filter entries based on active period
+  const nowTime = Date.now();
+  let cutoff = 0;
+  if (currentWeightPeriod === '7d') cutoff = nowTime - 7 * 86400000;
+  else if (currentWeightPeriod === '1m') cutoff = nowTime - 30 * 86400000;
+  else if (currentWeightPeriod === '3m') cutoff = nowTime - 90 * 86400000;
+  else if (currentWeightPeriod === '6m') cutoff = nowTime - 180 * 86400000;
+  else if (currentWeightPeriod === '1y') cutoff = nowTime - 365 * 86400000;
+
+  let sorted = allSorted.filter(h => new Date(h.date).getTime() >= cutoff);
+  if (sorted.length === 0) {
+    sorted = allSorted.slice(-5); // fallback to latest entries if filter is empty
+  }
+
   container.style.display = 'block';
   empty.style.display = 'none';
-  
-  // Sort history chronologically
-  const sorted = [...history].sort((a, b) => new Date(a.date) - new Date(b.date));
 
   const svgWidth = Math.max(320, container.clientWidth || 600);
-  const svgHeight = 220;
-  
-  const margin = { top: 38, right: 35, bottom: 44, left: 65 };
+  const svgHeight = 240;
+
+  const margin = { top: 25, right: 35, bottom: 40, left: 60 };
   const chartW = svgWidth - margin.left - margin.right;
   const chartH = svgHeight - margin.top - margin.bottom;
-  const innerPadX = sorted.length > 1 ? 28 : 0;
-  const plotW = chartW - innerPadX * 2;
 
   const weights = sorted.map(h => h.weight);
+  const targetW = parseFloat(profile.targetWeight);
+  if (!isNaN(targetW) && targetW > 20 && targetW < 300) {
+    weights.push(targetW);
+  }
+
   const rawMin = Math.min(...weights);
   const rawMax = Math.max(...weights);
+  const span = Math.max(2, rawMax - rawMin);
 
-  // Compute neat Y scale boundaries
-  const span = rawMax - rawMin;
-  let step = 5;
-  if (span > 40) step = 10;
-  else if (span <= 5) step = 1;
-  else if (span <= 12) step = 2;
+  let step = 2;
+  if (span > 30) step = 10;
+  else if (span > 15) step = 5;
+  else if (span <= 4) step = 1;
 
-  let yMin = Math.max(0, Math.floor((rawMin - step * 0.4) / step) * step);
-  let yMax = Math.ceil((rawMax + step * 0.4) / step) * step;
+  let yMin = Math.max(0, Math.floor((rawMin - step * 0.5) / step) * step);
+  let yMax = Math.ceil((rawMax + step * 0.5) / step) * step;
   if (yMax === yMin) { yMax += step; yMin = Math.max(0, yMin - step); }
   const yRange = yMax - yMin;
 
-  // Generate Y ticks (3 to 6 ticks)
-  const yTicks = [];
-  for (let v = yMin; v <= yMax + 0.001; v += step) {
-    yTicks.push(Math.round(v * 10) / 10);
-  }
-
-  // Draw Y-axis grid & labels
+  // Grid lines
   let gridLinesHtml = '';
   let yLabelsHtml = '';
-  yTicks.forEach(yVal => {
-    const yPos = margin.top + chartH - ((yVal - yMin) / yRange) * chartH;
-    gridLinesHtml += `<line x1="${margin.left}" y1="${yPos}" x2="${margin.left + chartW}" y2="${yPos}" stroke="rgba(255,255,255,0.07)" stroke-dasharray="4,4" />`;
-    yLabelsHtml += `<text x="${margin.left - 12}" y="${yPos + 4}" fill="var(--text-dim, #94a3b8)" font-size="11" font-weight="600" font-family="inherit" text-anchor="end">${yVal} kg</text>`;
-  });
+  for (let v = yMin; v <= yMax + 0.001; v += step) {
+    const rounded = Math.round(v * 10) / 10;
+    const yPos = margin.top + chartH - ((rounded - yMin) / yRange) * chartH;
+    gridLinesHtml += `<line x1="${margin.left}" y1="${yPos}" x2="${margin.left + chartW}" y2="${yPos}" stroke="rgba(255,255,255,0.06)" stroke-dasharray="4,4" />`;
+    yLabelsHtml += `<text x="${margin.left - 12}" y="${yPos + 4}" fill="var(--text-dim, #94a3b8)" font-size="11" font-weight="600" text-anchor="end">${rounded} kg</text>`;
+  }
 
-  // Y-axis vertical line & title
-  const yAxisLine = `<line x1="${margin.left}" y1="${margin.top - 12}" x2="${margin.left}" y2="${margin.top + chartH}" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" />`;
-  const yAxisTitle = `<text x="${margin.left - 12}" y="${margin.top - 18}" fill="var(--text-dim, #94a3b8)" font-size="10" font-weight="700" font-family="inherit" text-anchor="end">POIDS (KG)</text>`;
+  // Calculate coordinates with proportional time spacing
+  const minTime = new Date(sorted[0].date).getTime();
+  const maxTime = new Date(sorted[sorted.length - 1].date).getTime();
+  const timeSpan = Math.max(1, maxTime - minTime);
 
-  // X-axis horizontal baseline
-  const xAxisLine = `<line x1="${margin.left}" y1="${margin.top + chartH}" x2="${margin.left + chartW}" y2="${margin.top + chartH}" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" />`;
-
-  // Compute Points coordinates
   const coords = [];
-  if (sorted.length === 1) {
-    const x = margin.left + chartW / 2;
-    const y = margin.top + chartH - ((sorted[0].weight - yMin) / yRange) * chartH;
-    coords.push({ x, y, entry: sorted[0] });
-  } else {
-    sorted.forEach((entry, i) => {
-      const x = margin.left + innerPadX + (i / (sorted.length - 1)) * plotW;
-      const y = margin.top + chartH - ((entry.weight - yMin) / yRange) * chartH;
-      coords.push({ x, y, entry });
-    });
-  }
-
-  // Build Line and Area Path
-  let linePathD = '';
-  let areaPathD = '';
-  coords.forEach((pt, i) => {
-    if (i === 0) {
-      linePathD += `M ${pt.x} ${pt.y}`;
-      areaPathD += `M ${pt.x} ${margin.top + chartH} L ${pt.x} ${pt.y}`;
-    } else {
-      linePathD += ` L ${pt.x} ${pt.y}`;
-      areaPathD += ` L ${pt.x} ${pt.y}`;
-    }
+  sorted.forEach((entry, i) => {
+    const t = new Date(entry.date).getTime();
+    const xRatio = timeSpan === 0 ? 0.5 : (t - minTime) / timeSpan;
+    const x = margin.left + xRatio * chartW;
+    const y = margin.top + chartH - ((entry.weight - yMin) / yRange) * chartH;
+    coords.push({ x, y, entry, timestamp: t });
   });
+
+  // Spline Path
+  const linePathD = getSmoothSplinePath(coords);
+  let areaPathD = '';
   if (coords.length > 1) {
+    const first = coords[0];
     const last = coords[coords.length - 1];
-    areaPathD += ` L ${last.x} ${margin.top + chartH} Z`;
+    areaPathD = `${linePathD} L ${last.x} ${margin.top + chartH} L ${first.x} ${margin.top + chartH} Z`;
   }
 
-  // Build Points, Value Badges & X-axis Date Labels
+  // Target Goal Line
+  let targetLineHtml = '';
+  if (!isNaN(targetW) && targetW >= yMin && targetW <= yMax) {
+    const targetY = margin.top + chartH - ((targetW - yMin) / yRange) * chartH;
+    targetLineHtml = `
+      <g>
+        <line x1="${margin.left}" y1="${targetY}" x2="${margin.left + chartW}" y2="${targetY}" stroke="#60a5fa" stroke-dasharray="6,4" stroke-width="1.5" opacity="0.75" />
+        <text x="${margin.left + chartW}" y="${targetY - 6}" fill="#60a5fa" font-size="10" font-weight="700" text-anchor="end">Objectif ${targetW} kg</text>
+      </g>
+    `;
+  }
+
+  // Points and smart X date labels
   let pointsHtml = '';
   let xLabelsHtml = '';
-  coords.forEach((pt) => {
+  const stride = Math.ceil(coords.length / 5);
+
+  coords.forEach((pt, i) => {
+    const isMajor = (i === 0 || i === coords.length - 1 || i % stride === 0);
     const d = new Date(pt.entry.date);
-    const dateShort = isNaN(d.getTime()) ? pt.entry.date : d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' });
-    const yearStr = !isNaN(d.getTime()) ? d.getFullYear() : '';
+    const dateFormatted = isNaN(d.getTime()) ? pt.entry.date : d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' });
 
-    // Vertical dashed guide from point down to X-axis
-    pointsHtml += `<line x1="${pt.x}" y1="${pt.y}" x2="${pt.x}" y2="${margin.top + chartH}" stroke="rgba(52,211,153,0.18)" stroke-dasharray="2,2" />`;
-
-    // Glow halo & point
+    // Subtle point marker
     pointsHtml += `
-      <circle cx="${pt.x}" cy="${pt.y}" r="8" fill="var(--accent)" opacity="0.18" />
-      <circle cx="${pt.x}" cy="${pt.y}" r="4.5" fill="var(--accent)" stroke="#0f172a" stroke-width="2" />
-    `;
-
-    // Top value badge (with small dark pill background for readability)
-    const valText = `${pt.entry.weight} kg`;
-    pointsHtml += `
-      <g>
-        <rect x="${pt.x - 27}" y="${pt.y - 24}" width="54" height="18" rx="5" fill="rgba(15,23,42,0.9)" stroke="rgba(52,211,153,0.35)" stroke-width="1" />
-        <text x="${pt.x}" y="${pt.y - 11}" fill="var(--accent)" font-size="10.5" font-weight="700" font-family="inherit" text-anchor="middle">${valText}</text>
+      <g class="chart-point-group" data-idx="${i}">
+        <circle cx="${pt.x}" cy="${pt.y}" r="6" fill="var(--accent)" opacity="0.2" />
+        <circle cx="${pt.x}" cy="${pt.y}" r="3.5" fill="var(--accent)" stroke="#0f172a" stroke-width="2" />
       </g>
     `;
 
-    // Date below X axis with year
-    xLabelsHtml += `
-      <text x="${pt.x}" y="${margin.top + chartH + 17}" fill="var(--text-dim, #94a3b8)" font-size="10.5" font-weight="600" font-family="inherit" text-anchor="middle">${dateShort}</text>
-      <text x="${pt.x}" y="${margin.top + chartH + 30}" fill="rgba(255,255,255,0.3)" font-size="9" font-family="inherit" text-anchor="middle">${yearStr}</text>
-    `;
+    if (isMajor) {
+      xLabelsHtml += `
+        <text x="${pt.x}" y="${margin.top + chartH + 18}" fill="var(--text-dim, #94a3b8)" font-size="10" font-weight="600" text-anchor="middle">${dateFormatted}</text>
+      `;
+    }
   });
 
   svg.setAttribute('viewBox', `0 0 ${svgWidth} ${svgHeight}`);
-  svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
   svg.innerHTML = `
     <defs>
       <linearGradient id="weightAreaGradient" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.28" />
+        <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.32" />
         <stop offset="100%" stop-color="var(--accent)" stop-opacity="0.0" />
       </linearGradient>
     </defs>
     ${gridLinesHtml}
     ${yLabelsHtml}
-    ${yAxisLine}
-    ${yAxisTitle}
-    ${xAxisLine}
+    ${targetLineHtml}
+    <line x1="${margin.left}" y1="${margin.top + chartH}" x2="${margin.left + chartW}" y2="${margin.top + chartH}" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" />
     ${coords.length > 1 ? `<path d="${areaPathD}" fill="url(#weightAreaGradient)" />` : ''}
     ${coords.length > 1 ? `<path d="${linePathD}" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />` : ''}
     ${pointsHtml}
     ${xLabelsHtml}
+    <!-- Interactive crosshair line -->
+    <line id="chartCrosshairLine" x1="0" y1="${margin.top}" x2="0" y2="${margin.top + chartH}" stroke="rgba(52,211,153,0.5)" stroke-width="1.5" stroke-dasharray="3,3" style="display:none;" />
+    <circle id="chartHoverCircle" cx="0" cy="0" r="6" fill="#34d399" stroke="#fff" stroke-width="2.5" style="display:none;" />
+    <!-- Invisible overlay for pointer interaction -->
+    <rect id="chartOverlay" x="${margin.left}" y="${margin.top}" width="${chartW}" height="${chartH}" fill="transparent" style="cursor:crosshair;" />
   `;
+
+  // Attach interactive tooltip handlers
+  const overlay = svg.querySelector('#chartOverlay');
+  const crosshair = svg.querySelector('#chartCrosshairLine');
+  const hoverCircle = svg.querySelector('#chartHoverCircle');
+
+  function handlePointerMove(e) {
+    if (!coords || coords.length === 0 || !tooltip) return;
+    const rect = svg.getBoundingClientRect();
+    const scaleX = svgWidth / rect.width;
+    const clientX = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
+    const svgX = clientX * scaleX;
+
+    // Find nearest point
+    let nearest = coords[0];
+    let minDist = Infinity;
+    coords.forEach(pt => {
+      const dist = Math.abs(pt.x - svgX);
+      if (dist < minDist) {
+        minDist = dist;
+        nearest = pt;
+      }
+    });
+
+    if (nearest && crosshair && hoverCircle) {
+      crosshair.setAttribute('x1', nearest.x);
+      crosshair.setAttribute('x2', nearest.x);
+      crosshair.style.display = 'block';
+
+      hoverCircle.setAttribute('cx', nearest.x);
+      hoverCircle.setAttribute('cy', nearest.y);
+      hoverCircle.style.display = 'block';
+
+      // Position HTML tooltip
+      const d = new Date(nearest.entry.date);
+      const dateStr = isNaN(d.getTime()) ? nearest.entry.date : d.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+      const prevEntry = allSorted[allSorted.indexOf(nearest.entry) - 1];
+      const deltaText = prevEntry ? (nearest.entry.weight - prevEntry.weight).toFixed(1) : null;
+      const deltaFormatted = deltaText !== null ? (parseFloat(deltaText) <= 0 ? `📉 ${deltaText} kg` : `📈 +${deltaText} kg`) : 'Première pesée';
+
+      tooltip.innerHTML = `
+        <div style="font-weight:800; font-size:0.92rem; color:#fff; display:flex; align-items:baseline; gap:8px;">
+          <span>${nearest.entry.weight} kg</span>
+          <span style="font-size:0.75rem; font-weight:700; color:${deltaText && parseFloat(deltaText) <= 0 ? '#34d399' : '#f87171'};">${deltaFormatted}</span>
+        </div>
+        <div style="font-size:0.75rem; color:var(--text-dim); margin-top:3px;">${dateStr}</div>
+        ${nearest.entry.note ? `<div style="font-size:0.74rem; color:#93c5fd; margin-top:4px; font-style:italic;">« ${esc(nearest.entry.note)} »</div>` : ''}
+      `;
+
+      const tooltipX = (nearest.x / svgWidth) * rect.width;
+      const tooltipY = (nearest.y / svgHeight) * rect.height;
+
+      tooltip.style.display = 'block';
+      tooltip.style.left = `${Math.min(rect.width - 160, Math.max(10, tooltipX - 70))}px`;
+      tooltip.style.top = `${Math.max(10, tooltipY - 65)}px`;
+    }
+  }
+
+  function handlePointerLeave() {
+    if (crosshair) crosshair.style.display = 'none';
+    if (hoverCircle) hoverCircle.style.display = 'none';
+    if (tooltip) tooltip.style.display = 'none';
+  }
+
+  if (overlay) {
+    overlay.addEventListener('pointermove', handlePointerMove);
+    overlay.addEventListener('pointerleave', handlePointerLeave);
+    overlay.addEventListener('touchmove', handlePointerMove, { passive: true });
+    overlay.addEventListener('touchend', handlePointerLeave);
+  }
 };
 
 // Window resize handler for weight chart

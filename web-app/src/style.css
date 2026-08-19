@@ -3856,4 +3856,410 @@ input[type=number] {
   color: #05170f;
 }
 
+/* ══════════════════════════════════════════════════════════════════
+   ENRICHED FASTING ENGINE (STAGES, MODAL & HISTORY)
+   ══════════════════════════════════════════════════════════════════ */
+.fasting-stages-wrapper {
+  margin-top: 20px;
+  padding: 16px 18px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.stages-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.stages-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stages-current-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  background: rgba(52, 211, 153, 0.12);
+  color: var(--accent);
+  border: 1px solid rgba(52, 211, 153, 0.25);
+}
+
+.stages-progress-bar {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 14px;
+  position: relative;
+}
+
+.stages-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #60a5fa, var(--accent), #f59e0b, #ec4899);
+  border-radius: 10px;
+  transition: width 0.6s ease;
+}
+
+.stages-timeline-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 8px;
+}
+
+.stage-step-card {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.stage-step-card.active {
+  background: rgba(52, 211, 153, 0.08);
+  border-color: rgba(52, 211, 153, 0.35);
+  box-shadow: 0 0 16px rgba(52, 211, 153, 0.12);
+}
+
+.stage-step-card.completed {
+  background: rgba(52, 211, 153, 0.04);
+  border-color: rgba(52, 211, 153, 0.18);
+}
+
+.stage-step-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.stage-step-hours {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-dim);
+}
+
+.stage-step-card.active .stage-step-hours {
+  color: var(--accent);
+}
+
+.stage-step-icon {
+  font-size: 0.95rem;
+}
+
+.stage-step-name {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.stage-step-desc {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  line-height: 1.3;
+  margin-top: 3px;
+}
+
+/* Post-Fast Debrief Modal */
+.fast-debrief-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 15, 29, 0.88);
+  backdrop-filter: blur(16px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: fadeIn 0.25s ease-out;
+}
+
+.fast-debrief-modal {
+  background: #0f172a;
+  border: 1px solid rgba(52, 211, 153, 0.25);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 580px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+}
+
+.fast-debrief-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(135deg, rgba(52, 211, 153, 0.08), rgba(96, 165, 250, 0.04));
+  position: relative;
+}
+
+.fast-debrief-scroll {
+  padding: 20px 24px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.fast-debrief-kpis {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.fast-kpi-pill {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 10px;
+  text-align: center;
+}
+
+.fast-kpi-label {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.fast-kpi-val {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--accent);
+  margin-top: 2px;
+}
+
+.refeed-protocol-box {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(245, 158, 11, 0.02));
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+
+.refeed-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #f59e0b;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.refeed-list {
+  font-size: 0.82rem;
+  color: var(--text);
+  line-height: 1.5;
+  margin: 0;
+  padding-left: 18px;
+}
+
+.refeed-list li {
+  margin-bottom: 4px;
+}
+
+.feeling-rating-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.star-rating-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 6px 10px;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.15s ease;
+}
+
+.star-rating-btn.selected {
+  background: rgba(250, 204, 21, 0.18);
+  border-color: #facc15;
+  color: #facc15;
+  font-weight: 700;
+}
+
+.elim-tags-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.elim-tag-chip {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-dim);
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.elim-tag-chip.active {
+  background: rgba(96, 165, 250, 0.18);
+  border-color: #60a5fa;
+  color: #93c5fd;
+}
+
+.jn-rich-card {
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 10px;
+  transition: all 0.2s ease;
+}
+
+.jn-rich-card:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.jn-rich-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.jn-rich-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.jn-stage-badge-sm {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: rgba(52, 211, 153, 0.1);
+  color: var(--accent);
+  border: 1px solid rgba(52, 211, 153, 0.2);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   WEIGHT TRACKER & PERIOD FILTERS
+   ══════════════════════════════════════════════════════════════════ */
+.period-btn {
+  padding: 5px 12px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.period-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text);
+}
+
+.period-btn.active {
+  background: var(--accent);
+  color: #05170f;
+  border-color: var(--accent);
+}
+
+.weight-kpi-card {
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.weight-kpi-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(52, 211, 153, 0.25);
+}
+
+.weight-tooltip {
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   BIO-PROFILE & AI BIO-MEMORY SYSTEM
+   ══════════════════════════════════════════════════════════════════ */
+.profile-card-group {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.emonctoire-chip-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.emonctoire-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border-radius: 12px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-dim);
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.emonctoire-chip:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+}
+
+.emonctoire-chip.active {
+  background: rgba(52, 211, 153, 0.14);
+  border-color: rgba(52, 211, 153, 0.4);
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.ai-preview-box {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px dashed rgba(96, 165, 250, 0.35);
+  border-radius: 12px;
+  padding: 14px;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.78rem;
+  color: #93c5fd;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+
 
