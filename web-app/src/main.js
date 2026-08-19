@@ -1962,8 +1962,9 @@ const MODEL_TAXONOMY = [
     iconColor: '#4ade80',
     tagline: 'Vitesse maximale & réponse instantanée',
     models: [
-      { id: 'gemini-1.5-flash', name: 'Gemini 1.5 Flash', badge: 'Recommandé ⚡', tagline: 'Modèle de production Google standard, rapide et équilibré' },
-      { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash', badge: 'Nouvelle Génération', tagline: 'Haute vélocité et réactivité pour le coaching temps réel' }
+      { id: 'gemini-3.7-flash', name: 'Gemini 3.7 Flash', badge: 'Fastest & Smartest ⚡', tagline: 'Dernière génération hybride multimodale à réactivité instantanée' },
+      { id: 'gemini-3.6-flash', name: 'Gemini 3.6 Flash', badge: 'Ultra Rapide', tagline: 'Modèle réactif de haute précision pour le chat instantané' },
+      { id: 'gemini-3.5-flash', name: 'Gemini 3.5 Flash', badge: 'Équilibré', tagline: 'Vitesse élevée et excellente précision nutritionnelle' }
     ]
   },
   {
@@ -1973,18 +1974,31 @@ const MODEL_TAXONOMY = [
     iconColor: '#fbbf24',
     tagline: 'Analyse approfondie & protocoles complexes',
     models: [
-      { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro', badge: 'Grand Contexte', tagline: 'Raisonnement avancé et fenêtre de contexte étendue (1M tokens)' }
+      { id: 'gemini-3.5-pro', name: 'Gemini 3.5 Pro', badge: 'Raisonnement', tagline: 'Analyse approfondie des terrains biologiques et pathologies' },
+      { id: 'gemini-3.1-pro', name: 'Gemini 3.1 Pro', badge: 'Pro Stable', tagline: 'Synthèse médicale et protocoles de régénération avancés' }
     ]
   },
   {
     id: 'lite',
-    name: 'Lite (Haute Vélocité)',
+    name: 'Lite (Haute Capacité & Vélocité)',
     icon: 'ri-bolt-line',
     iconColor: '#a78bfa',
-    tagline: 'Léger et optimisé pour le mobile',
+    tagline: 'Léger, grand contexte & haute disponibilité (1400 RPD)',
     models: [
-      { id: 'gemini-1.5-flash-8b', name: 'Gemini 1.5 Flash-8B', badge: 'Ultra Léger', tagline: 'Modèle haute cadence pour requêtes simples' },
-      { id: 'gemini-2.0-flash-lite', name: 'Gemini 2.0 Flash Lite', badge: 'Économe', tagline: 'Traitement fluide optimisé' }
+      { id: 'gemini-3.6-flash-lite', name: 'Gemini 3.6 Flash Lite', badge: '1400 RPD', tagline: 'Modèle léger ultra-véloce' },
+      { id: 'gemini-3.5-flash-lite', name: 'Gemini 3.5 Flash Lite', badge: 'Économe', tagline: 'Traitement fluide à consommation optimisée' },
+      { id: 'gemini-3.1-flash-lite', name: 'Gemini 3.1 Flash Lite', badge: 'Grand Contexte', tagline: 'Idéal pour absorber de longs documents ou fichiers PDF' }
+    ]
+  },
+  {
+    id: 'gemma',
+    name: 'Open Weights (Gemma 4)',
+    icon: 'ri-cpu-line',
+    iconColor: '#22d3ee',
+    tagline: 'Modèles DeepMind à très haute disponibilité (124.2K RPD)',
+    models: [
+      { id: 'gemma-4-31b-it', name: 'Gemma 4 31B', badge: '31B Params', tagline: 'Grand modèle open-weights à haute fiabilité et résilience' },
+      { id: 'gemma-4-26b-a4b-it', name: 'Gemma 4 26B', badge: '26B Params', tagline: 'Modèle ouvert rapide et agile' }
     ]
   }
 ];
