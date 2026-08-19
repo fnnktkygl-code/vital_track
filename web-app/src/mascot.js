@@ -122,7 +122,7 @@ export class Pigeon {
   }
 
   setAction(action, isSpeaking = false, tNow) {
-    if (!action || action === 'peck') action = 'idle';
+    if (!action || action === 'peck' || action === 'fly') action = 'idle';
     if (action === this.action && isSpeaking === this.isSpeaking) return;
 
     this.action = action;
@@ -149,7 +149,7 @@ export class Pigeon {
       proud: 'walk',
       sleepy: 'sleep',
       stern: 'think',
-      scared: 'fly'
+      scared: 'think'
     };
     this.setAction(map[mood] || 'idle', isSpeaking);
   }
@@ -248,22 +248,6 @@ export class Pigeon {
 
       tailPitch = walkCos * 6.0;
       wingSpread = 0.05;
-    } else if (act === 'fly') {
-      const flapSpeed = t * 7.5;
-      const flap = Math.sin(flapSpeed);
-      bodyY = -14 + flap * 3.8;
-      headY = -14 + flap * 1.5;
-      shadowScale = 0.5 - flap * 0.12;
-      shadowAlpha = 0.07;
-
-      // Battement d'ailes ample et parfaitement symétrique
-      wingSpread = 1.0;
-      wingFlapAngle = flap * 65; // -65° à +65° symétrique
-
-      footL_Y = -6; footL_Rot = 35;
-      footR_Y = -6; footR_Rot = 35;
-      tailPitch = 12 + Math.sin(t * 3) * 4;
-      tailFan = 1.4;
     } else if (act === 'coo') {
       const cooCycle = Math.sin(t * 3.4);
       cropPuff = Math.max(0, cooCycle) * 8.5;

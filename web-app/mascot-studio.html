@@ -309,9 +309,6 @@
           <button class="action-btn" data-action="walk" onclick="setStudioAction('walk')">
             <span>🚶</span> Marcher
           </button>
-          <button class="action-btn" data-action="fly" onclick="setStudioAction('fly')">
-            <span>🪽</span> S'envoler
-          </button>
           <button class="action-btn" data-action="laugh" onclick="setStudioAction('laugh')">
             <span>😄</span> Rire / Joie
           </button>
@@ -389,7 +386,6 @@
     const actionQuotes = {
       idle: "« Prêt à explorer la vitalité naturelle ! »",
       walk: "« En route pour drainer la lymphe et activer la motilité ! »",
-      fly: "« L'énergie vitale est au plus haut (V = P - O) ! »",
       laugh: "« Hahaha ! La joie alcalinise le corps en quelques secondes ! »",
       coo: "« Roucouuu ! Écoute le chant de tes cellules régénérées. »",
       think: "« J'analyse les flavonoïdes et la charge en mucus... »",
@@ -424,7 +420,6 @@
       const labelMap = {
         idle: 'Respiration (Idle)',
         walk: 'Marche avec Head-Bobbing 🚶',
-        fly: 'Vol & Battement d\'Ailes 🪽',
         laugh: 'Rire & Allégresse 😄',
         coo: 'Roucoulement & Jabot gonflé 🐦',
         think: 'Observation Inquisitrice 🧐',
@@ -445,7 +440,7 @@
     };
 
     window.triggerPigeonClick = function() {
-      const actions = ['laugh', 'celebrate', 'coo', 'fly', 'walk', 'think'];
+      const actions = ['laugh', 'celebrate', 'coo', 'walk', 'think'];
       const next = actions[Math.floor(Math.random() * actions.length)];
       setStudioAction(next);
     };
