@@ -21,22 +21,26 @@ function extractHeuristicFoods(query) {
     const lower = token.toLowerCase();
     
     // 1. Junk Food / Ultra-Processed / Fast Food / Poutine / Fried / Dairy Heavy
-    const isUltraProcessed = /poutine|burger|hamburger|cheeseburger|pizza|frite|frites|hot-?dog|tacos|kebab|nugget|nuggets|chips|raclette|fondue|bacon|saucisse|soda|coca|donut|croissant|gaufre|biscuit|snack|fast-?food|croque-?monsieur/i.test(lower);
+    const isUltraProcessed = /burrito|wrap|tacos|fajita|quesadilla|nachos|poutine|burger|hamburger|cheeseburger|pizza|frite|frites|hot-?dog|kebab|shawarma|nugget|nuggets|chips|raclette|fondue|tartiflette|bacon|saucisse|soda|coca|donut|croissant|gaufre|biscuit|snack|fast-?food|croque-?monsieur|lasagne|quiche|p[aâ]t[eé]|p[aâ]t[eé]\s*chinois|hachis|hachis\s*parmentier|tourti[eè]re|gratin|moussaka|shepherd|cottage\s*pie|boeuf\s*bourguignon|chili\s*con\s*carne|cordon\s*bleu/i.test(lower);
     
-    // 2. Electric Foods (Universal Vitalist: bio-mineral, wild, non-hybridized, alkaline, Dr. Sebi, Ehret, Morse)
-    const isElectric = !isUltraProcessed && /avocat|concombre|mangue|papaye|melon|pasteque|pastèque|datte|figue|pomme|poire|cerise|prune|raisin|citron|citron vert|lime|kale|amarante|fonio|quinoa|kamut|teff|courgette|lin|chia|sésame|sesame|olive|roquette|cresson|mache|mâche|gingembre|aneth|basilic|coriandre|origan|romarin|thym|sauvage|spiruline|clémentine|mandarine|mûre|framboise|myrtille|fraise|moringa|baobab|bouye|bissap|hibiscus|bleuet|canneberge|argousier|ortie|pissenlit|ditakh|madd|gombo|sureau|aronia|camu|acai|acerola|pousse|germe/i.test(lower);
+    // 2. Electric & Wild Original Foods (Universal Vitalist: bio-mineral, wild, African, Amazonian, Dr. Sebi, Ehret, Morse)
+    const isElectric = !isUltraProcessed && /avocat|concombre|mangue|papaye|melon|pasteque|pastèque|datte|figue|pomme|poire|cerise|prune|raisin|citron|citron vert|lime|kale|amarante|fonio|quinoa|kamut|teff|courgette|lin|chia|sésame|sesame|olive|roquette|cresson|mache|mâche|gingembre|aneth|basilic|coriandre|origan|romarin|thym|sauvage|spiruline|clémentine|mandarine|mûre|framboise|myrtille|fraise|strawberry|raspberry|blueberry|blackberry|moringa|baobab|bouye|bissap|hibiscus|bleuet|canneberge|argousier|ortie|pissenlit|ditakh|dettarium|madd|saba|gombo|soursop|corossol|sureau|aronia|camu|acai|acerola|pousse|germe/i.test(lower);
     
-    // 3. Hybridized / Acidifying Starchy Foods
-    const isHybrid = !isUltraProcessed && !isElectric && /carotte|mais|maïs|pomme de terre|patate|riz|ble|blé|soja|tofu|seitan|haricot|lentille|pois|aubergine|pamplemousse|champignon/i.test(lower);
+    // 3. Natural Living Plant Foods / Fresh Fruits & Raw Greens (Non-Sebi living foods: PRAL negative, NOVA 1, Mucus Dissolving)
+    const isNaturalPlantAlkaline = !isUltraProcessed && !isElectric && /fruit|baie|berry|goyave|guava|lychee|litchi|passion|maracuja|grenade|pomegranate|kiwi|abricot|apricot|peche|pêche|nectarine|ananas|pineapple|mangoustan|mangosteen|kaki|persimmon|pitaya|dragon|tamarin|tamarind|agrumes|orange|mandarine|clementine|pamplemousse|salade|laitue|verdure|epinard|épinard|tisane|infusion/i.test(lower);
+
+    // 4. Hybridized / Acidifying Starchy Foods
+    const isHybrid = !isUltraProcessed && !isElectric && !isNaturalPlantAlkaline && /carotte|mais|maïs|pomme de terre|patate|riz|ble|blé|soja|tofu|seitan|haricot|lentille|pois|aubergine|champignon/i.test(lower);
     
-    // 4. Animal Products / Dairy / Standard Mucus-forming
-    const isAnimalMucus = !isUltraProcessed && !isElectric && !isHybrid && /viande|poulet|boeuf|bœuf|porc|veau|agneau|canard|dinde|fromage|lait|creme|crème|beurre|oeuf|œuf|poisson|saumon|thon|crevette/i.test(lower);
+    // 5. Animal Products / Dairy / Standard Mucus-forming
+    const isAnimalMucus = !isUltraProcessed && !isElectric && !isNaturalPlantAlkaline && !isHybrid && /viande|poulet|boeuf|bœuf|porc|veau|agneau|canard|dinde|fromage|lait|creme|crème|beurre|oeuf|œuf|poisson|saumon|thon|crevette/i.test(lower);
 
     let emoji = '🍽️';
-    if (/poutine/i.test(lower)) emoji = '🍟';
+    if (/burrito|wrap|tacos|fajita|quesadilla/i.test(lower)) emoji = '🌯';
+    else if (/poutine|frite/i.test(lower)) emoji = '🍟';
     else if (/burger/i.test(lower)) emoji = '🍔';
     else if (/pizza/i.test(lower)) emoji = '🍕';
-    else if (/frite/i.test(lower)) emoji = '🍟';
+    else if (/kebab|shawarma/i.test(lower)) emoji = '🥙';
     else if (/avocat/i.test(lower)) emoji = '🥑';
     else if (/concombre/i.test(lower)) emoji = '🥒';
     else if (/mangue/i.test(lower)) emoji = '🥭';
@@ -46,6 +50,8 @@ function extractHeuristicFoods(query) {
     else if (/melon|pasteque|pastèque/i.test(lower)) emoji = '🍉';
     else if (/raisin/i.test(lower)) emoji = '🍇';
     else if (/citron/i.test(lower)) emoji = '🍋';
+    else if (/fraise|strawberry/i.test(lower)) emoji = '🍓';
+    else if (/framboise|myrtille|blueberry|raspberry/i.test(lower)) emoji = '🫐';
     else if (/salade|laitue|kale|roquette/i.test(lower)) emoji = '🥗';
     else if (/riz|quinoa/i.test(lower)) emoji = '🍚';
 
@@ -62,13 +68,22 @@ function extractHeuristicFoods(query) {
       note = 'Produit ultra-transformé générant une forte acidose rénale (PRAL +14.8) et une congestion mucogène.';
     } else if (isElectric) {
       pral = -4.5;
-      density = 88;
+      density = 90;
       nova = 1;
       freshness = 95;
       mucus = 'Dissolvant';
-      label = 'Électrique (Dr. Sebi)';
+      label = 'Électrique (Dr. Sebi & Sauvage)';
       family = 'Aliment Vivant / Vitaliste';
       note = 'Aliment bio-minéral alcalinisant à haute charge électrolytique favorisant le nettoyage cellulaire.';
+    } else if (isNaturalPlantAlkaline) {
+      pral = -3.2;
+      density = 85;
+      nova = 1;
+      freshness = 90;
+      mucus = 'Dissolvant';
+      label = 'Végétal Vivant Alcalinisant';
+      family = 'Fruits & Végétaux Vivants';
+      note = 'Fruit ou végétal vivant naturel, alcalinisant et dissolvant naturel des toxines.';
     } else if (isHybrid) {
       pral = 2.5;
       density = 55;
@@ -88,14 +103,14 @@ function extractHeuristicFoods(query) {
       family = 'Produits Animaux';
       note = 'Génère une production intense de mucus lymphatique et une charge acide importante.';
     } else {
-      pral = 1.0;
-      density = 50;
-      nova = 2;
-      freshness = 60;
-      mucus = 'Neutre à Mucogène';
-      label = 'Standard';
-      family = 'Alimentation Courante';
-      note = 'Aliment standard à consommer avec modération dans une démarche de détox.';
+      pral = 0.5;
+      density = 60;
+      nova = 1;
+      freshness = 75;
+      mucus = 'Neutre';
+      label = 'Végétal Brut / Neutre';
+      family = 'Alimentation Naturelle';
+      note = 'Aliment brut naturel à consommer dans le cadre d\'une alimentation équilibrée.';
     }
 
     const nameCap = token.charAt(0).toUpperCase() + token.slice(1);
@@ -140,10 +155,10 @@ module.exports = async function handler(req, res) {
 
   if (!authGuard(req, res)) return;
 
-  const { query } = req.body || {};
-  if (!query || !query.trim()) return res.status(400).json({ error: 'query is required' });
+  const rawQuery = req.body?.query || req.body?.text || req.body?.dish || '';
+  if (!rawQuery || !rawQuery.trim()) return res.status(400).json({ error: 'query or text is required' });
 
-  const cleanQuery = query.trim();
+  const cleanQuery = rawQuery.trim();
 
   try {
     const apiKey = process.env.GEMINI_API_KEY;
@@ -156,14 +171,25 @@ module.exports = async function handler(req, res) {
       apiKey,
       contents: [{ role: 'user', parts: [{ text: `Analyze this food or dish: ${cleanQuery}` }] }],
       systemInstruction: foodAnalysisPrompt,
-      generationConfig: { temperature: 0.1, maxOutputTokens: 1500, responseMimeType: 'application/json' },
+      generationConfig: { temperature: 0.1, maxOutputTokens: 3000, responseMimeType: 'application/json' },
     });
 
     const rawText = typeof result === 'object' && result.text ? result.text : String(result || '');
     const cleaned = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
-    const parsed = JSON.parse(cleaned);
+    let parsed;
+    try {
+      parsed = JSON.parse(cleaned);
+    } catch (parseErr) {
+      // Try extracting json array/object if surrounded by preamble
+      const jsonMatch = cleaned.match(/\{[\s\S]*\}|\[[\s\S]*\]/);
+      if (jsonMatch) {
+        parsed = JSON.parse(jsonMatch[0]);
+      } else {
+        throw parseErr;
+      }
+    }
 
-    const list = parsed.foods || parsed.items || (parsed.name ? [parsed] : []);
+    const list = parsed.foods || parsed.items || (Array.isArray(parsed) ? parsed : (parsed.name ? [parsed] : []));
     res.status(200).json({ data: { items: list, foods: list } });
   } catch (error) {
     console.warn('[/api/analyze-text] Falling back to heuristics:', error.message);

@@ -263,16 +263,26 @@ window.updateProgramRing = function() {
   }
 }
 
-window.clearCalendar = function() {
-  if (confirm("Voulez-vous vraiment arrêter votre programme et effacer le calendrier ?")) {
+window.clearCalendar = async function() {
+  const ok = await (window.showVitalConfirm ? window.showVitalConfirm({
+    title: 'Arrêter le programme',
+    message: 'Voulez-vous vraiment arrêter votre programme et effacer l\'ensemble du calendrier ?',
+    icon: 'ri-alert-line',
+    confirmText: 'Arrêter et effacer',
+    cancelText: 'Annuler',
+    isDanger: true
+  }) : Promise.resolve(confirm("Voulez-vous vraiment arrêter votre programme et effacer le calendrier ?")));
+
+  if (ok) {
     window.store.set('calendar_meals', []);
     window.store.set('active_plan_meta', null);
     window.currentDateKey = "0";
     window.renderStrip();
     window.renderDay();
     window.updateProgramRing();
+    if (window.showToast) window.showToast('Programme arrêté et calendrier réinitialisé.', 'info');
   }
-}
+};
 
 // ═══════ GÉNÉRATION DE PLAN VIA LE CHAT (paramètres uniquement) ═══════
 // Le chat ne fournit plus que { numDays, protocol, objective, restrictions }
@@ -441,6 +451,10 @@ window.openCalMealModal = function(mealId) {
     slots.forEach((s, i) => { s.classList.toggle('active', i === 0); });
   }
 
+  if (dateInput && dateInput._updateVitalDatePicker) {
+    dateInput._updateVitalDatePicker();
+  }
+
   overlay.style.display = 'block';
   modal.style.display = 'block';
 };
@@ -464,14 +478,32 @@ document.addEventListener('keydown', function(e) {
   }
 });
 
-window.deleteMealConfirm = function(mealId) {
-  if (confirm('Supprimer ce repas du calendrier ?')) {
+window.deleteMealConfirm = async function(mealId) {
+  const ok = await (window.showVitalConfirm ? window.showVitalConfirm({
+    title: 'Supprimer ce repas',
+    message: 'Voulez-vous vraiment supprimer ce repas du calendrier ?',
+    icon: 'ri-delete-bin-line',
+    confirmText: 'Supprimer',
+    cancelText: 'Annuler',
+    isDanger: true
+  }) : Promise.resolve(confirm('Supprimer ce repas du calendrier ?')));
+
+  if (ok) {
     window.deleteMeal(mealId);
   }
 };
 
-window.confirmRegenerateDay = function() {
-  if (confirm('Régénérer les aliments de ce jour avec une nouvelle sélection ? (les cases cochées seront réinitialisées pour ce jour)')) {
+window.confirmRegenerateDay = async function() {
+  const ok = await (window.showVitalConfirm ? window.showVitalConfirm({
+    title: 'Régénérer les aliments du jour',
+    message: 'Régénérer les aliments de ce jour avec une nouvelle sélection ? (les cases cochées seront réinitialisées pour ce jour)',
+    icon: 'ri-refresh-line',
+    confirmText: 'Régénérer',
+    cancelText: 'Annuler',
+    isDanger: false
+  }) : Promise.resolve(confirm('Régénérer les aliments de ce jour avec une nouvelle sélection ?')));
+
+  if (ok) {
     window.regenerateDayContent();
   }
 };

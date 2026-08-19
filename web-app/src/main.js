@@ -4,6 +4,12 @@
  * Respiration (history), Modes/Protocoles, Profil, Food Detail Modal (3 tabs)
  */
 
+import { RAINTREE_HERBS, RAINTREE_PROTOCOLS } from './raintree-data.js';
+import { t, getLanguage, setLanguage, toggleLanguage, onLanguageChange } from './i18n.js';
+
+// Exposer globalement pour l'interface utilisateur
+window.vitalTrackI18n = { t, getLanguage, setLanguage, toggleLanguage, onLanguageChange };
+
 // ═══════ CONFIG ═══════
 const API_BASE = window.location.origin;
 const VT_APP_KEY = import.meta.env.VITE_VT_APP_KEY || '';
@@ -45,6 +51,510 @@ window.showToast = function(msg, type = 'success', duration = 3500) {
   }, duration);
 };
 
+// ═══════ GLOBAL VITAL CONFIRM MODAL ═══════
+window.showVitalConfirm = function({
+  title = 'Confirmation',
+  message = 'Voulez-vous vraiment continuer ?',
+  icon = 'ri-alert-fill',
+  confirmText = 'Confirmer',
+  cancelText = 'Annuler',
+  isDanger = true
+} = {}) {
+  return new Promise((resolve) => {
+    const modal = document.getElementById('vitalConfirmModal');
+    if (!modal) {
+      resolve(true);
+      return;
+    }
+    const titleEl = document.getElementById('vitalConfirmTitle');
+    const bodyEl = document.getElementById('vitalConfirmBody');
+    const iconEl = document.getElementById('vitalConfirmIcon');
+    const iconBox = document.getElementById('vitalConfirmIconBox');
+    const cancelBtn = document.getElementById('vitalConfirmCancelBtn');
+    const actionBtn = document.getElementById('vitalConfirmActionBtn');
+
+    if (titleEl) titleEl.textContent = title;
+    if (bodyEl) bodyEl.innerHTML = message;
+    if (iconEl) iconEl.className = icon;
+    if (iconBox) {
+      iconBox.className = isDanger ? 'vital-confirm-icon-box' : 'vital-confirm-icon-box info';
+    }
+    if (cancelBtn) cancelBtn.textContent = cancelText;
+    if (actionBtn) {
+      actionBtn.textContent = confirmText;
+      actionBtn.className = isDanger ? 'vital-confirm-btn-action' : 'vital-confirm-btn-action primary';
+    }
+
+    const cleanup = () => {
+      modal.classList.remove('show');
+      cancelBtn.onclick = null;
+      actionBtn.onclick = null;
+      document.removeEventListener('keydown', onKeyDown);
+    };
+
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        cleanup();
+        resolve(false);
+      }
+    };
+
+    cancelBtn.onclick = () => {
+      cleanup();
+      resolve(false);
+    };
+
+    actionBtn.onclick = () => {
+      cleanup();
+      resolve(true);
+    };
+
+    modal.onclick = (e) => {
+      if (e.target === modal) {
+        cleanup();
+        resolve(false);
+      }
+    };
+
+    document.addEventListener('keydown', onKeyDown);
+    modal.classList.add('show');
+  });
+};
+
+// ═══════ VITAL CUSTOM DATE PICKER ═══════
+const MONTH_NAMES_FR = [
+  'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+  'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
+];
+const WEEKDAYS_SHORT_FR = ['Lu', 'Ma', 'Me', 'Je', 'Ve', 'Sa', 'Di'];
+
+window.initVitalDatePicker = function(inputEl) {
+  if (!inputEl || inputEl._vitalDatePickerInitialized) return;
+  inputEl._vitalDatePickerInitialized = true;
+
+  let currentDate = inputEl.value ? new Date(inputEl.value + 'T12:00:00') : new Date();
+  if (isNaN(currentDate.getTime())) currentDate = new Date();
+
+  inputEl.style.display = 'none';
+
+  const wrap = document.createElement('div');
+  wrap.className = 'vital-datepicker-wrap';
+  inputEl.parentNode.insertBefore(wrap, inputEl.nextSibling);
+
+  const trigger = document.createElement('button');
+  trigger.type = 'button';
+  trigger.className = 'vital-datepicker-trigger';
+  wrap.appendChild(trigger);
+
+  const popover = document.createElement('div');
+  popover.className = 'vital-datepicker-popover';
+  popover.style.display = 'none';
+  wrap.appendChild(popover);
+
+  let viewYear = currentDate.getFullYear();
+  let viewMonth = currentDate.getMonth();
+
+  function formatDisplayDate(d) {
+    const today = new Date();
+    const isToday = d.toDateString() === today.toDateString();
+    
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
+    const isYesterday = d.toDateString() === yesterday.toDateString();
+
+    const dStr = d.toLocaleDateString('fr-FR', {
+      weekday: 'short',
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    });
+
+    if (isToday) return `Aujourd'hui (${dStr})`;
+    if (isYesterday) return `Hier (${dStr})`;
+    return dStr;
+  }
+
+  function updateTrigger() {
+    const val = inputEl.value;
+    let d = val ? new Date(val + 'T12:00:00') : new Date();
+    if (isNaN(d.getTime())) d = new Date();
+    trigger.innerHTML = `
+      <div class="vital-datepicker-trigger-val">
+        <span class="vital-datepicker-icon"><i class="ri-calendar-event-fill"></i></span>
+        <span>${formatDisplayDate(d)}</span>
+      </div>
+      <i class="ri-arrow-down-s-line vital-datepicker-chevron"></i>
+    `;
+  }
+
+  function setDate(d) {
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    const dateStr = `${yyyy}-${mm}-${dd}`;
+    inputEl.value = dateStr;
+    inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+    inputEl.dispatchEvent(new Event('change', { bubbles: true }));
+    currentDate = d;
+    viewYear = d.getFullYear();
+    viewMonth = d.getMonth();
+    updateTrigger();
+    closePopover();
+  }
+
+  function renderCalendar() {
+    const today = new Date();
+    const selectedVal = inputEl.value;
+    const selectedDate = selectedVal ? new Date(selectedVal + 'T12:00:00') : null;
+
+    const isTodaySelected = selectedDate && selectedDate.toDateString() === today.toDateString();
+    const yesterday = new Date(); yesterday.setDate(today.getDate() - 1);
+    const isYesterdaySelected = selectedDate && selectedDate.toDateString() === yesterday.toDateString();
+    const dayBefore = new Date(); dayBefore.setDate(today.getDate() - 2);
+    const isDayBeforeSelected = selectedDate && selectedDate.toDateString() === dayBefore.toDateString();
+
+    let html = `
+      <div class="vital-datepicker-presets">
+        <button type="button" class="vital-preset-chip ${isTodaySelected ? 'active' : ''}" data-preset="today">Aujourd'hui</button>
+        <button type="button" class="vital-preset-chip ${isYesterdaySelected ? 'active' : ''}" data-preset="yesterday">Hier</button>
+        <button type="button" class="vital-preset-chip ${isDayBeforeSelected ? 'active' : ''}" data-preset="dayBefore">Avant-hier</button>
+      </div>
+
+      <div class="vital-datepicker-header">
+        <div class="vital-datepicker-nav-group">
+          <button type="button" class="vital-datepicker-nav" data-nav="prev-year" title="Année précédente"><i class="ri-skip-back-line"></i></button>
+          <button type="button" class="vital-datepicker-nav" data-nav="prev-month" title="Mois précédent"><i class="ri-arrow-left-s-line"></i></button>
+        </div>
+
+        <div class="vital-datepicker-selectors">
+          <select class="vital-dp-select vital-dp-select-month" aria-label="Choisir le mois">
+            ${MONTH_NAMES_FR.map((name, i) => `<option value="${i}" ${i === viewMonth ? 'selected' : ''}>${name}</option>`).join('')}
+          </select>
+          <select class="vital-dp-select vital-dp-select-year" aria-label="Choisir l'année">
+            ${Array.from({ length: 30 }, (_, k) => {
+              const y = (new Date().getFullYear() - 15) + k;
+              return `<option value="${y}" ${y === viewYear ? 'selected' : ''}>${y}</option>`;
+            }).join('')}
+          </select>
+        </div>
+
+        <div class="vital-datepicker-nav-group">
+          <button type="button" class="vital-datepicker-nav" data-nav="next-month" title="Mois suivant"><i class="ri-arrow-right-s-line"></i></button>
+          <button type="button" class="vital-datepicker-nav" data-nav="next-year" title="Année suivante"><i class="ri-skip-forward-line"></i></button>
+        </div>
+      </div>
+
+      <div class="vital-datepicker-weekdays">
+        ${WEEKDAYS_SHORT_FR.map(w => `<div class="vital-datepicker-wd">${w}</div>`).join('')}
+      </div>
+
+      <div class="vital-datepicker-days">
+    `;
+
+    const firstDay = new Date(viewYear, viewMonth, 1);
+    let startDayOfWeek = firstDay.getDay();
+    startDayOfWeek = (startDayOfWeek + 6) % 7;
+
+    const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+    const daysInPrevMonth = new Date(viewYear, viewMonth, 0).getDate();
+
+    for (let i = startDayOfWeek - 1; i >= 0; i--) {
+      const pDay = daysInPrevMonth - i;
+      html += `<button type="button" class="vital-datepicker-day other-month" data-action="prev-month-day" data-day="${pDay}">${pDay}</button>`;
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const d = new Date(viewYear, viewMonth, day);
+      const isCurrentToday = d.toDateString() === today.toDateString();
+      const isSelected = selectedDate && d.toDateString() === selectedDate.toDateString();
+      
+      let classes = ['vital-datepicker-day'];
+      if (isCurrentToday) classes.push('today');
+      if (isSelected) classes.push('selected');
+
+      html += `<button type="button" class="${classes.join(' ')}" data-action="pick-day" data-day="${day}">${day}</button>`;
+    }
+
+    const totalCells = startDayOfWeek + daysInMonth;
+    const remainingCells = (7 - (totalCells % 7)) % 7;
+    for (let day = 1; day <= remainingCells; day++) {
+      html += `<button type="button" class="vital-datepicker-day other-month" data-action="next-month-day" data-day="${day}">${day}</button>`;
+    }
+
+    html += `</div>`;
+    popover.innerHTML = html;
+
+    popover.querySelectorAll('[data-preset]').forEach(btn => {
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        const p = btn.dataset.preset;
+        const target = new Date();
+        if (p === 'yesterday') target.setDate(target.getDate() - 1);
+        if (p === 'dayBefore') target.setDate(target.getDate() - 2);
+        setDate(target);
+      };
+    });
+
+    const monthSel = popover.querySelector('.vital-dp-select-month');
+    if (monthSel) {
+      monthSel.onchange = (e) => {
+        e.stopPropagation();
+        viewMonth = parseInt(e.target.value);
+        renderCalendar();
+      };
+      monthSel.onclick = (e) => e.stopPropagation();
+    }
+
+    const yearSel = popover.querySelector('.vital-dp-select-year');
+    if (yearSel) {
+      yearSel.onchange = (e) => {
+        e.stopPropagation();
+        viewYear = parseInt(e.target.value);
+        renderCalendar();
+      };
+      yearSel.onclick = (e) => e.stopPropagation();
+    }
+
+    const prevYearBtn = popover.querySelector('[data-nav="prev-year"]');
+    if (prevYearBtn) {
+      prevYearBtn.onclick = (e) => {
+        e.stopPropagation();
+        viewYear--;
+        renderCalendar();
+      };
+    }
+
+    const nextYearBtn = popover.querySelector('[data-nav="next-year"]');
+    if (nextYearBtn) {
+      nextYearBtn.onclick = (e) => {
+        e.stopPropagation();
+        viewYear++;
+        renderCalendar();
+      };
+    }
+
+    const prevMonthBtn = popover.querySelector('[data-nav="prev-month"]');
+    if (prevMonthBtn) {
+      prevMonthBtn.onclick = (e) => {
+        e.stopPropagation();
+        viewMonth--;
+        if (viewMonth < 0) {
+          viewMonth = 11;
+          viewYear--;
+        }
+        renderCalendar();
+      };
+    }
+
+    const nextMonthBtn = popover.querySelector('[data-nav="next-month"]');
+    if (nextMonthBtn) {
+      nextMonthBtn.onclick = (e) => {
+        e.stopPropagation();
+        viewMonth++;
+        if (viewMonth > 11) {
+          viewMonth = 0;
+          viewYear++;
+        }
+        renderCalendar();
+      };
+    }
+
+    popover.querySelectorAll('[data-action="pick-day"]').forEach(btn => {
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        const day = parseInt(btn.dataset.day);
+        const target = new Date(viewYear, viewMonth, day);
+        setDate(target);
+      };
+    });
+
+    popover.querySelectorAll('[data-action="prev-month-day"]').forEach(btn => {
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        const day = parseInt(btn.dataset.day);
+        let m = viewMonth - 1;
+        let y = viewYear;
+        if (m < 0) { m = 11; y--; }
+        setDate(new Date(y, m, day));
+      };
+    });
+
+    popover.querySelectorAll('[data-action="next-month-day"]').forEach(btn => {
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        const day = parseInt(btn.dataset.day);
+        let m = viewMonth + 1;
+        let y = viewYear;
+        if (m > 11) { m = 0; y++; }
+        setDate(new Date(y, m, day));
+      };
+    });
+  }
+
+  function openPopover() {
+    document.querySelectorAll('.vital-datepicker-popover').forEach(p => {
+      if (p !== popover) p.style.display = 'none';
+    });
+    document.querySelectorAll('.vital-datepicker-trigger').forEach(t => {
+      if (t !== trigger) t.classList.remove('active');
+    });
+    const val = inputEl.value;
+    if (val) {
+      const d = new Date(val + 'T12:00:00');
+      if (!isNaN(d.getTime())) {
+        viewYear = d.getFullYear();
+        viewMonth = d.getMonth();
+      }
+    }
+    renderCalendar();
+    popover.style.display = 'block';
+    trigger.classList.add('active');
+  }
+
+  function closePopover() {
+    popover.style.display = 'none';
+    trigger.classList.remove('active');
+  }
+
+  trigger.onclick = (e) => {
+    e.stopPropagation();
+    if (popover.style.display === 'none' || !popover.style.display) {
+      openPopover();
+    } else {
+      closePopover();
+    }
+  };
+
+  inputEl._updateVitalDatePicker = () => {
+    updateTrigger();
+  };
+
+  document.addEventListener('click', (e) => {
+    if (!wrap.contains(e.target)) {
+      closePopover();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closePopover();
+  });
+
+  updateTrigger();
+};
+
+window.initAllVitalDatePickers = function() {
+  document.querySelectorAll('input[type="date"], input.vital-datepicker-input, #calMealDate, #weightDateInput').forEach(input => {
+    window.initVitalDatePicker(input);
+  });
+};
+
+// ═══════ VITAL CUSTOM SELECT / DROPDOWN ═══════
+window.initVitalSelect = function(selectEl) {
+  if (!selectEl || selectEl._vitalSelectInitialized) return;
+  selectEl._vitalSelectInitialized = true;
+
+  selectEl.style.display = 'none';
+
+  const wrap = document.createElement('div');
+  wrap.className = 'vital-select-wrap';
+  selectEl.parentNode.insertBefore(wrap, selectEl.nextSibling);
+
+  const trigger = document.createElement('button');
+  trigger.type = 'button';
+  trigger.className = 'vital-select-trigger';
+  wrap.appendChild(trigger);
+
+  const menu = document.createElement('div');
+  menu.className = 'vital-select-menu';
+  menu.style.display = 'none';
+  wrap.appendChild(menu);
+
+  function updateTrigger() {
+    const selectedOpt = selectEl.options[selectEl.selectedIndex] || selectEl.options[0];
+    const text = selectedOpt ? selectedOpt.textContent : '';
+    trigger.innerHTML = `
+      <div class="vital-select-trigger-text">${text}</div>
+      <i class="ri-arrow-down-s-line vital-select-chevron"></i>
+    `;
+  }
+
+  function renderMenu() {
+    menu.innerHTML = Array.from(selectEl.options).map((opt, idx) => {
+      const isSelected = idx === selectEl.selectedIndex;
+      return `
+        <div class="vital-select-option ${isSelected ? 'selected' : ''}" data-idx="${idx}" data-val="${opt.value}">
+          <span>${opt.textContent}</span>
+          ${isSelected ? '<i class="ri-check-line vital-select-check"></i>' : ''}
+        </div>
+      `;
+    }).join('');
+
+    menu.querySelectorAll('.vital-select-option').forEach(item => {
+      item.onclick = (e) => {
+        e.stopPropagation();
+        const idx = parseInt(item.dataset.idx);
+        selectEl.selectedIndex = idx;
+        selectEl.dispatchEvent(new Event('change', { bubbles: true }));
+        selectEl.dispatchEvent(new Event('input', { bubbles: true }));
+        updateTrigger();
+        closeMenu();
+      };
+    });
+  }
+
+  function openMenu() {
+    document.querySelectorAll('.vital-select-menu').forEach(m => {
+      if (m !== menu) m.style.display = 'none';
+    });
+    document.querySelectorAll('.vital-select-trigger').forEach(t => {
+      if (t !== trigger) t.classList.remove('active');
+    });
+    renderMenu();
+    menu.style.display = 'block';
+    trigger.classList.add('active');
+  }
+
+  function closeMenu() {
+    menu.style.display = 'none';
+    trigger.classList.remove('active');
+  }
+
+  trigger.onclick = (e) => {
+    e.stopPropagation();
+    if (menu.style.display === 'none' || !menu.style.display) {
+      openMenu();
+    } else {
+      closeMenu();
+    }
+  };
+
+  selectEl._updateVitalSelect = () => {
+    updateTrigger();
+  };
+
+  selectEl.addEventListener('change', () => {
+    updateTrigger();
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!wrap.contains(e.target)) {
+      closeMenu();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeMenu();
+  });
+
+  updateTrigger();
+};
+
+window.initAllVitalSelects = function() {
+  document.querySelectorAll('select.custom-vital-select, select.sort-select, #fastingType, #searchSortSelect, #profileGoal').forEach(sel => {
+    window.initVitalSelect(sel);
+  });
+};
+
 // ═══════ INIT ═══════
 document.addEventListener('DOMContentLoaded', async () => {
   loadTheme();
@@ -62,6 +572,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   initSmartInsight();
   initMasterclass();
   initExpertAccordion();
+
+  // Initialize Custom Controls
+  initAllVitalDatePickers();
+  initAllVitalSelects();
+  initFastingDurationControls();
   
   if (window.VitalMascot) {
     window.appMascot = new window.VitalMascot('mascotCanvas');
@@ -76,10 +591,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
   renderResources();
 
-  // Show safety warning for >24h fasts
-  document.getElementById('fastingDuration').addEventListener('input', (e) => {
-    document.getElementById('fastingSafetyWarning').style.display = parseInt(e.target.value) > 24 ? 'flex' : 'none';
-  });
+  // Safety warning listener
+  const durationInput = document.getElementById('fastingDuration');
+  if (durationInput) {
+    durationInput.addEventListener('input', () => {
+      window.onFastingDurationChange?.();
+    });
+  }
 
   try {
     const resp = await fetch('/vital_ranking.json');
@@ -90,6 +608,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       populateVitalApprovedFoods();
       buildSearchIndex();
       initSearchPage();
+      renderRaintreeExplorer();
     }
   } catch (e) { console.warn('Could not load food database:', e); }
 });
@@ -147,7 +666,9 @@ window.showPage = function(page) {
   if (el) el.classList.add('active');
   document.querySelectorAll(`[data-page="${page}"]`).forEach(l => l.classList.add('active'));
   if (page === 'dashboard') renderDashboard();
+  if (page === 'meals') renderMeals();
   if (page === 'calendar') renderCalendar();
+  if (page === 'materia-medica') renderRaintreeExplorer();
 };
 
 window.toggleMobileNav = function() { document.getElementById('mobileNav').classList.toggle('open'); };
@@ -344,10 +865,21 @@ function renderDashboard() {
       dashList.innerHTML = todayMeals.slice(0, 5).map((m, idx) => {
         const isElec = m.electric === true || m.approved === true;
         const pral = m.pral ?? (m.scientific?.pral ?? (m.scientific_defaults?.pral ?? 0));
-        return `<div class="meal-item clickable" onclick="openFoodModalFromMeal(${idx})" style="cursor:pointer;" title="Cliquer pour ouvrir la carte d'identité 3 onglets">
+        const rawItems = m.items || m.ingredients || [];
+        let itemsPreview = '';
+        if (Array.isArray(rawItems) && rawItems.length > 0) {
+          const formatted = rawItems.map(it => typeof it === 'string' ? it : (it.name || '')).filter(Boolean);
+          if (formatted.length > 0) {
+            itemsPreview = `<div style="font-size:0.78rem; color:var(--text-dim); margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:240px;">
+              <span style="color:var(--accent);">🥗</span> ${esc(formatted.join(' · '))}
+            </div>`;
+          }
+        }
+        return `<div class="meal-item clickable" onclick="openFoodModalFromMeal(${idx})" style="cursor:pointer;" title="Cliquer pour ouvrir la fiche détaillée">
           <span class="food-emoji">${m.emoji || '🍽️'}</span>
-          <div class="meal-item-info">
+          <div class="meal-item-info" style="flex:1; min-width:0;">
             <div class="meal-item-name">${esc(m.name)}</div>
+            ${itemsPreview}
             <div class="meal-item-meta">${isElec ? '⚡ Électrique' : (m.hybrid ? '🔀 Hybride' : '⛔ Mucogène')} · PRAL ${pral > 0 ? '+' : ''}${pral.toFixed(1)} · NOVA ${m.nova ?? 1}</div>
           </div>
           <i class="ri-arrow-right-s-line" style="color:var(--text-dim); margin-left:auto; font-size:1.1rem;"></i>
@@ -1138,30 +1670,57 @@ function levenshtein(a, b) {
   return dp[m][n];
 }
 
-// Fuzzy search: find items where any name is within edit distance ≤ 2
+// Fuzzy search: find items where names match query with precision
 function fuzzySearch(q) {
   const matched = new Set();
+  const qClean = (q || '').trim().toLowerCase();
+  if (!qClean) return [];
+  const qWords = qClean.split(/\s+/).filter(w => w.length > 0);
+
   vitalDb.forEach((item, idx) => {
-    const names = item.names || [];
+    const names = item.names || [item.name || ''];
     for (const name of names) {
       const lower = name.toLowerCase();
-      // Substring match
-      if (lower.includes(q)) { matched.add(idx); break; }
-      // Per-word fuzzy match (edit distance ≤ 2 for words >= 4 chars)
-      const words = lower.split(/\s+/);
-      const qWords = q.split(/\s+/);
-      for (const qw of qWords) {
-        if (qw.length < 3) continue;
-        for (const w of words) {
-          if (w.length < 3) continue;
-          if (levenshtein(qw, w) <= (qw.length <= 4 ? 1 : 2)) {
-            matched.add(idx);
-            break;
-          }
-        }
-        if (matched.has(idx)) break;
+      
+      // 1. Substring exact match of the entire search query
+      if (lower.includes(qClean)) {
+        matched.add(idx);
+        break;
       }
-      if (matched.has(idx)) break;
+
+      // 2. Multi-word queries: ALL query words must match a word in the item's name
+      if (qWords.length > 1) {
+        const itemWords = lower.split(/\s+/).filter(w => w.length > 0);
+        const allWordsMatched = qWords.every(qw => {
+          if (qw.length < 3) return lower.includes(qw);
+          return itemWords.some(iw => {
+            if (iw.includes(qw) || qw.includes(iw)) return true;
+            if (iw.length >= 3) {
+              const maxDist = qw.length <= 4 ? 1 : 2;
+              return levenshtein(qw, iw) <= maxDist;
+            }
+            return false;
+          });
+        });
+        if (allWordsMatched) {
+          matched.add(idx);
+          break;
+        }
+      } else if (qWords.length === 1) {
+        // Single word query fuzzy matching
+        const qw = qWords[0];
+        if (qw.length >= 3) {
+          const itemWords = lower.split(/\s+/).filter(w => w.length > 0);
+          for (const w of itemWords) {
+            if (w.length < 3) continue;
+            if (levenshtein(qw, w) <= (qw.length <= 4 ? 1 : 2)) {
+              matched.add(idx);
+              break;
+            }
+          }
+          if (matched.has(idx)) break;
+        }
+      }
     }
   });
   return [...matched].map(i => vitalDb[i]);
@@ -1177,12 +1736,26 @@ function indexSearch(q) {
 // Apply active filter to a list of items
 function applyFilter(matches) {
   if (currentSearchFilter === 'all') return matches;
+  const favs = store.get('favorites', []);
+  const favIds = new Set(favs.map(f => f.id));
+  const favNames = new Set(favs.map(f => (f.name || '').toLowerCase()));
   return matches.filter(item => {
     const sp = item.specific || {};
-    if (currentSearchFilter === 'electric') return sp.electric === true;
-    if (currentSearchFilter === 'hybrid') return sp.hybrid === true;
-    if (currentSearchFilter === 'alkaline') return (item.scientific_defaults?.pral ?? 0) < 0;
-    if (currentSearchFilter === 'mucus') return sp.electric !== true && sp.hybrid !== true;
+    const sc = item.scientific_defaults || item.scientific || {};
+    const pral = sc.pral ?? (item.pral ?? 0);
+    const nameLower = (item.names?.[0] || item.name || '').toLowerCase();
+    const isE = sp.electric === true || item.electric === true || item.approved === true;
+    const isH = sp.hybrid === true || item.hybrid === true;
+    const mucusStr = (sp.mucus || item.mucus || '').toLowerCase();
+    const isDissolvant = mucusStr.includes('dissolvant') || mucusStr.includes('non-muc');
+    const isAlcalin = pral < 0 || isDissolvant || isE;
+    const isMucus = mucusStr.includes('mucog') || pral > 2.5;
+
+    if (currentSearchFilter === 'favorites') return (item.id && favIds.has(item.id)) || favNames.has(nameLower);
+    if (currentSearchFilter === 'electric') return isE;
+    if (currentSearchFilter === 'hybrid') return isH;
+    if (currentSearchFilter === 'alkaline') return isAlcalin;
+    if (currentSearchFilter === 'mucus') return isMucus && !isE && !isDissolvant && pral > 0;
     return true;
   });
 }
@@ -1191,11 +1764,11 @@ function applyFilter(matches) {
 function applySortItems(items) {
   const sort = document.getElementById('searchSortSelect')?.value || 'relevance';
   const sorted = [...items];
-  if (sort === 'pral-asc') sorted.sort((a, b) => (a.scientific_defaults?.pral ?? 0) - (b.scientific_defaults?.pral ?? 0));
-  else if (sort === 'pral-desc') sorted.sort((a, b) => (b.scientific_defaults?.pral ?? 0) - (a.scientific_defaults?.pral ?? 0));
-  else if (sort === 'nova-asc') sorted.sort((a, b) => (a.vitality?.nova ?? 4) - (b.vitality?.nova ?? 4));
-  else if (sort === 'freshness-desc') sorted.sort((a, b) => (b.vitality?.freshness ?? 0) - (a.vitality?.freshness ?? 0));
-  else if (sort === 'az') sorted.sort((a, b) => (a.names?.[0] || '').localeCompare(b.names?.[0] || '', 'fr'));
+  if (sort === 'pral-asc') sorted.sort((a, b) => (a.scientific_defaults?.pral ?? (a.scientific?.pral ?? (a.pral ?? 0))) - (b.scientific_defaults?.pral ?? (b.scientific?.pral ?? (b.pral ?? 0))));
+  else if (sort === 'pral-desc') sorted.sort((a, b) => (b.scientific_defaults?.pral ?? (b.scientific?.pral ?? (b.pral ?? 0))) - (a.scientific_defaults?.pral ?? (a.scientific?.pral ?? (a.pral ?? 0))));
+  else if (sort === 'nova-asc') sorted.sort((a, b) => (a.vitality?.nova ?? (a.nova ?? 4)) - (b.vitality?.nova ?? (b.nova ?? 4)));
+  else if (sort === 'freshness-desc') sorted.sort((a, b) => (b.vitality?.freshness ?? (b.freshness ?? 0)) - (a.vitality?.freshness ?? (a.freshness ?? 0)));
+  else if (sort === 'az') sorted.sort((a, b) => (a.names?.[0] || a.name || '').localeCompare(b.names?.[0] || b.name || '', 'fr'));
   return sorted;
 }
 
@@ -1211,20 +1784,30 @@ window.setSearchFilter = function(filter) {
   if (q) {
     searchFoods(q);
   } else {
-    // Re-render popular/category if no query
-    renderPopularFoods();
+    _doSearch('');
   }
 };
 
 // Debounced search entry point
 window.searchFoods = function(query) {
   const q = (query || '').trim();
-  // Show/hide clear button
+  // Show/hide clear and AI search buttons
   const clearBtn = document.getElementById('searchClearBtn');
+  const aiDirectBtn = document.getElementById('searchAiDirectBtn');
   if (clearBtn) clearBtn.style.display = q ? 'block' : 'none';
+  if (aiDirectBtn) aiDirectBtn.style.display = q ? 'inline-flex' : 'none';
 
   clearTimeout(_searchDebounceTimer);
   _searchDebounceTimer = setTimeout(() => _doSearch(q), 200);
+};
+
+// Direct AI Search trigger from input button
+window.triggerDirectAISearch = function() {
+  const input = document.getElementById('searchInput');
+  const q = (input?.value || '').trim();
+  if (q) {
+    askAIToFindFood(q);
+  }
 };
 
 function _doSearch(q) {
@@ -1233,6 +1816,37 @@ function _doSearch(q) {
   const statsBar = document.getElementById('searchStatsBar');
 
   if (!q) {
+    if (currentSearchFilter === 'favorites') {
+      const favs = store.get('favorites', []);
+      if (emptyState) emptyState.style.display = 'none';
+      if (resultsEl) resultsEl.style.display = 'flex';
+      
+      const countEl = document.getElementById('searchResultCount');
+      if (favs.length === 0) {
+        if (statsBar) statsBar.style.display = 'none';
+        resultsEl.innerHTML = `
+          <div class="empty-state" style="text-align:center; padding:36px 16px; width:100%;">
+            <div style="font-size:2.8rem; margin-bottom:10px;">❤️</div>
+            <p style="font-weight:700; font-size:1.05rem; color:var(--text); margin-bottom:6px;">Aucun aliment dans vos favoris</p>
+            <p style="font-size:0.88rem; color:var(--text-dim); max-width:360px; margin:0 auto;">Recherchez un aliment et cliquez sur le bouton "❤️ Favori" dans sa fiche pour l'ajouter instantanément à vos favoris.</p>
+          </div>
+        `;
+      } else {
+        if (statsBar) {
+          statsBar.style.display = 'flex';
+          if (countEl) countEl.textContent = favs.length === 1 ? '1 favori' : `${favs.length} favoris`;
+        }
+        const fullFavs = favs.map(f => {
+          return vitalDb.find(item => (f.id && item.id === f.id) || (item.names || []).some(n => n.toLowerCase() === (f.name || '').toLowerCase())) || f;
+        });
+        _lastSearchResults = fullFavs;
+        _lastSearchQuery = '';
+        const sorted = applySortItems(fullFavs);
+        resultsEl.innerHTML = sorted.map(item => renderFoodCard(item)).join('');
+      }
+      return;
+    }
+
     // No query → show empty state (category browse + popular)
     if (resultsEl) { resultsEl.innerHTML = ''; resultsEl.style.display = 'none'; }
     if (emptyState) emptyState.style.display = '';
@@ -1273,13 +1887,30 @@ function renderSearchResults(matches, q) {
   // Apply sort
   const sorted = applySortItems(matches).slice(0, 40);
 
+  // AI Prompt Banner HTML (always available when query has >= 2 characters)
+  const aiBannerHtml = `
+    <div class="search-ai-banner" onclick="askAIToFindFood('${esc(q)}')">
+      <div class="search-ai-banner-content">
+        <div class="search-ai-banner-icon"><i class="ri-sparkling-fill"></i></div>
+        <div class="search-ai-banner-text">
+          <span class="search-ai-banner-title"><i class="ri-sparkling-line" style="color:var(--accent)"></i> Votre aliment ou plat n'est pas dans la liste ?</span>
+          <span class="search-ai-banner-sub">Analyser <strong>« ${esc(q)} »</strong> avec l'IA VitalTrack (classification complète, PRAL & NOVA)</span>
+        </div>
+      </div>
+      <button type="button" class="btn-ai-search" onclick="event.stopPropagation(); askAIToFindFood('${esc(q)}')">
+        <i class="ri-search-eye-line"></i> Analyser IA
+      </button>
+    </div>
+  `;
+
   if (matches.length === 0) {
     if (statsBar) statsBar.style.display = 'none';
     resultsEl.innerHTML = `
-      <p class="empty-state">Aucun résultat pour <strong>"${esc(q)}"</strong>.</p>
-      <div style="text-align:center; margin-top:8px">
-        <button class="btn-primary" style="margin: 0 auto; display: inline-flex; align-items:center; gap:8px;" onclick="askAIToFindFood('${esc(q)}')">
-          <i class="ri-sparkling-fill"></i> Analyser "${esc(q)}" avec l'IA
+      <div style="text-align:center; padding:24px 16px; width:100%;">
+        <div style="font-size:2.5rem; margin-bottom:12px;">🔍</div>
+        <p class="empty-state" style="margin-bottom:16px; font-size:0.95rem;">Aucun résultat répertorié dans la base pour <strong>« ${esc(q)} »</strong>.</p>
+        <button class="btn-primary" style="margin: 0 auto; display: inline-flex; align-items:center; gap:8px; padding:12px 22px; font-weight:700; font-size:0.92rem; box-shadow:0 4px 14px rgba(16,185,129,0.4);" onclick="askAIToFindFood('${esc(q)}')">
+          <i class="ri-sparkling-fill"></i> Analyser « ${esc(q)} » avec l'IA VitalTrack
         </button>
       </div>
     `;
@@ -1296,38 +1927,55 @@ function renderSearchResults(matches, q) {
   // Save to recent searches
   saveRecentSearch(q);
 
-  resultsEl.innerHTML = sorted.map(item => renderFoodCard(item)).join('');
+  // Render AI banner at top + sorted food cards
+  resultsEl.innerHTML = aiBannerHtml + sorted.map(item => renderFoodCard(item)).join('');
 }
 
 function renderFoodCard(item, compact = false) {
-  const name = ((item.names?.[0] || 'Inconnu')).replace(/^./, c => c.toUpperCase());
+  const name = ((item.names?.[0] || item.name || 'Inconnu')).replace(/^./, c => c.toUpperCase());
   const sp = item.specific || {};
-  const sc = item.scientific_defaults || {};
+  const sc = item.scientific_defaults || item.scientific || {};
   const vt = item.vitality || {};
-  const isE = sp.electric === true;
-  const isH = sp.hybrid === true;
-  const pral = sc.pral ?? 0;
-  const nova = vt.nova ?? (isE ? 1 : isH ? 2 : 3);
-  const freshness = vt.freshness ?? 70;
-  const bc = isE ? 'badge-electric' : isH ? 'badge-hybrid' : 'badge-mucus';
-  const bt = isE ? 'Électrique' : isH ? 'Hybride' : 'Mucogène';
+  const isE = sp.electric === true || item.electric === true || item.approved === true;
+  const isH = sp.hybrid === true || item.hybrid === true;
+  const pral = sc.pral ?? (item.pral ?? 0);
+  const mucusStr = (sp.mucus || item.mucus || '').toLowerCase();
+  const isDissolvant = mucusStr.includes('dissolvant') || mucusStr.includes('non-muc');
+  const isAlcalin = pral < 0 || isDissolvant;
+  const nova = vt.nova ?? (item.nova ?? (isE ? 1 : isH ? 2 : 3));
+  const freshness = vt.freshness ?? (item.freshness ?? 70);
+  
+  let bc, bt;
+  if (isE) {
+    bc = 'badge-electric';
+    bt = 'Électrique';
+  } else if (isH) {
+    bc = 'badge-hybrid';
+    bt = 'Hybride';
+  } else if (isAlcalin && !mucusStr.includes('mucog')) {
+    bc = 'badge-alkaline';
+    bt = 'Alcalinisant';
+  } else {
+    bc = 'badge-mucus';
+    bt = 'Mucogène';
+  }
   const novaCls = `nova-${Math.min(4, Math.max(1, nova))}`;
   const freshnessColor = freshness >= 80 ? '#34d399' : freshness >= 50 ? '#facc15' : '#ef4444';
   const idx = vitalDb.indexOf(item);
   const favs = store.get('favorites', []);
-  const isFav = item.id && favs.some(f => f.id === item.id);
+  const isFav = (item.id && favs.some(f => f.id === item.id)) || favs.some(f => f.name?.toLowerCase() === name.toLowerCase());
   const noteHtml = item.note ? `<div class="food-note" title="${esc(item.note)}">${esc(item.note.slice(0, 70))}${item.note.length > 70 ? '…' : ''}</div>` : '';
+  const clickArg = idx >= 0 ? idx : `'${esc(item.id || name)}'`;
 
   if (compact) {
-    return `<div class="food-card-compact" onclick="openFoodModal(${idx})">
+    return `<div class="food-card-compact" onclick="openFoodModal(${clickArg})">
       <div class="food-emoji">${item.emoji || '🍽️'}</div>
       <div class="food-name">${esc(name)}</div>
       <span class="food-badge ${bc}">${bt}</span>
     </div>`;
   }
 
-  return `<div class="food-card" onclick="openFoodModal(${idx})">
-    ${isFav ? '<span class="food-fav-icon"><i class="ri-heart-fill"></i></span>' : ''}
+  return `<div class="food-card" onclick="openFoodModal(${clickArg})">
     <div class="food-emoji">${item.emoji || '🍽️'}</div>
     <div class="food-info">
       <div class="food-name">${esc(name)}</div>
@@ -1339,8 +1987,113 @@ function renderFoodCard(item, compact = false) {
       <span class="food-badge ${bc}">${bt}</span>
       <span class="nova-pip ${novaCls}">NOVA ${nova}</span>
     </div>
+    <div class="food-card-quick-actions">
+      <button type="button" class="food-card-action-btn btn-quick-add" onclick="event.stopPropagation(); quickAddFoodToMeal(${clickArg})" title="Ajouter directement à mes repas du jour">
+        <i class="ri-add-line"></i>
+      </button>
+      <button type="button" class="food-card-action-btn btn-quick-fav ${isFav ? 'active' : ''}" onclick="event.stopPropagation(); quickToggleFavorite(${clickArg})" title="${isFav ? 'Retirer des favoris' : 'Ajouter aux favoris'}">
+        <i class="${isFav ? 'ri-heart-fill' : 'ri-heart-line'}"></i>
+      </button>
+    </div>
   </div>`;
 }
+
+// ─── Quick Actions directly from food card ───
+window.quickAddFoodToMeal = function(idxOrFood) {
+  let item = null;
+  if (typeof idxOrFood === 'number' || (!isNaN(Number(idxOrFood)) && typeof idxOrFood !== 'object')) {
+    item = vitalDb[Number(idxOrFood)];
+  } else if (typeof idxOrFood === 'string') {
+    item = vitalDb.find(f => f.id === idxOrFood || (f.names || []).some(n => n.toLowerCase() === idxOrFood.toLowerCase()));
+  } else if (typeof idxOrFood === 'object' && idxOrFood !== null) {
+    item = idxOrFood;
+  }
+  if (!item) return;
+
+  const name = (item.names?.[0] || item.name || 'Aliment').replace(/^./, c => c.toUpperCase());
+  const id = item.id || 'dish_' + Date.now();
+  const sc = item.scientific_defaults || item.scientific || {};
+  const vt = item.vitality || {};
+  const sp = item.specific || {};
+  
+  const isElec = sp.electric === true || item.electric === true || item.approved === true;
+  const isHyb = sp.hybrid === true || item.hybrid === true;
+  const pral = sc.pral ?? (item.pral ?? 0);
+  const nova = vt.nova ?? (item.nova ?? (isElec ? 1 : isHyb ? 2 : 3));
+
+  const meals = store.get('meals', []);
+  meals.push({
+    id,
+    name,
+    emoji: item.emoji || '🍽️',
+    family: item.family || item.category || (isElec ? 'Vitaliste' : isHyb ? 'Hybride' : 'Alimentation'),
+    category: item.category || item.family || (isElec ? 'Vitaliste' : isHyb ? 'Hybride' : 'Alimentation'),
+    approved: isElec,
+    electric: isElec,
+    hybrid: isHyb,
+    pral,
+    scientific_defaults: { pral, density: sc.density ?? 50 },
+    nova,
+    vitality: { nova, freshness: vt.freshness ?? 70 },
+    freshness: vt.freshness ?? 70,
+    mucus: sp.mucus || (isElec ? 'Dissolvant' : isHyb ? 'Faiblement Mucogène' : 'Mucogène'),
+    specific: sp,
+    note: item.note,
+    timestamp: Date.now()
+  });
+  store.set('meals', meals);
+  renderMeals();
+  renderDashboard();
+  showToast(`✅ « ${name} » ajouté directement à vos repas du jour !`, 'success');
+};
+
+window.quickToggleFavorite = function(idxOrFood) {
+  let item = null;
+  if (typeof idxOrFood === 'number' || (!isNaN(Number(idxOrFood)) && typeof idxOrFood !== 'object')) {
+    item = vitalDb[Number(idxOrFood)];
+  } else if (typeof idxOrFood === 'string') {
+    item = vitalDb.find(f => f.id === idxOrFood || (f.names || []).some(n => n.toLowerCase() === idxOrFood.toLowerCase()));
+  } else if (typeof idxOrFood === 'object' && idxOrFood !== null) {
+    item = idxOrFood;
+  }
+  if (!item) return;
+
+  const targetId = item.id;
+  const name = (item.names?.[0] || item.name || 'Aliment').replace(/^./, c => c.toUpperCase());
+  let favs = store.get('favorites', []);
+  const idx = favs.findIndex(f => (targetId && f.id === targetId) || f.name?.toLowerCase() === name.toLowerCase());
+
+  const sc = item.scientific_defaults || item.scientific || {};
+  const pral = sc.pral ?? (item.pral ?? 0);
+  const isElec = item.specific?.electric === true || item.electric === true || item.approved === true;
+
+  if (idx >= 0) {
+    favs.splice(idx, 1);
+    showToast(`💔 « ${name} » retiré des favoris.`, 'info');
+  } else {
+    favs.push({
+      id: targetId || `fav_${Date.now()}`,
+      name,
+      names: item.names || [name],
+      emoji: item.emoji || '🍽️',
+      family: item.family || item.category || 'Alimentation',
+      category: item.category || item.family || 'Alimentation',
+      electric: isElec,
+      pral,
+      scientific_defaults: sc,
+      vitality: item.vitality || {},
+      specific: item.specific || {}
+    });
+    showToast(`❤️ « ${name} » ajouté aux favoris !`, 'success');
+  }
+  store.set('favorites', favs);
+  renderFavorites();
+
+  // Re-render current search results so heart icons update instantly
+  if (_lastSearchResults.length > 0) {
+    renderSearchResults(_lastSearchResults, _lastSearchQuery);
+  }
+};
 
 // ─── Recent searches (localStorage, max 8) ───
 function saveRecentSearch(q) {
@@ -1397,11 +2150,11 @@ function renderCategoryBrowse() {
   const grid = document.getElementById('categoryBrowseGrid');
   if (!grid) return;
   const cats = {};
-  vitalDb.forEach(item => { const c = item.category || 'Autre'; cats[c] = (cats[c] || 0) + 1; });
+  vitalDb.forEach(item => { const c = item.category || item.family || 'Autre'; cats[c] = (cats[c] || 0) + 1; });
   const sorted = Object.entries(cats).sort((a, b) => b[1] - a[1]);
   grid.innerHTML = sorted.map(([cat, count]) => {
     const emoji = CATEGORY_EMOJIS[cat] || '🍽️';
-    const shortName = cat.replace(' & ', '/').replace(' et ', '/');
+    const shortName = cat;
     return `<div class="category-card" onclick="browseFoodsByCategory('${esc(cat)}')">
       <span class="category-card-emoji">${emoji}</span>
       <span class="category-card-name">${esc(shortName)}</span>
@@ -1416,27 +2169,11 @@ window.browseFoodsByCategory = function(cat) {
   const clearBtn = document.getElementById('searchClearBtn');
   if (clearBtn) clearBtn.style.display = 'block';
 
-  const matches = applyFilter(vitalDb.filter(item => item.category === cat));
+  const matches = applyFilter(vitalDb.filter(item => (item.category && item.category === cat) || (item.family && item.family === cat)));
   _lastSearchResults = matches;
   _lastSearchQuery = cat;
   renderSearchResults(matches, cat);
 };
-
-// ─── Popular foods (8 random electric/high-freshness items) ───
-function renderPopularFoods() {
-  const grid = document.getElementById('popularFoodsGrid');
-  if (!grid) return;
-  let pool = vitalDb.filter(i => i.specific?.electric === true && (i.vitality?.freshness ?? 0) >= 85);
-  if (pool.length < 6) pool = vitalDb.filter(i => (i.vitality?.freshness ?? 0) >= 70);
-  // Shuffle deterministically based on day
-  const seed = Math.floor(Date.now() / 86400000);
-  pool = [...pool].sort((a, b) => {
-    const ha = (a.id || '').split('').reduce((s, c) => s + c.charCodeAt(0), seed);
-    const hb = (b.id || '').split('').reduce((s, c) => s + c.charCodeAt(0), seed);
-    return ha - hb;
-  }).slice(0, 8);
-  grid.innerHTML = pool.map(item => renderFoodCard(item, true)).join('');
-}
 
 // ─── AI search cache ───
 window.askAIToFindFood = async function(query) {
@@ -1464,18 +2201,22 @@ window.askAIToFindFood = async function(query) {
   if (storedCache[cacheKey] && (Date.now() - (storedCache[cacheKey]._cachedAt || 0)) < 86400000) {
     const cached = storedCache[cacheKey];
     _aiSearchCache.set(cacheKey, cached);
-    vitalDb.push(cached);
+    if (!vitalDb.some(i => i.id === cached.id)) {
+      vitalDb.push(cached);
+      buildSearchIndex();
+      renderCategoryBrowse();
+    }
     if (resultsEl) { resultsEl.style.display = 'flex'; }
     if (emptyState) emptyState.style.display = 'none';
     if (statsBar) statsBar.style.display = 'none';
     resultsEl.innerHTML = renderFoodCard(cached);
-    openFoodModal(vitalDb.length - 1);
+    openFoodModal(vitalDb.indexOf(cached) >= 0 ? vitalDb.indexOf(cached) : cached);
     return;
   }
 
   if (resultsEl) {
     resultsEl.style.display = 'flex';
-    resultsEl.innerHTML = `<p class="empty-state" style="padding:16px;text-align:center"><i class="ri-loader-4-line ri-spin" style="font-size:1.4rem;vertical-align:middle;margin-right:8px;color:var(--accent)"></i> Analyse de "${esc(q)}" via l'IA...</p>`;
+    resultsEl.innerHTML = `<p class="empty-state" style="padding:20px;text-align:center;width:100%;"><i class="ri-loader-4-line ri-spin" style="font-size:1.4rem;vertical-align:middle;margin-right:8px;color:var(--accent)"></i> Analyse scientifique & vitaliste de "${esc(q)}" via l'IA...</p>`;
   }
   if (emptyState) emptyState.style.display = 'none';
   if (statsBar) statsBar.style.display = 'none';
@@ -1485,36 +2226,51 @@ window.askAIToFindFood = async function(query) {
     try {
       const res = await fetch('/api/searchFood', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-VT-API-Key': VT_APP_KEY
+        },
         body: JSON.stringify({ query: q })
       });
-      if (res.ok) aiFood = await res.json();
+      if (res.ok) {
+        aiFood = await res.json();
+      }
     } catch (err) {
       console.warn('[AI Food Search] API fetch failed, using local fallback:', err);
     }
 
-    if (!aiFood) {
+    if (!aiFood || !aiFood.name) {
       aiFood = classifyFoodLocally(q);
-      aiFood.isNewFromAI = true;
     }
+    aiFood.isNewFromAI = true;
 
     // Cache result
     aiFood._cachedAt = Date.now();
     _aiSearchCache.set(cacheKey, aiFood);
     const storedC = store.get('ai-food-cache', {});
     storedC[cacheKey] = aiFood;
-    // Prune to 50 entries
     const keys = Object.keys(storedC);
-    if (keys.length > 50) delete storedC[keys[0]];
+    if (keys.length > 60) delete storedC[keys[0]];
     store.set('ai-food-cache', storedC);
 
-    vitalDb.push(aiFood);
-    // Rebuild index with new item
+    // Add to vitalDb if not present
+    const existingIdx = vitalDb.findIndex(i => (aiFood.id && i.id === aiFood.id) || (i.names || []).some(n => n.toLowerCase() === (aiFood.name || '').toLowerCase()));
+    let targetIdx;
+    if (existingIdx >= 0) {
+      vitalDb[existingIdx] = { ...vitalDb[existingIdx], ...aiFood };
+      targetIdx = existingIdx;
+    } else {
+      vitalDb.push(aiFood);
+      targetIdx = vitalDb.length - 1;
+    }
+
+    // Rebuild index and category browse with new item
     buildSearchIndex();
-    const newIdx = vitalDb.length - 1;
+    renderCategoryBrowse();
+
     if (resultsEl) resultsEl.innerHTML = renderFoodCard(aiFood);
-    openFoodModal(newIdx);
-    showToast(`✨ "${aiFood.names?.[0] || q}" analysé avec succès !`, 'success');
+    openFoodModal(targetIdx);
+    showToast(`✨ "${aiFood.names?.[0] || aiFood.name || q}" analysé avec succès !`, 'success');
   } catch (e) {
     if (resultsEl) resultsEl.innerHTML = `<p class="empty-state text-danger">${esc(e.message)}</p>`;
     showToast('Recherche IA terminée avec estimation locale.', 'info');
@@ -1525,7 +2281,6 @@ window.askAIToFindFood = async function(query) {
 function initSearchPage() {
   renderRecentSearches();
   renderCategoryBrowse();
-  renderPopularFoods();
 
   // Wire debounced input (HTML now has no oninput attr)
   const input = document.getElementById('searchInput');
@@ -1533,19 +2288,480 @@ function initSearchPage() {
     input.addEventListener('input', e => searchFoods(e.target.value));
     input.addEventListener('keydown', e => {
       if (e.key === 'Escape') clearSearch();
-      if (e.key === 'Enter' && !_lastSearchResults.length && input.value.trim()) {
-        askAIToFindFood(input.value.trim());
+      if (e.key === 'Enter') {
+        const val = input.value.trim();
+        if (val) {
+          askAIToFindFood(val);
+        }
       }
     });
   }
 }
 
-// ═══════ FOOD MODAL ═══════
-// ═══════ FOOD MODAL (3 ONGLETS UNIVERSEL) ═══════
+// ═══════ PHARMACOPÉE AMAZONIENNE & MATERIA MEDICA (RAINTREE) ═══════
+let _currentHerbFilter = 'all';
+let _currentHerbQuery = '';
+let _currentSelectedHerb = null;
+
+function renderRaintreeExplorer() {
+  renderProtocolsList();
+  filterAndRenderHerbs();
+}
+window.renderRaintreeExplorer = renderRaintreeExplorer;
+
+function renderProtocolsList() {
+  const grid = document.getElementById('protocolsGrid');
+  if (!grid) return;
+  grid.innerHTML = RAINTREE_PROTOCOLS.map(proto => {
+    const badgeClass = `badge-${proto.badgeColor || 'emerald'}`;
+    const herbPills = proto.herbs.map(hId => {
+      const h = RAINTREE_HERBS.find(x => x.id === hId);
+      if (!h) return '';
+      return `<span class="protocol-herb-pill" onclick="event.stopPropagation(); openHerbModal('${h.id}')">
+        ${h.emoji} ${esc(h.name)}
+      </span>`;
+    }).join('');
+
+    return `<div class="protocol-card" onclick="setHerbFilterByHerbs(['${proto.herbs.join("','")}'])">
+      <div class="protocol-card-top">
+        <span class="protocol-card-title">${esc(proto.title)}</span>
+        <span class="protocol-badge ${badgeClass}">${esc(proto.badge)}</span>
+      </div>
+      <div style="font-size:0.78rem;color:var(--text-dim);">${esc(proto.subtitle)}</div>
+      <div class="protocol-directions"><strong>Posologie :</strong> ${esc(proto.directions)}</div>
+      <div class="protocol-targets"><i class="ri-check-double-line" style="color:var(--accent)"></i> <strong>Cibles :</strong> ${esc(proto.targets)}</div>
+      <div class="protocol-herbs-row">
+        <span style="font-size:0.72rem;color:var(--text-dim);align-self:center">Plantes :</span>
+        ${herbPills}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+window.toggleProtocolsAccordion = function() {
+  const grid = document.getElementById('protocolsGrid');
+  const icon = document.getElementById('protocolsToggleIcon');
+  if (!grid) return;
+  const isHidden = grid.style.display === 'none' || !grid.style.display;
+  grid.style.display = isHidden ? 'grid' : 'none';
+  if (icon) {
+    icon.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
+  }
+};
+
+function filterAndRenderHerbs() {
+  const query = (_currentHerbQuery || '').trim().toLowerCase();
+  const filter = _currentHerbFilter;
+
+  let results = RAINTREE_HERBS.filter(herb => {
+    // 1. Tag / Category filter
+    if (filter !== 'all') {
+      const matchesFilter = (herb.category && herb.category.toLowerCase().includes(filter)) ||
+                            (herb.tags && herb.tags.some(t => t.toLowerCase().includes(filter))) ||
+                            (herb.id && herb.id.toLowerCase().includes(filter));
+      if (!matchesFilter) return false;
+    }
+
+    // 2. Query search across name, latinName, synonyms, activeCompounds, mechanisms, indications, tags
+    if (query) {
+      const qTerms = query.split(/\s+/).filter(Boolean);
+      const searchable = [
+        herb.name,
+        herb.latinName,
+        ...(herb.synonyms || []),
+        herb.category,
+        herb.family,
+        herb.origin,
+        herb.partsUsed,
+        ...(herb.activeCompounds || []),
+        herb.mechanisms,
+        ...(herb.indications || []),
+        ...(herb.tags || []),
+        herb.vitalistNote || '',
+        herb.tropismBadge?.label || ''
+      ].join(' ').toLowerCase();
+
+      // Normalize accents for fuzzy matching
+      const normSearchable = searchable.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      const allMatch = qTerms.every(term => {
+        const normTerm = term.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        return normSearchable.includes(normTerm);
+      });
+      if (!allMatch) return false;
+    }
+
+    return true;
+  });
+
+  const grid = document.getElementById('materiaHerbsGrid');
+  const countEl = document.getElementById('herbResultCount');
+  if (countEl) {
+    countEl.textContent = `${results.length} plante${results.length > 1 ? 's' : ''} médicinale${results.length > 1 ? 's' : ''} répertoriée${results.length > 1 ? 's' : ''}`;
+  }
+
+  if (!grid) return;
+
+  if (results.length === 0) {
+    grid.innerHTML = `
+      <div style="grid-column: 1 / -1; padding: 40px 20px; text-align: center; background: var(--bg-card); border-radius: var(--radius); border: 1px dashed var(--border);">
+        <div style="font-size: 2.5rem; margin-bottom: 12px;">🌿</div>
+        <h4 style="font-size: 1.1rem; color: var(--text); margin-bottom: 6px;">Aucune plante trouvée pour "${esc(_currentHerbQuery)}"</h4>
+        <p style="font-size: 0.85rem; color: var(--text-dim); margin-bottom: 16px;">Essayez un autre mot-clé (ex: <em>Crohn, calculs, candida, ulcère, foie, asthme, reins, fatigue</em>)</p>
+        <button class="btn-primary" onclick="clearHerbSearch()" style="margin: 0 auto;">Réinitialiser la recherche</button>
+      </div>
+    `;
+    return;
+  }
+
+  grid.innerHTML = results.map(herb => {
+    const badgeColorClass = `badge-${herb.tropismBadge?.color || 'emerald'}`;
+    const plantImg = herb.image || `/plants/${herb.id === 'boldo-amazonie' ? 'boldo' : herb.id}.jpg`;
+    
+    // Extrait immédiat et percutant pour l'utilisateur
+    const primaryIndications = (herb.indications || []).slice(0, 2).map(ind => esc(ind)).join(' • ');
+    
+    // Posologie courte pour aperçu
+    let quickDose = '';
+    if (herb.posology) {
+      if (herb.posology.decoction) quickDose = '🔥 Décoction';
+      else if (herb.posology.infusion) quickDose = '🫖 Infusion';
+      else if (herb.posology.internalDrops) quickDose = '🩸 Gouttes pures';
+      else if (herb.posology.capsules) quickDose = '💊 Gélules';
+      else if (herb.posology.powder) quickDose = '🥄 Poudre';
+    }
+
+    return `
+      <div class="herb-card" onclick="openHerbModal('${herb.id}')">
+        <div class="herb-card-media">
+          <img src="${plantImg}" alt="${esc(herb.name)}" class="herb-card-img" loading="lazy" onerror="this.src='/plants/boldo.jpg'" />
+          <div class="herb-card-tropism-chip ${badgeColorClass}">
+            <i class="${herb.tropismBadge?.icon || 'ri-leaf-fill'}"></i>
+            <span>${esc(herb.tropismBadge?.label || herb.category)}</span>
+          </div>
+        </div>
+
+        <div class="herb-card-body">
+          <div class="herb-card-title-wrap">
+            <span class="herb-card-name">${esc(herb.name)}</span>
+            <span class="herb-card-latin">${esc(herb.latinName)}</span>
+          </div>
+
+          <div class="herb-card-benefit-preview">
+            <i class="ri-heart-pulse-fill" style="color:var(--accent);margin-right:4px;"></i>
+            <strong>Cible :</strong> ${primaryIndications}
+          </div>
+
+          ${quickDose ? `
+          <div class="herb-card-posology-chip">
+            <i class="ri-cup-line" style="color:var(--accent)"></i> <span>Prise usuelle : <strong>${quickDose}</strong></span>
+          </div>` : ''}
+
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-top:10px; padding-top:8px; border-top:1px solid var(--border); font-size:0.75rem;">
+            <a href="${herb.sourceUrl || `https://www.rain-tree.com/${herb.id}.htm`}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" style="color:var(--accent); text-decoration:none; display:inline-flex; align-items:center; gap:4px; font-weight:600;">
+              <i class="ri-external-link-line"></i> Source Rain-Tree
+            </a>
+            <span style="color:var(--text-dim);">${esc(herb.family)}</span>
+          </div>
+
+          <button class="herb-card-btn" onclick="event.stopPropagation(); openHerbModal('${herb.id}')" style="margin-top:8px;">
+            <i class="ri-eye-line"></i> Consulter la fiche & posologie
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+window.handleHerbSearchInput = function() {
+  const input = document.getElementById('herbSearchInput');
+  const clearBtn = document.getElementById('herbClearBtn');
+  if (!input) return;
+  _currentHerbQuery = input.value;
+  if (clearBtn) clearBtn.style.display = _currentHerbQuery ? 'block' : 'none';
+  filterAndRenderHerbs();
+};
+
+window.clearHerbSearch = function() {
+  const input = document.getElementById('herbSearchInput');
+  const clearBtn = document.getElementById('herbClearBtn');
+  if (input) input.value = '';
+  _currentHerbQuery = '';
+  if (clearBtn) clearBtn.style.display = 'none';
+  _currentHerbFilter = 'all';
+  document.querySelectorAll('.materia-chip').forEach(c => {
+    c.classList.toggle('active', c.getAttribute('data-filter') === 'all');
+  });
+  filterAndRenderHerbs();
+};
+
+window.setHerbFilter = function(filterId) {
+  _currentHerbFilter = filterId;
+  document.querySelectorAll('.materia-chip').forEach(c => {
+    c.classList.toggle('active', c.getAttribute('data-filter') === filterId);
+  });
+  filterAndRenderHerbs();
+};
+
+window.filterByTag = function(tag) {
+  const input = document.getElementById('herbSearchInput');
+  const clearBtn = document.getElementById('herbClearBtn');
+  if (input) input.value = tag;
+  _currentHerbQuery = tag;
+  if (clearBtn) clearBtn.style.display = 'block';
+  _currentHerbFilter = 'all';
+  document.querySelectorAll('.materia-chip').forEach(c => {
+    c.classList.toggle('active', c.getAttribute('data-filter') === 'all');
+  });
+  filterAndRenderHerbs();
+};
+
+window.setHerbFilterByHerbs = function(herbIds) {
+  const grid = document.getElementById('materiaHerbsGrid');
+  if (!grid) return;
+  const filtered = RAINTREE_HERBS.filter(h => herbIds.includes(h.id));
+  const countEl = document.getElementById('herbResultCount');
+  if (countEl) countEl.textContent = `${filtered.length} plantes du protocole`;
+  
+  grid.innerHTML = filtered.map(herb => {
+    const badgeColorClass = `badge-${herb.tropismBadge?.color || 'emerald'}`;
+    const plantImg = herb.image || `/plants/${herb.id === 'boldo-amazonie' ? 'boldo' : herb.id}.jpg`;
+    const primaryIndications = (herb.indications || []).slice(0, 2).map(ind => esc(ind)).join(' • ');
+
+    return `
+      <div class="herb-card" onclick="openHerbModal('${herb.id}')">
+        <div class="herb-card-media">
+          <img src="${plantImg}" alt="${esc(herb.name)}" class="herb-card-img" loading="lazy" onerror="this.src='/plants/boldo.jpg'" />
+          <div class="herb-card-tropism-chip ${badgeColorClass}">
+            <i class="${herb.tropismBadge?.icon || 'ri-leaf-fill'}"></i>
+            <span>${esc(herb.tropismBadge?.label || herb.category)}</span>
+          </div>
+        </div>
+
+        <div class="herb-card-body">
+          <div class="herb-card-title-wrap">
+            <span class="herb-card-name">${esc(herb.name)}</span>
+            <span class="herb-card-latin">${esc(herb.latinName)}</span>
+          </div>
+
+          <div class="herb-card-benefit-preview">
+            <i class="ri-heart-pulse-fill" style="color:var(--accent);margin-right:4px;"></i>
+            <strong>Cible :</strong> ${primaryIndications}
+          </div>
+
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-top:10px; padding-top:8px; border-top:1px solid var(--border); font-size:0.75rem;">
+            <a href="${herb.sourceUrl || `https://www.rain-tree.com/${herb.id}.htm`}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" style="color:var(--accent); text-decoration:none; display:inline-flex; align-items:center; gap:4px; font-weight:600;">
+              <i class="ri-external-link-line"></i> Source Rain-Tree
+            </a>
+            <span style="color:var(--text-dim);">${esc(herb.family)}</span>
+          </div>
+
+          <button class="herb-card-btn" onclick="event.stopPropagation(); openHerbModal('${herb.id}')" style="margin-top:8px;">
+            <i class="ri-eye-line"></i> Consulter la fiche & posologie
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+};
+
+window.toggleHerbMonograph = function() {
+  const drawer = document.getElementById('herbMonographDrawer');
+  const btn = document.getElementById('herbMonographBtn');
+  const icon = document.getElementById('herbMonographIcon');
+  const text = document.getElementById('herbMonographBtnText');
+  if (!drawer || !btn) return;
+
+  const isOpen = drawer.classList.contains('open');
+  if (isOpen) {
+    drawer.classList.remove('open');
+    btn.classList.remove('open');
+    if (text) text.textContent = 'Dérouler la monographie scientifique & études Raintree (Dr. Leslie Taylor)';
+  } else {
+    drawer.classList.add('open');
+    btn.classList.add('open');
+    if (text) text.textContent = 'Replier la monographie scientifique';
+  }
+};
+
+window.openHerbModal = function(herbId) {
+  const herb = RAINTREE_HERBS.find(h => h.id === herbId);
+  if (!herb) return;
+  _currentSelectedHerb = herb;
+
+  const modal = document.getElementById('herbModal');
+  const imgEl = document.getElementById('herbModalImg');
+  const nameEl = document.getElementById('herbModalName');
+  const latinEl = document.getElementById('herbModalLatin');
+  const tropismBadge = document.getElementById('herbModalTropismBadge');
+  const tropismLabel = document.getElementById('herbModalTropismLabel');
+  const tropismIcon = document.getElementById('herbModalTropismIcon');
+  const bodyEl = document.getElementById('herbModalBody');
+
+  const plantImg = herb.image || `/plants/${herb.id === 'boldo-amazonie' ? 'boldo' : herb.id}.jpg`;
+  if (imgEl) {
+    imgEl.src = plantImg;
+    imgEl.onerror = () => { imgEl.src = '/plants/boldo.jpg'; };
+  }
+  if (nameEl) nameEl.textContent = herb.name;
+  if (latinEl) latinEl.textContent = `${herb.latinName} — Famille des ${herb.family}`;
+  
+  if (tropismBadge && herb.tropismBadge) {
+    tropismBadge.className = `herb-card-tropism-chip badge-${herb.tropismBadge.color || 'emerald'}`;
+    if (tropismLabel) tropismLabel.textContent = herb.tropismBadge.label || herb.category;
+    if (tropismIcon) tropismIcon.className = herb.tropismBadge.icon || 'ri-leaf-fill';
+  }
+
+  if (bodyEl) {
+    const synonymsStr = (herb.synonyms || []).join(', ');
+    const compoundsList = (herb.activeCompounds || []).map(c => `<li>• ${esc(c)}</li>`).join('');
+    const indicationsList = (herb.indications || []).map(ind => `
+      <li class="herb-benefit-item">
+        <i class="ri-checkbox-circle-fill"></i>
+        <span>${esc(ind)}</span>
+      </li>
+    `).join('');
+    
+    let posologyHtml = '';
+    if (herb.posology) {
+      if (herb.posology.decoction) posologyHtml += `<div class="herb-posology-item"><span class="herb-posology-type">🔥 Décoction :</span> ${esc(herb.posology.decoction)}</div>`;
+      if (herb.posology.infusion) posologyHtml += `<div class="herb-posology-item"><span class="herb-posology-type">🫖 Infusion :</span> ${esc(herb.posology.infusion)}</div>`;
+      if (herb.posology.tincture) posologyHtml += `<div class="herb-posology-item"><span class="herb-posology-type">💧 Teinture / Extrait hydroalcoolique :</span> ${esc(herb.posology.tincture)}</div>`;
+      if (herb.posology.internalDrops) posologyHtml += `<div class="herb-posology-item"><span class="herb-posology-type">🩸 Sève pure / Gouttes :</span> ${esc(herb.posology.internalDrops)}</div>`;
+      if (herb.posology.powder) posologyHtml += `<div class="herb-posology-item"><span class="herb-posology-type">🥄 Poudre lyophilisée :</span> ${esc(herb.posology.powder)}</div>`;
+      if (herb.posology.capsules) posologyHtml += `<div class="herb-posology-item"><span class="herb-posology-type">💊 Gélules :</span> ${esc(herb.posology.capsules)}</div>`;
+      if (herb.posology.oil) posologyHtml += `<div class="herb-posology-item"><span class="herb-posology-type">🫒 Huile végétale brute :</span> ${esc(herb.posology.oil)}</div>`;
+      if (herb.posology.standardDosage && !posologyHtml) {
+        posologyHtml = `<div class="herb-posology-item"><span class="herb-posology-type">📋 Posologie Raintree :</span> ${esc(herb.posology.standardDosage)}</div>`;
+      }
+    }
+
+    const formattedMechanisms = (herb.mechanisms || '')
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .split('\n')
+      .map(p => p.trim())
+      .filter(Boolean)
+      .map(p => `<p style="margin-bottom:10px">${p}</p>`)
+      .join('');
+
+    const synergiesList = (herb.synergies || []).map(s => `<span class="protocol-herb-pill" style="margin-right:6px;margin-bottom:6px;display:inline-flex;align-items:center;gap:4px"><i class="ri-links-line"></i> ${esc(s)}</span>`).join('');
+
+    const sourceUrl = herb.sourceUrl || `https://www.rain-tree.com/${herb.id}.htm`;
+
+    bodyEl.innerHTML = `
+      <!-- BANNIÈRE SOURCE PRIMAIRE OFFICIELLE & LIEN EXTERNE -->
+      <div style="margin-bottom:16px; padding:12px 14px; background:rgba(52,211,153,0.08); border:1px solid rgba(52,211,153,0.3); border-radius:10px; display:flex; flex-direction:column; gap:8px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+          <span style="font-size:0.82rem; font-weight:700; color:var(--accent); display:flex; align-items:center; gap:6px;">
+            <i class="ri-shield-check-fill"></i> Source Primaire Vérifiée — Base Raintree
+          </span>
+          <a href="${sourceUrl}" target="_blank" rel="noopener noreferrer" style="font-size:0.78rem; font-weight:600; color:var(--accent); text-decoration:none; display:inline-flex; align-items:center; gap:6px; padding:5px 12px; background:rgba(52,211,153,0.12); border:1px solid rgba(52,211,153,0.3); border-radius:6px; transition:all 0.2s;">
+            <span>Consulter la fiche originale sur Rain-Tree.com</span> <i class="ri-external-link-line"></i>
+          </a>
+        </div>
+        <div style="font-size:0.78rem; color:var(--text-dim); line-height:1.4;">
+          Monographie officielle rédigée par le <strong>Dr. Leslie Taylor, N.D.</strong> issue des recherches ethnobotaniques et des publications cliniques sur <em>${esc(herb.latinName)}</em> (${esc(herb.family)}).
+        </div>
+      </div>
+
+      <!-- ZONE 1 : APERÇU IMMÉDIAT -->
+      <div class="herb-preview-card" style="border-left:4px solid var(--accent)">
+        <div class="herb-preview-title"><i class="ri-shield-star-fill"></i> Bénéfices Majeurs & Cibles Cliniques</div>
+        <ul class="herb-benefit-list">
+          ${indicationsList}
+        </ul>
+      </div>
+
+      <div class="herb-preview-card" style="border-left:4px solid #38bdf8">
+        <div class="herb-preview-title" style="color:#38bdf8"><i class="ri-cup-fill"></i> Posologie Pratique & Mode d'Emploi</div>
+        <div class="herb-posology-box">
+          ${posologyHtml || '<div class="herb-posology-item">Infusion ou décoction standard : 1 tasse 2 à 3 fois par jour.</div>'}
+        </div>
+      </div>
+
+      ${herb.contraindications ? `
+      <div class="herb-preview-card" style="border-left:4px solid #f87171;background:rgba(239,68,68,0.05)">
+        <div class="herb-preview-title" style="color:#f87171"><i class="ri-alarm-warning-fill"></i> Précautions & Contre-indications</div>
+        <div style="font-size:0.88rem;color:#fca5a5;line-height:1.5">
+          ${esc(herb.contraindications)}
+        </div>
+      </div>` : ''}
+
+      <!-- ZONE 2 : ACCORDÉON DÉROULANT (Monographie Scientifique Complète) -->
+      <button class="herb-monograph-toggle" id="herbMonographBtn" onclick="toggleHerbMonograph()">
+        <span><i class="ri-microscope-fill" style="color:var(--accent);margin-right:8px"></i> <span id="herbMonographBtnText">Dérouler la monographie scientifique & études Raintree</span></span>
+        <i class="ri-arrow-down-s-line" id="herbMonographIcon"></i>
+      </button>
+
+      <div class="herb-monograph-drawer" id="herbMonographDrawer">
+        <div class="herb-drawer-section">
+          <div class="herb-drawer-title"><i class="ri-information-fill"></i> Carte d'Identité & Origine Botanique</div>
+          <div style="font-size:0.86rem;line-height:1.55;color:var(--text-dim)">
+            <div><strong>Noms usuels :</strong> ${esc(synonymsStr)}</div>
+            <div style="margin-top:4px"><strong>Origine :</strong> ${esc(herb.origin)}</div>
+            <div style="margin-top:4px"><strong>Partie utilisée :</strong> ${esc(herb.partsUsed)}</div>
+            <div style="margin-top:4px"><strong>Lien direct Raintree :</strong> <a href="${sourceUrl}" target="_blank" rel="noopener noreferrer" style="color:var(--accent);">${sourceUrl}</a></div>
+          </div>
+        </div>
+
+        <div class="herb-drawer-section">
+          <div class="herb-drawer-title"><i class="ri-flask-fill"></i> Principes Phytochimiques Actifs</div>
+          <ul style="list-style:none;padding-left:0;display:flex;flex-direction:column;gap:5px;font-size:0.86rem;color:var(--text)">
+            ${compoundsList}
+          </ul>
+        </div>
+
+        <div class="herb-drawer-section">
+          <div class="herb-drawer-title"><i class="ri-stethoscope-fill"></i> Mécanismes Physiologiques & Pharmacodynamie (Dr. Leslie Taylor)</div>
+          <div style="line-height:1.6;font-size:0.88rem;color:var(--text)">
+            ${formattedMechanisms}
+          </div>
+        </div>
+
+        ${herb.vitalistNote ? `
+        <div class="herb-drawer-section" style="border-left:3px solid var(--accent);background:rgba(52,211,153,0.06)">
+          <div class="herb-drawer-title"><i class="ri-leaf-fill"></i> Vision Vitaliste & Détoxification Émonctorielle</div>
+          <div style="font-size:0.88rem;color:var(--text);line-height:1.55">
+            ${esc(herb.vitalistNote)}
+          </div>
+        </div>` : ''}
+
+        ${herb.synergies && herb.synergies.length ? `
+        <div class="herb-drawer-section">
+          <div class="herb-drawer-title"><i class="ri-compass-3-fill"></i> Synergies Botaniques Amazoniennes</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">
+            ${synergiesList}
+          </div>
+        </div>` : ''}
+      </div>
+    `;
+  }
+
+  if (modal) modal.style.display = 'flex';
+};
+
+window.closeHerbModal = function() {
+  const modal = document.getElementById('herbModal');
+  if (modal) modal.style.display = 'none';
+};
+
+window.askAIAboutCurrentHerb = function() {
+  if (!_currentSelectedHerb) return;
+  const herb = _currentSelectedHerb;
+  closeHerbModal();
+  showPage('chat');
+  const chatInput = document.getElementById('chatInput');
+  if (chatInput) {
+    chatInput.value = `Peux-tu m'expliquer en détail les vertus thérapeutiques, le mode de préparation et les synergies de la plante ${herb.name} (${herb.latinName}) selon la pharmacopée Raintree et la vision vitaliste ?`;
+    chatInput.focus();
+  }
+};
+
+// ═══════ FOOD & MEAL MODAL (DIFFÉRENCIATION ALIMENT / REPAS COMPOSÉ) ═══════
 window.openFoodModal = function(idxOrFood) {
   let item = null;
   let isMealContext = false;
   let isMealSelection = false;
+  let mealIndex = undefined;
 
   if (typeof idxOrFood === 'number' || (!isNaN(Number(idxOrFood)) && typeof idxOrFood !== 'object')) {
     item = vitalDb[Number(idxOrFood)];
@@ -1555,6 +2771,7 @@ window.openFoodModal = function(idxOrFood) {
     item = idxOrFood;
     isMealContext = idxOrFood.isMealItem === true;
     isMealSelection = idxOrFood.isMealSelection === true;
+    mealIndex = idxOrFood.mealIndex;
   }
 
   if (!item) return;
@@ -1583,8 +2800,23 @@ window.openFoodModal = function(idxOrFood) {
     label: item.electric ? 'Électrique (Dr. Sebi)' : item.hybrid ? 'Hybride' : 'Standard / Mucogène'
   };
 
-  const isE = sp.electric === true;
-  const isHyb = sp.hybrid === true;
+  const isE = sp.electric === true || item.electric === true || item.approved === true;
+  const isHyb = sp.hybrid === true || item.hybrid === true;
+  const pral = sc.pral ?? (item.pral ?? 0);
+  const mucusStr = (sp.mucus || item.mucus || '').toLowerCase();
+  const isDissolvant = mucusStr.includes('dissolvant') || mucusStr.includes('non-muc');
+  const isAlcalin = pral < 0 || isDissolvant;
+
+  let modalSubtitleTag = '';
+  if (isE) modalSubtitleTag = '⚡ Électrique';
+  else if (isHyb) modalSubtitleTag = '🔀 Hybride';
+  else if (isAlcalin && !mucusStr.includes('mucog')) modalSubtitleTag = '🌿 Alcalinisant & Dissolvant';
+  else modalSubtitleTag = '⛔ Mucogène';
+
+  // Determine if Composed Meal
+  const rawItems = item.items || item.ingredients;
+  const hasItems = Array.isArray(rawItems) && rawItems.length > 0;
+  const isComposedMeal = item.isComposedMeal === true || (hasItems && rawItems.length > 1) || (isMealContext && hasItems);
 
   let multiNavHtml = '';
   if (item.allAnalyzedItems && item.allAnalyzedItems.length > 1) {
@@ -1604,31 +2836,74 @@ window.openFoodModal = function(idxOrFood) {
     `;
   }
 
+  // Header Subtitle
+  let headerSubtitle = `${esc(item.family || 'Aliment')} · ${modalSubtitleTag}`;
+  if (isComposedMeal) {
+    const categoryLabels = { breakfast: 'PETIT-DÉJEUNER', lunch: 'DÉJEUNER', dinner: 'DÎNER', snack: 'COLLATION' };
+    const catLabel = categoryLabels[item.category] || (item.category ? item.category.toUpperCase() : 'REPAS VITALISTE');
+    const count = hasItems ? rawItems.length : 1;
+    headerSubtitle = `<span style="color:var(--accent); font-weight:700;">[${esc(catLabel)}]</span> · ${modalSubtitleTag} · 🥗 ${count} ingrédient${count > 1 ? 's' : ''}`;
+  }
+
   document.getElementById('modalFoodHeader').innerHTML = `
     <div style="font-size:3rem;margin-bottom:8px">${item.emoji || '🍽️'}</div>
     <h2 style="font-family:var(--font);font-weight:700;font-size:1.35rem;">${esc(name)}</h2>
     <p style="color:var(--text-dim);font-size:0.88rem;margin-top:4px;">
-      ${esc(item.family || 'Aliment')} · ${isE ? '⚡ Électrique' : isHyb ? '🔀 Hybride' : '⛔ Mucogène'}
+      ${headerSubtitle}
     </p>
     ${multiNavHtml}
   `;
 
-  currentModalFood._parsed = { name, sc, vt, sp, item };
-  setModalTab('scientific');
+  // Render Tabs Bar dynamically
+  const tabsBar = document.getElementById('modalTabsBar') || document.querySelector('#foodModal .modal-tabs');
+  if (tabsBar) {
+    if (isComposedMeal) {
+      const count = hasItems ? rawItems.length : 1;
+      tabsBar.innerHTML = `
+        <button class="tab active" data-tab="meal_ingredients" onclick="setModalTab('meal_ingredients')">🥗 Ingrédients (${count})</button>
+        <button class="tab" data-tab="meal_balance" onclick="setModalTab('meal_balance')">🔬 Bilan & PRAL</button>
+        <button class="tab" data-tab="meal_coach" onclick="setModalTab('meal_coach')">💡 Note & Conseil</button>
+      `;
+    } else {
+      tabsBar.innerHTML = `
+        <button class="tab active" data-tab="scientific" onclick="setModalTab('scientific')">🔬 Scientifique</button>
+        <button class="tab" data-tab="vitality" onclick="setModalTab('vitality')">💚 Vitalité</button>
+        <button class="tab" data-tab="specific" onclick="setModalTab('specific')">🌿 Spécifique</button>
+      `;
+    }
+  }
+
+  currentModalFood._parsed = { 
+    name, 
+    sc, 
+    vt, 
+    sp, 
+    item, 
+    isComposedMeal, 
+    mealIndex, 
+    isMealContext,
+    cookingMethod: item.cookingMethod || (isE ? 'steam' : 'bake'),
+    oilQuality: item.oilQuality || (isE ? 'raw_olive' : 'none')
+  };
+  
+  if (isComposedMeal) {
+    setModalTab('meal_ingredients');
+  } else {
+    setModalTab('scientific');
+  }
 
   const favs = store.get('favorites', []);
-  const isFav = item.id ? favs.some(f => f.id === item.id) : false;
+  const isFav = item.id ? favs.some(f => f.id === item.id) : (favs.some(f => f.name?.toLowerCase() === name.toLowerCase()));
 
   // Render modal actions based on context
   const actionsContainer = document.getElementById('modalActionsContainer');
   if (actionsContainer) {
-    if (item.isNewFromAI) {
+    if (isMealContext) {
       actionsContainer.innerHTML = `
-        <button class="btn-primary full-w" onclick="saveAIFoodToDB()"><i class="ri-save-line"></i> Confirmer et Sauvegarder dans ma base</button>
-      `;
-    } else if (isMealContext) {
-      actionsContainer.innerHTML = `
-        <button class="btn-outline full-w" onclick="closeFoodModal()"><i class="ri-check-line"></i> Fermer la carte d'identité</button>
+        <div style="display:flex; gap:8px; width:100%;">
+          ${typeof mealIndex === 'number' ? `<button type="button" class="btn-outline" style="color:#ef4444; border-color:rgba(239,68,68,0.3); flex:1;" onclick="removeMealAndCloseModal(${mealIndex})"><i class="ri-delete-bin-line"></i> Supprimer</button>` : ''}
+          <button type="button" class="btn-primary" style="flex:1.5;" onclick="closeFoodModal()"><i class="ri-check-line"></i> Fermer</button>
+        </div>
       `;
     } else if (isAddingMeal) {
       actionsContainer.innerHTML = `
@@ -1639,9 +2914,13 @@ window.openFoodModal = function(idxOrFood) {
       `;
     } else {
       const idx = vitalDb.indexOf(item);
+      const isNewAI = item.isNewFromAI === true;
       actionsContainer.innerHTML = `
-        <button class="btn-primary" onclick="addFoodToMealFromModal(${idx})"><i class="ri-add-line"></i> Ajouter au repas</button>
-        <button class="btn-outline" id="modalFavBtn" onclick="toggleFavorite()"><i class="ri-heart-line"></i> Favori</button>
+        <div style="display:flex; gap:8px; width:100%; flex-wrap:wrap;">
+          <button class="btn-primary" style="flex:2; min-width:140px;" onclick="addFoodToMealFromModal(${idx})"><i class="ri-add-line"></i> Ajouter au repas</button>
+          <button class="btn-outline" id="modalFavBtn" style="flex:1; min-width:90px;" onclick="toggleFavorite()"><i class="ri-heart-line"></i> Favori</button>
+          ${isNewAI ? '<button class="btn-outline" style="flex:1.2; min-width:120px;" onclick="saveAIFoodToDB()"><i class="ri-save-line"></i> Sauvegarder</button>' : ''}
+        </div>
       `;
       const favBtn = document.getElementById('modalFavBtn');
       if (favBtn) {
@@ -1681,81 +2960,269 @@ window.openFoodModalFromSelection = function(id) {
   });
 };
 
+// ═══════ COOKING METHODS & OIL ALTERATIONS ENGINE ═══════
+const COOKING_METHODS = {
+  raw: {
+    id: 'raw',
+    label: 'Cru / Vivant (< 42°C)',
+    emoji: '🥗',
+    tempMax: 42,
+    vitalityRetention: 100,
+    pralModifier: 0,
+    description: 'Enzymes digestives intactes, vitamines thermolabiles (Vit C, B9) 100% préservées. Zéro glycation (0 AGEs).'
+  },
+  steam: {
+    id: 'steam',
+    label: 'Vapeur Douce (< 95°C)',
+    emoji: '♨️',
+    tempMax: 95,
+    vitalityRetention: 90,
+    pralModifier: +0.2,
+    description: 'Rupture ménagée des parois végétales sans caramélisation. Sels minéraux et antioxydants préservés à 90%.'
+  },
+  simmer: {
+    id: 'simmer',
+    label: 'Mijoté / Bouillon (< 100°C)',
+    emoji: '🍲',
+    tempMax: 100,
+    vitalityRetention: 75,
+    pralModifier: +0.5,
+    description: 'Minéraux transférés dans le bouillon (à consommer). Enzymes détruites, digestion adoucie.'
+  },
+  bake: {
+    id: 'bake',
+    label: 'Four / Rôti (140°C - 180°C)',
+    emoji: '🍳',
+    tempMax: 180,
+    vitalityRetention: 60,
+    pralModifier: +1.2,
+    description: 'Réactions de Maillard modérées (brunissement). Perte enzymatique totale et peroxydation lipidique débutante.'
+  },
+  fry: {
+    id: 'fry',
+    label: 'Friture / Haute T° (> 180°C)',
+    emoji: '🔥',
+    tempMax: 220,
+    vitalityRetention: 35,
+    pralModifier: +2.5,
+    description: 'Formation d\'acrylamides, d\'acroléine et de graisses peroxydées. Surcharge majeure des émonctoires (foie & reins).'
+  }
+};
+
+const OIL_QUALITIES = {
+  none: {
+    id: 'none',
+    label: 'Sans huile ajoutée',
+    emoji: '💧',
+    lipidQuality: 'Pureté naturelle des aliments',
+    healthImpact: 'Zéro surcharge lymphatique ou hépatique',
+    isPositive: true
+  },
+  raw_olive: {
+    id: 'raw_olive',
+    label: 'Huile d\'Olive Extra-Vierge Crue',
+    emoji: '🫒',
+    lipidQuality: '1ère pression à froid, acide oléique & polyphénols',
+    healthImpact: 'Anti-inflammatoire, protecteur cardiovasculaire',
+    isPositive: true
+  },
+  raw_cold_pressed: {
+    id: 'raw_cold_pressed',
+    label: 'Huile d\'Avocat / Lin Crue',
+    emoji: '🥑',
+    lipidQuality: 'Oméga-3 & 9 vivants non-oxydés',
+    healthImpact: 'Régénération membranaire et fluidification lymphatique',
+    isPositive: true
+  },
+  cooked_refined: {
+    id: 'cooked_refined',
+    label: 'Huile Chauffée / Raffinée (Friture)',
+    emoji: '⚠️',
+    lipidQuality: 'Peroxydation lipidique & radicaux libres',
+    healthImpact: 'Colles lipidiques obstruant le foie et la lymphe',
+    isPositive: false
+  }
+};
+
+window.setMealCookingMethod = function(methodId) {
+  if (!currentModalFood || !currentModalFood._parsed) return;
+  currentModalFood._parsed.cookingMethod = methodId;
+  if (currentModalFood._parsed.item) currentModalFood._parsed.item.cookingMethod = methodId;
+  if (typeof currentModalFood._parsed.mealIndex === 'number') {
+    const meals = store.get('meals', []);
+    const todayMeals = meals.filter(m => isToday(m.timestamp));
+    if (todayMeals[currentModalFood._parsed.mealIndex]) {
+      todayMeals[currentModalFood._parsed.mealIndex].cookingMethod = methodId;
+      store.set('meals', meals);
+      if (window.renderMeals) renderMeals();
+    }
+  }
+  setModalTab('meal_balance');
+};
+
+window.setMealOilQuality = function(oilId) {
+  if (!currentModalFood || !currentModalFood._parsed) return;
+  currentModalFood._parsed.oilQuality = oilId;
+  if (currentModalFood._parsed.item) currentModalFood._parsed.item.oilQuality = oilId;
+  if (typeof currentModalFood._parsed.mealIndex === 'number') {
+    const meals = store.get('meals', []);
+    const todayMeals = meals.filter(m => isToday(m.timestamp));
+    if (todayMeals[currentModalFood._parsed.mealIndex]) {
+      todayMeals[currentModalFood._parsed.mealIndex].oilQuality = oilId;
+      store.set('meals', meals);
+      if (window.renderMeals) renderMeals();
+    }
+  }
+  setModalTab('meal_balance');
+};
+
 window.openFoodModalFromMeal = function(idx) {
   const meals = store.get('meals', []);
   const todayMeals = meals.filter(m => isToday(m.timestamp));
   if (idx >= 0 && idx < todayMeals.length) {
     const m = todayMeals[idx];
+    const isElec = m.electric === true || m.approved === true;
+    const isHyb = m.hybrid === true;
+    const nova = m.nova ?? (isElec ? 1 : 2);
+    const pral = m.pral ?? 0;
+    
+    // Check if composed meal or has items
+    const rawItems = m.items || m.ingredients;
+    const hasItems = Array.isArray(rawItems) && rawItems.length > 0;
     const match = vitalDb.find(f => f.id === m.id || (f.names || []).some(n => n.toLowerCase() === (m.name || '').toLowerCase()));
-    if (match) {
-      openFoodModal({ ...match, isMealItem: true });
-    } else {
-      const isElec = m.electric === true || m.approved === true;
-      const isHyb = m.hybrid === true;
-      const nova = m.nova ?? (isElec ? 1 : 2);
-      const pral = m.pral ?? 0;
-      openFoodModal({
-        id: m.id,
-        name: m.name,
-        emoji: m.emoji || '🍽️',
-        family: m.family || (isElec ? 'Vitaliste' : isHyb ? 'Hybride' : 'Alimentation'),
-        scientific_defaults: {
-          pral,
-          density: m.density ?? (pral < 0 ? 85 : 30),
-          label: pral < 0 ? 'Alcalinisant' : 'Acidifiant'
-        },
-        vitality: {
-          nova,
-          freshness: m.freshness ?? (nova === 1 ? 95 : nova === 4 ? 15 : 60),
-          label: nova === 1 ? 'Aliment Brut (Non transformé)' : nova === 4 ? 'Produit Ultra-Transformé' : 'Aliment Transformé'
-        },
-        specific: {
-          electric: isElec,
-          hybrid: isHyb,
-          mucus: m.mucus || (isElec ? 'Dissolvant' : isHyb ? 'Faiblement Mucogène' : 'Mucogène'),
-          label: isElec ? 'Électrique (Dr. Sebi)' : isHyb ? 'Hybride' : 'Standard / Mucogène'
-        },
-        note: m.note || (isElec ? 'Aliment électrique vitalogène respectant le bio-équilibre minéral.' : nova === 4 ? 'Aliment ultra-transformé fortement acidifiant.' : 'Aliment ordinaire.'),
-        isMealItem: true
-      });
+    
+    // If it is a pure raw food item from DB with no custom ingredients/note
+    if (match && !hasItems && !m.note && !m.isComposedMeal) {
+      openFoodModal({ ...match, isMealItem: true, mealIndex: idx, cookingMethod: m.cookingMethod || 'raw', oilQuality: m.oilQuality || 'none' });
+      return;
     }
+
+    const items = hasItems ? rawItems : (match ? [match.name || match.names[0]] : [m.name]);
+
+    openFoodModal({
+      id: m.id,
+      name: m.name,
+      emoji: m.emoji || (match ? match.emoji : '🍲'),
+      family: m.family || (isElec ? 'Vitaliste' : isHyb ? 'Hybride' : 'Alimentation'),
+      category: m.category || (isElec ? 'Vitaliste' : isHyb ? 'Hybride' : 'Alimentation'),
+      items: items,
+      ingredients: items,
+      cookingMethod: m.cookingMethod || (isElec ? 'steam' : 'bake'),
+      oilQuality: m.oilQuality || (isElec ? 'raw_olive' : 'none'),
+      note: m.note || (isElec ? 'Repas vitaliste équilibré respectant le bio-équilibre minéral.' : nova === 4 ? 'Aliment transformé fortement acidifiant.' : 'Repas enregistré.'),
+      isComposedMeal: true,
+      scientific_defaults: {
+        pral,
+        density: m.density ?? (pral < 0 ? 85 : 30),
+        label: pral < 0 ? 'Alcalinisant' : 'Acidifiant'
+      },
+      vitality: {
+        nova,
+        freshness: m.freshness ?? (nova === 1 ? 95 : nova === 4 ? 15 : 60),
+        label: nova === 1 ? 'Aliment Brut (Non transformé)' : nova === 4 ? 'Produit Ultra-Transformé' : 'Aliment Transformé'
+      },
+      specific: {
+        electric: isElec,
+        hybrid: isHyb,
+        mucus: m.mucus || (isElec ? 'Dissolvant' : isHyb ? 'Faiblement Mucogène' : 'Mucogène'),
+        label: isElec ? 'Électrique (Dr. Sebi)' : isHyb ? 'Hybride' : 'Standard / Mucogène'
+      },
+      isMealItem: true,
+      mealIndex: idx
+    });
   }
 };
 
-window.saveAIFoodToDB = function(idx) {
+window.removeMealAndCloseModal = function(idx) {
+  if (typeof idx === 'number') {
+    removeMeal(idx);
+    closeFoodModal();
+    showToast('Repas retiré du journal', 'info');
+  }
+};
+
+window.saveAIFoodToDB = function() {
   const item = currentModalFood;
   if (!item) return;
   delete item.isNewFromAI;
   
   const customDb = store.get('customFoods', []);
-  customDb.push(item);
+  const existingIdx = customDb.findIndex(f => (item.id && f.id === item.id) || (f.names && f.names[0] === item.names?.[0]));
+  if (existingIdx >= 0) {
+    customDb[existingIdx] = item;
+  } else {
+    customDb.push(item);
+  }
   store.set('customFoods', customDb);
   
-  showToast('✅ Aliment ajouté définitivement à votre base de données !', 'success');
-  window.closeFoodModal();
-  searchFoods(document.getElementById('searchInput')?.value || '');
+  if (!vitalDb.some(f => (item.id && f.id === item.id) || (f.names && f.names[0] === item.names?.[0]))) {
+    vitalDb.push(item);
+  }
+  
+  buildSearchIndex();
+  renderCategoryBrowse();
+  
+  showToast('✅ Aliment sauvegardé définitivement dans votre base !', 'success');
+  
+  const actionsContainer = document.getElementById('modalActionsContainer');
+  if (actionsContainer) {
+    const idx = vitalDb.indexOf(item);
+    const favs = store.get('favorites', []);
+    const isFav = item.id ? favs.some(f => f.id === item.id) : (favs.some(f => f.name?.toLowerCase() === (item.names?.[0] || item.name || '').toLowerCase()));
+    actionsContainer.innerHTML = `
+      <div style="display:flex; gap:8px; width:100%; flex-wrap:wrap;">
+        <button class="btn-primary" style="flex:2; min-width:140px;" onclick="addFoodToMealFromModal(${idx})"><i class="ri-add-line"></i> Ajouter au repas</button>
+        <button class="btn-outline" id="modalFavBtn" style="flex:1; min-width:90px;" onclick="toggleFavorite()"><i class="ri-heart-line"></i> Favori</button>
+      </div>
+    `;
+    const favBtn = document.getElementById('modalFavBtn');
+    if (favBtn) {
+      favBtn.innerHTML = isFav ? '<i class="ri-heart-fill"></i> Retirer' : '<i class="ri-heart-line"></i> Favori';
+      favBtn.classList.toggle('active-fav', isFav);
+    }
+  }
 };
 
 window.addFoodToMealFromModal = function(idx) {
-  if (idx >= 0 && vitalDb[idx]) {
-    selectMealFood(idx);
-  } else if (currentModalFood) {
-    const f = currentModalFood;
-    const name = (f.names?.[0] || f.name || '?').replace(/^./, c => c.toUpperCase());
-    selectedMealFoods.push({
-      id: f.id || 'dish_' + Date.now(),
-      name,
-      emoji: f.emoji || '🍽️',
-      approved: f.specific?.electric === true || f.approved === true,
-      electric: f.specific?.electric === true || f.approved === true,
-      hybrid: f.specific?.hybrid === true,
-      pral: f.scientific_defaults?.pral ?? (f.scientific?.pral ?? 0),
-      nova: f.vitality?.nova ?? 1
-    });
-    renderSelectedMealFoods();
-  }
+  let f = (idx >= 0 && vitalDb[idx]) ? vitalDb[idx] : currentModalFood;
+  if (!f) return;
+  const name = (f.names?.[0] || f.name || '?').replace(/^./, c => c.toUpperCase());
+  const id = f.id || 'dish_' + Date.now();
+  const sc = f.scientific_defaults || f.scientific || {};
+  const vt = f.vitality || {};
+  const sp = f.specific || {};
+  
+  const isElec = sp.electric === true || f.electric === true || f.approved === true;
+  const isHyb = sp.hybrid === true || f.hybrid === true;
+  const pral = sc.pral ?? (f.pral ?? 0);
+  const nova = vt.nova ?? (f.nova ?? (isElec ? 1 : isHyb ? 2 : 3));
+  
+  const meals = store.get('meals', []);
+  meals.push({
+    id,
+    name,
+    emoji: f.emoji || '🍽️',
+    family: f.family || f.category || (isElec ? 'Vitaliste' : isHyb ? 'Hybride' : 'Alimentation'),
+    category: f.category || f.family || (isElec ? 'Vitaliste' : isHyb ? 'Hybride' : 'Alimentation'),
+    approved: isElec,
+    electric: isElec,
+    hybrid: isHyb,
+    pral,
+    scientific_defaults: { pral, density: sc.density ?? 50 },
+    nova,
+    vitality: { nova, freshness: vt.freshness ?? 70 },
+    freshness: vt.freshness ?? 70,
+    mucus: sp.mucus || (isElec ? 'Dissolvant' : isHyb ? 'Faiblement Mucogène' : 'Mucogène'),
+    specific: sp,
+    note: f.note,
+    timestamp: Date.now()
+  });
+  store.set('meals', meals);
+  
   window.closeFoodModal();
-  showPage('meals');
+  renderMeals();
+  renderDashboard();
+  showToast(`✅ « ${name} » ajouté directement à vos repas du jour !`, 'success');
 };
 
 window.closeFoodModal = function(e) { 
@@ -1765,18 +3232,200 @@ window.closeFoodModal = function(e) {
 };
 
 window.setModalTab = function(tab) {
-  document.querySelectorAll('.modal-tabs .tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+  document.querySelectorAll('.modal-tabs .tab, #modalTabsBar .tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
   const content = document.getElementById('modalTabContent');
   if (!currentModalFood) return;
-  const { name, sc, vt, sp, item } = currentModalFood._parsed || {};
+  const { name, sc, vt, sp, item, isComposedMeal } = currentModalFood._parsed || {};
 
-  const pral = sc?.pral ?? 0;
+  const pral = sc?.pral ?? (item?.pral ?? 0);
   const isAlkaline = pral < 0;
-  const nova = vt?.nova ?? 1;
-  const isElectric = sp?.electric === true;
-  const isHybrid = sp?.hybrid === true;
+  const nova = vt?.nova ?? (item?.nova ?? 1);
+  const isElectric = sp?.electric === true || item?.electric === true || item?.approved === true;
+  const isHybrid = sp?.hybrid === true || item?.hybrid === true;
 
+  // ═══════ 1. COMPOSÉ: INGRÉDIENTS & COMPOSITION ═══════
+  if (tab === 'meal_ingredients') {
+    const rawItems = item?.items || item?.ingredients || [];
+    const items = Array.isArray(rawItems) ? rawItems : (typeof rawItems === 'string' ? rawItems.split(/,\s*|\s*·\s*/).filter(Boolean) : [rawItems]);
+    
+    content.innerHTML = `
+      <div style="margin-bottom:12px; font-size:0.85rem; color:var(--text-dim); display:flex; align-items:center; justify-content:space-between;">
+        <span><i class="ri-restaurant-line" style="color:var(--accent);"></i> <strong>${items.length} ingrédients</strong> composent ce repas :</span>
+      </div>
+      <div class="meal-ingredients-list" style="display:flex; flex-direction:column; gap:8px; max-height:260px; overflow-y:auto; padding-right:4px;">
+        ${items.map(it => {
+          const itName = typeof it === 'string' ? it : (it.name || 'Ingrédient');
+          // Match in DB if possible
+          const matched = vitalDb.find(f => (f.names || []).some(n => n.toLowerCase() === itName.toLowerCase()) || f.id === itName.toLowerCase() || (f.name && f.name.toLowerCase() === itName.toLowerCase()) || (f.names && f.names.some(n => itName.toLowerCase().includes(n.toLowerCase()))));
+          
+          let itEmoji = it.emoji;
+          if (!itEmoji && matched) itEmoji = matched.emoji;
+          if (!itEmoji) {
+            const lower = itName.toLowerCase();
+            if (lower.includes('moule')) itEmoji = '🦪';
+            else if (lower.includes('sardine') || lower.includes('poisson')) itEmoji = '🐟';
+            else if (lower.includes('concombre')) itEmoji = '🥒';
+            else if (lower.includes('olive')) itEmoji = '🫒';
+            else if (lower.includes('basilic') || lower.includes('persil') || lower.includes('herbe')) itEmoji = '🌿';
+            else if (lower.includes('citron')) itEmoji = '🍋';
+            else if (lower.includes('avocat')) itEmoji = '🥑';
+            else if (lower.includes('tomate')) itEmoji = '🍅';
+            else if (lower.includes('salade') || lower.includes('romaine')) itEmoji = '🥬';
+            else itEmoji = '🌱';
+          }
+
+          const isElec = matched ? (matched.specific?.electric || matched.electric || matched.approved) : true;
+          const pralVal = matched ? (matched.scientific_defaults?.pral ?? -2.0) : -2.0;
+          const pralLabel = pralVal < 0 ? `PRAL ${pralVal.toFixed(1)} (Alcalin)` : `PRAL +${pralVal.toFixed(1)}`;
+          const badgeClass = isElec ? 'badge-electric' : 'badge-hybrid';
+          const badgeText = isElec ? '⚡ Électrique' : '🔀 Hybride';
+          
+          return `
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 12px; background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:10px;">
+              <div style="display:flex; align-items:center; gap:10px;">
+                <span style="font-size:1.3rem;">${itEmoji}</span>
+                <div>
+                  <div style="font-weight:600; font-size:0.9rem; color:var(--text);">${esc(itName)}</div>
+                  <div style="font-size:0.75rem; color:var(--text-dim);">${esc(pralLabel)}</div>
+                </div>
+              </div>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span class="food-badge ${badgeClass}" style="font-size:0.72rem; padding:3px 7px;">${badgeText}</span>
+                ${matched ? `<button type="button" class="btn-sm-action" onclick="openFoodModal('${matched.id}')" title="Voir la fiche détaillée de cet ingrédient" style="background:rgba(55,211,153,0.1); color:var(--accent); border:1px solid rgba(55,211,153,0.3); border-radius:6px; padding:3px 8px; font-size:0.75rem; cursor:pointer;"><i class="ri-information-line"></i></button>` : ''}
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+      <div style="margin-top:14px; padding:10px 12px; background:rgba(55,211,153,0.06); border:1px solid rgba(55,211,153,0.2); border-radius:8px; font-size:0.8rem; color:var(--text-dim); line-height:1.4;">
+        <strong style="color:var(--accent);">💡 Astuce Vitaliste :</strong> Chaque aliment apporte ses propres biominéraux vivants. Cliquez sur <i class="ri-information-line"></i> pour inspecter la fiche d'un ingrédient spécifique.
+      </div>
+    `;
+    return;
+  }
+
+  // ═══════ 2. COMPOSÉ: BILAN, CUISSONS & QUALITÉ DES HUILES ═══════
+  if (tab === 'meal_balance') {
+    const cooking = COOKING_METHODS[currentModalFood._parsed.cookingMethod || item?.cookingMethod || 'steam'] || COOKING_METHODS.steam;
+    const oil = OIL_QUALITIES[currentModalFood._parsed.oilQuality || item?.oilQuality || (isElectric ? 'raw_olive' : 'none')] || OIL_QUALITIES.none;
+
+    const basePral = Number((sc?.pral ?? (item?.pral ?? 0)).toFixed(1));
+    const adjustedPral = Number((basePral + cooking.pralModifier + (oil.isPositive ? -0.2 : 0.8)).toFixed(1));
+    const adjustedIsAlkaline = adjustedPral < 0;
+    
+    // Bio-enzymatic vitality score
+    const vitalityScore = Math.max(20, Math.min(100, Math.round(cooking.vitalityRetention * (oil.isPositive ? 1.0 : 0.8))));
+    const vitalityColor = vitalityScore >= 85 ? '#4ade80' : vitalityScore >= 60 ? '#facc15' : '#ef4444';
+    const effectiveNova = cooking.id === 'fry' ? Math.max(3, nova) : nova;
+    const novaColor = effectiveNova === 1 ? '#4ade80' : effectiveNova === 2 ? '#38bdf8' : effectiveNova === 3 ? '#facc15' : '#ef4444';
+
+    content.innerHTML = `
+      <!-- 1. Cuisson & Altération Thermique -->
+      <div style="background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:12px; padding:12px; margin-bottom:12px;">
+        <div style="font-size:0.82rem; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+          <span><i class="ri-fire-line"></i> Mode de Cuisson</span>
+          <span style="font-size:0.75rem; color:var(--text-dim);">Temp. max : ${cooking.tempMax}°C</span>
+        </div>
+        <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px;">
+          ${Object.values(COOKING_METHODS).map(cm => `
+            <button type="button" class="preset-pill ${cm.id === cooking.id ? 'active' : ''}" onclick="setMealCookingMethod('${cm.id}')" style="font-size:0.78rem; padding:4px 10px;">
+              ${cm.emoji} ${esc(cm.label)}
+            </button>
+          `).join('')}
+        </div>
+        <p style="font-size:0.78rem; color:var(--text-dim); line-height:1.4; margin:0;">${esc(cooking.description)}</p>
+      </div>
+
+      <!-- 2. Qualité des Lipides & Huiles -->
+      <div style="background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:12px; padding:12px; margin-bottom:12px;">
+        <div style="font-size:0.82rem; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+          <span><i class="ri-drop-line"></i> Matières Grasses & Huiles</span>
+          <span style="font-size:0.75rem; color:${oil.isPositive ? '#4ade80' : '#ef4444'}; font-weight:600;">${oil.isPositive ? '🟢 Non-oxydé' : '🔴 Oxydé / Pro-inflammatoire'}</span>
+        </div>
+        <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px;">
+          ${Object.values(OIL_QUALITIES).map(oq => `
+            <button type="button" class="preset-pill ${oq.id === oil.id ? 'active' : ''}" onclick="setMealOilQuality('${oq.id}')" style="font-size:0.78rem; padding:4px 10px;">
+              ${oq.emoji} ${esc(oq.label)}
+            </button>
+          `).join('')}
+        </div>
+        <p style="font-size:0.78rem; color:var(--text-dim); line-height:1.4; margin:0;">
+          <strong style="color:var(--text);">${esc(oil.lipidQuality)} :</strong> ${esc(oil.healthImpact)}
+        </p>
+      </div>
+
+      <!-- 3. Impact Physiologique & Rénal Réel -->
+      <div class="data-row">
+        <span class="data-label">Vitalité Bio-Enzymatique Réelle</span>
+        <span class="data-value" style="font-weight:800; color:${vitalityColor}">
+          ${vitalityScore}% ${vitalityScore >= 85 ? '✨ Vivant & Intact' : vitalityScore >= 60 ? '⚡ Préservation Moyenne' : '⚠️ Glycation (AGEs) & Dénaturé'}
+        </span>
+      </div>
+      <div class="data-row">
+        <span class="data-label">Charge PRAL ajustée (après cuisson)</span>
+        <span class="data-value" style="font-weight:700; color:${adjustedIsAlkaline ? '#4ade80' : '#facc15'}">
+          ${adjustedPral > 0 ? '+' : ''}${adjustedPral.toFixed(1)} mEq ${adjustedIsAlkaline ? '(Alcalinisant)' : '(Acidifiant)'}
+        </span>
+      </div>
+      <div class="data-row">
+        <span class="data-label">Impact Rénal & Émonctoires</span>
+        <span class="data-value" style="font-weight:600;">
+          ${adjustedIsAlkaline ? '🟢 Élimination fluide & Préservation minérale' : '🟡 Métabolites acides à tamponner'}
+        </span>
+      </div>
+      <div class="data-row">
+        <span class="data-label">Indice de Transformation NOVA</span>
+        <span class="data-value" style="font-weight:700; color:${novaColor}">
+          NOVA ${effectiveNova}/4
+        </span>
+      </div>
+      <div class="data-row">
+        <span class="data-label">Impact Lymphatique & Mucus</span>
+        <span class="data-value" style="font-weight:600; color:${cooking.id === 'fry' || !oil.isPositive ? '#facc15' : '#4ade80'}">
+          ${cooking.id === 'fry' || !oil.isPositive ? '⚠️ Colles lipidiques chauffées' : '🍃 Dissolvant & Non-obstruant'}
+        </span>
+      </div>
+      <div style="margin-top:14px; padding:10px 12px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:8px; font-size:0.8rem; color:var(--text-dim); line-height:1.4;">
+        <strong style="color:var(--text)">Bilan global du plat :</strong> ${cooking.id === 'raw' ? 'Alimentation vivante et pure sans altération enzymatique.' : cooking.id === 'steam' ? 'Cuisson respectueuse libérant les fibres sans caramélisation ni fuite minérale majeure.' : cooking.id === 'fry' ? 'La friture génère des réactions de glycation avancée (AGEs) et altère les corps gras.' : 'Préparation thermique modérée préservant les nutriments digestibles.'}
+      </div>
+    `;
+    return;
+  }
+
+  // ═══════ 3. COMPOSÉ: NOTE & CONSEIL COACH ═══════
+  if (tab === 'meal_coach') {
+    const coachNote = item?.note || currentModalFood.note || 'Repas vitaliste équilibré conçu pour maximiser l\'hydratation cellulaire et régénérer le système digestif.';
+    const categoryLabels = { breakfast: 'Petit-déjeuner', lunch: 'Déjeuner', dinner: 'Dîner', snack: 'Collation' };
+    const catName = categoryLabels[item?.category] || (item?.category || 'Repas');
+    
+    content.innerHTML = `
+      <div style="padding:14px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:10px; margin-bottom:12px;">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+          <span style="font-size:1.2rem;">💡</span>
+          <strong style="color:var(--text); font-size:0.95rem;">Note & Recommandations du Coach IA :</strong>
+        </div>
+        <p style="font-size:0.88rem; color:var(--text); line-height:1.5; margin:0;">
+          ${esc(coachNote)}
+        </p>
+      </div>
+      <div class="data-row">
+        <span class="data-label">Moment du repas</span>
+        <span class="data-value" style="font-weight:600;">${esc(catName)}</span>
+      </div>
+      <div class="data-row">
+        <span class="data-label">Tisane drainante recommandée</span>
+        <span class="data-value" style="color:var(--accent);">🌿 Ortie & Citron ou Gingembre doux</span>
+      </div>
+      <div style="margin-top:14px; padding:10px 12px; background:rgba(55,211,153,0.06); border:1px solid rgba(55,211,153,0.2); border-radius:8px; font-size:0.8rem; color:var(--text-dim); line-height:1.4;">
+        <strong style="color:var(--accent)">Historique permanent :</strong> Ces recommandations restent associées à ce repas dans votre journal même après réinitialisation du chat.
+      </div>
+    `;
+    return;
+  }
+
+  // ═══════ ALIMENT BRUT / SCIENTIFIQUE ═══════
   if (tab === 'scientific') {
+    const srcName = currentModalFood.source || item?.source || 'USDA FoodData Central / Table PRAL (Remer & Manz)';
     content.innerHTML = `
       <div class="data-row">
         <span class="data-label">Charge PRAL (Remer & Manz)</span>
@@ -1795,6 +3444,10 @@ window.setModalTab = function(tab) {
       <div class="data-bar"><div class="data-bar-fill" style="width:${sc?.density ?? 50}%;background:${isAlkaline ? 'var(--accent)' : 'var(--warn)'}"></div></div>
       <div style="margin-top:14px; padding:10px 12px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:8px; font-size:0.8rem; color:var(--text-dim); line-height:1.4;">
         <strong style="color:var(--text)">Indice PRAL :</strong> Mesure la charge acide nette éliminée par les reins. Les valeurs négatives préservent les réserves minérales corporelles (Potassium, Magnésium, Calcium).
+      </div>
+      <div style="margin-top:8px; padding:6px 10px; background:rgba(16,185,129,0.05); border:1px dashed var(--border); border-radius:6px; font-size:0.75rem; color:var(--text-dim); display:flex; align-items:center; gap:6px;">
+        <i class="ri-book-read-line" style="color:var(--accent);"></i>
+        <span><strong>Source vérifiée :</strong> ${esc(srcName)}</span>
       </div>
     `;
   } else if (tab === 'vitality') {
@@ -1818,26 +3471,113 @@ window.setModalTab = function(tab) {
       <div style="margin-top:14px; padding:10px 12px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:8px; font-size:0.8rem; color:var(--text-dim); line-height:1.4;">
         <strong style="color:var(--text)">Échelle NOVA :</strong> Norme mondiale de l'Université de São Paulo évaluant l'impact des procédés industriels, additifs et raffinements sur la santé humaine.
       </div>
+      <div style="margin-top:8px; padding:6px 10px; background:rgba(16,185,129,0.05); border:1px dashed var(--border); border-radius:6px; font-size:0.75rem; color:var(--text-dim); display:flex; align-items:center; gap:6px;">
+        <i class="ri-book-read-line" style="color:var(--accent);"></i>
+        <span><strong>Source méthodologique :</strong> Classification NOVA (Université de São Paulo, Pr. Carlos Monteiro)</span>
+      </div>
     `;
   } else {
+    // ═══════ SPÉCIFIQUE / VITALISTE & SEBI ═══════
+    const cat = (currentModalFood.category || item?.category || '').toLowerCase();
+    const fam = (currentModalFood.family || item?.family || '').toLowerCase();
+    const lbl = (sp?.label || item?.specific?.label || '').toLowerCase();
+    const foodName = (currentModalFood.names?.[0] || currentModalFood.name || '').toLowerCase();
+
+    const isAnimal = cat.includes('poisson') || cat.includes('viande') || cat.includes('lait') || 
+                     cat.includes('oeuf') || cat.includes('charcut') || cat.includes('fruit de mer') || 
+                     fam.includes('clupeidae') || fam.includes('bov') || fam.includes('suid') || 
+                     lbl.includes('animal') || foodName.includes('sardine') || foodName.includes('thon') || 
+                     foodName.includes('saumon') || foodName.includes('viande') || foodName.includes('poulet') || 
+                     foodName.includes('boeuf') || foodName.includes('porc') || foodName.includes('fromage');
+
+    const isMineral = cat.includes('sel') || cat.includes('eau') || cat.includes('miner') || foodName.includes('sel marin');
+
+    const mucusStr = (sp?.mucus || item?.mucus || '').toLowerCase();
+    const isDissolvant = !isAnimal && (mucusStr.includes('dissolvant') || mucusStr.includes('non-muc'));
+    const isAlcalinFood = !isAnimal && ((sc?.pral ?? 0) < 0 || isDissolvant);
+    const sebiStatus = sp?.sebiStatus || item?.sebiStatus;
+    
+    let sebiLabel = '❌ Non Recommandé / Acidifiant';
+    let sebiColor = '#ef4444';
+    let hybridLabel = isHybrid ? '⚠️ Hybride / Amilacé' : '✅ Végétal Originel & Brut';
+    let hybridColor = isHybrid ? '#facc15' : '#4ade80';
+
+    if (isAnimal) {
+      sebiLabel = '❌ Non Recommandé / Produit Animal';
+      sebiColor = '#ef4444';
+      hybridLabel = '❌ Non Végétal (Règne Animal)';
+      hybridColor = '#94a3b8';
+    } else if (isMineral) {
+      sebiLabel = '🌊 Minéral Naturel Pur';
+      sebiColor = '#38bdf8';
+      hybridLabel = '🌊 Non Végétal (Règne Minéral)';
+      hybridColor = '#94a3b8';
+    } else {
+      if (sebiStatus === 'sebi_official' || (isElectric && !sp?.label?.includes('Sauvage') && !sp?.label?.includes('Indigène'))) {
+        sebiLabel = '⚡ Liste Officielle Dr. Sebi';
+        sebiColor = '#4ade80';
+      } else if (sebiStatus === 'wild_original' || isElectric) {
+        sebiLabel = '⚡ Végétal Sauvage / Originel (Conforme Sebi)';
+        sebiColor = '#4ade80';
+      } else if (isAlcalinFood && !isHybrid) {
+        sebiLabel = '🌿 Végétal Naturel Alcalin (Hors liste Sebi)';
+        sebiColor = '#38bdf8';
+      } else if (isHybrid) {
+        sebiLabel = '⚠️ Hybride / Amilacé';
+        sebiColor = '#facc15';
+      }
+    }
+
+    let mucusLabel = sp?.mucus ?? (isDissolvant ? 'Dissolvant' : 'Neutre');
+    let mucusColor = '#4ade80';
+    if (isAnimal) {
+      mucusLabel = '🔴 Fortement mucogène (Protéines animales putrescibles)';
+      mucusColor = '#ef4444';
+    } else if (isDissolvant) {
+      mucusLabel = '🍃 Dissolvant de mucus (Astringent)';
+      mucusColor = '#4ade80';
+    } else if (mucusStr.includes('neutre') || (!mucusStr.includes('mucog') && isAlcalinFood)) {
+      mucusLabel = '🟢 Non-mucogène (Neutre)';
+      mucusColor = '#2dd4bf';
+    } else if (mucusStr.includes('faible') || isHybrid) {
+      mucusLabel = '🟡 Faiblement mucogène';
+      mucusColor = '#facc15';
+    } else {
+      mucusLabel = '🔴 Fortement mucogène';
+      mucusColor = '#ef4444';
+    }
+
+    let verdictLabel = sp?.label ?? (isElectric ? '⚡ Électrique & Régénérant' : isAlcalinFood ? '🌿 Végétal Vivant Alcalinisant & Dissolvant' : isHybrid ? '🔀 Hybride modéré' : isAnimal ? '⛔ Animal / Acidogène & Mucogène' : '⛔ Mucogène & Acidogène');
+    let verdictColor = isElectric ? '#4ade80' : isAlcalinFood ? '#38bdf8' : isHybrid ? '#facc15' : '#ef4444';
+
+    const noteText = currentModalFood.note || item?.note;
+
     content.innerHTML = `
       <div class="data-row">
-        <span class="data-label">Polarité Électrique (Dr. Sebi)</span>
-        <span class="data-value" style="font-weight:700; color:${isElectric ? '#4ade80' : '#ef4444'}">${isElectric ? '⚡ Oui (Bio-Minéral)' : '❌ Non électrique'}</span>
+        <span class="data-label">Polarité & Origine (Dr. Sebi)</span>
+        <span class="data-value" style="font-weight:700; color:${sebiColor}">${sebiLabel}</span>
       </div>
       <div class="data-row">
-        <span class="data-label">Hybridation Génétique</span>
-        <span class="data-value">${isHybrid ? '⚠️ Hybride / Modifié' : '✅ Végétal Originel'}</span>
+        <span class="data-label">Nature Botanique & Hybridation</span>
+        <span class="data-value" style="font-weight:600; color:${hybridColor}">${hybridLabel}</span>
       </div>
       <div class="data-row">
         <span class="data-label">Indice Mucus (Arnold Ehret)</span>
-        <span class="data-value" style="font-weight:600; color:${(sp?.mucus||'').toLowerCase().includes('dissolvant') ? '#4ade80' : (sp?.mucus||'').toLowerCase().includes('mucog') ? '#ef4444' : 'var(--text)'}">${sp?.mucus ?? 'Neutre'}</span>
+        <span class="data-value" style="font-weight:600; color:${mucusColor}">${mucusLabel}</span>
       </div>
       <div class="data-row">
         <span class="data-label">Verdict Vitaliste</span>
-        <span class="data-value">${sp?.label ?? 'Standard'}</span>
+        <span class="data-value" style="font-weight:700; color:${verdictColor}">${verdictLabel}</span>
       </div>
-      ${(currentModalFood.note || item?.note) ? `<div style="margin-top:14px; padding:10px 12px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:8px; font-size:0.8rem; color:var(--text-dim); line-height:1.4;"><strong style="color:var(--text)">Note Thérapeutique :</strong> ${esc(currentModalFood.note || item?.note)}</div>` : ''}
+      ${noteText ? `
+        <div style="margin-top:14px; padding:10px 12px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:8px; font-size:0.8rem; color:var(--text-dim); line-height:1.4;">
+          <strong style="color:var(--text)"><i class="ri-information-line" style="color:var(--accent);"></i> Précision Thérapeutique :</strong> ${esc(noteText)}
+        </div>
+      ` : ''}
+      <div style="margin-top:8px; padding:6px 10px; background:rgba(16,185,129,0.05); border:1px dashed var(--border); border-radius:6px; font-size:0.75rem; color:var(--text-dim); display:flex; align-items:center; gap:6px;">
+        <i class="ri-shield-check-line" style="color:var(--accent);"></i>
+        <span><strong>Sources méthodologiques :</strong> Guide Nutritionnel Dr. Sebi & Système de Guérison du Régime Sans Mucus (Arnold Ehret)</span>
+      </div>
     `;
   }
 };
@@ -1846,28 +3586,48 @@ window.setModalTab = function(tab) {
 window.toggleFavorite = function() {
   if (!currentModalFood) return;
   let favs = store.get('favorites', []);
-  const idx = favs.findIndex(f => f.id === currentModalFood.id);
+  const targetId = currentModalFood.id;
+  const name = (currentModalFood.names?.[0] || currentModalFood.name || 'Inconnu').replace(/^./, c => c.toUpperCase());
+  const idx = favs.findIndex(f => (targetId && f.id === targetId) || f.name?.toLowerCase() === name.toLowerCase());
+  
+  const sc = currentModalFood.scientific_defaults || currentModalFood.scientific || {};
+  const pral = sc.pral ?? (currentModalFood.pral ?? 0);
+  const isElec = currentModalFood.specific?.electric === true || currentModalFood.electric === true || currentModalFood.approved === true;
+
   if (idx >= 0) { 
     favs.splice(idx, 1); 
+    showToast(`💔 "${name}" retiré des favoris`, 'info');
   } else {
-    const name = (currentModalFood.names?.[0] || currentModalFood.name || 'Inconnu').replace(/^./, c => c.toUpperCase());
     favs.push({ 
-      id: currentModalFood.id, 
+      id: targetId || `fav_${Date.now()}`, 
       name, 
+      names: currentModalFood.names || [name],
       emoji: currentModalFood.emoji || '🍽️', 
-      family: currentModalFood.family || '', 
-      electric: currentModalFood.specific?.electric === true || currentModalFood.electric === true, 
-      pral: currentModalFood.scientific_defaults?.pral ?? (currentModalFood.scientific?.pral ?? (currentModalFood.pral ?? 0)) 
+      family: currentModalFood.family || currentModalFood.category || 'Alimentation', 
+      category: currentModalFood.category || currentModalFood.family || 'Alimentation', 
+      electric: isElec, 
+      pral,
+      scientific_defaults: sc,
+      vitality: currentModalFood.vitality || {},
+      specific: currentModalFood.specific || {}
     });
+    showToast(`❤️ "${name}" ajouté aux favoris !`, 'success');
   }
   store.set('favorites', favs);
-  const isFav = favs.some(f => f.id === currentModalFood.id);
+  const isFav = favs.some(f => (targetId && f.id === targetId) || f.name?.toLowerCase() === name.toLowerCase());
   const favBtn = document.getElementById('modalFavBtn');
   if (favBtn) {
     favBtn.innerHTML = isFav ? '<i class="ri-heart-fill"></i> Retirer' : '<i class="ri-heart-line"></i> Favori';
     favBtn.classList.toggle('active-fav', isFav);
   }
   renderFavorites();
+
+  // Also re-render search if on search page
+  if (currentSearchFilter === 'favorites') {
+    _doSearch(document.getElementById('searchInput')?.value || '');
+  } else if (_lastSearchResults.length > 0) {
+    renderSearchResults(_lastSearchResults, _lastSearchQuery);
+  }
 };
 
 function renderFavorites() {
@@ -1875,7 +3635,26 @@ function renderFavorites() {
   const list = document.getElementById('favsList');
   if (!list) return;
   if (favs.length === 0) { list.innerHTML = '<p class="empty-state">Aucun favori. Ajoutez des aliments depuis la recherche.</p>'; return; }
-  list.innerHTML = favs.map(f => `<div class="food-card clickable" onclick="openFoodModal('${f.id}')" style="cursor:pointer;"><div class="food-emoji">${f.emoji}</div><div class="food-info"><div class="food-name">${esc(f.name)}</div><div class="food-meta">${esc(f.family)} · PRAL ${(f.pral??0).toFixed(1)}</div></div><span class="food-badge ${f.electric ? 'badge-electric' : 'badge-mucus'}">${f.electric ? 'Électrique' : 'Mucogène'}</span></div>`).join('');
+  list.innerHTML = favs.map(f => {
+    const isE = f.electric === true || f.approved === true || f.specific?.electric === true;
+    const isH = f.hybrid === true || f.specific?.hybrid === true;
+    const pral = f.scientific_defaults?.pral ?? (f.pral ?? 0);
+    const mucusStr = (f.specific?.mucus || f.mucus || '').toLowerCase();
+    const isDissolvant = mucusStr.includes('dissolvant') || mucusStr.includes('non-muc');
+    const isAlcalin = pral < 0 || isDissolvant;
+    const bc = isE ? 'badge-electric' : isH ? 'badge-hybrid' : (isAlcalin && !mucusStr.includes('mucog')) ? 'badge-alkaline' : 'badge-mucus';
+    const bt = isE ? 'Électrique' : isH ? 'Hybride' : (isAlcalin && !mucusStr.includes('mucog')) ? 'Alcalinisant' : 'Mucogène';
+
+    return `<div class="food-card clickable" onclick="openFoodModal('${f.id || esc(f.name)}')" style="cursor:pointer;">
+      <span class="food-fav-icon"><i class="ri-heart-fill"></i></span>
+      <div class="food-emoji">${f.emoji || '🍽️'}</div>
+      <div class="food-info">
+        <div class="food-name">${esc(f.name)}</div>
+        <div class="food-meta">${esc(f.family || f.category || '')} · PRAL ${pral > 0 ? '+' : ''}${pral.toFixed(1)}</div>
+      </div>
+      <span class="food-badge ${bc}">${bt}</span>
+    </div>`;
+  }).join('');
 }
 
 // ═══════ MEALS ═══════
@@ -1886,59 +3665,101 @@ function classifyFoodLocally(token) {
   const clean = (token || '').trim();
   const lower = clean.toLowerCase();
 
-  // 1. Check in vitalDb first
-  const match = vitalDb.find(item => (item.names || []).some(n => n.toLowerCase() === lower || n.toLowerCase().includes(lower)));
+  // 1. Check in vitalDb for exact or whole-word match first
+  const match = vitalDb.find(item => (item.names || [item.name || '']).some(n => {
+    const nl = n.toLowerCase();
+    return nl === lower || (lower.length >= 3 && nl.split(/\s+/).includes(lower));
+  }));
   if (match) return match;
 
-  // 2. Junk Food / Ultra-Processed / Fast Food / Poutine / Fried / Dairy Heavy
-  const isUltraProcessed = /poutine|burger|hamburger|cheeseburger|pizza|frite|frites|hot-?dog|tacos|kebab|nugget|nuggets|chips|raclette|fondue|bacon|saucisse|soda|coca|donut|croissant|gaufre|biscuit|snack|fast-?food|croque-?monsieur/i.test(lower);
+  // 2. Fast Food / Junk Food / Ultra-Processed / Complex Dishes
+  const isUltraProcessed = /burrito|wrap|tacos|fajita|quesadilla|nachos|poutine|burger|hamburger|cheeseburger|pizza|frite|frites|hot-?dog|kebab|shawarma|nugget|nuggets|chips|raclette|fondue|tartiflette|bacon|saucisse|soda|coca|donut|croissant|gaufre|biscuit|snack|fast-?food|croque-?monsieur|lasagne|quiche|p[aâ]t[eé]|p[aâ]t[eé]\s*chinois|hachis|hachis\s*parmentier|tourti[eè]re|gratin|moussaka|shepherd|cottage\s*pie|boeuf\s*bourguignon|chili\s*con\s*carne|cordon\s*bleu/i.test(lower);
   
-  // 3. Electric Foods (Dr. Sebi: bio-mineral, non-hybridized, alkaline)
-  const isElectric = !isUltraProcessed && /avocat|concombre|mangue|papaye|melon|pasteque|pastèque|datte|figue|pomme|poire|cerise|prune|raisin|citron|citron vert|lime|kale|amarante|fonio|quinoa|kamut|teff|courgette|lin|chia|sésame|sesame|olive|roquette|cresson|mache|mâche|gingembre|aneth|basilic|coriandre|origan|romarin|thym|sauvage|spiruline|clémentine|mandarine|mûre|framboise|myrtille|fraise/i.test(lower);
+  // 3. Electric & Wild Original Foods (Dr. Sebi + African/Amazonian/Nordic Wild Superfoods)
+  const isElectric = !isUltraProcessed && /avocat|concombre|mangue|papaye|melon|pasteque|pastèque|datte|figue|pomme|poire|cerise|prune|raisin|citron|citron vert|lime|kale|amarante|fonio|quinoa|kamut|teff|courgette|lin|chia|sésame|sesame|olive|roquette|cresson|mache|mâche|gingembre|aneth|basilic|coriandre|origan|romarin|thym|sauvage|spiruline|clémentine|mandarine|mûre|framboise|myrtille|fraise|strawberry|raspberry|blueberry|blackberry|moringa|baobab|bouye|bissap|hibiscus|bleuet|canneberge|argousier|ortie|pissenlit|ditakh|dettarium|madd|saba|gombo|soursop|corossol|sureau|aronia|camu|acai|acerola|pousse|germe/i.test(lower);
   
-  // 4. Hybridized / Acidifying Starchy Foods
-  const isHybrid = !isUltraProcessed && !isElectric && /carotte|mais|maïs|pomme de terre|patate|riz|ble|blé|soja|tofu|seitan|haricot|lentille|pois|aubergine|pamplemousse|champignon/i.test(lower);
+  // 4. Natural Living Plant Foods / Fresh Fruits & Raw Greens (Non-Sebi living foods: PRAL negative, NOVA 1, Mucus Dissolving)
+  const isNaturalPlantAlkaline = !isUltraProcessed && !isElectric && /fruit|baie|berry|goyave|guava|lychee|litchi|passion|maracuja|grenade|pomegranate|kiwi|abricot|apricot|peche|pêche|nectarine|ananas|pineapple|mangoustan|mangosteen|kaki|persimmon|pitaya|dragon|tamarin|tamarind|agrumes|orange|mandarine|clementine|pamplemousse|salade|laitue|verdure|epinard|épinard|tisane|infusion/i.test(lower);
+
+  // 5. Hybridized / Acidifying Starchy Foods
+  const isHybrid = !isUltraProcessed && !isElectric && !isNaturalPlantAlkaline && /carotte|mais|maïs|pomme de terre|patate|riz|ble|blé|soja|tofu|seitan|haricot|lentille|pois|aubergine|champignon/i.test(lower);
   
-  // 5. Animal Products / Dairy / Standard Mucus-forming
-  const isAnimalMucus = !isUltraProcessed && !isElectric && !isHybrid && /viande|poulet|boeuf|bœuf|porc|veau|agneau|canard|dinde|fromage|lait|creme|crème|beurre|oeuf|œuf|poisson|saumon|thon|crevette/i.test(lower);
+  // 6. Animal Products / Dairy / Standard Mucus-forming
+  const isAnimalMucus = !isUltraProcessed && !isElectric && !isNaturalPlantAlkaline && !isHybrid && /viande|poulet|boeuf|bœuf|porc|veau|agneau|canard|dinde|fromage|lait|creme|crème|beurre|oeuf|œuf|poisson|saumon|thon|crevette/i.test(lower);
 
   let emoji = '🍽️';
-  if (/poutine/i.test(lower)) emoji = '🍟';
-  else if (/burger/i.test(lower)) emoji = '🍔';
-  else if (/pizza/i.test(lower)) emoji = '🍕';
-  else if (/frite/i.test(lower)) emoji = '🍟';
-  else if (/avocat/i.test(lower)) emoji = '🥑';
-  else if (/concombre/i.test(lower)) emoji = '🥒';
-  else if (/mangue/i.test(lower)) emoji = '🥭';
-  else if (/papaye/i.test(lower)) emoji = '🍈';
-  else if (/pomme/i.test(lower)) emoji = '🍎';
-  else if (/banane/i.test(lower)) emoji = '🍌';
-  else if (/melon|pasteque|pastèque/i.test(lower)) emoji = '🍉';
-  else if (/raisin/i.test(lower)) emoji = '🍇';
-  else if (/citron/i.test(lower)) emoji = '🍋';
-  else if (/salade|laitue|kale|roquette/i.test(lower)) emoji = '🥗';
-  else if (/riz|quinoa/i.test(lower)) emoji = '🍚';
+  let family = 'Alimentation';
+  let category = 'Alimentation';
 
-  let pral, density, nova, freshness, mucus, label, family, note;
+  if (/burrito|wrap|tacos|fajita|quesadilla/i.test(lower)) { emoji = '🌯'; family = 'Plats Cuisinés & Fast Food'; category = 'Plats Cuisinés & Fast Food'; }
+  else if (/poutine|frite/i.test(lower)) { emoji = '🍟'; family = 'Plats Cuisinés & Fast Food'; category = 'Plats Cuisinés & Fast Food'; }
+  else if (/burger/i.test(lower)) { emoji = '🍔'; family = 'Plats Cuisinés & Fast Food'; category = 'Plats Cuisinés & Fast Food'; }
+  else if (/pizza/i.test(lower)) { emoji = '🍕'; family = 'Plats Cuisinés & Fast Food'; category = 'Plats Cuisinés & Fast Food'; }
+  else if (/kebab|shawarma/i.test(lower)) { emoji = '🥙'; family = 'Plats Cuisinés & Fast Food'; category = 'Plats Cuisinés & Fast Food'; }
+  else if (/p[aâ]t[eé]|hachis|lasagne|gratin|quiche|tourti[eè]re/i.test(lower)) { emoji = '🥘'; family = 'Plats Cuisinés & Fast Food'; category = 'Plats Cuisinés & Fast Food'; }
+  else if (/avocat/i.test(lower)) { emoji = '🥑'; family = 'Fruits'; category = 'Fruits'; }
+  else if (/concombre/i.test(lower)) { emoji = '🥒'; family = 'Légumes'; category = 'Légumes'; }
+  else if (/mangue/i.test(lower)) { emoji = '🥭'; family = 'Fruits'; category = 'Fruits'; }
+  else if (/papaye/i.test(lower)) { emoji = '🍈'; family = 'Fruits'; category = 'Fruits'; }
+  else if (/pomme/i.test(lower)) { emoji = '🍎'; family = 'Fruits'; category = 'Fruits'; }
+  else if (/banane/i.test(lower)) { emoji = '🍌'; family = 'Fruits'; category = 'Fruits'; }
+  else if (/melon|pasteque|pastèque/i.test(lower)) { emoji = '🍉'; family = 'Fruits'; category = 'Fruits'; }
+  else if (/raisin/i.test(lower)) { emoji = '🍇'; family = 'Fruits'; category = 'Fruits'; }
+  else if (/citron/i.test(lower)) { emoji = '🍋'; family = 'Fruits'; category = 'Fruits'; }
+  else if (/fraise|strawberry/i.test(lower)) { emoji = '🍓'; family = 'Fruits'; category = 'Fruits'; }
+  else if (/framboise|myrtille|blueberry|raspberry/i.test(lower)) { emoji = '🫐'; family = 'Fruits'; category = 'Fruits'; }
+  else if (/salade|laitue|kale|roquette/i.test(lower)) { emoji = '🥗'; family = 'Légumes'; category = 'Légumes'; }
+  else if (/riz|quinoa|cereale|amarante|fonio|kamut/i.test(lower)) { emoji = '🌾'; family = 'Céréales'; category = 'Céréales'; }
+  else if (/haricot|lentille|pois/i.test(lower)) { emoji = '🫘'; family = 'Légumineuses'; category = 'Légumineuses'; }
+  else if (/amande|noix|noisette|chia|lin|sesame|sésame/i.test(lower)) { emoji = '🥜'; family = 'Noix & Graines'; category = 'Noix & Graines'; }
+  else if (/the|thé|tisane|infusion/i.test(lower)) { emoji = '🍵'; family = 'Herbes & Thés'; category = 'Herbes & Thés'; }
+  else if (/pain|baguette|boulange/i.test(lower)) { emoji = '🥖'; family = 'Pain & Boulangerie'; category = 'Pain & Boulangerie'; }
+  else if (/fromage/i.test(lower)) { emoji = '🧀'; family = 'Produits Laitiers'; category = 'Produits Laitiers'; }
+  else if (/viande|boeuf|bœuf|steak|poulet|porc/i.test(lower)) { emoji = '🥩'; family = 'Viandes & Charcuterie'; category = 'Viandes & Charcuterie'; }
+  else if (/poisson|saumon|thon|crevette/i.test(lower)) { emoji = '🐟'; family = 'Poissons & Fruits de mer'; category = 'Poissons & Fruits de mer'; }
+  else if (isNaturalPlantAlkaline) { emoji = '🌿'; family = 'Fruits & Végétaux'; category = 'Fruits'; }
+
+  let pral, density, nova, freshness, mucus, label, note, sebiStatus;
 
   if (isUltraProcessed) {
-    pral = 14.8;
-    density = 15;
+    pral = 15.8;
+    density = 20;
     nova = 4;
-    freshness = 10;
+    freshness = 20;
     mucus = 'Fortement Mucogène';
-    label = 'Ultra-transformé / Acidifiant';
-    family = 'Plat Industriel';
-    note = 'Produit ultra-transformé générant une forte acidose rénale (PRAL +14.8) et une congestion mucogène.';
+    label = 'Ultra-Transformé / Fast Food';
+    sebiStatus = 'non_approved';
+    if (!category || category === 'Alimentation') {
+      family = 'Plats Cuisinés & Fast Food';
+      category = 'Plats Cuisinés & Fast Food';
+    }
+    note = 'Plat complexe ultra-transformé générant une forte acidose rénale (PRAL +' + pral.toFixed(1) + ') et une charge mucogène élevée.';
   } else if (isElectric) {
     pral = -4.5;
-    density = 88;
+    density = 90;
     nova = 1;
     freshness = 95;
     mucus = 'Dissolvant';
-    label = 'Électrique (Dr. Sebi)';
-    family = 'Aliment Vivant / Vitaliste';
+    label = 'Électrique (Dr. Sebi & Sauvage)';
+    sebiStatus = /ditakh|dettarium|madd|saba|bouye|baobab|bissap|moringa|camu|aronia|sureau|argousier/i.test(lower) ? 'wild_original' : 'sebi_official';
+    if (!category || category === 'Alimentation') {
+      family = 'Fruits';
+      category = 'Fruits';
+    }
     note = 'Aliment bio-minéral alcalinisant à haute charge électrolytique favorisant le nettoyage cellulaire.';
+  } else if (isNaturalPlantAlkaline) {
+    pral = -3.2;
+    density = 85;
+    nova = 1;
+    freshness = 90;
+    mucus = 'Dissolvant';
+    label = 'Végétal Vivant Alcalinisant';
+    sebiStatus = 'natural_alkaline';
+    if (!category || category === 'Alimentation') {
+      family = 'Fruits & Végétaux';
+      category = 'Fruits';
+    }
+    note = 'Fruit ou végétal naturel vivant, alcalinisant et dissolvant naturel des mucosités et toxines.';
   } else if (isHybrid) {
     pral = 2.5;
     density = 55;
@@ -1946,26 +3767,35 @@ function classifyFoodLocally(token) {
     freshness = 65;
     mucus = 'Faiblement Mucogène';
     label = 'Aliment Hybride';
-    family = 'Féculents & Végétaux Hybrides';
+    sebiStatus = 'hybrid';
+    if (!category || category === 'Alimentation') {
+      family = 'Céréales';
+      category = 'Céréales';
+    }
     note = 'Aliment issu d\'hybridations végétales, contenant des amidons modérément mucogènes.';
   } else if (isAnimalMucus) {
-    pral = 9.5;
-    density = 45;
+    pral = 10.5;
+    density = 40;
     nova = 3;
     freshness = 30;
     mucus = 'Mucogène Élevé';
     label = 'Produit Animal / Mucogène';
-    family = 'Produits Animaux';
+    sebiStatus = 'non_approved';
+    if (!category || category === 'Alimentation') {
+      family = 'Viandes & Charcuterie';
+      category = 'Viandes & Charcuterie';
+    }
     note = 'Génère une production intense de mucus lymphatique et une charge acide importante.';
   } else {
-    pral = 1.0;
-    density = 50;
-    nova = 2;
-    freshness = 60;
-    mucus = 'Neutre à Mucogène';
-    label = 'Standard';
-    family = 'Alimentation Courante';
-    note = 'Aliment standard à consommer avec modération dans une démarche de détox.';
+    pral = 0.5;
+    density = 60;
+    nova = 1;
+    freshness = 75;
+    mucus = 'Neutre';
+    label = 'Végétal Brut / Neutre';
+    sebiStatus = 'natural_alkaline';
+    family = 'Alimentation Naturelle';
+    note = 'Aliment brut naturel analysé selon les règles vitalistes.';
   }
 
   const nameCap = clean.charAt(0).toUpperCase() + clean.slice(1);
@@ -1976,14 +3806,21 @@ function classifyFoodLocally(token) {
     name: nameCap,
     emoji,
     family,
-    category: family,
-    approved: isElectric,
+    category,
+    approved: isElectric || isNaturalPlantAlkaline,
     electric: isElectric,
+    sebiStatus,
     hybrid: isHybrid || isUltraProcessed,
     scientific_defaults: {
       pral,
       density,
-      label: pral < 0 ? 'Alcalinisant' : 'Acidifiant',
+      label: pral < 0 ? 'Alcalinisant puissant' : pral <= 4 ? 'Faiblement acidifiant' : 'Fortement acidifiant',
+      colorValue: pral < 0 ? '0xFF4ade80' : '0xFFfacc15'
+    },
+    scientific: {
+      pral,
+      density,
+      label: pral < 0 ? 'Alcalinisant puissant' : pral <= 4 ? 'Faiblement acidifiant' : 'Fortement acidifiant',
       colorValue: pral < 0 ? '0xFF4ade80' : '0xFFfacc15'
     },
     vitality: {
@@ -1996,9 +3833,10 @@ function classifyFoodLocally(token) {
       mucus,
       hybrid: isHybrid || isUltraProcessed,
       electric: isElectric,
+      sebiStatus,
       label
     },
-    tags: [isElectric ? 'Dr. Sebi Approved' : isUltraProcessed ? 'Ultra-Transformé (NOVA 4)' : 'VitalTrack Analyzed'],
+    tags: [isElectric ? 'Dr. Sebi / Sauvage' : isNaturalPlantAlkaline ? 'Végétal Vivant Alcalinisant' : isUltraProcessed ? 'Ultra-Transformé (NOVA 4)' : 'VitalTrack Analyzed'],
     note
   };
 }
@@ -2043,7 +3881,7 @@ window.analyzeDishWithAI = async function() {
     let addedCount = 0;
     items.forEach(item => {
       const name = (item.name || item.names?.[0] || 'Aliment').replace(/^./, c => c.toUpperCase());
-      const id = item.id || `dish_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
+      const id = item.id || ('dish_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6));
       const existing = selectedMealFoods.find(f => f.name.toLowerCase() === name.toLowerCase());
       
       const sc = item.scientific_defaults || item.scientific || {
@@ -2354,16 +4192,36 @@ function renderMeals() {
   list.innerHTML = todayMeals.map((m, i) => {
     const isElec = m.electric === true || m.approved === true;
     const pral = m.pral ?? (m.scientific?.pral ?? (m.scientific_defaults?.pral ?? 0));
-    return `<div class="meal-item clickable" onclick="openFoodModalFromMeal(${i})" style="cursor:pointer;" title="Cliquer pour ouvrir la carte d'identité 3 onglets">
+    const rawItems = m.items || m.ingredients || [];
+    let itemsPreview = '';
+    if (Array.isArray(rawItems) && rawItems.length > 0) {
+      const formatted = rawItems.map(it => typeof it === 'string' ? it : (it.name || '')).filter(Boolean);
+      if (formatted.length > 0) {
+        itemsPreview = `<div class="meal-item-ingredients" style="font-size:0.8rem; color:var(--text-dim); margin:3px 0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:85vw;">
+          <span style="color:var(--accent);">🥗</span> ${esc(formatted.join(' · '))}
+        </div>`;
+      }
+    }
+    const cookingObj = COOKING_METHODS[m.cookingMethod];
+    const catBadge = m.category ? `<span class="food-badge" style="font-size:0.7rem; padding:2px 6px; background:rgba(255,255,255,0.06);">${esc(m.category.toUpperCase())}</span>` : '';
+    const cookingBadge = cookingObj ? `<span class="food-badge" style="font-size:0.7rem; padding:2px 6px; background:rgba(55,211,153,0.1); color:var(--accent);">${cookingObj.emoji} ${esc(cookingObj.label.split(' ')[0])}</span>` : '';
+
+    return `<div class="meal-item clickable" onclick="openFoodModalFromMeal(${i})" style="cursor:pointer;" title="Cliquer pour ouvrir la fiche détaillée du repas">
       <span class="food-emoji">${m.emoji || '🍽️'}</span>
-      <div class="meal-item-info">
-        <div class="meal-item-name">${esc(m.name)}</div>
-        <div class="meal-item-meta">${isElec ? '⚡ Électrique' : (m.hybrid ? '🔀 Hybride' : '⛔ Mucogène')} · PRAL ${pral > 0 ? '+' : ''}${pral.toFixed(1)} · NOVA ${m.nova ?? 1}</div>
+      <div class="meal-item-info" style="flex:1; min-width:0;">
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <span class="meal-item-name" style="font-weight:700;">${esc(m.name)}</span>
+          ${catBadge}
+          ${cookingBadge}
+        </div>
+        ${itemsPreview}
+        <div class="meal-item-meta">${isElec ? '⚡ Électrique' : (m.hybrid ? '🔀 Hybride' : '⛔ Mucogène')} · PRAL ${pral > 0 ? '+' : ''}${pral.toFixed(1)} · NOVA ${m.nova ?? 1}${cookingObj ? ` · ${cookingObj.emoji} ${cookingObj.label.split(' ')[0]}` : ''}</div>
       </div>
       <button class="meal-item-remove" onclick="event.stopPropagation(); removeMeal(${i})" title="Supprimer ce repas"><i class="ri-delete-bin-line"></i></button>
     </div>`;
   }).join('');
 }
+window.renderMeals = renderMeals;
 
 window.removeMeal = function(idx) {
   const meals = store.get('meals', []);
@@ -2424,9 +4282,9 @@ const ehretMasterclassData = [
     shortDesc: 'La pathogenèse et l\'auto-élimination',
     pill: 'Physiologie',
     content: [
-      '<p>Selon la théorie du mucus développée par Ehret, la consommation d\'aliments biologiquement inadaptés à l\'espèce humaine (viandes, produits laitiers, œufs, graisses animales et féculents raffinés comme la farine blanche) produit lors de la digestion une substance gluante et adhésive.</p>',
+      '<p>Selon la théorie du mucus développée par Arnold Ehret, la consommation d\'aliments biologiquement inadaptés à l\'espèce humaine (viandes, produits laitiers, œufs, graisses animales et féculents raffinés comme la farine blanche) produit lors de la digestion une substance gluante et adhésive.</p>',
       '<p>Cette matière, assimilable à de la colle, tapisse progressivement l\'estomac et les 10 mètres du canal intestinal, s\'infiltre dans les vaisseaux et engorge le système lymphatique.</p>',
-      '<div class="info-box" style="margin: 16px 0;"><strong>V = P - O</strong><br>La Vitalité (V) est égale à la Puissance motrice naturelle (P) diminuée de l\'Obstruction interne (O) générée par le mucus et les toxines.</div>',
+      '<div class="mc-callout-formula"><div class="mc-formula-tag">V = P - O</div><div class="mc-formula-text"><strong>Équation Fondamentale d\'Ehret :</strong> La Vitalité (<strong>V</strong>) est égale à la Puissance motrice naturelle (<strong>P</strong>) diminuée de l\'Obstruction interne (<strong>O</strong>) générée par le mucus et les toxines.</div></div>',
       '<p>L\'abondance de globules blancs ne constitue pas une réponse immunitaire optimale, mais représente la manifestation directe du mucus mort et décomposé présent dans la circulation.</p>'
     ]
   },
@@ -2437,7 +4295,7 @@ const ehretMasterclassData = [
     pill: 'Préparation',
     content: [
       '<p>L\'une des mises en garde les plus sévères d\'Ehret concerne l\'imprudence d\'entreprendre un jeûne prolongé à l\'eau sans préparation. La dissolution trop rapide des toxines peut engorger les canaux d\'élimination et provoquer une auto-intoxication grave.</p>',
-      '<ul><li><strong>Aliments pauvres en mucus :</strong> légumes cuits non féculents, pommes de terre au four (avec peau), pain complet fortement toasté ou grillé (pour détruire le pouvoir collant de l\'amidon).</li><li><strong>Aliments exempts de mucus :</strong> fruits frais de saison, légumes à feuilles vertes, salades crues.</li></ul>',
+      '<ul class="mc-list"><li><span class="mc-bullet">●</span><div><strong>Aliments pauvres en mucus :</strong> légumes cuits non féculents, pommes de terre au four (avec peau), pain complet fortement toasté ou grillé (pour détruire le pouvoir collant de l\'amidon).</div></li><li><span class="mc-bullet">●</span><div><strong>Aliments exempts de mucus :</strong> fruits frais de saison, légumes à feuilles vertes, salades crues.</div></li></ul>',
       '<p>Avant un jeûne, le canal digestif doit subir un nettoyage mécanique : purge végétale douce la veille, combinée à l\'usage de lavements intestinaux à l\'eau tiède.</p>'
     ]
   },
@@ -2448,7 +4306,7 @@ const ehretMasterclassData = [
     pill: 'Exécution',
     content: [
       '<p>Ehret rejette les jeûnes uniformes de très longue durée, leur préférant une approche séquentielle et individualisée :</p>',
-      '<ul><li><strong>Non-Breakfast Plan (Quotidien) :</strong> Abstention de nourriture solide le matin. Prolonge l\'élimination nocturne. La sensation de malaise au réveil est le travail d\'élimination ; manger l\'interrompt.</li><li><strong>24 Heures (1-2 fois/semaine) :</strong> Repas unique vers 15h (fruits, puis légumes).</li><li><strong>36 Heures :</strong> Sauter le souper, jeûner le lendemain, rompre le surlendemain matin. Dissout le mucus incrusté.</li><li><strong>Jeûnes Courts Intermittents (2-5 jours) :</strong> Prise de limonade légère. Régénère le sang sans auto-intoxication.</li></ul>'
+      '<ul class="mc-list"><li><span class="mc-bullet">●</span><div><strong>Non-Breakfast Plan (Quotidien) :</strong> Abstention de nourriture solide le matin. Prolonge l\'élimination nocturne. La sensation de malaise au réveil est le travail d\'élimination ; manger l\'interrompt.</div></li><li><span class="mc-bullet">●</span><div><strong>24 Heures (1-2 fois/semaine) :</strong> Repas unique vers 15h (fruits, puis légumes).</div></li><li><span class="mc-bullet">●</span><div><strong>36 Heures :</strong> Sauter le souper, jeûner le lendemain, rompre le surlendemain matin. Dissout le mucus incrusté.</div></li><li><span class="mc-bullet">●</span><div><strong>Jeûnes Courts Intermittents (2-5 jours) :</strong> Prise de limonade légère. Régénère le sang sans auto-intoxication.</div></li></ul>'
     ]
   },
   {
@@ -2469,8 +4327,8 @@ const ehretMasterclassData = [
     pill: 'Critique',
     content: [
       '<p>La rupture du jeûne est la phase la plus délicate. Le premier repas ne doit jamais nourrir, mais agir mécaniquement comme un balai (laxatif).</p>',
-      '<div class="info-box" style="margin: 16px 0; background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.3); color: #fca5a5;"><strong>La Règle Absolue :</strong> Le premier repas doit provoquer une selle abondante sous 1 à 3 heures. Sinon, utilisez un lavement immédiatement.</div>',
-      '<ul><li><strong>Pour les corps préparés :</strong> Fruits frais sucrés (cerises, raisins). Les acides se mélangent au mucus pour libérer l\'intestin.</li><li><strong>Pour les mangeurs de viande / non-préparés :</strong> Les fruits doux sont interdits (fermentation violente). Rompez avec des légumes non féculents crus et cuits (choucroute, épinards étuvés) et du pain de son grillé.</li></ul>'
+      '<div class="mc-callout-danger"><div class="mc-callout-icon"><i class="ri-alarm-warning-fill"></i></div><div><div class="mc-callout-title">La Règle Absolue du Premier Repas</div><div class="mc-callout-body">Le premier repas doit obligatoirement provoquer une selle abondante sous 1 à 3 heures. Sinon, utilisez un lavement tiède immédiatement.</div></div></div>',
+      '<ul class="mc-list"><li><span class="mc-bullet">●</span><div><strong>Pour les corps préparés :</strong> Fruits frais sucrés (cerises, raisins). Les acides se mélangent au mucus pour libérer l\'intestin.</div></li><li><span class="mc-bullet">●</span><div><strong>Pour les mangeurs de viande / non-préparés :</strong> Les fruits doux sont interdits (fermentation violente). Rompez avec des légumes non féculents crus et cuits (choucroute, épinards étuvés) et du pain de son grillé.</div></li></ul>'
     ]
   },
   {
@@ -2481,7 +4339,7 @@ const ehretMasterclassData = [
     content: [
       '<p>Pour évaluer son degré d\'encrassement interne, Ehret propose le test du "Miroir Magique" :</p>',
       '<p>Jeûnez pendant 1 à 2 jours. L\'épaisse couche de mucus qui recouvre alors votre langue reflète l\'état réel de l\'ensemble de vos muqueuses internes et de votre canal digestif.</p>',
-      '<p>Réfutation du mythe de la langue propre : Chez un individu très encombré, poursuivre le jeûne jusqu\'à ce que la langue soit rose est dangereux. Le jeûne doit être interrompu dès que la charge toxique en circulation est trop lourde, puis repris après reconstruction.</p>'
+      '<p><strong>Réfutation du mythe de la langue propre :</strong> Chez un individu très encombré, poursuivre le jeûne jusqu\'à ce que la langue soit rose est dangereux. Le jeûne doit être interrompu dès que la charge toxique en circulation est trop lourde, puis repris après reconstruction.</p>'
     ]
   }
 ];
@@ -2526,14 +4384,33 @@ window.openMasterclass = function(index) {
         <i class="${mc.icon}"></i>
       </div>
       <div>
-        <div style="font-size:0.8rem; font-weight:600; text-transform:uppercase; letter-spacing:1px; color:${mc.color}; margin-bottom:4px;">${mc.pill}</div>
-        <h2 style="margin:0; font-size:1.6rem; color:#fff; line-height:1.2;">${mc.title}</h2>
+        <div style="font-size:0.8rem; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:${mc.color}; margin-bottom:4px;">${mc.pill}</div>
+        <h2 style="margin:0; font-size:1.55rem; color:#fff; line-height:1.2; font-weight:800;">${mc.title}</h2>
       </div>
     </div>
-    <p style="margin:0; color:var(--text-dim); font-size:1rem;">${mc.shortDesc}</p>
+    <p style="margin:0; color:var(--text-dim); font-size:0.95rem;">${mc.shortDesc}</p>
   `;
-  document.getElementById('mcBody').innerHTML = mc.content.join('');
+  
+  const footerBtn = `
+    <div class="mc-footer-actions">
+      <button class="herb-ask-ai-btn" onclick="askAIAboutMasterclass('${esc(mc.title.replace(/'/g, "\\'"))}')">
+        <i class="ri-sparkling-fill"></i> Approfondir cette leçon avec le Coach IA
+      </button>
+    </div>
+  `;
+  
+  document.getElementById('mcBody').innerHTML = mc.content.join('') + footerBtn;
   document.getElementById('masterclassModal').classList.add('open');
+};
+
+window.askAIAboutMasterclass = function(title) {
+  document.getElementById('masterclassModal').classList.remove('open');
+  showPage('chat');
+  const chatInput = document.getElementById('chatInput');
+  if (chatInput) {
+    chatInput.value = `Peux-tu m'expliquer en profondeur la leçon d'Arnold Ehret sur "${title}" et comment l'appliquer concrètement dans mon hygiène de vie ?`;
+    chatInput.focus();
+  }
 };
 
 window.closeMasterclass = function(e) {
@@ -2625,10 +4502,12 @@ function initExpertAccordion() {
       <div class="jn-expert-head" onclick="toggleExpertAccordion(this)">
         <div class="jn-expert-icon" style="background:${ec.bg}; color:${ec.color};">${expertIcons[i] || '📖'}</div>
         <div><div class="jn-expert-name">${exp.name}</div><div class="jn-expert-sub">${exp.title}</div></div>
-        <svg class="jn-icon jn-expert-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l5 5 5-5"/></svg>
+        <i class="ri-arrow-down-s-line jn-expert-chevron"></i>
       </div>
       <div class="jn-expert-body"><div class="jn-expert-body-inner">
-        ${exp.tips.map(t => `<div style="margin-bottom:8px;">${t}</div>`).join('')}
+        <ul>
+          ${exp.tips.map(t => `<li>${t}</li>`).join('')}
+        </ul>
       </div></div>
     </div>
   `;
@@ -2644,71 +4523,240 @@ window.toggleExpertAccordion = function(headEl) {
   if (!wasOpen) row.classList.add('open');
 };
 
-// ═══════ FASTING TIMER ═══════
-window.toggleFasting = function() { fastingState.active ? stopFasting() : startFasting(); };
+// ═══════ FASTING TIMER & CONTROLS ═══════
+window.stepFastingDuration = function(delta) {
+  if (fastingState?.active) return;
+  const input = document.getElementById('fastingDuration');
+  if (!input) return;
+  let val = (parseInt(input.value) || 16) + delta;
+  val = Math.max(1, Math.min(168, val));
+  input.value = val;
+  window.onFastingDurationChange();
+};
+
+window.setFastingDurationPreset = function(hours) {
+  if (fastingState?.active) return;
+  const input = document.getElementById('fastingDuration');
+  if (input) {
+    input.value = hours;
+    window.onFastingDurationChange();
+  }
+};
+
+window.onFastingDurationChange = function() {
+  const input = document.getElementById('fastingDuration');
+  if (!input) return;
+  let hours = parseInt(input.value) || 16;
+  hours = Math.max(1, Math.min(168, hours));
+  input.value = hours;
+
+  // Update preset chips
+  document.querySelectorAll('#fastingDurationPresets .vital-duration-chip').forEach(chip => {
+    const h = parseInt(chip.dataset.h);
+    chip.classList.toggle('active', h === hours);
+  });
+
+  // Safety warning
+  const warn = document.getElementById('fastingSafetyWarning');
+  if (warn) warn.style.display = hours > 24 ? 'block' : 'none';
+
+  // Fast goal
+  const goalEl = document.getElementById('fastGoal');
+  if (goalEl) goalEl.textContent = `Objectif : ${hours}h`;
+};
+
+window.initFastingDurationControls = function() {
+  const select = document.getElementById('fastingType');
+  if (select) {
+    select.addEventListener('change', () => {
+      if (fastingState?.active) return;
+      const opt = select.options[select.selectedIndex];
+      if (opt && opt.dataset.hours) {
+        window.setFastingDurationPreset(parseInt(opt.dataset.hours));
+      }
+    });
+  }
+  window.onFastingDurationChange();
+};
+
+window.toggleFasting = async function() {
+  if (fastingState.active) {
+    await stopFasting();
+  } else {
+    startFasting();
+  }
+};
+
 function startFasting() {
-  const type = document.getElementById('fastingType').value;
-  const hours = parseInt(document.getElementById('fastingDuration').value) || 16;
+  const type = document.getElementById('fastingType')?.value || 'intermittent';
+  const hours = parseInt(document.getElementById('fastingDuration')?.value) || 16;
   fastingState = { active: true, startTime: Date.now(), durationMs: hours * 3600000, type, interval: null };
   store.set('fasting-active', { startTime: fastingState.startTime, durationMs: fastingState.durationMs, type });
   fastingState.interval = setInterval(updateFastingUI, 1000);
   updateFastingUI();
+
+  // Button state
   const btn = document.getElementById('fastStartBtn');
-  document.getElementById('fastBtnIcon').innerHTML = '<rect x="5" y="5" width="10" height="10" rx="1.5"/>';
-  document.getElementById('fastBtnLabel').textContent = 'Arrêter';
-  btn.classList.add('stop');
+  const icon = document.getElementById('fastBtnIcon');
+  const label = document.getElementById('fastBtnLabel');
+  if (btn) {
+    btn.className = 'jn-btn-start running stop';
+  }
+  if (icon) icon.className = 'ri-stop-circle-fill';
+  if (label) label.textContent = 'Arrêter le jeûne';
+
+  // Ring status
   const statusEl = document.getElementById('timerLabel');
-  statusEl.textContent = 'EN COURS';
-  statusEl.classList.add('active');
+  if (statusEl) {
+    statusEl.textContent = '🔥 EN COURS';
+    statusEl.classList.add('active');
+  }
+
+  // Lock controls
+  document.getElementById('jnFieldType')?.classList.add('locked');
+  document.getElementById('jnFieldDuration')?.classList.add('locked');
+  const lockBadge = document.getElementById('jnTypeLockBadge');
+  if (lockBadge) lockBadge.style.display = 'inline-flex';
+
+  if (window.showToast) window.showToast(`Jeûne démarré ! Objectif : ${hours}h`, 'success');
   renderDashboard();
 }
-function stopFasting() {
+
+async function stopFasting() {
+  if (!fastingState.active) return;
   const elapsed = Date.now() - fastingState.startTime;
+  const elapsedH = (elapsed / 3600000).toFixed(1);
+
+  // Custom confirmation dialog
+  const ok = await (window.showVitalConfirm ? window.showVitalConfirm({
+    title: 'Arrêter la session de jeûne ?',
+    message: `Vous êtes en jeûne depuis <strong>${elapsedH}h</strong> (objectif : ${(fastingState.durationMs/3600000).toFixed(0)}h). Souhaitez-vous enregistrer et arrêter cette session ?`,
+    icon: 'ri-stop-circle-line',
+    confirmText: 'Arrêter et enregistrer',
+    cancelText: 'Poursuivre le jeûne',
+    isDanger: true
+  }) : Promise.resolve(confirm(`Arrêter le jeûne en cours ? (${elapsedH}h)`)));
+
+  if (!ok) return;
+
   const history = store.get('fasting-history', []);
-  history.unshift({ type: fastingState.type, startTime: fastingState.startTime, elapsed, targetMs: fastingState.durationMs, completed: elapsed >= fastingState.durationMs });
+  history.unshift({
+    type: fastingState.type,
+    startTime: fastingState.startTime,
+    elapsed,
+    targetMs: fastingState.durationMs,
+    completed: elapsed >= fastingState.durationMs
+  });
   store.set('fasting-history', history.slice(0, 50));
   clearInterval(fastingState.interval);
   fastingState = { active: false, startTime: null, durationMs: 0, type: '', interval: null };
   store.del('fasting-active');
+
+  // Reset Button state
   const btn = document.getElementById('fastStartBtn');
-  document.getElementById('fastBtnIcon').innerHTML = '<path d="M6 4l10 6-10 6V4z"/>';
-  document.getElementById('fastBtnLabel').textContent = 'Démarrer';
-  btn.classList.remove('stop');
-  document.getElementById('timerDigits').textContent = '00:00:00';
+  const icon = document.getElementById('fastBtnIcon');
+  const label = document.getElementById('fastBtnLabel');
+  if (btn) {
+    btn.className = 'jn-btn-start idle';
+  }
+  if (icon) icon.className = 'ri-play-fill';
+  if (label) label.textContent = 'Démarrer le jeûne';
+
+  // Reset Ring status
+  const timerDigits = document.getElementById('timerDigits');
+  if (timerDigits) timerDigits.textContent = '00:00:00';
   const statusEl = document.getElementById('timerLabel');
-  statusEl.textContent = 'PRÊT';
-  statusEl.classList.remove('active');
-  document.getElementById('timerProgress').style.strokeDashoffset = '637.6';
-  renderFastingHistory(); renderFastingAnalytics(); renderDashboard();
+  if (statusEl) {
+    statusEl.textContent = 'PRÊT';
+    statusEl.classList.remove('active');
+  }
+  const prog = document.getElementById('timerProgress');
+  if (prog) prog.style.strokeDashoffset = '637.6';
+
+  // Unlock controls
+  document.getElementById('jnFieldType')?.classList.remove('locked');
+  document.getElementById('jnFieldDuration')?.classList.remove('locked');
+  const lockBadge = document.getElementById('jnTypeLockBadge');
+  if (lockBadge) lockBadge.style.display = 'none';
+
+  if (window.showToast) window.showToast(`Session enregistrée avec succès (${elapsedH}h effectuées) !`, 'success');
+
+  renderFastingHistory();
+  renderFastingAnalytics();
+  renderDashboard();
 }
+
 function updateFastingUI() {
   if (!fastingState.active) return;
   const elapsed = Date.now() - fastingState.startTime;
   const remaining = Math.max(0, fastingState.durationMs - elapsed);
   const progress = Math.min(1, elapsed / fastingState.durationMs);
   const ts = Math.floor(elapsed / 1000);
-  document.getElementById('timerDigits').textContent = `${String(Math.floor(ts/3600)).padStart(2,'0')}:${String(Math.floor((ts%3600)/60)).padStart(2,'0')}:${String(ts%60).padStart(2,'0')}`;
-  document.getElementById('timerProgress').style.strokeDashoffset = 637.6 * (1 - progress);
+  const timerDigits = document.getElementById('timerDigits');
+  if (timerDigits) {
+    timerDigits.textContent = `${String(Math.floor(ts/3600)).padStart(2,'0')}:${String(Math.floor((ts%3600)/60)).padStart(2,'0')}:${String(ts%60).padStart(2,'0')}`;
+  }
+  const prog = document.getElementById('timerProgress');
+  if (prog) {
+    prog.style.strokeDashoffset = 637.6 * (1 - progress);
+  }
   const statusEl = document.getElementById('timerLabel');
-  if (remaining <= 0) { statusEl.textContent = '🎉 OBJECTIF ATTEINT !'; statusEl.classList.add('active'); }
-  else { statusEl.textContent = `Reste ${Math.floor(remaining/3600000)}h ${Math.floor((remaining%3600000)/60000)}min`; }
+  if (statusEl) {
+    if (remaining <= 0) {
+      statusEl.textContent = '🎉 OBJECTIF ATTEINT !';
+      statusEl.classList.add('active');
+    } else {
+      statusEl.textContent = `Reste ${Math.floor(remaining/3600000)}h ${Math.floor((remaining%3600000)/60000)}min`;
+    }
+  }
+
   // Dashboard mirror
-  const dt = document.getElementById('dashFastTimer'); if (dt) { dt.textContent = document.getElementById('timerDigits').textContent; }
-  const df = document.getElementById('dashFastFill'); if (df) { df.style.width = `${progress * 100}%`; }
-  const dft = document.getElementById('dashFastType'); if (dft) { const tl = { intermittent:'⏰ Intermittent', warrior:'⚔️ Warrior', waterFast:'💧 Hydrique', juiceFast:'🧃 Jus', fruitFast:'🍎 Fruits', grapeCure:'🍇 Raisin', drySunFast:'☀️ Sec', ramadan:'🌙 Ramadan' }; dft.textContent = tl[fastingState.type] || fastingState.type; }
+  const dt = document.getElementById('dashFastTimer');
+  if (dt && timerDigits) { dt.textContent = timerDigits.textContent; }
+  const df = document.getElementById('dashFastFill');
+  if (df) { df.style.width = `${progress * 100}%`; }
+  const dft = document.getElementById('dashFastType');
+  if (dft) {
+    const tl = { intermittent:'⏰ Intermittent', warrior:'⚔️ Warrior', waterFast:'💧 Hydrique', juiceFast:'🧃 Jus', fruitFast:'🍎 Fruits', grapeCure:'🍇 Raisin', drySunFast:'☀️ Sec', ramadan:'🌙 Ramadan' };
+    dft.textContent = tl[fastingState.type] || fastingState.type;
+  }
 }
+
 function loadFastingState() {
   const saved = store.get('fasting-active', null);
+  const btn = document.getElementById('fastStartBtn');
+  const icon = document.getElementById('fastBtnIcon');
+  const label = document.getElementById('fastBtnLabel');
+  const statusEl = document.getElementById('timerLabel');
+  const lockBadge = document.getElementById('jnTypeLockBadge');
+
   if (saved?.startTime) {
     fastingState = { ...saved, active: true, interval: null };
     fastingState.interval = setInterval(updateFastingUI, 1000);
     updateFastingUI();
-    const btn = document.getElementById('fastStartBtn');
-    document.getElementById('fastBtnIcon').innerHTML = '<rect x="5" y="5" width="10" height="10" rx="1.5"/>';
-    document.getElementById('fastBtnLabel').textContent = 'Arrêter';
-    btn.classList.add('stop');
-    const statusEl = document.getElementById('timerLabel');
-    statusEl.textContent = 'EN COURS'; statusEl.classList.add('active');
+
+    if (btn) btn.className = 'jn-btn-start running stop';
+    if (icon) icon.className = 'ri-stop-circle-fill';
+    if (label) label.textContent = 'Arrêter le jeûne';
+    if (statusEl) {
+      statusEl.textContent = '🔥 EN COURS';
+      statusEl.classList.add('active');
+    }
+
+    document.getElementById('jnFieldType')?.classList.add('locked');
+    document.getElementById('jnFieldDuration')?.classList.add('locked');
+    if (lockBadge) lockBadge.style.display = 'inline-flex';
+  } else {
+    if (btn) btn.className = 'jn-btn-start idle';
+    if (icon) icon.className = 'ri-play-fill';
+    if (label) label.textContent = 'Démarrer le jeûne';
+    if (statusEl) {
+      statusEl.textContent = 'PRÊT';
+      statusEl.classList.remove('active');
+    }
+    document.getElementById('jnFieldType')?.classList.remove('locked');
+    document.getElementById('jnFieldDuration')?.classList.remove('locked');
+    if (lockBadge) lockBadge.style.display = 'none';
   }
 }
 function renderFastingHistory() {
@@ -2740,16 +4788,116 @@ function renderFastingAnalytics() {
   document.getElementById('analyticCompletion').textContent = history.length ? `${Math.round(completed / history.length * 100)}%` : '0%';
 }
 
-// ═══════ BREATHING ═══════
+// ═══════ BREATHING & WIM HOF ENGINE ═══════
 const breathModes = {
-  wimhof: { name: 'Wim Hof', inhale: 2, exhale: 2, hold: 0, breaths: 30, retentionAfter: true },
+  wimhof: { name: 'Wim Hof (Alcalinisant)', inhale: 2, exhale: 2, hold: 0, breaths: 30, retentionAfter: true },
   relax: { name: 'Relaxation (1:2)', inhale: 4, exhale: 8, hold: 0, breaths: 10, retentionAfter: false },
-  box: { name: 'Box Breathing', inhale: 4, exhale: 4, hold: 4, breaths: 8, retentionAfter: false },
+  box: { name: 'Box Breathing (Focus)', inhale: 4, exhale: 4, hold: 4, breaths: 8, retentionAfter: false },
+  sleep: { name: '4-7-8 Sommeil Profond', inhale: 4, exhale: 8, hold: 7, breaths: 6, retentionAfter: false },
 };
+
+window.switchBreathingTab = function(tabName) {
+  const btnTimer = document.getElementById('tabBtnBreathingTimer');
+  const btnVideos = document.getElementById('tabBtnBreathingVideos');
+  const btnGuide = document.getElementById('tabBtnBreathingGuide');
+
+  const paneTimer = document.getElementById('breathingTabTimer');
+  const paneVideos = document.getElementById('breathingTabVideos');
+  const paneGuide = document.getElementById('breathingTabGuide');
+
+  if (btnTimer) btnTimer.classList.toggle('active', tabName === 'timer');
+  if (btnVideos) btnVideos.classList.toggle('active', tabName === 'videos');
+  if (btnGuide) btnGuide.classList.toggle('active', tabName === 'guide');
+
+  if (paneTimer) paneTimer.style.display = tabName === 'timer' ? 'block' : 'none';
+  if (paneVideos) paneVideos.style.display = tabName === 'videos' ? 'block' : 'none';
+  if (paneGuide) paneGuide.style.display = tabName === 'guide' ? 'block' : 'none';
+};
+
+const WIM_HOF_VIDEOS = {
+  '3-rounds': {
+    title: "Vidéo Guidée Officielle Wim Hof (3 Rounds)",
+    desc: "Pratiquez directement en rythme avec Wim Hof lui-même. Suivez les cloches et les indications vocales.",
+    src: "/videos/wim-hof-3-rounds.mp4",
+    poster: "/videos/posters/wim-hof-3-rounds.jpg"
+  },
+  'tutorial': {
+    title: "Tutoriel & Technique Pas-à-Pas",
+    desc: "Explications détaillées de la technique de respiration par Wim Hof : posture, volume pulmonaire, et rétention.",
+    src: "/videos/wim-hof-tutorial.mp4",
+    poster: "/videos/posters/wim-hof-tutorial.jpg"
+  },
+  'science': {
+    title: "La Science, l'Immunité & l'Étude Radboud",
+    desc: "Analyse médicale et scientifique de l'impact de l'hyperventilation contrôlée et du froid sur le système nerveux autonome.",
+    src: "/videos/wim-hof-science.mp4",
+    poster: "/videos/posters/wim-hof-science.jpg"
+  },
+  'tybOi4hjZFQ': {
+    title: "Vidéo Guidée Officielle Wim Hof (3 Rounds)",
+    desc: "Pratiquez directement en rythme avec Wim Hof lui-même. Suivez les cloches et les indications vocales.",
+    src: "/videos/wim-hof-3-rounds.mp4",
+    poster: "/videos/posters/wim-hof-3-rounds.jpg"
+  },
+  'nzCaZBQkeP8': {
+    title: "Tutoriel & Technique Pas-à-Pas",
+    desc: "Explications détaillées de la technique de respiration par Wim Hof : posture, volume pulmonaire, et rétention.",
+    src: "/videos/wim-hof-tutorial.mp4",
+    poster: "/videos/posters/wim-hof-tutorial.jpg"
+  },
+  'nzCaZQqAs9I': {
+    title: "Tutoriel & Technique Pas-à-Pas",
+    desc: "Explications détaillées de la technique de respiration par Wim Hof : posture, volume pulmonaire, et rétention.",
+    src: "/videos/wim-hof-tutorial.mp4",
+    poster: "/videos/posters/wim-hof-tutorial.jpg"
+  },
+  'D6EPuUdIC1E': {
+    title: "La Science, l'Immunité & l'Étude Radboud",
+    desc: "Analyse médicale et scientifique de l'impact de l'hyperventilation contrôlée et du froid sur le système nerveux autonome.",
+    src: "/videos/wim-hof-science.mp4",
+    poster: "/videos/posters/wim-hof-science.jpg"
+  }
+};
+
+window.loadBreathingVideo = function(videoKey, btnEl) {
+  const videoData = WIM_HOF_VIDEOS[videoKey] || WIM_HOF_VIDEOS['3-rounds'];
+  const videoPlayer = document.getElementById('wimHofVideoPlayer');
+  const sourceEl = document.getElementById('wimHofVideoSource');
+  const titleEl = document.getElementById('wimHofActiveTitle');
+  const descEl = document.getElementById('wimHofActiveDesc');
+
+  if (titleEl) {
+    titleEl.innerHTML = `<i class="ri-video-fill" style="color:var(--accent);"></i> ${videoData.title}`;
+  }
+  if (descEl) {
+    descEl.textContent = videoData.desc;
+  }
+
+  if (videoPlayer) {
+    const wasPlaying = !videoPlayer.paused;
+    if (sourceEl) {
+      sourceEl.src = videoData.src;
+    }
+    videoPlayer.src = videoData.src;
+    videoPlayer.poster = videoData.poster;
+    videoPlayer.load();
+    if (wasPlaying) {
+      videoPlayer.play().catch(() => {});
+    }
+  }
+
+  if (btnEl && btnEl.parentElement) {
+    btnEl.parentElement.querySelectorAll('.preset-pill').forEach(b => b.classList.remove('active'));
+    btnEl.classList.add('active');
+  }
+};
+
 window.setBreathMode = function(mode) { 
   currentBreathMode = mode; 
   document.querySelectorAll('.breath-mode').forEach(b => b.classList.toggle('active', b.dataset.mode === mode)); 
-  document.getElementById('breathInfo').innerHTML = `<p>${breathModes[mode].name} — ${breathModes[mode].breaths} respirations/tour</p>`; 
+  const desc = breathModes[mode] ? `${breathModes[mode].name} — ${breathModes[mode].breaths} respirations/tour` : '';
+  const info = document.getElementById('breathInfo');
+  if (info) info.innerHTML = `<p>${desc}</p>`; 
 };
 
 window.setBreathRounds = function(n) {
@@ -2773,57 +4921,175 @@ window.adjustBreathRounds = function(delta) {
   window.setBreathRounds(current + delta);
 };
 
+let _retentionResolve = null;
+window.triggerRecoveryBreath = function() {
+  if (_retentionResolve) {
+    _retentionResolve();
+    _retentionResolve = null;
+  }
+};
+
 window.startBreathing = async function() {
-  if (breathingActive) { breathingActive = false; resetBreathUI(); return; }
+  if (breathingActive) { 
+    breathingActive = false; 
+    if (_retentionResolve) { _retentionResolve(); _retentionResolve = null; }
+    resetBreathUI(); 
+    return; 
+  }
   breathingActive = true;
-  const btn = document.getElementById('breathStartBtn'); btn.innerHTML = '<i class="ri-stop-fill"></i> Arrêter'; btn.classList.add('danger');
-  const mode = breathModes[currentBreathMode];
-  const rounds = parseInt(document.getElementById('breathRounds').value) || 3;
-  const circle = document.getElementById('breathCircle'), text = document.getElementById('breathText'), info = document.getElementById('breathInfo');
+  const btn = document.getElementById('breathStartBtn'); 
+  if (btn) { btn.innerHTML = '<i class="ri-stop-fill"></i> Arrêter la session'; btn.classList.add('danger'); }
+  
+  const mode = breathModes[currentBreathMode] || breathModes.wimhof;
+  const rounds = parseInt(document.getElementById('breathRounds')?.value) || 3;
+  const circle = document.getElementById('breathCircle');
+  const text = document.getElementById('breathText');
+  const subText = document.getElementById('breathSubText');
+  const info = document.getElementById('breathInfo');
+  const retAction = document.getElementById('breathRetentionAction');
+  
   const startTime = Date.now();
+  const sessionRetentions = [];
+
   try {
     for (let r = 1; r <= rounds && breathingActive; r++) {
-      info.innerHTML = `<p>Tour ${r}/${rounds}</p>`;
+      if (info) info.innerHTML = `<p style="color:var(--accent); font-weight:700;">Tour ${r} sur ${rounds}</p>`;
+      
+      // Phase 1: Guided Breaths
       for (let b = 1; b <= mode.breaths && breathingActive; b++) {
-        circle.className = 'breath-circle inhale'; text.textContent = `Inspirez (${b}/${mode.breaths})`; await sleep(mode.inhale * 1000); if (!breathingActive) break;
-        if (mode.hold > 0) { circle.className = 'breath-circle hold'; text.textContent = 'Retenez'; await sleep(mode.hold * 1000); if (!breathingActive) break; }
-        circle.className = 'breath-circle exhale'; text.textContent = 'Expirez'; await sleep(mode.exhale * 1000); if (!breathingActive) break;
-        if (mode.hold > 0) { circle.className = 'breath-circle hold'; text.textContent = 'Retenez'; await sleep(mode.hold * 1000); }
+        if (circle) circle.className = 'breath-circle inhale'; 
+        if (text) text.textContent = `${b}`;
+        if (subText) subText.textContent = `Inspirez à fond (${b}/${mode.breaths})`;
+        await sleep(mode.inhale * 1000); 
+        if (!breathingActive) break;
+
+        if (mode.hold > 0) { 
+          if (circle) circle.className = 'breath-circle hold'; 
+          if (subText) subText.textContent = 'Bloquez'; 
+          await sleep(mode.hold * 1000); 
+          if (!breathingActive) break; 
+        }
+
+        if (circle) circle.className = 'breath-circle exhale'; 
+        if (subText) subText.textContent = 'Relâchez le souffle'; 
+        await sleep(mode.exhale * 1000); 
+        if (!breathingActive) break;
       }
+
+      // Phase 2: Retention on empty lungs (Wim Hof)
       if (mode.retentionAfter && breathingActive) {
-        circle.className = 'breath-circle hold'; info.innerHTML = `<p>Tour ${r}/${rounds} — Rétention !</p>`;
-        for (let s = 30; s > 0 && breathingActive; s--) { text.textContent = `RÉTENTION ${s}s`; await sleep(1000); }
-        if (breathingActive) { circle.className = 'breath-circle inhale'; text.textContent = 'RÉCUPÉRATION'; await sleep(15000); }
+        if (circle) circle.className = 'breath-circle hold'; 
+        if (subText) subText.textContent = 'Poumons vides · Retenez';
+        if (retAction) retAction.style.display = 'block';
+        if (info) info.innerHTML = `<p style="color:#38bdf8;">Tour ${r}/${rounds} — Rétention Poumons Vides</p>`;
+        
+        let retentionSec = 0;
+        let isHolding = true;
+
+        const retentionPromise = new Promise(resolve => {
+          _retentionResolve = resolve;
+        });
+
+        const timerPromise = (async () => {
+          while (isHolding && breathingActive && retentionSec < 360) {
+            retentionSec++;
+            const m = Math.floor(retentionSec / 60);
+            const s = (retentionSec % 60).toString().padStart(2, '0');
+            if (text) text.textContent = `${m}:${s}`;
+            await sleep(1000);
+          }
+        })();
+
+        await Promise.race([retentionPromise, timerPromise]);
+        isHolding = false;
+        _retentionResolve = null;
+        if (retAction) retAction.style.display = 'none';
+        sessionRetentions.push(retentionSec);
+
+        // Phase 3: Recovery Breath (15 seconds)
+        if (breathingActive) {
+          if (circle) circle.className = 'breath-circle inhale'; 
+          if (subText) subText.textContent = 'Inspirez à fond & Bloquez (15s)';
+          if (info) info.innerHTML = `<p style="color:#10b981;">Tour ${r}/${rounds} — Récupération (15s)</p>`;
+          
+          for (let s = 15; s > 0 && breathingActive; s--) {
+            if (text) text.textContent = `${s}s`;
+            await sleep(1000);
+          }
+        }
       }
     }
-  } catch {}
+  } catch (e) {
+    console.error('Breathing session error:', e);
+  }
+
   // Save session
   const elapsed = Date.now() - startTime;
   const bh = store.get('breathing-history', []);
-  bh.unshift({ mode: currentBreathMode, rounds, elapsed, timestamp: Date.now() });
+  bh.unshift({ 
+    mode: currentBreathMode, 
+    rounds, 
+    elapsed, 
+    retentions: sessionRetentions,
+    timestamp: Date.now() 
+  });
   store.set('breathing-history', bh.slice(0, 30));
-  resetBreathUI(); renderBreathingHistory(); renderDashboard();
+  resetBreathUI(); 
+  renderBreathingHistory(); 
+  renderDashboard();
+  if (breathingActive === false) {
+    showToast('✨ Félicitations pour votre session de respiration !', 'success');
+  }
 };
 
 function resetBreathUI() {
   breathingActive = false;
-  document.getElementById('breathCircle').className = 'breath-circle';
-  document.getElementById('breathText').textContent = 'Prêt';
-  const btn = document.getElementById('breathStartBtn'); btn.innerHTML = '<i class="ri-play-fill"></i> Démarrer'; btn.classList.remove('danger');
-  document.getElementById('breathInfo').innerHTML = '<p>Session terminée ✨</p>';
+  const circle = document.getElementById('breathCircle');
+  const text = document.getElementById('breathText');
+  const subText = document.getElementById('breathSubText');
+  const retAction = document.getElementById('breathRetentionAction');
+  const btn = document.getElementById('breathStartBtn');
+  const info = document.getElementById('breathInfo');
+
+  if (circle) circle.className = 'breath-circle';
+  if (text) text.textContent = 'Prêt';
+  if (subText) subText.textContent = 'Appuyez sur Démarrer';
+  if (retAction) retAction.style.display = 'none';
+  if (btn) { btn.innerHTML = '<i class="ri-play-fill"></i> Démarrer la session'; btn.classList.remove('danger'); }
+  if (info) info.innerHTML = '<p>Session prête ✨</p>';
 }
 
 function renderBreathingHistory() {
-  const el = document.getElementById('breathHistory'); if (!el) return;
+  const el = document.getElementById('breathHistory'); 
+  if (!el) return;
   const bh = store.get('breathing-history', []);
-  if (bh.length === 0) { el.innerHTML = '<p class="empty-state-sm">Aucune session enregistrée.</p>'; return; }
+  if (bh.length === 0) { 
+    el.innerHTML = '<p class="empty-state-sm">Aucune session enregistrée.</p>'; 
+    return; 
+  }
+  
   el.innerHTML = bh.slice(0, 8).map(s => {
     const d = new Date(s.timestamp).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' });
-    const mn = { wimhof: '❄️ Wim Hof', relax: '🧘 Relaxation', box: '📦 Box' };
-    const dur = Math.round(s.elapsed / 60000);
-    return `<div class="history-item"><span>${mn[s.mode] || s.mode} · ${s.rounds} tours</span><span>${dur}min · ${d}</span></div>`;
+    const mn = { wimhof: '❄️ Wim Hof', relax: '🧘 Relaxation', box: '📦 Box Breathing', sleep: '🌙 4-7-8 Sommeil' };
+    const dur = Math.round(s.elapsed / 60000) || 1;
+    let retentionsBadge = '';
+    if (Array.isArray(s.retentions) && s.retentions.length > 0) {
+      retentionsBadge = `<div style="font-size:0.78rem; color:var(--accent); margin-top:4px; display:flex; gap:6px; flex-wrap:wrap;">
+        ${s.retentions.map((sec, idx) => `<span style="background:rgba(55,211,153,0.1); border:1px solid rgba(55,211,153,0.25); border-radius:6px; padding:2px 6px;">T${idx+1}: <strong>${Math.floor(sec/60)}m${(sec%60).toString().padStart(2, '0')}s</strong></span>`).join('')}
+      </div>`;
+    }
+    return `
+      <div class="history-item" style="flex-direction:column; align-items:flex-start; gap:4px; padding:10px 14px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:10px; margin-bottom:8px;">
+        <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+          <strong style="color:var(--text); font-size:0.9rem;">${mn[s.mode] || s.mode} · ${s.rounds} tour${s.rounds > 1 ? 's' : ''}</strong>
+          <span style="font-size:0.8rem; color:var(--text-dim);">${dur} min · ${d}</span>
+        </div>
+        ${retentionsBadge}
+      </div>
+    `;
   }).join('');
 }
+window.renderBreathingHistory = renderBreathingHistory;
 
 // ═══════ SMART INSIGHT ═══════
 function initSmartInsight() {
@@ -2849,7 +5115,7 @@ function initSmartInsight() {
   }
 }
 
-// ═══════ SCANNER ═══════
+// ═══════ SCANNER IA ═══════
 window.handleScanUpload = function(event) {
   const file = event.target.files[0];
   if (!file) return;
@@ -2858,17 +5124,43 @@ window.handleScanUpload = function(event) {
   reader.onload = async function(e) {
     const base64Url = e.target.result;
     
-    // Show preview
-    document.getElementById('scanPreviewContainer').style.display = 'block';
-    document.getElementById('scanPreview').src = base64Url;
-    document.getElementById('scanResult').style.display = 'none';
-    document.getElementById('scanLoading').style.display = 'block';
+    // Show preview & activate laser scan animation
+    const previewContainer = document.getElementById('scanPreviewContainer');
+    const promptZone = document.getElementById('scanPromptZone');
+    const imageWrapper = document.getElementById('scanImageWrapper');
+    const scanPreview = document.getElementById('scanPreview');
+    const scanResult = document.getElementById('scanResult');
+    const scanLoading = document.getElementById('scanLoading');
+    const loadingStatus = document.getElementById('scanLoadingStatus');
+
+    if (previewContainer) previewContainer.style.display = 'block';
+    if (promptZone) promptZone.style.display = 'none';
+    if (scanPreview) scanPreview.src = base64Url;
+    if (imageWrapper) imageWrapper.classList.add('scanning');
+    if (scanResult) scanResult.style.display = 'none';
+    if (scanLoading) scanLoading.style.display = 'block';
+
+    // Cycle through descriptive status steps while waiting
+    const statusSteps = [
+      '🔍 Détection des ingrédients et classification NOVA...',
+      '⚖️ Calcul de l\'indice PRAL et équilibre acido-basique...',
+      '🌊 Évaluation de l\'impact lymphatique et filtration rénale...',
+      '⚡ Génération du protocole d\'électrisation et substituts vivants...'
+    ];
+    let stepIdx = 0;
+    const statusInterval = setInterval(() => {
+      stepIdx = (stepIdx + 1) % statusSteps.length;
+      if (loadingStatus) loadingStatus.textContent = statusSteps[stepIdx];
+    }, 1800);
     
     // Extract base64 without prefix
     const base64Data = base64Url.split(',')[1];
     
     try {
-      const query = "Analyse cet aliment. De quoi s'agit-il ? Est-il électrique, hybride ou mucogène (selon le Dr. Sebi/Ehret) ? Quel est son PRAL approximatif ? Réponds de manière concise, structurée avec des emojis.";
+      const query = `Analyse cette photo de repas/aliment avec une rigueur absolue.
+Identifie clairement les ingrédients visibles, leur statut vitaliste (Dr. Sebi / Arnold Ehret : mucogène, hybride ou électrique), l'indice PRAL estimé (+/- mEq/100g), l'impact sur la lymphe et les reins, et propose des substituts vivants pour électriser le plat.
+Inclus un bloc json avec "actionMeal" (avec nom, catégorie, emoji, items, note) et "suggestFoods" (tableau des 5 ingrédients vivants recommandés).`;
+      
       const profile = store.get('profile', { name: '', goal: 'detox', protocol: 'vitalist' });
       
       const resp = await fetch(`${API_BASE}/api/chat`, {
@@ -2887,34 +5179,413 @@ window.handleScanUpload = function(event) {
         }),
       });
       
-      document.getElementById('scanLoading').style.display = 'none';
+      clearInterval(statusInterval);
+      if (imageWrapper) imageWrapper.classList.remove('scanning');
+      if (scanLoading) scanLoading.style.display = 'none';
       
       if (!resp.ok) {
-        throw new Error(`Erreur ${resp.status}`);
+        throw new Error(`Erreur serveur (${resp.status})`);
       }
       
       const data = await resp.json();
       const aiText = data.text || 'Aucune réponse.';
       
-      document.getElementById('scanResult').style.display = 'block';
-      document.getElementById('scanResult').innerHTML = `
-        <h3 style="font-family:var(--font);margin-bottom:12px;color:var(--accent)"><i class="ri-sparkling-fill"></i> Résultat de l'analyse</h3>
-        <div style="line-height:1.6;font-size:0.95rem">${renderMarkdown(aiText)}</div>
-      `;
+      renderScanResult(aiText);
       
     } catch (err) {
-      document.getElementById('scanLoading').style.display = 'none';
-      document.getElementById('scanResult').style.display = 'block';
-      document.getElementById('scanResult').innerHTML = `<p style="color:var(--danger)">❌ Erreur lors de l'analyse : ${err.message}</p>`;
+      clearInterval(statusInterval);
+      if (imageWrapper) imageWrapper.classList.remove('scanning');
+      if (scanLoading) scanLoading.style.display = 'none';
+      if (scanResult) {
+        scanResult.style.display = 'block';
+        scanResult.innerHTML = `
+          <div class="scan-card glass" style="border-left:4px solid var(--danger);padding:24px">
+            <h4 style="color:var(--danger);display:flex;align-items:center;gap:8px;margin-bottom:8px">
+              <i class="ri-error-warning-line"></i> Erreur lors de l'analyse visuelle
+            </h4>
+            <p style="color:var(--text-dim);font-size:0.9rem">${esc(err.message)}</p>
+            <button class="btn-primary" onclick="document.getElementById('scanUpload').click()" style="margin-top:14px">
+              <i class="ri-refresh-line"></i> Réessayer avec une autre photo
+            </button>
+          </div>
+        `;
+      }
     }
   };
   reader.readAsDataURL(file);
+};
+
+function formatChemicals(str) {
+  if (!str) return '';
+  return str
+    .replace(/\$H_?2SO_?4\$/gi, 'H₂SO₄')
+    .replace(/\$H_?3PO_?4\$/gi, 'H₃PO₄')
+    .replace(/\$H_?2O\$/gi, 'H₂O')
+    .replace(/\$CO_?2\$/gi, 'CO₂')
+    .replace(/\$([A-Za-z0-9_]+)\$/g, '$1');
+}
+
+function renderScanResult(aiText) {
+  const container = document.getElementById('scanResult');
+  if (!container) return;
+
+  // 1. Extract JSON block if present
+  let actionMealData = null;
+  let suggestedFoods = [];
+  const jsonMatch = aiText.match(/```json([\s\S]*?)```/);
+  if (jsonMatch) {
+    try {
+      const parsed = JSON.parse(jsonMatch[1].trim());
+      if (parsed.actionMeal) actionMealData = parsed.actionMeal;
+      if (parsed.suggestFoods && Array.isArray(parsed.suggestFoods)) suggestedFoods = parsed.suggestFoods;
+    } catch (e) {
+      console.warn('JSON parsing error in scan result:', e);
+    }
+  }
+
+  // Remove JSON block from text for analysis
+  let text = aiText.replace(/```json[\s\S]*?```/g, '').trim();
+  text = formatChemicals(text);
+
+  // 2. Extract Dish Name & Overview Summary
+  let dishName = 'Plat / Assortiment Détecté';
+  let dishDesc = '';
+  let overallStatus = 'mucus';
+  let statusBadgeLabel = 'Fortement Mucogène & Acidifiant';
+  let statusBadgeClass = 'badge-mucus-danger';
+  let statusBadgeIcon = 'ri-error-warning-fill';
+
+  const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+  let summaryParagraphs = [];
+
+  let idx = 0;
+  while (idx < lines.length && !lines[idx].startsWith('---') && !lines[idx].match(/^[1-3]\./) && !lines[idx].match(/statut vitaliste/i)) {
+    const line = lines[idx];
+    if (line.includes('**')) {
+      const bMatch = line.match(/\*\*(.*?)\*\*/);
+      if (bMatch && bMatch[1].length > 3 && !bMatch[1].toLowerCase().includes('scan') && !bMatch[1].toLowerCase().includes('statut')) {
+        dishName = bMatch[1].replace(/^./, c => c.toUpperCase());
+      }
+    }
+    if (!line.startsWith('🍃') && !line.startsWith('📸') && !line.startsWith('Scan') && !line.startsWith('###')) {
+      summaryParagraphs.push(line);
+    }
+    idx++;
+  }
+
+  dishDesc = summaryParagraphs.join(' ')
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/Il s'agit d'un assortiment de /i, 'Assortiment de ')
+    .replace(/Il s'agit de /i, '')
+    .trim();
+
+  if (!dishDesc && lines.length > 0) {
+    dishDesc = lines[0].replace(/^[^\w]+/, '');
+  }
+
+  // Detect overall vitality status
+  const lowerText = text.toLowerCase();
+  if (lowerText.includes('hautement mucogène') || lowerText.includes('fortement mucogène') || lowerText.includes('très acidifiant') || lowerText.includes('colle digestive') || lowerText.includes('acide sulfurique')) {
+    overallStatus = 'mucus';
+    statusBadgeLabel = '⛔ Fortement Mucogène & Acidifiant';
+    statusBadgeClass = 'badge-mucus-danger';
+    statusBadgeIcon = 'ri-close-circle-fill';
+  } else if (lowerText.includes('100% électrique') || lowerText.includes('aliment électrique') || lowerText.includes('fortement alcalinisant')) {
+    overallStatus = 'electric';
+    statusBadgeLabel = '⚡ 100% Électrique & Alcalinisant';
+    statusBadgeClass = 'badge-electric-success';
+    statusBadgeIcon = 'ri-flashlight-fill';
+  } else if (lowerText.includes('hybride') || lowerText.includes('toléré')) {
+    overallStatus = 'hybrid';
+    statusBadgeLabel = '🔀 Hybride / Toléré en transition';
+    statusBadgeClass = 'badge-hybrid-warning';
+    statusBadgeIcon = 'ri-shuffle-fill';
+  }
+
+  // 3. Extract Section 1: Statut Vitaliste
+  let sebiItems = [];
+  const sebiSectionMatch = text.match(/(?:1\.\s*🔍?\s*Statut Vitaliste[\s\S]*?)(?=---|\n2\.|$)/i);
+  if (sebiSectionMatch) {
+    const sLines = sebiSectionMatch[0].split('\n').map(l => l.trim()).filter(Boolean);
+    let currentGroup = 'mucus';
+    for (const sLine of sLines) {
+      if (sLine.match(/1\.\s*🔍?\s*Statut Vitaliste/i)) continue;
+      if (sLine.includes('Mucogène') || sLine.includes('Acidifiant') || sLine.includes('🔴')) {
+        currentGroup = 'mucus';
+      } else if (sLine.includes('Végétaux') || sLine.includes('Neutres') || sLine.includes('🟡') || sLine.includes('Hybrides')) {
+        currentGroup = 'neutral';
+      } else if (sLine.includes('Électrique') || sLine.includes('Vivant') || sLine.includes('🟢')) {
+        currentGroup = 'electric';
+      }
+
+      if (sLine.startsWith('*') || sLine.startsWith('-') || sLine.startsWith('•')) {
+        const cleanL = sLine.replace(/^[\*\-\•]\s*/, '').trim();
+        if (cleanL.length > 5 && !cleanL.includes('🔴') && !cleanL.includes('🟡') && !cleanL.includes('🟢')) {
+          let name = '';
+          let details = cleanL;
+          if (cleanL.includes(' : ') || cleanL.includes(':')) {
+            const parts = cleanL.split(/ : |:/);
+            name = parts[0].replace(/\*\*/g, '').trim();
+            details = parts.slice(1).join(': ').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').trim();
+          } else {
+            name = cleanL.replace(/\*\*(.*?)\*\*/g, '$1');
+            details = '';
+          }
+          sebiItems.push({ group: currentGroup, name, details });
+        }
+      }
+    }
+  }
+
+  // 4. Extract Section 2: Indice PRAL Estimé
+  let pralGlobal = '+15 à +25 mEq/100g (Acidifiant)';
+  let pralNumeric = 18;
+  let pralDetails = [];
+  const pralSectionMatch = text.match(/(?:2\.\s*⚖️?\s*Indice PRAL[\s\S]*?)(?=---|\n3\.|$)/i);
+  if (pralSectionMatch) {
+    const pLines = pralSectionMatch[0].split('\n').map(l => l.trim()).filter(Boolean);
+    for (const pLine of pLines) {
+      if (pLine.match(/2\.\s*⚖️?\s*Indice PRAL/i)) continue;
+      if (pLine.includes('PRAL Global') || pLine.includes('Global :')) {
+        pralGlobal = pLine.replace(/^[\*\-\•]\s*/, '').replace(/PRAL Global\s*:\s*/i, '').replace(/\*\*/g, '').trim();
+        const numMatch = pralGlobal.match(/([+\-]?\d+(?:\.\d+)?)/);
+        if (numMatch) pralNumeric = parseFloat(numMatch[1]);
+      } else if (pLine.includes('mEq') || pLine.includes(':')) {
+        pralDetails.push(pLine.replace(/^[\*\-\•]\s*/, '').replace(/\*/g, '').trim());
+      }
+    }
+  }
+
+  const clampedPral = Math.max(-30, Math.min(30, pralNumeric));
+  const pralPercent = Math.round(((clampedPral + 30) / 60) * 100);
+
+  // 5. Extract Section 3: Impact Émonctoriel & Lymphatique
+  let lymphImpact = 'Congestion des liquides interstitiels par excès de graisses saturées et protéines animales.';
+  let kidneysImpact = 'Sollicitation intense des reins pour neutraliser et filtrer l\'acide urique, urates et phosphates.';
+  const emunctoryMatch = text.match(/(?:3\.\s*🌊?\s*Impact Émonctoriel[\s\S]*?)(?=---|💡|\n4\.|$)/i);
+  if (emunctoryMatch) {
+    const eLines = emunctoryMatch[0].split('\n').map(l => l.trim()).filter(Boolean);
+    for (const eLine of eLines) {
+      if (eLine.match(/3\.\s*🌊?\s*Impact/i)) continue;
+      if (eLine.toLowerCase().includes('lymphe')) {
+        lymphImpact = eLine.replace(/^[\*\-\•]\s*/, '').replace(/Lymphe\s*:\s*/i, '').replace(/\*\*/g, '').trim();
+      } else if (eLine.toLowerCase().includes('rein') || eLine.toLowerCase().includes('digestif') || eLine.toLowerCase().includes('foie')) {
+        kidneysImpact = eLine.replace(/^[\*\-\•]\s*/, '').replace(/Reins?\s*:\s*/i, '').replace(/\*\*/g, '').trim();
+      }
+    }
+  }
+
+  // 6. Extract Section 4: Protocole d'Électrisation & Substitutions
+  let electrifyText = "Remplacez le pain blanc par des <strong>tranches de concombre cru</strong> ou des <strong>crackers de graines de lin déshydratées</strong>, et substituez la charcuterie par du <strong>guacamole frais</strong>, des <strong>bâtonnets de légumes croquants</strong> et des <strong>micro-pousses vivantes</strong>.";
+  const electrifyMatch = text.match(/(?:💡|4\.)[\s\S]*?(?:Pour "Électriser"|Électriser|Substitutions)[\s\S]*?(?=```json|$)/i);
+  if (electrifyMatch) {
+    const cleanElec = electrifyMatch[0]
+      .replace(/^[\s\S]*?(?:Pour "Électriser"[^:\n]*:?|Substitutions[^:\n]*:?)/i, '')
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g, '$1')
+      .trim();
+    if (cleanElec.length > 10) electrifyText = cleanElec;
+  }
+
+  // Build Sebi Items HTML
+  let sebiItemsHtml = '';
+  if (sebiItems.length > 0) {
+    sebiItemsHtml = sebiItems.map(item => {
+      let icon = '🔴';
+      if (item.group === 'neutral') icon = '🟡';
+      if (item.group === 'electric') icon = '🟢';
+      return `
+        <div class="scan-item-row">
+          <span class="scan-item-bullet">${icon}</span>
+          <div>
+            <div class="scan-item-name">${esc(item.name)}</div>
+            ${item.details ? `<div class="scan-item-details">${item.details}</div>` : ''}
+          </div>
+        </div>
+      `;
+    }).join('');
+  } else {
+    sebiItemsHtml = `
+      <div class="scan-item-row">
+        <span class="scan-item-bullet">🔴</span>
+        <div>
+          <div class="scan-item-name">Charge mucogène et acidifiante identifiée</div>
+          <div class="scan-item-details">Présence d'amidons transformés, graisses saturées ou protéines génératrices de colles intestinales.</div>
+        </div>
+      </div>
+    `;
+  }
+
+  // Build PRAL details HTML
+  const pralDetailsHtml = pralDetails.map(pd => {
+    return `<div style="font-size:0.82rem;color:var(--text-dim);margin-top:6px;display:flex;align-items:center;gap:6px">
+      <i class="ri-arrow-right-s-line" style="color:var(--accent)"></i> ${esc(pd)}
+    </div>`;
+  }).join('');
+
+  // Build Suggest Foods chips HTML
+  let suggestChipsHtml = '';
+  if (suggestedFoods && suggestedFoods.length > 0) {
+    const chips = suggestedFoods.map(f => 
+      `<button class="food-chip" onclick="addSuggestedFood(this, '${esc(f)}')" style="display:inline-flex;align-items:center;gap:6px;padding:6px 14px;margin:4px;border-radius:20px;border:1px solid var(--accent);background:rgba(55,211,153,0.08);color:var(--text);cursor:pointer;font-size:0.84rem;font-weight:600;transition:all 0.2s">
+        <i class="ri-add-circle-line" style="color:var(--accent)"></i> ${esc(f)}
+      </button>`
+    ).join('');
+    suggestChipsHtml = `
+      <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border)">
+        <div style="font-size:0.85rem;color:var(--text-dim);margin-bottom:8px;font-weight:600">
+          <i class="ri-leaf-line" style="color:var(--accent)"></i> Ingrédients vivants suggérés à ajouter :
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px">${chips}</div>
+      </div>
+    `;
+  }
+
+  // Generate action meal payload
+  let actionMealBtnHtml = '';
+  if (actionMealData) {
+    const encodedMeal = btoa(unescape(encodeURIComponent(JSON.stringify(actionMealData))));
+    actionMealBtnHtml = `
+      <button class="scan-btn-primary" onclick="handleAddActionMeal('${encodedMeal}')">
+        <i class="ri-restaurant-line"></i> Enregistrer ce repas dans mon journal
+      </button>
+    `;
+  } else {
+    const fallbackMeal = {
+      name: dishName,
+      category: 'lunch',
+      emoji: overallStatus === 'electric' ? '🥗' : overallStatus === 'hybrid' ? '🍲' : '🍕',
+      items: [dishName],
+      note: `Scanné via Vision IA (${statusBadgeLabel})`
+    };
+    const encodedMeal = btoa(unescape(encodeURIComponent(JSON.stringify(fallbackMeal))));
+    actionMealBtnHtml = `
+      <button class="scan-btn-primary" onclick="handleAddActionMeal('${encodedMeal}')">
+        <i class="ri-restaurant-line"></i> Enregistrer ce repas dans mon journal
+      </button>
+    `;
+  }
+
+  container.innerHTML = `
+    <!-- Hero Dish Overview -->
+    <div class="scan-dish-hero glass">
+      <div class="scan-dish-top">
+        <div class="scan-dish-title">
+          <span style="font-size:1.6rem">${overallStatus === 'electric' ? '🥗' : overallStatus === 'hybrid' ? '🍲' : '🍕'}</span>
+          <span>${esc(dishName)}</span>
+        </div>
+        <div class="scan-vital-badge ${statusBadgeClass}">
+          <i class="${statusBadgeIcon}"></i>
+          <span>${esc(statusBadgeLabel)}</span>
+        </div>
+      </div>
+      <div class="scan-dish-desc">${dishDesc}</div>
+    </div>
+
+    <!-- Diagnostic Sections Grid -->
+    <div class="scan-grid-sections">
+      
+      <!-- Card 1: Statut Vitaliste -->
+      <div class="scan-card glass">
+        <div class="scan-card-header">
+          <div class="scan-card-icon"><i class="ri-microscope-line"></i></div>
+          <div class="scan-card-title">1. Statut Vitaliste & Mucus (Dr. Sebi / Ehret)</div>
+        </div>
+        <div class="scan-items-list">
+          ${sebiItemsHtml}
+        </div>
+      </div>
+
+      <!-- Card 2: Indice PRAL -->
+      <div class="scan-card glass">
+        <div class="scan-card-header">
+          <div class="scan-card-icon"><i class="ri-scales-3-line"></i></div>
+          <div class="scan-card-title">2. Indice PRAL & Équilibre Acido-Basique</div>
+        </div>
+        <div class="scan-pral-meter">
+          <div class="scan-pral-header">
+            <span style="font-size:0.85rem;color:var(--text-dim);font-weight:600">Charge Rénale Estimée</span>
+            <span class="scan-pral-val ${pralNumeric > 5 ? 'val-acid' : pralNumeric < -2 ? 'val-alkaline' : 'val-neutral'}">
+              ${esc(pralGlobal)}
+            </span>
+          </div>
+          <div class="scan-pral-track">
+            <div class="scan-pral-pointer" style="left: ${pralPercent}%"></div>
+          </div>
+          <div class="scan-pral-labels">
+            <span>🟢 Alcalinisant (-30)</span>
+            <span>🟡 Neutre (0)</span>
+            <span>🔴 Acidifiant (+30)</span>
+          </div>
+        </div>
+        ${pralDetailsHtml ? `<div style="margin-top:8px">${pralDetailsHtml}</div>` : ''}
+      </div>
+
+      <!-- Card 3: Impact Émonctoriel -->
+      <div class="scan-card glass">
+        <div class="scan-card-header">
+          <div class="scan-card-icon"><i class="ri-drop-line"></i></div>
+          <div class="scan-card-title">3. Impact Émonctoriel & Lymphatique (Morse)</div>
+        </div>
+        <div class="scan-emunctory-grid">
+          <div class="scan-emunctory-tile">
+            <div class="scan-emunctory-name" style="color:#60a5fa"><i class="ri-water-flash-line"></i> Lymphe & Fluides</div>
+            <div class="scan-emunctory-text">${esc(lymphImpact)}</div>
+          </div>
+          <div class="scan-emunctory-tile">
+            <div class="scan-emunctory-name" style="color:#f59e0b"><i class="ri-filter-3-line"></i> Reins & Filtration</div>
+            <div class="scan-emunctory-text">${esc(kidneysImpact)}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4: Protocole d'Électrisation -->
+      <div class="scan-card glass scan-electrify-card">
+        <div class="scan-card-header">
+          <div class="scan-card-icon" style="background:rgba(245,158,11,0.2);color:#fbbf24"><i class="ri-flashlight-line"></i></div>
+          <div class="scan-card-title" style="color:#fbbf24">💡 Comment "Électriser" ce repas</div>
+        </div>
+        <div class="scan-electrify-text">
+          ${electrifyText}
+        </div>
+        ${suggestChipsHtml}
+      </div>
+
+    </div>
+
+    <!-- Actions Row -->
+    <div class="scan-actions-row">
+      ${actionMealBtnHtml}
+      <button class="scan-btn-secondary" onclick="askAIAboutScannedDish('${esc(dishName.replace(/'/g, "\\'"))}')">
+        <i class="ri-chat-smile-3-fill" style="color:var(--accent)"></i> Discuter de ce plat avec l'IA
+      </button>
+      <button class="scan-btn-secondary" onclick="document.getElementById('scanUpload').click()" style="flex:0 1 auto;min-width:140px">
+        <i class="ri-camera-lens-line"></i> Nouveau scan
+      </button>
+    </div>
+  `;
+
+  container.style.display = 'flex';
+  container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+window.renderScanResult = renderScanResult;
+
+window.askAIAboutScannedDish = function(dishName) {
+  showPage('chat');
+  const chatInput = document.getElementById('chatInput');
+  if (chatInput) {
+    chatInput.value = `J'ai scanné mon plat "${dishName}". Peux-tu m'expliquer en détail comment compenser ses effets mucogènes et acidifiants avec des tisanes drainantes et une transition alimentaire adaptée ?`;
+    chatInput.focus();
+  }
 };
 
 // ═══════ UTILS ═══════
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 function esc(t) { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
 function renderMarkdown(text) {
+  if (!text) return '';
+  text = formatChemicals(text);
+
   // Extract and replace JSON blocks with interactive UI cards
   text = text.replace(/```json[\s\S]*?```/g, match => {
     try {
@@ -2926,17 +5597,19 @@ function renderMarkdown(text) {
       if (obj.actionMeal) {
         const meal = obj.actionMeal;
         const encodedMeal = btoa(unescape(encodeURIComponent(JSON.stringify(meal))));
-        const itemsText = Array.isArray(meal.items) ? meal.items.join(', ') : (meal.items || meal.name);
+        const rawItems = Array.isArray(meal.items) ? meal.items : (Array.isArray(meal.ingredients) ? meal.ingredients : typeof (meal.items || meal.ingredients) === 'string' ? (meal.items || meal.ingredients).split(/,\s*|\s*·\s*/).filter(Boolean) : [meal.name]);
         const categoryLabels = { breakfast: 'Petit-déjeuner', lunch: 'Déjeuner', dinner: 'Dîner', snack: 'Collation' };
         const catLabel = categoryLabels[meal.category] || 'Repas Vitaliste';
+        const itemsPills = rawItems.map(it => `<span style="display:inline-block; padding:3px 9px; background:rgba(255,255,255,0.06); border:1px solid var(--border); border-radius:12px; font-size:0.8rem; margin:2px 4px 2px 0;">🥗 ${esc(typeof it === 'string' ? it : it.name)}</span>`).join('');
 
         renderedCards += `<div class="ai-plan-card glass" style="margin:12px 0;padding:16px;border-radius:12px;border-left:4px solid var(--accent);background:rgba(55,211,153,0.06)">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
             <span style="font-weight:700;font-size:1.05rem;color:var(--text)">${meal.emoji || '🍲'} ${esc(meal.name || 'Repas Proposé')}</span>
             <span class="food-badge badge-electric" style="font-size:0.75rem">${esc(catLabel)}</span>
           </div>
-          <div style="font-size:0.88rem;color:var(--text);margin-bottom:6px">
-            <strong>Ingrédients :</strong> ${esc(itemsText)}
+          <div style="font-size:0.88rem;color:var(--text);margin-bottom:8px">
+            <div style="font-weight:600; margin-bottom:4px; color:var(--text-dim);">Ingrédients :</div>
+            <div style="display:flex; flex-wrap:wrap; gap:2px;">${itemsPills}</div>
           </div>
           ${meal.note ? `<div style="font-size:0.82rem;color:var(--text-dim);margin-bottom:12px;font-style:italic">🌿 ${esc(meal.note)}</div>` : ''}
           <button class="btn btn-primary" onclick="handleAddActionMeal('${encodedMeal}')" style="display:inline-flex;align-items:center;gap:6px">
@@ -3002,20 +5675,24 @@ function renderMarkdown(text) {
       return `<pre><code>${esc(JSON.stringify(obj, null, 2))}</code></pre>`;
     } catch { return match; }
   });
-  return text
+
+  // Handle dividers and clean lists first
+  text = text
+    .replace(/^---$/gm, '<hr style="border:none;border-top:1px solid var(--border);margin:14px 0">')
+    .replace(/^\s*[\*\-]\s+(.*$)/gm, '<li>$1</li>')
+    .replace(/(<li>[\s\S]*?<\/li>)/g, '<ul style="padding-left:20px;margin:8px 0">$1</ul>')
+    .replace(/<\/ul>\s*<ul[^>]*>/g, '')
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.*?)\*/g, '<em>$1</em>')
-    .replace(/^### (.*$)/gm, '<h3>$1</h3>')
-    .replace(/^## (.*$)/gm, '<h2>$1</h2>')
-    .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+    .replace(/\*([^\*]+)\*/g, '<em>$1</em>')
+    .replace(/^### (.*$)/gm, '<h4 style="margin:12px 0 6px 0;color:var(--accent)">$1</h4>')
+    .replace(/^## (.*$)/gm, '<h3 style="margin:14px 0 8px 0;color:var(--text)">$1</h3>')
+    .replace(/^# (.*$)/gm, '<h2 style="margin:16px 0 10px 0;color:var(--text)">$1</h2>')
     .replace(/```([\s\S]*?)```/g, (_, code) => `<pre><code>${esc(code.trim())}</code></pre>`)
-    .replace(/`(.*?)`/g, '<code>$1</code>')
-    .replace(/^\* (.*$)/gm, '<li>$1</li>')
-    .replace(/^- (.*$)/gm, '<li>$1</li>')
-    .replace(/(<li>[\s\S]*?<\/li>)/g, '<ul>$1</ul>')
-    .replace(/<\/ul>\s*<ul>/g, '')
-    .replace(/\n\n/g, '</p><p>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\n\n+/g, '</p><p style="margin-bottom:8px">')
     .replace(/\n/g, '<br>');
+
+  return text;
 }
 
 // ═══════ PROACTIVE MASCOT ═══════
@@ -3067,83 +5744,155 @@ window.renderResources = function() {
   const container = document.getElementById('resourcesContainer');
   if (!container) return;
   
-  // Hardcoded clean list of resources (No religious content)
+  // High-availability verified media and official local documents
   const resources = [
     {
-      title: "Guide Nutritionnel Officiel",
-      url: "/Nutrional-Guide.pdf", // Note: Adjust path if needed or point to actual PDF hosted URL
-      source: "VitalTrack",
+      title: "Guide Nutritionnel Officiel VitalTrack",
+      url: "/Nutrional-Guide.pdf",
+      source: "VitalTrack (PDF Local)",
+      badgeClass: "badge-success",
       type: "pdf",
-      description: "Notre guide complet sur la nutrition vitaliste et les associations alimentaires."
+      description: "Le guide complet de référence sur la nutrition vitaliste, le jeûne intermittent et les associations alimentaires optimales."
+    },
+    {
+      title: "Documentaire : Dr. Sebi & la Guérison Cellulaire",
+      localSrc: "/videos/dr-sebi-documentary.mp4",
+      poster: "/videos/posters/dr-sebi-documentary.jpg",
+      source: "Dr. Sebi (Média Local HD)",
+      badgeClass: "badge-success",
+      type: "local-video",
+      description: "Documentaire complet (40 min) sur la biochimie alcaline, l'élimination du mucus et les remèdes naturels du Dr. Sebi."
     },
     {
       title: "Le jeûne, une nouvelle thérapie ?",
-      url: "https://www.youtube.com/embed/hPXQH6gOuJM",
-      source: "ARTE",
+      url: "https://www.youtube-nocookie.com/embed/_ufnGrKmL1c",
+      watchUrl: "https://www.youtube.com/watch?v=_ufnGrKmL1c",
+      source: "ARTE Documentaire (56 min)",
+      badgeClass: "badge-warning",
       type: "video",
-      description: "Documentaire passionnant sur les bienfaits thérapeutiques du jeûne et les études scientifiques."
+      description: "Enquête médicale et scientifique d'ARTE sur les mécanismes de l'autophagie et les protocoles cliniques de jeûne thérapeutique."
     },
     {
       title: "What The Health",
-      url: "https://www.youtube.com/embed/_ymX8x0IqM8",
-      source: "Netflix",
+      url: "https://www.youtube-nocookie.com/embed/_ymX8x0IqM8",
+      watchUrl: "https://www.youtube.com/watch?v=_ymX8x0IqM8",
+      source: "AUM Films (VOSTFR 1h32)",
+      badgeClass: "badge-warning",
       type: "video",
-      description: "L'impact de l'alimentation sur la santé et les maladies chroniques."
+      description: "Film d'investigation sur les impacts des aliments ultra-transformés et les bénéfices prouvés de la nutrition végétale intégrale."
     },
     {
-      title: "La Santé Dans L'Assiette",
-      url: "https://www.youtube.com/embed/69VuB1Tt_n8",
-      source: "Netflix",
+      title: "La Santé Dans L'Assiette (Forks Over Knives)",
+      url: "https://www.youtube-nocookie.com/embed/EjTWFoqLy34",
+      watchUrl: "https://www.youtube.com/watch?v=EjTWFoqLy34",
+      source: "Forks Over Knives (1h36)",
+      badgeClass: "badge-warning",
       type: "video",
-      description: "Documentaire explorant le lien entre l'alimentation (focus végétal) et la santé globale."
-    },
-    {
-      title: "DR. SEBI DOCUMENTARY",
-      url: "https://www.youtube.com/embed/9ycV9aAWjzM",
-      source: "Dr. Sebi",
-      type: "video",
-      description: "Documentaire complet sur la vie et les enseignements du Dr. Sebi sur la nutrition alcaline."
+      description: "Documentaire pionnier mené par les Drs Campbell et Esselstyn démontrant comment inverser les maladies cardiovasculaires par l'alimentation."
     },
     {
       title: "Le Système de Guérison du Régime Sans Mucus",
       url: "https://www.amazon.fr/Syst%C3%A8me-gu%C3%A9rison-r%C3%A9gime-sans-mucus/dp/2889241512",
-      source: "Arnold Ehret",
+      source: "Arnold Ehret (Livre Fondateur)",
+      badgeClass: "badge-accent",
       type: "link",
-      description: "Le livre fondateur d'Arnold Ehret sur la transition alimentaire et l'élimination de l'obstruction (V = P - O)."
+      description: "L'ouvrage classique d'Arnold Ehret sur la transition sans mucus, la détoxification profonde et l'équation V = P - O."
     },
     {
       title: "The Detox Miracle Sourcebook",
       url: "https://www.amazon.fr/Detox-Miracle-Sourcebook-Complete-Regeneration/dp/1935826190",
-      source: "Dr. Robert Morse",
+      source: "Dr. Robert Morse, N.D. (Guide Complet)",
+      badgeClass: "badge-accent",
       type: "link",
-      description: "La bible de la détoxification et de la régénération tissulaire par le Dr. Robert Morse."
+      description: "La bible de la régénération cellulaire, du système lymphatique et des plantes médicinales par le Dr. Robert Morse."
     }
   ];
   
   container.innerHTML = resources.map(r => {
-    if (r.type === 'video') {
+    if (r.type === 'local-video') {
       return `
-        <div class="dash-card glass" style="padding:16px;">
-          <h3 style="margin-bottom:8px; font-size:1.1rem">${esc(r.title)}</h3>
-          <span class="badge badge-warning" style="margin-bottom:12px; display:inline-block">${esc(r.source)}</span>
-          <div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:12px; background:#000;">
-            <iframe src="${r.url}" style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;" allowfullscreen></iframe>
+        <div class="dash-card glass" style="padding:18px;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+            <h3 style="margin:0; font-size:1.05rem; font-weight:700;">${esc(r.title)}</h3>
+            <span class="badge ${r.badgeClass || 'badge-success'}">${esc(r.source)}</span>
           </div>
-          <p style="margin-top:12px; font-size:0.9rem; color:var(--text-dim)">${esc(r.description)}</p>
+          <div style="position:relative; width:100%; border-radius:12px; overflow:hidden; border:1px solid var(--border); background:#000; box-shadow:0 6px 24px rgba(0,0,0,0.4); margin-bottom:12px;">
+            <video controls playsinline preload="metadata" poster="${r.poster}" style="width:100%; height:auto; display:block; max-height:360px; background:#000;">
+              <source src="${r.localSrc}" type="video/mp4">
+              Votre navigateur ne supporte pas la vidéo locale directe.
+            </video>
+          </div>
+          <p style="font-size:0.85rem; color:var(--text-dim); line-height:1.5; margin:0;">${esc(r.description)}</p>
+        </div>
+      `;
+    } else if (r.type === 'video') {
+      return `
+        <div class="dash-card glass" style="padding:18px;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+            <h3 style="margin:0; font-size:1.05rem; font-weight:700;">${esc(r.title)}</h3>
+            <span class="badge ${r.badgeClass || 'badge-warning'}">${esc(r.source)}</span>
+          </div>
+          <div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:12px; border:1px solid var(--border); background:#000; box-shadow:0 6px 24px rgba(0,0,0,0.4); margin-bottom:12px;">
+            <iframe src="${r.url}" style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;" allowfullscreen loading="lazy"></iframe>
+          </div>
+          <p style="font-size:0.85rem; color:var(--text-dim); line-height:1.5; margin-bottom:10px;">${esc(r.description)}</p>
+          ${r.watchUrl ? `
+            <div style="text-align:right;">
+              <a href="${r.watchUrl}" target="_blank" rel="noopener noreferrer" style="font-size:0.8rem; color:var(--accent); text-decoration:none; display:inline-flex; align-items:center; gap:4px;">
+                <i class="ri-external-link-line"></i> Ouvrir dans un nouvel onglet
+              </a>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    } else if (r.type === 'pdf') {
+      return `
+        <div class="dash-card glass" style="padding:18px; display:flex; flex-direction:column; justify-content:space-between;">
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+              <h3 style="margin:0; font-size:1.05rem; font-weight:700;">${esc(r.title)}</h3>
+              <span class="badge ${r.badgeClass || 'badge-success'}">${esc(r.source)}</span>
+            </div>
+            <p style="font-size:0.85rem; color:var(--text-dim); line-height:1.5; margin-bottom:16px;">${esc(r.description)}</p>
+          </div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <a href="${r.url}" target="_blank" rel="noopener noreferrer" class="btn-primary" style="text-align:center; text-decoration:none; flex:1; display:inline-flex; align-items:center; justify-content:center; gap:6px;">
+              <i class="ri-file-pdf-line"></i> Consulter le Guide PDF
+            </a>
+            <a href="${r.url}" download class="btn-secondary" style="text-align:center; text-decoration:none; padding:10px 14px; display:inline-flex; align-items:center; justify-content:center; gap:4px;" title="Télécharger pour consultation hors-ligne">
+              <i class="ri-download-2-line"></i>
+            </a>
+          </div>
         </div>
       `;
     } else {
-      // PDF
+      // Books / external links
       return `
-        <div class="dash-card glass" style="padding:16px; display:flex; flex-direction:column;">
-          <h3 style="margin-bottom:8px; font-size:1.1rem">${esc(r.title)}</h3>
-          <span class="badge badge-success" style="margin-bottom:12px; display:inline-block">${esc(r.source)}</span>
-          <p style="font-size:0.9rem; color:var(--text-dim); margin-bottom:16px;">${esc(r.description)}</p>
-          <a href="${r.url}" target="_blank" class="btn-primary" style="text-align:center; text-decoration:none;"><i class="ri-file-pdf-line"></i> Ouvrir le Guide PDF</a>
+        <div class="dash-card glass" style="padding:18px; display:flex; flex-direction:column; justify-content:space-between;">
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+              <h3 style="margin:0; font-size:1.05rem; font-weight:700;">${esc(r.title)}</h3>
+              <span class="badge ${r.badgeClass || 'badge-accent'}">${esc(r.source)}</span>
+            </div>
+            <p style="font-size:0.85rem; color:var(--text-dim); line-height:1.5; margin-bottom:16px;">${esc(r.description)}</p>
+          </div>
+          <a href="${r.url}" target="_blank" rel="noopener noreferrer" class="btn-secondary" style="text-align:center; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:6px;">
+            <i class="ri-book-open-line"></i> Découvrir l'ouvrage
+          </a>
         </div>
       `;
     }
-  }).join('');
+  }).join('') + `
+    <div class="dash-card glass" style="grid-column:1/-1; padding:16px 20px; background:linear-gradient(135deg,rgba(16,185,129,0.06),rgba(59,130,246,0.04)); border:1px dashed var(--border); display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+      <div style="font-size:1.8rem; color:var(--accent);"><i class="ri-shield-check-line"></i></div>
+      <div style="flex:1; min-width:260px;">
+        <h4 style="margin:0 0 4px 0; font-size:0.92rem; color:var(--text);">Conservation & Souveraineté des Médias</h4>
+        <p style="margin:0; font-size:0.8rem; color:var(--text-dim); line-height:1.4;">
+          Les vidéos et documents clés sont directement hébergés et optimisés en local pour vous garantir un accès permanent, sans publicité ni risque de suppression.
+        </p>
+      </div>
+    </div>
+  `;
 };
 
 // ═══════ DIET PLAN CALENDAR ═══════
@@ -3434,9 +6183,10 @@ window.handleAddActionMeal = function(encodedMeal) {
     // Calculate PRAL and scores based on items if available
     let totalPral = 0;
     let itemCount = 0;
-    const items = Array.isArray(meal.items) ? meal.items : [meal.name];
+    const rawItems = Array.isArray(meal.items) ? meal.items : (Array.isArray(meal.ingredients) ? meal.ingredients : typeof (meal.items || meal.ingredients) === 'string' ? (meal.items || meal.ingredients).split(/,\s*|\s*·\s*/).filter(Boolean) : [meal.name || 'Repas']);
     
-    items.forEach(itemName => {
+    rawItems.forEach(itemEntry => {
+      const itemName = typeof itemEntry === 'string' ? itemEntry : (itemEntry.name || '');
       const match = vitalDb.find(f => (f.names || []).some(n => n.toLowerCase() === itemName.toLowerCase()) || f.id === itemName.toLowerCase());
       if (match) {
         totalPral += (match.scientific_defaults?.pral ?? -2.5);
@@ -3449,18 +6199,41 @@ window.handleAddActionMeal = function(encodedMeal) {
 
     const avgPral = itemCount > 0 ? Number((totalPral / itemCount).toFixed(1)) : -2.5;
 
+    const nameLower = (meal.name || '').toLowerCase();
+    const noteLower = (meal.note || '').toLowerCase();
+    let detectedCooking = meal.cookingMethod;
+    if (!detectedCooking) {
+      if (nameLower.includes('frit') || noteLower.includes('friture') || nameLower.includes('chips')) detectedCooking = 'fry';
+      else if (nameLower.includes('four') || noteLower.includes('rôti') || nameLower.includes('roti') || nameLower.includes('gratin')) detectedCooking = 'bake';
+      else if (nameLower.includes('soupe') || nameLower.includes('bouillon') || nameLower.includes('mijot')) detectedCooking = 'simmer';
+      else if (nameLower.includes('salade') || nameLower.includes('cru') || nameLower.includes('smoothie') || nameLower.includes('carpaccio')) detectedCooking = 'raw';
+      else detectedCooking = 'steam';
+    }
+
+    let detectedOil = meal.oilQuality;
+    if (!detectedOil) {
+      if (detectedCooking === 'fry' || noteLower.includes('tournesol') || noteLower.includes('raffin')) detectedOil = 'cooked_refined';
+      else if (noteLower.includes('avocat') || noteLower.includes('lin') || noteLower.includes('chanvre')) detectedOil = 'raw_cold_pressed';
+      else if (noteLower.includes('olive') || detectedCooking === 'raw' || detectedCooking === 'steam') detectedOil = 'raw_olive';
+      else detectedOil = 'none';
+    }
+
     const newMeal = {
       id: 'meal_' + Date.now(),
       name: meal.name || 'Repas Vitaliste',
-      category: meal.category || 'lunch',
-      items: items,
+      category: meal.category || 'dinner',
+      items: rawItems,
+      ingredients: rawItems,
       emoji: meal.emoji || '🍲',
+      cookingMethod: detectedCooking,
+      oilQuality: detectedOil,
       note: meal.note || 'Repas suggéré par le coach vitaliste IA',
       approved: true,
       electric: true,
       hybrid: false,
-      pral: avgPral,
-      nova: 1,
+      isComposedMeal: true,
+      pral: meal.pral ?? avgPral,
+      nova: meal.nova ?? (detectedCooking === 'fry' ? 3 : 1),
       timestamp: Date.now()
     };
 
@@ -3471,7 +6244,7 @@ window.handleAddActionMeal = function(encodedMeal) {
     if (window.renderDashboard) renderDashboard();
     if (window.updateProactiveMascot) updateProactiveMascot('meal');
     
-    showToast(`🍽️ Repas "${meal.name}" enregistré dans votre journal !`, 'success');
+    showToast(`🍽️ Repas "${newMeal.name}" enregistré dans votre journal !`, 'success');
   } catch (err) {
     console.error('Erreur handleAddActionMeal:', err);
     showToast("Impossible d'enregistrer le repas.", 'error');
@@ -3554,20 +6327,33 @@ window.sendQuickReply = function(btn, text) {
 };
 
 // ═══════ WEIGHT TRACKING & MODAL ═══════
+window._editingWeightId = null;
+
 window.openWeightModal = function() {
   const modal = document.getElementById('weightModal');
   if (!modal) return;
 
+  window._editingWeightId = null;
   const dateInput = document.getElementById('weightDateInput');
   const valInput = document.getElementById('weightValInput');
   const noteInput = document.getElementById('weightNoteInput');
+  const modalTitle = document.getElementById('weightModalTitle');
+  const submitText = document.getElementById('weightSubmitText');
+  const cancelBtn = document.getElementById('weightCancelEditBtn');
+
+  if (modalTitle) modalTitle.innerHTML = '<i class="ri-scales-3-line"></i> Enregistrer une pesée';
+  if (submitText) submitText.textContent = 'Valider la pesée';
+  if (cancelBtn) cancelBtn.style.display = 'none';
 
   // Default to today's date
   const today = new Date();
   const year = today.getFullYear();
   const month = String(today.getMonth() + 1).padStart(2, '0');
   const day = String(today.getDate()).padStart(2, '0');
-  if (dateInput) dateInput.value = `${year}-${month}-${day}`;
+  if (dateInput) {
+    dateInput.value = `${year}-${month}-${day}`;
+    if (dateInput._updateVitalDatePicker) dateInput._updateVitalDatePicker();
+  }
 
   // Default value from last entry
   const history = store.get('weight_history', []);
@@ -3586,8 +6372,74 @@ window.openWeightModal = function() {
 
 window.closeWeightModal = function(e) {
   if (!e || e.target === document.getElementById('weightModal') || e.target.closest?.('.modal-close')) {
+    window._editingWeightId = null;
     document.getElementById('weightModal')?.classList.remove('open');
   }
+};
+
+window.cancelWeightEdit = function() {
+  window._editingWeightId = null;
+  const dateInput = document.getElementById('weightDateInput');
+  const valInput = document.getElementById('weightValInput');
+  const noteInput = document.getElementById('weightNoteInput');
+  const modalTitle = document.getElementById('weightModalTitle');
+  const submitText = document.getElementById('weightSubmitText');
+  const cancelBtn = document.getElementById('weightCancelEditBtn');
+
+  if (modalTitle) modalTitle.innerHTML = '<i class="ri-scales-3-line"></i> Enregistrer une pesée';
+  if (submitText) submitText.textContent = 'Valider la pesée';
+  if (cancelBtn) cancelBtn.style.display = 'none';
+
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  if (dateInput) {
+    dateInput.value = `${year}-${month}-${day}`;
+    if (dateInput._updateVitalDatePicker) dateInput._updateVitalDatePicker();
+  }
+
+  const history = store.get('weight_history', []);
+  if (valInput) {
+    valInput.value = history.length > 0 ? history[history.length - 1].weight : '70.0';
+  }
+  if (noteInput) noteInput.value = '';
+
+  renderWeightHistoryInModal();
+};
+
+window.editWeightEntry = function(entryId) {
+  const history = store.get('weight_history', []);
+  const entry = history.find(h => h.id === entryId);
+  if (!entry) return;
+
+  window._editingWeightId = entryId;
+
+  const dateInput = document.getElementById('weightDateInput');
+  const valInput = document.getElementById('weightValInput');
+  const noteInput = document.getElementById('weightNoteInput');
+  const modalTitle = document.getElementById('weightModalTitle');
+  const submitText = document.getElementById('weightSubmitText');
+  const cancelBtn = document.getElementById('weightCancelEditBtn');
+
+  if (modalTitle) modalTitle.innerHTML = '<i class="ri-edit-line"></i> Modifier la pesée';
+  if (submitText) submitText.textContent = 'Mettre à jour la pesée';
+  if (cancelBtn) cancelBtn.style.display = 'block';
+
+  // Format date for input
+  const d = new Date(entry.date);
+  if (!isNaN(d.getTime()) && dateInput) {
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    dateInput.value = `${yyyy}-${mm}-${dd}`;
+    if (dateInput._updateVitalDatePicker) dateInput._updateVitalDatePicker();
+  }
+
+  if (valInput) valInput.value = entry.weight;
+  if (noteInput) noteInput.value = entry.note || '';
+
+  renderWeightHistoryInModal();
 };
 
 window.stepWeight = function(delta) {
@@ -3616,32 +6468,68 @@ window.saveWeightEntry = function() {
 
   const history = store.get('weight_history', []);
   const entryDate = new Date(`${dateStr}T12:00:00`).toISOString();
-  
-  history.push({
-    id: 'w_' + Date.now(),
-    date: entryDate,
-    weight: w,
-    note
+
+  if (window._editingWeightId) {
+    const idx = history.findIndex(h => h.id === window._editingWeightId);
+    if (idx !== -1) {
+      history[idx].date = entryDate;
+      history[idx].weight = w;
+      history[idx].note = note;
+      showToast(`Pesée mise à jour (${w} kg) !`, 'success');
+    }
+    window._editingWeightId = null;
+  } else {
+    const newId = 'w_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
+    history.push({
+      id: newId,
+      date: entryDate,
+      weight: w,
+      note
+    });
+    showToast(`Pesée de ${w} kg enregistrée pour le ${dateStr} !`, 'success');
+  }
+
+  // Ensure every item has an id
+  history.forEach((item, idx) => {
+    if (!item.id) item.id = 'w_' + (Date.now() + idx);
   });
 
   history.sort((a, b) => new Date(a.date) - new Date(b.date));
   store.set('weight_history', history);
 
-  showToast(`Pesée de ${w} kg enregistrée pour le ${dateStr} !`, 'success');
   renderWeightChart();
   renderWeightHistoryInModal();
   document.getElementById('weightModal')?.classList.remove('open');
 };
 
-window.deleteWeightEntry = function(idx) {
+window.deleteWeightEntry = async function(idOrIdx) {
   let history = store.get('weight_history', []);
-  if (idx >= 0 && idx < history.length) {
-    history.splice(idx, 1);
-    store.set('weight_history', history);
-    showToast('Pesée supprimée.', 'info');
-    renderWeightChart();
-    renderWeightHistoryInModal();
+  let idx = typeof idOrIdx === 'string' ? history.findIndex(h => h.id === idOrIdx) : idOrIdx;
+  if (idx < 0 || idx >= history.length) return;
+
+  const item = history[idx];
+  const dateFormatted = new Date(item.date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
+
+  const ok = await (window.showVitalConfirm ? window.showVitalConfirm({
+    title: 'Supprimer cette pesée ?',
+    message: `Voulez-vous supprimer la pesée de <strong>${item.weight} kg</strong> du ${dateFormatted} ?`,
+    icon: 'ri-delete-bin-line',
+    confirmText: 'Supprimer',
+    cancelText: 'Annuler',
+    isDanger: true
+  }) : Promise.resolve(confirm('Supprimer cette pesée ?')));
+
+  if (!ok) return;
+
+  if (window._editingWeightId === item.id) {
+    window.cancelWeightEdit();
   }
+
+  history.splice(idx, 1);
+  store.set('weight_history', history);
+  showToast('Pesée supprimée.', 'info');
+  renderWeightChart();
+  renderWeightHistoryInModal();
 };
 
 window.renderWeightHistoryInModal = function() {
@@ -3650,25 +6538,37 @@ window.renderWeightHistoryInModal = function() {
   if (!listEl) return;
 
   const history = store.get('weight_history', []);
+  let modified = false;
+  history.forEach((item, idx) => {
+    if (!item.id) {
+      item.id = 'w_' + (Date.now() + idx);
+      modified = true;
+    }
+  });
+  if (modified) store.set('weight_history', history);
+
   if (countEl) countEl.textContent = `${history.length} pesée${history.length > 1 ? 's' : ''}`;
 
   if (history.length === 0) {
-    listEl.innerHTML = '<p class="empty-state-sm" style="text-align:center;padding:8px;">Aucune pesée enregistrée.</p>';
+    listEl.innerHTML = '<p class="empty-state-sm" style="text-align:center;padding:12px;">Aucune pesée enregistrée.</p>';
     return;
   }
 
   const reversed = [...history].reverse();
-  listEl.innerHTML = reversed.map((item, rIdx) => {
-    const originalIdx = history.length - 1 - rIdx;
+  listEl.innerHTML = reversed.map((item) => {
+    const isEditing = window._editingWeightId === item.id;
     const d = new Date(item.date);
     const dateFormatted = isNaN(d.getTime()) ? item.date : d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
     return `
-      <div class="weight-history-item">
+      <div class="weight-history-item ${isEditing ? 'editing' : ''}">
         <div>
           <span class="weight-history-val">${item.weight} kg</span>
           <span class="weight-history-date"> · ${dateFormatted}${item.note ? ` (${esc(item.note)})` : ''}</span>
         </div>
-        <button class="weight-history-del" onclick="deleteWeightEntry(${originalIdx})" title="Supprimer"><i class="ri-delete-bin-line"></i></button>
+        <div class="weight-history-actions">
+          <button class="weight-history-btn edit" onclick="editWeightEntry('${item.id}')" title="Modifier cette pesée"><i class="ri-edit-line"></i></button>
+          <button class="weight-history-btn del" onclick="deleteWeightEntry('${item.id}')" title="Supprimer cette pesée"><i class="ri-delete-bin-line"></i></button>
+        </div>
       </div>
     `;
   }).join('');
@@ -3681,7 +6581,7 @@ window.renderWeightChart = function() {
   if (!container || !empty || !svg) return;
   
   const history = store.get('weight_history', []);
-  if (history.length === 0) {
+  if (!history || history.length === 0) {
     container.style.display = 'none';
     empty.style.display = 'block';
     return;
@@ -3690,42 +6590,148 @@ window.renderWeightChart = function() {
   container.style.display = 'block';
   empty.style.display = 'none';
   
-  const w = container.clientWidth || 300;
-  const h = container.clientHeight || 120;
+  // Sort history chronologically
+  const sorted = [...history].sort((a, b) => new Date(a.date) - new Date(b.date));
+
+  const svgWidth = Math.max(320, container.clientWidth || 600);
+  const svgHeight = 220;
   
-  const weights = history.map(h => h.weight);
-  const minW = Math.min(...weights) - 2;
-  const maxW = Math.max(...weights) + 2;
-  const range = maxW - minW || 10;
-  
-  let pathD = '';
-  let pointsHtml = '';
-  
-  if (history.length === 1) {
-    const y = h / 2;
-    const x = w / 2;
-    pointsHtml = `<circle cx="${x}" cy="${y}" r="4" fill="var(--accent)" />
-                  <text x="${x}" y="${y - 12}" fill="var(--text)" font-size="10" text-anchor="middle">${history[0].weight} kg</text>`;
+  const margin = { top: 38, right: 35, bottom: 44, left: 65 };
+  const chartW = svgWidth - margin.left - margin.right;
+  const chartH = svgHeight - margin.top - margin.bottom;
+  const innerPadX = sorted.length > 1 ? 28 : 0;
+  const plotW = chartW - innerPadX * 2;
+
+  const weights = sorted.map(h => h.weight);
+  const rawMin = Math.min(...weights);
+  const rawMax = Math.max(...weights);
+
+  // Compute neat Y scale boundaries
+  const span = rawMax - rawMin;
+  let step = 5;
+  if (span > 40) step = 10;
+  else if (span <= 5) step = 1;
+  else if (span <= 12) step = 2;
+
+  let yMin = Math.max(0, Math.floor((rawMin - step * 0.4) / step) * step);
+  let yMax = Math.ceil((rawMax + step * 0.4) / step) * step;
+  if (yMax === yMin) { yMax += step; yMin = Math.max(0, yMin - step); }
+  const yRange = yMax - yMin;
+
+  // Generate Y ticks (3 to 6 ticks)
+  const yTicks = [];
+  for (let v = yMin; v <= yMax + 0.001; v += step) {
+    yTicks.push(Math.round(v * 10) / 10);
+  }
+
+  // Draw Y-axis grid & labels
+  let gridLinesHtml = '';
+  let yLabelsHtml = '';
+  yTicks.forEach(yVal => {
+    const yPos = margin.top + chartH - ((yVal - yMin) / yRange) * chartH;
+    gridLinesHtml += `<line x1="${margin.left}" y1="${yPos}" x2="${margin.left + chartW}" y2="${yPos}" stroke="rgba(255,255,255,0.07)" stroke-dasharray="4,4" />`;
+    yLabelsHtml += `<text x="${margin.left - 12}" y="${yPos + 4}" fill="var(--text-dim, #94a3b8)" font-size="11" font-weight="600" font-family="inherit" text-anchor="end">${yVal} kg</text>`;
+  });
+
+  // Y-axis vertical line & title
+  const yAxisLine = `<line x1="${margin.left}" y1="${margin.top - 12}" x2="${margin.left}" y2="${margin.top + chartH}" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" />`;
+  const yAxisTitle = `<text x="${margin.left - 12}" y="${margin.top - 18}" fill="var(--text-dim, #94a3b8)" font-size="10" font-weight="700" font-family="inherit" text-anchor="end">POIDS (KG)</text>`;
+
+  // X-axis horizontal baseline
+  const xAxisLine = `<line x1="${margin.left}" y1="${margin.top + chartH}" x2="${margin.left + chartW}" y2="${margin.top + chartH}" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" />`;
+
+  // Compute Points coordinates
+  const coords = [];
+  if (sorted.length === 1) {
+    const x = margin.left + chartW / 2;
+    const y = margin.top + chartH - ((sorted[0].weight - yMin) / yRange) * chartH;
+    coords.push({ x, y, entry: sorted[0] });
   } else {
-    history.forEach((entry, i) => {
-      const x = (i / (history.length - 1)) * w;
-      const y = h - ((entry.weight - minW) / range) * h;
-      
-      if (i === 0) pathD += `M ${x} ${y} `;
-      else pathD += `L ${x} ${y} `;
-      
-      pointsHtml += `<circle cx="${x}" cy="${y}" r="3" fill="var(--accent)" />`;
-      if (i === 0 || i === history.length - 1) {
-         pointsHtml += `<text x="${x}" y="${y - 10}" fill="var(--text-dim)" font-size="10" text-anchor="${i === 0 ? 'start' : 'end'}">${entry.weight} kg</text>`;
-      }
+    sorted.forEach((entry, i) => {
+      const x = margin.left + innerPadX + (i / (sorted.length - 1)) * plotW;
+      const y = margin.top + chartH - ((entry.weight - yMin) / yRange) * chartH;
+      coords.push({ x, y, entry });
     });
   }
-  
+
+  // Build Line and Area Path
+  let linePathD = '';
+  let areaPathD = '';
+  coords.forEach((pt, i) => {
+    if (i === 0) {
+      linePathD += `M ${pt.x} ${pt.y}`;
+      areaPathD += `M ${pt.x} ${margin.top + chartH} L ${pt.x} ${pt.y}`;
+    } else {
+      linePathD += ` L ${pt.x} ${pt.y}`;
+      areaPathD += ` L ${pt.x} ${pt.y}`;
+    }
+  });
+  if (coords.length > 1) {
+    const last = coords[coords.length - 1];
+    areaPathD += ` L ${last.x} ${margin.top + chartH} Z`;
+  }
+
+  // Build Points, Value Badges & X-axis Date Labels
+  let pointsHtml = '';
+  let xLabelsHtml = '';
+  coords.forEach((pt) => {
+    const d = new Date(pt.entry.date);
+    const dateShort = isNaN(d.getTime()) ? pt.entry.date : d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' });
+    const yearStr = !isNaN(d.getTime()) ? d.getFullYear() : '';
+
+    // Vertical dashed guide from point down to X-axis
+    pointsHtml += `<line x1="${pt.x}" y1="${pt.y}" x2="${pt.x}" y2="${margin.top + chartH}" stroke="rgba(52,211,153,0.18)" stroke-dasharray="2,2" />`;
+
+    // Glow halo & point
+    pointsHtml += `
+      <circle cx="${pt.x}" cy="${pt.y}" r="8" fill="var(--accent)" opacity="0.18" />
+      <circle cx="${pt.x}" cy="${pt.y}" r="4.5" fill="var(--accent)" stroke="#0f172a" stroke-width="2" />
+    `;
+
+    // Top value badge (with small dark pill background for readability)
+    const valText = `${pt.entry.weight} kg`;
+    pointsHtml += `
+      <g>
+        <rect x="${pt.x - 27}" y="${pt.y - 24}" width="54" height="18" rx="5" fill="rgba(15,23,42,0.9)" stroke="rgba(52,211,153,0.35)" stroke-width="1" />
+        <text x="${pt.x}" y="${pt.y - 11}" fill="var(--accent)" font-size="10.5" font-weight="700" font-family="inherit" text-anchor="middle">${valText}</text>
+      </g>
+    `;
+
+    // Date below X axis with year
+    xLabelsHtml += `
+      <text x="${pt.x}" y="${margin.top + chartH + 17}" fill="var(--text-dim, #94a3b8)" font-size="10.5" font-weight="600" font-family="inherit" text-anchor="middle">${dateShort}</text>
+      <text x="${pt.x}" y="${margin.top + chartH + 30}" fill="rgba(255,255,255,0.3)" font-size="9" font-family="inherit" text-anchor="middle">${yearStr}</text>
+    `;
+  });
+
+  svg.setAttribute('viewBox', `0 0 ${svgWidth} ${svgHeight}`);
+  svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
   svg.innerHTML = `
-    <path d="${pathD}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+    <defs>
+      <linearGradient id="weightAreaGradient" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.28" />
+        <stop offset="100%" stop-color="var(--accent)" stop-opacity="0.0" />
+      </linearGradient>
+    </defs>
+    ${gridLinesHtml}
+    ${yLabelsHtml}
+    ${yAxisLine}
+    ${yAxisTitle}
+    ${xAxisLine}
+    ${coords.length > 1 ? `<path d="${areaPathD}" fill="url(#weightAreaGradient)" />` : ''}
+    ${coords.length > 1 ? `<path d="${linePathD}" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />` : ''}
     ${pointsHtml}
+    ${xLabelsHtml}
   `;
 };
+
+// Window resize handler for weight chart
+window.addEventListener('resize', () => {
+  const container = document.getElementById('weightChartContainer');
+  if (container && container.style.display !== 'none') {
+    renderWeightChart();
+  }
+});
 
 // Hook renderWeightChart into app init
 const originalUpdateDash = window.updateDashStats;

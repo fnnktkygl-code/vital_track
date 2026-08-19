@@ -17,7 +17,8 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -2.2,
@@ -44,10 +45,11 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique / Astringent"
+      "label": "Électrique / Astringent",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -4.0,
+      "pral": -4,
       "density": 85
     }
   },
@@ -71,10 +73,11 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique (Burro/Baby)"
+      "label": "Électrique (Burro/Baby)",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -6.0,
+      "pral": -6,
       "density": 88
     },
     "note": "Dr. Sebi recommande les Burro/Baby uniquement — PAS les Cavendish."
@@ -98,10 +101,11 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -3.0,
+      "pral": -3,
       "density": 90
     }
   },
@@ -124,10 +128,11 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -2.0,
+      "pral": -2,
       "density": 82
     }
   },
@@ -150,7 +155,8 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -2.5,
@@ -176,10 +182,11 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -5.0,
+      "pral": -5,
       "density": 70
     }
   },
@@ -202,7 +209,8 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -3.5,
@@ -228,10 +236,11 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique (Avec pépins)"
+      "label": "Électrique (Avec pépins)",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -4.0,
+      "pral": -4,
       "density": 80
     },
     "note": "Uniquement les raisins avec pépins."
@@ -254,7 +263,8 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -2.5,
@@ -280,10 +290,11 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique (Avec pépins)"
+      "label": "Électrique (Avec pépins)",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -2.0,
+      "pral": -2,
       "density": 92
     },
     "note": "Uniquement variétés avec pépins."
@@ -307,10 +318,11 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique (Seville)"
+      "label": "Électrique (Seville)",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -3.0,
+      "pral": -3,
       "density": 85
     },
     "note": "Uniquement Seville ou orange amère."
@@ -333,10 +345,11 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -3.0,
+      "pral": -3,
       "density": 90
     }
   },
@@ -358,7 +371,8 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -2.5,
@@ -383,10 +397,11 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -2.0,
+      "pral": -2,
       "density": 80
     }
   },
@@ -409,7 +424,8 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -2.5,
@@ -434,10 +450,11 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique (Avec pépins)"
+      "label": "Électrique (Avec pépins)",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -4.0,
+      "pral": -4,
       "density": 65
     }
   },
@@ -459,10 +476,11 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -3.0,
+      "pral": -3,
       "density": 88
     }
   },
@@ -484,10 +502,11 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -2.0,
+      "pral": -2,
       "density": 72
     }
   },
@@ -510,10 +529,11 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -1.0,
+      "pral": -1,
       "density": 75
     },
     "note": "Soft Jelly Coconut uniquement."
@@ -543,10 +563,11 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -2.0,
+      "pral": -2,
       "density": 88
     },
     "note": "Toutes les baies sauf cranberries."
@@ -570,10 +591,11 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -3.0,
+      "pral": -3,
       "density": 92
     }
   },
@@ -595,10 +617,11 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique / Gras"
+      "label": "Électrique / Gras",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -8.0,
+      "pral": -8,
       "density": 95
     }
   },
@@ -621,10 +644,11 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -2.0,
+      "pral": -2,
       "density": 85
     }
   },
@@ -647,10 +671,11 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -2.0,
+      "pral": -2,
       "density": 80
     }
   },
@@ -672,10 +697,11 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -2.0,
+      "pral": -2,
       "density": 95
     }
   },
@@ -698,10 +724,11 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -4.0,
+      "pral": -4,
       "density": 92
     }
   },
@@ -724,10 +751,11 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -1.0,
+      "pral": -1,
       "density": 75
     }
   },
@@ -750,10 +778,11 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -4.0,
+      "pral": -4,
       "density": 95
     }
   },
@@ -776,7 +805,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -1.5,
@@ -803,10 +833,11 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -1.0,
+      "pral": -1,
       "density": 80
     },
     "note": "Sauf Shiitake."
@@ -831,10 +862,11 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -3.0,
+      "pral": -3,
       "density": 88
     }
   },
@@ -856,10 +888,11 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -2.0,
+      "pral": -2,
       "density": 85
     }
   },
@@ -881,10 +914,11 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -2.0,
+      "pral": -2,
       "density": 78
     }
   },
@@ -907,7 +941,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -1.5,
@@ -932,10 +967,11 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -3.0,
+      "pral": -3,
       "density": 90
     }
   },
@@ -963,10 +999,11 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique / Minéral"
+      "label": "Électrique / Minéral",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -5.0,
+      "pral": -5,
       "density": 98
     }
   },
@@ -990,10 +1027,11 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -2.0,
+      "pral": -2,
       "density": 82
     }
   },
@@ -1017,7 +1055,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique (Cerise/Prune)"
+      "label": "Électrique (Cerise/Prune)",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -2.5,
@@ -1043,10 +1082,11 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -3.0,
+      "pral": -3,
       "density": 88
     }
   },
@@ -1068,7 +1108,8 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -3.5,
@@ -1094,7 +1135,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -2.5,
@@ -1119,10 +1161,11 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -2.0,
+      "pral": -2,
       "density": 85
     }
   },
@@ -1147,7 +1190,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -2.5,
@@ -1173,7 +1217,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Grain Alcalin"
+      "label": "Grain Alcalin",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -0.8,
@@ -1197,7 +1242,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Grain Alcalin"
+      "label": "Grain Alcalin",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -0.5,
@@ -1221,7 +1267,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Grain Alcalin"
+      "label": "Grain Alcalin",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -0.3,
@@ -1246,7 +1293,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Grain Alcalin"
+      "label": "Grain Alcalin",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": 0.5,
@@ -1271,7 +1319,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Grain Alcalin"
+      "label": "Grain Alcalin",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -0.5,
@@ -1296,7 +1345,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Grain Alcalin"
+      "label": "Grain Alcalin",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -0.3,
@@ -1320,7 +1370,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Grain Alcalin"
+      "label": "Grain Alcalin",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -0.5,
@@ -1345,7 +1396,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Grain Alcalin"
+      "label": "Grain Alcalin",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -0.5,
@@ -1370,10 +1422,11 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique / Gras"
+      "label": "Électrique / Gras",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -2.0,
+      "pral": -2,
       "density": 75
     }
   },
@@ -1396,7 +1449,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique / Gras"
+      "label": "Électrique / Gras",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -1.5,
@@ -1423,10 +1477,11 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique / Gras"
+      "label": "Électrique / Gras",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -1.0,
+      "pral": -1,
       "density": 78
     }
   },
@@ -1449,10 +1504,11 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique / Gras"
+      "label": "Électrique / Gras",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -2.0,
+      "pral": -2,
       "density": 80
     }
   },
@@ -1474,10 +1530,11 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique / Gras"
+      "label": "Électrique / Gras",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -1.0,
+      "pral": -1,
       "density": 70
     }
   },
@@ -1499,7 +1556,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique / Gras"
+      "label": "Électrique / Gras",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -0.5,
@@ -1524,7 +1582,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique / Gras"
+      "label": "Électrique / Gras",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -0.5,
@@ -1549,7 +1608,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique / Gras"
+      "label": "Électrique / Gras",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -0.5,
@@ -1574,10 +1634,11 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique / Gras"
+      "label": "Électrique / Gras",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -1.0,
+      "pral": -1,
       "density": 70
     }
   },
@@ -1599,7 +1660,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique / Gras"
+      "label": "Électrique / Gras",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -0.5,
@@ -1624,7 +1686,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Approuvé (modération)"
+      "label": "Approuvé (modération)",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -0.5,
@@ -1649,10 +1712,11 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -1.0,
+      "pral": -1,
       "density": 60
     }
   },
@@ -1678,10 +1742,11 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique / 92 Minéraux"
+      "label": "Électrique / 92 Minéraux",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -6.0,
+      "pral": -6,
       "density": 100
     },
     "note": "Pierre angulaire du système Dr. Sebi. 92 des 102 minéraux du corps. Source: Chondrus crispus (Atlantique) ou Gracilaria (Mer des Caraïbes). Sebian Sea Moss: récolté à la main au Honduras."
@@ -1706,7 +1771,8 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique / Iode / Thyroïde"
+      "label": "Électrique / Iode / Thyroïde",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -5.5,
@@ -1733,7 +1799,8 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": true,
-      "label": "Purificateur Sanguin"
+      "label": "Purificateur Sanguin",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -3.5,
@@ -1760,10 +1827,11 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": true,
-      "label": "Calmant / Alcalin"
+      "label": "Calmant / Alcalin",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -3.0,
+      "pral": -3,
       "density": 78
     }
   },
@@ -1788,10 +1856,11 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": true,
-      "label": "Immunomodulateur"
+      "label": "Immunomodulateur",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -4.0,
+      "pral": -4,
       "density": 85
     }
   },
@@ -1814,7 +1883,8 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": true,
-      "label": "Digestif / Alcalin"
+      "label": "Digestif / Alcalin",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -2.5,
@@ -1840,10 +1910,11 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": true,
-      "label": "Anti-Mucus / Thermogénique"
+      "label": "Anti-Mucus / Thermogénique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -3.0,
+      "pral": -3,
       "density": 90
     },
     "note": "Puissant dissolvant de mucus. Stimule la circulation. Approuvé par Dr. Sebi comme plante chauffante électrique."
@@ -1867,7 +1938,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Utérin / Hormonal"
+      "label": "Utérin / Hormonal",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -3.5,
@@ -1893,10 +1965,11 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": true,
-      "label": "Purificateur / Bio Ferro"
+      "label": "Purificateur / Bio Ferro",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -4.0,
+      "pral": -4,
       "density": 88
     },
     "note": "Composant clé du Bio Ferro. Lie et expulse les métaux lourds. Purificateur sanguin profond riche en minéraux biodisponibles."
@@ -1921,7 +1994,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Calmant / Nerveux"
+      "label": "Calmant / Nerveux",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -2.5,
@@ -1947,10 +2021,11 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -2.0,
+      "pral": -2,
       "density": 78
     }
   },
@@ -1973,7 +2048,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -2.5,
@@ -1999,10 +2075,11 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -2.0,
+      "pral": -2,
       "density": 75
     }
   },
@@ -2027,10 +2104,11 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": true,
-      "label": "Thermogénique / Dissolvant"
+      "label": "Thermogénique / Dissolvant",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -3.0,
+      "pral": -3,
       "density": 88
     },
     "note": "Seul piment épicé approuvé. Stimule la circulation et dissout le mucus. African Bird Pepper = variété naturelle non-hybride."
@@ -2055,10 +2133,11 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -3.0,
+      "pral": -3,
       "density": 90
     }
   },
@@ -2081,10 +2160,11 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -2.0,
+      "pral": -2,
       "density": 78
     }
   },
@@ -2106,7 +2186,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -2.5,
@@ -2131,10 +2212,11 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -2.0,
+      "pral": -2,
       "density": 83
     }
   },
@@ -2157,7 +2239,8 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": true,
-      "label": "Thermogénique / Fort"
+      "label": "Thermogénique / Fort",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -3.5,
@@ -2182,7 +2265,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique / Antimicrobien"
+      "label": "Électrique / Antimicrobien",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -2.5,
@@ -2207,10 +2291,11 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -2.0,
+      "pral": -2,
       "density": 80
     }
   },
@@ -2232,10 +2317,11 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -2.0,
+      "pral": -2,
       "density": 77
     }
   },
@@ -2259,10 +2345,11 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique / Minéral"
+      "label": "Électrique / Minéral",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": 0.0,
+      "pral": 0,
       "density": 100
     },
     "note": "Uniquement sel marin pur non raffiné. Le sel de table iodé (NaCl synthétique) est interdit."
@@ -2285,7 +2372,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique"
+      "label": "Électrique",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -2.5,
@@ -2310,10 +2398,11 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique / Respiratoire"
+      "label": "Électrique / Respiratoire",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -3.0,
+      "pral": -3,
       "density": 83
     }
   },
@@ -2335,10 +2424,11 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Hybride (Amidon)"
+      "label": "Hybride (Amidon)",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
-      "pral": -4.0,
+      "pral": -4,
       "density": 80
     },
     "note": "Hybride riche en amidon selon Dr. Sebi."
@@ -2361,10 +2451,11 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Hybride"
+      "label": "Hybride",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
-      "pral": -1.0,
+      "pral": -1,
       "density": 75
     },
     "note": "Considéré comme hybride (croisement oignon × poireau) par Dr. Sebi."
@@ -2387,10 +2478,11 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Hybride (Amidon)"
+      "label": "Hybride (Amidon)",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
-      "pral": -3.0,
+      "pral": -3,
       "density": 78
     }
   },
@@ -2412,10 +2504,11 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Hybride"
+      "label": "Hybride",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
-      "pral": -2.0,
+      "pral": -2,
       "density": 82
     }
   },
@@ -2437,7 +2530,8 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Hybride"
+      "label": "Hybride",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": -1.5,
@@ -2462,7 +2556,8 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Hybride"
+      "label": "Hybride",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": -1.2,
@@ -2488,10 +2583,11 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Hybride (Amidon)"
+      "label": "Hybride (Amidon)",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
-      "pral": -1.0,
+      "pral": -1,
       "density": 65
     }
   },
@@ -2514,10 +2610,11 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Hybride (Amidon)"
+      "label": "Hybride (Amidon)",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
-      "pral": -4.0,
+      "pral": -4,
       "density": 60
     }
   },
@@ -2539,10 +2636,11 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Hybride"
+      "label": "Hybride",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
-      "pral": -2.0,
+      "pral": -2,
       "density": 78
     }
   },
@@ -2565,7 +2663,8 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Hybride (Acide Oxalique)"
+      "label": "Hybride (Acide Oxalique)",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": -2.5,
@@ -2591,7 +2690,8 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Hybride Citrus"
+      "label": "Hybride Citrus",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": -2.6,
@@ -2617,7 +2717,8 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Hybride (Pomelo × Orange)"
+      "label": "Hybride (Pomelo × Orange)",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": -2.5,
@@ -2645,7 +2746,8 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Hybride (Amidon modifié)"
+      "label": "Hybride (Amidon modifié)",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": -5.5,
@@ -2671,7 +2773,8 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Non approuvé"
+      "label": "Non approuvé",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": -2.7,
@@ -2698,7 +2801,8 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Hybride Aloe"
+      "label": "Hybride Aloe",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": -1.5,
@@ -2725,10 +2829,11 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Hybride (Menthe)"
+      "label": "Hybride (Menthe)",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
-      "pral": -2.0,
+      "pral": -2,
       "density": 72
     },
     "note": "Hybride de watermint et spearmint. Non approuvé. Utiliser fennel ou chamomile à la place."
@@ -2752,7 +2857,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique / Alcalin"
+      "label": "Électrique / Alcalin",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -9.6,
@@ -2779,7 +2885,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Légumineuse / Acide"
+      "label": "Légumineuse / Acide",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": 8.3,
@@ -2805,7 +2912,8 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Hybride"
+      "label": "Hybride",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": 4.3,
@@ -2832,10 +2940,11 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Acide / Anacardiacée"
+      "label": "Acide / Anacardiacée",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
-      "pral": 4.0,
+      "pral": 4,
       "density": 62
     },
     "note": "Famille de l'herbe à puce (poison ivy). Toujours traité thermiquement (toxique cru). Non approuvé."
@@ -2860,7 +2969,8 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Hybride / Œstrogénique"
+      "label": "Hybride / Œstrogénique",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": 3.5,
@@ -2887,10 +2997,11 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Hybride / Transformé"
+      "label": "Hybride / Transformé",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
-      "pral": 2.0,
+      "pral": 2,
       "density": 25
     },
     "note": "Dérivé du soja hybridé. Contient des anti-nutriments et des phytoœstrogènes. Non approuvé."
@@ -2916,7 +3027,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Animal / Mucus ++"
+      "label": "Animal / Mucus ++",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": 1.1,
@@ -2943,10 +3055,11 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Animal / Acide"
+      "label": "Animal / Acide",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
-      "pral": 8.0,
+      "pral": 8,
       "density": 20
     },
     "note": "Fortement acide (PRAL +8). Produit animal exclu à 100% du système Dr. Sebi."
@@ -2973,10 +3086,11 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Hybride (Gluten Modifié)"
+      "label": "Hybride (Gluten Modifié)",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
-      "pral": 2.0,
+      "pral": 2,
       "density": 40
     },
     "note": "Blé moderne = hybride intensif depuis les années 1970. Gluten modifié inflammatoire. Amidon glycémique élevé. Utiliser épeautre, seigle ou kamut à la place."
@@ -3000,7 +3114,8 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Raffiné / Amidon"
+      "label": "Raffiné / Amidon",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": 1.7,
@@ -3028,7 +3143,8 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Non Approuvé"
+      "label": "Non Approuvé",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": 3.2,
@@ -3054,7 +3170,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Non Approuvé"
+      "label": "Non Approuvé",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": 1.5,
@@ -3080,10 +3197,11 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Non Approuvé"
+      "label": "Non Approuvé",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
-      "pral": 3.0,
+      "pral": 3,
       "density": 58
     }
   },
@@ -3109,7 +3227,8 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Acide / Inerte"
+      "label": "Acide / Inerte",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": 0.1,
@@ -3137,10 +3256,11 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Acide / Stimulant"
+      "label": "Acide / Stimulant",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
-      "pral": -1.0,
+      "pral": -1,
       "density": 15
     },
     "note": "Fortement acide. Drogue addictive. Épuise les glandes surrénales. Bloque l'absorption de fer. Non approuvé."
@@ -3167,7 +3287,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Toxique / Acide"
+      "label": "Toxique / Acide",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": -0.5,
@@ -3194,7 +3315,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Non Approuvé"
+      "label": "Non Approuvé",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": -0.5,
@@ -3222,7 +3344,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Acide Fermenté"
+      "label": "Acide Fermenté",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": -1.5,
@@ -3249,7 +3372,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Animal / Très Acide"
+      "label": "Animal / Très Acide",
+      "sebiStatus": "non_approved"
     },
     "scientific_defaults": {
       "pral": 7.8,
@@ -3278,7 +3402,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Animal / Très Acide"
+      "label": "Animal / Très Acide",
+      "sebiStatus": "non_approved"
     },
     "scientific_defaults": {
       "pral": 8.2,
@@ -3305,7 +3430,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Animal / Acide"
+      "label": "Animal / Acide",
+      "sebiStatus": "non_approved"
     },
     "scientific_defaults": {
       "pral": 10.9,
@@ -3334,7 +3460,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Animal / Acide"
+      "label": "Animal / Acide",
+      "sebiStatus": "non_approved"
     },
     "scientific_defaults": {
       "pral": 7.9,
@@ -3361,7 +3488,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Transformé / Très Acide"
+      "label": "Transformé / Très Acide",
+      "sebiStatus": "non_approved"
     },
     "scientific_defaults": {
       "pral": 14.6,
@@ -3390,7 +3518,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Charcuterie / Acide"
+      "label": "Charcuterie / Acide",
+      "sebiStatus": "non_approved"
     },
     "scientific_defaults": {
       "pral": 10.2,
@@ -3419,7 +3548,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Charcuterie / Ultra-Acide"
+      "label": "Charcuterie / Ultra-Acide",
+      "sebiStatus": "non_approved"
     },
     "scientific_defaults": {
       "pral": 12.1,
@@ -3447,7 +3577,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Animal / Acide"
+      "label": "Animal / Acide",
+      "sebiStatus": "non_approved"
     },
     "scientific_defaults": {
       "pral": 7.6,
@@ -3473,7 +3604,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Animal / Acide"
+      "label": "Animal / Acide",
+      "sebiStatus": "non_approved"
     },
     "scientific_defaults": {
       "pral": 8.1,
@@ -3500,7 +3632,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Ultra-Transformé / Acide"
+      "label": "Ultra-Transformé / Acide",
+      "sebiStatus": "non_approved"
     },
     "scientific_defaults": {
       "pral": 7.4,
@@ -3526,7 +3659,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Charcuterie / Ultra-Acide"
+      "label": "Charcuterie / Ultra-Acide",
+      "sebiStatus": "non_approved"
     },
     "scientific_defaults": {
       "pral": 15.2,
@@ -3554,7 +3688,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Charcuterie Affinée"
+      "label": "Charcuterie Affinée",
+      "sebiStatus": "non_approved"
     },
     "scientific_defaults": {
       "pral": 10.8,
@@ -3580,7 +3715,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Transformé / Ultra-Acide"
+      "label": "Transformé / Ultra-Acide",
+      "sebiStatus": "non_approved"
     },
     "scientific_defaults": {
       "pral": 18.5,
@@ -3608,7 +3744,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Animal / Acide"
+      "label": "Animal / Acide",
+      "sebiStatus": "non_approved"
     },
     "scientific_defaults": {
       "pral": 8.7,
@@ -3636,7 +3773,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Animal / Acide"
+      "label": "Animal / Acide",
+      "sebiStatus": "non_approved"
     },
     "scientific_defaults": {
       "pral": 7.4,
@@ -3663,7 +3801,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Animal / Acide"
+      "label": "Animal / Acide",
+      "sebiStatus": "non_approved"
     },
     "scientific_defaults": {
       "pral": 9.9,
@@ -3690,7 +3829,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Animal / Acide"
+      "label": "Animal / Acide",
+      "sebiStatus": "non_approved"
     },
     "scientific_defaults": {
       "pral": 7.2,
@@ -3717,7 +3857,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Ultra-Transformé / Acide"
+      "label": "Ultra-Transformé / Acide",
+      "sebiStatus": "non_approved"
     },
     "scientific_defaults": {
       "pral": 6.8,
@@ -3743,7 +3884,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Animal / Acide"
+      "label": "Animal / Acide",
+      "sebiStatus": "non_approved"
     },
     "scientific_defaults": {
       "pral": 8.2,
@@ -3770,7 +3912,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Animal / Acide"
+      "label": "Animal / Acide",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": 9.4,
@@ -3799,7 +3942,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Animal / Acide"
+      "label": "Animal / Acide",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": 7.9,
@@ -3825,7 +3969,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Transformé / Acide"
+      "label": "Transformé / Acide",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": 8.3,
@@ -3852,7 +3997,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Animal / Acide"
+      "label": "Animal / Acide",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": 6.8,
@@ -3878,14 +4024,15 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Animal / Acide"
+      "label": "Animal / Acide",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": 8.1,
       "density": 25
     },
     "source": "USDA FoodData Central",
-    "note": "Riches en calcium et oméga-3 mais calcium inorganique selon Sebi."
+    "note": "Aliment d'origine animale acidifiant (PRAL +8.1). Exclu du Guide Nutritionnel Dr. Sebi et classé fortement mucogène dans le système Arnold Ehret."
   },
   {
     "id": "sardines_canned",
@@ -3905,7 +4052,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Transformé / Acide"
+      "label": "Transformé / Acide",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": 7.6,
@@ -3931,7 +4079,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Animal / Acide"
+      "label": "Animal / Acide",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": 8.6,
@@ -3958,7 +4107,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Animal / Acide"
+      "label": "Animal / Acide",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": 7.1,
@@ -3985,7 +4135,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Animal / Acide"
+      "label": "Animal / Acide",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": 6.9,
@@ -4012,7 +4163,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Animal / Légèrement Acide"
+      "label": "Animal / Légèrement Acide",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": 3.4,
@@ -4041,7 +4193,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Animal / Acide"
+      "label": "Animal / Acide",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": 4.6,
@@ -4066,7 +4219,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Animal / Acide"
+      "label": "Animal / Acide",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": 6.2,
@@ -4093,7 +4247,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Ultra-Transformé / Acide"
+      "label": "Ultra-Transformé / Acide",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": 4.5,
@@ -4119,7 +4274,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Laitier / Très Acide"
+      "label": "Laitier / Très Acide",
+      "sebiStatus": "non_approved"
     },
     "scientific_defaults": {
       "pral": 8.7,
@@ -4147,7 +4303,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Laitier / Acide"
+      "label": "Laitier / Acide",
+      "sebiStatus": "non_approved"
     },
     "scientific_defaults": {
       "pral": 6.5,
@@ -4174,7 +4331,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Laitier / Très Acide"
+      "label": "Laitier / Très Acide",
+      "sebiStatus": "non_approved"
     },
     "scientific_defaults": {
       "pral": 11.3,
@@ -4201,7 +4359,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Laitier / Acide"
+      "label": "Laitier / Acide",
+      "sebiStatus": "non_approved"
     },
     "scientific_defaults": {
       "pral": 5.4,
@@ -4228,7 +4387,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Laitier / Acide"
+      "label": "Laitier / Acide",
+      "sebiStatus": "non_approved"
     },
     "scientific_defaults": {
       "pral": 4.2,
@@ -4255,7 +4415,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Laitier / Légèrement Acide"
+      "label": "Laitier / Légèrement Acide",
+      "sebiStatus": "non_approved"
     },
     "scientific_defaults": {
       "pral": 1.5,
@@ -4283,7 +4444,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Laitier / Acide"
+      "label": "Laitier / Acide",
+      "sebiStatus": "non_approved"
     },
     "scientific_defaults": {
       "pral": 3.5,
@@ -4309,7 +4471,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Laitier / Acide"
+      "label": "Laitier / Acide",
+      "sebiStatus": "non_approved"
     },
     "scientific_defaults": {
       "pral": 0.6,
@@ -4338,7 +4501,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Laitier / Acide"
+      "label": "Laitier / Acide",
+      "sebiStatus": "non_approved"
     },
     "scientific_defaults": {
       "pral": 0.5,
@@ -4365,7 +4529,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Ultra-Transformé / Acide"
+      "label": "Ultra-Transformé / Acide",
+      "sebiStatus": "non_approved"
     },
     "scientific_defaults": {
       "pral": 0.6,
@@ -4392,7 +4557,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Isolat / Très Acide"
+      "label": "Isolat / Très Acide",
+      "sebiStatus": "non_approved"
     },
     "scientific_defaults": {
       "pral": 26.8,
@@ -4419,10 +4585,11 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Animal / Très Acide"
+      "label": "Animal / Très Acide",
+      "sebiStatus": "non_approved"
     },
     "scientific_defaults": {
-      "pral": 11.0,
+      "pral": 11,
       "density": 15
     },
     "source": "USDA FoodData Central",
@@ -4446,7 +4613,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Animal / Acide"
+      "label": "Animal / Acide",
+      "sebiStatus": "non_approved"
     },
     "scientific_defaults": {
       "pral": 4.5,
@@ -4473,10 +4641,11 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Animal / Acide"
+      "label": "Animal / Acide",
+      "sebiStatus": "non_approved"
     },
     "scientific_defaults": {
-      "pral": 8.0,
+      "pral": 8,
       "density": 16
     },
     "source": "USDA FoodData Central"
@@ -4500,7 +4669,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Légumineuse / Légèrement Acide"
+      "label": "Légumineuse / Légèrement Acide",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": 1.3,
@@ -4528,10 +4698,11 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Légumineuse / Neutre"
+      "label": "Légumineuse / Neutre",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
-      "pral": 1.0,
+      "pral": 1,
       "density": 60
     },
     "source": "USDA FoodData Central"
@@ -4554,7 +4725,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Légumineuse / Légèrement Acide"
+      "label": "Légumineuse / Légèrement Acide",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": 1.6,
@@ -4581,7 +4753,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Légumineuse / Légèrement Acide"
+      "label": "Légumineuse / Légèrement Acide",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": 1.8,
@@ -4608,7 +4781,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Légumineuse / Neutre"
+      "label": "Légumineuse / Neutre",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": 0.9,
@@ -4634,7 +4808,8 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Hybride / Soja"
+      "label": "Hybride / Soja",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": 3.6,
@@ -4662,7 +4837,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Légumineuse / Légèrement Alcalin"
+      "label": "Légumineuse / Légèrement Alcalin",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": -1.8,
@@ -4690,7 +4866,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Légumineuse / Légèrement Acide"
+      "label": "Légumineuse / Légèrement Acide",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": 1.2,
@@ -4717,7 +4894,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Légumineuse / Légèrement Acide"
+      "label": "Légumineuse / Légèrement Acide",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": 0.7,
@@ -4743,7 +4921,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Légumineuse / Légèrement Acide"
+      "label": "Légumineuse / Légèrement Acide",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": 1.4,
@@ -4767,10 +4946,11 @@
       "label": "Brut · Vivant"
     },
     "specific": {
-      "mucus": "Neutre",
+      "mucus": "Dissolvant",
       "hybrid": false,
       "electric": false,
-      "label": "Non Classifié Dr. Sebi"
+      "label": "Alcalinisant & Dissolvant",
+      "sebiStatus": "natural_alkaline"
     },
     "scientific_defaults": {
       "pral": -1.5,
@@ -4797,7 +4977,8 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": false,
-      "label": "Alcalin"
+      "label": "Alcalinisant & Dissolvant",
+      "sebiStatus": "natural_alkaline"
     },
     "scientific_defaults": {
       "pral": -2.8,
@@ -4823,7 +5004,8 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": false,
-      "label": "Alcalin"
+      "label": "Alcalinisant & Dissolvant",
+      "sebiStatus": "natural_alkaline"
     },
     "scientific_defaults": {
       "pral": -3.2,
@@ -4850,7 +5032,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Alcalin / Amidon naturel"
+      "label": "Alcalin / Amidon naturel",
+      "sebiStatus": "natural_alkaline"
     },
     "scientific_defaults": {
       "pral": -0.8,
@@ -4876,7 +5059,8 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": false,
-      "label": "Alcalin"
+      "label": "Alcalinisant & Dissolvant",
+      "sebiStatus": "natural_alkaline"
     },
     "scientific_defaults": {
       "pral": -2.1,
@@ -4900,10 +5084,11 @@
       "label": "Brut · Vivant"
     },
     "specific": {
-      "mucus": "Neutre",
+      "mucus": "Dissolvant",
       "hybrid": false,
       "electric": false,
-      "label": "Alcalin"
+      "label": "Alcalinisant & Dissolvant",
+      "sebiStatus": "natural_alkaline"
     },
     "scientific_defaults": {
       "pral": -1.8,
@@ -4930,10 +5115,11 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": false,
-      "label": "Antioxydant puissant"
+      "label": "Alcalinisant & Dissolvant",
+      "sebiStatus": "natural_alkaline"
     },
     "scientific_defaults": {
-      "pral": -3.0,
+      "pral": -3,
       "density": 88
     },
     "source": "USDA FoodData Central"
@@ -4954,10 +5140,11 @@
       "label": "Brut · Vivant"
     },
     "specific": {
-      "mucus": "Neutre",
+      "mucus": "Dissolvant",
       "hybrid": false,
       "electric": false,
-      "label": "Alcalin"
+      "label": "Alcalinisant & Dissolvant",
+      "sebiStatus": "natural_alkaline"
     },
     "scientific_defaults": {
       "pral": -2.5,
@@ -4984,7 +5171,8 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": false,
-      "label": "Alcalin"
+      "label": "Alcalinisant & Dissolvant",
+      "sebiStatus": "natural_alkaline"
     },
     "scientific_defaults": {
       "pral": -4.8,
@@ -5011,7 +5199,8 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": false,
-      "label": "Alcalin / Vitamine C"
+      "label": "Alcalinisant & Dissolvant",
+      "sebiStatus": "natural_alkaline"
     },
     "scientific_defaults": {
       "pral": -4.1,
@@ -5037,7 +5226,8 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Hybride (sans pépins)"
+      "label": "Hybride (sans pépins)",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": -1.8,
@@ -5061,10 +5251,11 @@
       "label": "Brut"
     },
     "specific": {
-      "mucus": "Mucogène",
+      "mucus": "Dissolvant",
       "hybrid": false,
       "electric": false,
-      "label": "Trop Acide / Non Approuvé"
+      "label": "Astringent / Alcalinisant rénal",
+      "sebiStatus": "natural_alkaline"
     },
     "scientific_defaults": {
       "pral": -1.9,
@@ -5090,14 +5281,17 @@
     "specific": {
       "mucus": "Dissolvant",
       "hybrid": false,
-      "electric": false,
-      "label": "Électrique (inclus dans Berries)"
+      "electric": true,
+      "label": "Électrique (Dr. Sebi - Baies)",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -2.8,
       "density": 90
     },
-    "source": "USDA FoodData Central"
+    "source": "USDA FoodData Central",
+    "approved": true,
+    "electric": true
   },
   {
     "id": "blackberry",
@@ -5117,14 +5311,17 @@
     "specific": {
       "mucus": "Dissolvant",
       "hybrid": false,
-      "electric": false,
-      "label": "Électrique (inclus dans Berries)"
+      "electric": true,
+      "label": "Électrique (Dr. Sebi - Baies)",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -2.1,
       "density": 88
     },
-    "source": "USDA FoodData Central"
+    "source": "USDA FoodData Central",
+    "approved": true,
+    "electric": true
   },
   {
     "id": "blueberry",
@@ -5144,14 +5341,17 @@
     "specific": {
       "mucus": "Dissolvant",
       "hybrid": false,
-      "electric": false,
-      "label": "Électrique (inclus dans Berries)"
+      "electric": true,
+      "label": "Électrique (Dr. Sebi - Baies)",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -1.5,
       "density": 90
     },
-    "source": "USDA FoodData Central"
+    "source": "USDA FoodData Central",
+    "approved": true,
+    "electric": true
   },
   {
     "id": "strawberry",
@@ -5171,14 +5371,17 @@
     "specific": {
       "mucus": "Dissolvant",
       "hybrid": false,
-      "electric": false,
-      "label": "Électrique (inclus dans Berries)"
+      "electric": true,
+      "label": "Électrique (Dr. Sebi - Baies)",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -2.2,
       "density": 88
     },
-    "source": "USDA FoodData Central"
+    "source": "USDA FoodData Central",
+    "approved": true,
+    "electric": true
   },
   {
     "id": "sweet_corn_fresh",
@@ -5199,7 +5402,8 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Hybride (Sucre Modifié)"
+      "label": "Hybride (Sucre Modifié)",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": -1.7,
@@ -5226,7 +5430,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Exclu par Dr. Sebi"
+      "label": "Exclu par Dr. Sebi",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": 2.2,
@@ -5253,7 +5458,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Champignon Alcalin"
+      "label": "Champignon Alcalin",
+      "sebiStatus": "natural_alkaline"
     },
     "scientific_defaults": {
       "pral": -1.4,
@@ -5280,7 +5486,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Champignon Approuvé"
+      "label": "Champignon Approuvé",
+      "sebiStatus": "natural_alkaline"
     },
     "scientific_defaults": {
       "pral": -1.8,
@@ -5307,7 +5514,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Alcalin / Non classifié Dr. Sebi"
+      "label": "Alcalin / Non classifié Dr. Sebi",
+      "sebiStatus": "natural_alkaline"
     },
     "scientific_defaults": {
       "pral": -0.4,
@@ -5335,7 +5543,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Alcalin"
+      "label": "Alcalin",
+      "sebiStatus": "natural_alkaline"
     },
     "scientific_defaults": {
       "pral": -5.6,
@@ -5362,7 +5571,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Alcalin / Non classifié"
+      "label": "Alcalin / Non classifié",
+      "sebiStatus": "natural_alkaline"
     },
     "scientific_defaults": {
       "pral": -3.4,
@@ -5388,7 +5598,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Alcalin / Non classifié"
+      "label": "Alcalin / Non classifié",
+      "sebiStatus": "natural_alkaline"
     },
     "scientific_defaults": {
       "pral": -4.9,
@@ -5414,7 +5625,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Alcalin / Non classifié"
+      "label": "Alcalin / Non classifié",
+      "sebiStatus": "natural_alkaline"
     },
     "scientific_defaults": {
       "pral": -3.5,
@@ -5441,7 +5653,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Alcalin"
+      "label": "Alcalin",
+      "sebiStatus": "natural_alkaline"
     },
     "scientific_defaults": {
       "pral": -3.7,
@@ -5468,7 +5681,8 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": false,
-      "label": "Alcalin / Approuvé (bulbe)"
+      "label": "Alcalin / Approuvé (bulbe)",
+      "sebiStatus": "natural_alkaline"
     },
     "scientific_defaults": {
       "pral": -4.2,
@@ -5496,7 +5710,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Alcalin"
+      "label": "Alcalin",
+      "sebiStatus": "natural_alkaline"
     },
     "scientific_defaults": {
       "pral": -5.5,
@@ -5524,7 +5739,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Alcalin"
+      "label": "Alcalin",
+      "sebiStatus": "natural_alkaline"
     },
     "scientific_defaults": {
       "pral": -7.1,
@@ -5552,7 +5768,8 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": false,
-      "label": "Alcalin / Minéral"
+      "label": "Alcalin / Minéral",
+      "sebiStatus": "natural_alkaline"
     },
     "scientific_defaults": {
       "pral": -5.9,
@@ -5580,7 +5797,8 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": false,
-      "label": "Alcalin / Minéral"
+      "label": "Alcalin / Minéral",
+      "sebiStatus": "natural_alkaline"
     },
     "scientific_defaults": {
       "pral": -5.5,
@@ -5606,7 +5824,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Alcalin"
+      "label": "Alcalin",
+      "sebiStatus": "natural_alkaline"
     },
     "scientific_defaults": {
       "pral": -4.2,
@@ -5634,7 +5853,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Alcalin"
+      "label": "Alcalin",
+      "sebiStatus": "natural_alkaline"
     },
     "scientific_defaults": {
       "pral": -4.8,
@@ -5657,10 +5877,11 @@
       "label": "Brut"
     },
     "specific": {
-      "mucus": "Mucogène",
+      "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Exclu par Dr. Sebi"
+      "label": "Faible Densité Minérale",
+      "sebiStatus": "natural_alkaline"
     },
     "scientific_defaults": {
       "pral": -0.2,
@@ -5688,7 +5909,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Alcalin"
+      "label": "Alcalin",
+      "sebiStatus": "natural_alkaline"
     },
     "scientific_defaults": {
       "pral": -1.6,
@@ -5716,7 +5938,8 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": false,
-      "label": "Vivant / Alcalin"
+      "label": "Alcalinisant & Vivant",
+      "sebiStatus": "natural_alkaline"
     },
     "scientific_defaults": {
       "pral": -3.5,
@@ -5743,7 +5966,8 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": false,
-      "label": "Ultra-Vivant"
+      "label": "Alcalinisant & Vivant",
+      "sebiStatus": "natural_alkaline"
     },
     "scientific_defaults": {
       "pral": -3.8,
@@ -5770,7 +5994,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Alcalin / Oméga-3"
+      "label": "Alcalin / Oméga-3",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": -1.8,
@@ -5798,10 +6023,11 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Alcalin / Oméga-3"
+      "label": "Alcalin / Oméga-3",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
-      "pral": -1.0,
+      "pral": -1,
       "density": 85
     },
     "source": "USDA FoodData Central",
@@ -5826,7 +6052,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Légèrement Acide"
+      "label": "Légèrement Acide",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": 2.1,
@@ -5854,7 +6081,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Légèrement Acide"
+      "label": "Légèrement Acide",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": 2.6,
@@ -5881,7 +6109,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Légèrement Acide"
+      "label": "Légèrement Acide",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": 3.8,
@@ -5907,7 +6136,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Légèrement Acide"
+      "label": "Légèrement Acide",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": 2.2,
@@ -5934,7 +6164,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Légèrement Acide"
+      "label": "Légèrement Acide",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": 3.5,
@@ -5960,7 +6191,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Légèrement Acide"
+      "label": "Légèrement Acide",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": 1.8,
@@ -5987,7 +6219,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Oméga-3 / Non listé Sebi"
+      "label": "Oméga-3 / Non listé Sebi",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": -0.2,
@@ -6013,7 +6246,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Oméga-3 / Non listé Sebi"
+      "label": "Oméga-3 / Non listé Sebi",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": -0.3,
@@ -6040,10 +6274,11 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Hybride / Raffiné"
+      "label": "Hybride / Raffiné",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
-      "pral": 0.0,
+      "pral": 0,
       "density": 15
     },
     "source": "USDA FoodData Central",
@@ -6068,10 +6303,11 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Mélange Hybride Raffiné"
+      "label": "Mélange Hybride Raffiné",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
-      "pral": 0.0,
+      "pral": 0,
       "density": 10
     },
     "source": "USDA FoodData Central",
@@ -6095,10 +6331,11 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Saturé / Non recommandé"
+      "label": "Saturé / Non recommandé",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
-      "pral": 0.0,
+      "pral": 0,
       "density": 18
     },
     "source": "USDA FoodData Central",
@@ -6122,10 +6359,11 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Oméga-6 / Raffiné"
+      "label": "Oméga-6 / Raffiné",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
-      "pral": 0.0,
+      "pral": 0,
       "density": 20
     },
     "source": "USDA FoodData Central"
@@ -6149,7 +6387,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Animal / Saturé"
+      "label": "Animal / Saturé",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": 0.3,
@@ -6176,10 +6415,11 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique / Eau Approuvée"
+      "label": "Électrique / Eau Approuvée",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -5.0,
+      "pral": -5,
       "density": 100
     },
     "source": "USDA FoodData Central",
@@ -6204,10 +6444,11 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Non Approuvée (Chlore/Fluor)"
+      "label": "Non Approuvée (Chlore/Fluor)",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
-      "pral": 0.0,
+      "pral": 0,
       "density": 30
     },
     "source": "USDA FoodData Central",
@@ -6231,10 +6472,11 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Eau Morte (0 Minéraux)"
+      "label": "Eau Morte (0 Minéraux)",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
-      "pral": 0.0,
+      "pral": 0,
       "density": 5
     },
     "source": "USDA FoodData Central",
@@ -6259,10 +6501,11 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Acceptable (CO2)"
+      "label": "Acceptable (CO2)",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
-      "pral": -3.0,
+      "pral": -3,
       "density": 70
     },
     "source": "USDA FoodData Central",
@@ -6286,7 +6529,8 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique / Hydratant"
+      "label": "Électrique / Hydratant",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -6.8,
@@ -6314,7 +6558,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Légèrement Acide / Caféine"
+      "label": "Légèrement Acide / Caféine",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": -0.5,
@@ -6342,7 +6587,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Acide / Caféine"
+      "label": "Acide / Caféine",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": -0.3,
@@ -6369,7 +6615,8 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Pasteurisé / Hybride"
+      "label": "Pasteurisé / Hybride",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": -2.9,
@@ -6396,7 +6643,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Pasteurisé / Sucre rapide"
+      "label": "Pasteurisé / Sucre rapide",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": -2.2,
@@ -6425,7 +6673,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Ultra-Acide / pH 2.5"
+      "label": "Ultra-Acide / pH 2.5",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": -0.1,
@@ -6454,7 +6703,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Ultra-Acide / Stimulant"
+      "label": "Ultra-Acide / Stimulant",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": -0.2,
@@ -6481,7 +6731,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Ultra-Transformé"
+      "label": "Ultra-Transformé",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": -1.5,
@@ -6507,7 +6758,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Fermenté / Variable"
+      "label": "Fermenté / Variable",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": -1.2,
@@ -6535,10 +6787,11 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique / Approuvé si liste Sebi"
+      "label": "Électrique / Approuvé si liste Sebi",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -3.0,
+      "pral": -3,
       "density": 78
     },
     "source": "USDA FoodData Central",
@@ -6562,7 +6815,8 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Hybride / Amidon"
+      "label": "Hybride / Amidon",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": -0.5,
@@ -6589,7 +6843,8 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Hybride / Transformé"
+      "label": "Hybride / Transformé",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": -1.2,
@@ -6616,7 +6871,8 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Riz blanc / Transformé"
+      "label": "Riz blanc / Transformé",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": 0.5,
@@ -6644,7 +6900,8 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Blé Hybride / Raffiné"
+      "label": "Blé Hybride / Raffiné",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": 3.7,
@@ -6672,7 +6929,8 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Blé Hybride / Moins Raffiné"
+      "label": "Blé Hybride / Moins Raffiné",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": 1.8,
@@ -6700,7 +6958,8 @@
       "mucus": "Neutre",
       "hybrid": true,
       "electric": false,
-      "label": "Fermenté / Moins Acide"
+      "label": "Fermenté / Moins Acide",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": 1.2,
@@ -6728,7 +6987,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Approuvé (Épeautre)"
+      "label": "Approuvé (Épeautre)",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -0.3,
@@ -6756,7 +7016,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Approuvé (Seigle)"
+      "label": "Approuvé (Seigle)",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -0.5,
@@ -6783,7 +7044,8 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Hybride / Nixtamal"
+      "label": "Hybride / Nixtamal",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": 1.5,
@@ -6810,7 +7072,8 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Blé Hybride / NOVA 4"
+      "label": "Blé Hybride / NOVA 4",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": 3.5,
@@ -6837,7 +7100,8 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Ultra-Transformé"
+      "label": "Ultra-Transformé",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": 4.2,
@@ -6864,7 +7128,8 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Blé + Laitier / Très Acide"
+      "label": "Blé + Laitier / Très Acide",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": 4.8,
@@ -6893,7 +7158,8 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Blé Hybride / Amidon"
+      "label": "Blé Hybride / Amidon",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": 4.1,
@@ -6920,7 +7186,8 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Blé Hybride / Moins Raffiné"
+      "label": "Blé Hybride / Moins Raffiné",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": 3.5,
@@ -6947,10 +7214,11 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Hybride / Moins Raffiné que Riz Blanc"
+      "label": "Hybride / Moins Raffiné que Riz Blanc",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
-      "pral": 1.0,
+      "pral": 1,
       "density": 40
     },
     "source": "USDA FoodData Central",
@@ -6974,7 +7242,8 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Hybride / Raffiné"
+      "label": "Hybride / Raffiné",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": 1.7,
@@ -7001,7 +7270,8 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Non Approuvé / Avenine"
+      "label": "Non Approuvé / Avenine",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": 3.2,
@@ -7028,7 +7298,8 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Ultra-Transformé / Sucré"
+      "label": "Ultra-Transformé / Sucré",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": 2.5,
@@ -7055,7 +7326,8 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Ultra-Transformé / Maïs Hybride"
+      "label": "Ultra-Transformé / Maïs Hybride",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": 2.8,
@@ -7083,7 +7355,8 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Ultra-Transformé / Très Acide"
+      "label": "Ultra-Transformé / Très Acide",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": 12.8,
@@ -7110,7 +7383,8 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Ultra-Transformé / Acide"
+      "label": "Ultra-Transformé / Acide",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": 6.5,
@@ -7137,7 +7411,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Sucre + Laitier / Acide"
+      "label": "Sucre + Laitier / Acide",
+      "sebiStatus": "non_approved"
     },
     "scientific_defaults": {
       "pral": 3.2,
@@ -7164,7 +7439,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Légèrement Acide / Cacao"
+      "label": "Légèrement Acide / Cacao",
+      "sebiStatus": "non_approved"
     },
     "scientific_defaults": {
       "pral": 0.4,
@@ -7192,7 +7468,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Alcalin / Magnésium"
+      "label": "Alcalin / Magnésium",
+      "sebiStatus": "non_approved"
     },
     "scientific_defaults": {
       "pral": -2.5,
@@ -7219,7 +7496,8 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Blé Hybride / Sel"
+      "label": "Blé Hybride / Sel",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": 5.6,
@@ -7245,7 +7523,8 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Maïs Hybride"
+      "label": "Maïs Hybride",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": -0.2,
@@ -7271,7 +7550,8 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Riz Hybride / Raffiné"
+      "label": "Riz Hybride / Raffiné",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": 1.5,
@@ -7298,7 +7578,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Ultra-Transformé / Protéines Isolées"
+      "label": "Ultra-Transformé / Protéines Isolées",
+      "sebiStatus": "non_approved"
     },
     "scientific_defaults": {
       "pral": 8.5,
@@ -7326,7 +7607,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Sucre Pur / Acide"
+      "label": "Sucre Pur / Acide",
+      "sebiStatus": "non_approved"
     },
     "scientific_defaults": {
       "pral": 0.2,
@@ -7354,7 +7636,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Animal (Gélatine) / Sucre"
+      "label": "Animal (Gélatine) / Sucre",
+      "sebiStatus": "non_approved"
     },
     "scientific_defaults": {
       "pral": 0.5,
@@ -7381,7 +7664,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Grillé / Enzymes Détruits"
+      "label": "Grillé / Enzymes Détruits",
+      "sebiStatus": "non_approved"
     },
     "scientific_defaults": {
       "pral": 3.5,
@@ -7408,7 +7692,8 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Sucre + Hybride / Acide"
+      "label": "Sucre + Hybride / Acide",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": 1.2,
@@ -7434,7 +7719,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Légèrement Acide"
+      "label": "Légèrement Acide",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": -0.5,
@@ -7460,7 +7746,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Huile Raffinée + Œuf"
+      "label": "Huile Raffinée + Œuf",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": 3.5,
@@ -7487,7 +7774,8 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Soja Hybride / Sel"
+      "label": "Soja Hybride / Sel",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": -0.5,
@@ -7515,10 +7803,11 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Variable / Cayenne si naturel"
+      "label": "Variable / Cayenne si naturel",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
-      "pral": -1.0,
+      "pral": -1,
       "density": 22
     },
     "source": "USDA FoodData Central",
@@ -7543,10 +7832,11 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Approuvé (Sésame Cru)"
+      "label": "Approuvé (Sésame Cru)",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -1.0,
+      "pral": -1,
       "density": 78
     },
     "source": "USDA FoodData Central",
@@ -7570,7 +7860,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Pois chiche + Tahini"
+      "label": "Pois chiche + Tahini",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": 0.8,
@@ -7596,7 +7887,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": true,
-      "label": "Approuvé (Avocat)"
+      "label": "Approuvé (Avocat)",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -6.5,
@@ -7623,7 +7915,8 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Variable"
+      "label": "Variable",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": -1.5,
@@ -7651,10 +7944,11 @@
       "mucus": "Neutre",
       "hybrid": false,
       "electric": false,
-      "label": "Légèrement Acide"
+      "label": "Légèrement Acide",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
-      "pral": -2.0,
+      "pral": -2,
       "density": 42
     },
     "source": "USDA FoodData Central",
@@ -7679,7 +7973,8 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Légumineuse / Acide"
+      "label": "Légumineuse / Acide",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
       "pral": 6.2,
@@ -7706,7 +8001,8 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Ultra-Transformé / Très Acide"
+      "label": "Ultra-Transformé / Très Acide",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": 9.5,
@@ -7731,7 +8027,8 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Blé + Laitier / Très Acide"
+      "label": "Blé + Laitier / Très Acide",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": 5.8,
@@ -7758,7 +8055,8 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Ultra-Transformé / Acide"
+      "label": "Ultra-Transformé / Acide",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": 8.2,
@@ -7786,7 +8084,8 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Ultra-Transformé / Acide"
+      "label": "Ultra-Transformé / Acide",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
       "pral": 4.8,
@@ -7814,10 +8113,11 @@
       "mucus": "Mucogène",
       "hybrid": true,
       "electric": false,
-      "label": "Ultra-Transformé"
+      "label": "Ultra-Transformé",
+      "sebiStatus": "hybrid"
     },
     "scientific_defaults": {
-      "pral": 4.0,
+      "pral": 4,
       "density": 2
     },
     "source": "USDA FoodData Central"
@@ -7841,10 +8141,11 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Synthétique / Inorganique"
+      "label": "Synthétique / Inorganique",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
-      "pral": 0.0,
+      "pral": 0,
       "density": 0
     },
     "source": "USDA FoodData Central",
@@ -7869,10 +8170,11 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Synthétique / Inorganique"
+      "label": "Synthétique / Inorganique",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
-      "pral": 0.0,
+      "pral": 0,
       "density": 0
     },
     "source": "USDA FoodData Central"
@@ -7896,10 +8198,11 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Synthétique / Inorganique"
+      "label": "Synthétique / Inorganique",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
-      "pral": 2.0,
+      "pral": 2,
       "density": 0
     },
     "source": "USDA FoodData Central",
@@ -7923,7 +8226,8 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique / Protéine végétale"
+      "label": "Électrique / Protéine végétale",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -3.5,
@@ -7950,10 +8254,11 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": true,
-      "label": "Électrique / Détoxifiant"
+      "label": "Électrique / Détoxifiant",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
-      "pral": -3.0,
+      "pral": -3,
       "density": 90
     },
     "source": "USDA FoodData Central",
@@ -7978,7 +8283,8 @@
       "mucus": "Dissolvant",
       "hybrid": false,
       "electric": true,
-      "label": "Approuvé (si wildcrafted)"
+      "label": "Approuvé (si wildcrafted)",
+      "sebiStatus": "sebi_official"
     },
     "scientific_defaults": {
       "pral": -5.5,
@@ -8006,13 +8312,222 @@
       "mucus": "Mucogène",
       "hybrid": false,
       "electric": false,
-      "label": "Animal / Acide"
+      "label": "Animal / Acide",
+      "sebiStatus": "neutral_traditional"
     },
     "scientific_defaults": {
-      "pral": 15.0,
+      "pral": 15,
       "density": 3
     },
     "source": "USDA FoodData Central",
     "note": "Protéine animale concentrée. Très acide. Non approuvé Dr. Sebi."
+  },
+  {
+    "id": "ditakh",
+    "names": [
+      "ditakh",
+      "dettarium",
+      "dettarium senegalense",
+      "ditax",
+      "petit détar"
+    ],
+    "emoji": "🟢",
+    "family": "Fabaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 98,
+      "label": "Sauvage · Brut · Ultra-Vivant"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "sebiStatus": "wild_original",
+      "label": "⚡ Électrique & Sauvage (Dettarium - Afrique de l'Ouest)"
+    },
+    "scientific_defaults": {
+      "pral": -5.2,
+      "density": 96
+    },
+    "note": "Fruit sauvage d'Afrique de l'Ouest (Sénégal), exceptionnellement riche en vitamine C naturelle (plus que l'orange), potassium, fer et fibres mucilagineuses solubles dissolvant les toxines."
+  },
+  {
+    "id": "bouye",
+    "names": [
+      "bouye",
+      "baobab",
+      "pain de singe",
+      "baobab fruit",
+      "adansonia digitata"
+    ],
+    "emoji": "🍈",
+    "family": "Malvaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 95,
+      "label": "Sauvage · Brut · Superaliment"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "sebiStatus": "wild_original",
+      "label": "⚡ Électrique & Sauvage (Pain de Singe - Baobab)"
+    },
+    "scientific_defaults": {
+      "pral": -4.8,
+      "density": 95
+    },
+    "note": "Pulpe du fruit du baobab : 6x plus de vitamine C que l'orange, 2x plus de calcium que le lait, prébiotique originel et alcalinisant puissant."
+  },
+  {
+    "id": "madd",
+    "names": [
+      "madd",
+      "mad",
+      "saba senegalensis",
+      "saba",
+      "fruit liane"
+    ],
+    "emoji": "🟡",
+    "family": "Apocynaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 98,
+      "label": "Sauvage · Brut · Astringent"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "sebiStatus": "wild_original",
+      "label": "⚡ Électrique & Sauvage (Saba senegalensis)"
+    },
+    "scientific_defaults": {
+      "pral": -3.8,
+      "density": 92
+    },
+    "note": "Fruit sauvage des forêts et savanes d'Afrique de l'Ouest. Pulpe jaune acidulée très astringente, dissout le mucus gastrique et apporte des bio-minéraux rares."
+  },
+  {
+    "id": "bissap",
+    "names": [
+      "bissap",
+      "hibiscus",
+      "karkadé",
+      "hibiscus sabdariffa",
+      "oseille de guinée",
+      "carcadet"
+    ],
+    "emoji": "🌺",
+    "family": "Malvaceae",
+    "category": "Herbes & Thés",
+    "vitality": {
+      "nova": 1,
+      "freshness": 95,
+      "label": "Brut · Draineur"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "sebiStatus": "wild_original",
+      "label": "⚡ Électrique & Draineur Rénal (Hibiscus Originel)"
+    },
+    "scientific_defaults": {
+      "pral": -4.5,
+      "density": 90
+    },
+    "note": "Calices d'Hibiscus sabdariffa : riche en anthocyanes, draineur des reins et de la lymphe, dissout les calculs et régule la pression artérielle."
+  },
+  {
+    "id": "moringa",
+    "names": [
+      "moringa",
+      "moringa oleifera",
+      "nébédaye",
+      "arbre de vie",
+      "feuilles de moringa"
+    ],
+    "emoji": "🌿",
+    "family": "Moringaceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 98,
+      "label": "Sauvage · Bio-Minéral Suprême"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "sebiStatus": "wild_original",
+      "label": "⚡ Électrique & Bio-Minéral Suprême"
+    },
+    "scientific_defaults": {
+      "pral": -6,
+      "density": 99
+    },
+    "note": "L'Arbre de Vie : 46 antioxydants, 92 nutriments, tous les acides aminés essentiels, 4x plus de vitamine A que la carotte, 7x plus de vitamine C que l'orange."
+  },
+  {
+    "id": "mangosteen",
+    "names": [
+      "mangosteen",
+      "mangoustan",
+      "garcinia mangostana",
+      "reine des fruits"
+    ],
+    "emoji": "🟣",
+    "family": "Clusiaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 95,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": false,
+      "sebiStatus": "natural_alkaline",
+      "label": "🌿 Végétal Naturel Alcalinisant (Garcinia)"
+    },
+    "scientific_defaults": {
+      "pral": -3.5,
+      "density": 92
+    },
+    "note": "La Reine des Fruits : très riche en xanthones puissamment anti-inflammatoires et alcalinisants pour le système lymphatique."
+  },
+  {
+    "id": "camu_camu",
+    "names": [
+      "camu camu",
+      "myrciaria dubia",
+      "camu-camu"
+    ],
+    "emoji": "🍒",
+    "family": "Myrtaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 98,
+      "label": "Sauvage · Amazonien"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "sebiStatus": "wild_original",
+      "label": "⚡ Électrique & Sauvage (Amazonie)"
+    },
+    "scientific_defaults": {
+      "pral": -5.5,
+      "density": 98
+    },
+    "note": "Baie sauvage amazonienne : championne du monde de la vitamine C naturelle biodisponible (30x à 50x plus que l'orange)."
   }
 ]

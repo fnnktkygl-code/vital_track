@@ -39,8 +39,9 @@
       </div>
       
       <div class="sidebar-section">
-        <div class="sidebar-section-title">Suivi</div>
+        <div class="sidebar-section-title">Suivi & Plantes</div>
         <a href="#" class="sidebar-link" data-page="search" onclick="showPage('search')"><i class="ri-search-line"></i> Aliments</a>
+        <a href="#" class="sidebar-link" data-page="materia-medica" onclick="showPage('materia-medica')"><i class="ri-plant-line"></i> Pharmacopée</a>
         <a href="#" class="sidebar-link" data-page="scan" onclick="showPage('scan')"><i class="ri-camera-lens-line"></i> Scanner</a>
         <a href="#" class="sidebar-link" data-page="calendar" onclick="showPage('calendar')"><i class="ri-calendar-check-line"></i> Calendrier</a>
       </div>
@@ -69,6 +70,7 @@
         <a href="#" class="nav-link" data-page="chat" onclick="showPage('chat')"><i class="ri-chat-smile-3-line"></i> Chat</a>
         <a href="#" class="nav-link" data-page="scan" onclick="showPage('scan')"><i class="ri-camera-lens-fill"></i> Scanner</a>
         <a href="#" class="nav-link" data-page="search" onclick="showPage('search')"><i class="ri-search-line"></i> Aliments</a>
+        <a href="#" class="nav-link" data-page="materia-medica" onclick="showPage('materia-medica')"><i class="ri-plant-line"></i> Pharmacopée</a>
         <a href="#" class="nav-link" data-page="meals" onclick="showPage('meals')"><i class="ri-restaurant-line"></i> Repas</a>
         <a href="#" class="nav-link" data-page="calendar" onclick="showPage('calendar')"><i class="ri-calendar-check-line"></i> Calendrier</a>
         <a href="#" class="nav-link" data-page="fasting" onclick="showPage('fasting')"><i class="ri-fire-line"></i> Jeûne</a>
@@ -76,6 +78,7 @@
         <a href="#" class="nav-link" data-page="resources" onclick="showPage('resources')"><i class="ri-play-circle-line"></i> Médias</a>
         <a href="#" class="nav-link" data-page="modes" onclick="showPage('modes')"><i class="ri-settings-3-line"></i> Plus</a>
       </div>
+      <button class="lang-toggle-btn" id="globalLangToggleBtn" onclick="window.vitalTrackI18n?.toggleLanguage()" title="Changer de langue">🇫🇷 FR</button>
       <button class="theme-toggle" onclick="toggleTheme()" data-tooltip="Mode sombre/clair"><i class="ri-moon-line" id="themeIcon"></i></button>
       <button class="hamburger" onclick="toggleMobileNav()"><i class="ri-menu-3-line"></i></button>
     </div>
@@ -85,6 +88,7 @@
     <a href="#" onclick="showPage('chat'); toggleMobileNav()"><i class="ri-chat-smile-3-line"></i> Chat IA</a>
     <a href="#" onclick="showPage('scan'); toggleMobileNav()"><i class="ri-camera-lens-fill"></i> Scanner IA</a>
     <a href="#" onclick="showPage('search'); toggleMobileNav()"><i class="ri-search-line"></i> Recherche aliments</a>
+    <a href="#" onclick="showPage('materia-medica'); toggleMobileNav()"><i class="ri-plant-line"></i> Pharmacopée Amazonienne</a>
     <a href="#" onclick="showPage('meals'); toggleMobileNav()"><i class="ri-restaurant-line"></i> Mes repas</a>
     <a href="#" onclick="showPage('calendar'); toggleMobileNav()"><i class="ri-calendar-check-line"></i> Plan alimentaire</a>
     <a href="#" onclick="showPage('fasting'); toggleMobileNav()"><i class="ri-fire-line"></i> Jeûne</a>
@@ -247,7 +251,7 @@
 
       <div style="display:flex; flex-direction:column; gap:24px; margin-top:24px;">
         <!-- Weight Tracker -->
-        <div class="dash-card glass">
+        <div class="dash-card glass" id="dashWeightCard">
         <div class="card-head">
           <h3><i class="ri-scales-3-line"></i> Évolution du Poids</h3>
           <button class="chip-btn" onclick="openWeightModal()"><i class="ri-add-line"></i> Pesée</button>
@@ -256,7 +260,7 @@
           <i class="ri-scales-3-line"></i>
           <p>Ajoutez votre première pesée pour voir l'évolution.</p>
         </div>
-        <div id="weightChartContainer" style="height: 120px; width: 100%; margin-top: 16px; position: relative; display: none;">
+        <div id="weightChartContainer" style="min-height: 220px; height: 220px; width: 100%; margin-top: 16px; position: relative; display: none;">
            <svg id="weightChartSvg" width="100%" height="100%" style="overflow: visible;"></svg>
         </div>
       </div>
@@ -373,13 +377,24 @@
         <p class="subtitle">Base vitaliste — Dr. Sebi / Ehret / Morse</p>
       </div>
 
-      <!-- Search bar with clear button -->
+      <!-- Switch to Materia Medica / Pharmacopoeia Banner -->
+      <div class="materia-switch-banner" onclick="showPage('materia-medica')">
+        <span>🌿 <strong>Pharmacopée Amazonienne & Plantes Raintree</strong> — Recherche par pathologie (Crohn, calculs, candida, ulcères...)</span>
+        <button class="materia-switch-btn"><i class="ri-arrow-right-line"></i> Explorer</button>
+      </div>
+
+      <!-- Search bar with clear button and direct AI action -->
       <div class="search-bar-wrap search-bar-enhanced">
         <i class="ri-search-line search-icon-left"></i>
-        <input type="text" id="searchInput" placeholder="Chercher un aliment (ex: mangue, quinoa, kale)..." autocomplete="off" spellcheck="false">
-        <button class="search-clear-btn" id="searchClearBtn" onclick="clearSearch()" style="display:none" aria-label="Effacer la recherche">
-          <i class="ri-close-circle-fill"></i>
-        </button>
+        <input type="text" id="searchInput" placeholder="Chercher un aliment ou plat (ex: mangue, kale, pâté chinois)..." autocomplete="off" spellcheck="false">
+        <div class="search-input-actions">
+          <button class="search-clear-btn" id="searchClearBtn" onclick="clearSearch()" style="display:none" aria-label="Effacer la recherche">
+            <i class="ri-close-circle-fill"></i>
+          </button>
+          <button class="search-ai-btn" id="searchAiDirectBtn" onclick="triggerDirectAISearch()" style="display:none" title="Analyser cet aliment avec l'IA">
+            <i class="ri-sparkling-fill"></i> <span>Analyser IA</span>
+          </button>
+        </div>
       </div>
 
       <!-- Filters -->
@@ -387,8 +402,9 @@
         <button class="filter-chip active" data-filter="all" onclick="setSearchFilter('all')">Tous</button>
         <button class="filter-chip" data-filter="electric" onclick="setSearchFilter('electric')">⚡ Électriques</button>
         <button class="filter-chip" data-filter="hybrid" onclick="setSearchFilter('hybrid')">🔀 Hybrides</button>
-        <button class="filter-chip" data-filter="alkaline" onclick="setSearchFilter('alkaline')">🟢 Alcalinisants</button>
+        <button class="filter-chip" data-filter="alkaline" onclick="setSearchFilter('alkaline')">🌿 Alcalinisants & Dissolvants</button>
         <button class="filter-chip" data-filter="mucus" onclick="setSearchFilter('mucus')">⛔ Mucogènes</button>
+        <button class="filter-chip" data-filter="favorites" onclick="setSearchFilter('favorites')">❤️ Favoris</button>
       </div>
 
       <!-- Results stats bar + sort (visible only when results exist) -->
@@ -425,16 +441,114 @@
         <div class="category-browse-grid" id="categoryBrowseGrid">
           <!-- Rendered by JS after DB loads -->
         </div>
-
-        <!-- Popular foods -->
-        <div class="search-section-label" id="popularFoodsLabel" style="margin-top:18px">
-          <span><i class="ri-fire-line"></i> Aliments populaires</span>
-        </div>
-        <div class="food-results" id="popularFoodsGrid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:8px;"></div>
       </div>
 
       <!-- Live results -->
       <div class="food-results" id="foodResults" style="display:none"></div>
+    </div>
+  </main>
+
+  <!-- ═══════ PHARMACOPÉE AMAZONIENNE (RAINTREE) ═══════ -->
+  <main class="page" id="page-materia-medica">
+    <div class="materia-medica-container">
+      <!-- Header -->
+      <div class="materia-header glass">
+        <div class="materia-header-top">
+          <div>
+            <h2>🌿 Pharmacopée Amazonienne & Plantes Médicinales</h2>
+            <p class="subtitle" style="margin-top:4px">Materia Medica Botanique & Clinique — Reins, Intestin, Foie, Poumons & Lymphe</p>
+          </div>
+          <div class="materia-scientist-badge">
+            <i class="ri-microscope-line"></i> Base Dr. Leslie Taylor (Raintree)
+          </div>
+        </div>
+      </div>
+
+      <!-- Switch back to Food search banner -->
+      <div class="materia-switch-banner" onclick="showPage('search')">
+        <span>🔍 <strong>Recherche d'aliments classiques & vitalistes</strong> — Explorer fruits, légumes, graines et tables PRAL/NOVA</span>
+        <button class="materia-switch-btn"><i class="ri-arrow-left-line"></i> Aliments</button>
+      </div>
+
+      <!-- Rain-Tree Database Official Direct Navigation Portals -->
+      <div style="margin-bottom:18px; padding:12px 14px; background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:12px; display:flex; flex-direction:column; gap:8px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px;">
+          <span style="font-size:0.8rem; font-weight:700; color:var(--text); display:flex; align-items:center; gap:6px;">
+            <i class="ri-external-link-line" style="color:var(--accent);"></i> Portails de Recherche & Références Rain-Tree (Dr. Leslie Taylor) :
+          </span>
+          <span style="font-size:0.75rem; color:var(--text-dim);">Source primaire 100% vérifiée</span>
+        </div>
+        <div style="display:flex; flex-wrap:wrap; gap:8px;">
+          <a href="https://www.rain-tree.com/indicate.htm" target="_blank" rel="noopener noreferrer" class="materia-ref-link" style="padding:4px 10px; background:rgba(52,211,153,0.08); border:1px solid rgba(52,211,153,0.25); border-radius:6px; font-size:0.76rem; color:var(--accent); text-decoration:none; display:inline-flex; align-items:center; gap:4px; transition:all 0.2s;">
+            <i class="ri-stethoscope-line"></i> Indications Cliniques
+          </a>
+          <a href="https://www.rain-tree.com/ethnic.htm" target="_blank" rel="noopener noreferrer" class="materia-ref-link" style="padding:4px 10px; background:rgba(56,189,248,0.08); border:1px solid rgba(56,189,248,0.25); border-radius:6px; font-size:0.76rem; color:#38bdf8; text-decoration:none; display:inline-flex; align-items:center; gap:4px; transition:all 0.2s;">
+            <i class="ri-group-line"></i> Usages Ethnomédicaux & Tribaux
+          </a>
+          <a href="https://www.rain-tree.com/property-action.htm" target="_blank" rel="noopener noreferrer" class="materia-ref-link" style="padding:4px 10px; background:rgba(250,204,21,0.08); border:1px solid rgba(250,204,21,0.25); border-radius:6px; font-size:0.76rem; color:#facc15; text-decoration:none; display:inline-flex; align-items:center; gap:4px; transition:all 0.2s;">
+            <i class="ri-flask-line"></i> Propriétés & Actions
+          </a>
+          <a href="https://www.rain-tree.com/prepmethod.htm" target="_blank" rel="noopener noreferrer" class="materia-ref-link" style="padding:4px 10px; background:rgba(168,85,247,0.08); border:1px solid rgba(168,85,247,0.25); border-radius:6px; font-size:0.76rem; color:#c084fc; text-decoration:none; display:inline-flex; align-items:center; gap:4px; transition:all 0.2s;">
+            <i class="ri-cup-line"></i> Méthodes de Préparation
+          </a>
+          <a href="https://www.rain-tree.com/articles.htm" target="_blank" rel="noopener noreferrer" class="materia-ref-link" style="padding:4px 10px; background:rgba(244,63,94,0.08); border:1px solid rgba(244,63,94,0.25); border-radius:6px; font-size:0.76rem; color:#fb7185; text-decoration:none; display:inline-flex; align-items:center; gap:4px; transition:all 0.2s;">
+            <i class="ri-article-line"></i> Articles & Recherches Publiées
+          </a>
+          <a href="https://www.rain-tree.com/plist.htm" target="_blank" rel="noopener noreferrer" class="materia-ref-link" style="padding:4px 10px; background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:6px; font-size:0.76rem; color:var(--text-dim); text-decoration:none; display:inline-flex; align-items:center; gap:4px; transition:all 0.2s;">
+            <i class="ri-list-check"></i> Index Alphabétique A-Z
+          </a>
+          <a href="https://www.rain-tree.com/plistbot.htm" target="_blank" rel="noopener noreferrer" class="materia-ref-link" style="padding:4px 10px; background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:6px; font-size:0.76rem; color:var(--text-dim); text-decoration:none; display:inline-flex; align-items:center; gap:4px; transition:all 0.2s;">
+            <i class="ri-plant-line"></i> Index Botanique Latin
+          </a>
+        </div>
+      </div>
+
+      <!-- Search bar with clear button -->
+      <div class="herb-search-wrap">
+        <i class="ri-search-line herb-search-icon-left"></i>
+        <input type="text" id="herbSearchInput" class="herb-search-input" placeholder="Rechercher par pathologie (ex: Crohn, calculs rénaux, candida, ulcère, foie, asthme), plante ou principe actif..." autocomplete="off" spellcheck="false" oninput="handleHerbSearchInput()">
+        <button class="herb-clear-btn" id="herbClearBtn" onclick="clearHerbSearch()" style="display:none" aria-label="Effacer la recherche">
+          <i class="ri-close-circle-fill"></i>
+        </button>
+      </div>
+
+      <!-- Filter chips by organ / clinical condition -->
+      <div class="materia-chips-row" id="materiaChipsRow">
+        <button class="materia-chip active" data-filter="all" onclick="setHerbFilter('all')">Tous</button>
+        <button class="materia-chip" data-filter="reins" onclick="setHerbFilter('reins')">🪨 Reins & Lithiases</button>
+        <button class="materia-chip" data-filter="crohn" onclick="setHerbFilter('crohn')">🐾 Intestin & Crohn</button>
+        <button class="materia-chip" data-filter="ulcere" onclick="setHerbFilter('ulcere')">🩸 Ulcères & Estomac</button>
+        <button class="materia-chip" data-filter="candida" onclick="setHerbFilter('candida')">🌳 Candida & Parasites</button>
+        <button class="materia-chip" data-filter="foie" onclick="setHerbFilter('foie')">🌾 Foie & Vésicule</button>
+        <button class="materia-chip" data-filter="poumons" onclick="setHerbFilter('poumons')">🪵 Poumons & Mucus</button>
+        <button class="materia-chip" data-filter="vitalite" onclick="setHerbFilter('vitalite')">🍒 Surrénales & Vitalité</button>
+        <button class="materia-chip" data-filter="immunite" onclick="setHerbFilter('immunite')">🛡️ Immunité & Biofilm</button>
+        <button class="materia-chip" data-filter="cerveau" onclick="setHerbFilter('cerveau')">⭐ Cerveau & Nerfs</button>
+      </div>
+
+      <!-- Synergistic Protocols Section -->
+      <div class="protocols-section">
+        <div class="protocols-header" onclick="toggleProtocolsAccordion()">
+          <div class="protocols-title">
+            <i class="ri-flashlight-fill" style="color:var(--accent)"></i>
+            <span>Protocoles Combinés d'Élimination & Régénération (Raintree)</span>
+          </div>
+          <i class="ri-arrow-down-s-line protocols-toggle-icon" id="protocolsToggleIcon"></i>
+        </div>
+        <div class="protocols-grid" id="protocolsGrid" style="display:none">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+
+      <!-- Results stats bar -->
+      <div class="search-stats-bar" id="herbStatsBar" style="display:flex; justify-content:space-between; align-items:center;">
+        <span class="search-result-count" id="herbResultCount">20 plantes médicinales répertoriées</span>
+      </div>
+
+      <!-- Live Herbs Grid -->
+      <div class="herb-grid" id="materiaHerbsGrid">
+        <!-- Rendered by JS -->
+      </div>
     </div>
   </main>
 
@@ -565,34 +679,71 @@
     </div>
   </main>
 
-  <!-- ═══════ SCANNER ═══════ -->
+  <!-- ═══════ SCANNER IA ═══════ -->
   <main class="page" id="page-scan">
-    <div class="scan-container" style="max-width:600px;margin:0 auto;text-align:center">
-      <div class="scan-header glass" style="padding:16px 20px;margin-bottom:20px">
-        <h2>📸 Scanner IA</h2>
-        <p class="subtitle">Analysez vos aliments par photo</p>
+    <div class="scan-container">
+      <!-- Header -->
+      <div class="scan-header glass">
+        <div class="scan-header-title-wrap">
+          <div class="scan-header-icon"><i class="ri-camera-lens-fill"></i></div>
+          <div>
+            <h2>Scanner IA & Diagnostic Vitaliste</h2>
+            <p class="subtitle" style="margin-top:2px">Analyse instantanée de votre assiette : statut Sebi/Ehret, indice PRAL et impact émonctoriel</p>
+          </div>
+        </div>
+        <div class="scan-badge-live">
+          <span class="scan-live-dot"></span> Vision Multimodale IA
+        </div>
       </div>
       
-      <div class="glass" style="padding:30px 20px;border-radius:var(--radius);margin-bottom:20px">
-        <div id="scanPreviewContainer" style="display:none;margin-bottom:20px">
-          <img id="scanPreview" src="" alt="Scan preview" style="max-width:100%;max-height:300px;border-radius:12px;box-shadow:var(--shadow)">
+      <!-- Upload Card / Preview Zone -->
+      <div class="scan-upload-card glass" id="scanUploadCard">
+        <div class="scan-preview-box" id="scanPreviewContainer" style="display:none">
+          <div class="scan-image-wrapper" id="scanImageWrapper">
+            <img id="scanPreview" src="" alt="Aperçu du scan" class="scan-preview-img">
+            <div class="scan-laser-line" id="scanLaserLine"></div>
+          </div>
+          <button type="button" class="scan-change-photo-btn" onclick="document.getElementById('scanUpload').click()">
+            <i class="ri-camera-switch-line"></i> Choisir une autre photo
+          </button>
         </div>
         
-        <label for="scanUpload" class="btn-primary" style="font-size:1.1rem;padding:14px 32px;display:inline-flex;cursor:pointer">
-          <i class="ri-camera-lens-fill"></i> Photo ou Galerie
-        </label>
-        <input type="file" id="scanUpload" accept="image/*" style="display:none" onchange="handleScanUpload(event)">
-        
-        <p style="margin-top:16px;color:var(--text-dim);font-size:0.9rem">L'IA analysera l'aliment pour vous dire s'il est vitaliste.</p>
+        <div id="scanPromptZone">
+          <div class="scan-dropzone-icon">
+            <i class="ri-image-add-line"></i>
+          </div>
+          <h3 class="scan-dropzone-title">Prenez une photo ou importez votre assiette</h3>
+          <p class="scan-dropzone-sub">Détecte chaque ingrédient, évalue la formation de mucus intestinal (colle), calcule le PRAL rénal et propose des alternatives vivantes.</p>
+          
+          <label for="scanUpload" class="btn-primary scan-upload-cta">
+            <i class="ri-camera-lens-fill"></i> Analyser une photo / Scanner
+          </label>
+          <input type="file" id="scanUpload" accept="image/*" style="display:none" onchange="handleScanUpload(event)">
+          
+          <div class="scan-quick-tips">
+            <span><i class="ri-check-double-line"></i> Plats cuisinés & Tapas</span>
+            <span><i class="ri-check-double-line"></i> Végétaux & Fruits bruts</span>
+            <span><i class="ri-check-double-line"></i> Produits & Étiquettes</span>
+          </div>
+        </div>
       </div>
       
-      <div id="scanResult" style="text-align:left;display:none" class="glass">
-        <!-- Results will appear here -->
+      <!-- Loading State -->
+      <div id="scanLoading" class="scan-loading-card glass" style="display:none">
+        <div class="scan-loading-spinner-wrap">
+          <div class="scan-spinner-ring"></div>
+          <i class="ri-microscope-line scan-spinner-icon"></i>
+        </div>
+        <h3 class="scan-loading-title">Analyse biochimique & vitaliste en cours...</h3>
+        <p class="scan-loading-sub" id="scanLoadingStatus">Identification des composés, calcul du PRAL rénal et évaluation de la charge colloïdale...</p>
+        <div class="scan-loading-progress-bar">
+          <div class="scan-loading-progress-fill"></div>
+        </div>
       </div>
-      
-      <div id="scanLoading" style="display:none;padding:40px 0">
-        <div class="typing-dots" style="justify-content:center;margin-bottom:12px"><span></span><span></span><span></span></div>
-        <p style="color:var(--accent);font-weight:600">Analyse visuelle en cours...</p>
+
+      <!-- Result Dossier -->
+      <div id="scanResult" class="scan-result-container" style="display:none">
+        <!-- Rendered dynamically by renderScanResult(aiText) -->
       </div>
     </div>
   </main>
@@ -605,11 +756,11 @@
       <section class="jn-card">
         <div class="jn-section-head">
           <div class="jn-section-icon">
-            <svg class="jn-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="14" height="14" rx="2"/><line x1="3" y1="8" x2="17" y2="8"/><line x1="7" y1="3" x2="7" y2="8"/></svg>
+            <i class="ri-calendar-event-fill"></i>
           </div>
           <div>
-            <div class="jn-section-title">Programmes de jeûne</div>
-            <div class="jn-section-sub">Choisissez un protocole pour préremplir le minuteur</div>
+            <div class="jn-section-title" data-i18n="fasting.programsTitle">Programmes de jeûne</div>
+            <div class="jn-section-sub" data-i18n="fasting.programsSub">Choisissez un protocole pour préremplir le minuteur</div>
           </div>
         </div>
         <div class="jn-program-grid" id="programGrid">
@@ -626,7 +777,7 @@
                 <defs>
                   <linearGradient id="fastGrad" x1="0" y1="0" x2="1" y2="1">
                     <stop offset="0%" stop-color="var(--accent)"/>
-                    <stop offset="100%" stop-color="#7dffc4"/>
+                    <stop offset="100%" stop-color="#34d399"/>
                   </linearGradient>
                 </defs>
                 <circle class="jn-ring-track" cx="108" cy="108" r="101.5"/>
@@ -641,11 +792,14 @@
           </div>
 
           <div class="jn-controls">
-            <div class="jn-field">
-              <label>Type</label>
+            <div class="jn-field" id="jnFieldType">
+              <label data-i18n="fasting.typeLabel" style="display:flex; justify-content:space-between; align-items:center;">
+                <span>Type de protocole</span>
+                <span id="jnTypeLockBadge" class="jn-lock-badge" style="display:none;"><i class="ri-lock-2-fill"></i> Session active</span>
+              </label>
               <div class="jn-select-wrap">
-                <select class="jn-field-control" id="fastingType">
-                  <option value="intermittent" data-hours="16" selected>🍅 Intermittent (16:8)</option>
+                <select class="jn-field-control custom-vital-select" id="fastingType">
+                  <option value="intermittent" data-hours="16" selected>⏰ Intermittent (16:8)</option>
                   <option value="warrior" data-hours="20">⚔️ Warrior (20:4)</option>
                   <option value="waterFast" data-hours="24">💧 Hydrique 24h</option>
                   <option value="juiceFast" data-hours="72">🧃 Jus 3 jours</option>
@@ -654,19 +808,37 @@
                   <option value="drySunFast" data-hours="16">☀️ Sec 16h</option>
                   <option value="ramadan" data-hours="14">🌙 Ramadan</option>
                 </select>
-                <svg class="jn-icon jn-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l5 5 5-5"/></svg>
+                <i class="ri-arrow-down-s-line jn-chevron"></i>
               </div>
             </div>
-            <div class="jn-field">
-              <label>Durée (h)</label>
-              <input class="jn-field-control" type="number" id="fastingDuration" value="16" min="1" max="168">
+
+            <div class="jn-field" id="jnFieldDuration">
+              <label data-i18n="fasting.durationLabel">Objectif de durée (heures)</label>
+              <div class="vital-stepper-box">
+                <div class="vital-stepper-row">
+                  <button type="button" class="vital-stepper-btn" onclick="stepFastingDuration(-1)">−</button>
+                  <input class="vital-stepper-value" type="number" id="fastingDuration" value="16" min="1" max="168" onchange="onFastingDurationChange()">
+                  <button type="button" class="vital-stepper-btn" onclick="stepFastingDuration(1)">+</button>
+                </div>
+                <!-- Quick duration presets -->
+                <div class="vital-duration-presets" id="fastingDurationPresets">
+                  <button type="button" class="vital-duration-chip active" data-h="16" onclick="setFastingDurationPreset(16)">16h (16:8)</button>
+                  <button type="button" class="vital-duration-chip" data-h="20" onclick="setFastingDurationPreset(20)">20h (Warrior)</button>
+                  <button type="button" class="vital-duration-chip" data-h="24" onclick="setFastingDurationPreset(24)">24h (1 j)</button>
+                  <button type="button" class="vital-duration-chip" data-h="36" onclick="setFastingDurationPreset(36)">36h</button>
+                  <button type="button" class="vital-duration-chip" data-h="48" onclick="setFastingDurationPreset(48)">48h</button>
+                  <button type="button" class="vital-duration-chip" data-h="72" onclick="setFastingDurationPreset(72)">72h</button>
+                </div>
+              </div>
             </div>
-            <div id="fastingSafetyWarning" style="display:none; padding:10px 14px; border-radius:12px; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.2); color:#fca5a5; font-size:0.82rem;">
-              ⚠️ <strong>Attention :</strong> Les jeûnes de plus de 24h nécessitent un suivi médical.
+
+            <div id="fastingSafetyWarning" style="display:none; padding:12px 16px; border-radius:12px; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.25); color:#fca5a5; font-size:0.84rem; line-height:1.4;">
+              ⚠️ <strong data-i18n="fasting.safetyWarning">Attention : Les jeûnes de plus de 24h nécessitent une préparation préalable et un suivi adapté.</strong>
             </div>
-            <button class="jn-btn-start" id="fastStartBtn" onclick="toggleFasting()">
-              <svg class="jn-icon" viewBox="0 0 20 20" fill="currentColor" id="fastBtnIcon"><path d="M6 4l10 6-10 6V4z"/></svg>
-              <span id="fastBtnLabel">Démarrer</span>
+
+            <button class="jn-btn-start idle" id="fastStartBtn" onclick="toggleFasting()">
+              <i class="ri-play-fill" id="fastBtnIcon" style="font-size:1.2rem"></i>
+              <span id="fastBtnLabel" data-i18n="fasting.startBtn">Démarrer le jeûne</span>
             </button>
           </div>
         </div>
@@ -675,12 +847,12 @@
       <!-- ===== MASTERCLASS ===== -->
       <section class="jn-card">
         <div class="jn-section-head">
-          <div class="jn-section-icon" style="background:rgba(246,185,59,.14); color:#f6b93b; border-color:transparent;">
-            <svg class="jn-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4.5a2 2 0 0 1 2-1h4v13H5a2 2 0 0 0-2 1v-13z"/><path d="M17 4.5a2 2 0 0 0-2-1h-4v13h4a2 2 0 0 1 2 1v-13z"/></svg>
+          <div class="jn-section-icon" style="background:rgba(250,204,21,0.12); color:#facc15; border-color:rgba(250,204,21,0.25);">
+            <i class="ri-graduation-cap-fill"></i>
           </div>
           <div>
-            <div class="jn-section-title">Masterclass : Rational Fasting</div>
-            <div class="jn-section-sub">Le protocole complet d'Arnold Ehret</div>
+            <div class="jn-section-title" data-i18n="fasting.masterclassTitle">Masterclass : Rational Fasting</div>
+            <div class="jn-section-sub" data-i18n="fasting.masterclassSub">La méthode scientifique d'Arnold Ehret pour éliminer le mucus sans crise d'auto-intoxication</div>
           </div>
         </div>
         <div class="jn-lesson-grid" id="masterclassContainer">
@@ -691,12 +863,12 @@
       <!-- ===== CONSEILS D'EXPERTS ===== -->
       <section class="jn-card">
         <div class="jn-section-head">
-          <div class="jn-section-icon">
-            <svg class="jn-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="14" height="14" rx="2"/><line x1="10" y1="3" x2="10" y2="17"/></svg>
+          <div class="jn-section-icon" style="background:rgba(96,165,250,0.12); color:#60a5fa; border-color:rgba(96,165,250,0.25);">
+            <i class="ri-user-star-fill"></i>
           </div>
           <div>
-            <div class="jn-section-title">Conseils d'Experts</div>
-            <div class="jn-section-sub">Sagesse et recommandations des maîtres du jeûne</div>
+            <div class="jn-section-title" data-i18n="fasting.expertsTitle">Conseils & Sagesse des Maîtres</div>
+            <div class="jn-section-sub" data-i18n="fasting.expertsSub">Directives d'Arnold Ehret, Dr. Robert Morse, Dr. Sebi et Wim Hof</div>
           </div>
         </div>
         <div class="jn-expert-list" id="expertAccordion">
@@ -707,23 +879,23 @@
       <!-- ===== HISTORIQUE & STATISTIQUES ===== -->
       <section class="jn-card" style="margin-bottom:0;">
         <div class="jn-section-head">
-          <div class="jn-section-icon">
-            <svg class="jn-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M3 17V9M9 17V3M15 17v-6"/></svg>
+          <div class="jn-section-icon" style="background:rgba(167,139,250,0.12); color:#a78bfa; border-color:rgba(167,139,250,0.25);">
+            <i class="ri-line-chart-fill"></i>
           </div>
           <div>
-            <div class="jn-section-title">Historique &amp; Statistiques</div>
+            <div class="jn-section-title" data-i18n="fasting.historyTitle">Historique &amp; Statistiques</div>
           </div>
         </div>
 
         <div class="jn-stats-grid">
-          <div class="jn-stat-card"><div class="jn-stat-num" id="analyticTotal">0</div><div class="jn-stat-label">Total sessions</div></div>
-          <div class="jn-stat-card"><div class="jn-stat-num" id="analyticHours">0h</div><div class="jn-stat-label">Heures cumulées</div></div>
-          <div class="jn-stat-card"><div class="jn-stat-num" style="color:var(--accent);" id="analyticLongest">0h</div><div class="jn-stat-label">Plus long</div></div>
-          <div class="jn-stat-card"><div class="jn-stat-num" style="color:var(--accent);" id="analyticCompletion">0%</div><div class="jn-stat-label">Taux complétion</div></div>
+          <div class="jn-stat-card"><div class="jn-stat-num" id="analyticTotal">0</div><div class="jn-stat-label" data-i18n="fasting.totalSessions">Total sessions</div></div>
+          <div class="jn-stat-card"><div class="jn-stat-num" id="analyticHours">0h</div><div class="jn-stat-label" data-i18n="fasting.cumulatedHours">Heures cumulées</div></div>
+          <div class="jn-stat-card"><div class="jn-stat-num" style="color:var(--accent);" id="analyticLongest">0h</div><div class="jn-stat-label" data-i18n="fasting.longestFast">Plus long</div></div>
+          <div class="jn-stat-card"><div class="jn-stat-num" style="color:var(--accent);" id="analyticCompletion">0%</div><div class="jn-stat-label" data-i18n="fasting.completionRate">Taux complétion</div></div>
         </div>
 
         <div class="jn-history-list" id="historyList">
-          <p class="empty-state-sm">Aucune session enregistrée.</p>
+          <p class="empty-state-sm" data-i18n="fasting.noHistory">Aucune session enregistrée.</p>
         </div>
       </section>
 
@@ -732,52 +904,214 @@
 
   <!-- ═══════ BREATHING ═══════ -->
   <main class="page" id="page-breathing">
-    <div class="breathing-container">
-      <div class="breathing-header glass"><h2>🌬️ Respiration guidée</h2><p class="subtitle">Wim Hof · Relaxation · Box Breathing</p></div>
-      <div class="breathing-modes">
-        <button class="breath-mode active" onclick="setBreathMode('wimhof')" data-mode="wimhof">❄️ Wim Hof</button>
-        <button class="breath-mode" onclick="setBreathMode('relax')" data-mode="relax">🧘 Relaxation</button>
-        <button class="breath-mode" onclick="setBreathMode('box')" data-mode="box">📦 Box</button>
-      </div>
-      <div class="breathing-visual">
-        <div class="breath-circle" id="breathCircle"><span class="breath-text" id="breathText">Prêt</span></div>
-      </div>
-      <div class="breath-info" id="breathInfo"><p>Choisissez un mode et appuyez sur Démarrer.</p></div>
-      <div class="breath-config-card glass">
-        <div class="breath-rounds-wrapper">
-          <span class="rounds-label"><i class="ri-repeat-2-line"></i> Nombre de tours</span>
-          <div class="rounds-stepper">
-            <button type="button" class="stepper-btn" onclick="adjustBreathRounds(-1)" aria-label="Diminuer les tours">
-              <i class="ri-subtract-line"></i>
-            </button>
-            <div class="rounds-val-container">
-              <span class="rounds-number" id="breathRoundsDisplay">3</span>
-              <span class="rounds-unit">tours</span>
-            </div>
-            <button type="button" class="stepper-btn" onclick="adjustBreathRounds(1)" aria-label="Augmenter les tours">
-              <i class="ri-add-line"></i>
-            </button>
-          </div>
-          <input type="hidden" id="breathRounds" value="3">
-          
-          <div class="rounds-presets">
-            <button type="button" class="preset-pill active" onclick="setBreathRounds(3)">3 tours</button>
-            <button type="button" class="preset-pill" onclick="setBreathRounds(4)">4 tours</button>
-            <button type="button" class="preset-pill" onclick="setBreathRounds(5)">5 tours</button>
-            <button type="button" class="preset-pill" onclick="setBreathRounds(8)">8 tours</button>
+    <div class="breathing-container" style="max-width:760px; margin:0 auto;">
+      <!-- Header with Tabs -->
+      <div class="breathing-header glass" style="margin-bottom:16px;">
+        <h2>🌬️ Respiration & Méthode Wim Hof</h2>
+        <p class="subtitle">Alcalinisation sanguine · Contrôle du système nerveux · Réduction de l'inflammation</p>
+        
+        <!-- Safety Alert Banner -->
+        <div class="breathing-safety-alert" style="margin-top:14px; background:rgba(239, 68, 68, 0.12); border:1px solid rgba(239, 68, 68, 0.35); border-radius:12px; padding:10px 14px; font-size:0.82rem; color:#fca5a5; display:flex; align-items:center; gap:10px; text-align:left;">
+          <i class="ri-alert-fill" style="font-size:1.3rem; color:#ef4444; flex-shrink:0;"></i>
+          <div>
+            <strong style="color:#ffffff;">Règle de sécurité impérative :</strong> Pratiquez toujours <strong>assis ou allongé</strong> dans un lieu sécurisé. <strong>JAMAIS</strong> dans l'eau (bain, piscine), sous la douche ou au volant.
           </div>
         </div>
 
-        <div class="breath-action-row">
-          <button class="btn-primary breath-launch-btn" id="breathStartBtn" onclick="startBreathing()">
-            <i class="ri-play-fill"></i> Démarrer la session
+        <!-- Section Switcher Tabs -->
+        <div class="breathing-nav-tabs" style="display:flex; gap:8px; justify-content:center; margin-top:18px; flex-wrap:wrap;">
+          <button type="button" class="tab active" id="tabBtnBreathingTimer" onclick="switchBreathingTab('timer')" style="border-radius:25px; padding:8px 18px; font-size:0.9rem; font-weight:600;">
+            <i class="ri-timer-flash-line"></i> Session Guidée (Timer)
+          </button>
+          <button type="button" class="tab" id="tabBtnBreathingVideos" onclick="switchBreathingTab('videos')" style="border-radius:25px; padding:8px 18px; font-size:0.9rem; font-weight:600;">
+            <i class="ri-movie-line"></i> Vidéos & Masterclass Wim Hof
+          </button>
+          <button type="button" class="tab" id="tabBtnBreathingGuide" onclick="switchBreathingTab('guide')" style="border-radius:25px; padding:8px 18px; font-size:0.9rem; font-weight:600;">
+            <i class="ri-book-open-line"></i> Protocole & Physiologie
           </button>
         </div>
       </div>
-      <div class="dash-card glass" style="margin-top:24px">
-        <h3><i class="ri-history-line"></i> Historique respirations</h3>
-        <div id="breathHistory"><p class="empty-state-sm">Aucune session enregistrée.</p></div>
+
+      <!-- ════ TAB 1: TIMER INTERACTIF & GUIDAGE ════ -->
+      <div id="breathingTabTimer" class="breathing-tab-pane">
+        <div class="breathing-modes">
+          <button class="breath-mode active" onclick="setBreathMode('wimhof')" data-mode="wimhof">❄️ Wim Hof (Alcalinisant)</button>
+          <button class="breath-mode" onclick="setBreathMode('relax')" data-mode="relax">🧘 Relaxation (1:2)</button>
+          <button class="breath-mode" onclick="setBreathMode('box')" data-mode="box">📦 Box Breathing (Focus)</button>
+          <button class="breath-mode" onclick="setBreathMode('sleep')" data-mode="sleep">🌙 4-7-8 Sommeil</button>
+        </div>
+
+        <div class="breathing-visual">
+          <div class="breath-circle" id="breathCircle">
+            <span class="breath-text" id="breathText">Prêt</span>
+            <span class="breath-subtext" id="breathSubText" style="font-size:0.8rem; color:var(--text-dim); margin-top:4px;">Appuyez sur Démarrer</span>
+          </div>
+        </div>
+
+        <div class="breath-info" id="breathInfo" style="font-weight:600; font-size:0.95rem; min-height:28px;">
+          <p>Wim Hof — 30 respirations profondes puis rétention poumons vides</p>
+        </div>
+
+        <!-- Stop Retention Action Button (Visible during Retention Phase) -->
+        <div id="breathRetentionAction" style="display:none; margin-bottom:18px;">
+          <button type="button" class="btn-primary" onclick="triggerRecoveryBreath()" style="padding:14px 28px; font-size:1.05rem; font-weight:700; border-radius:50px; background:linear-gradient(135deg, #10b981, #059669); border:none; box-shadow:0 0 20px rgba(16, 185, 129, 0.4); cursor:pointer;">
+            <i class="ri-lungs-line"></i> J'inspire (Passer à la récupération 15s)
+          </button>
+        </div>
+
+        <div class="breath-config-card glass">
+          <div class="breath-rounds-wrapper">
+            <span class="rounds-label"><i class="ri-repeat-2-line"></i> Nombre de tours</span>
+            <div class="rounds-stepper">
+              <button type="button" class="stepper-btn" onclick="adjustBreathRounds(-1)" aria-label="Diminuer les tours">
+                <i class="ri-subtract-line"></i>
+              </button>
+              <div class="rounds-val-container">
+                <span class="rounds-number" id="breathRoundsDisplay">3</span>
+                <span class="rounds-unit">tours</span>
+              </div>
+              <button type="button" class="stepper-btn" onclick="adjustBreathRounds(1)" aria-label="Augmenter les tours">
+                <i class="ri-add-line"></i>
+              </button>
+            </div>
+            <input type="hidden" id="breathRounds" value="3">
+            
+            <div class="rounds-presets">
+              <button type="button" class="preset-pill active" onclick="setBreathRounds(3)">3 tours (Standard)</button>
+              <button type="button" class="preset-pill" onclick="setBreathRounds(4)">4 tours (Avancé)</button>
+              <button type="button" class="preset-pill" onclick="setBreathRounds(5)">5 tours (Intensif)</button>
+            </div>
+          </div>
+
+          <div class="breath-action-row">
+            <button class="btn-primary breath-launch-btn" id="breathStartBtn" onclick="startBreathing()">
+              <i class="ri-play-fill"></i> Démarrer la session
+            </button>
+          </div>
+        </div>
+
+        <!-- Dynamic Round Times History for current / past sessions -->
+        <div class="dash-card glass" style="margin-top:24px; text-align:left;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <h3 style="margin:0; font-size:1rem;"><i class="ri-history-line" style="color:var(--accent);"></i> Historique & Records de Rétention</h3>
+            <span style="font-size:0.8rem; color:var(--text-dim);">30 dernières sessions</span>
+          </div>
+          <div id="breathHistory"><p class="empty-state-sm">Aucune session enregistrée.</p></div>
+        </div>
       </div>
+
+      <!-- ════ TAB 2: VIDÉOS & MASTERCLASS WIM HOF ════ -->
+      <div id="breathingTabVideos" class="breathing-tab-pane" style="display:none; text-align:left;">
+        <div class="dash-card glass" style="margin-bottom:20px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+            <h3 id="wimHofActiveTitle" style="display:flex; align-items:center; gap:8px; margin:0; font-size:1.1rem;">
+              <i class="ri-video-fill" style="color:var(--accent);"></i> Vidéo Guidée Officielle Wim Hof (3 Rounds)
+            </h3>
+            <span class="badge badge-success" style="display:inline-flex; align-items:center; gap:5px; font-size:0.75rem; padding:4px 10px;">
+              <i class="ri-checkbox-circle-fill"></i> Média Local Intégré (HD)
+            </span>
+          </div>
+          <p id="wimHofActiveDesc" style="font-size:0.85rem; color:var(--text-dim); margin-bottom:16px;">
+            Pratiquez directement en rythme avec Wim Hof lui-même. Suivez les cloches et les indications vocales.
+          </p>
+          
+          <!-- Native HTML5 Responsive Video Player -->
+          <div style="position:relative; width:100%; border-radius:14px; overflow:hidden; border:1px solid var(--border); background:#000; box-shadow:0 8px 30px rgba(0,0,0,0.5);">
+            <video id="wimHofVideoPlayer"
+                   controls
+                   playsinline
+                   preload="metadata"
+                   poster="/videos/posters/wim-hof-3-rounds.jpg"
+                   style="width:100%; height:auto; display:block; max-height:480px; background:#000;">
+              <source id="wimHofVideoSource" src="/videos/wim-hof-3-rounds.mp4" type="video/mp4">
+              Votre navigateur ne supporte pas la lecture vidéo directe.
+            </video>
+          </div>
+
+          <!-- Video Selector Buttons -->
+          <div style="display:flex; gap:10px; margin-top:16px; flex-wrap:wrap;">
+            <button type="button" class="preset-pill active" onclick="loadBreathingVideo('3-rounds', this)">
+              🎬 Session Complète 3 Rounds <span style="opacity:0.7; font-size:0.75rem;">(11:00)</span>
+            </button>
+            <button type="button" class="preset-pill" onclick="loadBreathingVideo('tutorial', this)">
+              📖 Tutoriel & Technique <span style="opacity:0.7; font-size:0.75rem;">(10:08)</span>
+            </button>
+            <button type="button" class="preset-pill" onclick="loadBreathingVideo('science', this)">
+              🔬 Science & Immunité <span style="opacity:0.7; font-size:0.75rem;">(44:13)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Video Key Points Card -->
+        <div class="dash-card glass">
+          <h4 style="color:var(--accent); margin-bottom:10px; font-size:0.95rem;"><i class="ri-lightbulb-flash-line"></i> Conseils pour la séance vidéo</h4>
+          <ul style="font-size:0.85rem; color:var(--text-dim); line-height:1.6; padding-left:20px; margin:0;">
+            <li><strong>Laissez aller le souffle :</strong> Ne forcez pas l'expiration, relâchez simplement comme un ballon qui se dégonfle doucement.</li>
+            <li><strong>Sensations normales :</strong> Des picotements dans les mains/visage, une sensation de tête légère ou de chaleur sont physiologiquement tout à fait normaux (liés à la baisse temporaire du CO2 sanguin).</li>
+            <li><strong>Écoutez votre corps :</strong> Ne luttez jamais pour battre un record. Si vous ressentez le besoin d'inspirer pendant la rétention, inspirez doucement et passez à la récupération de 15s.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- ════ TAB 3: PROTOCOLE & SCIENCE PHYSIOLOGIQUE ════ -->
+      <div id="breathingTabGuide" class="breathing-tab-pane" style="display:none; text-align:left;">
+        <div class="dash-card glass" style="margin-bottom:18px;">
+          <h3 style="color:var(--accent); margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+            <i class="ri-flask-line"></i> Les 3 Phases de la Méthode Wim Hof
+          </h3>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:14px;">
+            
+            <div style="background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:12px; padding:14px;">
+              <div style="font-size:1.5rem; margin-bottom:6px;">1️⃣</div>
+              <h4 style="color:var(--text); font-size:0.92rem; margin-bottom:6px;">30 à 40 Respirations</h4>
+              <p style="font-size:0.8rem; color:var(--text-dim); line-height:1.4; margin:0;">
+                Inspiration profonde par le ventre puis la poitrine. Expiration relâchée sans vider complètement. Alcalinise le sang et surcharge les mitochondries en oxygène.
+              </p>
+            </div>
+
+            <div style="background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:12px; padding:14px;">
+              <div style="font-size:1.5rem; margin-bottom:6px;">2️⃣</div>
+              <h4 style="color:var(--text); font-size:0.92rem; margin-bottom:6px;">Rétention Poumons Vides</h4>
+              <p style="font-size:0.8rem; color:var(--text-dim); line-height:1.4; margin:0;">
+                Après la 30ème expiration, bloquez votre souffle sans forcer (1 à 2 min). Déclenche une hypoxie intermittente protectrice, stimule l'EPO et calme le mental.
+              </p>
+            </div>
+
+            <div style="background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:12px; padding:14px;">
+              <div style="font-size:1.5rem; margin-bottom:6px;">3️⃣</div>
+              <h4 style="color:var(--text); font-size:0.92rem; margin-bottom:6px;">Inspiration de Récupération (15s)</h4>
+              <p style="font-size:0.8rem; color:var(--text-dim); line-height:1.4; margin:0;">
+                Inspirez à fond et retenez 15 secondes. Sensation de chaleur qui monte dans la tête. Réoxygénation fulgurante de tous les tissus.
+              </p>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="dash-card glass">
+          <h3 style="color:#38bdf8; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+            <i class="ri-shield-check-line"></i> Ce que dit la Science (Étude Radboud 2014)
+          </h3>
+          <p style="font-size:0.85rem; color:var(--text); line-height:1.6; margin-bottom:12px;">
+            L'étude pionnière menée par l'Université de Radboud (Pays-Bas) a démontré pour la première fois dans l'histoire médicale que des individus entraînés à cette méthode peuvent volontairement influencer leur système immunitaire inné et leur système nerveux autonome :
+          </p>
+          <div style="display:flex; flex-direction:column; gap:8px; font-size:0.82rem; color:var(--text-dim);">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="color:#4ade80;">✔</span>
+              <span><strong>Pic d'épinéphrine (adrénaline) :</strong> Supérieur à celui d'un saut à l'élastique, modulant l'inflammation sans anxiété.</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="color:#4ade80;">✔</span>
+              <span><strong>Chute massive des cytokines pro-inflammatoires (TNF-α, IL-6, IL-8)</strong> et hausse de la cytokine anti-inflammatoire IL-10.</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="color:#4ade80;">✔</span>
+              <span><strong>Augmentation temporaire du pH sanguin jusqu'à 7.75</strong>, créant un terrain biochimique alcalin désamorçant l'acidose tissulaire.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </main>
 
@@ -941,7 +1275,7 @@
     <div class="modal-content glass" onclick="event.stopPropagation()">
       <button class="modal-close" onclick="closeFoodModal()"><i class="ri-close-line"></i></button>
       <div class="modal-food-header" id="modalFoodHeader"></div>
-      <div class="modal-tabs">
+      <div class="modal-tabs" id="modalTabsBar">
         <button class="tab active" data-tab="scientific" onclick="setModalTab('scientific')">🔬 Scientifique</button>
         <button class="tab" data-tab="vitality" onclick="setModalTab('vitality')">💚 Vitalité</button>
         <button class="tab" data-tab="specific" onclick="setModalTab('specific')">🌿 Spécifique</button>
@@ -1008,7 +1342,7 @@
   <div class="modal-overlay" id="weightModal" onclick="closeWeightModal(event)">
     <div class="modal-content glass modal-sm" onclick="event.stopPropagation()">
       <button class="modal-close" onclick="closeWeightModal()"><i class="ri-close-line"></i></button>
-      <h3><i class="ri-scales-3-line"></i> Enregistrer une pesée</h3>
+      <h3 id="weightModalTitle"><i class="ri-scales-3-line"></i> Enregistrer une pesée</h3>
       
       <div class="weight-modal-form">
         <div>
@@ -1032,7 +1366,8 @@
           <input type="text" id="weightNoteInput" class="form-input" placeholder="Ex: à jeun au réveil, fin de jeûne...">
         </div>
 
-        <button class="btn-primary full-w" onclick="saveWeightEntry()"><i class="ri-save-line"></i> Valider la pesée</button>
+        <button id="weightSubmitBtn" class="btn-primary full-w" onclick="saveWeightEntry()"><i class="ri-save-line"></i> <span id="weightSubmitText">Valider la pesée</span></button>
+        <button id="weightCancelEditBtn" type="button" class="btn-secondary full-w" onclick="cancelWeightEdit()" style="display:none; margin-top:8px;"><i class="ri-close-line"></i> Annuler la modification</button>
       </div>
 
       <!-- Weight History inside modal -->
@@ -1042,6 +1377,54 @@
           <span id="weightHistoryCount" style="font-size:0.78rem;color:var(--text-dim)">0 enregistrement</span>
         </div>
         <div id="weightHistoryList" class="weight-history-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ HERB MONOGRAPH MODAL (RAINTREE) ═══════ -->
+  <div class="herb-modal-overlay" id="herbModal" style="display:none" onclick="if(event.target===this) closeHerbModal()">
+    <div class="herb-modal-content">
+      <div class="herb-modal-hero" id="herbModalHero">
+        <img id="herbModalImg" class="herb-modal-hero-img" src="" alt="Plante Médicinale Raintree" />
+        <div class="herb-modal-hero-gradient"></div>
+        <button class="herb-modal-close-btn" onclick="closeHerbModal()" aria-label="Fermer"><i class="ri-close-line"></i></button>
+        <div class="herb-modal-header-info">
+          <span class="herb-card-tropism-chip badge-emerald" id="herbModalTropismBadge">
+            <i class="ri-leaf-fill" id="herbModalTropismIcon"></i> <span id="herbModalTropismLabel">Émonctoire</span>
+          </span>
+          <h2 class="herb-modal-title" id="herbModalName">Nom de la plante</h2>
+          <p class="herb-modal-subtitle" id="herbModalLatin">Nom latin botanique</p>
+        </div>
+      </div>
+      <div class="herb-modal-scrollable" id="herbModalBody">
+        <!-- Injected dynamically by openHerbModal() -->
+      </div>
+      <div class="herb-modal-footer">
+        <button class="herb-ask-ai-btn" id="herbModalAskAIBtn" onclick="askAIAboutCurrentHerb()" style="flex:1">
+          <i class="ri-sparkling-fill"></i> <span data-i18n="materia.askAIBtn">Poser une question au Coach IA</span>
+        </button>
+        <button class="btn-secondary" onclick="closeHerbModal()" data-i18n="common.close">Fermer</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ GLOBAL VITAL CONFIRM MODAL ═══════ -->
+  <div class="vital-confirm-overlay" id="vitalConfirmModal">
+    <div class="vital-confirm-modal" onclick="event.stopPropagation()">
+      <div class="vital-confirm-head">
+        <div class="vital-confirm-icon-box" id="vitalConfirmIconBox">
+          <i id="vitalConfirmIcon" class="ri-alert-fill"></i>
+        </div>
+        <div>
+          <h3 class="vital-confirm-title" id="vitalConfirmTitle">Confirmation</h3>
+        </div>
+      </div>
+      <div class="vital-confirm-body" id="vitalConfirmBody">
+        Voulez-vous vraiment effectuer cette action ?
+      </div>
+      <div class="vital-confirm-actions">
+        <button type="button" class="vital-confirm-btn-cancel" id="vitalConfirmCancelBtn">Annuler</button>
+        <button type="button" class="vital-confirm-btn-action" id="vitalConfirmActionBtn">Confirmer</button>
       </div>
     </div>
   </div>

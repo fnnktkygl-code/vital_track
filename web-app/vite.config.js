@@ -2,9 +2,6 @@ import { defineConfig } from 'vite';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 
-const analyzeTextHandler = require('../api/analyze-text.js');
-const searchFoodHandler = require('../api/searchFood.js');
-
 function apiMiddlewarePlugin() {
   return {
     name: 'api-dev-middleware',
@@ -12,6 +9,13 @@ function apiMiddlewarePlugin() {
       server.middlewares.use(async (req, res, next) => {
         const url = req.url.split('?')[0];
         if (url === '/api/analyze-text' || url === '/api/searchFood') {
+          let analyzeTextHandler, searchFoodHandler;
+          try {
+            analyzeTextHandler = require('../api/analyze-text.js');
+            searchFoodHandler = require('../api/searchFood.js');
+          } catch (err) {
+            console.warn('[API DEV] Could not load local API handlers:', err.message);
+          }
           let body = '';
           req.on('data', chunk => { body += chunk; });
           req.on('end', async () => {
@@ -27,10 +31,12 @@ function apiMiddlewarePlugin() {
               return res;
             };
             try {
-              if (url === '/api/analyze-text') {
+              if (url === '/api/analyze-text' && analyzeTextHandler) {
                 await analyzeTextHandler(req, res);
-              } else {
+              } else if (searchFoodHandler) {
                 await searchFoodHandler(req, res);
+              } else {
+                res.status(404).json({ error: 'API handler not available in current environment' });
               }
             } catch (e) {
               console.error(`[API DEV] Error handling ${url}:`, e);

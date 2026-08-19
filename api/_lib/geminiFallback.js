@@ -159,10 +159,11 @@ async function callGeminiApi({
           continue;
         }
 
-        // Model unavailable → cascade immediately
-        if (response.status === 404 || response.status === 400) {
-          console.warn(`⚠️ [CASCADE] ${modelName} returned ${response.status}. Cascading...`);
-          lastErr = new Error(errorBody.error?.message || `Unavailable ${modelName}`);
+        // Model unavailable or server overloaded (503, 500, 502, 404, 400) → cascade immediately
+        if (response.status === 404 || response.status === 400 || response.status === 503 || response.status === 500 || response.status === 502) {
+          console.warn(`⚠️ [CASCADE] ${modelName} returned ${response.status}. 1min cooldown. Cascading to next model...`);
+          modelCooldownMap.set(modelName, Date.now() + 60 * 1000);
+          lastErr = new Error(errorBody.error?.message || `Unavailable ${modelName} (${response.status})`);
           continue;
         }
 
