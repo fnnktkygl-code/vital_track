@@ -2,7 +2,7 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
   "framework": null,
-  "buildCommand": "npm install && node scripts/build-knowledge.js && cd web-app && npm install && npm run build",
+  "buildCommand": "npm run build",
   "outputDirectory": "web-app/dist",
   "installCommand": "cd api && npm install",
   "functions": {
