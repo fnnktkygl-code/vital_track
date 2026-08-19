@@ -7173,7 +7173,8 @@ function _renderMediaSearchResults() {
 
   if (countBadge) {
     countBadge.style.display = 'inline-block';
-    countBadge.textContent = `${results.length} résultat${results.length > 1 ? 's' : ''} trouvé${results.length > 1 ? 's' : ''}`;
+    const totalCount = results.length;
+    countBadge.textContent = `${totalCount} passage${totalCount > 1 ? 's' : ''} & vidéo${totalCount > 1 ? 's' : ''} trouvé${totalCount > 1 ? 's' : ''}${totalCount > 50 ? ' (Top 50 affichés)' : ''}`;
   }
 
   if (!results || results.length === 0) {
@@ -7182,7 +7183,7 @@ function _renderMediaSearchResults() {
         <div style="font-size:2.4rem; margin-bottom:10px;">🔍</div>
         <h3 style="color:#fff; font-size:1.1rem; margin-bottom:6px;">Aucun passage ou vidéo trouvé</h3>
         <p style="color:var(--text-dim); font-size:0.85rem; max-width:460px; margin:0 auto 16px;">
-          Aucun résultat ne correspond à « <strong>${esc(_mediaSearchQuery)}</strong> ». Essayez avec des termes plus généraux comme <em>mucus, jeûne, wim hof, dr sebi, autophagie, reins</em>.
+          Aucun résultat ne correspond à « <strong>${esc(_mediaSearchQuery)}</strong> ». Essayez avec des termes comme <em>yeux, intestins, colon, crohn, reins, mucus, jeûne, autophagie</em>.
         </p>
         <button class="btn-secondary" onclick="clearMediaSearch()" style="display:inline-flex; align-items:center; gap:6px;">
           <i class="ri-refresh-line"></i> Réinitialiser la recherche
@@ -7192,9 +7193,11 @@ function _renderMediaSearchResults() {
     return;
   }
 
+  const displayResults = results.slice(0, 50);
+
   resultsContainer.innerHTML = `
     <div class="media-results-grid">
-      ${results.map(item => renderMediaResultCard(item, _mediaSearchQuery)).join('')}
+      ${displayResults.map(item => renderMediaResultCard(item, _mediaSearchQuery)).join('')}
     </div>
   `;
 }
