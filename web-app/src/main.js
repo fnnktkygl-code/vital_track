@@ -1094,6 +1094,7 @@ window.showPage = function (page) {
   if (page === 'meals') renderMeals();
   if (page === 'calendar') renderCalendar();
   if (page === 'materia-medica') renderRaintreeExplorer();
+  if (page === 'favorites') renderFavorites();
   if (page === 'chat') initChatMascot();
 };
 
@@ -4414,12 +4415,256 @@ window.toggleFavorite = function () {
   }
 };
 
+// ═══════ FAVORITES & CUSTOM DISHES ═══════
+let currentFavFilter = 'all';
+
+window.setFavFilter = function (filter) {
+  currentFavFilter = filter;
+  document.querySelectorAll('.favs-folders .filter-chip').forEach(c => c.classList.remove('active'));
+  const activeBtn = document.getElementById(`favFilter${filter.charAt(0).toUpperCase() + filter.slice(1)}`) || document.getElementById('favFilterAll');
+  if (activeBtn) activeBtn.classList.add('active');
+  renderFavorites();
+};
+
+window.openCreateDishModal = function () {
+  const form = document.getElementById('createDishForm');
+  if (form) form.reset();
+  const preview = document.getElementById('dishEmojiPreview');
+  if (preview) preview.textContent = '🥗';
+  document.querySelectorAll('.dish-emoji-btn').forEach((b, idx) => {
+    b.classList.toggle('active', idx === 0);
+  });
+  const modal = document.getElementById('createDishModal');
+  if (modal) modal.style.display = 'flex';
+};
+
+window.closeCreateDishModal = function (e) {
+  if (e && e.target && e.target !== e.currentTarget && !e.target.classList.contains('modal-overlay')) {
+    return;
+  }
+  const modal = document.getElementById('createDishModal');
+  if (modal) modal.style.display = 'none';
+};
+
+window.selectDishEmoji = function (emoji, btn) {
+  const preview = document.getElementById('dishEmojiPreview');
+  if (preview) preview.textContent = emoji;
+  document.querySelectorAll('.dish-emoji-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+};
+
+window.handleSaveCustomDish = function (e) {
+  if (e) e.preventDefault();
+  const name = document.getElementById('dishNameInput')?.value?.trim();
+  if (!name) return;
+
+  const emoji = document.getElementById('dishEmojiPreview')?.textContent?.trim() || '🥗';
+  const rawIng = document.getElementById('dishIngredientsInput')?.value || '';
+  const ingredients = rawIng.split(',').map(s => s.trim()).filter(Boolean);
+  const profile = document.getElementById('dishProfileInput')?.value || 'electric';
+  const notes = document.getElementById('dishNotesInput')?.value?.trim() || '';
+
+  const isElec = profile === 'electric';
+  const pral = isElec ? -8.5 : (profile === 'alkaline' ? -5.2 : (profile === 'detox' ? -10.0 : -1.5));
+
+  let favs = store.get('favorites', []);
+  const dish = {
+    id: `dish_${Date.now()}`,
+    type: 'dish',
+    name,
+    emoji,
+    category: 'Plat Personnalisé',
+    ingredients,
+    profile,
+    electric: isElec,
+    pral,
+    nova: 1,
+    notes,
+    createdAt: Date.now()
+  };
+
+  favs.unshift(dish);
+  store.set('favorites', favs);
+  window.closeCreateDishModal();
+  window.setFavFilter('dish');
+  renderFavorites();
+  showToast(`✨ Plat « ${name} » enregistré avec succès dans vos Favoris !`, 'success', 3500);
+};
+
+window.addFavoriteDishToMeals = function (dishId) {
+  const favs = store.get('favorites', []);
+  const dish = favs.find(f => f.id === dishId);
+  if (!dish) return;
+
+  const meals = store.get('meals', []);
+  const newMeal = {
+    id: `meal_${Date.now()}`,
+    timestamp: Date.now(),
+    name: dish.name,
+    emoji: dish.emoji || '🥗',
+    category: 'repas',
+    items: dish.ingredients || [],
+    ingredients: dish.ingredients || [],
+    electric: dish.electric ?? (dish.profile === 'electric'),
+    hybrid: dish.profile === 'transition',
+    pral: dish.pral ?? -5,
+    nova: dish.nova ?? 1,
+    cookingMethod: 'raw',
+    notes: dish.notes || 'Plat favori réutilisé'
+  };
+
+  meals.push(newMeal);
+  store.set('meals', meals);
+  renderMeals();
+  renderDashboard();
+  showToast(`🥗 « ${dish.name} » ajouté avec succès à votre journal du jour !`, 'success', 3500);
+};
+
+window.chatAboutDish = function (dishId) {
+  const favs = store.get('favorites', []);
+  const dish = favs.find(f => f.id === dishId);
+  if (!dish) return;
+
+  const ingStr = (dish.ingredients && dish.ingredients.length > 0) ? ` (Ingrédients : ${dish.ingredients.join(', ')})` : '';
+  const prompt = `Peux-tu me donner des conseils pour préparer et optimiser mon plat « ${dish.name} »${ingStr} selon les principes vitalistes et émonctoriels ?`;
+
+  showPage('chat');
+  setTimeout(() => {
+    quickChat(prompt);
+  }, 400);
+};
+
+window.saveMealAsFavoriteDish = function (idx) {
+  const meals = store.get('meals', []);
+  const todayMeals = meals.filter(m => isToday(m.timestamp));
+  if (idx >= todayMeals.length) return;
+  const targetMeal = todayMeals[idx];
+
+  let favs = store.get('favorites', []);
+  const dishId = `dish_${Date.now()}`;
+  const rawItems = targetMeal.items || targetMeal.ingredients || [];
+  const ingredients = Array.isArray(rawItems)
+    ? rawItems.map(it => typeof it === 'string' ? it : (it.name || '')).filter(Boolean)
+    : [];
+
+  const isElec = targetMeal.electric === true || targetMeal.approved === true;
+  const profile = isElec ? 'electric' : (targetMeal.hybrid ? 'transition' : 'alkaline');
+
+  favs.unshift({
+    id: dishId,
+    type: 'dish',
+    name: targetMeal.name || 'Plat Vitaliste',
+    emoji: targetMeal.emoji || '🥗',
+    category: 'Plat Personnalisé',
+    ingredients,
+    profile,
+    electric: isElec,
+    pral: targetMeal.pral ?? (targetMeal.scientific?.pral ?? -5),
+    nova: targetMeal.nova ?? 1,
+    notes: `Enregistré depuis le journal des repas du ${new Date().toLocaleDateString('fr-FR')}`,
+    createdAt: Date.now()
+  });
+
+  store.set('favorites', favs);
+  renderFavorites();
+  showToast(`❤️ Plat « ${targetMeal.name} » ajouté à vos Plats Favoris !`, 'success');
+};
+
 function renderFavorites() {
   const favs = store.get('favorites', []);
   const list = document.getElementById('favsList');
   if (!list) return;
-  if (favs.length === 0) { list.innerHTML = '<p class="empty-state">Aucun favori. Ajoutez des aliments depuis la recherche.</p>'; return; }
-  list.innerHTML = favs.map(f => {
+
+  const countAll = favs.length;
+  const countDishes = favs.filter(f => f.type === 'dish').length;
+  const countFoods = favs.filter(f => f.type === 'food' || (!f.type && !f.id?.startsWith('plant_'))).length;
+  const countHerbs = favs.filter(f => f.type === 'herb' || f.id?.startsWith('plant_') || f.family === 'Pharmacopée' || f.category === 'Pharmacopée').length;
+
+  const countAllEl = document.getElementById('favCountAll');
+  const countDishesEl = document.getElementById('favCountDishes');
+  const countFoodsEl = document.getElementById('favCountFoods');
+  const countHerbsEl = document.getElementById('favCountHerbs');
+
+  if (countAllEl) countAllEl.textContent = countAll;
+  if (countDishesEl) countDishesEl.textContent = countDishes;
+  if (countFoodsEl) countFoodsEl.textContent = countFoods;
+  if (countHerbsEl) countHerbsEl.textContent = countHerbs;
+
+  if (favs.length === 0) {
+    list.innerHTML = '<p class="empty-state">Aucun favori enregistré. Ajoutez des aliments depuis la recherche ou créez vos propres plats personnalisés !</p>';
+    return;
+  }
+
+  const filtered = favs.filter(f => {
+    if (currentFavFilter === 'dish') return f.type === 'dish';
+    if (currentFavFilter === 'food') return f.type === 'food' || (!f.type && !f.id?.startsWith('plant_'));
+    if (currentFavFilter === 'herb') return f.type === 'herb' || f.id?.startsWith('plant_') || f.family === 'Pharmacopée' || f.category === 'Pharmacopée';
+    return true;
+  });
+
+  if (filtered.length === 0) {
+    list.innerHTML = `<p class="empty-state">Aucun élément dans cette catégorie.</p>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(f => {
+    if (f.type === 'dish') {
+      const isElec = f.electric === true || f.profile === 'electric';
+      const badgeText = isElec ? '⚡ 100% Électrique' : (f.profile === 'detox' ? '🥣 Détox Régénérante' : (f.profile === 'transition' ? '🔄 Transition' : '🌿 Alcalinisant'));
+      const badgeClass = isElec ? 'badge-electric' : (f.profile === 'transition' ? 'badge-hybrid' : 'badge-alkaline');
+      const ingredients = f.ingredients || [];
+      const tagsHtml = ingredients.length > 0
+        ? `<div class="fav-dish-tags">${ingredients.map(ing => `<span class="fav-dish-tag">${esc(ing)}</span>`).join('')}</div>`
+        : '';
+      const notesHtml = f.notes
+        ? `<div class="fav-dish-notes">${esc(f.notes)}</div>`
+        : '';
+
+      return `
+      <div class="fav-dish-card">
+        <div class="fav-dish-header">
+          <div class="fav-dish-title-wrap">
+            <div class="fav-dish-emoji">${f.emoji || '🥗'}</div>
+            <div>
+              <div class="fav-dish-name">${esc(f.name)}</div>
+              <div class="fav-dish-meta">Plat &amp; Recette · PRAL ${f.pral > 0 ? '+' : ''}${(f.pral || -5).toFixed(1)} · NOVA ${f.nova || 1}</div>
+            </div>
+          </div>
+          <span class="food-badge ${badgeClass}">${badgeText}</span>
+        </div>
+        ${tagsHtml}
+        ${notesHtml}
+        <div class="fav-dish-actions">
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button type="button" class="btn-dish-consume" onclick="addFavoriteDishToMeals('${f.id}')" title="Ajouter directement au journal des repas d'aujourd'hui">
+              <i class="ri-restaurant-line"></i> Consommer (Ajouter au journal)
+            </button>
+            <button type="button" class="btn-dish-chat" onclick="chatAboutDish('${f.id}')" title="Demander des conseils d'optimisation au Coach Vital">
+              <i class="ri-chat-smile-3-line"></i> Conseil Coach
+            </button>
+          </div>
+          <button type="button" class="btn-dish-delete" onclick="toggleFavorite({ id: '${f.id}', name: '${esc(f.name).replace(/'/g, "\\'")}' })" title="Retirer des favoris">
+            <i class="ri-delete-bin-line"></i>
+          </button>
+        </div>
+      </div>`;
+    }
+
+    // Herb / Pharmacopee
+    if (f.id?.startsWith('plant_') || f.type === 'herb' || f.family === 'Pharmacopée') {
+      return `
+      <div class="food-card clickable" onclick="openPlantModal('${f.id}')" style="cursor:pointer;">
+        <span class="food-fav-icon" onclick="event.stopPropagation(); toggleFavorite({ id: '${f.id}' });"><i class="ri-heart-fill"></i></span>
+        <div class="food-emoji">${f.emoji || '🌿'}</div>
+        <div class="food-info">
+          <div class="food-name">${esc(f.name)}</div>
+          <div class="food-meta">${esc(f.botanical || f.family || 'Plante Médicinale Amazonienne')}</div>
+        </div>
+        <span class="food-badge badge-electric">Pharmacopée</span>
+      </div>`;
+    }
+
+    // Standard Food Item
     const isE = f.electric === true || f.approved === true || f.specific?.electric === true;
     const isH = f.hybrid === true || f.specific?.hybrid === true;
     const pral = f.scientific_defaults?.pral ?? (f.pral ?? 0);
@@ -4430,7 +4675,7 @@ function renderFavorites() {
     const bt = isE ? 'Électrique' : isH ? 'Hybride' : (isAlcalin && !mucusStr.includes('mucog')) ? 'Alcalinisant' : 'Mucogène';
 
     return `<div class="food-card clickable" onclick="openFoodModal('${f.id || esc(f.name)}')" style="cursor:pointer;">
-      <span class="food-fav-icon"><i class="ri-heart-fill"></i></span>
+      <span class="food-fav-icon" onclick="event.stopPropagation(); toggleFavorite({ id: '${f.id || esc(f.name)}' });"><i class="ri-heart-fill"></i></span>
       <div class="food-emoji">${f.emoji || '🍽️'}</div>
       <div class="food-info">
         <div class="food-name">${esc(f.name)}</div>
@@ -4440,6 +4685,7 @@ function renderFavorites() {
     </div>`;
   }).join('');
 }
+window.renderFavorites = renderFavorites;
 
 // ═══════ MEALS ═══════
 window.showAddMealModal = function () { selectedMealFoods = []; renderSelectedMealFoods(); document.getElementById('mealSearchResults').innerHTML = ''; document.getElementById('mealSearchInput').value = ''; const aiInput = document.getElementById('aiDishInput'); if (aiInput) aiInput.value = ''; document.getElementById('addMealModal').classList.add('open'); };
@@ -5001,7 +5247,10 @@ function renderMeals() {
         ${itemsPreview}
         <div class="meal-item-meta">${isElec ? '⚡ Électrique' : (m.hybrid ? '🔀 Hybride' : '⛔ Mucogène')} · PRAL ${pral > 0 ? '+' : ''}${pral.toFixed(1)} · NOVA ${m.nova ?? 1}${cookingObj ? ` · ${cookingObj.emoji} ${cookingObj.label.split(' ')[0]}` : ''}</div>
       </div>
-      <button class="meal-item-remove" onclick="event.stopPropagation(); removeMeal(${i})" title="Supprimer ce repas"><i class="ri-delete-bin-line"></i></button>
+      <div style="display:flex; align-items:center; gap:4px;">
+        <button class="meal-item-save-fav" onclick="event.stopPropagation(); saveMealAsFavoriteDish(${i})" title="Enregistrer dans mes Plats Favoris" style="background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.25); color:#ef4444; border-radius:8px; width:32px; height:32px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer;"><i class="ri-heart-add-line"></i></button>
+        <button class="meal-item-remove" onclick="event.stopPropagation(); removeMeal(${i})" title="Supprimer ce repas"><i class="ri-delete-bin-line"></i></button>
+      </div>
     </div>`;
   }).join('');
 }

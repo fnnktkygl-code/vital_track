@@ -879,11 +879,32 @@
     </div>
   </div>
 
-  <!-- ═══════ FAVORITES ═══════ -->
+  <!-- ═══════ FAVORITES & RECIPES ═══════ -->
   <main class="page" id="page-favorites">
     <div class="favs-container">
-      <div class="favs-header glass"><h2>❤️ Favoris</h2><p class="subtitle">Vos aliments favoris</p></div>
-      <div id="favsList"><p class="empty-state">Aucun favori. Ajoutez des aliments depuis la recherche.</p></div>
+      <div class="favs-header glass" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; padding:18px 22px;">
+        <div>
+          <h2 style="display:flex; align-items:center; gap:8px; margin:0 0 4px 0;">
+            <i class="ri-heart-3-fill" style="color:#ef4444;"></i> Mes Favoris &amp; Plats
+          </h2>
+          <p class="subtitle" style="margin:0;">Aliments, tisanes et recettes personnalisées prêtes à l'emploi</p>
+        </div>
+        <button class="btn-primary" onclick="window.openCreateDishModal()" style="display:inline-flex; align-items:center; gap:8px; padding:10px 18px; font-weight:700; border-radius:12px;">
+          <i class="ri-add-circle-line"></i> + Créer un plat personnalisé
+        </button>
+      </div>
+
+      <!-- Dossiers / Filtres -->
+      <div class="favs-folders" style="display:flex; gap:8px; margin:16px 0; overflow-x:auto; padding-bottom:4px;">
+        <button class="filter-chip active" id="favFilterAll" onclick="setFavFilter('all')">Tous (<span id="favCountAll">0</span>)</button>
+        <button class="filter-chip" id="favFilterDishes" onclick="setFavFilter('dish')">🥗 Plats &amp; Recettes (<span id="favCountDishes">0</span>)</button>
+        <button class="filter-chip" id="favFilterFoods" onclick="setFavFilter('food')">🥑 Aliments (<span id="favCountFoods">0</span>)</button>
+        <button class="filter-chip" id="favFilterHerbs" onclick="setFavFilter('herb')">🌿 Tisanes &amp; Remèdes (<span id="favCountHerbs">0</span>)</button>
+      </div>
+
+      <div id="favsList" class="favs-grid">
+        <p class="empty-state">Aucun favori enregistré. Ajoutez des aliments ou créez vos propres plats !</p>
+      </div>
     </div>
   </main>
 
@@ -2175,6 +2196,70 @@
           <i class="ri-delete-bin-line"></i> Supprimer
         </button>
       </div>
+    </div>
+  </div>
+
+  <!-- ═══════ MODALE CRÉATION DE PLAT / RECETTE FAVORITE ═══════ -->
+  <div id="createDishModal" class="modal-overlay" onclick="closeCreateDishModal(event)" style="display:none; z-index:99999;">
+    <div class="modal-card glass" onclick="event.stopPropagation()" style="max-width:520px; width:92%; max-height:88vh; overflow-y:auto; padding:26px 22px; border-radius:24px; border:1px solid rgba(52,211,153,0.3); box-shadow:0 20px 60px rgba(0,0,0,0.85);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; padding-bottom:12px; border-bottom:1px solid var(--border);">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="font-size:1.8rem;" id="dishEmojiPreview">🥗</span>
+          <div>
+            <h3 style="margin:0; font-size:1.15rem; font-weight:800; color:var(--text);">Nouveau Plat Personnalisé</h3>
+            <p style="margin:2px 0 0 0; font-size:0.78rem; color:var(--text-dim);">Enregistrez vos créations ou recettes adaptées par l'IA</p>
+          </div>
+        </div>
+        <button type="button" class="more-drawer-close" onclick="closeCreateDishModal(null)" aria-label="Fermer"><i class="ri-close-line"></i></button>
+      </div>
+
+      <form id="createDishForm" onsubmit="handleSaveCustomDish(event)">
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:0.85rem; font-weight:600; color:var(--text); margin-bottom:6px;">Nom du plat *</label>
+          <input type="text" id="dishNameInput" placeholder="Ex: Salade Détox Papaye, Avocat &amp; Graines de Courge" required style="width:100%; padding:12px 14px; background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:12px; color:var(--text); font-size:0.95rem; font-family:var(--font);">
+        </div>
+
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:0.85rem; font-weight:600; color:var(--text); margin-bottom:6px;">Emoji du plat</label>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button type="button" class="dish-emoji-btn active" onclick="selectDishEmoji('🥗', this)">🥗</button>
+            <button type="button" class="dish-emoji-btn" onclick="selectDishEmoji('🥑', this)">🥑</button>
+            <button type="button" class="dish-emoji-btn" onclick="selectDishEmoji('🥣', this)">🥣</button>
+            <button type="button" class="dish-emoji-btn" onclick="selectDishEmoji('🍲', this)">🍲</button>
+            <button type="button" class="dish-emoji-btn" onclick="selectDishEmoji('🥤', this)">🥤</button>
+            <button type="button" class="dish-emoji-btn" onclick="selectDishEmoji('🍓', this)">🍓</button>
+            <button type="button" class="dish-emoji-btn" onclick="selectDishEmoji('🥥', this)">🥥</button>
+            <button type="button" class="dish-emoji-btn" onclick="selectDishEmoji('🫖', this)">🫖</button>
+          </div>
+        </div>
+
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:0.85rem; font-weight:600; color:var(--text); margin-bottom:6px;">Ingrédients (séparés par des virgules)</label>
+          <input type="text" id="dishIngredientsInput" placeholder="Ex: Papaye mûre, Avocat Hass, Roquette sauvage, Graines de chia, Huile d'olive" style="width:100%; padding:12px 14px; background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:12px; color:var(--text); font-size:0.9rem; font-family:var(--font);">
+        </div>
+
+        <div style="margin-bottom:16px;">
+          <label style="display:block; font-size:0.85rem; font-weight:600; color:var(--text); margin-bottom:6px;">Profil / Classification</label>
+          <select id="dishProfileInput" style="width:100%; padding:12px 14px; background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:12px; color:var(--text); font-size:0.9rem; font-family:var(--font);">
+            <option value="electric" selected>⚡ 100% Électrique &amp; Vivant (Dr. Sebi)</option>
+            <option value="alkaline">🌿 Alcalinisant &amp; Cru (Sans Mucus)</option>
+            <option value="detox">🥣 Détox Profonde &amp; Régénérant (Morse)</option>
+            <option value="transition">🔄 Plat de Transition Équilibré</option>
+          </select>
+        </div>
+
+        <div style="margin-bottom:20px;">
+          <label style="display:block; font-size:0.85rem; font-weight:600; color:var(--text); margin-bottom:6px;">Notes de préparation &amp; Conseils du Coach</label>
+          <textarea id="dishNotesInput" rows="3" placeholder="Ex: Assaisonner uniquement avec du jus de citron vert et de l'origan séché. Idéal le midi durant la fenêtre d'appropriation." style="width:100%; padding:12px 14px; background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:12px; color:var(--text); font-size:0.88rem; font-family:var(--font); resize:vertical;"></textarea>
+        </div>
+
+        <div style="display:flex; gap:12px; justify-content:flex-end;">
+          <button type="button" class="btn-secondary" onclick="closeCreateDishModal(null)" style="padding:10px 18px; border-radius:12px; cursor:pointer;">Annuler</button>
+          <button type="submit" class="btn-primary" style="display:inline-flex; align-items:center; gap:8px; padding:10px 22px; font-weight:700; border-radius:12px;">
+            <i class="ri-check-line"></i> Enregistrer le plat
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 
