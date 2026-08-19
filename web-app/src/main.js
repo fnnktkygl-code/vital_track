@@ -6685,16 +6685,16 @@ window.renderResources = function() {
     },
     {
       title: "Système de Guérison du Régime Sans Mucus",
-      subtitle: "Édition Intégrale & Moderne en Français · Prof. Arnold Ehret",
+      subtitle: "Édition Intégrale & Complète en Français (90 Pages) · Prof. Arnold Ehret",
       url: "/pdfs/arnold-ehret-systeme-de-guerison-du-regime-sans-mucus-fr.pdf",
       author: "Prof. Arnold Ehret",
-      source: "Édition Française Haute Définition",
-      size: "800 Ko",
+      source: "Édition Intégrale Française (90 Pages)",
+      size: "1.2 Mo",
       badgeClass: "badge-success",
-      badgeText: "🇫🇷 Édition Française Moderne",
+      badgeText: "🇫🇷 Édition Intégrale (90 Pages)",
       icon: "ri-book-open-fill",
       color: "#10b981",
-      description: "Traduction intégrale fidèle en français moderne du chef-d'œuvre d'Arnold Ehret (25 Leçons, V = P - O, Diagnostic, Transition, Jeûne Rationnel et Recettes)."
+      description: "Traduction intégrale, exhaustive et non abritée en français moderne de l'intégralité du chef-d'œuvre d'Arnold Ehret (Les 26 Leçons complètes, Biographie, Formule V = P - O, Diagnostic, Transition, Jeûne Rationnel et Recettes, 303 000 caractères)."
     },
     {
       title: "Mucusless Diet Healing System (Original)",
