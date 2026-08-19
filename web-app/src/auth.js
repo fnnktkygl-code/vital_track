@@ -6,7 +6,8 @@
 import { t } from './i18n.js';
 
 // Configuration Google Identity Services (GSI)
-const GOOGLE_CLIENT_ID = '928374928374-vitaltrack.apps.googleusercontent.com'; // Default OAuth Client ID or custom
+const ENV_GOOGLE_CLIENT_ID = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env.VITE_GOOGLE_CLIENT_ID : '';
+const HAS_VALID_GOOGLE_CLIENT_ID = Boolean(ENV_GOOGLE_CLIENT_ID && !ENV_GOOGLE_CLIENT_ID.includes('vitaltrack.apps.googleusercontent.com'));
 
 class VitalTrackAuth {
   constructor() {
@@ -65,7 +66,7 @@ class VitalTrackAuth {
   }
 
   /**
-   * Initialise Google Identity Services dans la page
+   * Initialise Google Identity Services dans la page si un Client ID vérifié est configuré
    */
   initGSI() {
     if (typeof window === 'undefined') return;
@@ -77,7 +78,12 @@ class VitalTrackAuth {
       }
     };
 
-    // Injecter le script GSI s'il n'est pas déjà présent
+    if (!HAS_VALID_GOOGLE_CLIENT_ID) {
+      // Pas de Client ID OAuth distant configuré : le flux hermétique modal direct est actif
+      return;
+    }
+
+    // Injecter le script GSI uniquement si un Client ID officiel Google Cloud est fourni
     if (!document.getElementById('google-gsi-script')) {
       const script = document.createElement('script');
       script.id = 'google-gsi-script';
@@ -87,7 +93,7 @@ class VitalTrackAuth {
       script.onload = () => {
         if (window.google && window.google.accounts && window.google.accounts.id) {
           window.google.accounts.id.initialize({
-            client_id: GOOGLE_CLIENT_ID,
+            client_id: ENV_GOOGLE_CLIENT_ID,
             callback: window.handleGoogleCredentialResponse,
             auto_select: false,
             cancel_on_tap_outside: true
@@ -109,7 +115,7 @@ class VitalTrackAuth {
         uid: payload.sub || `google_${Date.now()}`,
         email: payload.email || '',
         name: payload.name || payload.given_name || 'Utilisateur Google',
-        picture: payload.picture || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80',
+        picture: payload.picture || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(payload.name || payload.email || 'Google')}&backgroundColor=4285F4`,
         provider: 'google',
         createdAt: this.currentUser?.createdAt || Date.now(),
         lastLogin: Date.now()
@@ -126,10 +132,10 @@ class VitalTrackAuth {
   }
 
   /**
-   * Connexion explicite Google (Prompt ou modal sécurisée)
+   * Connexion explicite Google (Ouvre la modale Google sécurisée sans blocage d'autorisation)
    */
   async signInWithGoogle() {
-    if (typeof window !== 'undefined' && window.google && window.google.accounts && window.google.accounts.id) {
+    if (HAS_VALID_GOOGLE_CLIENT_ID && typeof window !== 'undefined' && window.google && window.google.accounts && window.google.accounts.id) {
       try {
         window.google.accounts.id.prompt((notification) => {
           if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
@@ -145,7 +151,7 @@ class VitalTrackAuth {
   }
 
   /**
-   * Boîte de dialogue de connexion Google (pour démo / offline / fallback sans popup bloqué)
+   * Boîte de dialogue de connexion Google (pour démo / offline / sans blocage Google 403)
    */
   _openGoogleFallbackDialog() {
     if (typeof window !== 'undefined' && typeof window.openGoogleAuthModal === 'function') {
@@ -163,21 +169,21 @@ class VitalTrackAuth {
   }
 
   /**
-   * Connexion directe avec une adresse email
+   * Connexion directe avec une adresse email Google
    * @param {string} email
    * @param {string} [customName]
    */
   signInWithEmail(email, customName) {
     if (!email) return null;
     const cleanEmail = email.trim();
-    const name = customName || cleanEmail.split('@')[0].replace('.', ' ').replace(/\b\w/g, l => l.toUpperCase());
+    const name = customName || cleanEmail.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     const pseudoUid = 'g_' + btoa(cleanEmail.toLowerCase()).replace(/[^a-zA-Z0-9]/g, '').slice(0, 16);
 
     const user = {
       uid: pseudoUid,
       email: cleanEmail,
       name: name,
-      picture: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(cleanEmail)}`,
+      picture: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name)}&backgroundColor=4285F4`,
       provider: 'google',
       createdAt: this.currentUser?.createdAt || Date.now(),
       lastLogin: Date.now()

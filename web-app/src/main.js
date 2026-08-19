@@ -1871,13 +1871,15 @@ function renderActiveConversation() {
   conv.messages.forEach(m => addMessage(m.text, m.role === 'user', m.model, m.image));
 }
 
-// ═══════ VOICE INPUT (SPEECH-TO-TEXT - GEMINI STYLE) ═══════
+// ═══════ VOICE INPUT (OFFICIAL GOOGLE GEMINI AI & WEB SPEECH) ═══════
 let _speechRecognition = null;
+let _mediaRecorder = null;
+let _audioStream = null;
+let _audioChunks = [];
 let _isListening = false;
 let _sessionBaseText = '';
-let _sessionFinalText = '';
-let _currentSegmentFinal = '';
-let _currentSegmentInterim = '';
+let _sessionFinalSegments = [];
+let _sessionInterim = '';
 let _voiceRestartTimer = null;
 let _userExplicitStop = false;
 
@@ -1889,20 +1891,132 @@ function _updateVoiceUI(listening) {
   if (voiceBtn) {
     if (listening) {
       voiceBtn.classList.add('recording');
-      voiceBtn.innerHTML = '<i class="ri-mic-fill" style="color:#ef4444;"></i>';
-      voiceBtn.title = "Arrêter l'enregistrement vocal";
+      voiceBtn.innerHTML = '<i class="ri-mic-fill" style="color:#ef4444; animation:pulse 1.2s infinite;"></i>';
+      voiceBtn.title = "Arrêter et transcrire";
     } else {
       voiceBtn.classList.remove('recording');
       voiceBtn.innerHTML = '<i class="ri-mic-line"></i>';
-      voiceBtn.title = "Saisie vocale";
+      voiceBtn.title = "Saisie vocale Google";
     }
   }
 
   if (indicator) {
     indicator.style.display = listening ? 'flex' : 'none';
   }
-  if (statusText && listening) {
-    statusText.textContent = '🎙️ Écoute active... Parlez à votre rythme';
+  if (statusText) {
+    statusText.textContent = listening
+      ? '🎙️ Écoute active... Parlez naturellement'
+      : '✨ Traitement Google IA...';
+  }
+}
+
+async function _startMediaRecorder() {
+  _audioChunks = [];
+  try {
+    if (navigator.mediaDevices && typeof navigator.mediaDevices.getUserMedia === 'function') {
+      _audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mimeTypes = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg', ''];
+      let selectedMime = '';
+      for (const m of mimeTypes) {
+        if (!m || (typeof MediaRecorder.isTypeSupported === 'function' && MediaRecorder.isTypeSupported(m))) {
+          selectedMime = m;
+          break;
+        }
+      }
+      _mediaRecorder = selectedMime ? new MediaRecorder(_audioStream, { mimeType: selectedMime }) : new MediaRecorder(_audioStream);
+      _mediaRecorder.ondataavailable = (e) => {
+        if (e.data && e.data.size > 0) {
+          _audioChunks.push(e.data);
+        }
+      };
+      _mediaRecorder.start(250);
+    }
+  } catch (e) {
+    console.warn('[Voice] MediaRecorder capture not available or refused:', e.message);
+    _mediaRecorder = null;
+    _audioStream = null;
+  }
+}
+
+function _stopMediaRecorder() {
+  return new Promise((resolve) => {
+    if (_mediaRecorder && _mediaRecorder.state !== 'inactive') {
+      _mediaRecorder.onstop = () => {
+        const mime = _mediaRecorder.mimeType || 'audio/webm';
+        const blob = new Blob(_audioChunks, { type: mime });
+        _cleanupAudioStream();
+        resolve(blob);
+      };
+      try {
+        _mediaRecorder.stop();
+      } catch (err) {
+        _cleanupAudioStream();
+        resolve(null);
+      }
+    } else {
+      _cleanupAudioStream();
+      resolve(null);
+    }
+  });
+}
+
+function _cleanupAudioStream() {
+  if (_audioStream) {
+    try {
+      _audioStream.getTracks().forEach(track => track.stop());
+    } catch (e) { }
+    _audioStream = null;
+  }
+  _mediaRecorder = null;
+}
+
+async function _transcribeWithGoogleGemini(audioBlob) {
+  if (!audioBlob || audioBlob.size < 1200) return;
+  try {
+    const statusText = document.getElementById('chatVoiceStatus');
+    if (statusText) statusText.textContent = '✨ Transcription Google Gemini de haute précision...';
+
+    const reader = new FileReader();
+    reader.readAsDataURL(audioBlob);
+    reader.onloadend = async () => {
+      try {
+        const base64Data = (reader.result || '').split(',')[1];
+        if (!base64Data) return;
+
+        const lang = window.vitalTrackI18n?.getLanguage ? window.vitalTrackI18n.getLanguage() : 'fr';
+        const resp = await fetch('/api/transcribe', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-VT-API-Key': VT_APP_KEY
+          },
+          body: JSON.stringify({
+            audioData: base64Data,
+            mimeType: audioBlob.type || 'audio/webm',
+            language: lang
+          })
+        });
+
+        if (resp.ok) {
+          const resJson = await resp.json();
+          if (resJson && resJson.text && resJson.text.trim()) {
+            const input = document.getElementById('chatInput');
+            if (input) {
+              const prefix = _sessionBaseText ? _sessionBaseText.trim() + ' ' : '';
+              input.value = (prefix + resJson.text.trim()).replace(/\s+/g, ' ').trim();
+              input.focus();
+              if (window.showToast) {
+                window.showToast('✨ Transcrit avec l\'IA Google Gemini', 'success', 2500);
+              }
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('[Voice] Gemini transcription error:', err);
+      }
+    };
+  } catch (err) {
+    console.warn('[Voice] FileReader error:', err);
   }
 }
 
@@ -1915,17 +2029,10 @@ function toggleVoiceInput(forceState, e) {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   const input = document.getElementById('chatInput');
 
-  if (!SpeechRecognition) {
-    if (window.showToast) {
-      window.showToast("⚠️ La reconnaissance vocale n'est pas supportée par ce navigateur.", "info");
-    }
-    return;
-  }
-
   const shouldStart = forceState !== undefined ? forceState : !_isListening;
 
   if (!shouldStart) {
-    // 🛑 Arrêt propre demandé par l'utilisateur
+    // 🛑 Arrêt demandé par l'utilisateur
     _userExplicitStop = true;
     _isListening = false;
 
@@ -1944,29 +2051,38 @@ function toggleVoiceInput(forceState, e) {
       _speechRecognition = null;
     }
 
-    // Consolidation définitive du texte sans duplication
-    if (_currentSegmentFinal) {
-      _sessionFinalText = [_sessionFinalText, _currentSegmentFinal].filter(Boolean).join(' ').trim();
-      _currentSegmentFinal = '';
-      _currentSegmentInterim = '';
-    }
-
-    const finalCombined = [_sessionBaseText, _sessionFinalText].filter(Boolean).join(' ').replace(/\s+/g, ' ').trim();
+    // Consolidation finale propre sans doublons
+    const fullText = [_sessionBaseText, ..._sessionFinalSegments, _sessionInterim].filter(Boolean).join(' ').replace(/\s+/g, ' ').trim();
     if (input) {
-      input.value = finalCombined;
+      input.value = fullText;
       input.focus();
     }
 
     _updateVoiceUI(false);
+
+    // Déclenchement de la transcription haute fidélité Google Gemini en tâche de fond
+    _stopMediaRecorder().then(audioBlob => {
+      if (audioBlob) {
+        _transcribeWithGoogleGemini(audioBlob);
+      }
+    });
     return;
   }
 
   // 🎙️ Démarrage d'une nouvelle session vocale
   _userExplicitStop = false;
+  _isListening = true;
   _sessionBaseText = input && input.value ? input.value.trim() : '';
-  _sessionFinalText = '';
-  _currentSegmentFinal = '';
-  _currentSegmentInterim = '';
+  _sessionFinalSegments = [];
+  _sessionInterim = '';
+
+  _updateVoiceUI(true);
+  _startMediaRecorder();
+
+  if (!SpeechRecognition) {
+    // Navigateur sans WebSpeech (ex: Firefox) : l'enregistrement Google Gemini prend le relais
+    return;
+  }
 
   function startRecognitionSession() {
     if (_userExplicitStop) return;
@@ -1998,100 +2114,70 @@ function toggleVoiceInput(forceState, e) {
       _speechRecognition.maxAlternatives = 1;
 
       _speechRecognition.onstart = () => {
-        _isListening = true;
-        _updateVoiceUI(true);
         if (input) input.focus();
       };
 
       _speechRecognition.onresult = (event) => {
-        let segFinal = '';
-        let segInterim = '';
+        let interimText = '';
 
-        // 🧠 Parcours linéaire strict de 0 à length : aucune duplication possible
-        for (let i = 0; i < event.results.length; ++i) {
+        // Lecture linéaire garantie sans ré-accumulation
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
           const item = event.results[i];
           if (item && item[0] && item[0].transcript) {
             const txt = item[0].transcript.trim();
             if (!txt) continue;
             if (item.isFinal) {
-              segFinal += (segFinal ? ' ' : '') + txt;
+              if (!_sessionFinalSegments.includes(txt)) {
+                _sessionFinalSegments.push(txt);
+              }
             } else {
-              segInterim += (segInterim ? ' ' : '') + txt;
+              interimText = txt;
             }
           }
         }
 
-        _currentSegmentFinal = segFinal;
-        _currentSegmentInterim = segInterim;
+        _sessionInterim = interimText;
 
-        const parts = [_sessionBaseText, _sessionFinalText, _currentSegmentFinal, _currentSegmentInterim].filter(Boolean);
-        const liveText = parts.join(' ').replace(/\s+/g, ' ').trim();
-
+        const liveText = [_sessionBaseText, ..._sessionFinalSegments, _sessionInterim].filter(Boolean).join(' ').replace(/\s+/g, ' ').trim();
         if (input) {
           input.value = liveText;
         }
       };
 
       _speechRecognition.onerror = (event) => {
-        console.warn('[Voice] Speech recognition error/warning:', event.error);
+        console.warn('[Voice] WebSpeech warning:', event.error);
         if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
           if (window.showToast) {
-            window.showToast("⚠️ Accès au micro refusé. Veuillez autoriser le microphone dans votre navigateur.", "error");
+            window.showToast("⚠️ Accès micro refusé. Autorisez le microphone pour parler.", "error");
           }
-          window.toggleVoiceInput(false);
-          return;
-        }
-        if (event.error === 'network') {
-          if (window.showToast) {
-            window.showToast("⚠️ Service vocal réseau momentanément indisponible.", "info");
-          }
-          window.toggleVoiceInput(false);
-          return;
-        }
-        if (event.error === 'audio-capture') {
-          if (window.showToast) {
-            window.showToast("⚠️ Aucun microphone détecté sur cet appareil.", "error");
-          }
-          window.toggleVoiceInput(false);
+          toggleVoiceInput(false);
           return;
         }
         if (event.error === 'no-speech') {
-          // Silence naturel de l'utilisateur : conserver la session active
           return;
         }
       };
 
       _speechRecognition.onend = () => {
-        // Enregistrer la portion finalisée du segment terminé
-        if (_currentSegmentFinal) {
-          _sessionFinalText = [_sessionFinalText, _currentSegmentFinal].filter(Boolean).join(' ').trim();
-          _currentSegmentFinal = '';
-          _currentSegmentInterim = '';
-        }
-
-        // Relance fluide si toujours en écoute
+        // En cas d'interruption temporaire du moteur de reconnaissance sans arrêt explicite
+        _sessionInterim = '';
         if (_isListening && !_userExplicitStop) {
           _voiceRestartTimer = setTimeout(() => {
             if (_isListening && !_userExplicitStop) {
               startRecognitionSession();
             }
-          }, 80);
-        } else {
-          _isListening = false;
-          _updateVoiceUI(false);
+          }, 100);
         }
       };
 
       _speechRecognition.start();
     } catch (err) {
-      console.error('Error starting speech recognition:', err);
-      _isListening = false;
-      _updateVoiceUI(false);
+      console.warn('[Voice] WebSpeech fallback:', err);
     }
   }
 
   startRecognitionSession();
-};
+}
 
 function cancelVoiceInput(e) {
   if (e && typeof e.preventDefault === 'function') {
@@ -2117,18 +2203,19 @@ function cancelVoiceInput(e) {
     _speechRecognition = null;
   }
 
+  _stopMediaRecorder();
+
   const input = document.getElementById('chatInput');
   if (input) {
     input.value = _sessionBaseText;
     input.focus();
   }
 
-  _currentSegmentFinal = '';
-  _currentSegmentInterim = '';
-  _sessionFinalText = '';
+  _sessionFinalSegments = [];
+  _sessionInterim = '';
 
   _updateVoiceUI(false);
-};
+}
 
 // ═══════ IMAGE UPLOAD & PREVIEW ═══════
 let pendingChatImage = null; // { mimeType, data, dataUri }
