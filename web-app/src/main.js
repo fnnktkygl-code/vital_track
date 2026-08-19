@@ -7382,9 +7382,6 @@ window.searchMediaResources = function (query) {
 
 window.setMediaSearchFilter = function (filter) {
   _mediaSearchFilter = filter;
-  document.querySelectorAll('.media-filter-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.filter === filter);
-  });
   _renderMediaSearchResults();
 };
 
@@ -7401,8 +7398,11 @@ window.clearMediaSearch = function () {
   const input = document.getElementById('mediaSearchInput');
   if (input) {
     input.value = '';
-    window.searchMediaResources('');
-    input.focus();
+    _mediaSearchQuery = '';
+    _mediaSearchFilter = 'all';
+    const clearBtn = document.getElementById('mediaSearchClearBtn');
+    if (clearBtn) clearBtn.style.display = 'none';
+    _renderMediaSearchResults();
   }
 };
 
@@ -7411,46 +7411,90 @@ function _renderMediaSearchResults() {
   const standardCatalog = document.getElementById('mediaStandardCatalog');
   const countBadge = document.getElementById('mediaResultCountBadge');
 
-  if (!_mediaSearchQuery && _mediaSearchFilter === 'all') {
-    if (resultsContainer) resultsContainer.style.display = 'none';
+  // Si aucune recherche saisie, on affiche le catalogue principal propre (ouvrages + vidéos)
+  if (!_mediaSearchQuery) {
+    if (resultsContainer) {
+      resultsContainer.style.display = 'none';
+      resultsContainer.innerHTML = '';
+    }
     if (standardCatalog) standardCatalog.style.display = 'block';
     if (countBadge) countBadge.style.display = 'none';
     return;
   }
 
+  // Mode recherche active : on cache le catalogue et on affiche les résultats ciblés
   if (standardCatalog) standardCatalog.style.display = 'none';
   if (resultsContainer) resultsContainer.style.display = 'block';
 
-  const results = searchMediaKnowledge(_mediaSearchQuery, _mediaSearchFilter);
+  const allMatches = searchMediaKnowledge(_mediaSearchQuery, 'all');
+  const pdfMatches = allMatches.filter(item => item.type === 'pdf');
+  const videoMatches = allMatches.filter(item => item.type === 'video');
+
+  let displayMatches = allMatches;
+  if (_mediaSearchFilter === 'pdf') {
+    displayMatches = pdfMatches;
+  } else if (_mediaSearchFilter === 'video') {
+    displayMatches = videoMatches;
+  }
 
   if (countBadge) {
     countBadge.style.display = 'inline-block';
-    const totalCount = results.length;
-    countBadge.textContent = `${totalCount} passage${totalCount > 1 ? 's' : ''} & vidéo${totalCount > 1 ? 's' : ''} trouvé${totalCount > 1 ? 's' : ''}${totalCount > 50 ? ' (Top 50 affichés)' : ''}`;
+    countBadge.textContent = `${allMatches.length} résultat${allMatches.length > 1 ? 's' : ''}`;
   }
 
-  if (!results || results.length === 0) {
+  if (allMatches.length === 0) {
     resultsContainer.innerHTML = `
-      <div class="dash-card glass" style="text-align:center; padding:40px 20px;">
+      <div class="dash-card glass" style="text-align:center; padding:40px 20px; border-radius:16px;">
         <div style="font-size:2.4rem; margin-bottom:10px;">🔍</div>
-        <h3 style="color:#fff; font-size:1.1rem; margin-bottom:6px;">Aucun passage ou vidéo trouvé</h3>
-        <p style="color:var(--text-dim); font-size:0.85rem; max-width:460px; margin:0 auto 16px;">
-          Aucun résultat ne correspond à « <strong>${esc(_mediaSearchQuery)}</strong> ». Essayez avec des termes comme <em>yeux, intestins, colon, crohn, reins, mucus, jeûne, autophagie</em>.
+        <h3 style="color:#fff; font-size:1.1rem; margin-bottom:6px;">Aucun résultat pour « ${esc(_mediaSearchQuery)} »</h3>
+        <p style="color:var(--text-dim); font-size:0.85rem; max-width:480px; margin:0 auto 18px; line-height:1.5;">
+          Aucun passage de livre ni extrait vidéo ne correspond à ce terme. Essayez un autre mot-clé (ex: <em>yeux, intestins, colon, crohn, reins, mucus, jeûne, autophagie, dr sebi</em>).
         </p>
-        <button class="btn-secondary" onclick="clearMediaSearch()" style="display:inline-flex; align-items:center; gap:6px;">
-          <i class="ri-refresh-line"></i> Réinitialiser la recherche
+        <button type="button" class="btn-secondary" onclick="clearMediaSearch()" style="display:inline-flex; align-items:center; gap:6px; margin:0 auto;">
+          <i class="ri-refresh-line"></i> Revenir au catalogue complet
         </button>
       </div>
     `;
     return;
   }
 
-  const displayResults = results.slice(0, 50);
+  const limitedMatches = displayMatches.slice(0, 50);
 
   resultsContainer.innerHTML = `
-    <div class="media-results-grid">
-      ${displayResults.map(item => renderMediaResultCard(item, _mediaSearchQuery)).join('')}
+    <!-- Barre de Filtrage des Résultats de Recherche -->
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:18px; padding:12px 16px; background:rgba(15,23,42,0.6); border:1px solid rgba(255,255,255,0.08); border-radius:12px;">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span style="font-size:0.88rem; font-weight:700; color:#fff;">
+          🎯 ${allMatches.length} passage${allMatches.length > 1 ? 's' : ''} trouvé${allMatches.length > 1 ? 's' : ''} pour « <span style="color:var(--accent);">${esc(_mediaSearchQuery)}</span> »
+        </span>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+        <button type="button" class="btn-tab ${_mediaSearchFilter === 'all' ? 'active' : ''}" style="padding:5px 12px; font-size:0.78rem;" onclick="setMediaSearchFilter('all')">
+          🌟 Tous (${allMatches.length})
+        </button>
+        <button type="button" class="btn-tab ${_mediaSearchFilter === 'pdf' ? 'active' : ''}" style="padding:5px 12px; font-size:0.78rem;" onclick="setMediaSearchFilter('pdf')">
+          📖 Livres & PDF (${pdfMatches.length})
+        </button>
+        <button type="button" class="btn-tab ${_mediaSearchFilter === 'video' ? 'active' : ''}" style="padding:5px 12px; font-size:0.78rem;" onclick="setMediaSearchFilter('video')">
+          🎬 Vidéos (${videoMatches.length})
+        </button>
+        <button type="button" class="btn-secondary" style="padding:5px 10px; font-size:0.78rem; display:inline-flex; align-items:center; gap:4px;" onclick="clearMediaSearch()" title="Fermer la recherche">
+          <i class="ri-close-line"></i> Fermer
+        </button>
+      </div>
     </div>
+
+    <!-- Grille des Résultats -->
+    <div class="media-results-grid">
+      ${limitedMatches.map(item => renderMediaResultCard(item, _mediaSearchQuery)).join('')}
+    </div>
+
+    ${displayMatches.length > 50 ? `
+      <div style="text-align:center; padding:16px; color:var(--text-dim); font-size:0.8rem;">
+        Affichage des 50 premiers résultats les plus pertinents sur ${displayMatches.length}.
+      </div>
+    ` : ''}
   `;
 }
 
@@ -7943,27 +7987,6 @@ window.renderResources = function () {
           <button type="button" class="clear-btn" id="mediaSearchClearBtn" onclick="clearMediaSearch()" style="${_mediaSearchQuery ? 'display:flex' : 'display:none'}" aria-label="Effacer la recherche">
             <i class="ri-close-circle-fill"></i>
           </button>
-        </div>
-
-        <!-- Filtres par format & langue -->
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
-          <div style="display:flex; gap:6px; flex-wrap:wrap;">
-            <button type="button" class="media-tag-chip media-filter-btn ${_mediaSearchFilter === 'all' ? 'active' : ''}" data-filter="all" onclick="setMediaSearchFilter('all')">
-              <i class="ri-apps-line"></i> Tout (${MEDIA_SEARCH_DATABASE.length})
-            </button>
-            <button type="button" class="media-tag-chip media-filter-btn ${_mediaSearchFilter === 'fr' ? 'active' : ''}" data-filter="fr" onclick="setMediaSearchFilter('fr')">
-              🇫🇷 Français (${MEDIA_SEARCH_DATABASE.filter(i => i.lang === 'fr').length})
-            </button>
-            <button type="button" class="media-tag-chip media-filter-btn ${_mediaSearchFilter === 'en' ? 'active' : ''}" data-filter="en" onclick="setMediaSearchFilter('en')">
-              🇬🇧 English (${MEDIA_SEARCH_DATABASE.filter(i => i.lang === 'en').length})
-            </button>
-            <button type="button" class="media-tag-chip media-filter-btn ${_mediaSearchFilter === 'videos' ? 'active' : ''}" data-filter="videos" onclick="setMediaSearchFilter('videos')">
-              <i class="ri-video-line"></i> Vidéos (${MEDIA_SEARCH_DATABASE.filter(i => i.type === 'video').length})
-            </button>
-            <button type="button" class="media-tag-chip media-filter-btn ${_mediaSearchFilter === 'pdfs' ? 'active' : ''}" data-filter="pdfs" onclick="setMediaSearchFilter('pdfs')">
-              <i class="ri-file-pdf-line"></i> Livres PDF (${MEDIA_SEARCH_DATABASE.filter(i => i.type === 'pdf').length})
-            </button>
-          </div>
         </div>
 
         <!-- Suggestions de Mots-Clés Rapides -->

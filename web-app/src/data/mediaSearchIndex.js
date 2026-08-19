@@ -67,15 +67,15 @@ function escapeRegex(string) {
 }
 
 export function searchMediaKnowledge(query = '', filter = 'all') {
-  if (!query && filter === 'all') return MEDIA_SEARCH_DATABASE;
+  if (!query) return [];
   
   const tokens = getExpandedSearchTokens(query);
   const normalizedQuery = (query || '').toLowerCase().trim();
 
   let filtered = MEDIA_SEARCH_DATABASE;
-  if (filter === 'video') {
+  if (filter === 'video' || filter === 'videos') {
     filtered = filtered.filter(item => item.type === 'video');
-  } else if (filter === 'pdf') {
+  } else if (filter === 'pdf' || filter === 'pdfs') {
     filtered = filtered.filter(item => item.type === 'pdf');
   } else if (filter === 'fr') {
     filtered = filtered.filter(item => item.lang === 'fr');
