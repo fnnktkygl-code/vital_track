@@ -1812,9 +1812,12 @@ function renderActiveConversation() {
   conv.messages.forEach(m => addMessage(m.text, m.role === 'user', m.model, m.image));
 }
 
-// ═══════ VOICE INPUT (SPEECH-TO-TEXT) ═══════
+// ═══════ VOICE INPUT (SPEECH-TO-TEXT - GEMINI STYLE) ═══════
 let _speechRecognition = null;
 let _isListening = false;
+let _voiceInitialPrefix = '';
+let _voiceRestartTimer = null;
+let _userExplicitStop = false;
 
 window.toggleVoiceInput = function (forceState) {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -1823,76 +1826,151 @@ window.toggleVoiceInput = function (forceState) {
   const input = document.getElementById('chatInput');
 
   if (!SpeechRecognition) {
-    showToast("⚠️ La reconnaissance vocale n'est pas supportée par ce navigateur.", "info");
+    if (window.showToast) {
+      window.showToast("⚠️ La reconnaissance vocale n'est pas supportée par ce navigateur.", "info");
+    }
     return;
   }
 
   const shouldStart = forceState !== undefined ? forceState : !_isListening;
 
   if (!shouldStart) {
-    if (_speechRecognition) {
-      try { _speechRecognition.stop(); } catch (e) { }
-    }
+    // 🛑 Arrêt explicite demandé par l'utilisateur
+    _userExplicitStop = true;
     _isListening = false;
-    if (voiceBtn) voiceBtn.classList.remove('recording');
+    if (_voiceRestartTimer) {
+      clearTimeout(_voiceRestartTimer);
+      _voiceRestartTimer = null;
+    }
+    if (_speechRecognition) {
+      try {
+        _speechRecognition.onresult = null;
+        _speechRecognition.onend = null;
+        _speechRecognition.onerror = null;
+        _speechRecognition.stop();
+      } catch (e) { }
+      _speechRecognition = null;
+    }
+    if (voiceBtn) {
+      voiceBtn.classList.remove('recording');
+      voiceBtn.title = "Saisie vocale";
+    }
     if (indicator) indicator.style.display = 'none';
+    if (input) {
+      input.focus();
+      input.value = input.value.trim();
+    }
     return;
   }
 
-  try {
+  // 🎙️ Démarrage de l'enregistrement vocal
+  _userExplicitStop = false;
+  _voiceInitialPrefix = input && input.value ? input.value.trim() : '';
+
+  function startRecognitionSession() {
+    if (_userExplicitStop) return;
+
     if (_speechRecognition) {
-      try { _speechRecognition.abort(); } catch (e) { }
+      try {
+        _speechRecognition.onresult = null;
+        _speechRecognition.onend = null;
+        _speechRecognition.onerror = null;
+        _speechRecognition.abort();
+      } catch (e) { }
+      _speechRecognition = null;
     }
-    _speechRecognition = new SpeechRecognition();
-    _speechRecognition.lang = 'fr-FR';
-    _speechRecognition.continuous = true;
-    _speechRecognition.interimResults = true;
 
-    let baseText = input.value ? input.value.trim() + ' ' : '';
+    try {
+      _speechRecognition = new SpeechRecognition();
+      _speechRecognition.lang = 'fr-FR';
+      _speechRecognition.continuous = true;
+      _speechRecognition.interimResults = true;
+      _speechRecognition.maxAlternatives = 1;
 
-    _speechRecognition.onstart = () => {
-      _isListening = true;
-      if (voiceBtn) voiceBtn.classList.add('recording');
-      if (indicator) indicator.style.display = 'flex';
-      input.focus();
-    };
-
-    _speechRecognition.onresult = (event) => {
-      let interim = '';
-      for (let i = event.resultIndex; i < event.results.length; ++i) {
-        if (event.results[i].isFinal) {
-          baseText += event.results[i][0].transcript + ' ';
-        } else {
-          interim += event.results[i][0].transcript;
+      _speechRecognition.onstart = () => {
+        _isListening = true;
+        if (voiceBtn) {
+          voiceBtn.classList.add('recording');
+          voiceBtn.title = "Arrêter l'enregistrement vocal";
         }
-      }
-      input.value = (baseText + interim).trim();
-    };
+        if (indicator) indicator.style.display = 'flex';
+        if (input) input.focus();
+      };
 
-    _speechRecognition.onerror = (event) => {
-      console.warn('Speech recognition error:', event.error);
-      if (event.error === 'not-allowed') {
-        showToast("⚠️ Accès au micro refusé. Activez le micro dans les paramètres.", "error");
-      }
+      _speechRecognition.onresult = (event) => {
+        let currentFinal = '';
+        let currentInterim = '';
+
+        // 🧠 Parcours de TOUS les résultats de 0 à event.results.length pour éliminer toute répétition/duplication
+        for (let i = 0; i < event.results.length; ++i) {
+          const item = event.results[i];
+          if (item && item[0] && item[0].transcript) {
+            const txt = item[0].transcript;
+            if (item.isFinal) {
+              currentFinal += txt + ' ';
+            } else {
+              currentInterim += txt;
+            }
+          }
+        }
+
+        let combined = '';
+        if (_voiceInitialPrefix) combined += _voiceInitialPrefix + ' ';
+        if (currentFinal) combined += currentFinal;
+        if (currentInterim) combined += currentInterim;
+
+        if (input) {
+          // Remplacement propre sans duplication
+          input.value = combined.replace(/\s+/g, ' ').trim();
+        }
+      };
+
+      _speechRecognition.onerror = (event) => {
+        console.warn('Speech recognition status:', event.error);
+        if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+          if (window.showToast) {
+            window.showToast("⚠️ Accès au micro refusé. Veuillez autoriser le micro dans votre navigateur.", "error");
+          }
+          window.toggleVoiceInput(false);
+          return;
+        }
+        if (event.error === 'no-speech') {
+          // Silence normal détecté, laisser actif
+          return;
+        }
+      };
+
+      _speechRecognition.onend = () => {
+        // 🔄 Relance fluide si l'utilisateur est toujours en train d'enregistrer (évite les coupures brutales de Chrome/Safari)
+        if (_isListening && !_userExplicitStop) {
+          if (input && input.value) {
+            _voiceInitialPrefix = input.value.trim();
+          }
+          _voiceRestartTimer = setTimeout(() => {
+            if (_isListening && !_userExplicitStop) {
+              startRecognitionSession();
+            }
+          }, 100);
+        } else {
+          _isListening = false;
+          if (voiceBtn) {
+            voiceBtn.classList.remove('recording');
+            voiceBtn.title = "Saisie vocale";
+          }
+          if (indicator) indicator.style.display = 'none';
+        }
+      };
+
+      _speechRecognition.start();
+    } catch (err) {
+      console.error('Error starting speech recognition:', err);
       _isListening = false;
       if (voiceBtn) voiceBtn.classList.remove('recording');
       if (indicator) indicator.style.display = 'none';
-    };
-
-    _speechRecognition.onend = () => {
-      _isListening = false;
-      if (voiceBtn) voiceBtn.classList.remove('recording');
-      if (indicator) indicator.style.display = 'none';
-    };
-
-    _speechRecognition.start();
-  } catch (err) {
-    console.error('Error starting speech recognition:', err);
-    showToast("Impossible de démarrer le micro.", "error");
-    _isListening = false;
-    if (voiceBtn) voiceBtn.classList.remove('recording');
-    if (indicator) indicator.style.display = 'none';
+    }
   }
+
+  startRecognitionSession();
 };
 
 // ═══════ IMAGE UPLOAD & PREVIEW ═══════
@@ -9220,7 +9298,7 @@ window.initAppLogos = function () {
   }
 };
 
-// ═══════ SCREENSHOT PROTECTION & PRIVACY NOTIFICATION ═══════
+// ═══════ SCREENSHOT HANDLING & PRIVACY NOTIFICATION ═══════
 let lastScreenshotToastTime = 0;
 
 window.initScreenshotProtection = function () {
@@ -9230,47 +9308,21 @@ window.initScreenshotProtection = function () {
   if (toggle) {
     toggle.checked = isEnabled;
   }
-
-  // Global screenshot shortcut detection (PrintScreen, Meta+Shift+3/4/5/S, Windows Snip)
-  window.addEventListener('keydown', (e) => {
-    const isPrintScreen = e.key === 'PrintScreen' || e.keyCode === 44 || e.code === 'PrintScreen';
-    const isMacScreenshot = (e.metaKey || e.ctrlKey) && e.shiftKey && (['3', '4', '5', 'S', 's', 'p', 'P'].includes(e.key) || ['Digit3', 'Digit4', 'Digit5', 'KeyS', 'KeyP'].includes(e.code));
-    const isWinScreenshot = e.key === 'Snapshot' || ((e.key === 'S' || e.code === 'KeyS') && (e.metaKey || e.ctrlKey));
-
-    if (isPrintScreen || isMacScreenshot || isWinScreenshot) {
-      handleScreenshotEvent();
-    }
-  });
 };
 
 function handleScreenshotEvent() {
-  const now = Date.now();
-  if (now - lastScreenshotToastTime > 2500) {
-    lastScreenshotToastTime = now;
-    if (window.showToast) {
-      window.showToast(t('settings.screenshotToast', {}, '📸 Capture d\'écran détectée — Vous pouvez activer ou désactiver la protection anti-capture à tout moment dans Paramètres.'), 'info', 5000);
-    }
-  }
-
-  // Only if explicitly enabled by user in settings:
-  if (store.get('screenshotProtection', false) === true) {
-    document.body.classList.add('screenshot-privacy-active');
-    setTimeout(() => {
-      document.body.classList.remove('screenshot-privacy-active');
-    }, 1200);
-  }
+  // Never black out or blur the screen - keep all captures 100% visible and clean
+  document.body.classList.remove('screenshot-privacy-active');
 }
 
 window.setScreenshotProtection = function (enabled) {
   store.set('screenshotProtection', !!enabled);
-  if (!enabled) {
-    document.body.classList.remove('screenshot-privacy-active');
-  }
+  document.body.classList.remove('screenshot-privacy-active');
   if (window.showToast) {
     if (enabled) {
-      window.showToast('🛡️ Protection anti-capture activée : Vos données de santé seront masquées lors des captures.', 'info', 4000);
+      window.showToast('🛡️ Mode discrétion activé pour vos données personnelles.', 'info', 4000);
     } else {
-      window.showToast('🔓 Protection anti-capture désactivée : Vos captures d\'écran sont désormais autorisées et nettes.', 'info', 4000);
+      window.showToast('📸 Captures d\'écran autorisées et nettes.', 'info', 4000);
     }
   }
 };
