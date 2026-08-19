@@ -158,6 +158,96 @@
     <a href="#" onclick="showPage('modes'); toggleMobileNav()"><i class="ri-settings-3-line"></i> <span data-i18n="nav.settings">Protocoles & Profil</span></a>
   </div>
 
+  <!-- ═══════ MORE FEATURES BOTTOM DRAWER (Mobile) ═══════ -->
+  <div class="more-drawer-backdrop" id="moreDrawerBackdrop" onclick="window.toggleMoreDrawer(false)"></div>
+  <div class="more-drawer glass" id="moreDrawer">
+    <div class="more-drawer-handle" onclick="window.toggleMoreDrawer(false)"></div>
+    <div class="more-drawer-header">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span style="font-size:1.2rem;">✨</span>
+        <div>
+          <h3 style="margin:0; font-size:1.05rem; font-weight:700; color:var(--text);">Plus de Fonctionnalités</h3>
+          <p style="margin:2px 0 0 0; font-size:0.76rem; color:var(--text-dim);">Toutes les ressources &amp; outils de l'écosystème</p>
+        </div>
+      </div>
+      <button class="more-drawer-close" onclick="window.toggleMoreDrawer(false)" aria-label="Fermer"><i class="ri-close-line"></i></button>
+    </div>
+
+    <div class="more-drawer-grid">
+      <a href="#" class="more-drawer-card" onclick="showPage('resources'); window.toggleMoreDrawer(false); event.preventDefault();">
+        <div class="more-card-icon" style="background:rgba(59,130,246,0.15); color:#60a5fa;"><i class="ri-play-circle-line"></i></div>
+        <div class="more-card-body">
+          <strong>Médias &amp; Vidéos</strong>
+          <span>Wim Hof, masterclass &amp; PDF</span>
+        </div>
+        <i class="ri-arrow-right-s-line more-card-arrow"></i>
+      </a>
+
+      <a href="#" class="more-drawer-card" onclick="showPage('materia-medica'); window.toggleMoreDrawer(false); event.preventDefault();">
+        <div class="more-card-icon" style="background:rgba(16,185,129,0.15); color:#34d399;"><i class="ri-plant-line"></i></div>
+        <div class="more-card-body">
+          <strong>Pharmacopée Raintree</strong>
+          <span>Monographies &amp; remèdes amazoniens</span>
+        </div>
+        <i class="ri-arrow-right-s-line more-card-arrow"></i>
+      </a>
+
+      <a href="#" class="more-drawer-card" onclick="showPage('breathing'); window.toggleMoreDrawer(false); event.preventDefault();">
+        <div class="more-card-icon" style="background:rgba(139,92,246,0.15); color:#a78bfa;"><i class="ri-windy-line"></i></div>
+        <div class="more-card-body">
+          <strong>Respiration Wim Hof</strong>
+          <span>Orbe interactif &amp; minuteur guidé</span>
+        </div>
+        <i class="ri-arrow-right-s-line more-card-arrow"></i>
+      </a>
+
+      <a href="#" class="more-drawer-card" onclick="showPage('search'); window.toggleMoreDrawer(false); event.preventDefault();">
+        <div class="more-card-icon" style="background:rgba(245,158,11,0.15); color:#fbbf24;"><i class="ri-search-line"></i></div>
+        <div class="more-card-body">
+          <strong>Recherche Aliments &amp; PRAL</strong>
+          <span>Dr. Sebi, Ehret, Morse &amp; analyse</span>
+        </div>
+        <i class="ri-arrow-right-s-line more-card-arrow"></i>
+      </a>
+
+      <a href="#" class="more-drawer-card" onclick="showPage('meals'); window.toggleMoreDrawer(false); event.preventDefault();">
+        <div class="more-card-icon" style="background:rgba(236,72,153,0.15); color:#f472b6;"><i class="ri-restaurant-fill"></i></div>
+        <div class="more-card-body">
+          <strong>Journal des Repas</strong>
+          <span>Suivi acido-basique journalier</span>
+        </div>
+        <i class="ri-arrow-right-s-line more-card-arrow"></i>
+      </a>
+
+      <a href="#" class="more-drawer-card" onclick="showPage('favorites'); window.toggleMoreDrawer(false); event.preventDefault();">
+        <div class="more-card-icon" style="background:rgba(239,68,68,0.15); color:#f87171;"><i class="ri-heart-line"></i></div>
+        <div class="more-card-body">
+          <strong>Mes Favoris</strong>
+          <span>Aliments &amp; remèdes sauvegardés</span>
+        </div>
+        <i class="ri-arrow-right-s-line more-card-arrow"></i>
+      </a>
+
+      <a href="#" class="more-drawer-card" onclick="showPage('modes'); window.toggleMoreDrawer(false); event.preventDefault();">
+        <div class="more-card-icon" style="background:rgba(100,116,139,0.2); color:#cbd5e1;"><i class="ri-settings-3-line"></i></div>
+        <div class="more-card-body">
+          <strong>Protocoles &amp; Paramètres</strong>
+          <span>Bio-Profil, RGPD &amp; sécurité</span>
+        </div>
+        <i class="ri-arrow-right-s-line more-card-arrow"></i>
+      </a>
+
+      <a href="#" class="more-drawer-card" onclick="window.openMascotStudioModal(); window.toggleMoreDrawer(false); event.preventDefault();">
+        <div class="more-card-icon" style="background:rgba(52,211,153,0.15); color:#34d399;"><i class="ri-magic-line"></i></div>
+        <div class="more-card-body">
+          <strong>Studio Mascotte Vital</strong>
+          <span>Personnalisation &amp; humeurs</span>
+        </div>
+        <i class="ri-arrow-right-s-line more-card-arrow"></i>
+      </a>
+    </div>
+  </div>
+
   <!-- ═══════ BOTTOM NAV (Mobile) ═══════ -->
   <nav class="bottom-nav" id="bottomNav">
     <a href="#" class="bnav-item active" data-page="dashboard" onclick="showPage('dashboard')"><i class="ri-dashboard-line"></i><span data-i18n="bnav.dashboard">Accueil</span></a>
@@ -165,7 +255,7 @@
     <a href="#" class="bnav-item" data-page="chat" onclick="showPage('chat')"><i class="ri-chat-smile-3-line"></i><span data-i18n="bnav.chat">Chat</span></a>
     <a href="#" class="bnav-item" data-page="calendar" onclick="showPage('calendar')"><i class="ri-calendar-check-line"></i><span data-i18n="bnav.calendar">Plan</span></a>
     <a href="#" class="bnav-item" data-page="fasting" onclick="showPage('fasting')"><i class="ri-fire-line"></i><span data-i18n="bnav.fasting">Jeûne</span></a>
-    <a href="#" class="bnav-item" data-page="modes" onclick="showPage('modes')"><i class="ri-apps-line"></i><span data-i18n="bnav.more">Plus</span></a>
+    <a href="#" class="bnav-item" id="bnavMoreBtn" onclick="window.toggleMoreDrawer(); event.preventDefault();"><i class="ri-apps-line"></i><span data-i18n="bnav.more">Plus</span></a>
   </nav>
 
   <!-- ═══════ DASHBOARD ═══════ -->
@@ -1283,9 +1373,9 @@
   <!-- ═══════ RESOURCES ═══════ -->
   <main class="page" id="page-resources">
     <div class="container" style="max-width:960px; padding:80px 20px 100px;">
-      <div class="dash-greeting glass" style="margin-bottom:24px;">
-        <h1 style="margin-bottom:4px; font-size:1.5rem;">Bibliothèque & Médias 📚🎬</h1>
-        <p class="subtitle">Ouvrages fondamentaux intégraux, guides PDF et documentaires scientifiques hébergés en haute disponibilité.</p>
+      <div class="dash-greeting glass" style="margin-bottom:24px; flex-direction:column; align-items:flex-start; gap:6px;">
+        <h1 style="margin:0; font-size:1.5rem;">Bibliothèque &amp; Médias 📚🎬</h1>
+        <p class="subtitle" style="margin:0;">Ouvrages fondamentaux intégraux, guides PDF et documentaires scientifiques hébergés en haute disponibilité.</p>
       </div>
       
       <div id="resourcesContainer" style="display:flex; flex-direction:column; gap:20px;">

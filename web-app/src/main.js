@@ -1079,14 +1079,49 @@ window.showPage = function (page) {
   if (el) el.classList.add('active');
   document.querySelectorAll(`[data-page="${page}"]`).forEach(l => l.classList.add('active'));
 
-  // Toujours fermer la sidebar de chat quand on change de page
+  // Highlight Plus tab if current page is in secondary drawer
+  const morePages = ['resources', 'materia-medica', 'breathing', 'search', 'meals', 'favorites', 'modes'];
+  if (morePages.includes(page)) {
+    const moreBtn = document.getElementById('bnavMoreBtn');
+    if (moreBtn) moreBtn.classList.add('active');
+  }
+
+  // Toujours fermer la sidebar de chat et le drawer Plus quand on change de page
   if (window.toggleSidebar) window.toggleSidebar(false);
+  if (window.toggleMoreDrawer) window.toggleMoreDrawer(false);
 
   if (page === 'dashboard') renderDashboard();
   if (page === 'meals') renderMeals();
   if (page === 'calendar') renderCalendar();
   if (page === 'materia-medica') renderRaintreeExplorer();
   if (page === 'chat') initChatMascot();
+};
+
+window.toggleMoreDrawer = function (forceOpen) {
+  const drawer = document.getElementById('moreDrawer');
+  const backdrop = document.getElementById('moreDrawerBackdrop');
+  if (!drawer) return;
+
+  const isOpen = drawer.classList.contains('open');
+  const shouldOpen = typeof forceOpen === 'boolean' ? forceOpen : !isOpen;
+
+  if (shouldOpen) {
+    drawer.style.display = 'block';
+    if (backdrop) backdrop.style.display = 'block';
+    requestAnimationFrame(() => {
+      drawer.classList.add('open');
+      if (backdrop) backdrop.classList.add('active');
+    });
+  } else {
+    drawer.classList.remove('open');
+    if (backdrop) backdrop.classList.remove('active');
+    setTimeout(() => {
+      if (!drawer.classList.contains('open')) {
+        drawer.style.display = 'none';
+        if (backdrop) backdrop.style.display = 'none';
+      }
+    }, 350);
+  }
 };
 
 let _chatMascotRenderer = null;
