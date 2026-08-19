@@ -539,13 +539,22 @@
           </div>
         </div>
 
-        <!-- Chat Voice Listening Indicator -->
+        <!-- Chat Voice Listening Indicator (Gemini-Style Live STT) -->
         <div class="chat-voice-indicator" id="chatVoiceIndicator" style="display:none">
-          <div class="voice-wave-anim">
-            <span></span><span></span><span></span><span></span><span></span>
+          <div class="voice-indicator-left">
+            <div class="voice-wave-anim">
+              <span></span><span></span><span></span><span></span><span></span><span></span>
+            </div>
+            <span class="voice-status-text" id="chatVoiceStatus">🎙️ Écoute active... Parlez à votre rythme</span>
           </div>
-          <span class="voice-status-text">🎙️ Écoute en cours... Parlez maintenant</span>
-          <button type="button" class="voice-cancel-btn" onclick="toggleVoiceInput(false)">Terminer</button>
+          <div class="voice-indicator-actions">
+            <button type="button" class="voice-cancel-btn" onclick="cancelVoiceInput(event)" title="Annuler la saisie vocale">
+              <i class="ri-close-line"></i> Annuler
+            </button>
+            <button type="button" class="voice-done-btn" onclick="toggleVoiceInput(false, event)" title="Terminer et insérer le texte">
+              <i class="ri-check-line"></i> Terminer
+            </button>
+          </div>
         </div>
 
         <form class="chat-input-bar" id="chatForm" onsubmit="sendChat(event)">
@@ -553,7 +562,7 @@
           <button type="button" class="chat-action-btn" id="chatImageBtn" onclick="document.getElementById('chatImageInput').click()" title="Joindre une photo d'aliment / repas / étiquette">
             <i class="ri-image-add-line"></i>
           </button>
-          <button type="button" class="chat-action-btn" id="chatVoiceBtn" onclick="toggleVoiceInput()" title="Saisie vocale">
+          <button type="button" class="chat-action-btn" id="chatVoiceBtn" onclick="toggleVoiceInput(undefined, event)" title="Saisie vocale">
             <i class="ri-mic-line"></i>
           </button>
           <input type="text" id="chatInput" placeholder="Pose une question, explore un sujet santé, un repas, un protocole..." data-i18n-placeholder="chat.inputPlaceholder" autocomplete="off">

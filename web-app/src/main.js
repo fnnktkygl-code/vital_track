@@ -1815,14 +1815,45 @@ function renderActiveConversation() {
 // ═══════ VOICE INPUT (SPEECH-TO-TEXT - GEMINI STYLE) ═══════
 let _speechRecognition = null;
 let _isListening = false;
-let _voiceInitialPrefix = '';
+let _sessionBaseText = '';
+let _sessionFinalText = '';
+let _currentSegmentFinal = '';
+let _currentSegmentInterim = '';
 let _voiceRestartTimer = null;
 let _userExplicitStop = false;
 
-window.toggleVoiceInput = function (forceState) {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+function _updateVoiceUI(listening) {
   const voiceBtn = document.getElementById('chatVoiceBtn');
   const indicator = document.getElementById('chatVoiceIndicator');
+  const statusText = document.getElementById('chatVoiceStatus');
+
+  if (voiceBtn) {
+    if (listening) {
+      voiceBtn.classList.add('recording');
+      voiceBtn.innerHTML = '<i class="ri-mic-fill" style="color:#ef4444;"></i>';
+      voiceBtn.title = "Arrêter l'enregistrement vocal";
+    } else {
+      voiceBtn.classList.remove('recording');
+      voiceBtn.innerHTML = '<i class="ri-mic-line"></i>';
+      voiceBtn.title = "Saisie vocale";
+    }
+  }
+
+  if (indicator) {
+    indicator.style.display = listening ? 'flex' : 'none';
+  }
+  if (statusText && listening) {
+    statusText.textContent = '🎙️ Écoute active... Parlez à votre rythme';
+  }
+}
+
+window.toggleVoiceInput = function (forceState, e) {
+  if (e && typeof e.preventDefault === 'function') {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   const input = document.getElementById('chatInput');
 
   if (!SpeechRecognition) {
@@ -1835,37 +1866,48 @@ window.toggleVoiceInput = function (forceState) {
   const shouldStart = forceState !== undefined ? forceState : !_isListening;
 
   if (!shouldStart) {
-    // 🛑 Arrêt explicite demandé par l'utilisateur
+    // 🛑 Arrêt propre demandé par l'utilisateur
     _userExplicitStop = true;
     _isListening = false;
+
     if (_voiceRestartTimer) {
       clearTimeout(_voiceRestartTimer);
       _voiceRestartTimer = null;
     }
+
     if (_speechRecognition) {
       try {
         _speechRecognition.onresult = null;
         _speechRecognition.onend = null;
         _speechRecognition.onerror = null;
         _speechRecognition.stop();
-      } catch (e) { }
+      } catch (err) { }
       _speechRecognition = null;
     }
-    if (voiceBtn) {
-      voiceBtn.classList.remove('recording');
-      voiceBtn.title = "Saisie vocale";
+
+    // Consolidation définitive du texte sans duplication
+    if (_currentSegmentFinal) {
+      _sessionFinalText = [_sessionFinalText, _currentSegmentFinal].filter(Boolean).join(' ').trim();
+      _currentSegmentFinal = '';
+      _currentSegmentInterim = '';
     }
-    if (indicator) indicator.style.display = 'none';
+
+    const finalCombined = [_sessionBaseText, _sessionFinalText].filter(Boolean).join(' ').replace(/\s+/g, ' ').trim();
     if (input) {
+      input.value = finalCombined;
       input.focus();
-      input.value = input.value.trim();
     }
+
+    _updateVoiceUI(false);
     return;
   }
 
-  // 🎙️ Démarrage de l'enregistrement vocal
+  // 🎙️ Démarrage d'une nouvelle session vocale
   _userExplicitStop = false;
-  _voiceInitialPrefix = input && input.value ? input.value.trim() : '';
+  _sessionBaseText = input && input.value ? input.value.trim() : '';
+  _sessionFinalText = '';
+  _currentSegmentFinal = '';
+  _currentSegmentInterim = '';
 
   function startRecognitionSession() {
     if (_userExplicitStop) return;
@@ -1876,12 +1918,13 @@ window.toggleVoiceInput = function (forceState) {
         _speechRecognition.onend = null;
         _speechRecognition.onerror = null;
         _speechRecognition.abort();
-      } catch (e) { }
+      } catch (err) { }
       _speechRecognition = null;
     }
 
     try {
       _speechRecognition = new SpeechRecognition();
+      window._speechRecognition = _speechRecognition;
       _speechRecognition.lang = 'fr-FR';
       _speechRecognition.continuous = true;
       _speechRecognition.interimResults = true;
@@ -1889,75 +1932,72 @@ window.toggleVoiceInput = function (forceState) {
 
       _speechRecognition.onstart = () => {
         _isListening = true;
-        if (voiceBtn) {
-          voiceBtn.classList.add('recording');
-          voiceBtn.title = "Arrêter l'enregistrement vocal";
-        }
-        if (indicator) indicator.style.display = 'flex';
+        _updateVoiceUI(true);
         if (input) input.focus();
       };
 
       _speechRecognition.onresult = (event) => {
-        let currentFinal = '';
-        let currentInterim = '';
+        let segFinal = '';
+        let segInterim = '';
 
-        // 🧠 Parcours de TOUS les résultats de 0 à event.results.length pour éliminer toute répétition/duplication
+        // 🧠 Parcours linéaire strict de 0 à length : aucune duplication possible
         for (let i = 0; i < event.results.length; ++i) {
           const item = event.results[i];
           if (item && item[0] && item[0].transcript) {
-            const txt = item[0].transcript;
+            const txt = item[0].transcript.trim();
+            if (!txt) continue;
             if (item.isFinal) {
-              currentFinal += txt + ' ';
+              segFinal += (segFinal ? ' ' : '') + txt;
             } else {
-              currentInterim += txt;
+              segInterim += (segInterim ? ' ' : '') + txt;
             }
           }
         }
 
-        let combined = '';
-        if (_voiceInitialPrefix) combined += _voiceInitialPrefix + ' ';
-        if (currentFinal) combined += currentFinal;
-        if (currentInterim) combined += currentInterim;
+        _currentSegmentFinal = segFinal;
+        _currentSegmentInterim = segInterim;
+
+        const parts = [_sessionBaseText, _sessionFinalText, _currentSegmentFinal, _currentSegmentInterim].filter(Boolean);
+        const liveText = parts.join(' ').replace(/\s+/g, ' ').trim();
 
         if (input) {
-          // Remplacement propre sans duplication
-          input.value = combined.replace(/\s+/g, ' ').trim();
+          input.value = liveText;
         }
       };
 
       _speechRecognition.onerror = (event) => {
-        console.warn('Speech recognition status:', event.error);
+        console.warn('Speech recognition warning:', event.error);
         if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
           if (window.showToast) {
-            window.showToast("⚠️ Accès au micro refusé. Veuillez autoriser le micro dans votre navigateur.", "error");
+            window.showToast("⚠️ Accès au micro refusé. Veuillez autoriser le micro.", "error");
           }
           window.toggleVoiceInput(false);
           return;
         }
         if (event.error === 'no-speech') {
-          // Silence normal détecté, laisser actif
+          // Silence naturel de l'utilisateur : conserver la session active
           return;
         }
       };
 
       _speechRecognition.onend = () => {
-        // 🔄 Relance fluide si l'utilisateur est toujours en train d'enregistrer (évite les coupures brutales de Chrome/Safari)
+        // Enregistrer la portion finalisée du segment terminé
+        if (_currentSegmentFinal) {
+          _sessionFinalText = [_sessionFinalText, _currentSegmentFinal].filter(Boolean).join(' ').trim();
+          _currentSegmentFinal = '';
+          _currentSegmentInterim = '';
+        }
+
+        // Relance fluide si toujours en écoute
         if (_isListening && !_userExplicitStop) {
-          if (input && input.value) {
-            _voiceInitialPrefix = input.value.trim();
-          }
           _voiceRestartTimer = setTimeout(() => {
             if (_isListening && !_userExplicitStop) {
               startRecognitionSession();
             }
-          }, 100);
+          }, 80);
         } else {
           _isListening = false;
-          if (voiceBtn) {
-            voiceBtn.classList.remove('recording');
-            voiceBtn.title = "Saisie vocale";
-          }
-          if (indicator) indicator.style.display = 'none';
+          _updateVoiceUI(false);
         }
       };
 
@@ -1965,12 +2005,48 @@ window.toggleVoiceInput = function (forceState) {
     } catch (err) {
       console.error('Error starting speech recognition:', err);
       _isListening = false;
-      if (voiceBtn) voiceBtn.classList.remove('recording');
-      if (indicator) indicator.style.display = 'none';
+      _updateVoiceUI(false);
     }
   }
 
   startRecognitionSession();
+};
+
+window.cancelVoiceInput = function (e) {
+  if (e && typeof e.preventDefault === 'function') {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  _userExplicitStop = true;
+  _isListening = false;
+
+  if (_voiceRestartTimer) {
+    clearTimeout(_voiceRestartTimer);
+    _voiceRestartTimer = null;
+  }
+
+  if (_speechRecognition) {
+    try {
+      _speechRecognition.onresult = null;
+      _speechRecognition.onend = null;
+      _speechRecognition.onerror = null;
+      _speechRecognition.abort();
+    } catch (err) { }
+    _speechRecognition = null;
+  }
+
+  const input = document.getElementById('chatInput');
+  if (input) {
+    input.value = _sessionBaseText;
+    input.focus();
+  }
+
+  _currentSegmentFinal = '';
+  _currentSegmentInterim = '';
+  _sessionFinalText = '';
+
+  _updateVoiceUI(false);
 };
 
 // ═══════ IMAGE UPLOAD & PREVIEW ═══════
@@ -7148,6 +7224,88 @@ function renderMarkdown(text) {
   return text;
 }
 
+function cleanMarkdownFormatting(txt) {
+  if (!txt) return '';
+  return txt
+    .replace(/[*_#`~]/g, ' ')
+    .replace(/[ \t]+/g, ' ')
+    .trim();
+}
+
+function getMatchCenteredSnippet(fullText, fallbackExcerpt, query) {
+  const sourceText = cleanMarkdownFormatting(fullText || fallbackExcerpt || '');
+  if (!query || !query.trim()) {
+    return sourceText.length > 260 ? sourceText.slice(0, 260) + '…' : sourceText;
+  }
+
+  const tokens = typeof getExpandedSearchTokens === 'function' ? getExpandedSearchTokens(query) : [query.trim()];
+  const lower = sourceText.toLowerCase();
+
+  let bestIdx = -1;
+  let bestTokenLen = 0;
+
+  for (const token of tokens) {
+    if (!token || token.length < 2) continue;
+    const escaped = token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp('\\b' + escaped, 'i');
+    const match = regex.exec(sourceText);
+    if (match) {
+      if (bestIdx === -1 || match.index < bestIdx) {
+        bestIdx = match.index;
+        bestTokenLen = token.length;
+      }
+    }
+  }
+
+  if (bestIdx === -1) {
+    for (const token of tokens) {
+      if (!token || token.length < 2) continue;
+      const idx = lower.indexOf(token.toLowerCase());
+      if (idx !== -1 && (bestIdx === -1 || idx < bestIdx)) {
+        bestIdx = idx;
+        bestTokenLen = token.length;
+      }
+    }
+  }
+
+  if (bestIdx === -1) {
+    return sourceText.length > 260 ? sourceText.slice(0, 260) + '…' : sourceText;
+  }
+
+  const start = Math.max(0, bestIdx - 50);
+  const end = Math.min(sourceText.length, bestIdx + bestTokenLen + 200);
+  let snippet = sourceText.substring(start, end).trim();
+
+  if (start > 0) snippet = '… ' + snippet;
+  if (end < sourceText.length) snippet = snippet + ' …';
+
+  return snippet;
+}
+
+function highlightMatches(text, query) {
+  if (!text) return '';
+  const clean = cleanMarkdownFormatting(text);
+  if (!query || !query.trim()) return esc(clean);
+  
+  const tokens = typeof getExpandedSearchTokens === 'function'
+    ? getExpandedSearchTokens(query)
+    : query.trim().split(/\s+/).filter(t => t.length > 1);
+
+  if (!tokens || tokens.length === 0) return esc(clean);
+
+  let escapedText = esc(clean);
+  const sortedTokens = [...tokens].sort((a, b) => b.length - a.length);
+
+  for (const token of sortedTokens) {
+    if (token.length < 2) continue;
+    const escapedToken = token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const pattern = token.length <= 4 ? `\\b(${escapedToken})\\b` : `(${escapedToken})`;
+    const regex = new RegExp(pattern, 'gi');
+    escapedText = escapedText.replace(regex, '<mark class="search-highlight">$1</mark>');
+  }
+  return escapedText;
+}
+
 // ═══════ PROACTIVE MASCOT ═══════
 window.updateProactiveMascot = function (actionContext = null) {
   const bubble = document.getElementById('mascotSpeechBubble') || document.getElementById('greetingContext');
@@ -7207,31 +7365,6 @@ function formatSeconds(secs) {
     return `${hrs}:${mins < 10 ? '0' : ''}${mins}:${remSecs < 10 ? '0' : ''}${remSecs}`;
   }
   return `${mins < 10 ? '0' : ''}${mins}:${remSecs < 10 ? '0' : ''}${remSecs}`;
-}
-
-function highlightMatches(text, query) {
-  if (!text) return '';
-  if (!query || !query.trim()) return esc(text);
-  
-  const tokens = typeof getExpandedSearchTokens === 'function'
-    ? getExpandedSearchTokens(query)
-    : query.trim().split(/\s+/).filter(t => t.length > 1);
-
-  if (!tokens || tokens.length === 0) return esc(text);
-
-  let escapedText = esc(text);
-  // Sort tokens by descending length so longer phrases (e.g. "maladie de crohn") are highlighted before individual words
-  const sortedTokens = [...tokens].sort((a, b) => b.length - a.length);
-
-  for (const token of sortedTokens) {
-    if (token.length < 2) continue;
-    const escapedToken = token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    // For short tokens (<=4 chars), require word boundary so it won't highlight inside unrelated words
-    const pattern = token.length <= 4 ? `\\b(${escapedToken})\\b` : `(${escapedToken})`;
-    const regex = new RegExp(pattern, 'gi');
-    escapedText = escapedText.replace(regex, '<mark class="search-highlight">$1</mark>');
-  }
-  return escapedText;
 }
 
 window.searchMediaResources = function (query) {
@@ -7323,6 +7456,7 @@ function _renderMediaSearchResults() {
 
 function renderMediaResultCard(item, query) {
   if (item.type === 'video') {
+    const displayExcerpt = getMatchCenteredSnippet(item.fullText, item.excerpt, query);
     return `
       <div class="media-result-card glass" style="border-left: 3px solid var(--accent);">
         <div>
@@ -7339,7 +7473,7 @@ function renderMediaResultCard(item, query) {
           </div>
 
           <div class="media-card-excerpt">
-            ${highlightMatches(item.excerpt, query)}
+            ${highlightMatches(displayExcerpt, query)}
           </div>
         </div>
 
@@ -7356,7 +7490,8 @@ function renderMediaResultCard(item, query) {
       </div>
     `;
   } else {
-    // PDF Card
+    // PDF Card with Match-Centered Dynamic Snippet & Exact Real PDF Page Number
+    const displayExcerpt = getMatchCenteredSnippet(item.fullText, item.excerpt, query);
     return `
       <div class="media-result-card glass" style="border-left: 3px solid #38bdf8;">
         <div>
@@ -7373,7 +7508,7 @@ function renderMediaResultCard(item, query) {
           </div>
 
           <div class="media-card-excerpt" style="border-left-color:#38bdf8;">
-            ${highlightMatches(item.excerpt, query)}
+            ${highlightMatches(displayExcerpt, query)}
           </div>
         </div>
 
@@ -7403,7 +7538,7 @@ window.playVideoAtTimestamp = function (mediaUrl, seconds = 0, title = '', type 
 
   if (modalSource) modalSource.textContent = source || (type === 'youtube' ? 'Documentaire YouTube' : 'Média Local HD');
   if (modalTitle) modalTitle.textContent = title || 'Lecture Vidéo';
-  if (modalChapter) modalChapter.innerHTML = `<span class="timestamp-pill" style="margin-right:6px;"><i class="ri-play-fill"></i> ${formatSeconds(seconds)}</span> ${esc(chapter)}`;
+  if (modalChapter) modalChapter.innerHTML = `<span class="timestamp-pill" style="margin-right:6px;"><i class="ri-play-fill"></i> ${formatSeconds(seconds)}</span> ${esc(cleanMarkdownFormatting(chapter))}`;
 
   // Find all chapters of this media in database for the scrubber bar
   const relatedChapters = MEDIA_SEARCH_DATABASE.filter(item => 
@@ -7414,40 +7549,46 @@ window.playVideoAtTimestamp = function (mediaUrl, seconds = 0, title = '', type 
     if (relatedChapters.length > 0) {
       timelineContainer.innerHTML = relatedChapters.map(c => `
         <button type="button" class="media-chapter-btn ${c.timeSeconds === seconds ? 'active' : ''}" onclick="playVideoAtTimestamp('${esc(c.mediaUrl)}', ${c.timeSeconds}, '${esc(c.title)}', '${c.videoType}', '${c.youtubeId || ''}', '${esc(c.chapter)}', '${esc(c.source)}')">
-          ▶ ${c.timeFormatted} · ${esc(c.chapter)}
+          ▶ ${c.timeFormatted} · ${esc(cleanMarkdownFormatting(c.chapter))}
         </button>
       `).join('');
     } else {
-      timelineContainer.innerHTML = `<div style="font-size:0.75rem; color:var(--text-dim);">Chapitre unique à ${formatSeconds(seconds)}</div>`;
+      timelineContainer.innerHTML = '';
     }
   }
 
+  // Inject video player (YouTube iframe or Native HTML5 Video)
   if (type === 'youtube' && youtubeId) {
     playerContainer.innerHTML = `
-      <div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden;">
-        <iframe src="https://www.youtube-nocookie.com/embed/${youtubeId}?start=${seconds}&autoplay=1" style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>
-      </div>
+      <iframe 
+        src="https://www.youtube.com/embed/${youtubeId}?autoplay=1&start=${seconds}&enablejsapi=1" 
+        title="${esc(title)}" 
+        frameborder="0" 
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+        allowfullscreen
+        style="width:100%; height:100%; min-height:280px; border:none; border-radius:12px;"
+      ></iframe>
     `;
   } else {
     playerContainer.innerHTML = `
-      <video id="modalMainVideoPlayer" controls autoplay playsinline preload="auto" style="width:100%; height:auto; max-height:460px; background:#000; display:block;">
-        <source src="${mediaUrl}" type="video/mp4">
-        Votre navigateur ne supporte pas la lecture directe.
+      <video id="mediaHtml5Video" controls autoplay playsinline style="width:100%; height:100%; border-radius:12px; background:#000;">
+        <source src="${esc(mediaUrl)}" type="video/mp4">
+        Votre navigateur ne supporte pas la lecture vidéo.
       </video>
     `;
-    const vid = document.getElementById('modalMainVideoPlayer');
-    if (vid) {
+    const videoEl = document.getElementById('mediaHtml5Video');
+    if (videoEl) {
       const applyTime = () => {
         try {
-          vid.currentTime = Number(seconds) || 0;
-          vid.play().catch(() => {});
+          videoEl.currentTime = Number(seconds) || 0;
+          videoEl.play().catch(() => {});
         } catch (e) {}
       };
-      if (vid.readyState >= 1) {
+      if (videoEl.readyState >= 1) {
         applyTime();
       } else {
-        vid.addEventListener('loadedmetadata', applyTime, { once: true });
-        vid.addEventListener('canplay', applyTime, { once: true });
+        videoEl.addEventListener('loadedmetadata', applyTime, { once: true });
+        videoEl.addEventListener('canplay', applyTime, { once: true });
       }
     }
   }
@@ -7481,6 +7622,8 @@ window.openPdfPassageModal = function (itemId) {
   const content = document.getElementById('pdfPassageModalContent');
   if (!item || !modal || !content) return;
 
+  const displayExcerpt = cleanMarkdownFormatting(item.fullText || item.excerpt || '');
+
   content.innerHTML = `
     <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; padding-right:48px; gap:12px; flex-wrap:wrap;">
       <div style="flex:1; min-width:220px;">
@@ -7490,7 +7633,7 @@ window.openPdfPassageModal = function (itemId) {
             ${item.lang === 'fr' ? '🇫🇷 Français' : '🇬🇧 English'}
           </span>
         </div>
-        <h3 style="margin:0 0 4px 0; font-size:1.15rem; color:#fff; font-weight:800; line-height:1.3;">${esc(item.title)}</h3>
+        <h3 style="margin:0 0 4px 0; font-size:1.15rem; color:#fff; font-weight:800; line-height:1.3;">${highlightMatches(item.title, _mediaSearchQuery)}</h3>
         <div style="font-size:0.82rem; color:var(--accent); font-weight:600;"><i class="ri-quill-pen-line"></i> Auteur : <span style="color:#fff;">${esc(item.author || 'Inconnu')}</span></div>
       </div>
       <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
@@ -7501,9 +7644,9 @@ window.openPdfPassageModal = function (itemId) {
     </div>
 
     <div style="background:rgba(16,185,129,0.08); border-left:3px solid var(--accent); padding:14px 16px; border-radius:12px; margin-bottom:18px;">
-      <div style="font-size:0.88rem; font-weight:700; color:#fff; margin-bottom:6px;">${esc(item.chapterTitle || '')}</div>
+      <div style="font-size:0.88rem; font-weight:700; color:#fff; margin-bottom:6px;">${highlightMatches(item.chapterTitle || '', _mediaSearchQuery)}</div>
       <p style="font-size:0.92rem; color:var(--text); line-height:1.6; margin:0; font-style:italic;">
-        « ${esc(item.excerpt)} »
+        « ${highlightMatches(displayExcerpt, _mediaSearchQuery)} »
       </p>
     </div>
 
