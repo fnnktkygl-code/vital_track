@@ -997,6 +997,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (welcomeEl && window.renderPigeonPortrait) {
     welcomeEl.innerHTML = window.renderPigeonPortrait(64, 'talking');
   }
+  
+  // Initialize Mascot Vital Logos & Screenshot Protection
+  if (typeof initAppLogos === 'function') initAppLogos();
+  if (typeof initScreenshotProtection === 'function') initScreenshotProtection();
+
   renderResources();
 
   // Safety warning listener
@@ -2208,7 +2213,7 @@ function addTypingIndicator() {
   div.innerHTML = `
     <div class="message-avatar">${typingAvatar}</div>
     <div class="message-bubble" style="display:flex; align-items:center; gap:10px; padding:10px 16px;">
-      <span style="font-size:0.82rem; color:var(--text-dim); font-weight:600;"><i class="ri-search-eye-line" style="color:#34d399;"></i> Arnold inspecte la mémoire &amp; analyse...</span>
+      <span style="font-size:0.82rem; color:var(--text-dim); font-weight:600;"><i class="ri-search-eye-line" style="color:#34d399;"></i> ${t('chat.thinkingStatus', {}, 'Vital inspecte la mémoire & analyse...')}</span>
       <div class="typing-dots"><span></span><span></span><span></span></div>
     </div>`;
   container.appendChild(div); container.scrollTop = container.scrollHeight; return div;
@@ -2837,7 +2842,7 @@ window.askAIToFindFood = async function (query) {
 
   const VITAL_EDUCATIONAL_TIPS = [
     "🌿 Les aliments à PRAL négatif (alcalins) facilitent le travail de filtration rénale et dissolvent les acides uriques.",
-    "🔬 Arnold le Détective ausculte les bases botaniques : analyse des alcaloïdes, flavonoïdes et minéraux colloïdaux...",
+    "🔬 Vital le Détective ausculte les bases botaniques : analyse des alcaloïdes, flavonoïdes et minéraux colloïdaux...",
     "💧 Les fruits frais mûrs apportent une eau biologique hautement structurée (H3O2), optimale pour la lymphe.",
     "⚖️ Selon Arnold Ehret (V = P - O), éliminer l'obstruction digestive libère immédiatement la vitalité naturelle.",
     "🌱 Les graines ancestrales (amarante, fonio, teff, quinoa) conservent leur charge électrique native sans gluten.",
@@ -2857,7 +2862,7 @@ window.askAIToFindFood = async function (query) {
           <canvas id="searchMascotCanvas" width="110" height="130" style="width:110px; height:130px; filter:drop-shadow(0 4px 16px rgba(52,211,153,0.35));"></canvas>
         </div>
         <div style="display:inline-flex; align-items:center; gap:6px; background:rgba(52,211,153,0.12); border:1px solid rgba(52,211,153,0.3); color:#34d399; font-size:0.82rem; font-weight:700; padding:5px 14px; border-radius:20px; margin-bottom:12px;">
-          <i class="ri-search-eye-line"></i> Arnold le Détective ausculte « ${esc(q)} »
+          <i class="ri-search-eye-line"></i> Vital le Détective ausculte « ${esc(q)} »
         </div>
         <h3 style="font-size:1.15rem; font-weight:800; color:var(--text); margin:0 0 8px 0;">Analyse biochimique &amp; statut vitaliste...</h3>
         
@@ -8641,4 +8646,76 @@ window.dismissPwaBanner = function () {
   if (banner) banner.style.display = 'none';
   localStorage.setItem('vt_pwa_dismissed', Date.now().toString());
 };
+
+// ═══════ APP LOGOS WITH VITAL MASCOT HEAD ═══════
+window.initAppLogos = function () {
+  const desktop = document.getElementById('desktopLogoIcon');
+  const mobile = document.getElementById('mobileLogoIcon');
+  if (window.renderPigeonPortrait) {
+    const mascotHeadDesktop = window.renderPigeonPortrait(34, 'idle');
+    const mascotHeadMobile = window.renderPigeonPortrait(30, 'idle');
+    if (desktop && mascotHeadDesktop) desktop.innerHTML = mascotHeadDesktop;
+    if (mobile && mascotHeadMobile) mobile.innerHTML = mascotHeadMobile;
+  }
+};
+
+// ═══════ SCREENSHOT PROTECTION & PRIVACY NOTIFICATION ═══════
+window.initScreenshotProtection = function () {
+  const isEnabled = store.get('screenshotProtection', false);
+  const toggle = document.getElementById('toggleScreenshotProtection');
+  if (toggle) {
+    toggle.checked = isEnabled;
+  }
+
+  // Global screenshot shortcut detection (PrintScreen, Meta+Shift+3/4/S)
+  window.addEventListener('keydown', (e) => {
+    const isPrintScreen = e.key === 'PrintScreen' || e.keyCode === 44;
+    const isMacScreenshot = (e.metaKey || e.ctrlKey) && e.shiftKey && (e.key === '3' || e.key === '4' || e.key === '5' || e.key === 'S' || e.key === 's');
+    
+    if (isPrintScreen || isMacScreenshot) {
+      handleScreenshotEvent();
+    }
+  });
+
+  // Also listen for window blur if user enabled protection
+  window.addEventListener('blur', () => {
+    if (store.get('screenshotProtection', false)) {
+      document.body.classList.add('screenshot-privacy-active');
+    }
+  });
+
+  window.addEventListener('focus', () => {
+    document.body.classList.remove('screenshot-privacy-active');
+  });
+};
+
+function handleScreenshotEvent() {
+  // First time screenshot prompt
+  if (!store.get('screenshot_notice_shown', false)) {
+    store.set('screenshot_notice_shown', true);
+    if (window.showToast) {
+      window.showToast(t('settings.screenshotToast', {}, '📸 Capture d\'écran — Vous pouvez activer ou désactiver la protection anti-capture à tout moment dans Paramètres.'), 'info', 6000);
+    }
+  }
+
+  // If enabled by user, briefly obscure health data
+  if (store.get('screenshotProtection', false)) {
+    document.body.classList.add('screenshot-privacy-active');
+    setTimeout(() => {
+      document.body.classList.remove('screenshot-privacy-active');
+    }, 1500);
+  }
+}
+
+window.setScreenshotProtection = function (enabled) {
+  store.set('screenshotProtection', !!enabled);
+  if (window.showToast) {
+    if (enabled) {
+      window.showToast('🛡️ Protection anti-capture activée : Vos données de santé sont protégées lors des captures.', 'info', 4000);
+    } else {
+      window.showToast('🔓 Protection anti-capture désactivée : Vos captures d\'écran sont autorisées sans masquage.', 'info', 4000);
+    }
+  }
+};
+
 

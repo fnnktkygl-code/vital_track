@@ -9,6 +9,7 @@
   <meta name="theme-color" content="#0F172A">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="icon" type="image/png" href="/icon-192.png">
   <link rel="apple-touch-icon" href="/icon-192.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,8 +26,37 @@
   <div class="app-container">
     <!-- ═══════ DESKTOP SIDEBAR ═══════ -->
     <aside class="sidebar-desktop">
-      <a href="#" class="sidebar-logo" onclick="showPage('dashboard')">
-        <div class="logo-icon"><i class="ri-leaf-fill"></i></div>
+      <a href="#" class="sidebar-logo" onclick="showPage('dashboard')" style="display:flex; align-items:center; gap:10px;">
+        <div class="logo-icon" id="desktopLogoIcon" style="width:34px; height:34px; border-radius:50%; overflow:hidden; background:transparent; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+          <svg viewBox="0 0 100 100" width="34" height="34" style="width:34px; height:34px; border-radius:50%;">
+            <defs>
+              <radialGradient id="vitalHeadGrad" cx="40%" cy="35%" r="60%">
+                <stop offset="0%" stop-color="#C5CFE2"/>
+                <stop offset="60%" stop-color="#8A95AC"/>
+                <stop offset="100%" stop-color="#505970"/>
+              </radialGradient>
+              <linearGradient id="vitalIridGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#34D399"/>
+                <stop offset="50%" stop-color="#2DD4BF"/>
+                <stop offset="100%" stop-color="#818CF8"/>
+              </linearGradient>
+            </defs>
+            <circle cx="50" cy="50" r="48" fill="#1E293B" stroke="rgba(255,255,255,0.15)" stroke-width="2"/>
+            <path d="M 28 85 Q 50 68 72 85 Q 50 98 28 85 Z" fill="url(#vitalIridGrad)"/>
+            <ellipse cx="50" cy="46" rx="30" ry="32" fill="url(#vitalHeadGrad)"/>
+            <circle cx="38" cy="42" r="9" fill="#FB923C"/>
+            <circle cx="38" cy="42" r="6" fill="#EA580C"/>
+            <circle cx="38" cy="42" r="3.5" fill="#141416"/>
+            <circle cx="36.5" cy="40.5" r="1.2" fill="#FFFFFF"/>
+            <circle cx="62" cy="42" r="9" fill="#FB923C"/>
+            <circle cx="62" cy="42" r="6" fill="#EA580C"/>
+            <circle cx="62" cy="42" r="3.5" fill="#141416"/>
+            <circle cx="60.5" cy="40.5" r="1.2" fill="#FFFFFF"/>
+            <ellipse cx="50" cy="53" rx="7" ry="4" fill="#F5F2EB"/>
+            <path d="M 44 55 Q 50 67 56 55 Z" fill="#353942"/>
+            <path d="M 45 55 Q 50 65 55 55 Z" fill="#1E2128"/>
+          </svg>
+        </div>
         VitalTrack
       </a>
       
@@ -62,8 +92,37 @@
   <!-- ═══════ NAV ═══════ -->
   <nav class="navbar" id="navbar">
     <div class="nav-inner">
-      <a href="#" class="logo" onclick="showPage('dashboard')">
-        <span class="logo-icon">🌿</span> Vital<span class="accent">Track</span>
+      <a href="#" class="logo" onclick="showPage('dashboard')" style="display:flex; align-items:center; gap:8px;">
+        <span class="logo-icon" id="mobileLogoIcon" style="width:30px; height:30px; border-radius:50%; overflow:hidden; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;">
+          <svg viewBox="0 0 100 100" width="30" height="30" style="width:30px; height:30px; border-radius:50%;">
+            <defs>
+              <radialGradient id="vitalHeadGradMobile" cx="40%" cy="35%" r="60%">
+                <stop offset="0%" stop-color="#C5CFE2"/>
+                <stop offset="60%" stop-color="#8A95AC"/>
+                <stop offset="100%" stop-color="#505970"/>
+              </radialGradient>
+              <linearGradient id="vitalIridGradMobile" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#34D399"/>
+                <stop offset="50%" stop-color="#2DD4BF"/>
+                <stop offset="100%" stop-color="#818CF8"/>
+              </linearGradient>
+            </defs>
+            <circle cx="50" cy="50" r="48" fill="#1E293B" stroke="rgba(255,255,255,0.15)" stroke-width="2"/>
+            <path d="M 28 85 Q 50 68 72 85 Q 50 98 28 85 Z" fill="url(#vitalIridGradMobile)"/>
+            <ellipse cx="50" cy="46" rx="30" ry="32" fill="url(#vitalHeadGradMobile)"/>
+            <circle cx="38" cy="42" r="9" fill="#FB923C"/>
+            <circle cx="38" cy="42" r="6" fill="#EA580C"/>
+            <circle cx="38" cy="42" r="3.5" fill="#141416"/>
+            <circle cx="36.5" cy="40.5" r="1.2" fill="#FFFFFF"/>
+            <circle cx="62" cy="42" r="9" fill="#FB923C"/>
+            <circle cx="62" cy="42" r="6" fill="#EA580C"/>
+            <circle cx="62" cy="42" r="3.5" fill="#141416"/>
+            <circle cx="60.5" cy="40.5" r="1.2" fill="#FFFFFF"/>
+            <ellipse cx="50" cy="53" rx="7" ry="4" fill="#F5F2EB"/>
+            <path d="M 44 55 Q 50 67 56 55 Z" fill="#353942"/>
+          </svg>
+        </span>
+        Vital<span class="accent">Track</span>
       </a>
       <div class="nav-links" id="navLinks">
         <a href="#" class="nav-link active" data-page="dashboard" onclick="showPage('dashboard')"><i class="ri-dashboard-line"></i> <span data-i18n="nav.dashboard">Tableau</span></a>
@@ -370,7 +429,7 @@
           <div class="chat-welcome" id="chatWelcome">
             <div class="welcome-mascot" id="welcomeMascotPortrait"></div>
             <h2>Roucouuu ! 🌿</h2>
-            <p>Je suis ton coach vitaliste IA. Pose-moi une question sur la nutrition, le jeûne, la respiration ou la santé naturelle.</p>
+            <p>Je suis Vital, ton coach vitaliste IA. Pose-moi une question sur la nutrition, le jeûne, la respiration ou la santé naturelle.</p>
             <div class="welcome-chips">
               <button class="welcome-chip" onclick="quickChat('Fais-moi un programme de jeûne de 7 jours')">🔥 Programme de jeûne</button>
               <button class="welcome-chip" onclick="quickChat('Qu\'est-ce que je peux cuisiner avec les restes de mon frigo ?')">🧑‍🍳 Cuisiner mes restes</button>
@@ -794,7 +853,7 @@
           <canvas id="scanMascotCanvas" width="110" height="130" style="width:110px; height:130px; filter:drop-shadow(0 4px 16px rgba(52,211,153,0.35));"></canvas>
         </div>
         <div style="display:inline-flex; align-items:center; gap:6px; background:rgba(52,211,153,0.12); border:1px solid rgba(52,211,153,0.3); color:#34d399; font-size:0.8rem; font-weight:700; padding:5px 14px; border-radius:20px; margin-bottom:12px;">
-          <i class="ri-search-eye-line"></i> Arnold le Détective Nutritionnel ausculte votre plat
+          <i class="ri-search-eye-line"></i> Vital le Détective Nutritionnel ausculte votre plat
         </div>
         <h3 class="scan-loading-title" style="margin-bottom:6px;">Analyse biochimique &amp; vitaliste en cours...</h3>
         <p class="scan-loading-sub" id="scanLoadingStatus" style="font-size:0.86rem; color:var(--text-dim); max-width:460px; margin:0 auto 18px auto;">Identification des composés, calcul du PRAL rénal et évaluation de la charge colloïdale...</p>
@@ -1459,6 +1518,27 @@
           <button class="btn-primary" onclick="saveProfile()" style="padding:14px; font-size:1rem; font-weight:700; border-radius:12px; margin-top:4px;">
             <i class="ri-save-line"></i> Sauvegarder mon Bio-Profil Vitaliste
           </button>
+        </div>
+      </div>
+
+      <!-- Bloc Protection Anti-Capture d'Écran & Confidentialité -->
+      <div class="dash-card glass" style="margin-top:20px; border:1px solid rgba(52, 211, 153, 0.2); padding:20px; border-radius:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+          <div style="flex:1; min-width:240px;">
+            <h3 style="display:flex; align-items:center; gap:8px; margin:0 0 4px 0; font-size:1.05rem; color:var(--text);">
+              <i class="ri-camera-off-line" style="color:var(--accent); font-size:1.2rem;"></i>
+              <span data-i18n="settings.screenshotTitle">Protection Anti-Capture d'Écran</span>
+            </h3>
+            <p style="font-size:0.82rem; color:var(--text-dim); margin:0; line-height:1.4;" data-i18n="settings.screenshotDesc">
+              Masque automatiquement les données de santé lors des captures d'écran (Désactivé par défaut).
+            </p>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <label class="vital-switch" style="position:relative; display:inline-block; width:50px; height:28px; cursor:pointer;">
+              <input type="checkbox" id="toggleScreenshotProtection" onchange="window.setScreenshotProtection(this.checked)" style="opacity:0; width:0; height:0;">
+              <span class="vital-slider" style="position:absolute; inset:0; background:rgba(255,255,255,0.15); border-radius:28px; transition:0.3s;"></span>
+            </label>
+          </div>
         </div>
       </div>
 
