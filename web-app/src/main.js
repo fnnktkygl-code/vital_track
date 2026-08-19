@@ -1749,8 +1749,13 @@ function addMessage(text, isUser, modelUsed = null, imageUri = null) {
 function addTypingIndicator() {
   const container = document.getElementById('chatMessages');
   const div = document.createElement('div'); div.className = 'message bot'; div.id = 'typing-indicator';
-  const typingAvatar = window.renderPigeonPortrait ? window.renderPigeonPortrait(24, 'talking') : '🐦';
-  div.innerHTML = `<div class="message-avatar">${typingAvatar}</div><div class="message-bubble"><div class="typing-dots"><span></span><span></span><span></span></div></div>`;
+  const typingAvatar = window.renderPigeonPortrait ? window.renderPigeonPortrait(28, 'talking') : '🐦';
+  div.innerHTML = `
+    <div class="message-avatar">${typingAvatar}</div>
+    <div class="message-bubble" style="display:flex; align-items:center; gap:10px; padding:10px 16px;">
+      <span style="font-size:0.82rem; color:var(--text-dim); font-weight:600;"><i class="ri-search-eye-line" style="color:#34d399;"></i> Arnold inspecte la mémoire &amp; analyse...</span>
+      <div class="typing-dots"><span></span><span></span><span></span></div>
+    </div>`;
   container.appendChild(div); container.scrollTop = container.scrollHeight; return div;
 }
 
@@ -5527,6 +5532,7 @@ function initSmartInsight() {
 }
 
 // ═══════ SCANNER IA ═══════
+let _scanMascotRenderer = null;
 window.handleScanUpload = function(event) {
   const file = event.target.files[0];
   if (!file) return;
@@ -5549,7 +5555,21 @@ window.handleScanUpload = function(event) {
     if (scanPreview) scanPreview.src = base64Url;
     if (imageWrapper) imageWrapper.classList.add('scanning');
     if (scanResult) scanResult.style.display = 'none';
-    if (scanLoading) scanLoading.style.display = 'block';
+    if (scanLoading) {
+      scanLoading.style.display = 'block';
+      const scanCanvas = document.getElementById('scanMascotCanvas');
+      if (scanCanvas && window.PigeonRenderer) {
+        const dpr = window.devicePixelRatio || 1;
+        scanCanvas.width = 110 * dpr;
+        scanCanvas.height = 130 * dpr;
+        scanCanvas.style.width = '110px';
+        scanCanvas.style.height = '130px';
+        if (!_scanMascotRenderer) {
+          _scanMascotRenderer = new window.PigeonRenderer(scanCanvas);
+        }
+        _scanMascotRenderer.setInspecting(true);
+      }
+    }
 
     // Cycle through descriptive status steps while waiting
     const statusSteps = [

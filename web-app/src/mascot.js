@@ -119,6 +119,14 @@ export class Pigeon {
     this.speed = 1.0;
     this.iridescenceIntensity = 1.0;
     this.particles = [];
+    this.isInspecting = false;
+  }
+
+  setInspecting(bool) {
+    this.isInspecting = !!bool;
+    if (this.isInspecting) {
+      this.setAction('think');
+    }
   }
 
   setAction(action, isSpeaking = false, tNow) {
@@ -312,7 +320,7 @@ export class Pigeon {
     this._drawUnifiedBodyAndNeck(ctx, bodyY, bodyPitch, cropPuff, headX, headY, headPitch, t);
 
     // 6. Tête & Yeux & Bec (Scellés à la nuque)
-    this._drawHead(ctx, headX, headY, headPitch, eyeBlinkL, eyeBlinkR, eyeShape, mouthOpen, bodyY, bodyPitch, cropPuff);
+    this._drawHead(ctx, headX, headY, headPitch, eyeBlinkL, eyeBlinkR, eyeShape, mouthOpen, bodyY, bodyPitch, cropPuff, t);
 
     // 7. Particules
     this._drawParticles(ctx);
@@ -560,7 +568,7 @@ export class Pigeon {
     ctx.restore();
   }
 
-  _drawHead(ctx, hX, hY, hPitch, blinkL, blinkR, eyeShape, mouthOpen, bodyY, bodyPitch, cropPuff) {
+  _drawHead(ctx, hX, hY, hPitch, blinkL, blinkR, eyeShape, mouthOpen, bodyY, bodyPitch, cropPuff, t = 0) {
     ctx.save();
     const cx = 50 + hX;
     const cy = 40 + hY + bodyY * 0.5;
@@ -598,6 +606,75 @@ export class Pigeon {
     this._drawEye(ctx, cx + 15, cy - 3, blinkR, eyeShape, 'R');
 
     this._drawEyebrows(ctx, cx, cy, eyeShape);
+
+    // Dessin des lunettes d'inspecteur / observateur scientifique lors des chargements et analyses
+    if (this.isInspecting || this.action === 'think') {
+      this._drawInspectorGlasses(ctx, cx, cy, t);
+    }
+
+    ctx.restore();
+  }
+
+  _drawInspectorGlasses(ctx, cx, cy, t = 0) {
+    ctx.save();
+    const eyeLeftX = cx - 15;
+    const eyeRightX = cx + 15;
+    const eyeY = cy - 3;
+    const glassR = 9.5;
+
+    // Monture dorée fine & chic
+    ctx.strokeStyle = '#F59E0B';
+    ctx.lineWidth = 1.6;
+    ctx.shadowColor = 'rgba(245, 158, 11, 0.45)';
+    ctx.shadowBlur = 4;
+
+    // Verre Gauche
+    ctx.beginPath();
+    ctx.arc(eyeLeftX, eyeY, glassR, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(56, 189, 248, 0.20)';
+    ctx.fill();
+    ctx.stroke();
+
+    // Verre Droit
+    ctx.beginPath();
+    ctx.arc(eyeRightX, eyeY, glassR, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(56, 189, 248, 0.20)';
+    ctx.fill();
+    ctx.stroke();
+
+    // Pont de nez
+    ctx.beginPath();
+    ctx.moveTo(eyeLeftX + glassR - 1, eyeY - 1);
+    ctx.quadraticCurveTo(cx, eyeY - 3.5, eyeRightX - glassR + 1, eyeY - 1);
+    ctx.stroke();
+
+    // Branches
+    ctx.beginPath();
+    ctx.moveTo(eyeLeftX - glassR, eyeY - 1);
+    ctx.lineTo(eyeLeftX - glassR - 5, eyeY - 3);
+    ctx.moveTo(eyeRightX + glassR, eyeY - 1);
+    ctx.lineTo(eyeRightX + glassR + 5, eyeY - 3);
+    ctx.stroke();
+
+    // Reflets lumineux blancs obliques
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.75)';
+    ctx.lineWidth = 1.2;
+    ctx.shadowBlur = 0;
+    ctx.beginPath();
+    ctx.moveTo(eyeLeftX - 4, eyeY - 4);
+    ctx.lineTo(eyeLeftX - 1, eyeY - 7);
+    ctx.moveTo(eyeRightX - 4, eyeY - 4);
+    ctx.lineTo(eyeRightX - 1, eyeY - 7);
+    ctx.stroke();
+
+    // Icône de loupe animée au-dessus de la tête
+    const floatY = Math.sin(t * 3.5) * 2.5;
+    ctx.fillStyle = '#34D399';
+    ctx.font = '12px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.shadowColor = 'rgba(52, 211, 153, 0.6)';
+    ctx.shadowBlur = 6;
+    ctx.fillText('🔍', cx + 16, cy - 22 + floatY);
 
     ctx.restore();
   }
@@ -805,6 +882,10 @@ export class PigeonRenderer {
     this.pigeon.setAction(action, isSpeaking, tNow);
   }
 
+  setInspecting(bool) {
+    if (this.pigeon) this.pigeon.setInspecting(bool);
+  }
+
   setSpeed(s) {
     if (this.pigeon) this.pigeon.setSpeed(s);
   }
@@ -873,6 +954,10 @@ export class VitalMascot {
     if (!this.pigeon) return;
     const tNow = (performance.now() - this.startTime) / 1000;
     this.pigeon.setAction(action, isSpeaking, tNow);
+  }
+
+  setInspecting(bool) {
+    if (this.pigeon) this.pigeon.setInspecting(bool);
   }
 
   loop(time) {

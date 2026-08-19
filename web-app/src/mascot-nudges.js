@@ -100,6 +100,19 @@ class PigeonNudgeEngine {
       requestAnimationFrame(() => {
         toast.classList.add('visible');
       });
+
+      // Pause auto-dismiss on hover (Industry best practice)
+      toast.addEventListener('mouseenter', () => {
+        if (this.hideTimeout) {
+          clearTimeout(this.hideTimeout);
+          this.hideTimeout = null;
+        }
+      });
+      toast.addEventListener('mouseleave', () => {
+        if (!this.hideTimeout) {
+          this.hideTimeout = setTimeout(() => this.dismiss(), 3000);
+        }
+      });
     }
 
     // Auto-dismiss après 6.5 secondes
