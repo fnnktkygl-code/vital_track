@@ -4895,18 +4895,29 @@ mark.search-highlight {
   }
 }
 
-/* Responsive Bottom Navigation & Text Wrapping */
+/* Responsive Bottom Navigation & Crisp Labels */
 .bottom-nav {
-  padding-bottom: max(10px, env(safe-area-inset-bottom));
-  gap: 2px;
+  padding: 6px 4px max(8px, env(safe-area-inset-bottom));
+  gap: 1px;
+  justify-content: space-around;
+  align-items: center;
 }
 
 .bnav-item {
   flex: 1 1 0;
   min-width: 0;
-  padding: 4px 2px;
+  padding: 4px 1px;
   overflow: hidden;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.bnav-item i {
+  font-size: 1.25rem;
+  line-height: 1;
 }
 
 .bnav-item span {
@@ -4914,14 +4925,17 @@ mark.search-highlight {
   width: 100%;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 0.68rem;
-  line-height: 1.2;
+  text-overflow: clip;
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.1;
+  text-align: center;
+  margin-top: 2px;
 }
 
-@media (max-width: 380px) {
+@media (max-width: 375px) {
   .bnav-item span {
-    font-size: 0.58rem;
+    font-size: 0.64rem;
     letter-spacing: -0.2px;
   }
   .bnav-item i {

@@ -156,6 +156,14 @@ export const TRANSLATIONS = {
       resources: 'Ressources',
       settings: 'Paramètres'
     },
+    bnav: {
+      dashboard: 'Accueil',
+      scan: 'Scan',
+      chat: 'Chat',
+      calendar: 'Plan',
+      fasting: 'Jeûne',
+      more: 'Plus'
+    },
     header: {
       title: 'VitalTrack — Santé Cellulaire & Vitalisme',
       searchPlaceholder: 'Chercher un aliment, une plante...',
@@ -342,6 +350,14 @@ export const TRANSLATIONS = {
       calendar: 'Calendrier',
       resources: 'Ressources',
       settings: 'Paramètres'
+    },
+    bnav: {
+      dashboard: 'Accueil',
+      scan: 'Scan',
+      chat: 'Chat',
+      calendar: 'Plan',
+      fasting: 'Jeûne',
+      more: 'Plus'
     },
     header: {
       title: 'VitalTrack — Santé Cellulaire & Flore Boréale 🍁',
@@ -530,6 +546,14 @@ export const TRANSLATIONS = {
       resources: 'Resources',
       settings: 'Settings'
     },
+    bnav: {
+      dashboard: 'Home',
+      scan: 'Scan',
+      chat: 'Chat',
+      calendar: 'Plan',
+      fasting: 'Fast',
+      more: 'More'
+    },
     header: {
       title: 'VitalTrack — Cellular Health & Vitalism',
       searchPlaceholder: 'Search foods, botanicals...',
@@ -716,6 +740,14 @@ export const TRANSLATIONS = {
       calendar: 'Calendario',
       resources: 'Recursos',
       settings: 'Ajustes'
+    },
+    bnav: {
+      dashboard: 'Inicio',
+      scan: 'Scan',
+      chat: 'Chat',
+      calendar: 'Plan',
+      fasting: 'Ayuno',
+      more: 'Más'
     },
     header: {
       title: 'VitalTrack — Salud Celular y Vitalismo',
