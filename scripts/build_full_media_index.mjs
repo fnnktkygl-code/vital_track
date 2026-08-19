@@ -9,6 +9,8 @@ const BASE_VIDEOS = [
   {
     id: "vid_sebi_rocknewman_intro",
     type: "video",
+    lang: "en",
+    langLabel: "Anglais (VO)",
     title: "The Rock Newman Show ft. Dr. Sebi (Interview Complète)",
     speaker: "Dr. Sebi (Alfredo Bowman)",
     source: "YouTube HD",
@@ -27,6 +29,8 @@ const BASE_VIDEOS = [
   {
     id: "vid_sebi_rocknewman_bioelectric",
     type: "video",
+    lang: "en",
+    langLabel: "Anglais (VO)",
     title: "The Rock Newman Show ft. Dr. Sebi (Interview Complète)",
     speaker: "Dr. Sebi (Alfredo Bowman)",
     source: "YouTube HD",
@@ -45,6 +49,8 @@ const BASE_VIDEOS = [
   {
     id: "vid_sebi_rocknewman_court",
     type: "video",
+    lang: "en",
+    langLabel: "Anglais (VO)",
     title: "The Rock Newman Show ft. Dr. Sebi (Interview Complète)",
     speaker: "Dr. Sebi (Alfredo Bowman)",
     source: "YouTube HD",
@@ -63,6 +69,8 @@ const BASE_VIDEOS = [
   {
     id: "vid_wimhof_documentary_origins",
     type: "video",
+    lang: "en",
+    langLabel: "Anglais (VO)",
     title: "Documentaire : Inside the Superhuman World of Wim Hof (Vice)",
     speaker: "Wim Hof & Scientifiques",
     source: "Vice / YouTube HD",
@@ -81,6 +89,8 @@ const BASE_VIDEOS = [
   {
     id: "vid_wimhof_documentary_radboud",
     type: "video",
+    lang: "en",
+    langLabel: "Anglais (VO)",
     title: "Documentaire : Inside the Superhuman World of Wim Hof (Vice)",
     speaker: "Wim Hof & Dr. Pickkers (Radboud Univ)",
     source: "Vice / YouTube HD",
@@ -99,6 +109,8 @@ const BASE_VIDEOS = [
   {
     id: "vid_wimhof_breathing_tutorial",
     type: "video",
+    lang: "en",
+    langLabel: "Anglais (VO)",
     title: "Session Guidée de Respiration Wim Hof (3 Rounds Officiels)",
     speaker: "Wim Hof",
     source: "Chaîne Officielle Wim Hof",
@@ -117,6 +129,8 @@ const BASE_VIDEOS = [
   {
     id: "vid_ehret_masterclass_vpo",
     type: "video",
+    lang: "fr",
+    langLabel: "Français",
     title: "Masterclass : Les Lois Fondamentales d'Arnold Ehret",
     speaker: "Institut Vitaliste & Arnold Ehret",
     source: "Masterclass Vidéo HD",
@@ -134,6 +148,8 @@ const BASE_VIDEOS = [
   {
     id: "vid_morse_lymphatic_miracle",
     type: "video",
+    lang: "fr",
+    langLabel: "Français",
     title: "Dr. Robert Morse — Le Système Lymphatique et la Filtration Rénale",
     speaker: "Dr. Robert Morse, N.D.",
     source: "Conférence Clinique Morse",
@@ -175,48 +191,108 @@ function extractKeywords(text, heading) {
 }
 
 function processKnowledgeFiles() {
-  console.log('📚 Indexing all knowledge documents in detail...');
+  console.log('📚 Indexing all bilingual knowledge documents in detail...');
   const results = [...BASE_VIDEOS];
 
   const files = [
+    // 🇫🇷 FRENCH EDITIONS
+    {
+      file: 'robert-morse-le-guide-du-miracle-de-la-detox-fr.md',
+      lang: 'fr',
+      langLabel: '🇫🇷 Français',
+      title: 'Le Guide du Miracle de la Détox & Régénération Cellulaire',
+      author: 'Dr. Robert Morse, N.D.',
+      pdfUrl: '/pdfs/dr-robert-morse-le-guide-du-miracle-de-la-detox-fr.pdf',
+      badgeClass: 'badge-purple'
+    },
     {
       file: 'arnold-mucusless-diet.md',
+      lang: 'fr',
+      langLabel: '🇫🇷 Français',
       title: 'Système de Guérison du Régime Sans Mucus',
       author: 'Prof. Arnold Ehret',
       pdfUrl: '/pdfs/arnold-ehret-systeme-de-guerison-du-regime-sans-mucus-fr.pdf',
       badgeClass: 'badge-success'
     },
     {
-      file: 'arnold-rational-fasting.md',
+      file: 'arnold-ehret-le-jeune-rationnel-fr.md',
+      lang: 'fr',
+      langLabel: '🇫🇷 Français',
       title: 'Le Jeûne Rationnel & Régénération Physiologique',
       author: 'Prof. Arnold Ehret',
-      pdfUrl: '/pdfs/arnold-ehret-rational-fasting.pdf',
+      pdfUrl: '/pdfs/arnold-ehret-le-jeune-rationnel-fr.pdf',
+      badgeClass: 'badge-warning'
+    },
+    {
+      file: 'david-wolfe-le-systeme-de-reussite-de-l-alimentation-vivante-fr.md',
+      lang: 'fr',
+      langLabel: '🇫🇷 Français',
+      title: 'Le Système de Réussite de l\'Alimentation Vivante',
+      author: 'David Wolfe',
+      pdfUrl: '/pdfs/david-wolfe-le-systeme-de-reussite-de-l-alimentation-vivante-fr.pdf',
+      badgeClass: 'badge-danger'
+    },
+    {
+      file: 'dr-leslie-taylor-pharmacopee-amazonienne-raintree-fr.md',
+      lang: 'fr',
+      langLabel: '🇫🇷 Français',
+      title: 'Pharmacopée Botanique Amazonienne & Monographies Raintree',
+      author: 'Dr. Leslie Taylor',
+      pdfUrl: '/pdfs/dr-leslie-taylor-pharmacopee-amazonienne-raintree-fr.pdf',
       badgeClass: 'badge-success'
     },
     {
+      file: 'dr-sebi-guide-de-purification-bio-electrique-cellulaire-fr.md',
+      lang: 'fr',
+      langLabel: '🇫🇷 Français',
+      title: 'Guide de Purification Cellulaire Bio-Électrique',
+      author: 'Dr. Sebi (Alfredo Bowman)',
+      pdfUrl: '/pdfs/dr-sebi-guide-de-purification-bio-electrique-cellulaire-fr.pdf',
+      badgeClass: 'badge-success'
+    },
+
+    // 🇬🇧 AUTHENTIC ENGLISH EDITIONS
+    {
       file: 'robert-morse-the-detox-miracle-sourcebook-ebook.md',
-      title: 'Guide de Régénération & Détoxification Cellulaire',
+      lang: 'en',
+      langLabel: '🇬🇧 English (Original)',
+      title: 'The Detox Miracle Sourcebook: Raw Foods and Herbs for Cellular Regeneration',
       author: 'Dr. Robert Morse, N.D.',
       pdfUrl: '/pdfs/robert-morse-detox-miracle-sourcebook.pdf',
-      badgeClass: 'badge-success'
+      badgeClass: 'badge-purple'
     },
     {
       file: 'the-sunfood-diet-success-system-david-wolfe.md',
-      title: 'Le Système de Réussite de l\'Alimentation Vivante',
+      lang: 'en',
+      langLabel: '🇬🇧 English (Original)',
+      title: 'The Sunfood Diet Success System',
       author: 'David Wolfe',
       pdfUrl: '/pdfs/david-wolfe-sunfood-diet-success-system.pdf',
-      badgeClass: 'badge-success'
+      badgeClass: 'badge-danger'
+    },
+    {
+      file: 'arnold-rational-fasting.md',
+      lang: 'en',
+      langLabel: '🇬🇧 English (Original)',
+      title: 'Rational Fasting & Regeneration',
+      author: 'Prof. Arnold Ehret',
+      pdfUrl: '/pdfs/arnold-ehret-rational-fasting.pdf',
+      badgeClass: 'badge-warning'
     },
     {
       file: 'amazon-and-tropical-raintree-materia-medica.md',
-      title: 'Pharmacopée Raintree & Plantes Médicinales Amazoniennes',
+      lang: 'en',
+      langLabel: '🇬🇧 English (Original)',
+      title: 'Amazon and Tropical Raintree Materia Medica',
       author: 'Dr. Leslie Taylor',
       pdfUrl: '/Nutrional-Guide.pdf',
       badgeClass: 'badge-success'
     },
     {
       file: 'nutrional-guide.md',
-      title: 'Guide Nutritionnel & Aliments Thérapeutiques',
+      lang: 'en',
+      langLabel: '🇬🇧 English (Original)',
+      title: 'Bio-Electric Cell Food Cleansing & Nutritional Guide',
       author: 'Dr. Sebi (Alfredo Bowman)',
       pdfUrl: '/pdfs/dr-sebi-bio-electric-cell-food-cleansing-guide.pdf',
       badgeClass: 'badge-success'
@@ -249,7 +325,7 @@ function processKnowledgeFiles() {
       const bodyText = bodyLines.join(' ');
       if (bodyText.length < 100) continue;
 
-      // Split large sections into sub-chunks of ~800-1200 characters to keep excerpts clear
+      // Split large sections into sub-chunks of ~800-1200 characters
       const chunks = [];
       if (bodyText.length > 1500) {
         const sentences = bodyText.match(/[^.!?]+[.!?]+/g) || [bodyText];
@@ -271,7 +347,6 @@ function processKnowledgeFiles() {
         const chunkText = chunks[chunkIdx];
         approxPage = Math.min(120, Math.max(1, Math.floor(cardIndex * 1.5) % 110 + 1));
 
-        // Create excerpt of first 280-350 chars
         let excerpt = chunkText.slice(0, 320);
         if (chunkText.length > 320) excerpt += '...';
 
@@ -294,6 +369,8 @@ function processKnowledgeFiles() {
         results.push({
           id: `doc_idx_${cardIndex++}`,
           type: 'pdf',
+          lang: f.lang,
+          langLabel: f.langLabel,
           title: f.title,
           author: f.author,
           chapterTitle: heading,
@@ -309,14 +386,14 @@ function processKnowledgeFiles() {
     }
   }
 
-  console.log(`✅ Total indexed passages & media: ${results.length}`);
+  console.log(`✅ Total indexed bilingual passages & media: ${results.length}`);
   return results;
 }
 
 const allData = processKnowledgeFiles();
 
 const fileContent = `// ═══════════════════════════════════════════════════════════════════════════════
-// VITALTRACK EXHAUSTIVE DEEP MULTIMEDIA KNOWLEDGE INDEX (PDFs & Timecoded Videos)
+// VITALTRACK BILINGUAL MULTIMEDIA KNOWLEDGE INDEX (French Editions & English Originals)
 // Auto-generated full-text index across all fundamental vitalist literature & media
 // ═══════════════════════════════════════════════════════════════════════════════
 
@@ -425,6 +502,8 @@ export function searchMediaKnowledge(query, filter = 'all') {
     if (filter !== 'all') {
       if (filter === 'videos' && item.type !== 'video') continue;
       if (filter === 'pdfs' && item.type !== 'pdf') continue;
+      if (filter === 'fr' && item.lang !== 'fr') continue;
+      if (filter === 'en' && item.lang !== 'en') continue;
     }
 
     let score = 0;
@@ -472,9 +551,11 @@ export function searchMediaKnowledge(query, filter = 'all') {
 function filterMediaByType(items, filter) {
   if (filter === 'videos') return items.filter(i => i.type === 'video');
   if (filter === 'pdfs') return items.filter(i => i.type === 'pdf');
+  if (filter === 'fr') return items.filter(i => i.lang === 'fr');
+  if (filter === 'en') return items.filter(i => i.lang === 'en');
   return items;
 }
 `;
 
 fs.writeFileSync(OUTPUT_FILE, fileContent, 'utf8');
-console.log(`🎉 Full media search index created successfully in ${OUTPUT_FILE}`);
+console.log(`🎉 Full bilingual media search index created successfully in ${OUTPUT_FILE}`);
