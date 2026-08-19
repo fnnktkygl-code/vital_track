@@ -8041,7 +8041,7 @@ window.renderResources = function () {
             <span class="badge badge-success" style="font-size:0.78rem;">${filteredBooks.length} ouvrage${filteredBooks.length > 1 ? 's' : ''} disponible${filteredBooks.length > 1 ? 's' : ''}</span>
           </div>
 
-          <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(360px, 1fr)); gap:22px;">
+          <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(min(360px, 100%), 1fr)); gap:22px;">
             ${filteredBooks.map(b => `
               <div class="dash-card glass" style="padding:22px; display:flex; flex-direction:column; justify-content:space-between; border-left:4px solid ${b.color}; background:linear-gradient(145deg, rgba(255,255,255,0.035), rgba(15,23,42,0.8)); box-shadow:0 10px 30px rgba(0,0,0,0.3); border-radius:16px;">
                 <div>
