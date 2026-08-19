@@ -8676,21 +8676,10 @@ window.initScreenshotProtection = function () {
       handleScreenshotEvent();
     }
   });
-
-  // Also listen for window blur if user enabled protection
-  window.addEventListener('blur', () => {
-    if (store.get('screenshotProtection', false)) {
-      document.body.classList.add('screenshot-privacy-active');
-    }
-  });
-
-  window.addEventListener('focus', () => {
-    document.body.classList.remove('screenshot-privacy-active');
-  });
 };
 
 function handleScreenshotEvent() {
-  // First time screenshot prompt
+  // First time screenshot prompt (purely informational toast)
   if (!store.get('screenshot_notice_shown', false)) {
     store.set('screenshot_notice_shown', true);
     if (window.showToast) {
@@ -8698,12 +8687,12 @@ function handleScreenshotEvent() {
     }
   }
 
-  // If enabled by user, briefly obscure health data
+  // Only if explicitly enabled by user in settings:
   if (store.get('screenshotProtection', false)) {
     document.body.classList.add('screenshot-privacy-active');
     setTimeout(() => {
       document.body.classList.remove('screenshot-privacy-active');
-    }, 1500);
+    }, 1200);
   }
 }
 

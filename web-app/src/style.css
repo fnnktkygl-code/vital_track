@@ -80,10 +80,10 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
 .sidebar-link.active { color: var(--accent); background: var(--accent-glow); font-weight: 600; }
 .sidebar-spacer { flex: 1; }
 
-/* Blobs */
-.bg-blob{position:fixed;border-radius:50%;filter:blur(120px);opacity:0.12;pointer-events:none;z-index:0}
-.blob-1{width:500px;height:500px;background:var(--accent);top:-100px;left:-100px}
-.blob-2{width:400px;height:400px;background:var(--accent-2);bottom:-100px;right:-100px}
+/* Ambient Background Glow (Hardware-Accelerated Radial Gradients without blur lag) */
+.bg-blob{position:fixed;border-radius:50%;pointer-events:none;z-index:0;opacity:0.6}
+.blob-1{width:600px;height:600px;top:-150px;left:-150px;background:radial-gradient(circle, rgba(16,185,129,0.12) 0%, rgba(16,185,129,0) 70%)}
+.blob-2{width:500px;height:500px;bottom:-150px;right:-150px;background:radial-gradient(circle, rgba(59,130,246,0.10) 0%, rgba(59,130,246,0) 70%)}
 
 /* Glass */
 .glass{background:var(--bg-glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
@@ -5242,33 +5242,10 @@ mark.search-highlight {
   background-color: #0F172A;
 }
 
-/* Privacy screenshot blur when activated */
-.screenshot-privacy-active .main-content,
-.screenshot-privacy-active .navbar,
-.screenshot-privacy-active .bottom-nav {
-  filter: blur(25px) !important;
-  transition: filter 0.1s ease;
-  user-select: none;
-}
-
-.screenshot-privacy-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: 999999;
-  background: rgba(15, 23, 42, 0.96);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  text-align: center;
-  padding: 24px;
-}
-
-.screenshot-privacy-overlay.active {
-  display: flex;
+/* Privacy Mode (Optional when explicitly enabled by user) */
+.screenshot-privacy-active .dash-card {
+  filter: blur(12px);
+  transition: filter 0.2s ease;
 }
 
 
