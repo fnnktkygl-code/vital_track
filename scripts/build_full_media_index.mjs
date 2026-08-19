@@ -400,7 +400,7 @@ const fileContent = `// ══════════════════�
 export const MEDIA_SEARCH_DATABASE = ${JSON.stringify(allData, null, 2)};
 
 // ═══════ SYNONYM & BILINGUAL EXPANSION DICTIONARY ═══════
-const SYNONYMS = {
+export const SYNONYMS = {
   'eye': ['eye', 'eyes', 'eyesight', 'yeux', 'oeil', 'oculaire', 'vision', 'vue', 'iridologie', 'sight'],
   'eyes': ['eye', 'eyes', 'eyesight', 'yeux', 'oeil', 'oculaire', 'vision', 'vue', 'iridologie', 'sight'],
   'eyesight': ['eye', 'eyes', 'eyesight', 'yeux', 'oeil', 'oculaire', 'vision', 'vue', 'sight'],
@@ -410,23 +410,31 @@ const SYNONYMS = {
   'vue': ['eye', 'eyes', 'eyesight', 'yeux', 'oeil', 'oculaire', 'vision', 'vue', 'sight'],
   'oculaire': ['eye', 'eyes', 'eyesight', 'yeux', 'oeil', 'oculaire', 'vision', 'vue'],
   'iridologie': ['eye', 'eyes', 'iridology', 'iridologie', 'iris', 'pupil', 'pupille', 'yeux'],
+  'iridology': ['eye', 'eyes', 'iridology', 'iridologie', 'iris', 'pupil', 'pupille', 'yeux'],
 
-  'intestin': ['intestin', 'intestins', 'intestinal', 'intestine', 'intestines', 'gut', 'bowel', 'colon', 'côlon', 'small intestine', 'large intestine'],
-  'intestins': ['intestin', 'intestins', 'intestinal', 'intestine', 'intestines', 'gut', 'bowel', 'colon', 'côlon', 'small intestine', 'large intestine'],
-  'intestine': ['intestin', 'intestins', 'intestinal', 'intestine', 'intestines', 'gut', 'bowel', 'colon', 'côlon'],
-  'intestines': ['intestin', 'intestins', 'intestinal', 'intestine', 'intestines', 'gut', 'bowel', 'colon', 'côlon'],
-  'intestinal': ['intestin', 'intestins', 'intestinal', 'intestine', 'intestines', 'gut', 'bowel', 'colon', 'côlon'],
-  'gut': ['intestin', 'intestins', 'intestinal', 'gut', 'bowel', 'colon', 'côlon'],
-  'bowel': ['intestin', 'intestins', 'intestinal', 'gut', 'bowel', 'colon', 'côlon'],
+  'intestin': ['intestin', 'intestins', 'intestinal', 'intestine', 'intestines', 'gut', 'bowel', 'small intestine', 'large intestine'],
+  'intestins': ['intestin', 'intestins', 'intestinal', 'intestine', 'intestines', 'gut', 'bowel', 'small intestine', 'large intestine'],
+  'intestine': ['intestin', 'intestins', 'intestinal', 'intestine', 'intestines', 'gut', 'bowel'],
+  'intestines': ['intestin', 'intestins', 'intestinal', 'intestine', 'intestines', 'gut', 'bowel'],
+  'intestinal': ['intestin', 'intestins', 'intestinal', 'intestine', 'intestines', 'gut', 'bowel'],
+  'gut': ['intestin', 'intestins', 'intestinal', 'gut', 'bowel'],
+  'bowel': ['intestin', 'intestins', 'intestinal', 'gut', 'bowel'],
 
-  'colon': ['colon', 'côlon', 'colique', 'colonic', 'colite', 'gros intestin', 'bowel', 'crohn', 'constipation'],
-  'côlon': ['colon', 'côlon', 'colique', 'colonic', 'colite', 'gros intestin', 'bowel', 'crohn', 'constipation'],
-  'colite': ['colon', 'côlon', 'colite', 'colitis', 'crohn', 'inflammation', 'bowel'],
+  'colon': ['colon', 'côlon', 'colique', 'colonic', 'gros intestin', 'large intestine', 'constipation'],
+  'côlon': ['colon', 'côlon', 'colique', 'colonic', 'gros intestin', 'large intestine', 'constipation'],
+  'colite': ['colite', 'colitis', 'colite ulcereuse', 'ulcerative colitis', 'rectocolite'],
+  'colitis': ['colite', 'colitis', 'colite ulcereuse', 'ulcerative colitis', 'rectocolite'],
 
-  'crohn': ['crohn', 'maladie de crohn', 'colite', 'colitis', 'mici', 'ibd', 'intestin', 'inflammation', 'colon', 'bowel'],
+  // Specific Inflammatory Bowel & Crohn terms (Strict precision: no generic intestine pollution)
+  'crohn': ['crohn', 'crone', 'crohns', "crohn's", 'maladie de crohn', "crohn's disease", 'crohn disease', 'mici', 'ibd'],
+  'crone': ['crohn', 'crone', 'crohns', "crohn's", 'maladie de crohn', "crohn's disease", 'crohn disease', 'mici', 'ibd'],
+  'crohns': ['crohn', 'crone', 'crohns', "crohn's", 'maladie de crohn', "crohn's disease", 'crohn disease', 'mici', 'ibd'],
+  'mici': ['crohn', 'crone', 'maladie de crohn', 'mici', 'ibd', 'colite ulcereuse', 'ulcerative colitis'],
+  'ibd': ['crohn', 'crone', 'maladie de crohn', 'mici', 'ibd', 'colite ulcereuse', 'ulcerative colitis'],
   
   'rein': ['rein', 'reins', 'renal', 'renale', 'kidney', 'kidneys', 'nephron', 'filtration', 'urates', 'lithiase', 'calculs'],
   'reins': ['rein', 'reins', 'renal', 'renale', 'kidney', 'kidneys', 'nephron', 'filtration', 'urates', 'lithiase', 'calculs'],
+  'renal': ['rein', 'reins', 'renal', 'renale', 'kidney', 'kidneys', 'nephron', 'filtration', 'urates'],
   'kidney': ['rein', 'reins', 'renal', 'renale', 'kidney', 'kidneys', 'nephron', 'filtration', 'urates'],
   'kidneys': ['rein', 'reins', 'renal', 'renale', 'kidney', 'kidneys', 'nephron', 'filtration', 'urates'],
 
@@ -434,10 +442,10 @@ const SYNONYMS = {
   'liver': ['foie', 'hepatique', 'liver', 'vesicule', 'biliaire', 'bile', 'gallbladder'],
   'vesicule': ['vesicule', 'vesicule biliaire', 'gallbladder', 'foie', 'liver', 'bile'],
 
-  'poumon': ['poumon', 'poumons', 'lung', 'lungs', 'bronches', 'respiration', 'asthme', 'mucus'],
-  'poumons': ['poumon', 'poumons', 'lung', 'lungs', 'bronches', 'respiration', 'asthme', 'mucus'],
-  'lung': ['poumon', 'poumons', 'lung', 'lungs', 'bronches', 'respiration', 'asthme', 'mucus'],
-  'lungs': ['poumon', 'poumons', 'lung', 'lungs', 'bronches', 'respiration', 'asthme', 'mucus'],
+  'poumon': ['poumon', 'poumons', 'lung', 'lungs', 'bronches', 'respiration', 'asthme'],
+  'poumons': ['poumon', 'poumons', 'lung', 'lungs', 'bronches', 'respiration', 'asthme'],
+  'lung': ['poumon', 'poumons', 'lung', 'lungs', 'bronches', 'respiration', 'asthme'],
+  'lungs': ['poumon', 'poumons', 'lung', 'lungs', 'bronches', 'respiration', 'asthme'],
 
   'peau': ['peau', 'skin', 'dermatite', 'psoriasis', 'eczema', 'eczéma', 'transpiration', 'cutane'],
   'skin': ['peau', 'skin', 'dermatite', 'psoriasis', 'eczema', 'eczéma', 'transpiration', 'cutane'],
@@ -448,10 +456,10 @@ const SYNONYMS = {
   'jeune': ['jeune', 'jeûne', 'fasting', 'fast', 'autophagie', 'autophagy', 'autolyse', 'autolysis', 'hydrique', 'sec'],
   'jeûne': ['jeune', 'jeûne', 'fasting', 'fast', 'autophagie', 'autophagy', 'autolyse', 'autolysis', 'hydrique', 'sec'],
   'fasting': ['jeune', 'jeûne', 'fasting', 'fast', 'autophagie', 'autophagy', 'autolyse', 'autolysis', 'hydrique', 'sec'],
-  'autophagie': ['autophagie', 'autophagy', 'autolyse', 'autolysis', 'jeune', 'jeûne', 'fasting', 'elimination', 'cellulaire'],
-  'autophagy': ['autophagie', 'autophagy', 'autolyse', 'autolysis', 'jeune', 'jeûne', 'fasting', 'elimination', 'cellulaire'],
-  'autolyse': ['autophagie', 'autophagy', 'autolyse', 'autolysis', 'jeune', 'jeûne', 'fasting', 'elimination'],
-  'autolysis': ['autophagie', 'autophagy', 'autolyse', 'autolysis', 'jeune', 'jeûne', 'fasting', 'elimination'],
+  'autophagie': ['autophagie', 'autophagy', 'autolyse', 'autolysis', 'jeune', 'jeûne', 'fasting'],
+  'autophagy': ['autophagie', 'autophagy', 'autolyse', 'autolysis', 'jeune', 'jeûne', 'fasting'],
+  'autolyse': ['autophagie', 'autophagy', 'autolyse', 'autolysis', 'jeune', 'jeûne', 'fasting'],
+  'autolysis': ['autophagie', 'autophagy', 'autolyse', 'autolysis', 'jeune', 'jeûne', 'fasting'],
 
   'mucus': ['mucus', 'mucusless', 'mucogene', 'mucogène', 'sans mucus', 'colloide', 'colloïde', 'catarrhe'],
   'parasite': ['parasite', 'parasites', 'candida', 'vers', 'worms', 'mycose', 'fungus', 'champignons'],
@@ -469,19 +477,19 @@ function normalize(str) {
     .trim();
 }
 
-/**
- * High-performance full-text search with bilingual expansions, normalized token scoring & substring matches
- */
-export function searchMediaKnowledge(query, filter = 'all') {
-  if (!query || !query.trim()) {
-    return filterMediaByType(MEDIA_SEARCH_DATABASE, filter);
+function termMatches(text, term) {
+  if (!text) return false;
+  if (term.length <= 4) {
+    const escaped = term.replace(/[.*+?^$\\{}()|[\\]\\\\]/g, '\\\\$&');
+    return new RegExp('\\\\b' + escaped + '\\\\b', 'i').test(text);
   }
+  return text.includes(term);
+}
 
-  const rawQuery = query.trim();
-  const cleanQuery = normalize(rawQuery);
+export function getExpandedSearchTokens(query) {
+  if (!query || !query.trim()) return [];
+  const cleanQuery = normalize(query);
   const rawTokens = cleanQuery.split(/\\s+/).filter(t => t.length > 0);
-
-  // Expand tokens with synonyms
   const searchTerms = new Set();
   searchTerms.add(cleanQuery);
 
@@ -493,8 +501,20 @@ export function searchMediaKnowledge(query, filter = 'all') {
       }
     }
   }
+  return Array.from(searchTerms).filter(t => t.length > 1);
+}
 
-  const termsList = Array.from(searchTerms);
+/**
+ * High-performance full-text search with bilingual expansions, normalized token scoring & substring matches
+ */
+export function searchMediaKnowledge(query, filter = 'all') {
+  if (!query || !query.trim()) {
+    return filterMediaByType(MEDIA_SEARCH_DATABASE, filter);
+  }
+
+  const rawQuery = query.trim();
+  const cleanQuery = normalize(rawQuery);
+  const termsList = getExpandedSearchTokens(query);
 
   const scored = [];
 
@@ -516,25 +536,25 @@ export function searchMediaKnowledge(query, filter = 'all') {
     const topicsNorm = (item.topics || []).map(t => normalize(t)).join(' ');
 
     // 1. Direct whole-query exact phrase match
-    if (chapterNorm.includes(cleanQuery)) score += 150;
-    if (titleNorm.includes(cleanQuery)) score += 100;
-    if (keywordsNorm.includes(cleanQuery)) score += 90;
-    if (excerptNorm.includes(cleanQuery)) score += 80;
-    if (fullTextNorm.includes(cleanQuery)) score += 70;
-    if (topicsNorm.includes(cleanQuery)) score += 60;
+    if (termMatches(chapterNorm, cleanQuery)) score += 150;
+    if (termMatches(titleNorm, cleanQuery)) score += 100;
+    if (termMatches(keywordsNorm, cleanQuery)) score += 90;
+    if (termMatches(excerptNorm, cleanQuery)) score += 80;
+    if (termMatches(fullTextNorm, cleanQuery)) score += 70;
+    if (termMatches(topicsNorm, cleanQuery)) score += 60;
 
     // 2. Expanded terms matches
     for (const term of termsList) {
       if (term.length < 2) continue;
       
       let termScore = 0;
-      if (chapterNorm.includes(term)) termScore += 40;
-      if (titleNorm.includes(term)) termScore += 30;
-      if (keywordsNorm.includes(term)) termScore += 25;
-      if (excerptNorm.includes(term)) termScore += 20;
-      if (fullTextNorm.includes(term)) termScore += 18;
-      if (topicsNorm.includes(term)) termScore += 15;
-      if (speakerNorm.includes(term)) termScore += 12;
+      if (termMatches(chapterNorm, term)) termScore += 40;
+      if (termMatches(titleNorm, term)) termScore += 30;
+      if (termMatches(keywordsNorm, term)) termScore += 25;
+      if (termMatches(excerptNorm, term)) termScore += 20;
+      if (termMatches(fullTextNorm, term)) termScore += 18;
+      if (termMatches(topicsNorm, term)) termScore += 15;
+      if (termMatches(speakerNorm, term)) termScore += 12;
 
       score += termScore;
     }

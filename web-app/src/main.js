@@ -8,7 +8,7 @@ import { RAINTREE_HERBS, RAINTREE_PROTOCOLS } from './raintree-data.js';
 import { t, getLanguage, setLanguage, toggleLanguage, onLanguageChange } from './i18n.js';
 import { pigeonNudges } from './mascot-nudges.js';
 import { auth } from './auth.js';
-import { MEDIA_SEARCH_DATABASE, searchMediaKnowledge } from './data/mediaSearchIndex.js';
+import { MEDIA_SEARCH_DATABASE, searchMediaKnowledge, getExpandedSearchTokens } from './data/mediaSearchIndex.js';
 
 // Exposer globalement pour l'interface utilisateur
 window.vitalTrackI18n = { t, getLanguage, setLanguage, toggleLanguage, onLanguageChange };
@@ -16,6 +16,7 @@ window.pigeonNudges = pigeonNudges;
 window.vitalTrackAuth = auth;
 window.MEDIA_SEARCH_DATABASE = MEDIA_SEARCH_DATABASE;
 window.searchMediaKnowledge = searchMediaKnowledge;
+window.getExpandedSearchTokens = getExpandedSearchTokens;
 
 // ═══════ CONFIG ═══════
 const API_BASE = window.location.origin;
@@ -7133,14 +7134,25 @@ function formatSeconds(secs) {
 function highlightMatches(text, query) {
   if (!text) return '';
   if (!query || !query.trim()) return esc(text);
-  const cleanTokens = query.trim().split(/\s+/).filter(t => t.length > 1);
-  if (cleanTokens.length === 0) return esc(text);
+  
+  const tokens = typeof getExpandedSearchTokens === 'function'
+    ? getExpandedSearchTokens(query)
+    : query.trim().split(/\s+/).filter(t => t.length > 1);
+
+  if (!tokens || tokens.length === 0) return esc(text);
 
   let escapedText = esc(text);
-  cleanTokens.forEach(token => {
-    const regex = new RegExp(`(${token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+  // Sort tokens by descending length so longer phrases (e.g. "maladie de crohn") are highlighted before individual words
+  const sortedTokens = [...tokens].sort((a, b) => b.length - a.length);
+
+  for (const token of sortedTokens) {
+    if (token.length < 2) continue;
+    const escapedToken = token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    // For short tokens (<=4 chars), require word boundary so it won't highlight inside unrelated words
+    const pattern = token.length <= 4 ? `\\b(${escapedToken})\\b` : `(${escapedToken})`;
+    const regex = new RegExp(pattern, 'gi');
     escapedText = escapedText.replace(regex, '<mark class="search-highlight">$1</mark>');
-  });
+  }
   return escapedText;
 }
 
