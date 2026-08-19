@@ -1,0 +1,22 @@
+================================================================================
+🛡️ COMMANDE D'INSTALLATION EN UNE SEULE LIGNE (ONE-LINER)
+================================================================================
+
+Pour installer automatiquement toute l'architecture sur n'importe quel nouveau
+projet, ouvre ton terminal à la racine de ton nouveau dossier et colle cette commande :
+
+curl -L https://vitaltrack-app.vercel.app/generic-agent-architecture-kit.zip -o kit.zip && unzip kit.zip && bash generic-agent-architecture-kit/setup.sh && rm -rf generic-agent-architecture-kit kit.zip
+
+--------------------------------------------------------------------------------
+Ce que fait cette commande automatiquement :
+1. Télécharge et extrait le kit
+2. Déploie les 9 règles dans .agents/rules/
+3. Déploie les 6 skills dans .agents/skills/
+4. Déploie les 3 harnais de test dans harnesses/
+5. Déploie les templates d'APIs et configs dans templates/
+6. Copie ARCHITECTURE.md et README-kit.md à la racine
+7. Nettoie les fichiers temporaires
+
+Tu peux ensuite directement ouvrir le dossier dans l'IDE Antigravity et lancer
+ton projet sans aucune autre configuration manuelle.
+================================================================================
