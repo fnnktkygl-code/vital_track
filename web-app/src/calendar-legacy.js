@@ -136,13 +136,20 @@ window.renderDay = function() {
     
     html += "<span class='meal-tags'>";
     if (meal.tags) {
-      meal.tags.forEach(function(t){ html += "<span class='meal-tag'>"+t.e+" "+t.n+"</span>"; });
+      meal.tags.forEach(function(t, tagIdx){
+        var safeTagN = (t.n || '').replace(/"/g, '&quot;').replace(/'/g, "\\'");
+        var safeEmoji = t.e || '🍽️';
+        html += "<span class='meal-tag meal-tag-interactive' title='Cliquer pour remplacer ou demander l\\'avis du Coach IA' onclick='event.stopPropagation();window.openSubstituteModal(\""+meal.id+"\", "+tagIdx+", \""+safeTagN+"\", \""+safeEmoji+"\")'>"+t.e+" "+t.n+" <i class=\"ri-loop-right-line sub-tag-icon\"></i></span>";
+      });
     }
     html += "</span>";
     
     html += "<span class='meal-note'><svg class='icon' viewBox='0 0 20 20' fill='none' stroke='currentColor' stroke-width='1.6'><circle cx='10' cy='10' r='7'/><line x1='10' y1='9' x2='10' y2='14'/><circle cx='10' cy='6.5' r='.6' fill='currentColor'/></svg>"+meal.note+"</span>";
     html += "</span></button>";
     html += "<span class='meal-actions'>";
+    var firstFood = (meal.tags && meal.tags[0] && meal.tags[0].n) ? meal.tags[0].n.replace(/"/g, '&quot;').replace(/'/g, "\\'") : '';
+    var firstEmoji = (meal.tags && meal.tags[0] && meal.tags[0].e) || '🍽️';
+    html += "<button class='meal-action-btn' title='Varier / Remplacer un aliment' onclick='event.stopPropagation();window.openSubstituteModal(\""+meal.id+"\", 0, \""+firstFood+"\", \""+firstEmoji+"\")'><svg class='icon' viewBox='0 0 20 20' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><path d='M4 10a6 6 0 0 1 10.5-4M16 10a6 6 0 0 1-10.5 4'/><path d='M14.5 3v3h-3M5.5 17v-3h3'/></svg></button>";
     html += "<button class='meal-action-btn' title='Modifier' onclick='event.stopPropagation();window.openAddMealModal(\""+meal.id+"\")'><svg class='icon' viewBox='0 0 20 20' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><path d='M13.5 3.5l3 3L7 16l-4 1 1-4z'/></svg></button>";
     html += "<button class='meal-action-btn danger' title='Supprimer' onclick='event.stopPropagation();window.deleteMealConfirm(\""+meal.id+"\")'><svg class='icon' viewBox='0 0 20 20' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round'><path d='M4 6h12M8 6V4h4v2M6 6l1 10h6l1-10'/></svg></button>";
     html += "</span>";
@@ -531,3 +538,185 @@ window.saveManualMeal = function() {
   window.renderDay();
   window.updateProgramRing();
 };
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SMART FOOD SUBSTITUTION MODAL & AI ADVICE INTEGRATION
+// ═══════════════════════════════════════════════════════════════════════════
+
+window._activeSubContext = null;
+
+window.openSubstituteModal = function(mealId, tagIdx, currentFoodName, currentFoodEmoji) {
+  const existing = document.getElementById('substituteModalOverlay');
+  if (existing) existing.remove();
+
+  const storedMeals = window.store.get('calendar_meals', []);
+  const meal = storedMeals.find(m => m.id === mealId);
+  if (!meal) return;
+
+  tagIdx = parseInt(tagIdx) || 0;
+  const currentTag = (meal.tags && meal.tags[tagIdx]) || { n: currentFoodName || 'Aliment', e: currentFoodEmoji || '🍽️' };
+  const foodName = currentTag.n;
+  const foodEmoji = currentTag.e;
+
+  window._activeSubContext = {
+    mealId: mealId,
+    tagIdx: tagIdx,
+    originalFood: foodName,
+    originalEmoji: foodEmoji,
+    mealTitle: meal.title || meal.slot || 'Repas',
+    dateStr: meal.dateStr || ''
+  };
+
+  // Obtenir les substituts recommandés via DietPlanEngine
+  let substitutes = [];
+  if (window.DietPlanEngine && window.DietPlanEngine.getFoodSubstitutes) {
+    substitutes = window.DietPlanEngine.getFoodSubstitutes(foodName);
+  }
+
+  const chipsHtml = substitutes.length > 0
+    ? substitutes.map((s, idx) => `
+        <button type="button" class="sub-chip ${idx === 0 ? 'selected' : ''}" onclick="window.selectSubstituteChip(this, '${s.name.replace(/'/g, "\\'")}', '${s.emoji}')" style="
+          display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:20px;border:1px solid rgba(55,211,153,0.3);
+          background:rgba(55,211,153,0.08);color:var(--text,#f3f6f9);cursor:pointer;font-size:0.85rem;font-weight:500;transition:all 0.2s;">
+          <span>${s.emoji}</span> <span>${s.name}</span>
+        </button>
+      `).join('')
+    : '<div style="font-size:0.85rem;color:var(--text-dim,#9aa7b8);">Saisissez un aliment de votre choix ci-dessous.</div>';
+
+  const defaultSelection = substitutes.length > 0 ? substitutes[0].name : '';
+
+  const overlay = document.createElement('div');
+  overlay.id = 'substituteModalOverlay';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.65);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:16px;animation:fadeIn 0.2s ease;';
+  
+  overlay.innerHTML = `
+    <div style="background:var(--surface,#121b27);border:1px solid rgba(255,255,255,0.14);border-radius:24px;padding:24px;max-width:480px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,0.7);color:var(--text,#f3f6f9);position:relative;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:36px;height:36px;border-radius:50%;background:rgba(55,211,153,0.15);color:var(--accent,#37d399);display:grid;place-items:center;font-size:1.2rem;">
+            <i class="ri-loop-right-line"></i>
+          </div>
+          <div>
+            <h3 style="margin:0;font-size:1.15rem;font-weight:700;">Varier / Remplacer l'aliment</h3>
+            <div style="font-size:0.8rem;color:var(--text-dim,#9aa7b8);">${meal.title} · ${meal.dateStr}</div>
+          </div>
+        </div>
+        <button onclick="document.getElementById('substituteModalOverlay').remove()" style="background:none;border:none;color:var(--text-dim,#9aa7b8);font-size:1.3rem;cursor:pointer;padding:4px;"><i class="ri-close-line"></i></button>
+      </div>
+
+      <!-- Current Food Display -->
+      <div style="margin-bottom:16px;padding:10px 14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;display:flex;align-items:center;justify-content:space-between;">
+        <span style="font-size:0.85rem;color:var(--text-dim,#9aa7b8);">Aliment actuel :</span>
+        <span style="font-weight:600;font-size:0.95rem;color:var(--text,#f3f6f9);display:inline-flex;align-items:center;gap:6px;">
+          <span>${foodEmoji}</span> <span>${foodName}</span>
+        </span>
+      </div>
+
+      <!-- Suggested Substitutes -->
+      <div style="margin-bottom:14px;">
+        <div style="font-size:0.85rem;font-weight:600;color:var(--text-dim,#9aa7b8);margin-bottom:8px;display:flex;align-items:center;gap:6px;">
+          <i class="ri-sparkling-fill" style="color:var(--accent,#37d399)"></i> Alternatives vitalistes 1-clic :
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;" id="subChipsContainer">
+          ${chipsHtml}
+        </div>
+      </div>
+
+      <!-- Custom Food Input -->
+      <div style="margin-bottom:20px;">
+        <label style="display:block;font-size:0.85rem;font-weight:600;color:var(--text-dim,#9aa7b8);margin-bottom:6px;">Ou saisir un autre aliment :</label>
+        <div style="position:relative;">
+          <input type="text" id="substituteCustomInput" value="${defaultSelection}" placeholder="Ex: Bleuets sauvages, Courge Butternut, Fenouil..." style="width:100%;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.15);color:#fff;padding:12px 14px;border-radius:12px;font-size:0.95rem;outline:none;box-sizing:border-box;">
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <button onclick="window.applySubstitution()" style="padding:12px;border-radius:14px;border:none;background:linear-gradient(135deg,var(--accent,#37d399),#059669);color:#000;font-weight:700;font-size:0.95rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 15px rgba(55,211,153,0.3);">
+          <i class="ri-check-line" style="font-size:1.1rem"></i> Valider ce remplacement
+        </button>
+
+        <button onclick="window.askAiAboutSubstitution()" style="padding:11px;border-radius:14px;border:1px solid rgba(251,191,36,0.4);background:rgba(251,191,36,0.1);color:#fbbf24;font-weight:600;font-size:0.9rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s;">
+          <i class="ri-chat-smile-2-line"></i> Demander l'avis du Coach IA 🐦
+        </button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+};
+
+window.selectSubstituteChip = function(btn, foodName, emoji) {
+  document.querySelectorAll('#subChipsContainer .sub-chip').forEach(c => {
+    c.style.background = 'rgba(55,211,153,0.08)';
+    c.style.borderColor = 'rgba(55,211,153,0.3)';
+  });
+  btn.style.background = 'var(--accent,#37d399)';
+  btn.style.borderColor = 'var(--accent,#37d399)';
+  btn.style.color = '#000';
+
+  const input = document.getElementById('substituteCustomInput');
+  if (input) input.value = foodName;
+};
+
+window.applySubstitution = function() {
+  const ctx = window._activeSubContext;
+  const input = document.getElementById('substituteCustomInput');
+  if (!ctx || !input) return;
+
+  const newFoodName = input.value.trim();
+  if (!newFoodName) {
+    if (window.showToast) window.showToast("⚠️ Veuillez choisir ou saisir un aliment.", "error");
+    return;
+  }
+
+  const storedMeals = window.store.get('calendar_meals', []);
+  const meal = storedMeals.find(m => m.id === ctx.mealId);
+  if (!meal) return;
+
+  let newEmoji = '🍽️';
+  if (window.DietPlanEngine && window.DietPlanEngine.emojiFor) {
+    newEmoji = window.DietPlanEngine.emojiFor(newFoodName);
+  }
+
+  if (!Array.isArray(meal.tags)) meal.tags = [];
+  if (meal.tags[ctx.tagIdx]) {
+    meal.tags[ctx.tagIdx] = { e: newEmoji, n: newFoodName };
+  } else {
+    meal.tags.push({ e: newEmoji, n: newFoodName });
+  }
+
+  window.store.set('calendar_meals', storedMeals);
+
+  const overlay = document.getElementById('substituteModalOverlay');
+  if (overlay) overlay.remove();
+
+  window.renderDay();
+  window.updateProgramRing();
+  if (window.showToast) {
+    window.showToast(`✅ "${ctx.originalFood}" remplacé par "${newFoodName}" !`, 'success');
+  }
+};
+
+window.askAiAboutSubstitution = function() {
+  const ctx = window._activeSubContext;
+  const input = document.getElementById('substituteCustomInput');
+  if (!ctx || !input) return;
+
+  const targetFood = input.value.trim() || ctx.originalFood;
+  const prompt = `Bonjour Coach Pigeon ! Pour mon ${ctx.mealTitle} du ${ctx.dateStr}, je souhaite remplacer "${ctx.originalFood}" par "${targetFood}". Qu'en penses-tu selon mon protocole vitaliste ? Quels sont les bénéfices et comment bien le préparer ?`;
+
+  const overlay = document.getElementById('substituteModalOverlay');
+  if (overlay) overlay.remove();
+
+  if (window.showPage) window.showPage('chat');
+  const chatInput = document.getElementById('chatInput');
+  if (chatInput) {
+    chatInput.value = prompt;
+    const chatForm = document.getElementById('chatForm');
+    if (chatForm) {
+      chatForm.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+    }
+  }
+};
+

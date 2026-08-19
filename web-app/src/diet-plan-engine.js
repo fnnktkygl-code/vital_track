@@ -1,59 +1,141 @@
 /**
- * diet-plan-engine.js
- *
- * Port JS du DietPlanGenerator Dart (vital_track/services + models).
- * Déterministe, ne fait AUCUN appel réseau/IA : compose le calendrier à
- * partir d'une liste d'aliments approuvés, exactement comme le fait le
- * moteur Flutter. Le chat (Gemini) ne doit plus fournir que des
- * PARAMÈTRES (dietPlanRequest) — c'est ce fichier qui transforme ces
- * paramètres en repas réels, avec les mêmes garanties de sécurité/
- * cohérence que côté mobile.
- *
- * Si vous avez déjà une base d'aliments approuvés côté web (ex. le même
- * assets/vital_ranking.json que Flutter, ou un équivalent JS de
- * VitalRulesEngine), branchez-la via `window.VITAL_APPROVED_FOODS`
- * (voir `approvedNamesByCategory` plus bas) — sinon ce module retombe sur
- * les mêmes listes de secours que le générateur Dart.
+ * diet-plan-engine.js — Moteur de Plan Alimentaire Vitaliste Déterministe 30 Jours
+ * 
+ * Génère des calendriers alimentaires ultra-variés, non-répétitifs, respectant
+ * la nutrition vitaliste (Ehret, Sebi, Morse, Universelle) et s'adaptant à l'éco-région,
+ * la saison, les préférences et les restrictions de l'utilisateur.
  */
 (function () {
   var SUPPORTED_PROTOCOLS = ['ehret', 'sebi', 'morse', 'personalized'];
 
+  // ═══════ POOLS DE SECOURS ÉTENDUS (30+ aliments par catégorie) ═══════
   var FALLBACK_POOLS = {
-    fruits: ['Papaye', 'Mangue', 'Raisins noirs', 'Pastèque'],
-    veggies: ['Kale', 'Concombre', 'Avocat', 'Roquette'],
-    grains: ['Quinoa', 'Amarante', 'Sarrasin'],
-    herbs: ['Tisane de gingembre', 'Tisane de menthe'],
-    oils: ["Huile d'olive", 'Huile de sésame'],
-    nuts: ['Graines de courge', 'Graines de tournesol'],
-    spices: ['Gingembre frais', 'Origan']
+    fruits: [
+      'Bleuets sauvages boréaux', 'Papaye solo', 'Mangue sauvage', 'Raisins noirs à pépins',
+      'Pastèque à graines', 'Canneberges fraîches', 'Figues fraîches', 'Grenade pourpre',
+      'Cerises noires', 'Framboises sauvages', 'Mûres sauvages', 'Pomme rustique ancestrale',
+      'Poire conférence', 'Prunes sauvages', 'Ananas victoria', 'Sapotille', 'Corossol',
+      'Goyave rose', 'Pamplemousse rose', 'Dattes Medjool', 'Poudre de Baobab', 'Baies d\'argousier',
+      'Kiwis sauvages', 'Abricots secs bruts', 'Melon charentais', 'Pêches de vigne', 'Fraises des bois',
+      'Baies d\'açaï sauvages', 'Tamarin doux', 'Citron vert Key Lime'
+    ],
+    veggies: [
+      'Kale frisé pourpre', 'Roquette sauvage', 'Mâche bio', 'Concombre sans pépins',
+      'Avocat créole', 'Courge Butternut rôtie', 'Potimarron doux', 'Courgette crue en tagliatelles',
+      'Épinards sauvages', 'Pissenlit sauvage', 'Feuilles d\'ortie fraîche', 'Céleri branche croquant',
+      'Fenouil doux', 'Poivron rouge doux', 'Betterave crue râpée', 'Carotte sauvage pourpre',
+      'Pourpier d\'été', 'Brocoli sauvage', 'Choux kale lacinato', 'Algue Nori sauvage',
+      'Algue Dulse de l\'Atlantique', 'Algue Wakamé bio', 'Laitue romaine croquante',
+      'Pousses de tournesol vivantes', 'Micro-pousses de radis', 'Cresson de fontaine',
+      'Asperges vertes', 'Artichaut vapeur', 'Navet doux râpé', 'Chicorée rouge de Trévise'
+    ],
+    grains: [
+      'Quinoa royal blanc & noir', 'Amarante sauvage', 'Sarrasin complet germé',
+      'Fonio ancestral d\'Afrique', 'Riz sauvage Zizania (Manomin)', 'Teff complet brun',
+      'Millet perlé complet'
+    ],
+    herbs: [
+      'Décoction de Chaga boréal', 'Infusion d\'Ortie dioïque reminéralisante',
+      'Infusion de Chanca Piedra', 'Décoction de Gingembre frais & Citron',
+      'Tisane de Menthe poivrée vivifiante', 'Infusion de Thym sauvage & Romarin',
+      'Tisane de fleurs d\'Hibiscus (Bissap)', 'Infusion de Griffe de Chat (Uña de Gato)',
+      'Décoction de Pau d\'Arco (Lapacho)', 'Tisane de Kinkéliba sauvage',
+      'Infusion de Camomille matricaire', 'Décoction de racines de Pissenlit',
+      'Tisane de Basilic sacré (Tulsi)', 'Infusion de Reine des Prés'
+    ],
+    oils: [
+      'Huile d\'olive extra-vierge première pression à froid',
+      'Huile de graines de chanvre vierge bio',
+      'Huile de sésame noir pressée à froid',
+      'Huile d\'avocat brute non raffinée',
+      'Huile de graines de lin fraîche'
+    ],
+    nuts: [
+      'Graines de courge d\'Autriche', 'Graines de tournesol germées',
+      'Graines de chanvre décortiquées', 'Graines de chia noir activées',
+      'Noix de Grenoble sauvages', 'Amandes brutes activées',
+      'Noix du Brésil (sélénium)', 'Graines de sésame complet'
+    ],
+    spices: [
+      'Gingembre frais râpé', 'Curcuma sauvage frais', 'Origan des montagnes',
+      'Poivre de Cayenne doux', 'Piment habanero doux', 'Basilic sacré séché',
+      'Cannelle de Ceylan véritable', 'Graines de coriandre moulues', 'Cardamome verte',
+      'Clous de girofle sauvages', 'Anis étoilé'
+    ],
+    remineralizing: [
+      'Huîtres sauvages fraîches du littoral', 'Moules de bouchot au thym',
+      'Palourdes sauvages vapeur', 'Salade de macroalgues dulse & wakamé'
+    ]
   };
 
-  // Emoji par défaut si votre base d'aliments approuvés n'en fournit pas
-  // déjà un par nom (le schéma foodAnalysisPrompt en génère un par
-  // aliment scanné — idéalement réutilisez cette même table ici via
-  // window.VITAL_FOOD_EMOJIS = { "Papaye": "🥭", ... }).
   var CATEGORY_EMOJI = {
     fruits: '🍎', veggies: '🥬', grains: '🌾',
-    herbs: '🌿', oils: '🫒', nuts: '🌰', spices: '🌶️'
+    herbs: '🌿', oils: '🫒', nuts: '🌰', spices: '🌶️', remineralizing: '🦪'
   };
 
   function emojiFor(name, category) {
     var table = (typeof window !== 'undefined' && window.VITAL_FOOD_EMOJIS) || {};
-    return table[name] || CATEGORY_EMOJI[category] || '🍽️';
+    if (table[name]) return table[name];
+    var n = (name || '').toLowerCase();
+    if (n.indexOf('bleuet') !== -1) return '🫐';
+    if (n.indexOf('huître') !== -1 || n.indexOf('huitre') !== -1 || n.indexOf('moule') !== -1 || n.indexOf('palourde') !== -1) return '🦪';
+    if (n.indexOf('chaga') !== -1 || n.indexOf('champignon') !== -1) return '🍄';
+    if (n.indexOf('avocat') !== -1) return '🥑';
+    if (n.indexOf('courge') !== -1 || n.indexOf('potimarron') !== -1) return '🎃';
+    if (n.indexOf('pomme') !== -1) return '🍏';
+    if (n.indexOf('banane') !== -1) return '🍌';
+    if (n.indexOf('citron') !== -1) return '🍋';
+    if (n.indexOf('mangue') !== -1) return '🥭';
+    if (n.indexOf('pastèque') !== -1 || n.indexOf('pasteque') !== -1) return '🍉';
+    if (n.indexOf('raisin') !== -1) return '🍇';
+    if (n.indexOf('gingembre') !== -1 || n.indexOf('curcuma') !== -1) return '🫚';
+    if (n.indexOf('tisane') !== -1 || n.indexOf('infusion') !== -1 || n.indexOf('décoction') !== -1) return '🍵';
+    if (n.indexOf('algue') !== -1 || n.indexOf('dulse') !== -1 || n.indexOf('wakamé') !== -1) return '🌊';
+    return CATEGORY_EMOJI[category] || '🍽️';
   }
 
   function approvedNamesByCategory() {
-    // Attendu: { Fruits: [...], "Légumes": [...], "Céréales": [...],
-    //            "Herbes & Thés": [...], Huiles: [...],
-    //            "Noix & Graines": [...], "Épices & Assaisonnements": [...] }
+    var out = {};
+    
+    // 1. Check window.VITAL_APPROVED_FOODS
     if (typeof window !== 'undefined' && window.VITAL_APPROVED_FOODS) {
-      return window.VITAL_APPROVED_FOODS;
+      var src = window.VITAL_APPROVED_FOODS;
+      out.fruits = src.fruits || src['Fruits'] || [];
+      out.veggies = src.veggies || src['Légumes'] || [];
+      out.grains = src.grains || src['Céréales'] || [];
+      out.herbs = src.herbs || src['Herbes & Thés'] || [];
+      out.oils = src.oils || src['Huiles'] || [];
+      out.nuts = src.nuts || src['Noix & Graines'] || [];
+      out.spices = src.spices || src['Épices & Assaisonnements'] || [];
     }
-    return {};
+
+    // 2. If vitalDb is available, complement dynamically
+    if (typeof window !== 'undefined' && Array.isArray(window.vitalDb) && window.vitalDb.length > 0) {
+      window.vitalDb.forEach(function(item) {
+        var cat = item.category || '';
+        var name = (item.names && (item.names[1] || item.names[0])) || item.id;
+        if (!name) return;
+        var cap = name.charAt(0).toUpperCase() + name.slice(1);
+        
+        var targetKey = 'fruits';
+        if (cat === 'Fruits') targetKey = 'fruits';
+        else if (cat === 'Légumes') targetKey = 'veggies';
+        else if (cat === 'Céréales') targetKey = 'grains';
+        else if (cat === 'Herbes & Thés') targetKey = 'herbs';
+        else if (cat === 'Huiles') targetKey = 'oils';
+        else if (cat === 'Noix & Graines') targetKey = 'nuts';
+        else if (cat === 'Épices & Assaisonnements') targetKey = 'spices';
+
+        if (!out[targetKey]) out[targetKey] = [];
+        if (out[targetKey].indexOf(cap) === -1) out[targetKey].push(cap);
+      });
+    }
+
+    return out;
   }
 
-  function buildPools(restrictions) {
-    var byCategory = approvedNamesByCategory();
+  function buildPools(restrictions, context) {
+    var byCat = approvedNamesByCategory();
     var restrictedWords = String(restrictions || '')
       .toLowerCase()
       .split(/[,;/\n]/)
@@ -61,81 +143,130 @@
       .filter(Boolean);
 
     function clean(list, fallback) {
-      var source = (!list || list.length === 0) ? fallback : list;
-      var filtered = source.filter(function (n) {
+      var source = (!list || list.length === 0) ? fallback : list.concat(fallback);
+      // Dédoublonne en préservant l'ordre
+      var seen = {};
+      var dedup = [];
+      source.forEach(function(item) {
+        if (!item || seen[item.toLowerCase()]) return;
+        seen[item.toLowerCase()] = true;
+        dedup.push(item);
+      });
+
+      var filtered = dedup.filter(function (n) {
         var lower = n.toLowerCase();
         return !restrictedWords.some(function (r) { return lower.indexOf(r) !== -1; });
       });
-      // dédoublonne
-      filtered = filtered.filter(function (n, i) { return filtered.indexOf(n) === i; });
+
       return filtered.length === 0 ? fallback : filtered;
     }
 
-    return {
-      fruits: clean(byCategory['Fruits'], FALLBACK_POOLS.fruits),
-      veggies: clean(byCategory['Légumes'], FALLBACK_POOLS.veggies),
-      grains: clean(byCategory['Céréales'], FALLBACK_POOLS.grains),
-      herbs: clean(byCategory['Herbes & Thés'], FALLBACK_POOLS.herbs),
-      oils: clean(byCategory['Huiles'], FALLBACK_POOLS.oils),
-      nuts: clean(byCategory['Noix & Graines'], FALLBACK_POOLS.nuts),
-      spices: clean(byCategory['Épices & Assaisonnements'], FALLBACK_POOLS.spices)
+    var pools = {
+      fruits: clean(byCat.fruits, FALLBACK_POOLS.fruits),
+      veggies: clean(byCat.veggies, FALLBACK_POOLS.veggies),
+      grains: clean(byCat.grains, FALLBACK_POOLS.grains),
+      herbs: clean(byCat.herbs, FALLBACK_POOLS.herbs),
+      oils: clean(byCat.oils, FALLBACK_POOLS.oils),
+      nuts: clean(byCat.nuts, FALLBACK_POOLS.nuts),
+      spices: clean(byCat.spices, FALLBACK_POOLS.spices),
+      remineralizing: clean([], FALLBACK_POOLS.remineralizing)
     };
-  }
 
-  function pick(list, dayIndex, seed, offset) {
-    offset = offset || 0;
-    return list[(dayIndex + seed + offset) % list.length];
-  }
-
-  function pickN(list, n, dayIndex, seed, offset) {
-    offset = offset || 0;
-    var out = [];
-    for (var k = 0; out.length < n && k < n + list.length; k++) {
-      var v = list[(dayIndex + seed + offset + k) % list.length];
-      if (out.indexOf(v) === -1) out.push(v);
+    // Eco-regional & seasonal prioritization
+    var region = (context && context.country) || 'Canada';
+    var isCold = region.indexOf('Canada') !== -1 || region.indexOf('Montréal') !== -1 || (context && context.season === 'Hiver');
+    if (isCold) {
+      // Prioritize warming & boreal staples
+      pools.fruits.sort(function(a, b) {
+        var aScore = (a.indexOf('Bleuet') !== -1 || a.indexOf('Canneberge') !== -1 || a.indexOf('Argousier') !== -1 || a.indexOf('Pomme') !== -1) ? -1 : 1;
+        var bScore = (b.indexOf('Bleuet') !== -1 || b.indexOf('Canneberge') !== -1 || b.indexOf('Argousier') !== -1 || b.indexOf('Pomme') !== -1) ? -1 : 1;
+        return aScore - bScore;
+      });
+      pools.veggies.sort(function(a, b) {
+        var aScore = (a.indexOf('Courge') !== -1 || a.indexOf('Potimarron') !== -1 || a.indexOf('Ortie') !== -1 || a.indexOf('Racine') !== -1) ? -1 : 1;
+        var bScore = (b.indexOf('Courge') !== -1 || b.indexOf('Potimarron') !== -1 || b.indexOf('Ortie') !== -1 || b.indexOf('Racine') !== -1) ? -1 : 1;
+        return aScore - bScore;
+      });
+      pools.herbs.sort(function(a, b) {
+        var aScore = (a.indexOf('Chaga') !== -1 || a.indexOf('Gingembre') !== -1 || a.indexOf('Thym') !== -1 || a.indexOf('Ortie') !== -1) ? -1 : 1;
+        var bScore = (b.indexOf('Chaga') !== -1 || b.indexOf('Gingembre') !== -1 || b.indexOf('Thym') !== -1 || b.indexOf('Ortie') !== -1) ? -1 : 1;
+        return aScore - bScore;
+      });
     }
-    return out;
+
+    return pools;
+  }
+
+  function pickSmart(list, dayIndex, seed, offset, excludeNames) {
+    offset = offset || 0;
+    excludeNames = excludeNames || [];
+    if (!list || list.length === 0) return 'Aliment vitaliste';
+    
+    // Stride ensures full cycle through large pool without repeating modulo 4
+    var stride = 7;
+    var index = (dayIndex * stride + seed + offset) % list.length;
+    var candidate = list[index];
+
+    // If excluded (e.g. was consumed yesterday), step forward
+    var attempts = 0;
+    while (excludeNames.indexOf(candidate) !== -1 && attempts < list.length) {
+      index = (index + 1) % list.length;
+      candidate = list[index];
+      attempts++;
+    }
+    return candidate;
+  }
+
+  function pickSmartN(list, n, dayIndex, seed, offset, excludeNames) {
+    offset = offset || 0;
+    excludeNames = excludeNames || [];
+    var picked = [];
+    for (var i = 0; picked.length < n && i < list.length; i++) {
+      var item = pickSmart(list, dayIndex, seed, offset + i * 3, excludeNames.concat(picked));
+      if (picked.indexOf(item) === -1) {
+        picked.push(item);
+      }
+    }
+    return picked;
   }
 
   function toTags(items, category) {
     return items.map(function (n) { return { e: emojiFor(n, category), n: n }; });
   }
 
-  function phaseLabel(protocol, dayIndex, numDays) {
-    var ratio = numDays <= 1 ? 1 : dayIndex / (numDays - 1);
-    switch (protocol) {
-      case 'ehret':
-        if (ratio < 0.34) return 'Élimination douce';
-        if (ratio < 0.7) return 'Transition mucusless';
-        return 'Régénération';
-      case 'sebi':
-        if (ratio < 0.34) return 'Nettoyage alcalin';
-        if (ratio < 0.7) return 'Reconstruction minérale';
-        return 'Équilibre bio-minéral';
-      case 'morse':
-        if (ratio < 0.34) return 'Activation lymphatique';
-        if (ratio < 0.7) return 'Détoxification';
-        return 'Régénération cellulaire';
+  function weeklyThemeFor(weekNum) {
+    switch (weekNum) {
+      case 1:
+        return { name: 'Semaine 1 : Élimination douce & Transition', focus: 'Alcalinisation des humeurs, verdures toniques et mono-fruits doux.' };
+      case 2:
+        return { name: 'Semaine 2 : Hydratation cellulaire profonde', focus: 'Fruits vivants à eau structurée, jus verts et régénération interstitielle.' };
+      case 3:
+        return { name: 'Semaine 3 : Reminéralisation & Lymphe', focus: 'Super-végétaux, baies boréales sauvages, graines riches et algues marines.' };
+      case 4:
       default:
-        if (ratio < 0.34) return 'Mise en route';
-        if (ratio < 0.7) return 'Approfondissement';
-        return 'Ancrage';
+        return { name: 'Semaine 4 : Ancrage & Force vitale', focus: 'Céréales ancestrales douces, légumes vapeurs aromatisés et décoctions adaptogènes.' };
     }
   }
 
+  function phaseLabel(protocol, dayIndex, numDays) {
+    var weekNum = Math.floor(dayIndex / 7) + 1;
+    var theme = weeklyThemeFor(weekNum);
+    return theme.name;
+  }
+
   function planName(protocol, objective) {
-    var label = { ehret: 'Transition Ehret', sebi: 'Guide Dr. Sebi', morse: 'Détox Dr. Morse' }[protocol] || 'Plan Vitaliste';
+    var label = { ehret: 'Transition Ehret', sebi: 'Guide Dr. Sebi', morse: 'Détox Dr. Morse' }[protocol] || 'Programme Vitaliste Équilibré';
     var o = String(objective || '').trim();
     return o ? label + ' — ' + o : label;
   }
 
   function slotMeta(slot) {
     switch (slot) {
-      case 'Réveil': return { time: '6h-7h', tone: 'matin', icon: '🌅' };
-      case 'Petit-déjeuner': return { time: '8h-9h', tone: 'matin', icon: '🍽️' };
-      case 'Déjeuner': return { time: '12h-13h', tone: 'midi', icon: '🥗' };
-      case 'Collation': return { time: '16h', tone: 'midi', icon: '🌰' };
-      case 'Dîner': return { time: '19h-20h', tone: 'soir', icon: '🌙' };
+      case 'Réveil': return { time: '6h30-7h30', tone: 'matin', icon: '🌅' };
+      case 'Petit-déjeuner': return { time: '8h30-9h30', tone: 'matin', icon: '🍽️' };
+      case 'Déjeuner': return { time: '12h30-13h30', tone: 'midi', icon: '🥗' };
+      case 'Collation': return { time: '16h30', tone: 'midi', icon: '🌰' };
+      case 'Dîner': return { time: '19h00-20h00', tone: 'soir', icon: '🌙' };
       default: return { time: '', tone: 'midi', icon: '🍽️' };
     }
   }
@@ -149,13 +280,16 @@
     return y + '-' + m + '-' + day;
   }
 
-  /** Construit les repas d'UN jour, sous forme de la structure attendue par calendar-legacy.js */
+  /**
+   * Construit les repas d'un jour précis avec diversité réelle et prise en compte des exceptions
+   */
   function buildDayMeals(opts) {
     var protocol = opts.protocol, dayIndex = opts.dayIndex, numDays = opts.numDays;
-    var date = opts.date, pools = opts.pools, seed = opts.seed;
+    var date = opts.date, pools = opts.pools, seed = opts.seed || 0;
+    var prevDayFoods = opts.prevDayFoods || [];
+    var allowWeeklyMollusks = opts.allowWeeklyMollusks || false;
 
-    var fruits = pools.fruits, veggies = pools.veggies, grains = pools.grains, herbs = pools.herbs, nuts = pools.nuts;
-    var earlyRatio = numDays <= 1 ? 1 : dayIndex / (numDays - 1);
+    var fruits = pools.fruits, veggies = pools.veggies, grains = pools.grains, herbs = pools.herbs, nuts = pools.nuts, remin = pools.remineralizing;
     var planned = [];
 
     function push(slot, items, category, note) {
@@ -169,51 +303,78 @@
         tone: meta.tone,
         icon: meta.icon,
         tags: toTags(items, category),
-        note: note,
+        note: note || '',
         done: false
       });
     }
 
+    var weekNum = Math.floor(dayIndex / 7) + 1;
+    var dayOfWeek = date.getDay(); // 0 = Dimanche, 6 = Samedi
+    var isSpecialRemineralizingDay = allowWeeklyMollusks && (dayOfWeek === 0 || (dayIndex > 0 && dayIndex % 7 === 6));
+
+    // Sélection d'aliments du jour en évitant ceux de la veille
+    var morningHerb = pickSmart(herbs, dayIndex, seed, 0, prevDayFoods);
+    var morningFruits = pickSmartN(fruits, weekNum === 1 ? 1 : 2, dayIndex, seed, 1, prevDayFoods);
+    
+    var lunchVeggies = pickSmartN(veggies, 2, dayIndex, seed, 3, prevDayFoods);
+    var lunchGrain = pickSmart(grains, dayIndex, seed, 2, prevDayFoods);
+    
+    var afternoonSnack = pickSmart(nuts, dayIndex, seed, 4, prevDayFoods);
+    var dinnerVeggies = pickSmartN(veggies, 2, dayIndex, seed, 7, lunchVeggies.concat(prevDayFoods));
+
     switch (protocol) {
       case 'ehret':
-        push('Réveil', ['Eau tiède citronnée'], 'herbs', "Draine la lymphe avant le premier repas — l'estomac vide.");
-        push('Petit-déjeuner', pickN(fruits, earlyRatio < 0.3 ? 1 : 2, dayIndex, seed), 'fruits', "Mono-fruit de préférence. Mâche lentement, jusqu'à satiété légère.");
-        push('Déjeuner', pickN(veggies, 2, dayIndex, seed).concat(earlyRatio > 0.4 ? [pick(grains, dayIndex, seed, 1)] : []), 'veggies', 'Salade crue en base, + un féculent sans mucus si bien toléré.');
-        push('Dîner', pickN(veggies, 2, dayIndex, seed, 3), 'veggies', 'Repas léger. Arrête de manger au moins 3h avant le coucher.');
+        push('Réveil', [morningHerb], 'herbs', "Draine la lymphe et active les reins avant le premier repas.");
+        push('Petit-déjeuner', morningFruits, 'fruits', "Mono-fruit de préférence. Mâche lentement, jusqu'à satiété légère.");
+        
+        var lunchItems = lunchVeggies;
+        if (dayIndex % 2 === 1) lunchItems = lunchItems.concat([lunchGrain]);
+        push('Déjeuner', lunchItems, 'veggies', 'Grande salade vivante sans mucus + féculent doux autorisé.');
+        
+        push('Dîner', dinnerVeggies, 'veggies', 'Repas léger du soir. Arrête de manger au moins 3h avant le coucher.');
         break;
 
       case 'sebi':
-        push('Réveil', [pick(herbs, dayIndex, seed)], 'herbs', 'Tisane du guide nutritionnel Dr. Sebi.');
-        push('Petit-déjeuner', pickN(fruits, 2, dayIndex, seed), 'fruits', "Uniquement des fruits de la liste approuvée (pas de pastèque hybride ni d'agrumes doux).");
-        push('Déjeuner', pickN(veggies, 2, dayIndex, seed, 1).concat([pick(grains, dayIndex, seed)]), 'veggies', 'Céréale sans gluten (liste approuvée) + légumes-feuilles.');
-        push('Collation', [pick(nuts, dayIndex, seed)], 'nuts', 'Petite poignée — pas de cacahuètes ni de noix de cajou.');
-        push('Dîner', pickN(veggies, 2, dayIndex, seed, 2), 'veggies', 'Légumes vapeur + huile approuvée (olive, sésame, chanvre).');
+        push('Réveil', [morningHerb], 'herbs', 'Tisane drainante bio-minérale Dr. Sebi.');
+        push('Petit-déjeuner', morningFruits, 'fruits', "Fruits vivants à graines de la liste alcalinisante.");
+        
+        var sebiLunch = lunchVeggies.concat([lunchGrain]);
+        if (isSpecialRemineralizingDay && remin.length > 0) {
+          sebiLunch = [pickSmart(remin, Math.floor(dayIndex / 7), seed, 0)].concat(lunchVeggies.slice(0, 1));
+        }
+        push('Déjeuner', sebiLunch, 'veggies', isSpecialRemineralizingDay ? '🌿 Déjeuner reminéralisant hebdomadaire (zinc & iode bio-actifs).' : 'Céréale ancestrale sans gluten + légumes-feuilles alcalins.');
+        
+        push('Collation', [afternoonSnack], 'nuts', 'Petite poignée de graines brutes activées.');
+        push('Dîner', dinnerVeggies, 'veggies', 'Légumes vapeur aux herbes + huile vierge pressée à froid.');
         break;
 
       case 'morse':
-        push('Réveil', ['Eau de source'], 'herbs', 'Hydrate le système lymphatique avant tout.');
-        push('Petit-déjeuner', pickN(fruits, 2, dayIndex, seed), 'fruits', 'Fruits astringents — jusqu\u2019à midi uniquement, jamais après.');
-        push('Déjeuner', pickN(veggies, 3, dayIndex, seed), 'veggies', 'La grande salade crue du jour — le repas le plus important pour Morse.');
-        push('Collation', [pick(fruits, dayIndex, seed, 2)], 'fruits', 'Un fruit si besoin, jamais juste avant le dîner.');
-        push('Dîner', pickN(veggies, 2, dayIndex, seed, 1), 'veggies', 'Léger, vapeur si besoin de chaud.');
+        push('Réveil', ['Eau de source pure'], 'herbs', 'Hydrate en profondeur le système lymphatique.');
+        push('Petit-déjeuner', morningFruits, 'fruits', 'Fruits astringents et riches en eau structurée EZ.');
+        push('Déjeuner', lunchVeggies.concat([pickSmart(veggies, dayIndex, seed, 11, lunchVeggies)]), 'veggies', 'La grande salade crue vitaliste — le pilier régénérateur.');
+        push('Collation', [pickSmart(fruits, dayIndex, seed, 5, morningFruits)], 'fruits', 'Fruit frais hydratant en collation légère.');
+        push('Dîner', dinnerVeggies, 'veggies', 'Dîner léger végétal, cuit à basse température si besoin.');
         break;
 
       default: // personalized
-        push('Réveil', ['Eau tiède citronnée'], 'herbs', '');
-        push('Petit-déjeuner', pickN(fruits, 2, dayIndex, seed), 'fruits', 'Le point commun des trois écoles : fruits frais et mûrs.');
-        push('Déjeuner', pickN(veggies, 2, dayIndex, seed).concat([pick(grains, dayIndex, seed)]), 'veggies', '');
-        push('Collation', [pick(nuts, dayIndex, seed)], 'nuts', '');
-        push('Dîner', pickN(veggies, 2, dayIndex, seed, 2), 'veggies', '');
+        push('Réveil', [morningHerb], 'herbs', 'Éveil digestif et hydratation rénale.');
+        push('Petit-déjeuner', morningFruits, 'fruits', 'Fruits mûrs de saison à haute vitalité.');
+        
+        var persLunch = lunchVeggies.concat([lunchGrain]);
+        if (isSpecialRemineralizingDay && remin.length > 0) {
+          persLunch = [pickSmart(remin, Math.floor(dayIndex / 7), seed, 0)].concat(lunchVeggies.slice(0, 1));
+        }
+        push('Déjeuner', persLunch, 'veggies', isSpecialRemineralizingDay ? 'Repas de reminéralisation marine hebdomadaire.' : 'Assiette végétale colorée : verdures + grains ancestraux.');
+        
+        push('Collation', [afternoonSnack], 'nuts', 'Graines bio-actives riches en magnésium.');
+        push('Dîner', dinnerVeggies, 'veggies', 'Légumes tièdes aux épices douces et herbes aromatiques.');
     }
 
     return planned;
   }
 
   /**
-   * Génère un plan complet à partir des seuls PARAMÈTRES fournis par le chat.
-   * Ne fait aucune supposition sur le contenu des repas : tout vient de
-   * buildPools() + buildDayMeals(), donc reste dans la liste approuvée et
-   * respecte les restrictions comme côté Flutter.
+   * Génère un plan complet de 1 à 30 jours sans boucle répétitive
    */
   function generateDietPlan(request) {
     var protocol = SUPPORTED_PROTOCOLS.indexOf(request.protocol) !== -1 ? request.protocol : 'personalized';
@@ -223,15 +384,44 @@
     var startDate = request.startDate ? new Date(request.startDate) : new Date();
     startDate.setHours(0, 0, 0, 0);
 
-    var pools = buildPools(restrictions);
+    // Détecte les demandes d'exceptions spéciales (ex: mollusques 1x/semaine)
+    var combinedReq = (restrictions + ' ' + objective).toLowerCase();
+    var allowWeeklyMollusks = combinedReq.indexOf('mollusque') !== -1 || combinedReq.indexOf('huître') !== -1 || combinedReq.indexOf('huitre') !== -1 || combinedReq.indexOf('fruits de mer') !== -1;
+
+    // Profil utilisateur local si présent
+    var userContext = {};
+    if (typeof window !== 'undefined' && window.getUserProfile) {
+      try { userContext = window.getUserProfile() || {}; } catch(e) {}
+    }
+
+    var pools = buildPools(restrictions, userContext);
     var meals = [];
     var phaseByDate = {};
+    var prevDayFoods = [];
+
     for (var i = 0; i < numDays; i++) {
       var date = new Date(startDate);
       date.setDate(date.getDate() + i);
-      var dayMeals = buildDayMeals({ protocol: protocol, dayIndex: i, numDays: numDays, date: date, pools: pools, seed: 0 });
+
+      var dayMeals = buildDayMeals({
+        protocol: protocol,
+        dayIndex: i,
+        numDays: numDays,
+        date: date,
+        pools: pools,
+        seed: i * 13,
+        prevDayFoods: prevDayFoods,
+        allowWeeklyMollusks: allowWeeklyMollusks
+      });
+
       meals = meals.concat(dayMeals);
       phaseByDate[toDateStr(date)] = phaseLabel(protocol, i, numDays);
+
+      // Collecte les aliments du jour pour éviter la répétition le lendemain
+      prevDayFoods = [];
+      dayMeals.forEach(function(m) {
+        if (m.tags) m.tags.forEach(function(t) { prevDayFoods.push(t.n); });
+      });
     }
 
     return {
@@ -249,9 +439,15 @@
     };
   }
 
-  /** Régénère uniquement le contenu d'un jour (nouvelle sélection d'aliments), comme regenerateDay() côté Dart. */
+  /**
+   * Régénère les repas d'un jour spécifique
+   */
   function regenerateDietDay(opts) {
-    var pools = buildPools(opts.restrictions);
+    var userContext = {};
+    if (typeof window !== 'undefined' && window.getUserProfile) {
+      try { userContext = window.getUserProfile() || {}; } catch(e) {}
+    }
+    var pools = buildPools(opts.restrictions, userContext);
     var seed = (Date.now() % 97) + 1;
     return buildDayMeals({
       protocol: SUPPORTED_PROTOCOLS.indexOf(opts.protocol) !== -1 ? opts.protocol : 'personalized',
@@ -263,10 +459,50 @@
     });
   }
 
+  /**
+   * Propose des substituts d'aliments intelligents pour un aliment donné
+   */
+  function getFoodSubstitutes(foodName, preferredCategory) {
+    var cleanName = (foodName || '').trim();
+    var byCat = approvedNamesByCategory();
+
+    // Détecte la catégorie de l'aliment
+    var catKey = preferredCategory || 'veggies';
+    var foundIn = null;
+    var allCats = ['fruits', 'veggies', 'grains', 'herbs', 'nuts', 'oils', 'spices', 'remineralizing'];
+    for (var i = 0; i < allCats.length; i++) {
+      var c = allCats[i];
+      var list = (byCat[c] || []).concat(FALLBACK_POOLS[c] || []);
+      if (list.some(function(item) { return item.toLowerCase() === cleanName.toLowerCase(); })) {
+        foundIn = c;
+        break;
+      }
+    }
+    if (foundIn) catKey = foundIn;
+
+    var candidates = (byCat[catKey] || []).concat(FALLBACK_POOLS[catKey] || []);
+    // Filtre pour ne pas renvoyer l'aliment lui-même
+    var substitutes = [];
+    var seen = {};
+    candidates.forEach(function(item) {
+      if (!item || item.toLowerCase() === cleanName.toLowerCase() || seen[item.toLowerCase()]) return;
+      seen[item.toLowerCase()] = true;
+      substitutes.push({
+        name: item,
+        emoji: emojiFor(item, catKey),
+        category: catKey
+      });
+    });
+
+    return substitutes.slice(0, 6);
+  }
+
   window.DietPlanEngine = {
     supportedProtocols: SUPPORTED_PROTOCOLS,
     generate: generateDietPlan,
     generateDietPlan: generateDietPlan,
-    regenerateDietDay: regenerateDietDay
+    regenerateDietDay: regenerateDietDay,
+    getFoodSubstitutes: getFoodSubstitutes,
+    emojiFor: emojiFor
   };
 })();

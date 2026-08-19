@@ -27,6 +27,7 @@
  */
 
 const COMPLEX_CASCADE = [
+  'gemini-3.7-flash',
   'gemini-3.6-flash',
   'gemini-3.5-flash',
   'gemini-3.1-pro-preview',
@@ -36,6 +37,7 @@ const COMPLEX_CASCADE = [
 ];
 
 const SIMPLE_CASCADE = [
+  'gemini-3.7-flash',
   'gemini-3.6-flash',
   'gemini-3.5-flash',
   'gemini-3.1-flash-lite',

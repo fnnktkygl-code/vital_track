@@ -582,8 +582,138 @@ function renderActiveConversation() {
   title.textContent = conv.title;
   container.innerHTML = '';
   
-  conv.messages.forEach(m => addMessage(m.text, m.role === 'user', m.model));
+  conv.messages.forEach(m => addMessage(m.text, m.role === 'user', m.model, m.image));
 }
+
+// ═══════ VOICE INPUT (SPEECH-TO-TEXT) ═══════
+let _speechRecognition = null;
+let _isListening = false;
+
+window.toggleVoiceInput = function(forceState) {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const voiceBtn = document.getElementById('chatVoiceBtn');
+  const indicator = document.getElementById('chatVoiceIndicator');
+  const input = document.getElementById('chatInput');
+
+  if (!SpeechRecognition) {
+    showToast("⚠️ La reconnaissance vocale n'est pas supportée par ce navigateur.", "info");
+    return;
+  }
+
+  const shouldStart = forceState !== undefined ? forceState : !_isListening;
+
+  if (!shouldStart) {
+    if (_speechRecognition) {
+      try { _speechRecognition.stop(); } catch(e) {}
+    }
+    _isListening = false;
+    if (voiceBtn) voiceBtn.classList.remove('recording');
+    if (indicator) indicator.style.display = 'none';
+    return;
+  }
+
+  try {
+    if (_speechRecognition) {
+      try { _speechRecognition.abort(); } catch(e) {}
+    }
+    _speechRecognition = new SpeechRecognition();
+    _speechRecognition.lang = 'fr-FR';
+    _speechRecognition.continuous = true;
+    _speechRecognition.interimResults = true;
+
+    let baseText = input.value ? input.value.trim() + ' ' : '';
+
+    _speechRecognition.onstart = () => {
+      _isListening = true;
+      if (voiceBtn) voiceBtn.classList.add('recording');
+      if (indicator) indicator.style.display = 'flex';
+      input.focus();
+    };
+
+    _speechRecognition.onresult = (event) => {
+      let interim = '';
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          baseText += event.results[i][0].transcript + ' ';
+        } else {
+          interim += event.results[i][0].transcript;
+        }
+      }
+      input.value = (baseText + interim).trim();
+    };
+
+    _speechRecognition.onerror = (event) => {
+      console.warn('Speech recognition error:', event.error);
+      if (event.error === 'not-allowed') {
+        showToast("⚠️ Accès au micro refusé. Activez le micro dans les paramètres.", "error");
+      }
+      _isListening = false;
+      if (voiceBtn) voiceBtn.classList.remove('recording');
+      if (indicator) indicator.style.display = 'none';
+    };
+
+    _speechRecognition.onend = () => {
+      _isListening = false;
+      if (voiceBtn) voiceBtn.classList.remove('recording');
+      if (indicator) indicator.style.display = 'none';
+    };
+
+    _speechRecognition.start();
+  } catch (err) {
+    console.error('Error starting speech recognition:', err);
+    showToast("Impossible de démarrer le micro.", "error");
+    _isListening = false;
+    if (voiceBtn) voiceBtn.classList.remove('recording');
+    if (indicator) indicator.style.display = 'none';
+  }
+};
+
+// ═══════ IMAGE UPLOAD & PREVIEW ═══════
+let pendingChatImage = null; // { mimeType, data, dataUri }
+
+window.handleChatImageSelected = function(e) {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+
+  if (!file.type.startsWith('image/')) {
+    showToast("⚠️ Veuillez sélectionner un fichier image valide.", "error");
+    return;
+  }
+
+  if (file.size > 5 * 1024 * 1024) {
+    showToast("⚠️ L'image est trop volumineuse (max 5 Mo).", "error");
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    const dataUri = evt.target.result;
+    const base64Data = dataUri.split(',')[1];
+    pendingChatImage = {
+      mimeType: file.type,
+      data: base64Data,
+      dataUri: dataUri
+    };
+
+    const preview = document.getElementById('chatAttachmentPreview');
+    const img = document.getElementById('chatAttachmentImg');
+    if (preview && img) {
+      img.src = dataUri;
+      preview.style.display = 'flex';
+    }
+    const input = document.getElementById('chatInput');
+    if (input) input.focus();
+  };
+  reader.readAsDataURL(file);
+};
+
+window.removeChatImage = function() {
+  pendingChatImage = null;
+  const preview = document.getElementById('chatAttachmentPreview');
+  const fileInput = document.getElementById('chatImageInput');
+  if (preview) preview.style.display = 'none';
+  if (fileInput) fileInput.value = '';
+};
 
 window.quickChat = function(query) {
   document.getElementById('chatInput').value = query;
@@ -594,8 +724,17 @@ window.sendChat = async function(e) {
   e.preventDefault();
   const input = document.getElementById('chatInput');
   const query = input.value.trim();
-  if (!query) return;
+  const attachedImage = pendingChatImage;
+
+  if (!query && !attachedImage) return;
+
+  if (_isListening) {
+    window.toggleVoiceInput(false);
+  }
+
+  const messageText = query || "Analyse cette photo et donne-moi ton avis vitaliste détaillé.";
   input.value = '';
+  window.removeChatImage();
   
   const welcome = document.getElementById('chatWelcome');
   if (welcome) welcome.style.display = 'none';
@@ -605,7 +744,7 @@ window.sendChat = async function(e) {
     // Create new conversation
     conv = {
       id: 'conv_' + Date.now(),
-      title: query.length > 25 ? query.substring(0, 25) + '...' : query,
+      title: messageText.length > 25 ? messageText.substring(0, 25) + '...' : messageText,
       updated: Date.now(),
       messages: []
     };
@@ -616,9 +755,9 @@ window.sendChat = async function(e) {
     conv.updated = Date.now();
   }
 
-  conv.messages.push({ role: 'user', text: query });
+  conv.messages.push({ role: 'user', text: messageText, image: attachedImage ? attachedImage.dataUri : null });
   saveConversations();
-  addMessage(query, true);
+  addMessage(messageText, true, null, attachedImage ? attachedImage.dataUri : null);
 
   const sendBtn = document.getElementById('sendBtn');
   sendBtn.disabled = true;
@@ -626,12 +765,27 @@ window.sendChat = async function(e) {
 
   try {
     const profile = getUserProfile();
+    const reqBody = {
+      query: messageText,
+      profile,
+      history: conv.messages.slice(0, -1).map(m => ({ role: m.role, text: m.text })),
+      model: store.get('selected_model', 'auto')
+    };
+
+    if (attachedImage) {
+      reqBody.fileParts = [{
+        inlineData: {
+          mimeType: attachedImage.mimeType,
+          data: attachedImage.data
+        }
+      }];
+    }
     
     // Call the backend with stream=true to bypass the 10s Vercel timeout
     const resp = await fetch(`${API_BASE}/api/chat?stream=true`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...(VT_APP_KEY ? { 'X-VT-API-Key': VT_APP_KEY } : {}) },
-      body: JSON.stringify({ query, profile, history: conv.messages.slice(0, -1), model: store.get('selected_model', 'auto') }),
+      body: JSON.stringify(reqBody),
     });
     
     typingEl.remove();
@@ -733,7 +887,8 @@ const MODEL_TAXONOMY = [
     iconColor: '#4ade80',
     tagline: 'Vitesse maximale & réponse immédiate',
     models: [
-      { id: 'gemini-3.6-flash', name: 'Gemini 3.6 Flash', badge: 'Fastest ⚡', tagline: 'Modèle réactif de dernière génération pour le chat instantané' },
+      { id: 'gemini-3.7-flash', name: 'Gemini 3.7 Flash', badge: 'Fastest & Smartest ⚡', tagline: 'Dernière génération hybride, multimodal & réactivité instantanée' },
+      { id: 'gemini-3.6-flash', name: 'Gemini 3.6 Flash', badge: 'Ultra Rapide', tagline: 'Modèle réactif de haute précision pour le chat instantané' },
       { id: 'gemini-3.5-flash', name: 'Gemini 3.5 Flash', badge: 'Équilibré', tagline: 'Vitesse élevée et excellente précision nutritionnelle' },
       { id: 'gemini-flash-latest', name: 'Gemini Flash Latest', badge: 'Auto-Update', tagline: 'Pointé sur la version Flash stable la plus récente' }
     ]
@@ -892,7 +1047,7 @@ document.addEventListener('click', (e) => {
 });
 
 
-function addMessage(text, isUser, modelUsed = null) {
+function addMessage(text, isUser, modelUsed = null, imageUri = null) {
   const container = document.getElementById('chatMessages');
   const div = document.createElement('div');
   div.className = `message ${isUser ? 'user' : 'bot'}`;
@@ -916,7 +1071,8 @@ function addMessage(text, isUser, modelUsed = null) {
   }
   
   const avatarHtml = !isUser ? `<div class="message-avatar">${window.renderPigeonPortrait ? window.renderPigeonPortrait(24, 'talking') : '🐦'}</div>` : '';
-  div.innerHTML = `${avatarHtml}<div class="message-bubble">${isUser ? esc(text) : renderMarkdown(text)}${quickReplies}${badgeHtml}</div>`;
+  const imgHtml = imageUri ? `<img src="${imageUri}" class="message-image" alt="Photo jointe">` : '';
+  div.innerHTML = `${avatarHtml}<div class="message-bubble">${imgHtml}${isUser ? esc(text) : renderMarkdown(text)}${quickReplies}${badgeHtml}</div>`;
   container.appendChild(div);
   container.scrollTop = container.scrollHeight;
 }

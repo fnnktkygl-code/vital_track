@@ -131,7 +131,19 @@
 #legacy-calendar .meal-tags{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:7px; }
 #legacy-calendar .meal-tag{
   font-size:11.5px; font-weight:600; color:var(--text-mid); background:rgba(255,255,255,.045);
-  padding:4px 9px; border-radius:100px;
+  padding:4px 9px; border-radius:100px; transition:all 0.2s ease;
+}
+#legacy-calendar .meal-tag-interactive{
+  cursor:pointer; display:inline-flex; align-items:center; gap:4px;
+}
+#legacy-calendar .meal-tag-interactive:hover{
+  background:rgba(55,211,153,0.15); color:var(--accent,#37d399); border:1px solid rgba(55,211,153,0.3); transform:translateY(-1px);
+}
+#legacy-calendar .sub-tag-icon{
+  font-size:10px; opacity:0.6; transition:opacity 0.2s;
+}
+#legacy-calendar .meal-tag-interactive:hover .sub-tag-icon{
+  opacity:1;
 }
 #legacy-calendar .meal-note{ font-size:11.5px; color:var(--text-low); display:flex; align-items:flex-start; gap:5px; font-style:italic; }
 #legacy-calendar .meal-note .icon{ width:12px; height:12px; margin-top:1.5px; flex-shrink:0; opacity:.7; }

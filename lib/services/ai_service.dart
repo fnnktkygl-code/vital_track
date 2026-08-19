@@ -86,15 +86,16 @@ class AIService {
     }
   }
 
-  // Model cascade matching the Vercel proxy — 11 models across 4 tiers
+  // Model cascade matching the Vercel proxy — 12 models across 4 tiers
   static const _models = [
-    // Tier 1: Lite — High capacity (15 RPM / 500 RPD)
+    // Tier 1: Premium Flash (Fastest & Smartest)
+    'gemini-3.7-flash',
+    'gemini-3.6-flash',
+    'gemini-3.5-flash',
+    // Tier 2: Lite — High capacity (15 RPM / 500 RPD)
     'gemini-3.5-flash-lite',
     'gemini-3.1-flash-lite',
     'gemini-2.5-flash-lite',
-    // Tier 2: Premium Flash (5 RPM / 20 RPD)
-    'gemini-3.5-flash',
-    'gemini-3.6-flash',
     'gemini-2.5-flash',
     // Tier 3: Gemma Reserve (30 RPM / 14,400 RPD)
     'gemma-4-31b-it',

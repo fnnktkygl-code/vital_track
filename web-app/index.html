@@ -330,9 +330,35 @@
             </div>
           </div>
         </div>
+        <!-- Chat Attachment Preview -->
+        <div class="chat-attachment-preview" id="chatAttachmentPreview" style="display:none">
+          <div class="chat-attachment-item">
+            <img id="chatAttachmentImg" src="" alt="Aperçu image">
+            <button type="button" class="chat-attachment-remove" onclick="removeChatImage()" title="Supprimer l'image">
+              <i class="ri-close-line"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Chat Voice Listening Indicator -->
+        <div class="chat-voice-indicator" id="chatVoiceIndicator" style="display:none">
+          <div class="voice-wave-anim">
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <span class="voice-status-text">🎙️ Écoute en cours... Parlez maintenant</span>
+          <button type="button" class="voice-cancel-btn" onclick="toggleVoiceInput(false)">Terminer</button>
+        </div>
+
         <form class="chat-input-bar" id="chatForm" onsubmit="sendChat(event)">
-          <input type="text" id="chatInput" placeholder="Pose ta question..." autocomplete="off">
-          <button type="submit" class="send-btn" id="sendBtn"><i class="ri-send-plane-2-fill"></i></button>
+          <input type="file" id="chatImageInput" accept="image/*" style="display:none" onchange="handleChatImageSelected(event)">
+          <button type="button" class="chat-action-btn" id="chatImageBtn" onclick="document.getElementById('chatImageInput').click()" title="Joindre une photo d'aliment / repas / étiquette">
+            <i class="ri-image-add-line"></i>
+          </button>
+          <button type="button" class="chat-action-btn" id="chatVoiceBtn" onclick="toggleVoiceInput()" title="Saisie vocale">
+            <i class="ri-mic-line"></i>
+          </button>
+          <input type="text" id="chatInput" placeholder="Pose ta question ou décris tes aliments..." autocomplete="off">
+          <button type="submit" class="send-btn" id="sendBtn" title="Envoyer"><i class="ri-send-plane-2-fill"></i></button>
         </form>
       </div>
     </div>
