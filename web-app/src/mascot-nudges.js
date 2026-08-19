@@ -139,27 +139,78 @@ class PigeonNudgeEngine {
    * Évalue le contexte circadien (Ehret / Shelton)
    */
   evaluateCircadian() {
+    const lang = typeof window !== 'undefined' && window.vitalTrackI18n ? window.vitalTrackI18n.getLanguage() : 'fr';
     const hour = new Date().getHours();
+    
+    const messages = {
+      fr: {
+        elimBadge: '🍋 Cycle d\'Élimination',
+        elimTitle: 'Phase de Nettoyage Matinal',
+        elimMsg: 'Tes émonctoires éliminent activement. Hydrate-toi avec de l\'eau tiède citronnée ou une infusion !',
+        apprBadge: '🍉 Cycle d\'Appropriation',
+        apprTitle: 'Fenêtre Nutritionnelle',
+        apprMsg: 'Priorité aux aliments vivants, fruits mûrs gorgés d\'eau structurée et légumes riches en minéraux.',
+        assimBadge: '🌙 Cycle d\'Assimilation',
+        assimTitle: 'Régénération Cellulaire',
+        assimMsg: 'Repos physiologique profond. C\'est l\'heure de l\'autolyse nocturne des toxines.'
+      },
+      'fr-CA': {
+        elimBadge: '🍋 Cycle d\'Élimination',
+        elimTitle: 'Phase de Nettoyage Matinal',
+        elimMsg: 'Tes émonctoires éliminent activement. Hydrate-toi avec de l\'eau tiède citronnée ou de la sève d\'érable pure !',
+        apprBadge: '🍉 Cycle d\'Appropriation',
+        apprTitle: 'Fenêtre Nutritionnelle (Dîner & Souper)',
+        apprMsg: 'Priorité aux aliments vivants, bleuets sauvages, courges et pousses fraîches boréales.',
+        assimBadge: '🌙 Cycle d\'Assimilation',
+        assimTitle: 'Régénération Cellulaire',
+        assimMsg: 'Repos physiologique complet. C\'est l\'heure de l\'autolyse nocturne régénératrice.'
+      },
+      en: {
+        elimBadge: '🍋 Elimination Cycle',
+        elimTitle: 'Morning Cleansing Phase',
+        elimMsg: 'Your emunctories are actively clearing acids. Hydrate with warm lemon water or herbal tea!',
+        apprBadge: '🍉 Appropriation Cycle',
+        apprTitle: 'Active Nutrition Window',
+        apprMsg: 'Prioritize living foods, ripe astringent fruits rich in structured water, and mineral-dense greens.',
+        assimBadge: '🌙 Assimilation Cycle',
+        assimTitle: 'Cellular Regeneration',
+        assimMsg: 'Deep physiological rest. Time for nocturnal autolysis and tissue repair.'
+      },
+      es: {
+        elimBadge: '🍋 Ciclo de Eliminación',
+        elimTitle: 'Fase de Limpieza Matutina',
+        elimMsg: 'Tus emuntorios están eliminando ácidos activamente. ¡Hidrátate con agua tibia con limón o infusión!',
+        apprBadge: '🍉 Ciclo de Apropiación',
+        apprTitle: 'Ventana Nutricional',
+        apprMsg: 'Prioridad a alimentos vivos, frutas maduras con agua estructurada y hojas verdes minerales.',
+        assimBadge: '🌙 Ciclo de Asimilación',
+        assimTitle: 'Regeneración Celular',
+        assimMsg: 'Reposo fisiológico profundo. Tiempo de autólisis nocturna y reparación tisular.'
+      }
+    };
+
+    const m = messages[lang] || messages.fr;
+
     if (hour >= 4 && hour < 12) {
       this.triggerNudge({
         mood: 'proud',
-        badge: '🍋 Cycle d\'Élimination',
-        title: 'Phase de Nettoyage Matinal',
-        message: 'Tes émonctoires éliminent activement. Hydrate-toi avec de l\'eau tiède citronnée ou une infusion !'
+        badge: m.elimBadge,
+        title: m.elimTitle,
+        message: m.elimMsg
       });
     } else if (hour >= 12 && hour < 20) {
       this.triggerNudge({
         mood: 'idle',
-        badge: '🍉 Cycle d\'Appropriation',
-        title: 'Fenêtre Nutritionnelle',
-        message: 'Priorité aux aliments vivants, fruits mûrs gorgés d\'eau structurée et légumes riches en minéraux.'
+        badge: m.apprBadge,
+        title: m.apprTitle,
+        message: m.apprMsg
       });
     } else {
       this.triggerNudge({
         mood: 'sleepy',
-        badge: '🌙 Cycle d\'Assimilation',
-        title: 'Régénération Cellulaire',
-        message: 'Repos physiologique profond. C\'est l\'heure de l\'autolyse nocturne des toxines.'
+        badge: m.assimBadge,
+        title: m.assimTitle,
+        message: m.assimMsg
       });
     }
   }
@@ -169,24 +220,62 @@ class PigeonNudgeEngine {
    * @param {Object} mealData { name, pral, mucogenicScore }
    */
   onMealLogged(mealData = {}) {
+    const lang = typeof window !== 'undefined' && window.vitalTrackI18n ? window.vitalTrackI18n.getLanguage() : 'fr';
     const pral = mealData.pral !== undefined ? mealData.pral : 0;
     const isAcidic = pral > 8 || mealData.isAcidic;
     const isLiving = pral < -5 || mealData.isLiving;
 
+    const texts = {
+      fr: {
+        acidBadge: '⚖️ Équilibre Acido-Basique',
+        acidTitle: 'Charge Acidifiante Détectée',
+        acidMsg: 'Pense à compenser ce repas avec un jus vert, du persil frais ou une infusion de prêle alcalinisante !',
+        livingBadge: '🌿 Vitalité Pure',
+        livingTitle: 'Aliment Vivant & Alcalin !',
+        livingMsg: 'Excellent apport en enzymes, potassium et eau cellulaire structurée. Tes cellules te remercient !'
+      },
+      'fr-CA': {
+        acidBadge: '⚖️ Équilibre Acido-Basique',
+        acidTitle: 'Charge Acidifiante Détectée',
+        acidMsg: 'Pense à compenser ce repas avec un jus vert, du persil frais ou une tisane boréale alcalinisante !',
+        livingBadge: '🌿 Vitalité Pure',
+        livingTitle: 'Aliment Vivant & Alcalin !',
+        livingMsg: 'Excellent apport en enzymes, potassium et eau cellulaire structurée. Tes cellules te remercient !'
+      },
+      en: {
+        acidBadge: '⚖️ Acid-Base Balance',
+        acidTitle: 'Acidifying Load Detected',
+        acidMsg: 'Balance this meal with fresh green juice, leafy parsley, or an alkalizing herbal infusion!',
+        livingBadge: '🌿 Pure Vitality',
+        livingTitle: 'Living & Alkaline Food!',
+        livingMsg: 'Outstanding supply of active enzymes, electrolytes, and structured EZ water. Your cells thank you!'
+      },
+      es: {
+        acidBadge: '⚖️ Equilibrio Ácido-Base',
+        acidTitle: 'Carga Acidificante Detectada',
+        acidMsg: '¡Compensa esta comida con un jugo verde, perejil fresco o una infusión alcalinizante!',
+        livingBadge: '🌿 Vitalidad Pura',
+        livingTitle: '¡Alimento Vivo y Alcalino!',
+        livingMsg: 'Excelente aporte de enzimas vivas, electrolitos y agua estructurada. ¡Tus células te lo agradecen!'
+      }
+    };
+
+    const t = texts[lang] || texts.fr;
+
     if (isAcidic) {
       this.triggerNudge({
         mood: 'questioning',
-        badge: '⚖️ Équilibre Acido-Basique',
-        title: 'Charge Acidifiante Détectée',
-        message: 'Pense à compenser ce repas avec un jus vert, du persil frais ou une infusion de prêle alcalinisante !',
+        badge: t.acidBadge,
+        title: t.acidTitle,
+        message: t.acidMsg,
         force: true
       });
     } else if (isLiving) {
       this.triggerNudge({
         mood: 'excited',
-        badge: '🌿 Vitalité Pure',
-        title: 'Aliment Vivant & Alcalin !',
-        message: 'Excellent apport en enzymes, potassium et eau cellulaire structurée. Tes cellules te remercient !',
+        badge: t.livingBadge,
+        title: t.livingTitle,
+        message: t.livingMsg,
         force: true
       });
     }

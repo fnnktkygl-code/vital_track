@@ -66,46 +66,46 @@
         <span class="logo-icon">🌿</span> Vital<span class="accent">Track</span>
       </a>
       <div class="nav-links" id="navLinks">
-        <a href="#" class="nav-link active" data-page="dashboard" onclick="showPage('dashboard')"><i class="ri-dashboard-line"></i> Tableau</a>
-        <a href="#" class="nav-link" data-page="chat" onclick="showPage('chat')"><i class="ri-chat-smile-3-line"></i> Chat</a>
-        <a href="#" class="nav-link" data-page="scan" onclick="showPage('scan')"><i class="ri-camera-lens-fill"></i> Scanner</a>
-        <a href="#" class="nav-link" data-page="search" onclick="showPage('search')"><i class="ri-search-line"></i> Aliments</a>
-        <a href="#" class="nav-link" data-page="materia-medica" onclick="showPage('materia-medica')"><i class="ri-plant-line"></i> Pharmacopée</a>
-        <a href="#" class="nav-link" data-page="meals" onclick="showPage('meals')"><i class="ri-restaurant-line"></i> Repas</a>
-        <a href="#" class="nav-link" data-page="calendar" onclick="showPage('calendar')"><i class="ri-calendar-check-line"></i> Calendrier</a>
-        <a href="#" class="nav-link" data-page="fasting" onclick="showPage('fasting')"><i class="ri-fire-line"></i> Jeûne</a>
-        <a href="#" class="nav-link" data-page="breathing" onclick="showPage('breathing')"><i class="ri-windy-line"></i> Respir.</a>
-        <a href="#" class="nav-link" data-page="resources" onclick="showPage('resources')"><i class="ri-play-circle-line"></i> Médias</a>
-        <a href="#" class="nav-link" data-page="modes" onclick="showPage('modes')"><i class="ri-settings-3-line"></i> Plus</a>
+        <a href="#" class="nav-link active" data-page="dashboard" onclick="showPage('dashboard')"><i class="ri-dashboard-line"></i> <span data-i18n="nav.dashboard">Tableau</span></a>
+        <a href="#" class="nav-link" data-page="chat" onclick="showPage('chat')"><i class="ri-chat-smile-3-line"></i> <span data-i18n="nav.chat">Chat</span></a>
+        <a href="#" class="nav-link" data-page="scan" onclick="showPage('scan')"><i class="ri-camera-lens-fill"></i> <span data-i18n="nav.scanner">Scanner</span></a>
+        <a href="#" class="nav-link" data-page="search" onclick="showPage('search')"><i class="ri-search-line"></i> <span data-i18n="search.pageTitle">Aliments</span></a>
+        <a href="#" class="nav-link" data-page="materia-medica" onclick="showPage('materia-medica')"><i class="ri-plant-line"></i> <span data-i18n="nav.materiaMedica">Pharmacopée</span></a>
+        <a href="#" class="nav-link" data-page="meals" onclick="showPage('meals')"><i class="ri-restaurant-line"></i> <span data-i18n="meals.addMeal">Repas</span></a>
+        <a href="#" class="nav-link" data-page="calendar" onclick="showPage('calendar')"><i class="ri-calendar-check-line"></i> <span data-i18n="nav.calendar">Calendrier</span></a>
+        <a href="#" class="nav-link" data-page="fasting" onclick="showPage('fasting')"><i class="ri-fire-line"></i> <span data-i18n="nav.fasting">Jeûne</span></a>
+        <a href="#" class="nav-link" data-page="breathing" onclick="showPage('breathing')"><i class="ri-windy-line"></i> <span data-i18n="nav.breathing">Respir.</span></a>
+        <a href="#" class="nav-link" data-page="resources" onclick="showPage('resources')"><i class="ri-play-circle-line"></i> <span data-i18n="nav.resources">Médias</span></a>
+        <a href="#" class="nav-link" data-page="modes" onclick="showPage('modes')"><i class="ri-settings-3-line"></i> <span data-i18n="nav.settings">Plus</span></a>
       </div>
-      <button class="lang-toggle-btn" id="globalLangToggleBtn" onclick="window.vitalTrackI18n?.toggleLanguage()" title="Changer de langue">🇫🇷 FR</button>
+      <button class="lang-toggle-btn" id="globalLangToggleBtn" onclick="window.vitalTrackI18n?.toggleLanguage()" title="Changer de langue">🇫🇷 <span style="font-weight:700;">FR</span></button>
       <button class="theme-toggle" onclick="toggleTheme()" data-tooltip="Mode sombre/clair"><i class="ri-moon-line" id="themeIcon"></i></button>
       <button class="hamburger" onclick="toggleMobileNav()"><i class="ri-menu-3-line"></i></button>
     </div>
   </nav>
   <div class="mobile-nav" id="mobileNav">
-    <a href="#" onclick="showPage('dashboard'); toggleMobileNav()"><i class="ri-dashboard-line"></i> Tableau de bord</a>
-    <a href="#" onclick="showPage('chat'); toggleMobileNav()"><i class="ri-chat-smile-3-line"></i> Chat IA</a>
-    <a href="#" onclick="showPage('scan'); toggleMobileNav()"><i class="ri-camera-lens-fill"></i> Scanner IA</a>
-    <a href="#" onclick="showPage('search'); toggleMobileNav()"><i class="ri-search-line"></i> Recherche aliments</a>
-    <a href="#" onclick="showPage('materia-medica'); toggleMobileNav()"><i class="ri-plant-line"></i> Pharmacopée Amazonienne</a>
-    <a href="#" onclick="showPage('meals'); toggleMobileNav()"><i class="ri-restaurant-line"></i> Mes repas</a>
-    <a href="#" onclick="showPage('calendar'); toggleMobileNav()"><i class="ri-calendar-check-line"></i> Plan alimentaire</a>
-    <a href="#" onclick="showPage('fasting'); toggleMobileNav()"><i class="ri-fire-line"></i> Jeûne</a>
-    <a href="#" onclick="showPage('breathing'); toggleMobileNav()"><i class="ri-windy-line"></i> Respiration</a>
-    <a href="#" onclick="showPage('resources'); toggleMobileNav()"><i class="ri-play-circle-line"></i> Bibliothèque</a>
-    <a href="#" onclick="showPage('favorites'); toggleMobileNav()"><i class="ri-heart-line"></i> Favoris</a>
-    <a href="#" onclick="showPage('modes'); toggleMobileNav()"><i class="ri-settings-3-line"></i> Protocoles & Profil</a>
+    <a href="#" onclick="showPage('dashboard'); toggleMobileNav()"><i class="ri-dashboard-line"></i> <span data-i18n="nav.dashboard">Tableau de bord</span></a>
+    <a href="#" onclick="showPage('chat'); toggleMobileNav()"><i class="ri-chat-smile-3-line"></i> <span data-i18n="nav.chat">Chat IA</span></a>
+    <a href="#" onclick="showPage('scan'); toggleMobileNav()"><i class="ri-camera-lens-fill"></i> <span data-i18n="nav.scanner">Scanner IA</span></a>
+    <a href="#" onclick="showPage('search'); toggleMobileNav()"><i class="ri-search-line"></i> <span data-i18n="search.pageTitle">Recherche aliments</span></a>
+    <a href="#" onclick="showPage('materia-medica'); toggleMobileNav()"><i class="ri-plant-line"></i> <span data-i18n="nav.materiaMedica">Pharmacopée Amazonienne</span></a>
+    <a href="#" onclick="showPage('meals'); toggleMobileNav()"><i class="ri-restaurant-line"></i> <span data-i18n="meals.addMeal">Mes repas</span></a>
+    <a href="#" onclick="showPage('calendar'); toggleMobileNav()"><i class="ri-calendar-check-line"></i> <span data-i18n="nav.calendar">Plan alimentaire</span></a>
+    <a href="#" onclick="showPage('fasting'); toggleMobileNav()"><i class="ri-fire-line"></i> <span data-i18n="nav.fasting">Jeûne</span></a>
+    <a href="#" onclick="showPage('breathing'); toggleMobileNav()"><i class="ri-windy-line"></i> <span data-i18n="nav.breathing">Respiration</span></a>
+    <a href="#" onclick="showPage('resources'); toggleMobileNav()"><i class="ri-play-circle-line"></i> <span data-i18n="nav.resources">Bibliothèque</span></a>
+    <a href="#" onclick="showPage('favorites'); toggleMobileNav()"><i class="ri-heart-line"></i> <span data-i18n="search.filterFavorites">Favoris</span></a>
+    <a href="#" onclick="showPage('modes'); toggleMobileNav()"><i class="ri-settings-3-line"></i> <span data-i18n="nav.settings">Protocoles & Profil</span></a>
   </div>
 
   <!-- ═══════ BOTTOM NAV (Mobile) ═══════ -->
   <nav class="bottom-nav" id="bottomNav">
-    <a href="#" class="bnav-item active" data-page="dashboard" onclick="showPage('dashboard')"><i class="ri-dashboard-line"></i><span>Tableau</span></a>
-    <a href="#" class="bnav-item" data-page="scan" onclick="showPage('scan')"><i class="ri-camera-lens-fill"></i><span>Scanner</span></a>
-    <a href="#" class="bnav-item" data-page="chat" onclick="showPage('chat')"><i class="ri-chat-smile-3-line"></i><span>Chat</span></a>
-    <a href="#" class="bnav-item" data-page="calendar" onclick="showPage('calendar')"><i class="ri-calendar-check-line"></i><span>Plan</span></a>
-    <a href="#" class="bnav-item" data-page="fasting" onclick="showPage('fasting')"><i class="ri-fire-line"></i><span>Jeûne</span></a>
-    <a href="#" class="bnav-item" data-page="modes" onclick="showPage('modes')"><i class="ri-apps-line"></i><span>Plus</span></a>
+    <a href="#" class="bnav-item active" data-page="dashboard" onclick="showPage('dashboard')"><i class="ri-dashboard-line"></i><span data-i18n="nav.dashboard">Tableau</span></a>
+    <a href="#" class="bnav-item" data-page="scan" onclick="showPage('scan')"><i class="ri-camera-lens-fill"></i><span data-i18n="nav.scanner">Scanner</span></a>
+    <a href="#" class="bnav-item" data-page="chat" onclick="showPage('chat')"><i class="ri-chat-smile-3-line"></i><span data-i18n="nav.chat">Chat</span></a>
+    <a href="#" class="bnav-item" data-page="calendar" onclick="showPage('calendar')"><i class="ri-calendar-check-line"></i><span data-i18n="nav.calendar">Plan</span></a>
+    <a href="#" class="bnav-item" data-page="fasting" onclick="showPage('fasting')"><i class="ri-fire-line"></i><span data-i18n="nav.fasting">Jeûne</span></a>
+    <a href="#" class="bnav-item" data-page="modes" onclick="showPage('modes')"><i class="ri-apps-line"></i><span data-i18n="nav.settings">Plus</span></a>
   </nav>
 
   <!-- ═══════ DASHBOARD ═══════ -->
@@ -1280,6 +1280,14 @@
                   <option value="beginner">🌱 Débutant (Alimentation mixte / transition douce vers le végétal)</option>
                   <option value="intermediate" selected>🌿 Intermédiaire (Alimentation végétale, sans mucus, jeûnes réguliers)</option>
                   <option value="advanced">🍇 Avancé (Frugivore, jeûneur expérimenté, herboristerie active)</option>
+                </select>
+              </label>
+              <label>Langue de l'App &amp; du Coach IA
+                <select id="profileLanguage" class="form-input custom-vital-select" onchange="window.vitalTrackI18n?.setLanguage(this.value); updateLiveAiPreview();">
+                  <option value="fr">🇫🇷 Français (Standard / International)</option>
+                  <option value="fr-CA">🍁 Français Canadien (Québec / Boréal)</option>
+                  <option value="en">🇬🇧 English (US / Global)</option>
+                  <option value="es">🇪🇸 Español (España / América Latina)</option>
                 </select>
               </label>
             </div>

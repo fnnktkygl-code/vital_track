@@ -6,7 +6,7 @@
  */
 const { callGeminiApi } = require('./_lib/geminiFallback');
 const { authGuard } = require('./_lib/auth');
-const { foodAnalysisPrompt } = require('./_lib/prompts');
+const { foodAnalysisPrompt, getFoodAnalysisPrompt } = require('./_lib/prompts');
 
 function getHeuristicFood(query) {
   const q = (query || '').trim();
@@ -177,10 +177,13 @@ module.exports = async function handler(req, res) {
       return res.status(200).json(getHeuristicFood(cleanQuery));
     }
 
+    const userLang = req.body?.language || 'fr';
+    const dynamicPrompt = getFoodAnalysisPrompt(userLang);
+
     const result = await callGeminiApi({
       apiKey,
       contents: [{ role: 'user', parts: [{ text: `Recherche et analyse vitaliste rigoureuse de l'aliment ou plat : "${cleanQuery}"` }] }],
-      systemInstruction: foodAnalysisPrompt,
+      systemInstruction: dynamicPrompt,
       generationConfig: { temperature: 0.1, maxOutputTokens: 2500, responseMimeType: "application/json" }
     });
 

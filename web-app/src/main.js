@@ -552,7 +552,7 @@ window.initVitalSelect = function(selectEl) {
 };
 
 window.initAllVitalSelects = function() {
-  document.querySelectorAll('select.custom-vital-select, select.sort-select, #fastingType, #searchSortSelect, #profileGoal, #profileTransitionLevel, #profileActivity, #profileBioregion').forEach(sel => {
+  document.querySelectorAll('select.custom-vital-select, select.sort-select, #fastingType, #searchSortSelect, #profileGoal, #profileTransitionLevel, #profileLanguage, #profileActivity, #profileBioregion').forEach(sel => {
     window.initVitalSelect(sel);
   });
 };
@@ -579,6 +579,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   initAllVitalDatePickers();
   initAllVitalSelects();
   initFastingDurationControls();
+
+  // Re-render and update on language change
+  onLanguageChange((newLang) => {
+    const p = getUserProfile();
+    if (document.getElementById('greetName')) {
+      document.getElementById('greetName').textContent = p.name ? `${t('dashboard.greeting')} ${p.name} ! 👋` : `${t('dashboard.greeting')} ! 👋`;
+    }
+    const bubble = document.getElementById('inAppMascotBubble');
+    if (bubble) bubble.textContent = `🐦 ${t('mascot.idle')}`;
+    renderDashboard();
+    renderMeals();
+  });
   
   if (window.VitalMascot) {
     window.appMascot = new window.VitalMascot('mascotCanvas');
@@ -724,6 +736,7 @@ function getUserProfile() {
     goal: p.goal || 'detox',
     protocol: currentProtocol || p.protocol || 'vitalist',
     transitionLevel: p.transitionLevel || 'intermediate',
+    language: p.language || getLanguage() || 'fr',
     height: p.height || '',
     currentWeight: p.currentWeight || '',
     targetWeight: p.targetWeight || '',
@@ -744,6 +757,7 @@ function loadProfile() {
   if (document.getElementById('profileName')) document.getElementById('profileName').value = p.name || '';
   if (document.getElementById('profileGoal')) document.getElementById('profileGoal').value = p.goal || 'detox';
   if (document.getElementById('profileTransitionLevel')) document.getElementById('profileTransitionLevel').value = p.transitionLevel || 'intermediate';
+  if (document.getElementById('profileLanguage')) document.getElementById('profileLanguage').value = p.language || getLanguage();
   if (document.getElementById('profileHeight')) document.getElementById('profileHeight').value = p.height || '';
   if (document.getElementById('profileCurrentWeight')) document.getElementById('profileCurrentWeight').value = p.currentWeight || '';
   if (document.getElementById('profileTargetWeight')) document.getElementById('profileTargetWeight').value = p.targetWeight || '';
@@ -765,12 +779,12 @@ function loadProfile() {
   });
 
   // Refresh all custom vital-select UI triggers
-  ['profileGoal', 'profileTransitionLevel', 'profileActivity', 'profileBioregion'].forEach(id => {
+  ['profileGoal', 'profileTransitionLevel', 'profileLanguage', 'profileActivity', 'profileBioregion'].forEach(id => {
     const el = document.getElementById(id);
     if (el && el._updateVitalSelect) el._updateVitalSelect();
   });
 
-  if (document.getElementById('greetName')) document.getElementById('greetName').textContent = p.name ? `Salut ${p.name} ! 👋` : 'Salut ! 👋';
+  if (document.getElementById('greetName')) document.getElementById('greetName').textContent = p.name ? `${t('dashboard.greeting')} ${p.name} ! 👋` : `${t('dashboard.greeting')} ! 👋`;
   updateLiveAiPreview();
 }
 
@@ -818,15 +832,13 @@ window.updateLiveAiPreview = function() {
   if (curW) morpho.push(`Poids: ${curW}kg`);
   if (tarW) morpho.push(`Cible: ${tarW}kg`);
   if (age) morpho.push(`Âge: ${age}ans`);
-  if (activity) morpho.push(`Activité: ${activity}`);
 
   const restrictions = document.getElementById('profileRestrictions')?.value.trim() || 'Aucune restriction déclarée';
   const rawMems = document.getElementById('profileMemories')?.value.trim() || '';
 
-  const generatedPrompt = `[CONTEXTE & BIO-PROFIL DE L'UTILISATEUR]
-Nom: ${name}
-Localisation: ${city}, ${country} (Biorégion: ${bioregion})
-Objectif Majeur: ${goal}
+  const generatedPrompt = `[CONTEXTE UTILISATEUR & DIRECTIVES IA]
+Identité: ${name} | Localisation: ${city}, ${country} (Biorégion: ${bioregion})
+Objectif: ${goal} | Protocole: ${currentProtocol.toUpperCase()}
 Niveau de Transition: ${transLevel}
 Émonctoires Prioritaires: ${organs}${morpho.length > 0 ? `\nMorphologie & Métabolisme: ${morpho.join(' | ')}` : ''}
 Restrictions Strictes: ${restrictions}${rawMems ? `\nHabitudes Mémorisées:\n- ${rawMems.split('\n').join('\n- ')}` : ''}
@@ -841,11 +853,13 @@ window.saveProfile = function() {
 
   const activeChips = Array.from(document.querySelectorAll('#emonctoireChipsContainer .emonctoire-chip.active'));
   const targetOrgans = activeChips.map(c => c.dataset.organ);
+  const chosenLang = document.getElementById('profileLanguage') ? document.getElementById('profileLanguage').value : getLanguage();
 
   const p = {
     name: document.getElementById('profileName') ? document.getElementById('profileName').value.trim() : '',
     goal: document.getElementById('profileGoal') ? document.getElementById('profileGoal').value : 'detox',
     transitionLevel: document.getElementById('profileTransitionLevel') ? document.getElementById('profileTransitionLevel').value : 'intermediate',
+    language: chosenLang,
     height: document.getElementById('profileHeight') ? document.getElementById('profileHeight').value.trim() : '',
     currentWeight: document.getElementById('profileCurrentWeight') ? document.getElementById('profileCurrentWeight').value.trim() : '',
     targetWeight: document.getElementById('profileTargetWeight') ? document.getElementById('profileTargetWeight').value.trim() : '',
@@ -860,10 +874,14 @@ window.saveProfile = function() {
   };
   store.set('profile', p);
 
-  if (document.getElementById('greetName')) document.getElementById('greetName').textContent = p.name ? `Salut ${p.name} ! 👋` : 'Salut ! 👋';
+  if (chosenLang !== getLanguage()) {
+    setLanguage(chosenLang);
+  }
+
+  if (document.getElementById('greetName')) document.getElementById('greetName').textContent = p.name ? `${t('dashboard.greeting')} ${p.name} ! 👋` : `${t('dashboard.greeting')} ! 👋`;
   updateLiveAiPreview();
   if (window.renderWeightChart) window.renderWeightChart();
-  showToast('✅ Bio-Profil & Directives IA sauvegardés !', 'success');
+  showToast(t('settings.saveSuccess', {}, '✅ Bio-Profil & Directives IA sauvegardés !'), 'success');
 };
 
 // ═══════ PROTOCOL ═══════
@@ -1435,6 +1453,7 @@ window.sendChat = async function(e) {
     const reqBody = {
       query: messageText,
       profile,
+      language: getLanguage(),
       history: conv.messages.slice(0, -1).map(m => ({ role: m.role, text: m.text })),
       model: store.get('selected_model', 'auto')
     };
@@ -2441,7 +2460,7 @@ window.askAIToFindFood = async function(query) {
           'Content-Type': 'application/json',
           'X-VT-API-Key': VT_APP_KEY
         },
-        body: JSON.stringify({ query: q })
+        body: JSON.stringify({ query: q, language: getLanguage() })
       });
       if (res.ok) {
         aiFood = await res.json();
@@ -5660,11 +5679,26 @@ window.handleScanUpload = function(event) {
     const base64Data = base64Url.split(',')[1];
     
     try {
-      const query = `Analyse cette photo de repas/aliment avec une rigueur absolue.
+      const userLang = getLanguage();
+      let query = `Analyse cette photo de repas/aliment avec une rigueur absolue.
 Identifie clairement les ingrédients visibles, leur statut vitaliste (Dr. Sebi / Arnold Ehret : mucogène, hybride ou électrique), l'indice PRAL estimé (+/- mEq/100g), l'impact sur la lymphe et les reins, et propose des substituts vivants pour électriser le plat.
 Inclus un bloc json avec "actionMeal" (avec nom, catégorie, emoji, items, note) et "suggestFoods" (tableau des 5 ingrédients vivants recommandés).`;
       
-      const profile = store.get('profile', { name: '', goal: 'detox', protocol: 'vitalist' });
+      if (userLang === 'en') {
+        query = `Analyze this meal/food photo with absolute scientific and vitalist rigor.
+Clearly identify visible ingredients, their vitalist classification (Dr. Sebi / Arnold Ehret: mucus-forming, hybrid, or electric), estimated renal PRAL (+/- mEq/100g), lymphatic impact, and suggest living substitutes to electrify the dish.
+Include a json block with "actionMeal" (name, category, emoji, items, note) and "suggestFoods" (5 recommended living foods).`;
+      } else if (userLang === 'es') {
+        query = `Analiza esta foto de comida/plato con absoluto rigor vitalista y científico.
+Identifica claramente los ingredientes visibles, su estado vitalista (Dr. Sebi / Arnold Ehret: mucógeno, híbrido o eléctrico), índice PRAL estimado (+/- mEq/100g), impacto en la linfa y los riñones, y propón sustitutos vivos para electrificar el plato.
+Incluye un bloque json con "actionMeal" (nombre, categoría, emoji, items, nota) y "suggestFoods" (5 alimentos vivos recomendados).`;
+      } else if (userLang === 'fr-CA') {
+        query = `Analyse cette photo de repas/aliment avec une rigueur absolue (en utilisant les termes botaniques et de repas du Québec/Canada 🍁 : bleuets, canneberges, courges, déjeuner/dîner/souper).
+Identifie clairement les ingrédients visibles, leur statut vitaliste (Dr. Sebi / Arnold Ehret : mucogène, hybride ou électrique), l'indice PRAL estimé (+/- mEq/100g), l'impact sur la lymphe et les reins, et propose des substituts vivants pour électriser le plat.
+Inclus un bloc json avec "actionMeal" (avec nom, catégorie, emoji, items, note) et "suggestFoods" (tableau des 5 ingrédients vivants recommandés).`;
+      }
+      
+      const profile = getUserProfile();
       
       const resp = await fetch(`${API_BASE}/api/chat`, {
         method: 'POST',
@@ -5672,6 +5706,7 @@ Inclus un bloc json avec "actionMeal" (avec nom, catégorie, emoji, items, note)
         body: JSON.stringify({ 
           query, 
           profile,
+          language: userLang,
           history: [], 
           fileParts: [{
             inlineData: {

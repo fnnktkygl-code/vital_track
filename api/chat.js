@@ -7,7 +7,7 @@
  */
 const { callGeminiApi } = require('./_lib/geminiFallback');
 const { authGuard } = require('./_lib/auth');
-const { chatSystemPrompt } = require('./_lib/prompts');
+const { getChatSystemPrompt } = require('./_lib/prompts');
 const { retrieveRelevantKnowledge } = require('./_lib/knowledgeRetriever');
 
 module.exports = async function handler(req, res) {
@@ -97,9 +97,10 @@ Restrictions & Allergies strictes: ${restrictions}${memoriesText}
     const conversationRule = isContinuing 
       ? `\n\n[RÈGLE STRICTE] Ceci est la suite d'une conversation en cours. NE DIS PAS BONJOUR. Reprends directement le fil de la discussion.` 
       : `\n\n[RÈGLE STRICTE] C'est le début d'une nouvelle conversation. Tu peux saluer l'utilisateur si c'est pertinent.`;
-
+    const userLang = profile?.language || req.body?.language || 'fr';
     const targetedKnowledge = retrieveRelevantKnowledge(query, 4);
-    const fullSystemInstruction = `${chatSystemPrompt}${profileContext}${conversationRule}${targetedKnowledge ? `\n\n[RAG_KNOWLEDGE_BASE]\nExtraits pertinents de nos livres de référence pour t'aider à répondre :\n${targetedKnowledge}` : ''}`;
+    const dynamicSystemPrompt = getChatSystemPrompt(userLang);
+    const fullSystemInstruction = `${dynamicSystemPrompt}${profileContext}${conversationRule}${targetedKnowledge ? `\n\n[RAG_KNOWLEDGE_BASE]\nExtraits pertinents de nos livres de référence pour t'aider à répondre :\n${targetedKnowledge}` : ''}`;
 
     const isStream = req.query.stream === 'true';
 
