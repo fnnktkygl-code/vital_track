@@ -296,6 +296,27 @@ export const TRANSLATIONS = {
       audioOn: "Sons Aviaires : Activés",
       audioOff: "Sons Aviaires : Désactivés"
     },
+    auth: {
+      signInWithGoogle: 'Se connecter avec Google',
+      signOut: 'Se déconnecter',
+      guestBadge: 'Invité (Local)',
+      accountTitle: 'Espace Privé & Sécurisé',
+      welcomeBack: 'Bienvenue {name} !',
+      enterEmailPrompt: 'Connectez-vous avec votre adresse Google (@gmail.com) :',
+      loginSuccess: 'Connecté avec succès : {name}',
+      loggedOut: 'Déconnexion effectuée.'
+    },
+    rgpd: {
+      title: 'Espace Privé, Sécurité & Droit à l\'Oubli (RGPD)',
+      description: 'Conformément au Règlement Général sur la Protection des Données (RGPD), votre espace de santé est strictement privé et hermétique. Vous disposez d\'un contrôle total : portabilité (export), réinitialisation et suppression définitive immédiate (droit à l\'oubli).',
+      exportBtn: '📦 Exporter mes données (Portabilité RGPD - Art. 20)',
+      resetBtn: '🔄 Réinitialiser mes historiques de santé',
+      deleteAccountBtn: '⚠️ Supprimer définitivement mon compte & mes données (Droit à l\'oubli)',
+      confirmResetTitle: 'Réinitialiser vos données de santé ?',
+      confirmResetText: 'Cette action supprimera tous vos historiques de repas, de jeûne, de respiration et de poids. Votre compte reste conservé.',
+      confirmDeleteTitle: 'Exercer votre Droit à l\'Oubli (Suppression Totale) ?',
+      confirmDeleteText: 'Cette action est IRRÉVERSIBLE. L\'intégralité de vos données, profil, historiques, conversations et compte sera définitivement effacée du système.'
+    },
     common: {
       close: 'Fermer',
       back: 'Retour',
@@ -461,6 +482,27 @@ export const TRANSLATIONS = {
       audioBtn: "Roucouler",
       audioOn: "Sons Aviaires : Activés",
       audioOff: "Sons Aviaires : Désactivés"
+    },
+    auth: {
+      signInWithGoogle: 'Se connecter avec Google',
+      signOut: 'Se déconnecter',
+      guestBadge: 'Invité (Local)',
+      accountTitle: 'Espace Privé & Sécurisé',
+      welcomeBack: 'Bienvenue {name} !',
+      enterEmailPrompt: 'Connectez-vous avec votre adresse Google (@gmail.com) :',
+      loginSuccess: 'Connecté avec succès : {name}',
+      loggedOut: 'Déconnexion effectuée.'
+    },
+    rgpd: {
+      title: 'Espace Privé, Sécurité & Droit à l\'Oubli (RGPD / Loi 25)',
+      description: 'Conformément aux normes RGPD et de protection des renseignements personnels (Loi 25), vos données sont strictement étanches. Vous pouvez exporter, réinitialiser ou supprimer définitivement vos données en tout temps.',
+      exportBtn: '📦 Exporter mes données (Portabilité)',
+      resetBtn: '🔄 Réinitialiser mes historiques de santé',
+      deleteAccountBtn: '⚠️ Supprimer définitivement mon compte & mes données (Droit à l\'oubli)',
+      confirmResetTitle: 'Réinitialiser vos données de santé ?',
+      confirmResetText: 'Cette action effacera vos repas, jeûnes, mesures et conversations. Votre profil restera accessible.',
+      confirmDeleteTitle: 'Suppression Définitive du Compte & Droit à l\'Oubli',
+      confirmDeleteText: 'Cette action est IRRÉVERSIBLE. Toutes vos données seront définitivement et immédiatement supprimées.'
     },
     common: {
       close: 'Fermer',
@@ -628,6 +670,27 @@ export const TRANSLATIONS = {
       audioOn: "Avian Sounds: Enabled",
       audioOff: "Avian Sounds: Muted"
     },
+    auth: {
+      signInWithGoogle: 'Sign in with Google',
+      signOut: 'Sign Out',
+      guestBadge: 'Guest (Local)',
+      accountTitle: 'Private & Secure Workspace',
+      welcomeBack: 'Welcome back, {name}!',
+      enterEmailPrompt: 'Sign in with your Google account (@gmail.com):',
+      loginSuccess: 'Successfully signed in: {name}',
+      loggedOut: 'Signed out successfully.'
+    },
+    rgpd: {
+      title: 'Privacy, Data Protection & Right to be Forgotten (GDPR)',
+      description: 'In full compliance with General Data Protection Regulation (GDPR), your health space is strictly isolated and private. You have complete control: data portability (export), health reset, and permanent account & data erasure (right to be forgotten).',
+      exportBtn: '📦 Export All My Data (GDPR Portability - Art. 20)',
+      resetBtn: '🔄 Reset Health & Fasting History',
+      deleteAccountBtn: '⚠️ Permanently Delete Account & All Data (Right to be Forgotten)',
+      confirmResetTitle: 'Reset Health Records?',
+      confirmResetText: 'This will erase all meal logs, fasts, breathing sessions, and weight records. Your account remains active.',
+      confirmDeleteTitle: 'Exercise Right to be Forgotten (Permanent Deletion)?',
+      confirmDeleteText: 'This action is IRREVERSIBLE. All your profile data, history, conversations, and account will be permanently purged from the system.'
+    },
     common: {
       close: 'Close',
       back: 'Back',
@@ -793,6 +856,27 @@ export const TRANSLATIONS = {
       audioBtn: "Arrullo",
       audioOn: "Sonidos de Aves: Activados",
       audioOff: "Sonidos de Aves: Silenciados"
+    },
+    auth: {
+      signInWithGoogle: 'Iniciar sesión con Google',
+      signOut: 'Cerrar sesión',
+      guestBadge: 'Invitado (Local)',
+      accountTitle: 'Espacio Privado y Seguro',
+      welcomeBack: '¡Bienvenido {name}!',
+      enterEmailPrompt: 'Inicia sesión con tu cuenta de Google (@gmail.com):',
+      loginSuccess: 'Sesión iniciada con éxito: {name}',
+      loggedOut: 'Sesión cerrada correctamente.'
+    },
+    rgpd: {
+      title: 'Privacidad, Seguridad y Derecho al Olvido (RGPD)',
+      description: 'En estricto cumplimiento del RGPD, tu espacio de salud es confidencial e intransferible. Tienes control total: portabilidad (exportar), reinicio y eliminación definitiva de cuenta y datos (derecho al olvido).',
+      exportBtn: '📦 Exportar mis datos (Portabilidad RGPD - Art. 20)',
+      resetBtn: '🔄 Reiniciar registros de salud y ayuno',
+      deleteAccountBtn: '⚠️ Eliminar definitivamente mi cuenta y todos mis datos (Derecho al olvido)',
+      confirmResetTitle: '¿Reiniciar registros de salud?',
+      confirmResetText: 'Esta acción borrará tus comidas, ayunos, respiraciones y pesos. Tu cuenta permanecerá activa.',
+      confirmDeleteTitle: '¿Ejercer Derecho al Olvido (Eliminación Total)?',
+      confirmDeleteText: 'Esta acción es IRREVERSIBLE. Todo tu perfil, historial, conversaciones y cuenta serán eliminados permanentemente.'
     },
     common: {
       close: 'Cerrar',

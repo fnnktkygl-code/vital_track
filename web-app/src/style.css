@@ -2640,6 +2640,96 @@ input.jn-field-control { padding-right: 14px; }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
+   GOOGLE AUTH & USER PROFILE BADGE
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.google-auth-container {
+  display: flex;
+  align-items: center;
+}
+
+.google-auth-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: var(--text);
+  padding: 6px 14px;
+  border-radius: 10px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  backdrop-filter: blur(8px);
+}
+
+.google-auth-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: var(--accent);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.google-icon-svg {
+  flex-shrink: 0;
+}
+
+.user-profile-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(52, 211, 153, 0.25);
+  padding: 4px 8px 4px 6px;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.user-avatar-mini {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid var(--accent);
+}
+
+.user-name-label {
+  max-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-logout-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  transition: all var(--transition);
+}
+
+.user-logout-btn:hover {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.rgpd-card {
+  transition: all var(--transition);
+}
+
+.rgpd-card:hover {
+  border-color: rgba(239, 68, 68, 0.35);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
    SCANNER IA — MODERN DIAGNOSTIC SUITE & POLISHED RESULT UI
    ═══════════════════════════════════════════════════════════════════════════════ */
 
