@@ -1962,9 +1962,8 @@ const MODEL_TAXONOMY = [
     iconColor: '#4ade80',
     tagline: 'Vitesse maximale & réponse instantanée',
     models: [
-      { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash', badge: 'Recommandé ⚡', tagline: 'Dernière génération multimodale, rapide et précise' },
-      { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash', badge: 'Ultra Rapide', tagline: 'Haute réactivité pour le coaching instantané' },
-      { id: 'gemini-1.5-flash', name: 'Gemini 1.5 Flash', badge: 'Éprouvé', tagline: 'Excellente précision et stabilité diététique' }
+      { id: 'gemini-1.5-flash', name: 'Gemini 1.5 Flash', badge: 'Recommandé ⚡', tagline: 'Modèle de production Google standard, rapide et équilibré' },
+      { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash', badge: 'Nouvelle Génération', tagline: 'Haute vélocité et réactivité pour le coaching temps réel' }
     ]
   },
   {
@@ -1974,8 +1973,7 @@ const MODEL_TAXONOMY = [
     iconColor: '#fbbf24',
     tagline: 'Analyse approfondie & protocoles complexes',
     models: [
-      { id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro', badge: 'Raisonnement', tagline: 'Analyse complexe des terrains biologiques et pathologies' },
-      { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro', badge: 'Grand Contexte', tagline: 'Fenêtre étendue pour synthèses et longs historiques' }
+      { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro', badge: 'Grand Contexte', tagline: 'Raisonnement avancé et fenêtre de contexte étendue (1M tokens)' }
     ]
   },
   {
@@ -1985,7 +1983,8 @@ const MODEL_TAXONOMY = [
     iconColor: '#a78bfa',
     tagline: 'Léger et optimisé pour le mobile',
     models: [
-      { id: 'gemini-2.0-flash-lite', name: 'Gemini 2.0 Flash Lite', badge: 'Économe', tagline: 'Traitement fluide à consommation minimale' }
+      { id: 'gemini-1.5-flash-8b', name: 'Gemini 1.5 Flash-8B', badge: 'Ultra Léger', tagline: 'Modèle haute cadence pour requêtes simples' },
+      { id: 'gemini-2.0-flash-lite', name: 'Gemini 2.0 Flash Lite', badge: 'Économe', tagline: 'Traitement fluide optimisé' }
     ]
   }
 ];
