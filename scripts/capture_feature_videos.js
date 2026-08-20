@@ -81,11 +81,20 @@ function compileVideo(outputBaseName, fps = 24) {
   const page = await browser.newPage();
   await page.goto('http://localhost:5173', { waitUntil: 'networkidle0' });
 
-  // Suppress toasts, errors and notifications permanently
+  // Suppress toasts, errors, sidebars and center page contents for pristine video captures
   await page.evaluate(() => {
     window.showToast = () => {};
     const style = document.createElement('style');
-    style.innerHTML = '#pwaInstallBanner, .toast, .vital-toast { display: none !important; opacity: 0 !important; }';
+    style.innerHTML = `
+      #pwaInstallBanner, .toast, .vital-toast { display: none !important; opacity: 0 !important; }
+      .sidebar-desktop { display: none !important; }
+      .app-layout { grid-template-columns: 1fr !important; padding: 0 !important; }
+      .main-content { margin-left: 0 !important; width: 100% !important; max-width: 100% !important; padding: 20px !important; }
+      .page { max-width: 900px !important; margin: 0 auto !important; width: 100% !important; }
+      #page-breathing { display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; min-height: 640px !important; }
+      .breathing-container { width: 100% !important; max-width: 600px !important; margin: 0 auto !important; display: flex !important; flex-direction: column !important; align-items: center !important; }
+      .breathing-circle-wrap { margin: 20px auto !important; display: flex !important; justify-content: center !important; }
+    `;
     document.head.appendChild(style);
   });
 
