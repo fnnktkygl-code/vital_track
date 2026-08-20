@@ -1489,6 +1489,21 @@ function saveProfile() {
   showToast(t('settings.saveSuccess', {}, '✅ Bio-Profil & Directives IA sauvegardés !'), 'success');
 };
 
+function switchSettingsTab(tabId, btn) {
+  document.querySelectorAll('.settings-tab-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+
+  const sections = document.querySelectorAll('.settings-tab-section');
+  sections.forEach(sec => {
+    if (tabId === 'all' || sec.dataset.tab === tabId) {
+      sec.style.display = 'block';
+    } else {
+      sec.style.display = 'none';
+    }
+  });
+}
+window.switchSettingsTab = switchSettingsTab;
+
 // ═══════ PROTOCOL ═══════
 function loadProtocol() {
   currentProtocol = store.get('protocol', 'vitalist');
@@ -1498,11 +1513,16 @@ function setProtocol(mode) {
   currentProtocol = mode;
   store.set('protocol', mode);
   updateProtocolUI();
+  updateLiveAiPreview();
+  if (window.showToast) {
+    const names = { vitalist: '🌿 Vitaliste Intégral', sebi: '🌱 Dr. Sebi', ehret: '🌾 Arnold Ehret', morse: '🍇 Dr. Morse' };
+    window.showToast(`Protocole activé : ${names[mode] || mode}`, 'success');
+  }
 };
 function updateProtocolUI() {
   const labels = { vitalist: 'Mode Vitaliste', sebi: 'Mode Dr. Sebi', ehret: 'Mode Ehret', morse: 'Mode Dr. Morse' };
   if (document.getElementById('greetMode')) document.getElementById('greetMode').textContent = labels[currentProtocol] || 'Mode Vitaliste';
-  document.querySelectorAll('.protocol-card').forEach(c => c.classList.toggle('active', c.dataset.mode === currentProtocol));
+  document.querySelectorAll('.protocol-card, .protocol-card-v2').forEach(c => c.classList.toggle('active', c.dataset.mode === currentProtocol));
 }
 
 // ═══════ DASHBOARD ═══════
@@ -10588,6 +10608,7 @@ if (typeof window !== "undefined") window.toggleAiPreviewBox = toggleAiPreviewBo
 if (typeof window !== "undefined") window.updateLiveAiPreview = updateLiveAiPreview;
 if (typeof window !== "undefined") window.saveProfile = saveProfile;
 if (typeof window !== "undefined") window.setProtocol = setProtocol;
+if (typeof window !== "undefined") window.switchSettingsTab = switchSettingsTab;
 if (typeof window !== "undefined") window.openVitalityInfoModal = openVitalityInfoModal;
 if (typeof window !== "undefined") window.closeVitalityInfoModal = closeVitalityInfoModal;
 if (typeof window !== "undefined") window.newConversation = newConversation;
