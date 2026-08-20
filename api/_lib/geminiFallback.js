@@ -6,37 +6,34 @@
  */
 
 const CASCADE_MODELS = [
-  'gemini-2.5-flash',
-  'gemini-2.0-flash',
-  'gemini-2.0-flash-lite',
-  'gemini-1.5-flash',
-  'gemini-1.5-flash-8b',
-  'gemini-1.5-pro'
+  'gemini-3.7-flash',
+  'gemini-3.6-flash',
+  'gemini-3.5-flash',
+  'gemini-3.5-flash-lite',
+  'gemini-flash-lite-latest',
+  'gemini-3.1-flash-lite'
 ];
 
 const MODEL_ALIASES = {
-  'auto': 'gemini-2.5-flash',
-  'flash': 'gemini-2.5-flash',
-  'gemini-3.7-flash': 'gemini-2.5-flash',
-  'gemini-3.6-flash': 'gemini-2.0-flash',
-  'gemini-3.5-flash': 'gemini-2.0-flash',
-  'gemini-3.5-pro': 'gemini-1.5-pro',
-  'gemini-3.1-pro': 'gemini-1.5-pro',
-  'gemini-3.6-flash-lite': 'gemini-2.0-flash-lite',
-  'gemini-3.5-flash-lite': 'gemini-2.0-flash-lite',
-  'gemini-3.1-flash-lite': 'gemini-2.0-flash-lite',
-  'gemini-3.1-flash-lite-preview': 'gemini-2.0-flash-lite',
-  'gemini-flash-lite-latest': 'gemini-2.0-flash-lite',
-  'gemini-3-flash-preview': 'gemini-2.0-flash',
-  'gemma-4-31b-it': 'gemini-2.0-flash-lite',
-  'gemma-4-26b-a4b-it': 'gemini-1.5-flash-8b',
-  'flash-lite': 'gemini-2.0-flash-lite',
-  'pro': 'gemini-1.5-pro',
-  'lite': 'gemini-2.0-flash-lite'
+  'auto': 'gemini-3.7-flash',
+  'flash': 'gemini-3.7-flash',
+  'gemini-3.7-flash': 'gemini-3.7-flash',
+  'gemini-3.6-flash': 'gemini-3.6-flash',
+  'gemini-3.5-flash': 'gemini-3.5-flash',
+  'gemini-3.5-flash-lite': 'gemini-3.5-flash-lite',
+  'gemini-flash-lite-latest': 'gemini-flash-lite-latest',
+  'gemini-3.1-flash-lite': 'gemini-3.1-flash-lite',
+  'gemini-2.5-flash': 'gemini-3.7-flash',
+  'gemini-2.0-flash': 'gemini-3.6-flash',
+  'gemini-1.5-flash': 'gemini-3.5-flash',
+  'gemini-1.5-pro': 'gemini-3.7-flash',
+  'pro': 'gemini-3.7-flash',
+  'lite': 'gemini-3.5-flash-lite',
+  'flash-lite': 'gemini-3.5-flash-lite'
 };
 
 function resolveModelName(name) {
-  if (!name || name === 'auto') return 'gemini-2.5-flash';
+  if (!name || name === 'auto') return 'gemini-3.7-flash';
   const clean = name.trim();
   if (MODEL_ALIASES[clean]) return MODEL_ALIASES[clean];
   return clean;
