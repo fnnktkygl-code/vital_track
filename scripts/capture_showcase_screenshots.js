@@ -48,14 +48,17 @@ function startLocalServer(port = 8282) {
 
 async function cleanToastsAndNoise(page) {
   await page.evaluate(() => {
-    // Supprimer tous les toasts et empêcher leur affichage
-    const toastContainer = document.getElementById('toastContainer');
-    if (toastContainer) {
-      toastContainer.innerHTML = '';
-      toastContainer.style.display = 'none';
-    }
     window.showToast = () => {};
-    document.querySelectorAll('.toast, .toast-notification').forEach(el => el.remove());
+    let style = document.getElementById('kill-all-toasts');
+    if (!style) {
+      style = document.createElement('style');
+      style.id = 'kill-all-toasts';
+      style.innerHTML = '#appToastContainer, .app-toast-container, .app-toast, .pigeon-nudge-toast, #toastContainer, .toast, .toast-notification, .notification { display: none !important; opacity: 0 !important; visibility: hidden !important; pointer-events: none !important; height: 0 !important; width: 0 !important; max-height: 0 !important; max-width: 0 !important; overflow: hidden !important; }';
+      document.head.appendChild(style);
+    }
+    document.querySelectorAll('#appToastContainer, .app-toast-container, .app-toast, .pigeon-nudge-toast, #toastContainer, .toast, .toast-notification, .notification').forEach(el => {
+      el.remove();
+    });
   });
 }
 

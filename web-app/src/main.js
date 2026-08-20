@@ -694,8 +694,13 @@ function updateAuthUI(user) {
     });
 
     avatarButtons.forEach(btn => {
-      btn.innerHTML = `<img src="${user.picture || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + user.uid}" style="width:100%; height:100%; border-radius:inherit; object-fit:cover;" />`;
+      btn.innerHTML = `<img src="${user.picture || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + user.uid}" class="user-avatar-mini" style="width:24px; height:24px; min-width:24px; min-height:24px; max-width:24px; max-height:24px; border-radius:50%; object-fit:cover; display:block;" />`;
       btn.style.padding = '0';
+      btn.style.width = '38px';
+      btn.style.height = '38px';
+      btn.style.display = 'inline-flex';
+      btn.style.alignItems = 'center';
+      btn.style.justifyContent = 'center';
       btn.title = `${user.name} - Mon Profil & Badges`;
       btn.onclick = () => window.openUserProfileModal();
     });
@@ -715,6 +720,11 @@ function updateAuthUI(user) {
       const initial = (p.name && p.name[0]) ? p.name[0].toUpperCase() : '<i class="ri-user-3-line"></i>';
       btn.innerHTML = initial;
       btn.style.padding = '';
+      btn.style.width = '38px';
+      btn.style.height = '38px';
+      btn.style.display = 'inline-flex';
+      btn.style.alignItems = 'center';
+      btn.style.justifyContent = 'center';
       btn.title = 'Mon Profil & Badges Vitalistes';
       btn.onclick = () => window.openUserProfileModal();
     });
