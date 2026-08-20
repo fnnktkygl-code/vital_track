@@ -547,6 +547,30 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
 .sidebar-toggle:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-glow)}
 .subtitle{color:var(--text-dim);font-size:0.8rem;margin-top:2px}
 
+.chat-voice-gender-selector {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text);
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  margin-right: 6px;
+  flex-shrink: 0;
+}
+.chat-voice-gender-selector:hover {
+  background: rgba(55, 211, 153, 0.12);
+  border-color: var(--accent, #34d399);
+  color: var(--accent, #34d399);
+  transform: translateY(-1px);
+}
+
 .chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:16px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
 .message-wrapper{display:flex;flex-direction:column;max-width:85%;position:relative;animation:fadeUp 0.25s cubic-bezier(0.16,1,0.3,1)}
 .message-wrapper.bot{align-self:flex-start}

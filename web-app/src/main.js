@@ -3043,9 +3043,33 @@ function copyChatMessage(text, btn) {
 window.copyChatMessage = copyChatMessage;
 
 let _currentSpeakingBtn = null;
-let _currentUtterance = null;
+let _currentAudioInstance = null;
 
-function stopSpeechSynthesis() {
+function toggleTtsVoiceGender() {
+  const current = store.get('preferred_voice_gender', 'female');
+  const next = current === 'female' ? 'male' : 'female';
+  store.set('preferred_voice_gender', next);
+  updateTtsVoiceUI();
+  if (window.showToast) {
+    showToast(next === 'male' ? '🎙️ Voix Masculine activée (Henri Studio)' : '🎙️ Voix Féminine activée (Denise Studio)', 'success');
+  }
+}
+window.toggleTtsVoiceGender = toggleTtsVoiceGender;
+
+function updateTtsVoiceUI() {
+  const gender = store.get('preferred_voice_gender', 'female');
+  const icon = document.getElementById('chatVoiceGenderIcon');
+  const label = document.getElementById('chatVoiceGenderLabel');
+  if (icon) icon.textContent = gender === 'male' ? '👨' : '👩';
+  if (label) label.textContent = gender === 'male' ? 'Voix Homme' : 'Voix Femme';
+}
+window.updateTtsVoiceUI = updateTtsVoiceUI;
+
+function stopAudioPlayback() {
+  if (_currentAudioInstance) {
+    _currentAudioInstance.pause();
+    _currentAudioInstance = null;
+  }
   if ('speechSynthesis' in window) {
     window.speechSynthesis.cancel();
   }
@@ -3054,23 +3078,18 @@ function stopSpeechSynthesis() {
     _currentSpeakingBtn.classList.remove('speaking');
     _currentSpeakingBtn = null;
   }
-  _currentUtterance = null;
 }
-window.stopSpeechSynthesis = stopSpeechSynthesis;
+window.stopAudioPlayback = stopAudioPlayback;
+window.stopSpeechSynthesis = stopAudioPlayback;
 
-function speakChatMessageByIndex(idx, btn) {
-  if (!('speechSynthesis' in window)) {
-    showToast("Synthèse vocale non supportée sur ce navigateur", "error");
-    return;
-  }
-
+async function speakChatMessageByIndex(idx, btn) {
   // Toggle off if currently reading the same message
-  if (window.speechSynthesis.speaking && _currentSpeakingBtn === btn) {
-    stopSpeechSynthesis();
+  if (_currentSpeakingBtn === btn) {
+    stopAudioPlayback();
     return;
   }
 
-  stopSpeechSynthesis();
+  stopAudioPlayback();
 
   const conv = conversations.find(c => c.id === activeConvId);
   let textToSpeak = '';
@@ -3083,48 +3102,91 @@ function speakChatMessageByIndex(idx, btn) {
 
   if (!textToSpeak) return;
 
-  // Clean markdown, JSON blocks, actionMeal tags and emojis
-  let cleanText = textToSpeak
-    .replace(/```[\s\S]*?```/g, '') // strip code blocks
-    .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1') // links
-    .replace(/[*#_~`>]/g, '') // markdown chars
-    .replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '') // emojis
-    .replace(/\s+/g, ' ')
-    .trim();
-
-  if (!cleanText) {
-    showToast("Aucun texte à lire.", "info");
-    return;
-  }
-
-  const utter = new SpeechSynthesisUtterance(cleanText.slice(0, 2000));
-  const isEn = getLanguage() === 'en';
-  utter.lang = isEn ? 'en-US' : 'fr-FR';
-  utter.rate = 1.05;
-
-  const voices = window.speechSynthesis.getVoices();
-  if (voices && voices.length) {
-    const targetPrefix = isEn ? 'en' : 'fr';
-    const naturalVoice = voices.find(v => v.lang.startsWith(targetPrefix) && (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Premium') || v.name.includes('Thomas') || v.name.includes('Amelie') || v.name.includes('Audrey')));
-    if (naturalVoice) utter.voice = naturalVoice;
-  }
-
   _currentSpeakingBtn = btn;
-  _currentUtterance = utter;
-
   if (btn) {
-    btn.innerHTML = '<i class="ri-stop-circle-line" style="color:#ef4444;"></i> Arrêter';
+    btn.innerHTML = '<i class="ri-loader-4-line ri-spin"></i> Voix Studio...';
     btn.classList.add('speaking');
   }
 
-  utter.onend = () => {
-    stopSpeechSynthesis();
-  };
-  utter.onerror = () => {
-    stopSpeechSynthesis();
-  };
+  const gender = store.get('preferred_voice_gender', 'female');
+  const language = typeof getLanguage === 'function' ? getLanguage() : 'fr';
 
-  window.speechSynthesis.speak(utter);
+  try {
+    const resp = await fetch('/api/tts', {
+      method: 'POST',
+      headers: getApiHeaders(),
+      body: JSON.stringify({
+        text: textToSpeak,
+        gender,
+        language
+      })
+    });
+
+    if (!resp.ok) {
+      throw new Error(`TTS HTTP ${resp.status}`);
+    }
+
+    const audioBlob = await resp.blob();
+    const audioUrl = URL.createObjectURL(audioBlob);
+    const audio = new Audio(audioUrl);
+    _currentAudioInstance = audio;
+
+    audio.onplay = () => {
+      if (btn) {
+        btn.innerHTML = '<i class="ri-stop-circle-line" style="color:#ef4444;"></i> Arrêter';
+      }
+    };
+
+    audio.onended = () => {
+      URL.revokeObjectURL(audioUrl);
+      stopAudioPlayback();
+    };
+
+    audio.onerror = (e) => {
+      console.warn('Audio playback error:', e);
+      URL.revokeObjectURL(audioUrl);
+      stopAudioPlayback();
+    };
+
+    await audio.play();
+
+  } catch (err) {
+    console.warn('Neural TTS failed, falling back to browser SpeechSynthesis:', err);
+    if (!('speechSynthesis' in window)) {
+      if (window.showToast) showToast("Lecture audio non disponible", "error");
+      stopAudioPlayback();
+      return;
+    }
+
+    let cleanText = textToSpeak
+      .replace(/```[\s\S]*?```/g, '')
+      .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1')
+      .replace(/[*#_~`>]/g, '')
+      .replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    const utter = new SpeechSynthesisUtterance(cleanText.slice(0, 1500));
+    utter.lang = language === 'en' ? 'en-US' : 'fr-FR';
+    utter.rate = 1.05;
+
+    const voices = window.speechSynthesis.getVoices();
+    if (voices && voices.length) {
+      const targetPrefix = language === 'en' ? 'en' : 'fr';
+      const targetGenderName = gender === 'male' ? ['Henri', 'Thomas', 'Paul', 'Guy'] : ['Denise', 'Amelie', 'Audrey', 'Julie', 'Jenny'];
+      const matched = voices.find(v => v.lang.startsWith(targetPrefix) && targetGenderName.some(n => v.name.includes(n)));
+      if (matched) utter.voice = matched;
+    }
+
+    if (btn) {
+      btn.innerHTML = '<i class="ri-stop-circle-line" style="color:#ef4444;"></i> Arrêter';
+    }
+
+    utter.onend = () => stopAudioPlayback();
+    utter.onerror = () => stopAudioPlayback();
+
+    window.speechSynthesis.speak(utter);
+  }
 }
 window.speakChatMessageByIndex = speakChatMessageByIndex;
 
@@ -10549,6 +10611,9 @@ if (typeof window !== "undefined") window.copyChatMessageByIndex = copyChatMessa
 if (typeof window !== "undefined") window.speakChatMessage = speakChatMessage;
 if (typeof window !== "undefined") window.speakChatMessageByIndex = speakChatMessageByIndex;
 if (typeof window !== "undefined") window.stopSpeechSynthesis = stopSpeechSynthesis;
+if (typeof window !== "undefined") window.stopAudioPlayback = stopAudioPlayback;
+if (typeof window !== "undefined") window.toggleTtsVoiceGender = toggleTtsVoiceGender;
+if (typeof window !== "undefined") window.updateTtsVoiceUI = updateTtsVoiceUI;
 if (typeof window !== "undefined") window.editChatMessage = editChatMessage;
 if (typeof window !== "undefined") window.retryChatMessage = retryChatMessage;
 if (typeof window !== "undefined") window.switchModelAndRetry = switchModelAndRetry;
