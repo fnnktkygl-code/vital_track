@@ -25,3 +25,7 @@ scratch/
 .env*
 test-results/
 web-app/test-results/
+
+models/
+scratch/
+
