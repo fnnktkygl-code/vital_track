@@ -127,12 +127,14 @@ function showToast(msg, type = 'success', duration = 3500, action = null) {
   }
 
   toast.innerHTML = `
-    <div style="display:flex; align-items:center; gap:10px; flex:1; min-width:0;">
+    <div class="app-toast-icon-wrap">
       <i class="${iconClass}"></i>
-      <span style="line-height:1.35; font-size:0.86rem; word-break:break-word;">${msg}</span>
+    </div>
+    <div class="app-toast-content">
+      <div class="app-toast-message">${msg}</div>
     </div>
     ${actionHtml}
-    <button type="button" class="app-toast-close" onclick="this.closest('.app-toast').remove()" title="Fermer">&times;</button>
+    <button type="button" class="app-toast-close" onclick="this.closest('.app-toast').remove()" aria-label="Fermer">&times;</button>
   `;
 
   if (action && typeof action.onClick === 'function') {
@@ -3282,17 +3284,69 @@ function switchModelAndRetry(modelType, msgIdx) {
 }
 window.switchModelAndRetry = switchModelAndRetry;
 
+let _thinkingStepTimer = null;
+const REAL_THINKING_STEPS = [
+  { icon: 'ri-search-eye-line', color: '#34d399', text: 'Analyse sémantique & extraction des éléments...' },
+  { icon: 'ri-book-read-line', color: '#60a5fa', text: 'Consultation des bases Raintree, Ehret, Sebi & Morse...' },
+  { icon: 'ri-capsule-line', color: '#a78bfa', text: 'Calibrage selon vos émonctoires & bio-profil...' },
+  { icon: 'ri-sparkling-fill', color: '#34d399', text: 'Formulation de la synthèse vitaliste...' }
+];
+
 function addTypingIndicator() {
+  if (_thinkingStepTimer) {
+    clearInterval(_thinkingStepTimer);
+    _thinkingStepTimer = null;
+  }
+
   const container = document.getElementById('chatMessages');
-  const div = document.createElement('div'); div.className = 'message bot'; div.id = 'typing-indicator';
+  const div = document.createElement('div');
+  div.className = 'message bot';
+  div.id = 'typing-indicator';
   const typingAvatar = window.renderPigeonPortrait ? window.renderPigeonPortrait(28, 'talking') : '🐦';
+
+  let stepIdx = 0;
   div.innerHTML = `
     <div class="message-avatar">${typingAvatar}</div>
-    <div class="message-bubble" style="display:flex; align-items:center; gap:10px; padding:10px 16px;">
-      <span style="font-size:0.82rem; color:var(--text-dim); font-weight:600;"><i class="ri-search-eye-line" style="color:#34d399;"></i> ${t('chat.thinkingStatus', {}, 'Vital inspecte la mémoire & analyse...')}</span>
+    <div class="message-bubble dynamic-thinking-bubble">
+      <div class="dynamic-thinking-icon-wrap" id="typingStepIcon">
+        <i class="${REAL_THINKING_STEPS[0].icon}" style="color:${REAL_THINKING_STEPS[0].color};"></i>
+      </div>
+      <span class="dynamic-thinking-text" id="typingStepText">${REAL_THINKING_STEPS[0].text}</span>
       <div class="typing-dots"><span></span><span></span><span></span></div>
     </div>`;
-  container.appendChild(div); container.scrollTop = container.scrollHeight; return div;
+
+  _thinkingStepTimer = setInterval(() => {
+    stepIdx++;
+    if (stepIdx >= REAL_THINKING_STEPS.length) {
+      clearInterval(_thinkingStepTimer);
+      _thinkingStepTimer = null;
+      return;
+    }
+    const step = REAL_THINKING_STEPS[stepIdx];
+    const iconWrap = div.querySelector('#typingStepIcon');
+    const textSpan = div.querySelector('#typingStepText');
+    if (iconWrap && textSpan) {
+      textSpan.classList.add('step-switching');
+      setTimeout(() => {
+        iconWrap.innerHTML = `<i class="${step.icon}" style="color:${step.color};"></i>`;
+        textSpan.textContent = step.text;
+        textSpan.classList.remove('step-switching');
+      }, 150);
+    }
+  }, 750);
+
+  const origRemove = div.remove.bind(div);
+  div.remove = () => {
+    if (_thinkingStepTimer) {
+      clearInterval(_thinkingStepTimer);
+      _thinkingStepTimer = null;
+    }
+    origRemove();
+  };
+
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+  return div;
 }
 
 // ═══════ SEARCH ENGINE ═══════
@@ -9566,11 +9620,16 @@ function handleAddActionMeal(encodedMeal) {
     if (window.renderDashboard) renderDashboard();
     if (window.updateProactiveMascot) updateProactiveMascot('meal');
 
-    showToast(`🍽️ Repas "${newMeal.name}" enregistré !`, 'success', 6000, {
-      label: 'Voir mon journal →',
-      icon: 'ri-book-open-line',
-      onClick: "showPage('meals')"
-    });
+    showToast(
+      `<div style="display:flex;flex-direction:column;gap:1px;"><span style="font-weight:700;color:#fff;">Repas enregistré !</span><span style="color:var(--text-dim);font-size:0.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px;">« ${esc(newMeal.name)} »</span></div>`,
+      'success',
+      6000,
+      {
+        label: 'Voir mon journal →',
+        icon: 'ri-book-open-line',
+        onClick: "showPage('meals')"
+      }
+    );
   } catch (err) {
     console.error('Erreur handleAddActionMeal:', err);
     showToast("Impossible d'enregistrer le repas.", 'error');
@@ -10767,6 +10826,65 @@ if (typeof window !== "undefined") window.triggerPwaInstall = triggerPwaInstall;
 if (typeof window !== "undefined") window.dismissPwaBanner = dismissPwaBanner;
 if (typeof window !== "undefined") window.initScreenshotProtection = initScreenshotProtection;
 if (typeof window !== "undefined") window.setScreenshotProtection = setScreenshotProtection;
+
+// ═══════ GLOBAL THEMED TOOLTIP SANITIZER ═══════
+// Converts any native HTML title="..." into dark-glass data-tooltip="..." so ugly browser tooltips NEVER show
+function initGlobalTooltipSanitizer() {
+  function sanitize(root = document) {
+    if (!root || !root.querySelectorAll) return;
+    root.querySelectorAll('[title]').forEach(el => {
+      const txt = el.getAttribute('title');
+      if (txt && !el.hasAttribute('data-tooltip')) {
+        el.setAttribute('data-tooltip', txt);
+      }
+      el.removeAttribute('title');
+    });
+  }
+
+  if (typeof document !== 'undefined') {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => sanitize());
+    } else {
+      sanitize();
+    }
+
+    if (typeof MutationObserver !== 'undefined') {
+      const observer = new MutationObserver((mutations) => {
+        for (const m of mutations) {
+          if (m.type === 'childList') {
+            m.addedNodes.forEach(node => {
+              if (node && node.nodeType === 1) {
+                if (node.hasAttribute('title')) {
+                  node.setAttribute('data-tooltip', node.getAttribute('title'));
+                  node.removeAttribute('title');
+                }
+                node.querySelectorAll?.('[title]')?.forEach(el => {
+                  el.setAttribute('data-tooltip', el.getAttribute('title'));
+                  el.removeAttribute('title');
+                });
+              }
+            });
+          } else if (m.type === 'attributes' && m.attributeName === 'title') {
+            const target = m.target;
+            const txt = target.getAttribute('title');
+            if (txt) {
+              target.setAttribute('data-tooltip', txt);
+              target.removeAttribute('title');
+            }
+          }
+        }
+      });
+
+      observer.observe(document.documentElement, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['title']
+      });
+    }
+  }
+}
+initGlobalTooltipSanitizer();
 
 // ═══════ BOOTSTRAP INITIALIZATION ═══════
 if (typeof document !== "undefined") {
