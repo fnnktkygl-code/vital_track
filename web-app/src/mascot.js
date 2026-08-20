@@ -199,7 +199,7 @@ export class Pigeon {
     const ctx = this.ctx;
     if (!ctx) return;
     const W = this.canvas.width, H = this.canvas.height;
-    const scale = W / 100;
+    const scale = Math.min(W / 100, H / 125);
 
     const t = tNow * this.speed;
     const dt = 0.016 * this.speed;
@@ -923,8 +923,8 @@ export class VitalMascot {
     if (!this.canvas) return;
 
     const dpr = (typeof window !== 'undefined' && window.devicePixelRatio) || 1;
-    const initialW = this.canvas.offsetWidth || this.canvas.width || 84;
-    const initialH = this.canvas.offsetHeight || this.canvas.height || 84;
+    const initialW = this.canvas.offsetWidth || this.canvas.width || 100;
+    const initialH = this.canvas.offsetHeight || this.canvas.height || 125;
     this.canvas.width = initialW * dpr;
     this.canvas.height = initialH * dpr;
     this.canvas.style.width = initialW + 'px';
