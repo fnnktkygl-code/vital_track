@@ -9,6 +9,7 @@ export const VIDEO_DUBBING_DATABASE = {
     videoId: "dr_sebi_interview",
     youtubeId: "V5l9VqC1k8w",
     mediaUrl: "/videos/dr-sebi-documentary.mp4",
+    dubbedMediaUrl: "/videos/dr-sebi-documentary-fr.mp4",
     title: "The Rock Newman Show ft. Dr. Sebi (Interview Complète)",
     source: "WHUT TV / Howard University",
     duration: 3360, // 56 min
@@ -286,6 +287,7 @@ export const VIDEO_DUBBING_DATABASE = {
     videoId: "wim_hof_breathing",
     youtubeId: "tybOi4hjZFQ",
     mediaUrl: "/videos/wim-hof-3-rounds.mp4",
+    dubbedMediaUrl: "/videos/wim-hof-3-rounds-fr.mp4",
     title: "Session Guidée de Respiration Wim Hof (3 Rounds Officiels)",
     source: "Chaîne Officielle Wim Hof",
     duration: 680,

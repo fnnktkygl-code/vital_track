@@ -1,6 +1,7 @@
 /**
- * 🎙️ VITALTRACK MULTI-SPEAKER DUBBING & SYNCHRONIZATION ENGINE
- * Moteur de lecture synchronisée, attribution de voix françaises distinctes et audio ducking.
+ * 🎙️ VITALTRACK STUDIO DUBBING & SYNCHRONIZATION ENGINE
+ * Moteur audio studio haute fidélité utilisant de véritables voix neurales humaines pré-rendues,
+ * basculement instantané VF / VO et synchronisation temporelle sur vidéo.
  */
 
 class DubbingEngine {
@@ -13,69 +14,23 @@ class DubbingEngine {
     this.isDubbingEnabled = true;
     this.subtitleMode = 'fr'; // 'fr', 'en', 'off'
     this.originalVolume = 1.0;
-    this.duckedVolume = 0.15;
+    this.duckedVolume = 0.20;
 
     this.currentDialogueIndex = -1;
-    this.currentUtterance = null;
+    this.activeAudioClip = null;
     this.isSpeaking = false;
-
-    this.frenchVoices = [];
-    this.speakerVoiceAssignments = new Map();
 
     // Callbacks pour l'UI
     this.onLineChange = null;
     this.onSubtitleUpdate = null;
     this.onDubbingStateChange = null;
-
-    this._initVoices();
-  }
-
-  _initVoices() {
-    if (typeof window === 'undefined' || !window.speechSynthesis) return;
-
-    const loadVoices = () => {
-      const allVoices = window.speechSynthesis.getVoices() || [];
-      this.frenchVoices = allVoices.filter(v => 
-        v.lang && (v.lang.startsWith('fr') || v.lang.startsWith('FR'))
-      );
-      this._assignSpeakerVoices();
-    };
-
-    loadVoices();
-    if (window.speechSynthesis.onvoiceschanged !== undefined) {
-      window.speechSynthesis.onvoiceschanged = loadVoices;
-    }
-  }
-
-  _assignSpeakerVoices() {
-    if (!this.dubbingData || !this.dubbingData.speakers) return;
-
-    const speakerIds = Object.keys(this.dubbingData.speakers);
-    this.speakerVoiceAssignments.clear();
-
-    speakerIds.forEach((id, idx) => {
-      const speaker = this.dubbingData.speakers[id];
-      const settings = speaker.voiceSettings || {};
-
-      // Si plusieurs voix françaises réelles existent, on en attribue une différente à chaque locuteur
-      let voice = null;
-      if (this.frenchVoices.length > 0) {
-        voice = this.frenchVoices[idx % this.frenchVoices.length];
-      }
-
-      this.speakerVoiceAssignments.set(id, {
-        voice: voice,
-        pitch: settings.pitch || (idx === 0 ? 1.05 : 0.86),
-        rate: settings.rate || 0.96
-      });
-    });
   }
 
   /**
    * Initialise le moteur sur une vidéo donnée
    */
   loadVideo(dubbingData, target = null) {
-    this.stopSpeech();
+    this.stopAudio();
     this.dubbingData = dubbingData;
     this.currentDialogueIndex = -1;
 
@@ -84,6 +39,15 @@ class DubbingEngine {
       this.isYouTube = false;
       this.youtubeIframe = null;
       this.originalVolume = target.volume || 1.0;
+
+      // Si une version vidéo entièrement mixée en français existe et que le doublage est actif
+      if (this.isDubbingEnabled && dubbingData && dubbingData.dubbedMediaUrl) {
+        if (!target.src.includes(dubbingData.dubbedMediaUrl)) {
+          const currentTime = target.currentTime || 0;
+          target.src = dubbingData.dubbedMediaUrl;
+          target.currentTime = currentTime;
+        }
+      }
     } else if (target && target.tagName === 'IFRAME') {
       this.youtubeIframe = target;
       this.isYouTube = true;
@@ -94,7 +58,6 @@ class DubbingEngine {
       this.isYouTube = false;
     }
 
-    this._assignSpeakerVoices();
     if (this.onDubbingStateChange) {
       this.onDubbingStateChange({
         hasDubbing: !!(dubbingData && dubbingData.dialogues && dubbingData.dialogues.length > 0),
@@ -106,11 +69,32 @@ class DubbingEngine {
   }
 
   setDubbingEnabled(enabled) {
+    const prev = this.isDubbingEnabled;
     this.isDubbingEnabled = !!enabled;
-    if (!this.isDubbingEnabled) {
-      this.stopSpeech();
-      this.restoreAudioDucking();
+
+    // Si on est sur une vidéo locale avec fichier mixé dédié
+    if (this.videoElement && this.dubbingData) {
+      const currentTime = this.videoElement.currentTime || 0;
+      const wasPlaying = !this.videoElement.paused;
+
+      if (this.isDubbingEnabled && this.dubbingData.dubbedMediaUrl) {
+        this.videoElement.src = this.dubbingData.dubbedMediaUrl;
+      } else if (this.dubbingData.mediaUrl) {
+        this.videoElement.src = this.dubbingData.mediaUrl;
+      }
+
+      this.videoElement.currentTime = currentTime;
+      if (wasPlaying) {
+        this.videoElement.play().catch(() => {});
+      }
+    } else {
+      // Pour les iframes YouTube
+      if (!this.isDubbingEnabled) {
+        this.stopAudio();
+        this.restoreAudioDucking();
+      }
     }
+
     if (this.onDubbingStateChange) {
       this.onDubbingStateChange({
         isDubbingEnabled: this.isDubbingEnabled,
@@ -150,12 +134,12 @@ class DubbingEngine {
         const activeLine = dialogues[activeIdx];
         const speaker = this.dubbingData.speakers[activeLine.speaker] || { name: activeLine.speaker, color: '#38bdf8' };
 
-        // 1. Déclencher le doublage vocal si activé
-        if (this.isDubbingEnabled) {
-          this.speakDialogueLine(activeLine);
+        // Si vidéo YouTube (sans vidéo mixée locale) et doublage actif -> jouer le clip MP3 studio
+        if (this.isYouTube && this.isDubbingEnabled) {
+          this.playStudioClip(activeLine);
         }
 
-        // 2. Notifier pour le surlignage de l'UI
+        // Notifier pour le surlignage de l'UI
         if (this.onLineChange) {
           this.onLineChange({
             index: activeIdx,
@@ -164,12 +148,14 @@ class DubbingEngine {
           });
         }
 
-        // 3. Mettre à jour les sous-titres
+        // Mettre à jour les sous-titres
         this._renderSubtitle(activeLine, speaker);
       } else {
-        // Période de silence ou hors dialogue
-        this.stopSpeech();
-        this.restoreAudioDucking();
+        // Période hors réplique
+        if (this.isYouTube) {
+          this.stopAudio();
+          this.restoreAudioDucking();
+        }
         if (this.onSubtitleUpdate) {
           this.onSubtitleUpdate(null);
         }
@@ -177,62 +163,52 @@ class DubbingEngine {
     }
   }
 
-  speakDialogueLine(line) {
-    if (typeof window === 'undefined' || !window.speechSynthesis) return;
+  /**
+   * Joue le clip MP3 studio haute fidélité d'une réplique
+   */
+  playStudioClip(line) {
+    this.stopAudio();
+    const clipUrl = line.clipUrl || `/videos/dubbing/clips/${line.id}.mp3`;
 
-    this.stopSpeech();
-
-    // Re-verify voices if not loaded initially
-    if (this.frenchVoices.length === 0) {
-      const allVoices = window.speechSynthesis.getVoices() || [];
-      this.frenchVoices = allVoices.filter(v => v.lang && (v.lang.startsWith('fr') || v.lang.startsWith('FR')));
-      if (this.frenchVoices.length > 0) this._assignSpeakerVoices();
-    }
-
-    const config = this.speakerVoiceAssignments.get(line.speaker) || { pitch: 1.0, rate: 0.96, voice: null };
-
-    const utterance = new SpeechSynthesisUtterance(line.textFr);
-    utterance.lang = 'fr-FR';
-    if (config.voice) utterance.voice = config.voice;
-    utterance.pitch = config.pitch;
-    utterance.rate = config.rate;
-
-    utterance.onstart = () => {
+    try {
+      const audio = new Audio(clipUrl);
+      this.activeAudioClip = audio;
       this.isSpeaking = true;
       this.applyAudioDucking();
-    };
 
-    utterance.onend = () => {
-      this.isSpeaking = false;
+      audio.onended = () => {
+        this.isSpeaking = false;
+        this.restoreAudioDucking();
+        this.activeAudioClip = null;
+      };
+
+      audio.onerror = () => {
+        this.isSpeaking = false;
+        this.restoreAudioDucking();
+        this.activeAudioClip = null;
+      };
+
+      audio.play().catch(() => {});
+    } catch (e) {
       this.restoreAudioDucking();
-    };
-
-    utterance.onerror = () => {
-      this.isSpeaking = false;
-      this.restoreAudioDucking();
-    };
-
-    this.currentUtterance = utterance;
-    if (window.speechSynthesis.paused) {
-      window.speechSynthesis.resume();
     }
-    window.speechSynthesis.speak(utterance);
   }
 
+  /**
+   * Teste la voix humaine réelle d'un locuteur avec un extrait studio
+   */
   testSpeakerVoice(speakerId) {
-    if (typeof window === 'undefined' || !window.speechSynthesis) return;
-    this.stopSpeech();
-    const speaker = this.dubbingData?.speakers?.[speakerId] || { name: speakerId };
-    const config = this.speakerVoiceAssignments.get(speakerId) || { pitch: 1.0, rate: 0.96, voice: null };
-    const utterance = new SpeechSynthesisUtterance(`Bonjour, je suis la voix française de ${speaker.name}. Le doublage est actif.`);
-    utterance.lang = 'fr-FR';
-    if (config.voice) utterance.voice = config.voice;
-    utterance.pitch = config.pitch;
-    utterance.rate = config.rate;
-    if (window.speechSynthesis.paused) {
-      window.speechSynthesis.resume();
+    this.stopAudio();
+    if (!this.dubbingData || !this.dubbingData.dialogues) return;
+
+    // Trouver la première réplique de ce locuteur
+    const sampleLine = this.dubbingData.dialogues.find(d => d.speaker === speakerId) || this.dubbingData.dialogues[0];
+    if (sampleLine) {
+      const clipUrl = `/videos/dubbing/clips/${sampleLine.id}.mp3`;
+      const audio = new Audio(clipUrl);
+      this.activeAudioClip = audio;
+      audio.play().catch(() => {});
     }
-    window.speechSynthesis.speak(utterance);
   }
 
   applyAudioDucking() {
@@ -243,7 +219,7 @@ class DubbingEngine {
     } else if (this.isYouTube && this.youtubeIframe && this.youtubeIframe.contentWindow) {
       try {
         this.youtubeIframe.contentWindow.postMessage(
-          JSON.stringify({ event: 'command', func: 'setVolume', args: [15] }),
+          JSON.stringify({ event: 'command', func: 'setVolume', args: [20] }),
           '*'
         );
       } catch (e) {}
@@ -265,11 +241,13 @@ class DubbingEngine {
     }
   }
 
-  stopSpeech() {
-    if (typeof window !== 'undefined' && window.speechSynthesis) {
+  stopAudio() {
+    if (this.activeAudioClip) {
       try {
-        window.speechSynthesis.cancel();
+        this.activeAudioClip.pause();
+        this.activeAudioClip.currentTime = 0;
       } catch (e) {}
+      this.activeAudioClip = null;
     }
     this.isSpeaking = false;
   }
@@ -305,17 +283,17 @@ class DubbingEngine {
   }
 
   onVideoPause() {
-    this.stopSpeech();
+    this.stopAudio();
     this.restoreAudioDucking();
   }
 
   onVideoSeek() {
-    this.stopSpeech();
+    this.stopAudio();
     this.currentDialogueIndex = -1;
   }
 
   destroy() {
-    this.stopSpeech();
+    this.stopAudio();
     this.restoreAudioDucking();
     this.dubbingData = null;
     this.videoElement = null;

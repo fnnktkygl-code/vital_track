@@ -7812,7 +7812,7 @@ function renderDubbingControlsAndScript(dubbingData, mediaUrl, type, youtubeId, 
             const spk = dubbingData.speakers[d.speaker] || { name: d.speaker, color: '#38bdf8', avatar: '🎙️' };
             const isActive = currentSeconds >= d.start && currentSeconds <= d.end;
             return `
-              <div class="dialogue-bubble ${isActive ? 'active' : ''}" id="dialogueBubble_${index}" onclick="jumpToDialogueTime(${d.start}, '${esc(mediaUrl)}', '${type}', '${youtubeId}', '${esc(title)}', '${esc(source)}')">
+              <div class="dialogue-bubble ${isActive ? 'active' : ''}" id="dialogueBubble_${index}" onclick="jumpToDialogueTime(${d.start}, '${esc(mediaUrl)}', '${type}', '${youtubeId}', '${esc(title)}', '${esc(source)}', '${d.id}')">
                 <div class="speaker-avatar-circle" style="border:1px solid ${spk.color}55; color:${spk.color};">
                   ${spk.avatar || '🎙️'}
                 </div>
@@ -7870,10 +7870,10 @@ function toggleVideoDubbing() {
   if (btn) {
     if (dubbingEngine.isDubbingEnabled) {
       btn.classList.add('active');
-      btn.innerHTML = `<i class="ri-volume-vibrate-fill"></i> 🎙️ VF Activée (Multi-Voix)`;
+      btn.innerHTML = `<i class="ri-volume-vibrate-fill"></i> 🎙️ VF Studio HD (Active)`;
     } else {
       btn.classList.remove('active');
-      btn.innerHTML = `<i class="ri-volume-mute-line"></i> 🔇 VF Coupée (VO Seule)`;
+      btn.innerHTML = `<i class="ri-volume-mute-line"></i> 🔇 VO Originale (Active)`;
     }
   }
 }
@@ -7892,7 +7892,7 @@ function setVideoSubtitleMode(mode) {
   }
 }
 
-function jumpToDialogueTime(startSec, mediaUrl, type, youtubeId, title, source) {
+function jumpToDialogueTime(startSec, mediaUrl, type, youtubeId, title, source, dialogueId = null) {
   const videoEl = document.getElementById('mediaHtml5Video');
   if (videoEl) {
     videoEl.currentTime = startSec;
@@ -7900,6 +7900,10 @@ function jumpToDialogueTime(startSec, mediaUrl, type, youtubeId, title, source) 
     dubbingEngine.onTimeUpdate(startSec);
   } else if (type === 'youtube' && youtubeId) {
     playVideoAtTimestamp(mediaUrl, startSec, title, type, youtubeId, `Dialogue à ${formatSeconds(startSec)}`, source);
+  }
+  if (dialogueId && dubbingEngine.isYouTube && dubbingEngine.isDubbingEnabled) {
+    const line = dubbingEngine.dubbingData?.dialogues?.find(d => d.id === dialogueId);
+    if (line) dubbingEngine.playStudioClip(line);
   }
 }
 
@@ -7981,9 +7985,14 @@ function playVideoAtTimestamp(mediaUrl, seconds = 0, title = '', type = 'local',
     }, 1000);
 
   } else {
+    // Si doublage FR actif et fichier mixé disponible, charger directement la vidéo doublée studio
+    const activeVideoSrc = (dubbingEngine.isDubbingEnabled && dubbingData && dubbingData.dubbedMediaUrl) 
+      ? dubbingData.dubbedMediaUrl 
+      : mediaUrl;
+
     playerContainer.innerHTML = `
       <video id="mediaHtml5Video" controls autoplay playsinline style="width:100%; height:100%; border-radius:12px; background:#000;">
-        <source src="${esc(mediaUrl)}" type="video/mp4">
+        <source src="${esc(activeVideoSrc)}" type="video/mp4">
         Votre navigateur ne supporte pas la lecture vidéo.
       </video>
       <div id="mediaVideoSubtitleOverlay" class="video-subtitle-overlay" style="display:none;"></div>
