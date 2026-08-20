@@ -10857,6 +10857,30 @@ function triggerInAppPigeonAction() {
   window.setInAppMascotAction(next);
 };
 
+function triggerMascotInPlaceReaction(action) {
+  const actions = ['laugh', 'celebrate', 'coo', 'walk', 'think'];
+  const act = action || actions[Math.floor(Math.random() * actions.length)];
+  
+  if (window.mascot && typeof window.mascot.setAction === 'function') {
+    window.mascot.setAction(act);
+  }
+  
+  if (act === 'coo' && window.pigeonAudio) {
+    window.pigeonAudio.playRealCoo();
+  }
+  
+  const speechEl = document.getElementById('mascotSpeechBubble');
+  if (speechEl && _mascotQuotes[act]) {
+    speechEl.innerHTML = `💬 <strong>Vital :</strong> ${_mascotQuotes[act]}`;
+    speechEl.style.transform = 'scale(1.02)';
+    speechEl.style.transition = 'transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)';
+    setTimeout(() => {
+      speechEl.style.transform = 'scale(1)';
+    }, 250);
+  }
+}
+window.triggerMascotInPlaceReaction = triggerMascotInPlaceReaction;
+
 function toggleInAppAudioFx() {
   if (window.pigeonAudio) {
     const enabled = window.pigeonAudio.toggleSound();

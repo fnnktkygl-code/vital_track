@@ -934,13 +934,16 @@ export class VitalMascot {
     this.running = true;
     requestAnimationFrame(this.loop);
 
-    // Click on canvas opens HD Studio modal without ugly native tooltip!
+    // Click on canvas triggers playful in-place reaction without opening any popup/modal
     this.canvas.style.cursor = 'pointer';
-    this.canvas.removeAttribute('title'); // Élimine tout infobulle par défaut du navigateur
+    this.canvas.removeAttribute('title');
     this.canvas.addEventListener('click', (e) => {
       e.stopPropagation();
-      if (typeof window !== 'undefined' && window.openMascotStudioModal) {
-        window.openMascotStudioModal();
+      const actions = ['laugh', 'celebrate', 'coo', 'walk', 'think'];
+      const next = actions[Math.floor(Math.random() * actions.length)];
+      this.setAction(next);
+      if (typeof window !== 'undefined' && window.triggerMascotInPlaceReaction) {
+        window.triggerMascotInPlaceReaction(next);
       }
     });
   }

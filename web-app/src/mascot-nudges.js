@@ -74,7 +74,7 @@ class PigeonNudgeEngine {
     toast.id = toastId;
 
     toast.innerHTML = `
-      <div class="pigeon-nudge-avatar-wrap" onclick="if(window.openMascotStudioModal) window.openMascotStudioModal();" title="Ouvrir le Mascotte Studio">
+      <div class="pigeon-nudge-avatar-wrap" onclick="if(window.triggerMascotInPlaceReaction) window.triggerMascotInPlaceReaction();" title="Vital Mascotte">
         <canvas class="mini-nudge-canvas" width="56" height="70"></canvas>
       </div>
       <div class="pigeon-nudge-content">
