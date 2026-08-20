@@ -7819,9 +7819,6 @@ function playVideoAtTimestamp(mediaUrl, seconds = 0, title = '', type = 'local',
 }
 
 function closeMediaVideoModal(e) {
-  if (e && e.target && e.target.closest('.media-video-modal-content') && !e.target.closest('.modal-close-btn')) {
-    return;
-  }
   if (videoTimeSyncInterval) {
     clearInterval(videoTimeSyncInterval);
     videoTimeSyncInterval = null;
@@ -7833,13 +7830,31 @@ function closeMediaVideoModal(e) {
   if (playerContainer) {
     const vid = playerContainer.querySelector('video');
     if (vid) {
-      vid.pause();
-      vid.src = '';
+      try {
+        vid.pause();
+        vid.removeAttribute('src');
+        vid.load();
+      } catch (err) {}
+    }
+    const iframe = playerContainer.querySelector('iframe');
+    if (iframe) {
+      iframe.src = '';
     }
     playerContainer.innerHTML = '';
   }
   if (modal) modal.style.display = 'none';
   document.body.style.overflow = '';
+}
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const modal = document.getElementById('mediaVideoModal');
+      if (modal && modal.style.display !== 'none') {
+        closeMediaVideoModal();
+      }
+    }
+  });
 }
 
 // ═══════ PDF PASSAGE MODAL ═══════

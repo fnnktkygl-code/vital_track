@@ -2098,15 +2098,17 @@
   </div>
 
   <!-- ═══════ MODALE LECTEUR VIDÉO HD AVEC CHAPITRAGE ═══════ -->
-  <div id="mediaVideoModal" class="modal-overlay" onclick="closeMediaVideoModal(event)" style="display:none; z-index:9999;">
-    <div class="modal-card glass media-video-modal-content" onclick="event.stopPropagation()" style="max-width:840px; width:95%; max-height:90vh; overflow-y:auto; border-radius:20px; padding:20px; position:relative;">
-      <button class="modal-close-btn" onclick="closeMediaVideoModal(null)" style="position:absolute; top:16px; right:16px; background:rgba(255,255,255,0.08); border:none; color:var(--text); width:34px; height:34px; border-radius:50%; cursor:pointer; font-size:1.2rem; display:flex; align-items:center; justify-content:center; z-index:10;">
-        <i class="ri-close-line"></i>
+  <div id="mediaVideoModal" class="modal-overlay" onclick="if (event.target === this) closeMediaVideoModal(event)" style="display:none; z-index:99999; background:rgba(0,0,0,0.85); backdrop-filter:blur(10px);">
+    <div class="modal-card glass media-video-modal-content" onclick="event.stopPropagation()" style="max-width:860px; width:95%; max-height:92vh; overflow-y:auto; border-radius:20px; padding:20px; position:relative; border:1px solid rgba(255,255,255,0.12); box-shadow:0 20px 60px rgba(0,0,0,0.8);">
+      
+      <!-- Bouton Fermer Haute Visibilité en haut à droite -->
+      <button type="button" class="modal-close-btn" onclick="closeMediaVideoModal()" style="position:absolute; top:14px; right:14px; background:rgba(239,68,68,0.25); border:1px solid rgba(239,68,68,0.5); color:#fff; padding:6px 14px; border-radius:24px; cursor:pointer; font-size:0.85rem; font-weight:700; display:inline-flex; align-items:center; gap:6px; z-index:20; box-shadow:0 4px 16px rgba(0,0,0,0.4); transition:all 0.2s ease;">
+        <i class="ri-close-circle-fill" style="font-size:1.15rem; color:#f87171;"></i> Fermer
       </button>
 
-      <div id="mediaVideoModalHeader" style="margin-bottom:12px; padding-right:40px;">
+      <div id="mediaVideoModalHeader" style="margin-bottom:12px; padding-right:110px;">
         <div id="mediaVideoModalSource" style="font-size:0.75rem; color:var(--accent); font-weight:700; text-transform:uppercase; margin-bottom:4px;"></div>
-        <h3 id="mediaVideoModalTitle" style="margin:0; font-size:1.15rem; color:#fff; font-weight:700;"></h3>
+        <h3 id="mediaVideoModalTitle" style="margin:0; font-size:1.15rem; color:#fff; font-weight:700; line-height:1.3;"></h3>
         <div id="mediaVideoModalChapter" style="font-size:0.85rem; color:var(--text-dim); margin-top:2px;"></div>
       </div>
 
@@ -2123,6 +2125,13 @@
         <div id="mediaVideoTimelineChapters" class="media-timeline-chapters">
           <!-- Injected via JS -->
         </div>
+      </div>
+
+      <!-- Bouton Quitter Plein Écran en bas de modale -->
+      <div style="margin-top:16px; border-top:1px solid rgba(255,255,255,0.08); padding-top:14px;">
+        <button type="button" class="btn-secondary" style="width:100%; padding:12px; border-radius:12px; font-weight:700; font-size:0.9rem; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.15); color:#fff; display:flex; align-items:center; justify-content:center; gap:8px; cursor:pointer;" onclick="closeMediaVideoModal()">
+          <i class="ri-arrow-go-back-line"></i> Quitter le Lecteur & Retourner à la Médiathèque
+        </button>
       </div>
     </div>
   </div>
