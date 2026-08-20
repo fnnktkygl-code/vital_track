@@ -1316,6 +1316,8 @@ function toggleTheme() {
     store.set('theme', 'dark');
     document.querySelectorAll('.theme-icon, #themeIcon, #themeIconMobile, #desktopThemeIcon').forEach(i => i.className = 'ri-moon-line theme-icon');
   }
+  if (typeof updateCircadianWidget === 'function') updateCircadianWidget();
+  if (typeof renderDashboard === 'function') renderDashboard();
 };
 function loadTheme() {
   if (store.get('theme') === 'light') {
@@ -1324,6 +1326,7 @@ function loadTheme() {
   } else {
     document.querySelectorAll('.theme-icon, #themeIcon, #themeIconMobile, #desktopThemeIcon').forEach(i => i.className = 'ri-moon-line theme-icon');
   }
+  if (typeof updateCircadianWidget === 'function') updateCircadianWidget();
 }
 
 // ═══════ PROFILE & BIO-MEMORY ENGINE ═══════
@@ -1583,28 +1586,30 @@ function renderDashboard() {
     arcProgress.style.stroke = isZero ? 'rgba(255,255,255,0.1)' : (score >= 70 ? 'var(--accent)' : score >= 40 ? 'var(--warn)' : 'var(--danger)');
   }
 
+  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+
   const levelBadge = document.getElementById('vitalityLevelBadge');
   const commentEl = document.getElementById('vitalityScoreComment');
   if (commentEl && levelBadge) {
     if (todayMeals.length === 0 && !breakdown.hasFasting && !breakdown.hasBreathing) {
-      levelBadge.style.background = 'var(--surface-hover)';
-      levelBadge.style.borderColor = 'var(--border)';
-      levelBadge.style.color = 'var(--text-dim)';
+      levelBadge.style.background = isLight ? '#f1f5f9' : 'var(--surface-hover)';
+      levelBadge.style.borderColor = isLight ? '#cbd5e1' : 'var(--border)';
+      levelBadge.style.color = isLight ? '#475569' : 'var(--text-dim)';
       commentEl.textContent = "En attente d'enregistrements aujourd'hui";
     } else if (score >= 70) {
-      levelBadge.style.background = 'rgba(16,185,129,0.14)';
-      levelBadge.style.borderColor = 'rgba(16,185,129,0.3)';
-      levelBadge.style.color = '#10b981';
+      levelBadge.style.background = isLight ? '#dcfce7' : 'rgba(16,185,129,0.14)';
+      levelBadge.style.borderColor = isLight ? '#86efac' : 'rgba(16,185,129,0.3)';
+      levelBadge.style.color = isLight ? '#047857' : '#10b981';
       commentEl.textContent = `Vitalité rayonnante · Électrolytes optimaux (${score}/100)`;
     } else if (score >= 40) {
-      levelBadge.style.background = 'rgba(245,158,11,0.14)';
-      levelBadge.style.borderColor = 'rgba(245,158,11,0.3)';
-      levelBadge.style.color = '#f59e0b';
+      levelBadge.style.background = isLight ? '#fef3c7' : 'rgba(245,158,11,0.14)';
+      levelBadge.style.borderColor = isLight ? '#fde68a' : 'rgba(245,158,11,0.3)';
+      levelBadge.style.color = isLight ? '#92400e' : '#f59e0b';
       commentEl.textContent = `Vitalité modérée · Marge d'optimisation (${score}/100)`;
     } else {
-      levelBadge.style.background = 'rgba(239,68,68,0.14)';
-      levelBadge.style.borderColor = 'rgba(239,68,68,0.3)';
-      levelBadge.style.color = '#ef4444';
+      levelBadge.style.background = isLight ? '#fee2e2' : 'rgba(239,68,68,0.14)';
+      levelBadge.style.borderColor = isLight ? '#fca5a5' : 'rgba(239,68,68,0.3)';
+      levelBadge.style.color = isLight ? '#991b1b' : '#ef4444';
       commentEl.textContent = `Terrain acidifié · Priorité élimination & repos (${score}/100)`;
     }
   }
@@ -1660,8 +1665,9 @@ function renderDashboard() {
 
   if (focusCard && focusInsight && focusChips) {
     let fIcon = 'ri-sparkling-fill';
-    let fColor = '#10b981';
-    let fBg = 'rgba(16,185,129,0.15)';
+    let fColor = isLight ? '#047857' : '#10b981';
+    let fBg = isLight ? '#dcfce7' : 'rgba(16,185,129,0.15)';
+    let fBorder = isLight ? '#86efac' : '#10b981';
     let fTag = 'Recommandation';
     let fInsight = '';
     let fChipsList = [];
@@ -1672,8 +1678,9 @@ function renderDashboard() {
 
     if (!breakdown.hasMeals && !breakdown.hasFasting && !breakdown.hasBreathing) {
       fIcon = 'ri-seedling-fill';
-      fColor = '#10b981';
-      fBg = 'rgba(16,185,129,0.15)';
+      fColor = isLight ? '#047857' : '#10b981';
+      fBg = isLight ? '#dcfce7' : 'rgba(16,185,129,0.15)';
+      fBorder = isLight ? '#86efac' : '#10b981';
       fTag = 'Réveil Cellulaire';
       fInsight = 'Démarrez par une hydratation tiède citronnée et un premier repas vivant riche en micronutriments.';
       fChipsList = [
@@ -1683,8 +1690,9 @@ function renderDashboard() {
       ];
     } else if (breakdown.hasFasting && fScore < 40) {
       fIcon = 'ri-drop-fill';
-      fColor = '#38bdf8';
-      fBg = 'rgba(56,189,248,0.15)';
+      fColor = isLight ? '#0369a1' : '#38bdf8';
+      fBg = isLight ? '#e0f2fe' : 'rgba(56,189,248,0.15)';
+      fBorder = isLight ? '#7dd3fc' : '#38bdf8';
       fTag = 'Émonctoires & Repos';
       fInsight = 'Prolongez la fenêtre de repos digestif pour relancer l\'autophagie et soulager la filtration rénale.';
       fChipsList = [
@@ -1694,8 +1702,9 @@ function renderDashboard() {
       ];
     } else if (breakdown.hasMeals && nScore < 60) {
       fIcon = 'ri-leaf-fill';
-      fColor = '#f59e0b';
-      fBg = 'rgba(245,158,11,0.15)';
+      fColor = isLight ? '#92400e' : '#f59e0b';
+      fBg = isLight ? '#fef3c7' : 'rgba(245,158,11,0.15)';
+      fBorder = isLight ? '#fde68a' : '#f59e0b';
       fTag = 'Équilibre PRAL';
       fInsight = 'Charge acide détectée : Augmentez la part de fruits aqueux, pastèque, raisin ou jus verts frais.';
       fChipsList = [
@@ -1705,8 +1714,9 @@ function renderDashboard() {
       ];
     } else if (!breakdown.hasBreathing || bScore < 40) {
       fIcon = 'ri-windy-fill';
-      fColor = '#a855f7';
-      fBg = 'rgba(168,85,247,0.15)';
+      fColor = isLight ? '#6b21a8' : '#a855f7';
+      fBg = isLight ? '#f3e8ff' : 'rgba(168,85,247,0.15)';
+      fBorder = isLight ? '#d8b4fe' : '#a855f7';
       fTag = 'Oxygénation';
       fInsight = 'Activez 5 minutes de cohérence cardiaque pour stimuler le flux lymphatique et apaiser le système nerveux.';
       fChipsList = [
@@ -1716,8 +1726,9 @@ function renderDashboard() {
       ];
     } else {
       fIcon = 'ri-sparkling-fill';
-      fColor = '#10b981';
-      fBg = 'rgba(16,185,129,0.15)';
+      fColor = isLight ? '#047857' : '#10b981';
+      fBg = isLight ? '#dcfce7' : 'rgba(16,185,129,0.15)';
+      fBorder = isLight ? '#86efac' : '#10b981';
       fTag = 'Excellence';
       fInsight = 'Électrolytes et vitalité au sommet ! Vos cellules disposent d\'un potentiel électromagnétique maximal.';
       fChipsList = [
@@ -1729,7 +1740,7 @@ function renderDashboard() {
 
     if (focusIconBadge) {
       focusIconBadge.style.background = fBg;
-      focusIconBadge.style.borderColor = fColor;
+      focusIconBadge.style.borderColor = fBorder;
       focusIconBadge.style.color = fColor;
     }
     if (focusIcon) {
@@ -11391,6 +11402,7 @@ function updateDashStats() {
 let _isCircadianDragging = false;
 
 function getCircadianPhaseData(h, m = 0) {
+  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
   let shortCycle = '';
   let fullCycle = '';
   let iconClass = '';
@@ -11402,37 +11414,37 @@ function getCircadianPhaseData(h, m = 0) {
     fullCycle = 'ÉLIMINATION ACTIVE & DRAINAGE';
     iconClass = 'ri-sun-cloudy-fill';
     descText = "04h - 08h • Pic d'élimination des toxines & filtration rénale. Hydratation à jeun (eau tiède, citron, sève).";
-    phaseColor = '#f59e0b';
+    phaseColor = isLight ? '#b45309' : '#f59e0b';
   } else if (h >= 8 && h < 12) {
     shortCycle = 'ÉLIMINATION (Matin)';
     fullCycle = 'ÉLIMINATION DIGESTIVE';
     iconClass = 'ri-sun-foggy-fill';
     descText = "08h - 12h • Nettoyage intestinal & réveil enzymatique. Privilégiez les fruits aqueux, jus ou jeûne matinal.";
-    phaseColor = '#eab308';
+    phaseColor = isLight ? '#a16207' : '#eab308';
   } else if (h >= 12 && h < 16) {
     shortCycle = 'APPROPRIATION (Zénith)';
     fullCycle = 'APPROPRIATION MAXIMALE';
     iconClass = 'ri-sun-fill';
     descText = "12h - 16h • Feu digestif au maximum. Fenêtre idéale pour le repas principal dense, vivant & nutritif.";
-    phaseColor = '#10b981';
+    phaseColor = isLight ? '#047857' : '#10b981';
   } else if (h >= 16 && h < 20) {
     shortCycle = 'APPROPRIATION (Soir)';
     fullCycle = 'DIGESTION & TRANSITION';
     iconClass = 'ri-sunset-fill';
     descText = "16h - 20h • Fin de la fenêtre d'alimentation. Dîner léger, légumes vapeurs minéralisants et tisanes digestives.";
-    phaseColor = '#14b8a6';
+    phaseColor = isLight ? '#0f766e' : '#14b8a6';
   } else if (h >= 20 && h < 24) {
     shortCycle = 'ASSIMILATION';
     fullCycle = 'ASSIMILATION CELLULAIRE';
     iconClass = 'ri-moon-fill';
     descText = "20h - 00h • Assimilation des nutriments & sécrétion de mélatonine. Repos digestif et détente nerveuse.";
-    phaseColor = '#818cf8';
+    phaseColor = isLight ? '#4338ca' : '#818cf8';
   } else {
     shortCycle = 'RÉGÉNÉRATION';
     fullCycle = 'RÉGÉNÉRATION & AUTOPHAGIE';
     iconClass = 'ri-moon-clear-fill';
     descText = "00h - 04h • Sommeil profond, autophagie cellulaire & détox hépatique nocturne. Repos absolu.";
-    phaseColor = '#a855f7';
+    phaseColor = isLight ? '#7e22ce' : '#a855f7';
   }
 
   return { shortCycle, fullCycle, iconClass, descText, phaseColor };
