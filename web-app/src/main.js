@@ -8100,23 +8100,24 @@ function renderResources() {
   ];
 
   const videos = [
+    // 🇫🇷 ÉDITIONS FRANÇAISES (VF HD & DOCUMENTAIRES)
     {
-      id: "dr_sebi_interview",
+      id: "dr_sebi_interview_fr",
+      lang: "fr",
       title: "Documentaire : The Rock Newman Show ft. Dr. Sebi (VF HD)",
       localSrc: "/videos/dr-sebi-documentary-fr.mp4",
-      originalSrc: "/videos/dr-sebi-documentary.mp4",
       poster: "/videos/posters/dr-sebi-documentary.jpg",
       source: "WHUT TV • Version Française HD (56 min)",
       badgeClass: "badge-success",
       badgeText: "🇫🇷 Version Française Complète",
       type: "local-video",
-      description: "L'entretien télévisé et documentaire historique (56 min) avec le Dr. Sebi sur Howard University Television : explications détaillées sur la biochimie alcaline, la nutrition électrique cellulaire, le nettoyage du mucus et les protocoles thérapeutiques naturels."
+      description: "L'entretien télévisé et documentaire historique (56 min) avec le Dr. Sebi sur Howard University Television : doublé intégralement en français studio sur l'ensemble des 10 chapitres (biochimie alcaline, aliments électriques, procès de New York, protocoles thérapeutiques)."
     },
     {
-      id: "wim_hof_breathing",
+      id: "wim_hof_breathing_fr",
+      lang: "fr",
       title: "Session Guidée de Respiration Wim Hof (VF HD)",
       localSrc: "/videos/wim-hof-3-rounds-fr.mp4",
-      originalSrc: "/videos/wim-hof-3-rounds.mp4",
       poster: "/videos/posters/wim-hof-3-rounds.jpg",
       source: "Wim Hof Officiel • VF HD (11 min)",
       badgeClass: "badge-success",
@@ -8126,6 +8127,7 @@ function renderResources() {
     },
     {
       id: "wim_hof_vice",
+      lang: "fr",
       title: "Inside the Superhuman World of Wim Hof (Vice Documentaire)",
       url: "https://www.youtube-nocookie.com/embed/Np0jGp6442A",
       watchUrl: "https://www.youtube.com/watch?v=Np0jGp6442A",
@@ -8138,6 +8140,7 @@ function renderResources() {
     },
     {
       id: "arnold_ehret_masterclass",
+      lang: "fr",
       title: "Masterclass : Le Système de Guérison du Régime Sans Mucus",
       url: "https://www.youtube-nocookie.com/embed/EjTWFoqLy34",
       watchUrl: "https://www.youtube.com/watch?v=EjTWFoqLy34",
@@ -8150,9 +8153,10 @@ function renderResources() {
     },
     {
       id: "dr_morse_lymphatic",
+      lang: "fr",
       title: "Dr. Robert Morse : Le Grand Système Lymphatique & Reins",
       url: "https://www.youtube-nocookie.com/embed/_ufnGrKmL1c",
-      watchUrl: "https://www.youtube.com/watch?v=_ufnGrKmL1c",
+      watchUrl: "https://www.youtube.com/watch?v=Np0jGp6442A",
       youtubeId: "_ufnGrKmL1c",
       source: "Club Santé Naturelle (56 min)",
       badgeClass: "badge-warning",
@@ -8162,6 +8166,7 @@ function renderResources() {
     },
     {
       id: "what_the_health",
+      lang: "fr",
       title: "What The Health (Film Documentaire)",
       url: "https://www.youtube-nocookie.com/embed/_ymX8x0IqM8",
       watchUrl: "https://www.youtube.com/watch?v=_ymX8x0IqM8",
@@ -8170,6 +8175,56 @@ function renderResources() {
       badgeText: "🎬 Film Documentaire",
       type: "video",
       description: "Film d'investigation sur les impacts des aliments ultra-transformés et les bénéfices prouvés de la nutrition végétale intégrale."
+    },
+
+    // 🇬🇧 AUTHENTIC ORIGINAL ENGLISH EDITIONS
+    {
+      id: "dr_sebi_interview_en",
+      lang: "en",
+      title: "The Rock Newman Show ft. Dr. Sebi (Original English HD)",
+      localSrc: "/videos/dr-sebi-documentary.mp4",
+      poster: "/videos/posters/dr-sebi-documentary.jpg",
+      source: "WHUT TV / Howard University (56 min)",
+      badgeClass: "badge-purple",
+      badgeText: "🇬🇧 Authentic English Edition",
+      type: "local-video",
+      description: "The complete historic 56-minute television interview and documentary with Dr. Sebi on WHUT TV: alkaline cell biochemistry, electric cellular food, mucus removal, and natural therapeutic protocols."
+    },
+    {
+      id: "wim_hof_breathing_en",
+      lang: "en",
+      title: "Guided Wim Hof Breathing (Official English HD)",
+      localSrc: "/videos/wim-hof-3-rounds.mp4",
+      poster: "/videos/posters/wim-hof-3-rounds.jpg",
+      source: "Wim Hof Official (11 min)",
+      badgeClass: "badge-purple",
+      badgeText: "🇬🇧 Official English Edition",
+      type: "local-video",
+      description: "The official original 3-round guided breathing session with Wim Hof (The Iceman), with real-time breathing rhythms and retention timers."
+    },
+    {
+      id: "wim_hof_science_en",
+      lang: "en",
+      title: "Wim Hof: Testing the Immune System (Original English HD)",
+      localSrc: "/videos/wim-hof-science.mp4",
+      poster: "/videos/posters/wim-hof-science.jpg",
+      source: "Radboud University / Wim Hof (71 min)",
+      badgeClass: "badge-purple",
+      badgeText: "🇬🇧 Original English Video",
+      type: "local-video",
+      description: "Comprehensive scientific documentary documenting clinical trials at Radboud University and voluntary modulation of the human autonomic nervous system and immune response."
+    },
+    {
+      id: "wim_hof_tutorial_en",
+      lang: "en",
+      title: "Wim Hof: Complete Method Tutorial (Original English HD)",
+      localSrc: "/videos/wim-hof-tutorial.mp4",
+      poster: "/videos/posters/wim-hof-tutorial.jpg",
+      source: "Wim Hof Official Tutorial (20 min)",
+      badgeClass: "badge-purple",
+      badgeText: "🇬🇧 Original English Video",
+      type: "local-video",
+      description: "In-depth video tutorial by Wim Hof on breathing mechanics, cold exposure progression, and conscious mental focus."
     }
   ];
 
@@ -8179,10 +8234,10 @@ function renderResources() {
 
   if (_resourcesCatalogTab === 'fr') {
     filteredBooks = allBooks.filter(b => b.lang === 'fr');
-    displayedVideos = videos.filter(v => v.type === 'local-video' || v.badgeText.includes('FR'));
+    displayedVideos = videos.filter(v => v.lang === 'fr');
   } else if (_resourcesCatalogTab === 'en') {
     filteredBooks = allBooks.filter(b => b.lang === 'en');
-    displayedVideos = [];
+    displayedVideos = videos.filter(v => v.lang === 'en');
   } else if (_resourcesCatalogTab === 'videos') {
     filteredBooks = [];
     displayedVideos = videos;
@@ -8238,13 +8293,13 @@ function renderResources() {
           🌟 Tout (${allBooks.length + videos.length})
         </button>
         <button type="button" class="btn-tab ${_resourcesCatalogTab === 'fr' ? 'active' : ''}" onclick="setResourcesCatalogTab('fr')">
-          🇫🇷 Ouvrages & Vidéos en Français (${allBooks.filter(b => b.lang === 'fr').length + videos.filter(v => v.type === 'local-video' || v.badgeText.includes('FR')).length})
+          🇫🇷 En Français (${allBooks.filter(b => b.lang === 'fr').length + videos.filter(v => v.lang === 'fr').length})
         </button>
         <button type="button" class="btn-tab ${_resourcesCatalogTab === 'en' ? 'active' : ''}" onclick="setResourcesCatalogTab('en')">
-          🇬🇧 Original English Editions (${allBooks.filter(b => b.lang === 'en').length})
+          🇬🇧 In English (${allBooks.filter(b => b.lang === 'en').length + videos.filter(v => v.lang === 'en').length})
         </button>
         <button type="button" class="btn-tab ${_resourcesCatalogTab === 'videos' ? 'active' : ''}" onclick="setResourcesCatalogTab('videos')">
-          🎬 Vidéos & Documentaires (${videos.length})
+          🎬 Vidéos (${videos.length})
         </button>
       </div>
 
