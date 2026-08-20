@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 """
-🎙️ VITALTRACK MULTI-SPEAKER STUDIO DUBBING PIPELINE (HIGH-CONTRAST DIALOG DIARIZATION)
-Génère une piste audio française continue de 56 minutes avec 2 voix distinctes à haut contraste :
-- Rock Newman (Journaliste TV) : fr-FR-HenriNeural (ton clair, vif, parisien)
-- Dr. Sebi (Herboriste & Sage) : fr-CA-JeanNeural (timbre chaleureux, posé et profond)
+🎙️ VITALTRACK AI LINGUISTIC POLISHING & MULTI-SPEAKER DUBBING PIPELINE
+1. Analyse lexicale & protection des noms propres (Lisa « Left Eye » Lopes, Dr. Sebi, etc.)
+2. Adaptation prosodique pour le français parlé (pauses respiratoires, virgules, intonations)
+3. Synthèse neuronale multi-voix haute fidélité (Rock Newman vs Dr. Sebi)
+4. Assemblage continu 56 minutes sans coupure avec Audio Ducking
 """
 
 import os
+import re
 import sys
 import json
 import asyncio
@@ -20,7 +22,7 @@ BASE_DIR = Path("/Users/richard/Developer/vital_track")
 WEB_APP_DIR = BASE_DIR / "web-app"
 PUBLIC_VIDEOS_DIR = WEB_APP_DIR / "public" / "videos"
 SCRATCH_DIR = BASE_DIR / "scratch"
-CLIPS_DIR = SCRATCH_DIR / "master_dubbing_clips_dialog"
+CLIPS_DIR = SCRATCH_DIR / "master_dubbing_clips_ai_polished"
 SILENCE_DIR = SCRATCH_DIR / "silence_cache"
 
 VOICE_ROCK = "fr-FR-HenriNeural"
@@ -109,30 +111,88 @@ def parse_exact_dialog_turns(json_path):
 
     return groups
 
-def fix_translation(fr_text):
-    replacements = {
-        "Dr Sabie": "Dr Sebi",
-        "Docteur Sabie": "Docteur Sebi",
-        "Sabie": "Sebi",
-        "aliments cellulaires": "aliments bio-électriques",
-        "chapskin": "problèmes de peau",
-        "village au Honduras": "village Usha au Honduras",
-        "acides carboniques": "acides carboniques et mucus",
-        "Queen Anne's Lace": "carotte sauvage",
-        "mucusless": "sans mucus"
-    }
-    for k, v in replacements.items():
-        fr_text = fr_text.replace(k, v)
-    return fr_text
+def ai_clean_and_translate_dialog(text_en, speaker):
+    """
+    Traduction intelligente avec protection lexicale absolue des noms propres et
+    formatage prosodique naturel (pauses respiratoires, virgules de diction).
+    """
+    # 1. Protection préalable des entités et noms propres
+    protected = [
+        (r'(?i)lisa\s+left\s+eye\s+lope[sz]', 'TAG_LISA_LEFT_EYE'),
+        (r'(?i)left\s+eye\s+lope[sz]', 'TAG_LISA_LEFT_EYE'),
+        (r'(?i)left\s+eye', 'TAG_LEFT_EYE'),
+        (r'(?i)dr\.?\s*sabie', 'TAG_DR_SEBI'),
+        (r'(?i)dr\.?\s*sebi', 'TAG_DR_SEBI'),
+        (r'(?i)the\s+rock\s+newman\s+show', 'TAG_ROCK_NEWMAN_SHOW'),
+        (r'(?i)rock\s+newman', 'TAG_ROCK_NEWMAN'),
+        (r'(?i)howard\s+university', 'TAG_HOWARD_UNIV'),
+        (r'(?i)new\s+york\s+supreme\s+court', 'TAG_NY_COURT'),
+        (r'(?i)supreme\s+court', 'TAG_SUPREME_COURT'),
+        (r'(?i)usha\s+village', 'TAG_USHA_VILLAGE'),
+        (r'(?i)alfredo\s+cortez', 'TAG_ALFREDO_CORTEZ'),
+        (r'(?i)michael\s+jackson', 'TAG_MICHAEL_JACKSON')
+    ]
+    
+    t = text_en
+    for pattern, tag in protected:
+        t = re.sub(pattern, tag, t)
 
-def translate_single(item):
-    txt_en = item['text']
+    # 2. Traduction
     try:
-        translator = GoogleTranslator(source='en', target='fr')
-        fr = translator.translate(txt_en)
-        item['text_fr'] = fix_translation(fr)
+        tr = GoogleTranslator(source='en', target='fr').translate(t)
     except Exception:
-        item['text_fr'] = txt_en
+        tr = t
+
+    # 3. Restauration élégante et précise des termes
+    tr = tr.replace('TAG_LISA_LEFT_EYE', 'Lisa « Left Eye » Lopes')
+    tr = tr.replace('TAG_LEFT_EYE', 'Left Eye')
+    tr = tr.replace('TAG_DR_SEBI', 'Docteur Sebi')
+    tr = tr.replace('TAG_ROCK_NEWMAN_SHOW', "l'émission Rock Newman Show")
+    tr = tr.replace('TAG_ROCK_NEWMAN', 'Rock Newman')
+    tr = tr.replace('TAG_HOWARD_UNIV', "l'Université Howard")
+    tr = tr.replace('TAG_NY_COURT', 'la Cour Suprême de New York')
+    tr = tr.replace('TAG_SUPREME_COURT', 'la Cour Suprême')
+    tr = tr.replace('TAG_USHA_VILLAGE', 'village Usha au Honduras')
+    tr = tr.replace('TAG_ALFREDO_CORTEZ', 'Alfredo Cortez')
+    tr = tr.replace('TAG_MICHAEL_JACKSON', 'Michael Jackson')
+
+    # Nettoyage systématique des contresens courants
+    mistranslations = {
+        r'(?i)lisa\s+yeux?\s+gauche?s?': 'Lisa « Left Eye » Lopes',
+        r'(?i)lisa\s+oeil\s+gauche': 'Lisa « Left Eye » Lopes',
+        r'(?i)oeil\s+gauche\s+lopez': 'Lisa « Left Eye » Lopes',
+        r'(?i)docteur\s+sabie': 'Docteur Sebi',
+        r'(?i)dr\s+sabie': 'Docteur Sebi',
+        r'(?i)nourriture\s+cellulaire': 'aliments bio-électriques cellulaires',
+        r'(?i)aliments\s+cellulaires': 'aliments bio-électriques',
+        r'(?i)chapskin': 'problèmes de peau et gerçures',
+        r'(?i)acides\s+carboniques': 'acides carboniques et toxines',
+        r'(?i)mucusless': 'sans mucus',
+        r'(?i)Queen\s+Anne\'?s\s+Lace': 'carotte sauvage (Queen Anne\'s Lace)'
+    }
+    for pat, rep in mistranslations.items():
+        tr = re.sub(pat, rep, tr)
+
+    # 4. Prosodie & Rythme Respiratoire (Virgules pour les pauses orales de l'acteur)
+    if speaker == 'rock':
+        tr = re.sub(r'^(Ce soir)\b', 'Ce soir,', tr)
+        tr = re.sub(r'^(Bienvenue)\b', 'Bienvenue,', tr)
+        tr = re.sub(r'^(D\'accord)\b', 'D\'accord...', tr)
+        tr = re.sub(r'\b(Permettez-moi de vous demander)\b', 'Permettez-moi de vous demander,', tr)
+    elif speaker == 'sebi':
+        tr = re.sub(r'^(Eh bien)\b', 'Eh bien,', tr)
+        tr = re.sub(r'^(Vous savez)\b', 'Vous savez,', tr)
+        tr = re.sub(r'^(En fait)\b', 'En fait,', tr)
+        tr = re.sub(r'^(Oui)\b', 'Oui,', tr)
+        tr = re.sub(r'^(Non)\b', 'Non,', tr)
+
+    # Harmonisation des doubles signes
+    tr = re.sub(r',\s*,', ',', tr)
+    tr = re.sub(r'\s+', ' ', tr).strip()
+    return tr
+
+def translate_turn(item):
+    item['text_fr'] = ai_clean_and_translate_dialog(item['text'], item['speaker'])
     return item
 
 async def generate_speech_for_sentence(idx, item, out_path, sem):
@@ -162,8 +222,8 @@ async def generate_speech_for_sentence(idx, item, out_path, sem):
             try:
                 comm = edge_tts.Communicate(text, voice, rate=rate, pitch=pitch)
                 await comm.save(str(out_path))
-                if (idx + 1) % 30 == 0 or idx == 0:
-                    print(f"  [Dialogue Multi-Voix #{idx+1:03d}] [{speaker.upper()}] ({item['start']:.1f}s -> {item['end']:.1f}s): {text[:45]}...", flush=True)
+                if (idx + 1) % 35 == 0 or idx == 0:
+                    print(f"  [Dialogue Pro #{idx+1:03d}] [{speaker.upper()}] ({item['start']:.1f}s -> {item['end']:.1f}s): {text[:50]}...", flush=True)
                 return
             except Exception as e:
                 if attempt == 2:
@@ -177,18 +237,23 @@ async def build_sebi_continuous_audio():
     SILENCE_DIR.mkdir(parents=True, exist_ok=True)
     json_path = SCRATCH_DIR / "sebi_exact_transcript.json"
     
-    print(f"📖 1. Analyse des répliques et tours de parole ({json_path.name})...", flush=True)
+    print(f"📖 1. Analyse des répliques et tours de dialogue ({json_path.name})...", flush=True)
     dialog_turns = parse_exact_dialog_turns(json_path)
     rock_cnt = sum(1 for g in dialog_turns if g['speaker'] == 'rock')
     sebi_cnt = sum(1 for g in dialog_turns if g['speaker'] == 'sebi')
     print(f"   ➔ {len(dialog_turns)} répliques détectées (Rock: {rock_cnt}, Dr. Sebi: {sebi_cnt}).", flush=True)
 
-    print("\n🌐 2. Traduction française contextuelle (30 workers)...", flush=True)
+    print("\n🧠 2. Traduction intelligente & Protection des entités (Lisa « Left Eye » Lopes, Dr. Sebi, etc.)...", flush=True)
     with ThreadPoolExecutor(max_workers=30) as executor:
-        dialog_turns = list(executor.map(translate_single, dialog_turns))
-    print(f"   ✅ Les {len(dialog_turns)} répliques ont été traduites avec succès !", flush=True)
+        dialog_turns = list(executor.map(translate_turn, dialog_turns))
+    print(f"   ✅ Les {len(dialog_turns)} répliques ont été adaptées avec prosodie et respect des entités !", flush=True)
 
-    print("\n🎙️ 3. Synthèse vocale neuronale à deux voix distinctes...", flush=True)
+    # Affichage des 5 premières répliques adaptées pour vérification
+    print("\n🔍 Aperçu des répliques traduites & cadencées :")
+    for s in dialog_turns[:5]:
+        print(f"   [{s['speaker'].upper()}] : \"{s['text_fr']}\"")
+
+    print("\n🎙️ 3. Synthèse vocale neuronale studio avec respiration naturelle...", flush=True)
     sem = asyncio.Semaphore(15)
     tasks = []
     
@@ -201,7 +266,7 @@ async def build_sebi_continuous_audio():
     print("   ✅ Toutes les répliques audio sont synthétisées !", flush=True)
 
     print("\n🎚️ 4. Concaténation de la piste continue 56 minutes...", flush=True)
-    concat_list_file = SCRATCH_DIR / "concat_dialog_list.txt"
+    concat_list_file = SCRATCH_DIR / "concat_ai_dialog_list.txt"
     with open(concat_list_file, "w", encoding="utf-8") as f_concat:
         curr_timeline_pos = 0.0
         for i, s in enumerate(dialog_turns):
@@ -221,7 +286,7 @@ async def build_sebi_continuous_audio():
             clip_dur = get_audio_duration(clip_path)
             curr_timeline_pos += clip_dur
 
-    master_speech_path = SCRATCH_DIR / "dr_sebi_dialog_french_master.mp3"
+    master_speech_path = SCRATCH_DIR / "dr_sebi_ai_dialog_master.mp3"
     print(f"   Assemblage ffmpeg vers {master_speech_path.name}...", flush=True)
     cmd_concat = [
         "/opt/homebrew/bin/ffmpeg", "-y",
@@ -255,7 +320,7 @@ async def build_sebi_continuous_audio():
     res = subprocess.run(cmd_mix, capture_output=True, text=True)
     if res.returncode == 0:
         size_mb = out_video.stat().st_size / (1024 * 1024)
-        print(f"🎉 VIDÉO DR. SEBI MULTI-VOIX RENDUE : {out_video.name} ({size_mb:.1f} MB)", flush=True)
+        print(f"🎉 VIDÉO DR. SEBI AI-POLISHED RENDUE : {out_video.name} ({size_mb:.1f} MB)", flush=True)
     else:
         print(f"❌ Erreur ffmpeg : {res.stderr[-500:]}", flush=True)
 
