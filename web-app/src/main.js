@@ -3073,7 +3073,11 @@ function toggleTtsVoiceGender() {
   store.set('preferred_voice_gender', next);
   updateTtsVoiceUI();
   if (window.showToast) {
-    showToast(next === 'male' ? '🎙️ Voix Masculine activée (Henri Studio)' : '🎙️ Voix Féminine activée (Denise Studio)', 'success');
+    const lang = typeof getLanguage === 'function' ? getLanguage() : 'fr-CA';
+    const isCa = lang === 'fr-CA' || (store.get('user_profile', {})?.country?.includes('Canada'));
+    const femaleName = isCa ? 'Sylvie 🍁' : 'Denise 🇫🇷';
+    const maleName = isCa ? 'Antoine 🍁' : 'Henri 🇫🇷';
+    showToast(next === 'male' ? `🎙️ Voix Homme activée (${maleName} Studio)` : `🎙️ Voix Femme activée (${femaleName} Studio)`, 'success');
   }
 }
 window.toggleTtsVoiceGender = toggleTtsVoiceGender;
@@ -3131,7 +3135,9 @@ async function speakChatMessageByIndex(idx, btn) {
   }
 
   const gender = store.get('preferred_voice_gender', 'female');
-  const language = typeof getLanguage === 'function' ? getLanguage() : 'fr';
+  const prof = store.get('user_profile', {});
+  const language = typeof getLanguage === 'function' ? getLanguage() : (prof.language || 'fr-CA');
+  const customVoice = store.get('preferred_voice_id');
 
   try {
     const resp = await fetch('/api/tts', {
@@ -3140,7 +3146,8 @@ async function speakChatMessageByIndex(idx, btn) {
       body: JSON.stringify({
         text: textToSpeak,
         gender,
-        language
+        language: language === 'fr' && (prof.country?.includes('Canada') || prof.bioregion === 'boreal') ? 'fr-CA' : language,
+        voice: customVoice
       })
     });
 
@@ -3285,17 +3292,24 @@ function switchModelAndRetry(modelType, msgIdx) {
 window.switchModelAndRetry = switchModelAndRetry;
 
 let _thinkingStepTimer = null;
+let _thinkingSecondsTimer = null;
 const REAL_THINKING_STEPS = [
-  { icon: 'ri-search-eye-line', color: '#34d399', text: 'Analyse sémantique & extraction des éléments...' },
-  { icon: 'ri-book-read-line', color: '#60a5fa', text: 'Consultation des bases Raintree, Ehret, Sebi & Morse...' },
-  { icon: 'ri-capsule-line', color: '#a78bfa', text: 'Calibrage selon vos émonctoires & bio-profil...' },
-  { icon: 'ri-sparkling-fill', color: '#34d399', text: 'Formulation de la synthèse vitaliste...' }
+  { icon: 'ri-search-eye-line', color: '#34d399', text: 'Analyse sémantique de votre question...' },
+  { icon: 'ri-book-read-line', color: '#60a5fa', text: 'Consultation des bases Raintree, Ehret & Morse...' },
+  { icon: 'ri-capsule-line', color: '#a78bfa', text: 'Vérification du niveau de transition & mucus...' },
+  { icon: 'ri-shield-check-line', color: '#34d399', text: 'Validation des synergies et contre-indications...' },
+  { icon: 'ri-sparkling-fill', color: '#f59e0b', text: 'Formulation des conseils personnalisés...' },
+  { icon: 'ri-quill-pen-line', color: '#38bdf8', text: 'Finalisation et mise en page de la réponse...' }
 ];
 
 function addTypingIndicator() {
   if (_thinkingStepTimer) {
     clearInterval(_thinkingStepTimer);
     _thinkingStepTimer = null;
+  }
+  if (_thinkingSecondsTimer) {
+    clearInterval(_thinkingSecondsTimer);
+    _thinkingSecondsTimer = null;
   }
 
   const container = document.getElementById('chatMessages');
@@ -3305,6 +3319,7 @@ function addTypingIndicator() {
   const typingAvatar = window.renderPigeonPortrait ? window.renderPigeonPortrait(28, 'talking') : '🐦';
 
   let stepIdx = 0;
+  let elapsedSec = 0;
   div.innerHTML = `
     <div class="message-avatar">${typingAvatar}</div>
     <div class="message-bubble dynamic-thinking-bubble">
@@ -3312,16 +3327,18 @@ function addTypingIndicator() {
         <i class="${REAL_THINKING_STEPS[0].icon}" style="color:${REAL_THINKING_STEPS[0].color};"></i>
       </div>
       <span class="dynamic-thinking-text" id="typingStepText">${REAL_THINKING_STEPS[0].text}</span>
+      <span class="dynamic-thinking-timer" id="typingStepTimer" style="font-size:0.75rem; color:var(--text-dim); font-family:monospace; margin-left:6px; opacity:0.8;">0s</span>
       <div class="typing-dots"><span></span><span></span><span></span></div>
     </div>`;
 
+  _thinkingSecondsTimer = setInterval(() => {
+    elapsedSec++;
+    const timerSpan = div.querySelector('#typingStepTimer');
+    if (timerSpan) timerSpan.textContent = `${elapsedSec}s`;
+  }, 1000);
+
   _thinkingStepTimer = setInterval(() => {
-    stepIdx++;
-    if (stepIdx >= REAL_THINKING_STEPS.length) {
-      clearInterval(_thinkingStepTimer);
-      _thinkingStepTimer = null;
-      return;
-    }
+    stepIdx = (stepIdx + 1) % REAL_THINKING_STEPS.length;
     const step = REAL_THINKING_STEPS[stepIdx];
     const iconWrap = div.querySelector('#typingStepIcon');
     const textSpan = div.querySelector('#typingStepText');
@@ -3333,13 +3350,17 @@ function addTypingIndicator() {
         textSpan.classList.remove('step-switching');
       }, 150);
     }
-  }, 750);
+  }, 1300);
 
   const origRemove = div.remove.bind(div);
   div.remove = () => {
     if (_thinkingStepTimer) {
       clearInterval(_thinkingStepTimer);
       _thinkingStepTimer = null;
+    }
+    if (_thinkingSecondsTimer) {
+      clearInterval(_thinkingSecondsTimer);
+      _thinkingSecondsTimer = null;
     }
     origRemove();
   };

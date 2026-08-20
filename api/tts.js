@@ -12,15 +12,20 @@ const VOICE_MAP = {
     female: 'fr-FR-DeniseNeural',
     male: 'fr-FR-HenriNeural',
     female_expressive: 'fr-FR-VivienneMultilingualNeural',
-    male_expressive: 'fr-FR-RemyMultilingualNeural'
+    male_expressive: 'fr-FR-RemyMultilingualNeural',
+    female_young: 'fr-FR-EloiseNeural'
   },
   'fr-CA': {
     female: 'fr-CA-SylvieNeural',
-    male: 'fr-CA-AntoineNeural'
+    male: 'fr-CA-AntoineNeural',
+    male_mature: 'fr-CA-JeanNeural',
+    male_young: 'fr-CA-ThierryNeural'
   },
   en: {
     female: 'en-US-JennyNeural',
-    male: 'en-US-GuyNeural'
+    male: 'en-US-GuyNeural',
+    female_hd: 'en-US-AvaMultilingualNeural',
+    male_hd: 'en-US-AndrewMultilingualNeural'
   },
   es: {
     female: 'es-ES-ElviraNeural',
