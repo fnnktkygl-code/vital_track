@@ -1,25 +1,7 @@
-# Ignore old Render-based proxy (replaced by api/ serverless functions)
-ai_proxy/
-
-# Flutter/Dart build artifacts
-build/
-.dart_tool/
-.flutter-plugins-dependencies
-
-# Landing page (served from GitHub Pages, not Vercel)
-landing_page/
-docs/
-
-# Android/iOS/macOS/Windows/Linux native
-android/
-ios/
-macos/
-windows/
-linux/
-
-# Dev files
-*.apk
-.env
-.env.*
-!.env.example
-test/
+scratch/
+.venv/
+*.wav
+*.bin
+web-app/dist/
+node_modules/
+.git/
