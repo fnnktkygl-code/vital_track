@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VitalTrack — L'Application Compagnon de Santé Vitaliste & Régénération Cellulaire</title>
+  
+  <!-- SEO & Social Meta Tags -->
+  <meta name="description" content="VitalTrack réunit les enseignements d'Arnold Ehret, Dr. Sebi, Dr. Robert Morse, David Wolfe et Wim Hof avec un Coach IA multimodal, scanner visuel PRAL, et traqueur d'autophagie.">
+  <meta name="keywords" content="vitalisme, régénération cellulaire, régime sans mucus, dr sebi, arnold ehret, wim hof, autophagie, jeûne intermittent, indice pral, santé naturelle">
+  <meta property="og:title" content="VitalTrack — Santé Vitaliste & Régénération Cellulaire">
+  <meta property="og:description" content="Le premier compagnon IA holistique dédié au vitalisme, à la nutrition bio-électrique et à l'autophagie.">
+  <meta property="og:image" content="screenshots/desktop_dashboard_dark.png">
+  <meta property="og:url" content="https://vitaltrackapp.vercel.app/landing.html">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Favicon & Fonts -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/src/landing.css">
+</head>
+<body class="dark-theme">
+
+  <!-- 🌌 THREE.JS 3D BACKGROUND CANVAS -->
+  <div id="threeCanvasContainer">
+    <canvas id="bg3dCanvas"></canvas>
+  </div>
+
+  <!-- 🌟 STICKY NAVIGATION BAR -->
+  <header class="navbar glass">
+    <div class="nav-container">
+      <a href="/landing.html" class="brand">
+        <div class="brand-logo">
+          <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" class="logo-svg">
+            <circle cx="18" cy="18" r="16" stroke="url(#logo-grad)" stroke-width="2.5" fill="rgba(16, 185, 129, 0.08)"/>
+            <path d="M12 21C14 24 22 24 24 21M18 9V14M14 11L16 14M22 11L20 14" stroke="#34d399" stroke-width="2" stroke-linecap="round"/>
+            <defs>
+              <linearGradient id="logo-grad" x1="2" y1="2" x2="34" y2="34" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#34d399"/>
+                <stop offset="0.5" stop-color="#38bdf8"/>
+                <stop offset="1" stop-color="#8b5cf6"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <span class="brand-text">Vital<span>Track</span></span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="#features" class="nav-link">Fonctionnalités</a>
+        <a href="#videos" class="nav-link">Vidéos Démo</a>
+        <a href="#piliers" class="nav-link">6 Piliers</a>
+        <a href="#simulator" class="nav-link">Simulateur</a>
+        <a href="#privacy" class="nav-link">Confidentialité</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a href="/" class="btn-primary glow-btn">
+          <span>Ouvrir l'App</span>
+          <i class="ri-arrow-right-up-line"></i>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- 🚀 HERO SECTION -->
+  <section class="hero-section">
+    <div class="hero-glow"></div>
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="pulse-dot"></span>
+        <span>NOUVELLE VERSION 2.0 • IA MULTIMODALE & BIO-ÉLECTRICITÉ</span>
+      </div>
+
+      <h1 class="hero-title">
+        La Révolution de la <span class="gradient-text">Santé Vitaliste</span> & de la Régénération Cellulaire.
+      </h1>
+
+      <p class="hero-desc">
+        Le premier compagnon holistique tout-en-un combinant les enseignements des grands maîtres 
+        (<em>Dr. Sebi, Arnold Ehret, Dr. Robert Morse, David Wolfe, Wim Hof</em>) avec un Coach IA de pointe, 
+        une dictée vocale temps réel sans quota et un scanner de repas bio-minéral.
+      </p>
+
+      <div class="hero-cta-group">
+        <a href="/" class="btn-hero-primary glow-btn">
+          <i class="ri-rocket-2-fill"></i>
+          <span>Lancer l'Application Web</span>
+        </a>
+        <a href="#videos" class="btn-hero-secondary">
+          <i class="ri-play-circle-fill"></i>
+          <span>Voir les Démonstrations Vidéo</span>
+        </a>
+      </div>
+
+      <!-- Trust Metrics Bar -->
+      <div class="trust-bar glass">
+        <div class="trust-item">
+          <div class="trust-icon"><i class="ri-shield-check-fill"></i></div>
+          <div>
+            <div class="trust-val">100% Zero-Knowledge</div>
+            <div class="trust-lbl">Données isolées localement (RGPD)</div>
+          </div>
+        </div>
+        <div class="trust-item">
+          <div class="trust-icon"><i class="ri-mic-fill"></i></div>
+          <div>
+            <div class="trust-val">0 Quota Consommé</div>
+            <div class="trust-lbl">Dictée vocale Web Speech illimitée</div>
+          </div>
+        </div>
+        <div class="trust-item">
+          <div class="trust-icon"><i class="ri-leaf-fill"></i></div>
+          <div>
+            <div class="trust-val">250+ Monographies</div>
+            <div class="trust-lbl">Pharmacopée Raintree & Flores</div>
+          </div>
+        </div>
+        <div class="trust-item">
+          <div class="trust-icon"><i class="ri-compass-3-fill"></i></div>
+          <div>
+            <div class="trust-val">6 Piliers Fondateurs</div>
+            <div class="trust-lbl">Corpus vitaliste authentique</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 🎬 SECTION VIDÉOS & SHOWCASE INTERACTIF PAR ONGLETS -->
+  <section id="videos" class="section-container">
+    <div class="section-header text-center">
+      <div class="sub-badge">DÉMONSTRATION EN DIRECT</div>
+      <h2 class="section-title">Découvrez VitalTrack en <span class="gradient-text">Extraits Vidéo</span></h2>
+      <p class="section-desc">
+        Explorez chaque fonctionnalité interactive capturée en haute définition, conçue pour vous accompagner chaque jour.
+      </p>
+    </div>
+
+    <!-- Video Tabs Switcher -->
+    <div class="video-showcase-wrapper glass">
+      <div class="video-tabs-nav">
+        <button class="video-tab-btn active" data-feature="voice">
+          <i class="ri-mic-line"></i>
+          <span>1. Coach Vocal & Plans</span>
+        </button>
+        <button class="video-tab-btn" data-feature="scan">
+          <i class="ri-scan-2-line"></i>
+          <span>2. Scanner Visuel PRAL</span>
+        </button>
+        <button class="video-tab-btn" data-feature="calendar">
+          <i class="ri-calendar-check-line"></i>
+          <span>3. Calendrier Cockpit</span>
+        </button>
+        <button class="video-tab-btn" data-feature="fasting">
+          <i class="ri-timer-flash-line"></i>
+          <span>4. Jeûne & Autophagie</span>
+        </button>
+        <button class="video-tab-btn" data-feature="breathing">
+          <i class="ri-wind-line"></i>
+          <span>5. Respiration Wim Hof</span>
+        </button>
+      </div>
+
+      <!-- Video Player & Details Grid -->
+      <div class="video-content-grid">
+        <div class="video-player-container">
+          <div class="video-frame">
+            <video id="showcaseVideoPlayer" autoplay loop muted playsinline preload="auto">
+              <source src="/videos/features/feature_voice_ai_chat.mp4" type="video/mp4">
+              <source src="/videos/features/feature_voice_ai_chat.webm" type="video/webm">
+              Votre navigateur ne supporte pas la lecture vidéo HTML5.
+            </video>
+            <div class="video-overlay-controls">
+              <button id="videoPlayPauseBtn" class="vid-ctrl-btn" title="Lecture / Pause">
+                <i class="ri-pause-line"></i>
+              </button>
+              <div class="video-badge-live">
+                <span class="pulse-dot"></span> ENREGISTREMENT LIVE 60 FPS
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="video-info-container">
+          <div id="featureInfoCard" class="feature-info-card">
+            <!-- Dynamic Content Injected via landing.js -->
+            <div class="feature-meta">
+              <span class="feature-tag">Intelligence Artificielle & Voix</span>
+              <span class="feature-badge-sub">Gemini 3.7 Flash + Web Speech</span>
+            </div>
+            <h3 class="feature-title">Coach IA Vitaliste & Dictée Vocale Streaming</h3>
+            <p class="feature-desc">
+              Parlez naturellement à votre coach. Le texte est transcrit en direct dans le champ de saisie sans temps d'attente et sans consommer votre quota d'API. L'IA analyse votre terrain et génère automatiquement des protocoles complets avec des cartes d'action interactives.
+            </p>
+            <ul class="feature-bullet-list">
+              <li><i class="ri-checkbox-circle-fill"></i> <strong>Zero-Quota Voice :</strong> Dictée vocale native avec indicateur d'ondes sonores en temps réel.</li>
+              <li><i class="ri-checkbox-circle-fill"></i> <strong>RAG Vitaliste :</strong> Réponses fondées sur les écrits authentiques des docteurs Sebi, Ehret et Morse.</li>
+              <li><i class="ri-checkbox-circle-fill"></i> <strong>Cartes d'Action 1-Clic :</strong> Application immédiate du protocole généré dans votre calendrier de repas.</li>
+            </ul>
+            <div class="feature-action-row">
+              <a href="/" class="btn-feature-try">
+                <span>Tester dans l'App</span>
+                <i class="ri-arrow-right-line"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 🌟 SECTION 6 PILIERS VITALISTES FONDATEURS -->
+  <section id="piliers" class="section-container">
+    <div class="section-header text-center">
+      <div class="sub-badge">FONDATIONS PHYSIOLOGIQUES</div>
+      <h2 class="section-title">Les 6 Piliers Fondateurs de <span class="gradient-text">VitalTrack</span></h2>
+      <p class="section-desc">
+        Une synergie scientifique et naturelle bâtie sur les travaux de référence de la santé holistique mondiale.
+      </p>
+    </div>
+
+    <div class="piliers-grid">
+      <!-- 1. Arnold Ehret -->
+      <div class="pilier-card glass">
+        <div class="pilier-icon icon-ehret"><i class="ri-apple-line"></i></div>
+        <div class="pilier-author">Prof. Arnold Ehret</div>
+        <h3 class="pilier-title">Système du Régime Sans Mucus</h3>
+        <p class="pilier-desc">
+          Formule fondamentale <strong>V = P - E</strong>. Détection du potentiel mucogène des aliments cuits et transition sécurisée vers l'alimentation vivante sans crise d'élimination brutale.
+        </p>
+        <div class="pilier-tag">Équation Vitale : Vitalité = Puissance - Obstruction</div>
+      </div>
+
+      <!-- 2. Dr. Sebi -->
+      <div class="pilier-card glass">
+        <div class="pilier-icon icon-sebi"><i class="ri-flashlight-line"></i></div>
+        <div class="pilier-author">Dr. Sebi (Alfredo Bowman)</div>
+        <h3 class="pilier-title">Nutrition Cellulaire Bio-Électrique</h3>
+        <p class="pilier-desc">
+          Aliments alcalinisants non hybridés à graines fertiles (Sea Moss, Fucus, Fonio, Burdock). Maintien du pH intra-cellulaire et dissolution de la gangue mucique.
+        </p>
+        <div class="pilier-tag">100% Électrique & Alcalin</div>
+      </div>
+
+      <!-- 3. Dr. Robert Morse -->
+      <div class="pilier-card glass">
+        <div class="pilier-icon icon-morse"><i class="ri-drop-line"></i></div>
+        <div class="pilier-author">Dr. Robert Morse, N.D.</div>
+        <h3 class="pilier-title">Détox Lymphatique & Filtration Rénale</h3>
+        <p class="pilier-desc">
+          Drainage du grand système lymphatique (80% des liquides corporels) par les fruits astringents et décongestion des 4 grands émonctoires d'évacuation.
+        </p>
+        <div class="pilier-tag">Filtration Rénale & Lymphe</div>
+      </div>
+
+      <!-- 4. David Wolfe -->
+      <div class="pilier-card glass">
+        <div class="pilier-icon icon-wolfe"><i class="ri-sun-line"></i></div>
+        <div class="pilier-author">David Wolfe</div>
+        <h3 class="pilier-title">Sunfood Diet & Superaliments</h3>
+        <p class="pilier-desc">
+          Alimentation crue à haute énergie biophotonique, régénération des membranes cellulaires, huiles brutes et minéralisation par les plantes sauvages.
+        </p>
+        <div class="pilier-tag">Énergie Photonique & Cru</div>
+      </div>
+
+      <!-- 5. Dr. Leslie Taylor -->
+      <div class="pilier-card glass">
+        <div class="pilier-icon icon-taylor"><i class="ri-plant-line"></i></div>
+        <div class="pilier-author">Dr. Leslie Taylor</div>
+        <h3 class="pilier-title">Pharmacopée Botanique Raintree</h3>
+        <p class="pilier-desc">
+          Base clinique intégrale de monographies phytothérapeutiques amazoniennes : Chanca Piedra, Pau d'Arco, Sangre de Grado, Griffe de Chat et posologies précises.
+        </p>
+        <div class="pilier-tag">Phytothérapie Clinique</div>
+      </div>
+
+      <!-- 6. Wim Hof -->
+      <div class="pilier-card glass">
+        <div class="pilier-icon icon-hof"><i class="ri-wind-line"></i></div>
+        <div class="pilier-author">Wim Hof</div>
+        <h3 class="pilier-title">Respiration Prānique & Autophagie</h3>
+        <p class="pilier-desc">
+          Hyper-oxygénation contrôlée et rétentions poumons vides pour alcaliniser instantanément le flux sanguin, booster le système immunitaire et activer l'autolyse.
+        </p>
+        <div class="pilier-tag">Alcalinisation par le Souffle</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 🧪 SIMULATEUR D'ÉNERGIE VITALE INTERACTIF -->
+  <section id="simulator" class="section-container">
+    <div class="simulator-box glass">
+      <div class="sim-header text-center">
+        <div class="sub-badge">SIMULATEUR INSTANTANÉ</div>
+        <h2 class="section-title">Évaluez Votre <span class="gradient-text">Niveau de Vitalité</span> en 3 Questions</h2>
+        <p class="section-desc">Découvrez votre charge d'obstruction mucique et votre potentiel de régénération.</p>
+      </div>
+
+      <div class="sim-body">
+        <div class="sim-step" id="simStep1">
+          <label class="sim-label">1. Quel est votre petit-déjeuner type ?</label>
+          <div class="sim-options">
+            <button class="sim-opt-btn active" data-score="30" data-mucus="Haut">🥖 Pain blanc, beurre, café, viennoiseries (Mucogène fort)</button>
+            <button class="sim-opt-btn" data-score="65" data-mucus="Moyen">🥣 Flocons d'avoine, lait végétal, fruits secs (Transition)</button>
+            <button class="sim-opt-btn" data-score="100" data-mucus="Nul">🍉 Fruits aqueux vivants, jus frais pressé ou jeûne matinal (Dissolvant)</button>
+          </div>
+        </div>
+
+        <div class="sim-step" id="simStep2">
+          <label class="sim-label">2. Comment vous sentez-vous au réveil ?</label>
+          <div class="sim-options">
+            <button class="sim-opt-btn active" data-score="30">😴 Lourd, brouillard mental, besoin impératif d'un stimulant</button>
+            <button class="sim-opt-btn" data-score="70">😐 Énergie correcte après quelques minutes d'étirements</button>
+            <button class="sim-opt-btn" data-score="100">⚡ Esprit clair, corps léger et prêt sans dépendance au café</button>
+          </div>
+        </div>
+
+        <div class="sim-step" id="simStep3">
+          <label class="sim-label">3. Pratiquez-vous une fenêtre de jeûne quotidien ?</label>
+          <div class="sim-options">
+            <button class="sim-opt-btn active" data-score="20">Non, je grignote jusqu'au coucher et mange dès le réveil</button>
+            <button class="sim-opt-btn" data-score="70">Jeûne naturel de 12 à 14 heures de repos nocturne</button>
+            <button class="sim-opt-btn" data-score="100">Jeûne intermittent régulier 16:8 ou 20:4 avec hydratation pure</button>
+          </div>
+        </div>
+
+        <div class="sim-result-card glass" id="simResultCard">
+          <div class="sim-score-ring">
+            <span id="simScoreVal">85</span>
+            <span class="sim-score-max">/ 100</span>
+          </div>
+          <div class="sim-result-info">
+            <h4 id="simResultTitle" class="sim-result-title">Excellent Potentiel de Régénération !</h4>
+            <p id="simResultDesc" class="sim-result-desc">
+              Votre terrain est prêt pour une transition profonde vers l'alimentation électrique. L'application VitalTrack vous permettra de booster votre filtration rénale.
+            </p>
+            <a href="/" class="btn-primary">Découvrir mon programme sur l'App</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 🔒 SECTION CONFIDENTIALITÉ ZERO-KNOWLEDGE & RGPD -->
+  <section id="privacy" class="section-container">
+    <div class="privacy-showcase glass">
+      <div class="privacy-left">
+        <div class="sub-badge"><i class="ri-lock-2-fill"></i> PRIVACY-BY-DESIGN</div>
+        <h2 class="section-title">Vos Données de Santé Vous Appartiennent. <span class="gradient-text">Point Final.</span></h2>
+        <p class="section-desc">
+          Contrairement aux applications traditionnelles qui revendent vos habitudes alimentaires à des tiers, VitalTrack applique une politique <strong>Zero-Knowledge hermétique</strong>.
+        </p>
+
+        <div class="privacy-points">
+          <div class="priv-point">
+            <i class="ri-database-2-fill"></i>
+            <div>
+              <strong>Stockage Local Confiné :</strong>
+              <p>Vos repas, vos sessions de jeûne et vos conversations avec l'IA restent sur votre appareil.</p>
+            </div>
+          </div>
+          <div class="priv-point">
+            <i class="ri-download-cloud-fill"></i>
+            <div>
+              <strong>Portabilité & Droit à l'Oubli :</strong>
+              <p>Export JSON intégral et suppression définitive de votre compte en 1 clic (Articles 17 & 20 RGPD).</p>
+            </div>
+          </div>
+          <div class="priv-point">
+            <i class="ri-eye-off-fill"></i>
+            <div>
+              <strong>Protection Anti-Capture d'Écran :</strong>
+              <p>Option de floutage immédiat des données sensibles lors des partages d'écran.</p>
+            </div>
+          </div>
+        </div>
+
+        <a href="/privacy.html" class="btn-secondary" style="margin-top:20px; display:inline-flex;">
+          <i class="ri-file-shield-2-line"></i>
+          <span>Lire la Politique de Confidentialité Complète</span>
+        </a>
+      </div>
+
+      <div class="privacy-right">
+        <img src="/screenshots/desktop_privacy_gdpr.png" alt="Centre de Confidentialité VitalTrack" class="privacy-img-mockup" />
+      </div>
+    </div>
+  </section>
+
+  <!-- 🚀 FOOTER CTA BANNER -->
+  <section class="footer-cta-section">
+    <div class="footer-cta-card glass text-center">
+      <div class="cta-glow"></div>
+      <h2 class="cta-title">Prêt à Réveiller Votre <span class="gradient-text">Vitalité Cellulaire</span> ?</h2>
+      <p class="cta-desc">
+        Rejoignez l'application VitalTrack gratuitement dès aujourd'hui. Aucun abonnement requis pour débuter.
+      </p>
+      <div class="cta-buttons">
+        <a href="/" class="btn-hero-primary glow-btn">
+          <i class="ri-rocket-fill"></i>
+          <span>Accéder Immédiatement à l'App</span>
+        </a>
+        <a href="https://github.com/fnnktkygl-code/vital_track" target="_blank" class="btn-hero-secondary">
+          <i class="ri-github-fill"></i>
+          <span>Consulter le Code Source (GitHub)</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 📑 FOOTER -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <span class="brand-text">Vital<span>Track</span></span>
+        <p>L'intelligence artificielle dédiée à la santé vitaliste, à la bio-électricité et à la régénération.</p>
+      </div>
+
+      <div class="footer-links-grid">
+        <div class="footer-col">
+          <h4>Navigation</h4>
+          <a href="/">Application Web</a>
+          <a href="#features">Fonctionnalités</a>
+          <a href="#videos">Vidéos Démo</a>
+          <a href="#piliers">6 Piliers</a>
+        </div>
+        <div class="footer-col">
+          <h4>Ressources</h4>
+          <a href="/GUIDE.md">Guide Complet</a>
+          <a href="/privacy.html">Politique RGPD</a>
+          <a href="https://github.com/fnnktkygl-code/vital_track">Dépôt GitHub</a>
+        </div>
+        <div class="footer-col">
+          <h4>Pionniers</h4>
+          <a href="#piliers">Arnold Ehret</a>
+          <a href="#piliers">Dr. Sebi</a>
+          <a href="#piliers">Dr. Robert Morse</a>
+          <a href="#piliers">Wim Hof</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom text-center">
+      <p>© 2026 VitalTrack AI. Distribué sous Licence MIT. Conforme RGPD & Privacy-First.</p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script type="module" src="/src/landing.js"></script>
+</body>
+</html>

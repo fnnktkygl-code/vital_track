@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import { createRequire } from 'module';
+import { resolve } from 'path';
 const require = createRequire(import.meta.url);
 
 function apiMiddlewarePlugin() {
@@ -57,6 +58,11 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, 'index.html'),
+        landing: resolve(__dirname, 'landing.html')
+      }
+    }
   },
 });
-
