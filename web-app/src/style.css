@@ -583,7 +583,9 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
 .greet-mascot{font-size:2.2rem}
 .dash-greeting h2{font-family:var(--font);font-weight:700;font-size:1.2rem}
 
-.dash-card h3{font-family:var(--font);font-weight:700;font-size:1.02rem;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.dash-card{padding:18px 20px;border-radius:var(--radius)}
+.card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;width:100%}
+.dash-card h3, .card-head h3{font-family:var(--font);font-weight:700;font-size:1.02rem;margin-bottom:0;display:flex;align-items:center;gap:10px}
 .dash-card h3 i, .card-head h3 i {
   display: inline-flex;
   align-items: center;
@@ -1530,7 +1532,7 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
 }
 .jn-ring-track {
   fill: none;
-  stroke: rgba(255, 255, 255, 0.06);
+  stroke: var(--surface-3, var(--border));
   stroke-width: 12;
 }
 .jn-ring-fill {
@@ -4821,7 +4823,7 @@ input[type=number] {
 .vital-stepper-row {
   display: flex;
   align-items: center;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--surface-hover);
   border: 1px solid var(--border);
   border-radius: 14px;
   padding: 4px;
@@ -4835,8 +4837,8 @@ input[type=number] {
   width: 44px;
   height: 44px;
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
   color: var(--text);
   font-size: 1.25rem;
   font-weight: 700;
@@ -4849,7 +4851,7 @@ input[type=number] {
 }
 .vital-stepper-btn:hover {
   background: var(--accent);
-  color: #05170f;
+  color: #ffffff;
   transform: scale(1.04);
 }
 .vital-stepper-btn:active {
@@ -4879,8 +4881,8 @@ input[type=number] {
   min-width: 65px;
   padding: 7px 10px;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--surface-hover);
+  border: 1px solid var(--border);
   color: var(--text-dim);
   font-size: 0.78rem;
   font-weight: 600;
@@ -4889,15 +4891,15 @@ input[type=number] {
   transition: all 0.15s ease;
 }
 .vital-duration-chip:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--surface-2);
   color: var(--text);
-  border-color: rgba(255, 255, 255, 0.2);
+  border-color: var(--border-strong);
 }
 .vital-duration-chip.active {
-  background: rgba(52, 211, 153, 0.15);
-  border-color: var(--accent);
-  color: var(--accent);
-  font-weight: 700;
+  background: var(--accent-glow) !important;
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
+  font-weight: 700 !important;
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -5084,10 +5086,10 @@ input[type=number] {
    ══════════════════════════════════════════════════════════════════ */
 .fasting-stages-wrapper {
   margin-top: 20px;
-  padding: 16px 18px;
+  padding: 18px 20px;
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.025);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: var(--surface-hover);
+  border: 1px solid var(--border);
 }
 
 .stages-header {
@@ -5116,14 +5118,14 @@ input[type=number] {
   border-radius: 20px;
   font-size: 0.76rem;
   font-weight: 700;
-  background: rgba(52, 211, 153, 0.12);
+  background: var(--accent-glow);
   color: var(--accent);
-  border: 1px solid rgba(52, 211, 153, 0.25);
+  border: 1px solid var(--accent);
 }
 
 .stages-progress-bar {
-  height: 6px;
-  background: rgba(255, 255, 255, 0.08);
+  height: 8px;
+  background: var(--surface-3, var(--border));
   border-radius: 10px;
   overflow: hidden;
   margin-bottom: 14px;
@@ -5144,12 +5146,13 @@ input[type=number] {
 }
 
 .stage-step-card {
-  padding: 10px 12px;
+  padding: 12px 14px;
   border-radius: 12px;
-  background: var(--surface-hover);
+  background: var(--surface);
   border: 1px solid var(--border);
   transition: all 0.2s ease;
   position: relative;
+  box-shadow: var(--shadow-sm);
 }
 
 .stage-step-card:hover {
@@ -5173,7 +5176,7 @@ input[type=number] {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 
 .stage-step-hours {
@@ -5187,7 +5190,14 @@ input[type=number] {
 }
 
 .stage-step-icon {
-  font-size: 0.95rem;
+  font-size: 1.05rem;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  background: var(--surface-hover);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .stage-step-name {
