@@ -492,11 +492,17 @@
   <main class="page" id="page-chat">
     <div class="chat-layout">
       <!-- ── Sidebar ── -->
-      <div class="chat-sidebar-backdrop" id="chatSidebarBackdrop" onclick="toggleSidebar()"></div>
-      <aside class="chat-sidebar glass hidden" id="chatSidebar">
+      <div class="chat-sidebar-backdrop" id="chatSidebarBackdrop" onclick="toggleSidebar(false)"></div>
+      <aside class="chat-sidebar hidden" id="chatSidebar">
         <div class="sidebar-top">
-          <button class="btn-new-chat" onclick="newConversation()"><i class="ri-add-line"></i> Nouveau chat</button>
-          <input type="text" class="sidebar-search" id="sidebarSearch" placeholder="Chercher..." oninput="filterConversations(this.value)">
+          <div style="display:flex; align-items:center; gap:8px; width:100%;">
+            <button class="btn-new-chat" onclick="newConversation()" style="flex:1;"><i class="ri-add-line"></i> Nouveau chat</button>
+            <button type="button" class="sidebar-close-btn" onclick="toggleSidebar(false)" data-tooltip="Fermer l'historique" aria-label="Fermer"><i class="ri-close-line"></i></button>
+          </div>
+          <div class="sidebar-search-wrap">
+            <i class="ri-search-line"></i>
+            <input type="text" class="sidebar-search" id="sidebarSearch" placeholder="Rechercher une discussion..." oninput="filterConversations(this.value)">
+          </div>
         </div>
         <div class="sidebar-list" id="sidebarList"></div>
       </aside>

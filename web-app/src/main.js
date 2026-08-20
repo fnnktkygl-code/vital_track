@@ -1901,10 +1901,12 @@ function toggleSidebar(forceOpen) {
   const backdrop = document.getElementById('chatSidebarBackdrop');
   if (!sidebar) return;
 
+  const isMobile = window.innerWidth <= 900;
+
   if (typeof forceOpen === 'boolean') {
     if (forceOpen) {
       sidebar.classList.remove('hidden');
-      if (backdrop) backdrop.classList.add('active');
+      if (isMobile && backdrop) backdrop.classList.add('active');
     } else {
       sidebar.classList.add('hidden');
       if (backdrop) backdrop.classList.remove('active');
@@ -1915,7 +1917,7 @@ function toggleSidebar(forceOpen) {
   const isHidden = sidebar.classList.contains('hidden');
   if (isHidden) {
     sidebar.classList.remove('hidden');
-    if (backdrop) backdrop.classList.add('active');
+    if (isMobile && backdrop) backdrop.classList.add('active');
   } else {
     sidebar.classList.add('hidden');
     if (backdrop) backdrop.classList.remove('active');
@@ -1927,21 +1929,29 @@ function renderSidebar(filterQuery = '') {
   if (!list) return;
 
   const q = filterQuery.toLowerCase().trim();
-  const filtered = q ? conversations.filter(c => c.title.toLowerCase().includes(q)) : conversations;
+  const filtered = q ? conversations.filter(c => (c.title || '').toLowerCase().includes(q)) : conversations;
 
   if (filtered.length === 0) {
-    list.innerHTML = '<p class="empty-state-sm" style="color:var(--text-dim);text-align:center;margin-top:20px">Aucun historique</p>';
+    list.innerHTML = `
+      <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:30px 16px; text-align:center; color:var(--text-dim);">
+        <i class="ri-chat-smile-2-line" style="font-size:2rem; color:rgba(52,211,153,0.4); margin-bottom:8px;"></i>
+        <span style="font-size:0.86rem; font-weight:600; color:#cbd5e1;">Aucune discussion</span>
+        <span style="font-size:0.75rem; margin-top:4px; line-height:1.4;">Démarrez une nouvelle conversation avec le Coach Vitaliste.</span>
+      </div>
+    `;
     return;
   }
 
-  list.innerHTML = filtered.sort((a, b) => b.updated - a.updated).map(c => {
+  list.innerHTML = filtered.sort((a, b) => (b.updated || 0) - (a.updated || 0)).map(c => {
     const escapedTitle = esc(c.title).replace(/'/g, "\\'");
+    const msgCount = Array.isArray(c.messages) ? c.messages.length : 0;
+    const dateStr = c.updated ? new Date(c.updated).toLocaleDateString('fr-FR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
     return `
     <div class="conv-item ${c.id === activeConvId ? 'active' : ''}" onclick="switchConversation('${c.id}')">
-      <i class="ri-chat-3-line" style="color:var(--text-dim)"></i>
+      <i class="ri-chat-3-line conv-icon" style="color:var(--text-dim); font-size:1.1rem; flex-shrink:0;"></i>
       <div class="conv-item-info">
-        <div class="conv-item-title">${esc(c.title)}</div>
-        <div class="conv-item-date">${new Date(c.updated).toLocaleDateString('fr-FR', { month: 'short', day: 'numeric' })}</div>
+        <div class="conv-item-title">${esc(c.title || 'Discussion')}</div>
+        <div class="conv-item-date">${dateStr} · ${msgCount} msgs</div>
       </div>
       <button class="conv-item-delete" onclick="confirmDeleteConversation('${c.id}', event, '${escapedTitle}')" data-tooltip="Supprimer la discussion" aria-label="Supprimer la discussion">
         <i class="ri-delete-bin-line"></i>
