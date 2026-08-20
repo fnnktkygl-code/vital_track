@@ -6,9 +6,11 @@
   "outputDirectory": "web-app/dist",
   "installCommand": "cd api && npm install",
   "functions": {
+    "api/*.js": {
+      "maxDuration": 60
+    },
     "api/**/*.js": {
-      "memory": 256,
-      "maxDuration": 30
+      "maxDuration": 60
     }
   },
   "rewrites": [
