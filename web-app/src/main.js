@@ -1335,25 +1335,25 @@ function updateLiveAiPreview() {
   const preview = document.getElementById('aiPreviewBox');
   if (!preview) return;
 
-  const name = document.getElementById('profileName')?.value.trim() || 'Inconnu';
+  const name = document.getElementById('profileName')?.value?.trim() || 'Inconnu';
   const goalEl = document.getElementById('profileGoal');
-  const goal = goalEl ? goalEl.options[goalEl.selectedIndex]?.text : 'Détox & Vitalité';
+  const goal = goalEl ? goalEl.options?.[goalEl.selectedIndex]?.text : 'Détox & Vitalité';
   const transEl = document.getElementById('profileTransitionLevel');
-  const transLevel = transEl ? transEl.options[transEl.selectedIndex]?.text : 'Intermédiaire';
-  const city = document.getElementById('profileCity')?.value.trim() || 'Montréal';
-  const country = document.getElementById('profileCountry')?.value.trim() || 'Canada 🍁';
+  const transLevel = transEl ? transEl.options?.[transEl.selectedIndex]?.text : 'Intermédiaire';
+  const city = document.getElementById('profileCity')?.value?.trim() || 'Montréal';
+  const country = document.getElementById('profileCountry')?.value?.trim() || 'Canada 🍁';
   const bioregionEl = document.getElementById('profileBioregion');
-  const bioregion = bioregionEl ? bioregionEl.options[bioregionEl.selectedIndex]?.text : 'Boréale';
+  const bioregion = bioregionEl ? bioregionEl.options?.[bioregionEl.selectedIndex]?.text : 'Boréale';
 
-  const activeChips = Array.from(document.querySelectorAll('#emonctoireChipsContainer .emonctoire-chip.active'));
-  const organs = activeChips.map(c => c.textContent.trim()).join(', ') || 'Système global (Reins & Lymphe)';
+  const activeChips = Array.from(document.querySelectorAll('#emonctoireChipsContainer .emonctoire-chip.active') || []);
+  const organs = activeChips.map(c => c.textContent?.trim() || '').filter(Boolean).join(', ') || 'Système global (Reins & Lymphe)';
 
-  const height = document.getElementById('profileHeight')?.value.trim();
-  const curW = document.getElementById('profileCurrentWeight')?.value.trim();
-  const tarW = document.getElementById('profileTargetWeight')?.value.trim();
-  const age = document.getElementById('profileAge')?.value.trim();
+  const height = document.getElementById('profileHeight')?.value?.trim();
+  const curW = document.getElementById('profileCurrentWeight')?.value?.trim();
+  const tarW = document.getElementById('profileTargetWeight')?.value?.trim();
+  const age = document.getElementById('profileAge')?.value?.trim();
   const actEl = document.getElementById('profileActivity');
-  const activity = actEl ? actEl.options[actEl.selectedIndex]?.text : 'Modéré';
+  const activity = actEl ? actEl.options?.[actEl.selectedIndex]?.text : 'Modéré';
 
   let morpho = [];
   if (height) morpho.push(`Taille: ${height}cm`);
@@ -1361,12 +1361,12 @@ function updateLiveAiPreview() {
   if (tarW) morpho.push(`Cible: ${tarW}kg`);
   if (age) morpho.push(`Âge: ${age}ans`);
 
-  const restrictions = document.getElementById('profileRestrictions')?.value.trim() || 'Aucune restriction déclarée';
-  const rawMems = document.getElementById('profileMemories')?.value.trim() || '';
+  const restrictions = document.getElementById('profileRestrictions')?.value?.trim() || 'Aucune restriction déclarée';
+  const rawMems = document.getElementById('profileMemories')?.value?.trim() || '';
 
   const generatedPrompt = `[CONTEXTE UTILISATEUR & DIRECTIVES IA]
 Identité: ${name} | Localisation: ${city}, ${country} (Biorégion: ${bioregion})
-Objectif: ${goal} | Protocole: ${currentProtocol.toUpperCase()}
+Objectif: ${goal} | Protocole: ${(currentProtocol || 'vitalist').toUpperCase()}
 Niveau de Transition: ${transLevel}
 Émonctoires Prioritaires: ${organs}${morpho.length > 0 ? `\nMorphologie & Métabolisme: ${morpho.join(' | ')}` : ''}
 Restrictions Strictes: ${restrictions}${rawMems ? `\nHabitudes Mémorisées:\n- ${rawMems.split('\n').join('\n- ')}` : ''}
@@ -9839,10 +9839,6 @@ if (typeof window !== "undefined") window.applyMediaTopicTag = applyMediaTopicTa
 if (typeof window !== "undefined") window.clearMediaSearch = clearMediaSearch;
 if (typeof window !== "undefined") window.playVideoAtTimestamp = playVideoAtTimestamp;
 if (typeof window !== "undefined") window.closeMediaVideoModal = closeMediaVideoModal;
-if (typeof window !== "undefined") window.toggleVideoDubbing = toggleVideoDubbing;
-if (typeof window !== "undefined") window.setVideoSubtitleMode = setVideoSubtitleMode;
-if (typeof window !== "undefined") window.jumpToDialogueTime = jumpToDialogueTime;
-if (typeof window !== "undefined") window.testFirstSpeakerVoice = testFirstSpeakerVoice;
 if (typeof window !== "undefined") window.openPdfPassageModal = openPdfPassageModal;
 if (typeof window !== "undefined") window.closePdfPassageModal = closePdfPassageModal;
 if (typeof window !== "undefined") window.setResourcesCatalogTab = setResourcesCatalogTab;
