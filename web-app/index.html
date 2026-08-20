@@ -561,6 +561,16 @@
               <i class="ri-check-line"></i> Terminer
             </button>
           </div>
+        <!-- Chat Context Pill / Prompt Wrapper (Clean Background Encoding) -->
+        <div id="chatContextBar" class="chat-context-bar" style="display:none;">
+          <div class="chat-context-pill">
+            <span class="chat-context-icon" id="chatContextIcon">🥑</span>
+            <div class="chat-context-text">
+              <span class="chat-context-type" id="chatContextType">Adapter avec mon frigo</span>
+              <strong class="chat-context-subject" id="chatContextSubject">Gaspacho cru & Pourpier</strong>
+            </div>
+            <button type="button" class="chat-context-clear" onclick="clearChatContext()" title="Annuler le contexte">&times;</button>
+          </div>
         </div>
 
         <form class="chat-input-bar" id="chatForm" onsubmit="sendChat(event)">

@@ -2349,6 +2349,44 @@ function removeChatImage() {
   if (fileInput) fileInput.value = '';
 };
 
+// ═══════ CHAT CONTEXT & BACKGROUND ENCODING ═══════
+let pendingChatContext = null;
+
+function setChatContext(config) {
+  pendingChatContext = config;
+  const bar = document.getElementById('chatContextBar');
+  const icon = document.getElementById('chatContextIcon');
+  const type = document.getElementById('chatContextType');
+  const subject = document.getElementById('chatContextSubject');
+  const input = document.getElementById('chatInput');
+
+  if (bar && icon && type && subject) {
+    icon.textContent = config.icon || '💬';
+    type.textContent = config.label || 'Contexte';
+    subject.textContent = config.subject || '';
+    bar.style.display = 'flex';
+  }
+
+  if (input) {
+    input.value = '';
+    if (config.placeholder) input.placeholder = config.placeholder;
+    input.focus();
+    input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+window.setChatContext = setChatContext;
+
+function clearChatContext() {
+  pendingChatContext = null;
+  const bar = document.getElementById('chatContextBar');
+  if (bar) bar.style.display = 'none';
+  const input = document.getElementById('chatInput');
+  if (input) {
+    input.placeholder = "Pose une question, explore un sujet santé, un repas, un protocole...";
+  }
+}
+window.clearChatContext = clearChatContext;
+
 function quickChat(query) {
   if (!requireAuthForAi("le Coach Vitaliste IA")) return;
   document.getElementById('chatInput').value = query;
@@ -2360,16 +2398,30 @@ async function sendChat(e) {
   if (!requireAuthForAi("le Coach Vitaliste IA")) return;
 
   const input = document.getElementById('chatInput');
-  const query = input.value.trim();
+  const userRawQuery = input.value.trim();
   const attachedImage = pendingChatImage;
+  const activeCtx = pendingChatContext;
 
-  if (!query && !attachedImage) return;
+  if (!userRawQuery && !attachedImage && !activeCtx) return;
 
   if (_isListening) {
     window.toggleVoiceInput(false);
   }
 
-  const messageText = query || "Analyse cette photo et donne-moi ton avis vitaliste détaillé.";
+  let messageText = userRawQuery;
+  let displayUserText = userRawQuery;
+  let contextQuoteTag = null;
+
+  if (activeCtx) {
+    messageText = activeCtx.buildPrompt ? activeCtx.buildPrompt(userRawQuery) : `${activeCtx.label} (${activeCtx.subject}) : ${userRawQuery}`;
+    contextQuoteTag = `${activeCtx.icon || '💬'} ${activeCtx.label} : ${activeCtx.subject}`;
+    displayUserText = userRawQuery || `Adapter "${activeCtx.subject}"`;
+    clearChatContext();
+  } else if (!userRawQuery && attachedImage) {
+    messageText = "Analyse cette photo et donne-moi ton avis vitaliste détaillé.";
+    displayUserText = messageText;
+  }
+
   input.value = '';
   window.removeChatImage();
 
@@ -2381,7 +2433,7 @@ async function sendChat(e) {
     // Create new conversation
     conv = {
       id: 'conv_' + Date.now(),
-      title: messageText.length > 25 ? messageText.substring(0, 25) + '...' : messageText,
+      title: displayUserText.length > 25 ? displayUserText.substring(0, 25) + '...' : displayUserText,
       updated: Date.now(),
       messages: []
     };
@@ -2392,9 +2444,16 @@ async function sendChat(e) {
     conv.updated = Date.now();
   }
 
-  conv.messages.push({ role: 'user', text: messageText, image: attachedImage ? attachedImage.dataUri : null });
+  conv.messages.push({
+    role: 'user',
+    text: displayUserText,
+    fullPrompt: messageText,
+    contextQuote: contextQuoteTag,
+    image: attachedImage ? attachedImage.dataUri : null,
+    timestamp: Date.now()
+  });
   saveConversations();
-  addMessage(messageText, true, null, attachedImage ? attachedImage.dataUri : null);
+  addMessage(displayUserText, true, null, attachedImage ? attachedImage.dataUri : null, conv.messages.length - 1, false, null, contextQuoteTag);
 
   const sendBtn = document.getElementById('sendBtn');
   sendBtn.disabled = true;
@@ -2711,7 +2770,7 @@ document.addEventListener('click', (e) => {
 });
 
 
-function addMessage(text, isUser, modelUsed = null, imageUri = null, msgIndex = null, isError = false, failedQuery = null) {
+function addMessage(text, isUser, modelUsed = null, imageUri = null, msgIndex = null, isError = false, failedQuery = null, contextQuote = null) {
   const container = document.getElementById('chatMessages');
   if (!container) return;
 
@@ -2767,7 +2826,12 @@ function addMessage(text, isUser, modelUsed = null, imageUri = null, msgIndex = 
       }
     }
 
-    div.innerHTML = `${avatarHtml}<div class="message-bubble">${imgHtml}${isUser ? esc(text) : renderMarkdown(text)}${quickReplies}${badgeHtml}</div>`;
+    let contextQuoteHtml = '';
+    if (isUser && contextQuote) {
+      contextQuoteHtml = `<div class="msg-context-quote"><i class="ri-corner-down-right-line"></i> ${esc(contextQuote)}</div>`;
+    }
+
+    div.innerHTML = `${avatarHtml}<div class="message-bubble">${imgHtml}${contextQuoteHtml}${isUser ? esc(text) : renderMarkdown(text)}${quickReplies}${badgeHtml}</div>`;
     wrapper.appendChild(div);
 
     // Modern Message Action Toolbar
@@ -4140,11 +4204,14 @@ function askAIAboutCurrentHerb() {
   const herb = _currentSelectedHerb;
   closeHerbModal();
   showPage('chat');
-  const chatInput = document.getElementById('chatInput');
-  if (chatInput) {
-    chatInput.value = `Peux-tu m'expliquer en détail les vertus thérapeutiques, le mode de préparation et les synergies de la plante ${herb.name} (${herb.latinName}) selon la pharmacopée Raintree et la vision vitaliste ?`;
-    chatInput.focus();
-  }
+  setChatContext({
+    type: 'herb_info',
+    icon: '🌿',
+    label: 'Plante Raintree',
+    subject: `${herb.name} (${herb.latinName})`,
+    placeholder: `Posez une question sur ${herb.name} (ou appuyez sur Envoyer)...`,
+    buildPrompt: (userText) => `Peux-tu m'expliquer en détail les vertus thérapeutiques, le mode de préparation et les synergies de la plante ${herb.name} (${herb.latinName}) selon la pharmacopée Raintree et la vision vitaliste ? ${userText ? `Question précise de l'utilisateur : ${userText}` : ''}`
+  });
 };
 
 // ═══════ FOOD & MEAL MODAL (DIFFÉRENCIATION ALIMENT / REPAS COMPOSÉ) ═══════
@@ -6046,11 +6113,14 @@ function openMasterclass(index) {
 function askAIAboutMasterclass(title) {
   document.getElementById('masterclassModal').classList.remove('open');
   showPage('chat');
-  const chatInput = document.getElementById('chatInput');
-  if (chatInput) {
-    chatInput.value = `Peux-tu m'expliquer en profondeur la leçon d'Arnold Ehret sur "${title}" et comment l'appliquer concrètement dans mon hygiène de vie ?`;
-    chatInput.focus();
-  }
+  setChatContext({
+    type: 'lesson_info',
+    icon: '📖',
+    label: "Leçon d'Arnold Ehret",
+    subject: title,
+    placeholder: `Posez une question sur cette leçon (ou appuyez sur Envoyer)...`,
+    buildPrompt: (userText) => `Peux-tu m'expliquer en profondeur la leçon d'Arnold Ehret sur "${title}" et comment l'appliquer concrètement dans mon hygiène de vie ? ${userText ? `Précision de l'utilisateur : ${userText}` : ''}`
+  });
 };
 
 function closeMasterclass(e) {
@@ -7566,11 +7636,14 @@ window.renderScanResult = renderScanResult;
 
 function askAIAboutScannedDish(dishName) {
   showPage('chat');
-  const chatInput = document.getElementById('chatInput');
-  if (chatInput) {
-    chatInput.value = `J'ai scanné mon plat "${dishName}". Peux-tu m'expliquer en détail comment compenser ses effets mucogènes et acidifiants avec des tisanes drainantes et une transition alimentaire adaptée ?`;
-    chatInput.focus();
-  }
+  setChatContext({
+    type: 'dish_scan',
+    icon: '🥗',
+    label: 'Plat scanné',
+    subject: dishName,
+    placeholder: `Comment compenser ce plat ou l'adapter ?`,
+    buildPrompt: (userText) => `J'ai scanné mon plat "${dishName}". Peux-tu m'expliquer en détail comment compenser ses effets mucogènes et acidifiants avec des tisanes drainantes et une transition alimentaire adaptée ? ${userText ? `Précision de l'utilisateur : ${userText}` : ''}`
+  });
 };
 
 // ═══════ UTILS ═══════
@@ -7630,13 +7703,13 @@ function renderMarkdown(text) {
           </div>
           <div style="margin-top:10px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.06); display:flex; flex-wrap:wrap; gap:4px; align-items:center;">
             <span style="font-size:0.72rem; color:var(--text-dim); margin-right:4px;">Ajustements rapides :</span>
-            <button type="button" class="quick-reply-chip" onclick="askMealVariant('${safeMealName}', 'Comment adapter cette recette avec les ingrédients de mon frigo ?')" style="font-size:0.74rem; padding:3px 10px; border-radius:12px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); color:var(--text-dim); cursor:pointer;">
+            <button type="button" class="quick-reply-chip" onclick="askMealVariant('${safeMealName}', 'fridge')" style="font-size:0.74rem; padding:3px 10px; border-radius:12px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); color:var(--text-dim); cursor:pointer;">
               🥑 Avec mon frigo
             </button>
-            <button type="button" class="quick-reply-chip" onclick="askMealVariant('${safeMealName}', 'Comment adapter ce plat en version 100% crue vivante ?')" style="font-size:0.74rem; padding:3px 10px; border-radius:12px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); color:var(--text-dim); cursor:pointer;">
+            <button type="button" class="quick-reply-chip" onclick="askMealVariant('${safeMealName}', 'raw')" style="font-size:0.74rem; padding:3px 10px; border-radius:12px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); color:var(--text-dim); cursor:pointer;">
               🌿 Version 100% crue
             </button>
-            <button type="button" class="quick-reply-chip" onclick="askMealVariant('${safeMealName}', 'Comment intégrer un aliment de transition (poisson sauvage doux / féculent sans gluten) ?')" style="font-size:0.74rem; padding:3px 10px; border-radius:12px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); color:var(--text-dim); cursor:pointer;">
+            <button type="button" class="quick-reply-chip" onclick="askMealVariant('${safeMealName}', 'transition')" style="font-size:0.74rem; padding:3px 10px; border-radius:12px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); color:var(--text-dim); cursor:pointer;">
               🐟 Aliment de transition
             </button>
           </div>
@@ -9009,16 +9082,26 @@ function deleteCalendarMeal(id) {
 
 function promptAIFixMeal(id) {
   showPage('chat');
-  const chatInput = document.getElementById('chatInput');
-  chatInput.value = "IA, j'aimerais changer ce repas. Propose-moi une alternative cohérente. (ID: " + id + ")";
-  chatInput.focus();
+  setChatContext({
+    type: 'meal_fix',
+    icon: '🍲',
+    label: 'Modifier le repas',
+    subject: `Repas #${id}`,
+    placeholder: 'Que souhaitez-vous modifier dans ce repas ?',
+    buildPrompt: (userText) => `IA, j'aimerais changer ce repas (ID: ${id}). Propose-moi une alternative vitaliste cohérente. ${userText ? `Précisions : ${userText}` : ''}`
+  });
 };
 
 function promptAIPlan() {
   showPage('chat');
-  const chatInput = document.getElementById('chatInput');
-  chatInput.value = "IA, propose-moi un plan alimentaire de 3 jours pour mon calendrier.";
-  chatInput.focus();
+  setChatContext({
+    type: 'plan_gen',
+    icon: '📅',
+    label: 'Plan Alimentaire',
+    subject: 'Génération 3 jours',
+    placeholder: 'Précisez vos préférences (ou appuyez sur Envoyer)...',
+    buildPrompt: (userText) => `IA, propose-moi un plan alimentaire de 3 jours pour mon calendrier vitaliste. ${userText ? `Objectifs ou préférences : ${userText}` : ''}`
+  });
 };
 
 function handleApplyDietPlanRequest(encodedReq, mode) {
@@ -9179,20 +9262,45 @@ function handleAddActionMeal(encodedMeal) {
 };
 
 function openMealCustomizer(mealName) {
-  const input = document.getElementById('chatInput');
-  if (input) {
-    input.value = `Je voudrais personnaliser ou remplacer des ingrédients dans "${mealName}". Voici ce que j'aimerais changer : `;
-    input.focus();
-    input.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }
+  setChatContext({
+    type: 'meal_replace',
+    icon: '🔄',
+    label: 'Personnaliser le plat',
+    subject: mealName,
+    placeholder: 'Quels ingrédients souhaitez-vous remplacer ou ajouter ?',
+    buildPrompt: (userText) => `À propos du plat "${mealName}" : Je souhaite adapter la recette. Voici mes souhaits : "${userText || 'propose une variante savoureuse'}". Propose une adaptation vitaliste selon Arnold Ehret avec un bloc actionMeal mis à jour.`
+  });
 }
 window.openMealCustomizer = openMealCustomizer;
 
-function askMealVariant(mealName, question) {
-  const input = document.getElementById('chatInput');
-  if (input) {
-    input.value = `À propos du plat "${mealName}" : ${question}`;
-    sendChatMessage();
+function askMealVariant(mealName, variantType) {
+  if (variantType === 'fridge') {
+    setChatContext({
+      type: 'meal_fridge',
+      icon: '🥑',
+      label: 'Adapter avec mon frigo',
+      subject: mealName,
+      placeholder: 'Quels aliments avez-vous sous la main ? (ex: courgettes, avocat, cabillaud...)',
+      buildPrompt: (userText) => `À propos du plat "${mealName}" : Comment adapter cette recette avec les ingrédients suivants que j'ai au frigo / placard : "${userText || 'ce qui est disponible'}". Donne la recette adaptée selon les règles vitalistes d'Arnold Ehret avec un bloc actionMeal.`
+    });
+  } else if (variantType === 'raw') {
+    setChatContext({
+      type: 'meal_raw',
+      icon: '🌿',
+      label: 'Version 100% crue vivante',
+      subject: mealName,
+      placeholder: 'Précisez vos préférences (ou appuyez sur Envoyer)...',
+      buildPrompt: (userText) => `À propos du plat "${mealName}" : Comment adapter ce plat en version 100% crue, vivante et hautement enzymatique ? ${userText ? `Précisions : ${userText}` : ''} Fournis la recette avec son bloc actionMeal.`
+    });
+  } else if (variantType === 'transition') {
+    setChatContext({
+      type: 'meal_transition',
+      icon: '🐟',
+      label: 'Aliment de transition',
+      subject: mealName,
+      placeholder: 'Quel aliment de transition voulez-vous ajouter ? (ex: poisson vapeur, quinoa, patate douce...)',
+      buildPrompt: (userText) => `À propos du plat "${mealName}" : Comment intégrer l'aliment de transition suivant : "${userText || 'poisson blanc vapeur douce ou féculent doux sans gluten'}" en respectant les règles d'association et de neutralisation du mucus d'Arnold Ehret ? Fournis le bloc actionMeal adapté.`
+    });
   }
 }
 window.askMealVariant = askMealVariant;

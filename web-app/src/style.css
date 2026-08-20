@@ -603,6 +603,81 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
 .chat-attachment-remove{position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,0.8);color:white;border:none;cursor:pointer;font-size:0.8rem;display:grid;place-items:center;transition:transform 0.15s}
 .chat-attachment-remove:hover{transform:scale(1.15);background:#ef4444}
 
+/* ═══════ CHAT CONTEXT BAR (CLEAN ENCODED PROMPT MODE) ═══════ */
+.chat-context-bar {
+  padding: 8px 16px 0 16px;
+  display: flex;
+  align-items: center;
+  animation: slideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.chat-context-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: rgba(55, 211, 153, 0.12);
+  border: 1px solid rgba(55, 211, 153, 0.35);
+  border-radius: 12px;
+  color: var(--text);
+  font-size: 0.82rem;
+  max-width: 100%;
+}
+.chat-context-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+.chat-context-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+  min-width: 0;
+}
+.chat-context-type {
+  font-size: 0.68rem;
+  color: var(--accent, #34d399);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+.chat-context-subject {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 280px;
+}
+.chat-context-clear {
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  font-size: 1.15rem;
+  cursor: pointer;
+  padding: 0 4px;
+  margin-left: 6px;
+  transition: color 0.15s;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.chat-context-clear:hover {
+  color: #ef4444;
+}
+
+/* User Context Quote Tag in Messages */
+.msg-context-quote {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  margin-bottom: 6px;
+  background: rgba(0, 0, 0, 0.25);
+  border-left: 3px solid rgba(255, 255, 255, 0.7);
+  border-radius: 4px;
+  font-size: 0.74rem;
+  color: rgba(255, 255, 255, 0.92);
+}
+
 .chat-voice-indicator {
   display: flex;
   align-items: center;
