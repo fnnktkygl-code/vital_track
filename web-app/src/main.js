@@ -8914,8 +8914,11 @@ function renderMascotSpeechBubble(text, mood = 'talking') {
   const bubble = document.getElementById('mascotSpeechBubble') || document.getElementById('greetingContext');
   if (!bubble) return;
 
-  // Clean text from any legacy markup prefix
-  let cleanText = text.replace(/^[💬🐦]\s*(<strong>.*?<\/strong>)?\s*[:«]?\s*/i, '').replace(/[»"]$/g, '').trim();
+  // Clean text from any legacy markup prefix and any existing outer quotes («, », ", “, ”)
+  let cleanText = (text || '')
+    .replace(/^[💬🐦]\s*(<strong>.*?<\/strong>)?\s*[:«"“]?\s*/i, '')
+    .replace(/^[\s«"“\u00AB\u201C\u2018]+|[\s»"”\u00BB\u201D\u2019]+$/g, '')
+    .trim();
   if (!cleanText) cleanText = text;
 
   const moodBadges = {
@@ -11658,13 +11661,13 @@ window.initCircadianClockInteractivity = initCircadianClockInteractivity;
 // ═══════════════════════════════════════════════════════════════════════════════
 let _inAppMascotRenderer = null;
 const _mascotQuotes = {
-  idle: "« Prêt à explorer la vitalité naturelle et drainer les acides ! »",
-  walk: "« En route pour stimuler la lymphe et activer la motilité péristaltique ! 🚶 »",
-  laugh: "« Hahaha ! La joie et la respiration profonde alcalinisent le terrain ! 😄 »",
-  coo: "« Roucouuu ! Écoute le chant de tes cellules régénérées. 🐦 »",
-  think: "« J'analyse les flavonoïdes, le PRAL et la charge en mucus... 🧐 »",
-  celebrate: "« Félicitations pour tes victoires vitalistes ! 🎉 »",
-  sleep: "« Réparation cellulaire et autolyse des déchets... Bonne nuit ! 😴 »"
+  idle: "Prêt à explorer la vitalité naturelle et drainer les acides !",
+  walk: "En route pour stimuler la lymphe et activer la motilité péristaltique ! 🚶",
+  laugh: "Hahaha ! La joie et la respiration profonde alcalinisent le terrain ! 😄",
+  coo: "Roucouuu ! Écoute le chant de tes cellules régénérées. 🐦",
+  think: "J'analyse les flavonoïdes, le PRAL et la charge en mucus... 🧐",
+  celebrate: "Félicitations pour tes victoires vitalistes ! 🎉",
+  sleep: "Réparation cellulaire et autolyse des déchets... Bonne nuit ! 😴"
 };
 
 function openMascotStudioModal() {

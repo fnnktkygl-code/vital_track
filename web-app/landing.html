@@ -159,7 +159,11 @@
     <!-- Video Tabs Switcher -->
     <div class="video-showcase-wrapper glass">
       <div class="video-tabs-nav">
-        <button class="video-tab-btn active" data-feature="voice">
+        <button class="video-tab-btn active" data-feature="presentation">
+          <i class="ri-movie-2-line"></i>
+          <span>0. Démo Complète (1 min)</span>
+        </button>
+        <button class="video-tab-btn" data-feature="voice">
           <i class="ri-mic-line"></i>
           <span>1. Coach Vocal & Plans</span>
         </button>
@@ -186,16 +190,20 @@
         <div class="video-player-container">
           <div class="video-frame">
             <video id="showcaseVideoPlayer" autoplay loop muted playsinline preload="auto">
-              <source src="/videos/features/feature_voice_ai_chat.mp4" type="video/mp4">
-              <source src="/videos/features/feature_voice_ai_chat.webm" type="video/webm">
+              <source src="/videos/vitaltrack_presentation.mp4" type="video/mp4">
               Votre navigateur ne supporte pas la lecture vidéo HTML5.
             </video>
             <div class="video-overlay-controls">
-              <button id="videoPlayPauseBtn" class="vid-ctrl-btn" title="Lecture / Pause">
-                <i class="ri-pause-line"></i>
-              </button>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <button id="videoPlayPauseBtn" class="vid-ctrl-btn" title="Lecture / Pause">
+                  <i class="ri-pause-line"></i>
+                </button>
+                <button id="videoMuteBtn" class="vid-ctrl-btn" title="Activer / Couper le son">
+                  <i class="ri-volume-mute-line"></i>
+                </button>
+              </div>
               <div class="video-badge-live">
-                <span class="pulse-dot"></span> CAPTURE LIVE 60 FPS
+                <span class="pulse-dot"></span> CAPTURE LIVE 1080P
               </div>
             </div>
           </div>
@@ -205,17 +213,17 @@
           <div id="featureInfoCard" class="feature-info-card">
             <!-- Dynamic Content Injected via landing.js -->
             <div class="feature-meta">
-              <span class="feature-tag">Intelligence Artificielle & Voix</span>
-              <span class="feature-badge-sub">Gemini 3.7 Flash + Web Speech</span>
+              <span class="feature-tag">Présentation Officielle • Voix Ariane</span>
+              <span class="feature-badge-sub">Démo Complète 1080p Full HD</span>
             </div>
-            <h3 class="feature-title">Coach IA Vitaliste & Dictée Vocale Streaming</h3>
+            <h3 class="feature-title">Présentation Complète de VitalTrack de Bout en Bout</h3>
             <p class="feature-desc">
-              Parlez naturellement à votre coach. Le texte est transcrit en direct dans le champ de saisie sans temps d'attente et sans consommer votre quota d'API. L'IA analyse votre terrain et génère automatiquement des protocoles complets avec des cartes d'action interactives.
+              Découvrez en 1 minute comment VitalTrack révolutionne votre santé cellulaire : du tableau de bord au coach vocal IA sans quota, en passant par le calendrier cockpit 14 jours et le scanner biochimique PRAL.
             </p>
             <ul class="feature-bullet-list">
-              <li><i class="ri-checkbox-circle-fill"></i> <div><strong>Zero-Quota Voice :</strong> Dictée vocale native avec indicateur d'ondes sonores en temps réel.</div></li>
-              <li><i class="ri-checkbox-circle-fill"></i> <div><strong>RAG Vitaliste :</strong> Réponses fondées sur les écrits authentiques des docteurs Sebi, Ehret et Morse.</div></li>
-              <li><i class="ri-checkbox-circle-fill"></i> <div><strong>Cartes d'Action 1-Clic :</strong> Application immédiate du protocole généré dans votre calendrier de repas.</div></li>
+              <li><i class="ri-checkbox-circle-fill"></i> <div><strong>Vue Panoramique :</strong> Démonstration fluide et commentée de toutes les fonctionnalités majeures de l'application.</div></li>
+              <li><i class="ri-checkbox-circle-fill"></i> <div><strong>Voix Studio Ariane :</strong> Explication claire, humaine et posée des concepts vitalistes et de l'équilibre cellulaire.</div></li>
+              <li><i class="ri-checkbox-circle-fill"></i> <div><strong>Expérience 100% Réelle :</strong> Zéro artifice, capture directe des composants de l'application en conditions réelles.</div></li>
             </ul>
             <div class="feature-action-row">
               <a href="/" class="btn-feature-try">

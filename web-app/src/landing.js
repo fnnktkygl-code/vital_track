@@ -159,6 +159,19 @@ function animateThree() {
 // ═════════════════════════════════════════════════════════════════════════
 
 const FEATURE_DATA = {
+  presentation: {
+    tag: "Présentation Officielle • Voix Ariane",
+    badgeSub: "Démo Complète 1080p Full HD",
+    title: "Présentation Complète de VitalTrack de Bout en Bout",
+    desc: "Découvrez en 1 minute comment VitalTrack révolutionne votre santé cellulaire : du tableau de bord au coach vocal IA sans quota, en passant par le calendrier cockpit 14 jours et le scanner biochimique PRAL.",
+    bullets: [
+      "<strong>Vue Panoramique :</strong> Démonstration fluide et commentée de toutes les fonctionnalités majeures de l'application.",
+      "<strong>Voix Studio Ariane :</strong> Explication claire, humaine et posée des concepts vitalistes et de l'équilibre cellulaire.",
+      "<strong>Expérience 100% Réelle :</strong> Zéro artifice, capture directe des composants de l'application en conditions réelles."
+    ],
+    videoMp4: "/videos/vitaltrack_presentation.mp4",
+    videoWebm: "/videos/vitaltrack_presentation.mp4"
+  },
   voice: {
     tag: "Intelligence Artificielle & Voix",
     badgeSub: "Gemini 3.7 Flash + Web Speech",
@@ -230,6 +243,7 @@ function initVideoShowcase() {
   const tabs = document.querySelectorAll('.video-tab-btn');
   const videoPlayer = document.getElementById('showcaseVideoPlayer');
   const playPauseBtn = document.getElementById('videoPlayPauseBtn');
+  const muteBtn = document.getElementById('videoMuteBtn');
   const infoCard = document.getElementById('featureInfoCard');
 
   if (!tabs.length || !videoPlayer || !infoCard) return;
@@ -294,6 +308,20 @@ function initVideoShowcase() {
       } else {
         videoPlayer.pause();
         playPauseBtn.innerHTML = '<i class="ri-play-line"></i>';
+      }
+    });
+  }
+
+  // Mute/Unmute button
+  if (muteBtn) {
+    muteBtn.addEventListener('click', () => {
+      videoPlayer.muted = !videoPlayer.muted;
+      if (videoPlayer.muted) {
+        muteBtn.innerHTML = '<i class="ri-volume-mute-line"></i>';
+        muteBtn.title = "Activer le son (Voix Ariane)";
+      } else {
+        muteBtn.innerHTML = '<i class="ri-volume-up-line"></i>';
+        muteBtn.title = "Couper le son";
       }
     });
   }

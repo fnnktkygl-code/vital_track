@@ -299,13 +299,13 @@ export const TRANSLATIONS = {
       saveSuccess: 'Profil enregistré avec succès !'
     },
     mascot: {
-      idle: "« Prêt à explorer la vitalité naturelle et drainer les acides ! »",
-      walk: "« En route pour stimuler la lymphe et activer la motilité péristaltique ! 🚶 »",
-      laugh: "« Hahaha ! La joie et la respiration profonde alcalinisent le terrain ! 😄 »",
-      coo: "« Roucouuu ! Écoute le chant de tes cellules régénérées. 🐦 »",
-      think: "« J'analyse les flavonoïdes, le PRAL et la charge en mucus... 🧐 »",
-      celebrate: "« Félicitations pour tes victoires vitalistes ! 🎉 »",
-      sleep: "« Réparation cellulaire et autolyse des déchets... Bonne nuit ! 😴 »",
+      idle: "Prêt à explorer la vitalité naturelle et drainer les acides !",
+      walk: "En route pour stimuler la lymphe et activer la motilité péristaltique ! 🚶",
+      laugh: "Hahaha ! La joie et la respiration profonde alcalinisent le terrain ! 😄",
+      coo: "Roucouuu ! Écoute le chant de tes cellules régénérées. 🐦",
+      think: "J'analyse les flavonoïdes, le PRAL et la charge en mucus... 🧐",
+      celebrate: "Félicitations pour tes victoires vitalistes ! 🎉",
+      sleep: "Réparation cellulaire et autolyse des déchets... Bonne nuit ! 😴",
       audioBtn: "Roucouler",
       audioOn: "Sons Aviaires : Activés",
       audioOff: "Sons Aviaires : Désactivés"
@@ -498,13 +498,13 @@ export const TRANSLATIONS = {
       saveSuccess: 'Profil enregistré avec succès !'
     },
     mascot: {
-      idle: "« Prêt à explorer la vitalité naturelle et drainer les acides ! »",
-      walk: "« En route pour stimuler la lymphe et activer la motilité péristaltique ! 🚶 »",
-      laugh: "« Hahaha ! La joie et la respiration profonde alcalinisent le terrain ! 😄 »",
-      coo: "« Roucouuu ! Écoute le chant de tes cellules régénérées. 🐦 »",
-      think: "« J'analyse les flavonoïdes, le PRAL et la charge en mucus... 🧐 »",
-      celebrate: "« Félicitations pour tes victoires vitalistes ! 🎉 »",
-      sleep: "« Réparation cellulaire et autolyse des déchets... Bonne nuit ! 😴 »",
+      idle: "Prêt à explorer la vitalité naturelle et drainer les acides !",
+      walk: "En route pour stimuler la lymphe et activer la motilité péristaltique ! 🚶",
+      laugh: "Hahaha ! La joie et la respiration profonde alcalinisent le terrain ! 😄",
+      coo: "Roucouuu ! Écoute le chant de tes cellules régénérées. 🐦",
+      think: "J'analyse les flavonoïdes, le PRAL et la charge en mucus... 🧐",
+      celebrate: "Félicitations pour tes victoires vitalistes ! 🎉",
+      sleep: "Réparation cellulaire et autolyse des déchets... Bonne nuit ! 😴",
       audioBtn: "Roucouler",
       audioOn: "Sons Aviaires : Activés",
       audioOff: "Sons Aviaires : Désactivés"
@@ -697,13 +697,13 @@ export const TRANSLATIONS = {
       saveSuccess: 'Profile saved successfully!'
     },
     mascot: {
-      idle: "« Ready to explore natural vitality and drain cellular acids! »",
-      walk: "« Moving to stimulate lymphatic flow and peristaltic motility! 🚶 »",
-      laugh: "« Hahaha! Joy and deep breathing alkalize the biological terrain! 😄 »",
-      coo: "« Coo-coo! Listen to the song of your regenerating cells. 🐦 »",
-      think: "« Analyzing flavonoids, PRAL balance, and mucoid load... 🧐 »",
-      celebrate: "« Congratulations on your vitalist breakthroughs! 🎉 »",
-      sleep: "« Cellular repair and waste autolysis in progress... Good night! 😴 »",
+      idle: "Ready to explore natural vitality and drain cellular acids!",
+      walk: "Moving to stimulate lymphatic flow and peristaltic motility! 🚶",
+      laugh: "Hahaha! Joy and deep breathing alkalize the biological terrain! 😄",
+      coo: "Coo-coo! Listen to the song of your regenerating cells. 🐦",
+      think: "Analyzing flavonoids, PRAL balance, and mucoid load... 🧐",
+      celebrate: "Congratulations on your vitalist breakthroughs! 🎉",
+      sleep: "Cellular repair and waste autolysis in progress... Good night! 😴",
       audioBtn: "Coo Sound",
       audioOn: "Avian Sounds: Enabled",
       audioOff: "Avian Sounds: Muted"
@@ -893,13 +893,13 @@ export const TRANSLATIONS = {
       saveSuccess: '¡Perfil guardado con éxito!'
     },
     mascot: {
-      idle: "« ¡Listo para explorar la vitalidad natural y drenar los ácidos! »",
-      walk: "« ¡En marcha para estimular la linfa y activar el peristaltismo! 🚶 »",
-      laugh: "« ¡Jajaja! ¡La alegría y la respiración profunda alcalinizan el organismo! 😄 »",
-      coo: "« ¡Rucuuu! Escucha el canto de tus células regeneradas. 🐦 »",
-      think: "« Analizando flavonoides, equilibrio PRAL y carga de moco... 🧐 »",
-      celebrate: "« ¡Felicitaciones por tus logros vitalistas! 🎉 »",
-      sleep: "« Reparación celular y autólisis de desechos en curso... ¡Buenas noches! 😴 »",
+      idle: "¡Listo para explorar la vitalidad natural y drenar los ácidos!",
+      walk: "¡En marcha para estimular la linfa y activar el peristaltismo! 🚶",
+      laugh: "¡Jajaja! ¡La alegría y la respiración profunda alcalinizan el organismo! 😄",
+      coo: "¡Rucuuu! Escucha el canto de tus células regeneradas. 🐦",
+      think: "Analizando flavonoides, equilibrio PRAL y carga de moco... 🧐",
+      celebrate: "¡Felicitaciones por tus logros vitalistas! 🎉",
+      sleep: "Reparación celular y autólisis de desechos en curso... ¡Buenas noches! 😴",
       audioBtn: "Arrullo",
       audioOn: "Sonidos de Aves: Activados",
       audioOff: "Sonidos de Aves: Silenciados"

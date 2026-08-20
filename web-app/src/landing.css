@@ -947,6 +947,7 @@ body {
   }
   .video-content-grid {
     grid-template-columns: 1fr;
+    gap: 24px;
   }
   .privacy-showcase {
     grid-template-columns: 1fr;
@@ -962,19 +963,86 @@ body {
 
 @media (max-width: 600px) {
   .hero-title {
-    font-size: 1.95rem;
+    font-size: 1.85rem;
+    line-height: 1.25;
+  }
+  .hero-subtitle {
+    font-size: 0.95rem;
   }
   .hero-section {
-    padding-top: 60px;
+    padding-top: 50px;
+    padding-bottom: 40px;
+  }
+  .hero-buttons {
+    flex-direction: column;
+    width: 100%;
+    gap: 12px;
+  }
+  .btn-hero-primary, .btn-hero-secondary {
+    width: 100%;
+    justify-content: center;
   }
   .trust-bar {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
   .video-showcase-wrapper {
-    padding: 16px;
+    padding: 16px 12px;
+    border-radius: var(--radius-md);
+  }
+  .video-tabs-nav {
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 10px;
+    margin-bottom: 16px;
+    gap: 8px;
+  }
+  .video-tab-btn {
+    font-size: 0.8rem;
+    padding: 8px 14px;
+  }
+  .video-frame {
+    border-radius: 12px;
+    aspect-ratio: 16 / 9;
+  }
+  .video-frame video {
+    aspect-ratio: 16 / 9;
+    max-height: none;
+  }
+  .video-overlay-controls {
+    bottom: 8px;
+    left: 8px;
+    right: 8px;
+  }
+  .vid-ctrl-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 0.95rem;
+  }
+  .video-badge-live {
+    font-size: 0.65rem;
+    padding: 3px 8px;
+  }
+  .feature-info-card {
+    gap: 12px;
+  }
+  .feature-title {
+    font-size: 1.25rem;
+  }
+  .feature-desc {
+    font-size: 0.88rem;
+  }
+  .feature-bullet-list li {
+    font-size: 0.85rem;
+  }
+  .btn-feature-try {
+    width: 100%;
+    justify-content: center;
   }
   .simulator-box {
-    padding: 20px;
+    padding: 18px 14px;
+  }
+  .sim-options {
+    grid-template-columns: 1fr;
   }
   .footer-links-grid {
     grid-template-columns: 1fr;
