@@ -3,30 +3,56 @@ const fs = require('fs');
 const path = require('path');
 
 const OUTPUT_DIR = path.resolve(__dirname, '../docs/screenshots');
-if (!fs.existsSync(OUTPUT_DIR)) {
-  fs.mkdirSync(OUTPUT_DIR, { recursive: true });
-}
+const PUBLIC_DIR = path.resolve(__dirname, '../web-app/public/screenshots');
+
+[OUTPUT_DIR, PUBLIC_DIR].forEach(dir => {
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+});
 
 (async () => {
-  console.log('🚀 Démarrage de la capture finale ultra-soignée...');
+  console.log('🚀 Démarrage de la capture vitrine 100% épurée (Zéro notification / Zéro toast)...');
   const browser = await puppeteer.launch({
     executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
     headless: true,
     defaultViewport: { width: 1440, height: 920, deviceScaleFactor: 2 }
   });
 
+  const context = browser.defaultBrowserContext();
+  try {
+    await context.overridePermissions('http://localhost:5173', ['microphone']);
+  } catch (e) {}
+
   const page = await browser.newPage();
   await page.goto('http://localhost:5173', { waitUntil: 'networkidle0' });
 
   // ═════════════════════════════════════════════════════════════════════════
-  // 1. INJECT REALISTIC VITALIST SAMPLE DATA & STATE
+  // 1. NEUTER ALL TOASTS, NOTIFICATIONS, MASCOT NUDGES & INJECT CSS
   // ═════════════════════════════════════════════════════════════════════════
   await page.evaluate(() => {
-    // Hide PWA banner & toasts permanently
-    const pwaBanner = document.getElementById('pwaInstallBanner');
-    if (pwaBanner) pwaBanner.style.setProperty('display', 'none', 'important');
+    // Disable all notification mechanisms
+    window.showToast = () => {};
+    window.showMascotNotification = () => {};
+    if (window.mascotNudges) {
+      window.mascotNudges.triggerFastingNudge = () => {};
+      window.mascotNudges.triggerMealNudge = () => {};
+      window.mascotNudges.show = () => {};
+    }
+
+    // Permanent CSS kill-switch for any toast or popup
     const style = document.createElement('style');
-    style.innerHTML = '#pwaInstallBanner, .toast, .vital-toast { display: none !important; opacity: 0 !important; pointer-events: none !important; }';
+    style.id = 'kill-all-notifications-style';
+    style.innerHTML = `
+      #toastContainer, .toast-container, .toast, .vital-toast, 
+      .mascot-proactive-toast, .mascot-proactive-container, #mascotProactiveContainer,
+      .mascot-nudge-bubble, .mascot-bubble, [class*="toast"], [id*="toast"],
+      #pwaInstallBanner, .pwa-banner, .screenshot-privacy-active {
+        display: none !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+        transform: scale(0) !important;
+      }
+    `;
     document.head.appendChild(style);
 
     const now = Date.now();
@@ -115,16 +141,36 @@ if (!fs.existsSync(OUTPUT_DIR)) {
     }
   });
 
-  // Helper for taking screenshot
+  // Helper for taking pristine screenshots
   async function take(name, width, height, isMobile = false) {
     await page.setViewport({ width, height, deviceScaleFactor: 2, isMobile, hasTouch: isMobile });
     await page.evaluate(() => {
-      document.querySelectorAll('.toast, .vital-toast, #pwaInstallBanner').forEach(el => el.remove());
+      window.showToast = () => {};
+      window.showMascotNotification = () => {};
+      document.querySelectorAll(`
+        #toastContainer, .toast-container, .toast, .vital-toast, 
+        .mascot-proactive-toast, .mascot-proactive-container, #mascotProactiveContainer,
+        .mascot-nudge-bubble, .mascot-bubble, [class*="toast"], [id*="toast"],
+        #pwaInstallBanner, .pwa-banner
+      `).forEach(el => el.remove());
     });
     await new Promise(r => setTimeout(r, 600));
-    const dest = path.join(OUTPUT_DIR, name);
-    await page.screenshot({ path: dest });
-    console.log(`📸 Capturé: ${name}`);
+    
+    // Purge again immediately before screenshot
+    await page.evaluate(() => {
+      document.querySelectorAll(`
+        #toastContainer, .toast-container, .toast, .vital-toast, 
+        .mascot-proactive-toast, .mascot-proactive-container, #mascotProactiveContainer,
+        .mascot-nudge-bubble, .mascot-bubble, [class*="toast"], [id*="toast"],
+        #pwaInstallBanner, .pwa-banner
+      `).forEach(el => el.remove());
+    });
+
+    const destDocs = path.join(OUTPUT_DIR, name);
+    const destPublic = path.join(PUBLIC_DIR, name);
+    await page.screenshot({ path: destDocs });
+    fs.copyFileSync(destDocs, destPublic);
+    console.log(`📸 Capturé net sans notification : ${name}`);
   }
 
   // ═════════════════════════════════════════════════════════════════════════
@@ -282,15 +328,17 @@ Cet assortiment cru et vivant présente une densité photonique et enzymatique e
   // 11. Mobile AI Chat with Live Voice Streaming HUD & Contextual Plan
   await page.evaluate(() => {
     if (window.showPage) window.showPage('chat');
-    window.toggleVoiceInput(true);
+    const hud = document.getElementById('voiceStreamingHUD');
+    if (hud) hud.classList.add('active');
     const input = document.getElementById('chatInput');
     if (input) input.value = "Comment adapter ce protocole si je dois voyager ?";
   });
   await take('mobile_chat_voice_live.png', 390, 844, true);
 
-  // Stop voice
+  // Stop voice HUD
   await page.evaluate(() => {
-    window.toggleVoiceInput(false);
+    const hud = document.getElementById('voiceStreamingHUD');
+    if (hud) hud.classList.remove('active');
   });
 
   // 12. Mobile Food Scanner Diagnostic & PRAL Analysis
@@ -375,5 +423,5 @@ Densité enzymatique et photonique maximale.
   await take('mobile_privacy_vault.png', 390, 844, true);
 
   await browser.close();
-  console.log('🎉 Toutes les captures d\'écran vitrines ont été générées avec succès !');
+  console.log('🎉 Toutes les 17 captures vitrines ont été générées SANS AUCUNE notification !');
 })();
