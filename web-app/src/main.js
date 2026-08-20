@@ -8161,6 +8161,30 @@ function renderResources() {
       description: "Session complète de respiration guidée en 3 cycles avec Wim Hof, avec guidage vocal français calé au rythme des inspirations et des temps de rétention."
     },
     {
+      id: "wim_hof_tutorial_fr",
+      lang: "fr",
+      title: "Tutoriel Officiel & Méthode Wim Hof (VF HD)",
+      localSrc: "/videos/wim-hof-tutorial-fr.mp4",
+      poster: "/videos/posters/wim-hof-3-rounds.jpg",
+      source: "Wim Hof Officiel • VF HD (10 min)",
+      badgeClass: "badge-success",
+      badgeText: "🇫🇷 Tutoriel en Français",
+      type: "local-video",
+      description: "Tutoriel complet avec Wim Hof expliquant les 3 piliers : respiration prānique, exposition au froid et alcalinisation sanguine."
+    },
+    {
+      id: "wim_hof_science_fr",
+      lang: "fr",
+      title: "Documentaire : Wim Hof & La Science de l'Immunité (VF HD)",
+      localSrc: "/videos/wim-hof-science-fr.mp4",
+      poster: "/videos/posters/wim-hof-science.jpg",
+      source: "Radboud University • VF Multi-Voix (44 min)",
+      badgeClass: "badge-success",
+      badgeText: "🇫🇷 Documentaire Multi-Voix HD",
+      type: "local-video",
+      description: "Grand documentaire scientifique avec chercheurs et scientifiques universitaires doublés en français multi-voix sur la modulation du système immunitaire et l'autophagie."
+    },
+    {
       id: "wim_hof_vice",
       lang: "fr",
       title: "Inside the Superhuman World of Wim Hof (Vice Documentaire)",
