@@ -10381,6 +10381,161 @@ function renderWeightHistoryInModal() {
   }).join('');
 };
 
+// ═══════ INTELLIGENT DYNAMIC TARGET WEIGHT ENGINE ═══════
+function calculateTargetWeightInsight(curWeight, targetWeight, startWeight) {
+  if (isNaN(targetWeight) || targetWeight <= 20 || targetWeight > 300) {
+    return {
+      status: 'unset',
+      badgeText: '+ Définir',
+      badgeColor: '#60a5fa',
+      badgeBg: 'rgba(96,165,250,0.14)',
+      title: '🎯 Objectif de Poids Non Défini',
+      message: 'Définissez votre poids physiologique idéal pour activer le suivi dynamique et tracer votre ligne de mire sur le graphique.',
+      progressPct: null,
+      delta: null,
+      isGoalReached: false
+    };
+  }
+
+  if (isNaN(curWeight) || curWeight <= 0) {
+    return {
+      status: 'target_set_no_current',
+      badgeText: `${targetWeight.toFixed(1)} kg`,
+      badgeColor: '#60a5fa',
+      badgeBg: 'rgba(96,165,250,0.14)',
+      title: `🎯 Cible : ${targetWeight.toFixed(1)} kg`,
+      message: 'Enregistrez votre première pesée pour calculer votre écart et votre trajectoire vitale.',
+      progressPct: null,
+      delta: null,
+      isGoalReached: false
+    };
+  }
+
+  const delta = Math.round((curWeight - targetWeight) * 10) / 10;
+  const absDelta = Math.abs(delta);
+
+  // Case 1: EXACTLY AT GOAL (within ±0.2 kg)
+  if (absDelta <= 0.2) {
+    return {
+      status: 'reached',
+      badgeText: `🎯 Atteint (${targetWeight.toFixed(1)} kg)`,
+      badgeColor: '#34d399',
+      badgeBg: 'rgba(52,211,153,0.18)',
+      title: '🌟 Félicitations ! Poids Cible Atteint',
+      message: `Vous êtes à ${curWeight.toFixed(1)} kg, exactement sur votre objectif de ${targetWeight.toFixed(1)} kg. Bravo pour cette harmonisation métabolique ! Maintenez l'équilibre de vitalité.`,
+      progressPct: 100,
+      delta: 0,
+      isGoalReached: true
+    };
+  }
+
+  // Case 2: WEIGHT LOSS GOAL (Current > Target)
+  if (delta > 0) {
+    const isVeryClose = delta <= 2.0;
+    const isClose = delta > 2.0 && delta <= 5.0;
+
+    let progressPct = null;
+    if (!isNaN(startWeight) && startWeight > targetWeight) {
+      const totalToLose = startWeight - targetWeight;
+      const alreadyLost = startWeight - curWeight;
+      if (totalToLose > 0) {
+        progressPct = Math.min(99, Math.max(1, Math.round((alreadyLost / totalToLose) * 100)));
+      }
+    }
+
+    if (isVeryClose) {
+      return {
+        status: 'loss_very_close',
+        badgeText: `🔥 -${delta.toFixed(1)} kg (Tout proche)`,
+        badgeColor: '#10b981',
+        badgeBg: 'rgba(16,185,129,0.18)',
+        title: `🔥 Dernière Ligne Droite : Plus que ${delta.toFixed(1)} kg !`,
+        message: `Actuel : ${curWeight.toFixed(1)} kg (cible ${targetWeight.toFixed(1)} kg). Le but est à portée de main, continuez les fenêtres d'hydratation et le drainage doux.`,
+        progressPct: progressPct !== null ? progressPct : 90,
+        delta,
+        isGoalReached: false
+      };
+    } else if (isClose) {
+      return {
+        status: 'loss_in_progress',
+        badgeText: `📉 -${delta.toFixed(1)} kg restant`,
+        badgeColor: '#60a5fa',
+        badgeBg: 'rgba(96,165,250,0.15)',
+        title: `📉 En Bonne Voie : -${delta.toFixed(1)} kg pour atteindre la cible`,
+        message: `Actuel : ${curWeight.toFixed(1)} kg ➔ Cible : ${targetWeight.toFixed(1)} kg. Le drainage lymphatique et l'alimentation vivante portent leurs fruits.`,
+        progressPct: progressPct !== null ? progressPct : 60,
+        delta,
+        isGoalReached: false
+      };
+    } else {
+      return {
+        status: 'loss_far',
+        badgeText: `📉 -${delta.toFixed(1)} kg à perdre`,
+        badgeColor: '#818cf8',
+        badgeBg: 'rgba(129,140,248,0.15)',
+        title: `🎯 Cap sur ${targetWeight.toFixed(1)} kg (Écart : -${delta.toFixed(1)} kg)`,
+        message: `Actuel : ${curWeight.toFixed(1)} kg. Chaque cycle de régénération nettoie le terrain cellulaire. Progressez à votre rythme sans forcer.`,
+        progressPct: progressPct !== null ? progressPct : 30,
+        delta,
+        isGoalReached: false
+      };
+    }
+  }
+
+  // Case 3: WEIGHT GAIN GOAL (Current < Target, delta < 0)
+  if (delta < 0) {
+    const isVeryClose = absDelta <= 2.0;
+    const isClose = absDelta > 2.0 && absDelta <= 5.0;
+
+    let progressPct = null;
+    if (!isNaN(startWeight) && startWeight < targetWeight) {
+      const totalToGain = targetWeight - startWeight;
+      const alreadyGained = curWeight - startWeight;
+      if (totalToGain > 0) {
+        progressPct = Math.min(99, Math.max(1, Math.round((alreadyGained / totalToGain) * 100)));
+      }
+    }
+
+    if (isVeryClose) {
+      return {
+        status: 'gain_very_close',
+        badgeText: `💪 +${absDelta.toFixed(1)} kg (Presque atteint)`,
+        badgeColor: '#34d399',
+        badgeBg: 'rgba(52,211,153,0.18)',
+        title: `💪 Presque au Sommet : Plus que +${absDelta.toFixed(1)} kg !`,
+        message: `Actuel : ${curWeight.toFixed(1)} kg (cible ${targetWeight.toFixed(1)} kg). Excellente assimilation cellulaire des nutriments denses !`,
+        progressPct: progressPct !== null ? progressPct : 90,
+        delta,
+        isGoalReached: false
+      };
+    } else if (isClose) {
+      return {
+        status: 'gain_in_progress',
+        badgeText: `📈 +${absDelta.toFixed(1)} kg restant`,
+        badgeColor: '#38bdf8',
+        badgeBg: 'rgba(56,189,248,0.15)',
+        title: `📈 Phase d'Assimilation : +${absDelta.toFixed(1)} kg restant`,
+        message: `Actuel : ${curWeight.toFixed(1)} kg ➔ Cible : ${targetWeight.toFixed(1)} kg. Poursuivez l'apport d'aliments reminéralisants (bananes, graines germées, oléagineux trempés).`,
+        progressPct: progressPct !== null ? progressPct : 55,
+        delta,
+        isGoalReached: false
+      };
+    } else {
+      return {
+        status: 'gain_far',
+        badgeText: `📈 +${absDelta.toFixed(1)} kg à gagner`,
+        badgeColor: '#a78bfa',
+        badgeBg: 'rgba(167,139,250,0.15)',
+        title: `🌱 Objectif Reminéralisation : +${absDelta.toFixed(1)} kg`,
+        message: `Actuel : ${curWeight.toFixed(1)} kg (Cible : ${targetWeight.toFixed(1)} kg). Soutenez l'anabolisme naturel avec une nutrition dense et un sommeil réparateur.`,
+        progressPct: progressPct !== null ? progressPct : 25,
+        delta,
+        isGoalReached: false
+      };
+    }
+  }
+}
+
 // ═══════ TARGET WEIGHT MODAL CONTROLLER ═══════
 function openTargetWeightModal() {
   const modal = document.getElementById('targetWeightModal');
@@ -10433,8 +10588,9 @@ function handleTargetWeightForm(event) {
     return;
   }
 
-  const profile = typeof getUserProfile === 'function' ? getUserProfile() : {};
+  const profile = store.get('profile', {});
   profile.targetWeight = tw.toFixed(1);
+  store.set('profile', profile);
   store.set('user_profile', profile);
 
   if (document.getElementById('profileTargetWeight')) {
@@ -10447,8 +10603,9 @@ function handleTargetWeightForm(event) {
 }
 
 function clearTargetWeight() {
-  const profile = typeof getUserProfile === 'function' ? getUserProfile() : {};
+  const profile = store.get('profile', {});
   profile.targetWeight = '';
+  store.set('profile', profile);
   store.set('user_profile', profile);
 
   if (document.getElementById('profileTargetWeight')) {
@@ -10465,6 +10622,7 @@ window.closeTargetWeightModal = closeTargetWeightModal;
 window.stepTargetWeight = stepTargetWeight;
 window.handleTargetWeightForm = handleTargetWeightForm;
 window.clearTargetWeight = clearTargetWeight;
+window.calculateTargetWeightInsight = calculateTargetWeightInsight;
 
 // ═══════ MODERN WEIGHT ANALYTICS & INTERACTIVE CHART ═══════
 let currentWeightPeriod = 'all';
@@ -10518,6 +10676,11 @@ function renderWeightChart() {
   const totalDeltaEl = document.getElementById('kpiTotalDelta');
   const avg7dEl = document.getElementById('kpiAvg7d');
   const targetWeightEl = document.getElementById('kpiTargetWeight');
+  const bannerEl = document.getElementById('weightGoalDynamicBanner');
+
+  const curWeightVal = allSorted.length > 0 ? allSorted[allSorted.length - 1].weight : (parseFloat(profile.currentWeight) || null);
+  const startWeightVal = allSorted.length > 0 ? allSorted[0].weight : curWeightVal;
+  const targetWeightVal = parseFloat(profile.targetWeight);
 
   if (allSorted.length > 0) {
     const latest = allSorted[allSorted.length - 1];
@@ -10573,35 +10736,86 @@ function renderWeightChart() {
     if (avg7dEl) avg7dEl.textContent = '-- kg';
   }
 
+  // 🎯 Calculate Target Weight Insight
+  const insight = calculateTargetWeightInsight(curWeightVal, targetWeightVal, startWeightVal);
+
   if (targetWeightEl) {
-    const tw = parseFloat(profile.targetWeight);
-    if (!isNaN(tw) && tw > 20 && tw < 300) {
-      const curW = allSorted.length > 0 ? allSorted[allSorted.length - 1].weight : null;
-      let diffBadge = '';
-      if (curW !== null) {
-        const remaining = Math.round((curW - tw) * 10) / 10;
-        if (remaining > 0) {
-          diffBadge = `<span style="font-size:0.7rem; color:#60a5fa; font-weight:700; background:rgba(96,165,250,0.12); padding:1px 5px; border-radius:4px;">-${remaining} kg</span>`;
-        } else if (remaining < 0) {
-          diffBadge = `<span style="font-size:0.7rem; color:#34d399; font-weight:700; background:rgba(52,211,153,0.12); padding:1px 5px; border-radius:4px;">+${Math.abs(remaining)} kg</span>`;
-        } else {
-          diffBadge = `<span style="font-size:0.7rem; color:#34d399; font-weight:700; background:rgba(52,211,153,0.12); padding:1px 5px; border-radius:4px;">🎯 Atteint !</span>`;
-        }
-      }
+    if (insight.status === 'unset') {
       targetWeightEl.innerHTML = `
-        <div style="display:flex; align-items:baseline; justify-content:space-between; width:100%;">
-          <div style="display:flex; align-items:baseline; gap:6px;">
-            <span>${tw.toFixed(1)} kg</span>
-            ${diffBadge}
-          </div>
-          <button type="button" onclick="event.stopPropagation(); openTargetWeightModal()" class="target-edit-chip" title="Modifier le poids cible"><i class="ri-pencil-line"></i></button>
-        </div>
+        <button type="button" onclick="event.stopPropagation(); openTargetWeightModal()" class="btn-set-target-cta">
+          <i class="ri-add-circle-fill"></i> <span>Définir cible</span>
+        </button>
       `;
     } else {
       targetWeightEl.innerHTML = `
-        <button type="button" onclick="event.stopPropagation(); openTargetWeightModal()" class="btn-set-target-cta">
-          <i class="ri-add-circle-fill"></i> <span>Définir ma cible</span>
+        <div style="display:flex; flex-direction:column; gap:2px; width:100%;">
+          <div style="display:flex; align-items:baseline; justify-content:space-between; width:100%;">
+            <span style="font-size:1.35rem; font-weight:800; color:#60a5fa;">${targetWeightVal.toFixed(1)} kg</span>
+            <button type="button" onclick="event.stopPropagation(); openTargetWeightModal()" class="target-edit-chip" title="Modifier l'objectif"><i class="ri-pencil-line"></i></button>
+          </div>
+          <div style="display:flex; align-items:center; gap:6px; margin-top:2px;">
+            <span style="font-size:0.7rem; font-weight:700; color:${insight.badgeColor}; background:${insight.badgeBg}; padding:2px 6px; border-radius:6px;">
+              ${insight.badgeText}
+            </span>
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  // 💡 Dynamic Insight Banner
+  if (bannerEl) {
+    if (insight.status === 'unset') {
+      bannerEl.style.display = 'flex';
+      bannerEl.style.background = 'rgba(96,165,250,0.06)';
+      bannerEl.style.borderColor = 'rgba(96,165,250,0.2)';
+      bannerEl.innerHTML = `
+        <div style="width:36px; height:36px; border-radius:50%; background:rgba(96,165,250,0.15); display:flex; align-items:center; justify-content:center; color:#60a5fa; font-size:1.2rem; flex-shrink:0;">
+          <i class="ri-focus-3-line"></i>
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:0.85rem; font-weight:700; color:#60a5fa;">${insight.title}</div>
+          <div style="font-size:0.78rem; color:var(--text-dim); margin-top:2px; line-height:1.4;">${insight.message}</div>
+        </div>
+        <button type="button" onclick="openTargetWeightModal()" class="chip-btn" style="background:#60a5fa; color:#0f172a; font-weight:700; border:none; padding:6px 12px; font-size:0.78rem; flex-shrink:0; cursor:pointer;">
+          + Définir
         </button>
+      `;
+    } else {
+      bannerEl.style.display = 'flex';
+      const borderCol = insight.isGoalReached ? 'rgba(52,211,153,0.35)' : 'rgba(96,165,250,0.25)';
+      const bgCol = insight.isGoalReached ? 'rgba(52,211,153,0.08)' : 'rgba(96,165,250,0.06)';
+      bannerEl.style.background = bgCol;
+      bannerEl.style.borderColor = borderCol;
+
+      const progressHtml = insight.progressPct !== null ? `
+        <div style="margin-top:8px;">
+          <div style="display:flex; justify-content:space-between; font-size:0.72rem; font-weight:700; margin-bottom:4px;">
+            <span style="color:var(--text-dim);">Progression vers l'objectif</span>
+            <span style="color:${insight.badgeColor};">${insight.progressPct}%</span>
+          </div>
+          <div style="height:6px; background:rgba(255,255,255,0.08); border-radius:10px; overflow:hidden;">
+            <div style="height:100%; width:${insight.progressPct}%; background:linear-gradient(90deg, #3b82f6, ${insight.badgeColor}); border-radius:10px; transition:width 0.6s ease;"></div>
+          </div>
+        </div>
+      ` : '';
+
+      bannerEl.innerHTML = `
+        <div style="display:flex; align-items:flex-start; gap:12px; width:100%;">
+          <div style="width:36px; height:36px; border-radius:50%; background:${insight.badgeBg}; display:flex; align-items:center; justify-content:center; color:${insight.badgeColor}; font-size:1.2rem; flex-shrink:0;">
+            <i class="${insight.isGoalReached ? 'ri-trophy-fill' : 'ri-compass-3-line'}"></i>
+          </div>
+          <div style="flex:1;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
+              <div style="font-size:0.86rem; font-weight:800; color:${insight.badgeColor};">${insight.title}</div>
+              <button type="button" onclick="openTargetWeightModal()" style="background:none; border:none; color:var(--text-dim); font-size:0.75rem; cursor:pointer; display:flex; align-items:center; gap:4px; padding:0;">
+                <i class="ri-edit-line"></i> Modifier
+              </button>
+            </div>
+            <div style="font-size:0.78rem; color:var(--text-dim); margin-top:3px; line-height:1.45;">${insight.message}</div>
+            ${progressHtml}
+          </div>
+        </div>
       `;
     }
   }
