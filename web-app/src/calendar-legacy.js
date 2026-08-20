@@ -196,31 +196,25 @@ window.renderDay = function() {
 
     html += "<div class='meal-card " + (checked ? "is-checked" : "") + "' id='mealCard_" + meal.id + "'>";
     
-    // 1. Integrated Validation Checkbox
-    html += "  <div class='meal-check-col'>";
+    // 1. Header (Checkbox + Category Icon + Title + Status Pill + Time)
+    html += "  <div class='meal-header-row'>";
     html += "    <button type='button' class='meal-check-btn " + (checked ? "checked" : "") + "' onclick='event.stopPropagation(); window.toggleMeal(\"" + meal.id + "\")' title='" + (checked ? "Cliquer pour marquer comme non consommé" : "Cliquer pour valider ce repas") + "' aria-label='Valider le repas'>";
     html += "      <span class='check-inner'><i class='ri-check-line'></i></span>";
     html += "    </button>";
+    html += "    <div class='meal-icon-badge' style='background:" + tone.bg + "; color:" + tone.fg + ";' title='" + tone.label + "'>" + (meal.icon || tone.icon) + "</div>";
+    html += "    <div class='meal-title-block'>";
+    html += "      <div class='meal-title-line'>";
+    html += "        <span class='meal-title'>" + safeTitle + "</span>";
+    html += "        <span class='meal-status-pill " + (checked ? "done" : "pending") + "' onclick='event.stopPropagation(); window.toggleMeal(\"" + meal.id + "\")'>";
+    html += "          " + (checked ? "<i class='ri-checkbox-circle-fill'></i> Validé" : "<i class='ri-time-line'></i> À consommer");
+    html += "        </span>";
+    html += "      </div>";
+    html += "      <div class='meal-time'><i class='ri-time-line'></i> " + (meal.time || 'Horaire libre') + "</div>";
+    html += "    </div>";
     html += "  </div>";
 
-    // 2. Main Card Content
-    html += "  <div class='meal-card-content' onclick='window.toggleMeal(\"" + meal.id + "\")'>";
-    
-    // Top Row: Meal Icon, Title, Status Badge, Time
-    html += "    <div class='meal-top'>";
-    html += "      <div class='meal-icon-badge' style='background:" + tone.bg + "; color:" + tone.fg + ";' title='" + tone.label + "'>" + (meal.icon || tone.icon) + "</div>";
-    html += "      <div class='meal-title-wrap'>";
-    html += "        <div class='meal-title-row'>";
-    html += "          <span class='meal-title'>" + safeTitle + "</span>";
-    html += "          <span class='meal-status-pill " + (checked ? "done" : "pending") + "' onclick='event.stopPropagation(); window.toggleMeal(\"" + meal.id + "\")'>";
-    html += "            " + (checked ? "<i class='ri-checkbox-circle-fill'></i> Validé" : "<i class='ri-time-line'></i> À consommer");
-    html += "          </span>";
-    html += "        </div>";
-    html += "        <span class='meal-time'><i class='ri-time-line'></i> " + (meal.time || 'Horaire libre') + "</span>";
-    html += "      </div>";
-    html += "    </div>";
-    
-    // Food Ingredient Tags
+    // 2. Food Ingredient Tags
+    html += "  <div class='meal-body-content'>";
     html += "    <div class='meal-tags'>";
     if (meal.tags && meal.tags.length > 0) {
       meal.tags.forEach(function(t, tagIdx){
@@ -241,14 +235,17 @@ window.renderDay = function() {
     }
     html += "  </div>";
 
-    // 3. Quick Action Buttons
-    html += "  <div class='meal-actions'>";
+    // 3. Footer Actions Row
     var firstFood = (meal.tags && meal.tags[0] && meal.tags[0].n) ? meal.tags[0].n.replace(/"/g, '&quot;').replace(/'/g, "\\'") : '';
     var firstEmoji = (meal.tags && meal.tags[0] && meal.tags[0].e) || '🍽️';
-    html += "    <button type='button' class='meal-action-btn' data-tooltip='Varier un aliment' onclick='event.stopPropagation(); window.openSubstituteModal(\"" + meal.id + "\", 0, \"" + firstFood + "\", \"" + firstEmoji + "\")'><i class='ri-loop-right-line'></i></button>";
-    html += "    <button type='button' class='meal-action-btn ai-btn' data-tooltip='Suggérer un autre plat avec l\\'IA' onclick='event.stopPropagation(); window.openMealAiSuggestModal(\"" + meal.id + "\")'><i class='ri-sparkling-fill'></i></button>";
-    html += "    <button type='button' class='meal-action-btn' data-tooltip='Modifier l\\'horaire ou le plat' onclick='event.stopPropagation(); window.openCalMealModal(\"" + meal.id + "\")'><i class='ri-edit-line'></i></button>";
-    html += "    <button type='button' class='meal-action-btn danger' data-tooltip='Supprimer ce créneau' onclick='event.stopPropagation(); window.deleteMealConfirm(\"" + meal.id + "\")'><i class='ri-delete-bin-line'></i></button>";
+    html += "  <div class='meal-footer-row'>";
+    html += "    <div class='meal-footer-hint'><i class='ri-hand-coin-line'></i> Toucher pour cocher</div>";
+    html += "    <div class='meal-actions'>";
+    html += "      <button type='button' class='meal-action-btn' title='Varier un aliment' data-tooltip='Varier un aliment' onclick='event.stopPropagation(); window.openSubstituteModal(\"" + meal.id + "\", 0, \"" + firstFood + "\", \"" + firstEmoji + "\")'><i class='ri-loop-right-line'></i></button>";
+    html += "      <button type='button' class='meal-action-btn ai-btn' title='Suggérer avec IA' data-tooltip='Suggérer un autre plat avec l\\'IA' onclick='event.stopPropagation(); window.openMealAiSuggestModal(\"" + meal.id + "\")'><i class='ri-sparkling-fill'></i></button>";
+    html += "      <button type='button' class='meal-action-btn' title='Modifier' data-tooltip='Modifier l\\'horaire ou le plat' onclick='event.stopPropagation(); window.openCalMealModal(\"" + meal.id + "\")'><i class='ri-edit-line'></i></button>";
+    html += "      <button type='button' class='meal-action-btn danger' title='Supprimer' data-tooltip='Supprimer ce créneau' onclick='event.stopPropagation(); window.deleteMealConfirm(\"" + meal.id + "\")'><i class='ri-delete-bin-line'></i></button>";
+    html += "    </div>";
     html += "  </div>";
 
     html += "</div>";

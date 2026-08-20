@@ -211,10 +211,10 @@ body.light-theme #legacy-calendar .prog-ring-bg,
 }
 
 #legacy-calendar .meal-card {
-  background:var(--surface); border:1.5px solid var(--border); border-radius:20px;
-  padding:16px 120px 16px 18px; display:flex; align-items:flex-start; gap:16px;
+  background:var(--surface); border:1.5px solid var(--border); border-radius:18px;
+  padding:16px 18px; display:flex; flex-direction:column; gap:12px;
   position:relative; transition:all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow:0 2px 10px rgba(0,0,0,0.02); min-height:86px; cursor:pointer;
+  box-shadow:0 2px 10px rgba(0,0,0,0.02);
 }
 
 #legacy-calendar .meal-card:hover {
@@ -227,25 +227,26 @@ body.light-theme #legacy-calendar .prog-ring-bg,
   box-shadow:0 4px 16px rgba(5,150,105,0.1);
 }
 
-/* 1. Integrated Validation Checkbox Column */
-#legacy-calendar .meal-check-col {
-  flex-shrink:0; padding-top:2px;
+/* 1. Header (Checkbox + Icon + Title/Status/Time) */
+#legacy-calendar .meal-header-row {
+  display:flex; align-items:center; gap:12px; width:100%;
 }
+
 #legacy-calendar .meal-check-btn {
   width:36px; height:36px; border-radius:50%; background:var(--surface-2);
   border:2.5px solid var(--border-strong, #94a3b8); display:flex; align-items:center; justify-content:center;
   color:#ffffff; cursor:pointer; transition:all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-  box-shadow:0 2px 8px rgba(0,0,0,0.06); padding:0; outline:none;
+  box-shadow:0 2px 8px rgba(0,0,0,0.06); padding:0; outline:none; flex-shrink:0;
 }
 #legacy-calendar .meal-check-btn:hover {
-  border-color:var(--accent); transform:scale(1.14); box-shadow:0 0 14px rgba(5,150,105,0.45);
+  border-color:var(--accent); transform:scale(1.12); box-shadow:0 0 14px rgba(5,150,105,0.45);
 }
 #legacy-calendar .meal-check-btn.checked {
   background:var(--accent, #059669); border-color:var(--accent, #059669); color:#ffffff;
-  transform:scale(1.06); box-shadow:0 4px 14px rgba(5,150,105,0.45);
+  transform:scale(1.05); box-shadow:0 4px 14px rgba(5,150,105,0.45);
 }
 #legacy-calendar .meal-check-btn .check-inner {
-  display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:900;
+  display:flex; align-items:center; justify-content:center; font-size:19px; font-weight:900;
 }
 #legacy-calendar .meal-check-btn .check-inner i {
   opacity:0; transform:scale(0.4); transition:all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -254,24 +255,29 @@ body.light-theme #legacy-calendar .prog-ring-bg,
   opacity:1; transform:scale(1);
 }
 
-/* 2. Main Card Content */
-#legacy-calendar .meal-card-content {
-  flex:1; min-width:0;
-}
-
-#legacy-calendar .meal-top { display:flex; align-items:flex-start; gap:12px; margin-bottom:10px; }
 #legacy-calendar .meal-icon-badge {
-  width:42px; height:42px; border-radius:12px; display:flex; align-items:center; justify-content:center;
+  width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center;
   font-size:20px; flex-shrink:0; box-shadow:0 2px 8px rgba(0,0,0,0.05);
 }
-#legacy-calendar .meal-title-wrap { flex:1; }
-#legacy-calendar .meal-title-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:3px; }
-#legacy-calendar .meal-title { font-size:16px; font-weight:800; color:var(--text-hi); line-height:1.2; }
-#legacy-calendar .meal-card.is-checked .meal-title { text-decoration:line-through; opacity:0.75; }
+
+#legacy-calendar .meal-title-block {
+  display:flex; flex-direction:column; gap:3px; min-width:0; flex:1;
+}
+
+#legacy-calendar .meal-title-line {
+  display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+}
+
+#legacy-calendar .meal-title {
+  font-size:16px; font-weight:800; color:var(--text-hi); line-height:1.25;
+}
+#legacy-calendar .meal-card.is-checked .meal-title {
+  text-decoration:line-through; opacity:0.75;
+}
 
 #legacy-calendar .meal-status-pill {
-  font-size:11px; font-weight:700; padding:3px 9px; border-radius:100px; letter-spacing:0.02em;
-  display:inline-flex; align-items:center; gap:4px; transition:all 0.2s ease; cursor:pointer;
+  font-size:11px; font-weight:700; padding:2px 8px; border-radius:100px; letter-spacing:0.02em;
+  display:inline-flex; align-items:center; gap:4px; transition:all 0.2s ease; cursor:pointer; flex-shrink:0;
 }
 #legacy-calendar .meal-status-pill.pending {
   color:var(--text-low); background:var(--surface-2); border:1px solid var(--border);
@@ -287,7 +293,12 @@ body.light-theme #legacy-calendar .prog-ring-bg,
   font-size:12px; color:var(--text-low); font-weight:600; display:inline-flex; align-items:center; gap:4px;
 }
 
-#legacy-calendar .meal-tags { display:flex; gap:7px; flex-wrap:wrap; margin-bottom:8px; }
+/* 2. Body Content (Tags & Note) */
+#legacy-calendar .meal-body-content {
+  display:flex; flex-direction:column; gap:8px; padding-left:48px;
+}
+
+#legacy-calendar .meal-tags { display:flex; gap:7px; flex-wrap:wrap; }
 #legacy-calendar .meal-tag {
   font-size:12px; font-weight:600; color:var(--text-hi); background:var(--surface-2);
   border:1.2px solid var(--border); padding:5px 12px; border-radius:100px; transition:all 0.2s ease;
@@ -307,18 +318,27 @@ body.light-theme #legacy-calendar .prog-ring-bg,
 }
 
 #legacy-calendar .meal-note {
-  font-size:12.5px; color:var(--text-low); display:flex; align-items:flex-start; gap:6px; font-style:italic; line-height:1.4; margin-top:4px;
+  font-size:12.5px; color:var(--text-low); display:flex; align-items:flex-start; gap:6px; font-style:italic; line-height:1.4;
 }
 #legacy-calendar .meal-note .note-icon { font-size:14px; margin-top:1px; color:var(--accent); flex-shrink:0; }
 
-/* 3. Quick Action Buttons (top-right of card) */
+/* 3. Footer Row (Action Hint + Quick Action Buttons) */
+#legacy-calendar .meal-footer-row {
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  padding-top:8px; border-top:1px solid var(--border); margin-top:2px;
+}
+
+#legacy-calendar .meal-footer-hint {
+  font-size:11px; color:var(--text-low); display:flex; align-items:center; gap:4px; font-weight:500;
+}
+
 #legacy-calendar .meal-actions {
-  position:absolute; top:14px; right:14px; display:flex; gap:6px; z-index:3;
+  display:flex; align-items:center; gap:6px; margin-left:auto;
 }
 #legacy-calendar .meal-action-btn {
-  width:32px; height:32px; border-radius:10px; display:flex; align-items:center; justify-content:center;
+  width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center;
   background:var(--surface-2); border:1px solid var(--border); color:var(--text-mid); cursor:pointer;
-  transition:all 0.2s ease; font-size:14px;
+  transition:all 0.2s ease; font-size:13px;
 }
 #legacy-calendar .meal-action-btn:hover {
   background:var(--surface-hover); color:var(--text-hi); border-color:var(--accent); transform:translateY(-1px);
@@ -332,6 +352,46 @@ body.light-theme #legacy-calendar .prog-ring-bg,
 }
 #legacy-calendar .meal-action-btn.danger:hover {
   background:var(--red-dim); color:var(--red); border-color:rgba(239,68,68,0.4);
+}
+
+/* 📱 Responsive Mobile Adjustments */
+@media (max-width: 600px) {
+  #legacy-calendar .meal-card {
+    padding:12px 14px; gap:10px; border-radius:16px;
+  }
+  #legacy-calendar .meal-header-row {
+    gap:9px;
+  }
+  #legacy-calendar .meal-check-btn {
+    width:32px; height:32px;
+  }
+  #legacy-calendar .meal-check-btn .check-inner {
+    font-size:17px;
+  }
+  #legacy-calendar .meal-icon-badge {
+    width:34px; height:34px; font-size:17px; border-radius:10px;
+  }
+  #legacy-calendar .meal-title {
+    font-size:14.5px;
+  }
+  #legacy-calendar .meal-body-content {
+    padding-left:0;
+  }
+  #legacy-calendar .meal-tags {
+    gap:5px;
+  }
+  #legacy-calendar .meal-tag {
+    padding:4px 10px; font-size:11.5px;
+  }
+  #legacy-calendar .meal-footer-row {
+    padding-top:6px;
+  }
+  #legacy-calendar .meal-actions {
+    gap:5px;
+  }
+  #legacy-calendar .meal-action-btn {
+    width:28px; height:28px; font-size:13px;
+  }
 }
 
 /* Empty State */
