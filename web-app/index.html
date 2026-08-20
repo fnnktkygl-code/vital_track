@@ -2097,44 +2097,32 @@
     </div>
   </div>
 
-  <!-- ═══════ MODALE LECTEUR VIDÉO AVEC SAUT HORODATÉ & DOUBLAGE MULTI-VOIX ═══════ -->
+  <!-- ═══════ MODALE LECTEUR VIDÉO HD AVEC CHAPITRAGE ═══════ -->
   <div id="mediaVideoModal" class="modal-overlay" onclick="closeMediaVideoModal(event)" style="display:none; z-index:9999;">
-    <div class="modal-card glass media-video-modal-content" onclick="event.stopPropagation()" style="max-width:860px; max-height:90vh; overflow-y:auto;">
+    <div class="modal-card glass media-video-modal-content" onclick="event.stopPropagation()" style="max-width:840px; width:95%; max-height:90vh; overflow-y:auto; border-radius:20px; padding:20px; position:relative;">
       <button class="modal-close-btn" onclick="closeMediaVideoModal(null)" style="position:absolute; top:16px; right:16px; background:rgba(255,255,255,0.08); border:none; color:var(--text); width:34px; height:34px; border-radius:50%; cursor:pointer; font-size:1.2rem; display:flex; align-items:center; justify-content:center; z-index:10;">
         <i class="ri-close-line"></i>
       </button>
 
       <div id="mediaVideoModalHeader" style="margin-bottom:12px; padding-right:40px;">
         <div id="mediaVideoModalSource" style="font-size:0.75rem; color:var(--accent); font-weight:700; text-transform:uppercase; margin-bottom:4px;"></div>
-        <h3 id="mediaVideoModalTitle" style="margin:0; font-size:1.1rem; color:#fff; font-weight:700;"></h3>
+        <h3 id="mediaVideoModalTitle" style="margin:0; font-size:1.15rem; color:#fff; font-weight:700;"></h3>
         <div id="mediaVideoModalChapter" style="font-size:0.85rem; color:var(--text-dim); margin-top:2px;"></div>
       </div>
 
-      <!-- Barre de Contrôle du Doublage Multi-Locuteurs & Sous-Titres -->
-      <div id="mediaVideoDubbingBar" class="dubbing-control-bar" style="display:none;">
-        <!-- Injected via JS -->
-      </div>
-
       <!-- Player Container -->
-      <div id="mediaVideoPlayerContainer" style="position:relative; width:100%; border-radius:14px; overflow:hidden; background:#000; box-shadow:0 8px 30px rgba(0,0,0,0.6); min-height:260px;">
+      <div id="mediaVideoPlayerContainer" style="position:relative; width:100%; border-radius:14px; overflow:hidden; background:#000; box-shadow:0 8px 30px rgba(0,0,0,0.6); min-height:280px;">
         <!-- Injected via JS (HTML5 video or YouTube iframe) -->
-        <!-- Overlay Sous-Titres Synchronisés -->
-        <div id="mediaVideoSubtitleOverlay" class="video-subtitle-overlay" style="display:none;"></div>
       </div>
 
       <!-- Timeline & Chapters list -->
-      <div style="margin-top:14px;">
+      <div id="mediaVideoTimelineSection" style="margin-top:14px;">
         <div style="font-size:0.78rem; font-weight:700; color:var(--text-dim); text-transform:uppercase; margin-bottom:6px; display:flex; align-items:center; gap:6px;">
-          <i class="ri-time-line" style="color:var(--accent);"></i> Chapitres & Horodatages Indexés
+          <i class="ri-time-line" style="color:var(--accent);"></i> Chapitres & Moments Clés
         </div>
         <div id="mediaVideoTimelineChapters" class="media-timeline-chapters">
           <!-- Injected via JS -->
         </div>
-      </div>
-
-      <!-- Panneau de Transcription & Script Interactif Multi-Locuteurs -->
-      <div id="mediaVideoDialogueScriptContainer" style="display:none; margin-top:14px;">
-        <!-- Injected via JS -->
       </div>
     </div>
   </div>

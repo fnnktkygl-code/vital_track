@@ -7742,181 +7742,7 @@ function renderMediaResultCard(item, query) {
   }
 }
 
-// ═══════ VIDEO TIMESTAMP PLAYER MODAL & MULTI-SPEAKER DUBBING ═══════
-let videoTimeSyncInterval = null;
-
-function renderDubbingControlsAndScript(dubbingData, mediaUrl, type, youtubeId, currentSeconds, title, source) {
-  const dubbingBar = document.getElementById('mediaVideoDubbingBar');
-  const dialogueContainer = document.getElementById('mediaVideoDialogueScriptContainer');
-  const subtitleOverlay = document.getElementById('mediaVideoSubtitleOverlay');
-
-  if (!dubbingData || !dubbingData.dialogues || dubbingData.dialogues.length === 0) {
-    if (dubbingBar) dubbingBar.style.display = 'none';
-    if (dialogueContainer) dialogueContainer.style.display = 'none';
-    if (subtitleOverlay) subtitleOverlay.style.display = 'none';
-    return;
-  }
-
-  // Locuteurs
-  const speakersList = Object.values(dubbingData.speakers || {});
-  const speakerBadges = speakersList.map(s => `
-    <span class="badge" style="background:${s.color}22; color:${s.color}; border:1px solid ${s.color}55; font-size:0.75rem; font-weight:700; display:inline-flex; align-items:center; gap:4px;">
-      ${s.avatar || '🎙️'} ${esc(s.name)}
-    </span>
-  `).join('');
-
-  if (dubbingBar) {
-    dubbingBar.style.display = 'flex';
-    dubbingBar.innerHTML = `
-      <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-        <span style="font-size:0.78rem; font-weight:700; color:#fff; text-transform:uppercase; letter-spacing:0.5px; display:inline-flex; align-items:center; gap:5px;">
-          <i class="ri-voiceprint-line" style="color:var(--accent); font-size:1.1rem;"></i> Doublage IA FR :
-        </span>
-        <div class="dubbing-pill-group">
-          <button type="button" id="btnDubbingToggle" class="dubbing-toggle-btn ${dubbingEngine.isDubbingEnabled ? 'active' : ''}" onclick="toggleVideoDubbing()">
-            <i class="${dubbingEngine.isDubbingEnabled ? 'ri-volume-vibrate-fill' : 'ri-volume-mute-line'}"></i>
-            ${dubbingEngine.isDubbingEnabled ? '🎙️ VF Activée (Multi-Voix)' : '🔇 VF Coupée (VO Seule)'}
-          </button>
-        </div>
-      </div>
-
-      <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-        <span style="font-size:0.75rem; font-weight:600; color:var(--text-dim);">Sous-titres :</span>
-        <div class="dubbing-pill-group">
-          <button type="button" class="dubbing-toggle-btn ${dubbingEngine.subtitleMode === 'fr' ? 'active' : ''}" onclick="setVideoSubtitleMode('fr')">🇫🇷 FR</button>
-          <button type="button" class="dubbing-toggle-btn ${dubbingEngine.subtitleMode === 'en' ? 'active' : ''}" onclick="setVideoSubtitleMode('en')">🇬🇧 VO</button>
-          <button type="button" class="dubbing-toggle-btn ${dubbingEngine.subtitleMode === 'off' ? 'active' : ''}" onclick="setVideoSubtitleMode('off')">✕ Off</button>
-        </div>
-      </div>
-    `;
-  }
-
-  if (dialogueContainer) {
-    dialogueContainer.style.display = 'block';
-    dialogueContainer.innerHTML = `
-      <div class="dialogue-script-panel">
-        <div class="dialogue-script-header">
-          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-            <span style="font-size:0.82rem; font-weight:800; color:#fff; display:inline-flex; align-items:center; gap:6px;">
-              <i class="ri-chat-voice-line" style="color:var(--accent);"></i> Script & Dialogues Synchronisés (${dubbingData.dialogues.length} répliques)
-            </span>
-            <div style="display:flex; gap:6px; flex-wrap:wrap;">
-              ${speakerBadges}
-            </div>
-          </div>
-          <span style="font-size:0.72rem; color:var(--text-dim);"><i class="ri-cursor-fill"></i> Cliquez sur une réplique pour écouter</span>
-        </div>
-
-        <div class="dialogue-script-list" id="dialogueScriptList">
-          ${dubbingData.dialogues.map((d, index) => {
-            const spk = dubbingData.speakers[d.speaker] || { name: d.speaker, color: '#38bdf8', avatar: '🎙️' };
-            const isActive = currentSeconds >= d.start && currentSeconds <= d.end;
-            return `
-              <div class="dialogue-bubble ${isActive ? 'active' : ''}" id="dialogueBubble_${index}" onclick="jumpToDialogueTime(${d.start}, '${esc(mediaUrl)}', '${type}', '${youtubeId}', '${esc(title)}', '${esc(source)}', '${d.id}')">
-                <div class="speaker-avatar-circle" style="border:1px solid ${spk.color}55; color:${spk.color};">
-                  ${spk.avatar || '🎙️'}
-                </div>
-                <div class="dialogue-bubble-content">
-                  <div class="dialogue-bubble-meta">
-                    <span class="dialogue-bubble-speaker" style="color:${spk.color};">${esc(spk.name)}</span>
-                    <span class="dialogue-bubble-time"><i class="ri-play-mini-fill"></i> ${formatSeconds(d.start)}</span>
-                  </div>
-                  <div style="font-size:0.86rem; color:#fff; line-height:1.45; font-weight:500;">
-                    ${esc(d.textFr)}
-                  </div>
-                  ${d.textEn ? `<div style="font-size:0.75rem; color:var(--text-dim); font-style:italic; margin-top:3px;">${esc(d.textEn)}</div>` : ''}
-                </div>
-              </div>
-            `;
-          }).join('')}
-        </div>
-      </div>
-    `;
-  }
-
-  // Setup callbacks for dubbingEngine
-  dubbingEngine.onSubtitleUpdate = (subtitle) => {
-    const subOverlay = document.getElementById('mediaVideoSubtitleOverlay');
-    if (!subOverlay) return;
-    if (!subtitle || !subtitle.text) {
-      subOverlay.style.display = 'none';
-      subOverlay.innerHTML = '';
-      return;
-    }
-    subOverlay.style.display = 'block';
-    subOverlay.innerHTML = `
-      <div class="subtitle-speaker-badge" style="background:${subtitle.speakerColor}33; color:${subtitle.speakerColor}; border:1px solid ${subtitle.speakerColor}66;">
-        ${subtitle.speakerAvatar || '🎙️'} ${esc(subtitle.speakerName)}
-      </div>
-      <div class="subtitle-text">${esc(subtitle.text)}</div>
-    `;
-  };
-
-  dubbingEngine.onLineChange = ({ index, line, speaker }) => {
-    document.querySelectorAll('.dialogue-bubble').forEach((el, idx) => {
-      if (idx === index) {
-        el.classList.add('active');
-        el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      } else {
-        el.classList.remove('active');
-      }
-    });
-  };
-}
-
-function toggleVideoDubbing() {
-  dubbingEngine.setDubbingEnabled(!dubbingEngine.isDubbingEnabled);
-  const btn = document.getElementById('btnDubbingToggle');
-  if (btn) {
-    if (dubbingEngine.isDubbingEnabled) {
-      btn.classList.add('active');
-      btn.innerHTML = `<i class="ri-volume-vibrate-fill"></i> 🎙️ VF Studio HD (Active)`;
-    } else {
-      btn.classList.remove('active');
-      btn.innerHTML = `<i class="ri-volume-mute-line"></i> 🔇 VO Originale (Active)`;
-    }
-  }
-}
-
-function setVideoSubtitleMode(mode) {
-  dubbingEngine.setSubtitleMode(mode);
-  const dubbingBar = document.getElementById('mediaVideoDubbingBar');
-  if (dubbingBar) {
-    const btns = dubbingBar.querySelectorAll('.dubbing-pill-group:last-child .dubbing-toggle-btn');
-    btns.forEach(b => {
-      const isCurrent = (mode === 'fr' && b.textContent.includes('FR')) ||
-                        (mode === 'en' && b.textContent.includes('VO')) ||
-                        (mode === 'off' && b.textContent.includes('Off'));
-      b.classList.toggle('active', isCurrent);
-    });
-  }
-}
-
-function jumpToDialogueTime(startSec, mediaUrl, type, youtubeId, title, source, dialogueId = null) {
-  const videoEl = document.getElementById('mediaHtml5Video');
-  if (videoEl) {
-    videoEl.currentTime = startSec;
-    videoEl.play().catch(() => {});
-    dubbingEngine.onTimeUpdate(startSec);
-  } else if (type === 'youtube' && youtubeId) {
-    playVideoAtTimestamp(mediaUrl, startSec, title, type, youtubeId, `Dialogue à ${formatSeconds(startSec)}`, source);
-  }
-  if (dialogueId && dubbingEngine.isYouTube && dubbingEngine.isDubbingEnabled) {
-    const line = dubbingEngine.dubbingData?.dialogues?.find(d => d.id === dialogueId);
-    if (line) dubbingEngine.playStudioClip(line);
-  }
-}
-
-function testFirstSpeakerVoice(videoId) {
-  const data = VIDEO_DUBBING_DATABASE[videoId];
-  if (!data || !data.speakers) return;
-  const firstSpeakerId = Object.keys(data.speakers)[0];
-  dubbingEngine.loadVideo(data);
-  dubbingEngine.testSpeakerVoice(firstSpeakerId);
-}
-
-window.testFirstSpeakerVoice = testFirstSpeakerVoice;
-
+// ═══════ VIDEO TIMESTAMP PLAYER MODAL & PLAYBACK ═══════
 function playVideoAtTimestamp(mediaUrl, seconds = 0, title = '', type = 'local', youtubeId = '', chapter = '', source = '') {
   const modal = document.getElementById('mediaVideoModal');
   const modalSource = document.getElementById('mediaVideoModalSource');
@@ -7924,102 +7750,59 @@ function playVideoAtTimestamp(mediaUrl, seconds = 0, title = '', type = 'local',
   const modalChapter = document.getElementById('mediaVideoModalChapter');
   const playerContainer = document.getElementById('mediaVideoPlayerContainer');
   const timelineContainer = document.getElementById('mediaVideoTimelineChapters');
+  const timelineSection = document.getElementById('mediaVideoTimelineSection');
 
   if (!modal || !playerContainer) return;
 
   if (modalSource) modalSource.textContent = source || (type === 'youtube' ? 'Documentaire YouTube' : 'Média Local HD');
   if (modalTitle) modalTitle.textContent = title || 'Lecture Vidéo';
-  if (modalChapter) modalChapter.innerHTML = `<span class="timestamp-pill" style="margin-right:6px;"><i class="ri-play-fill"></i> ${formatSeconds(seconds)}</span> ${esc(cleanMarkdownFormatting(chapter))}`;
+  if (modalChapter) modalChapter.innerHTML = chapter ? `<span class="timestamp-pill" style="margin-right:6px;"><i class="ri-play-fill"></i> ${formatSeconds(seconds)}</span> ${esc(cleanMarkdownFormatting(chapter))}` : '';
 
   // Find all chapters of this media in database for the scrubber bar
   const relatedChapters = MEDIA_SEARCH_DATABASE.filter(item => 
     item.type === 'video' && ((youtubeId && item.youtubeId === youtubeId) || (mediaUrl && item.mediaUrl === mediaUrl))
   ).sort((a, b) => a.timeSeconds - b.timeSeconds);
 
-  if (timelineContainer) {
+  if (timelineContainer && timelineSection) {
     if (relatedChapters.length > 0) {
+      timelineSection.style.display = 'block';
       timelineContainer.innerHTML = relatedChapters.map(c => `
         <button type="button" class="media-chapter-btn ${c.timeSeconds === seconds ? 'active' : ''}" onclick="playVideoAtTimestamp('${esc(c.mediaUrl)}', ${c.timeSeconds}, '${esc(c.title)}', '${c.videoType}', '${c.youtubeId || ''}', '${esc(c.chapter)}', '${esc(c.source)}')">
           ▶ ${c.timeFormatted} · ${esc(cleanMarkdownFormatting(c.chapter))}
         </button>
       `).join('');
     } else {
+      timelineSection.style.display = 'none';
       timelineContainer.innerHTML = '';
     }
   }
-
-  // Clear any existing video time sync timer
-  if (videoTimeSyncInterval) {
-    clearInterval(videoTimeSyncInterval);
-    videoTimeSyncInterval = null;
-  }
-
-  // Retrieve Dubbing Data
-  const dubbingData = getDubbingDataForVideo(youtubeId, mediaUrl, title);
 
   // Inject video player (YouTube iframe or Native HTML5 Video)
   if (type === 'youtube' && youtubeId) {
     playerContainer.innerHTML = `
       <iframe 
         id="mediaYoutubeIframe"
-        src="https://www.youtube.com/embed/${youtubeId}?autoplay=1&start=${seconds}&enablejsapi=1" 
+        src="https://www.youtube.com/embed/${youtubeId}?autoplay=1&start=${seconds}" 
         title="${esc(title)}" 
         frameborder="0" 
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
         allowfullscreen
-        style="width:100%; height:100%; min-height:280px; border:none; border-radius:12px;"
+        style="width:100%; height:100%; min-height:360px; border:none; border-radius:12px;"
       ></iframe>
-      <div id="mediaVideoSubtitleOverlay" class="video-subtitle-overlay" style="display:none;"></div>
     `;
-
-    const iframeEl = document.getElementById('mediaYoutubeIframe');
-    dubbingEngine.loadVideo(dubbingData, iframeEl);
-    renderDubbingControlsAndScript(dubbingData, mediaUrl, type, youtubeId, seconds, title, source);
-
-    dubbingEngine.onTimeUpdate(seconds);
-
-    let currentSimulatedTime = Number(seconds) || 0;
-    videoTimeSyncInterval = setInterval(() => {
-      currentSimulatedTime += 1;
-      dubbingEngine.onTimeUpdate(currentSimulatedTime);
-    }, 1000);
-
   } else {
-    // Si doublage FR actif et fichier mixé disponible, charger directement la vidéo doublée studio
-    const activeVideoSrc = (dubbingEngine.isDubbingEnabled && dubbingData && dubbingData.dubbedMediaUrl) 
-      ? dubbingData.dubbedMediaUrl 
-      : mediaUrl;
-
     playerContainer.innerHTML = `
-      <video id="mediaHtml5Video" controls autoplay playsinline style="width:100%; height:100%; border-radius:12px; background:#000;">
-        <source src="${esc(activeVideoSrc)}" type="video/mp4">
+      <video id="mediaHtml5Video" controls autoplay playsinline style="width:100%; height:100%; min-height:340px; border-radius:12px; background:#000;">
+        <source src="${esc(mediaUrl)}" type="video/mp4">
         Votre navigateur ne supporte pas la lecture vidéo.
       </video>
-      <div id="mediaVideoSubtitleOverlay" class="video-subtitle-overlay" style="display:none;"></div>
     `;
     const videoEl = document.getElementById('mediaHtml5Video');
     if (videoEl) {
-      dubbingEngine.loadVideo(dubbingData, videoEl);
-      renderDubbingControlsAndScript(dubbingData, mediaUrl, type, youtubeId, seconds, title, source);
-
-      videoEl.addEventListener('timeupdate', () => {
-        dubbingEngine.onTimeUpdate(videoEl.currentTime);
-      });
-      videoEl.addEventListener('seeking', () => {
-        dubbingEngine.onVideoSeek();
-      });
-      videoEl.addEventListener('pause', () => {
-        dubbingEngine.onVideoPause();
-      });
-      videoEl.addEventListener('play', () => {
-        dubbingEngine.onTimeUpdate(videoEl.currentTime);
-      });
-
       const applyTime = () => {
         try {
           videoEl.currentTime = Number(seconds) || 0;
           videoEl.play().catch(() => {});
-          dubbingEngine.onTimeUpdate(Number(seconds) || 0);
         } catch (e) {}
       };
       if (videoEl.readyState >= 1) {
@@ -8319,15 +8102,27 @@ function renderResources() {
   const videos = [
     {
       id: "dr_sebi_interview",
-      title: "Documentaire : The Rock Newman Show ft. Dr. Sebi",
-      localSrc: "/videos/dr-sebi-documentary.mp4",
+      title: "Documentaire : The Rock Newman Show ft. Dr. Sebi (VF HD)",
+      localSrc: "/videos/dr-sebi-documentary-fr.mp4",
+      originalSrc: "/videos/dr-sebi-documentary.mp4",
       poster: "/videos/posters/dr-sebi-documentary.jpg",
-      source: "WHUT TV / Dr. Sebi (Média Local HD • 56 min)",
+      source: "WHUT TV • Version Française HD (56 min)",
       badgeClass: "badge-success",
+      badgeText: "🇫🇷 Version Française Complète",
       type: "local-video",
-      hasDubbing: true,
-      speakersText: "2 Voix : Rock Newman (Journaliste) & Dr. Sebi (Chercheur)",
       description: "L'entretien télévisé et documentaire historique (56 min) avec le Dr. Sebi sur Howard University Television : explications détaillées sur la biochimie alcaline, la nutrition électrique cellulaire, le nettoyage du mucus et les protocoles thérapeutiques naturels."
+    },
+    {
+      id: "wim_hof_breathing",
+      title: "Session Guidée de Respiration Wim Hof (VF HD)",
+      localSrc: "/videos/wim-hof-3-rounds-fr.mp4",
+      originalSrc: "/videos/wim-hof-3-rounds.mp4",
+      poster: "/videos/posters/wim-hof-3-rounds.jpg",
+      source: "Wim Hof Officiel • VF HD (11 min)",
+      badgeClass: "badge-success",
+      badgeText: "🇫🇷 Session Guidée en Français",
+      type: "local-video",
+      description: "Session complète de respiration guidée en 3 cycles avec Wim Hof, avec guidage vocal français calé au rythme des inspirations et des temps de rétention."
     },
     {
       id: "wim_hof_vice",
@@ -8337,23 +8132,9 @@ function renderResources() {
       youtubeId: "Np0jGp6442A",
       source: "Vice Media (39 min)",
       badgeClass: "badge-warning",
+      badgeText: "🎬 VOSTFR",
       type: "video",
-      hasDubbing: true,
-      speakersText: "3 Voix : Matt Shea (Reporter), Wim Hof, Dr. Pickkers (Chercheur)",
       description: "Le grand reportage d'investigation de Vice Media suivant Wim Hof et les tests scientifiques à l'Université Radboud prouvant le contrôle volontaire du système immunitaire."
-    },
-    {
-      id: "wim_hof_breathing",
-      title: "Guided Wim Hof Breathing (Session Guidée)",
-      url: "https://www.youtube-nocookie.com/embed/tybOi4hjZFQ",
-      watchUrl: "https://www.youtube.com/watch?v=tybOi4hjZFQ",
-      youtubeId: "tybOi4hjZFQ",
-      source: "Wim Hof Official (11 min)",
-      badgeClass: "badge-warning",
-      type: "video",
-      hasDubbing: true,
-      speakersText: "1 Voix : Wim Hof (Guidage Respiratoire)",
-      description: "Session complète de respiration guidée en 3 cycles avec Wim Hof, avec doublage français fluide et calage des rétentions."
     },
     {
       id: "arnold_ehret_masterclass",
@@ -8363,9 +8144,8 @@ function renderResources() {
       youtubeId: "EjTWFoqLy34",
       source: "Masterclass Vitaliste (1h36)",
       badgeClass: "badge-warning",
+      badgeText: "🎬 Conférence FR",
       type: "video",
-      hasDubbing: true,
-      speakersText: "1 Voix : Professeur Arnold Ehret",
       description: "Masterclass audio-vidéo intégrale sur l'équation vitale V = P - O et les lois fondamentales de la détoxination sans mucus."
     },
     {
@@ -8376,9 +8156,8 @@ function renderResources() {
       youtubeId: "_ufnGrKmL1c",
       source: "Club Santé Naturelle (56 min)",
       badgeClass: "badge-warning",
+      badgeText: "🎬 Conférence FR",
       type: "video",
-      hasDubbing: true,
-      speakersText: "1 Voix : Dr. Robert Morse N.D.",
       description: "Explication magistrale du Dr. Morse sur les deux fluides majeurs (sang et lymphe), la filtration rénale et le drainage des acides cellulaires."
     },
     {
@@ -8388,6 +8167,7 @@ function renderResources() {
       watchUrl: "https://www.youtube.com/watch?v=_ymX8x0IqM8",
       source: "AUM Films (VOSTFR 1h32)",
       badgeClass: "badge-warning",
+      badgeText: "🎬 Film Documentaire",
       type: "video",
       description: "Film d'investigation sur les impacts des aliments ultra-transformés et les bénéfices prouvés de la nutrition végétale intégrale."
     }
@@ -8399,20 +8179,16 @@ function renderResources() {
 
   if (_resourcesCatalogTab === 'fr') {
     filteredBooks = allBooks.filter(b => b.lang === 'fr');
-    displayedVideos = [];
+    displayedVideos = videos.filter(v => v.type === 'local-video' || v.badgeText.includes('FR'));
   } else if (_resourcesCatalogTab === 'en') {
     filteredBooks = allBooks.filter(b => b.lang === 'en');
     displayedVideos = [];
-  } else if (_resourcesCatalogTab === 'dubbing') {
-    filteredBooks = [];
-    displayedVideos = videos.filter(v => v.hasDubbing);
   } else if (_resourcesCatalogTab === 'videos') {
     filteredBooks = [];
     displayedVideos = videos;
   }
 
   const showVideos = displayedVideos.length > 0;
-  const dubbedList = Object.values(VIDEO_DUBBING_DATABASE);
 
   let html = `
     <!-- Module Moteur de Recherche Multimédia & Deep Search -->
@@ -8449,62 +8225,6 @@ function renderResources() {
           <button type="button" class="media-tag-chip" onclick="applyMediaTopicTag('wim hof')">🌬️ Respiration Wim Hof</button>
         </div>
       </div>
-
-      <!-- 🎙️ SHOWCASE DOUBLAGE MULTI-VOIX SYNCHRONISÉ IA -->
-      <div class="dash-card glass" style="padding:18px 20px; margin-bottom:24px; border:1px solid rgba(56,189,248,0.35); background:linear-gradient(135deg, rgba(56,189,248,0.08), rgba(15,23,42,0.9)); border-radius:18px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
-          <div style="display:flex; align-items:center; gap:10px;">
-            <div style="width:42px; height:42px; border-radius:12px; background:linear-gradient(135deg,#38bdf8,#10b981); display:flex; align-items:center; justify-content:center; font-size:1.4rem; color:#042f2e; box-shadow:0 4px 14px rgba(56,189,248,0.35);">
-              🎙️
-            </div>
-            <div>
-              <h3 style="margin:0; font-size:1.1rem; font-weight:800; color:#fff; display:flex; align-items:center; gap:6px;">
-                Médiathèque avec Doublage Multi-Voix Français Actif
-              </h3>
-              <p style="margin:0; font-size:0.8rem; color:var(--text-dim);">
-                Entretiens et documentaires doublés en français naturel multi-locuteurs avec synchronisation temporelle
-              </p>
-            </div>
-          </div>
-          <span class="badge" style="background:rgba(52,211,153,0.18); color:#34d399; border:1px solid rgba(52,211,153,0.4); font-size:0.75rem; font-weight:700;">
-            ✨ Synthèse Vocale & Script Cliquable
-          </span>
-        </div>
-
-        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(min(320px, 100%), 1fr)); gap:14px;">
-          ${dubbedList.map(item => {
-            const spkList = Object.values(item.speakers || {});
-            return `
-              <div class="dash-card glass" style="padding:14px; background:rgba(0,0,0,0.35); border:1px solid rgba(255,255,255,0.08); border-radius:14px; display:flex; flex-direction:column; justify-content:space-between;">
-                <div>
-                  <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:6px; margin-bottom:8px;">
-                    <span class="badge badge-success" style="font-size:0.72rem;">🎙️ ${spkList.length} voix configurées</span>
-                    <span style="font-size:0.75rem; color:var(--text-dim);"><i class="ri-time-line"></i> ${Math.round(item.duration / 60)} min</span>
-                  </div>
-                  <h4 style="margin:0 0 6px 0; font-size:0.95rem; font-weight:700; color:#fff; line-height:1.35;">${esc(item.title)}</h4>
-                  
-                  <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px;">
-                    ${spkList.map(s => `
-                      <span class="badge" style="background:${s.color}22; color:${s.color}; border:1px solid ${s.color}44; font-size:0.72rem; padding:2px 7px; display:inline-flex; align-items:center; gap:3px;">
-                        ${s.avatar || '🎙️'} ${esc(s.name)}
-                      </span>
-                    `).join('')}
-                  </div>
-                </div>
-
-                <div style="display:flex; gap:8px; margin-top:8px;">
-                  <button type="button" class="btn-primary" style="flex:1; padding:8px 12px; font-size:0.82rem; font-weight:700; display:inline-flex; align-items:center; justify-content:center; gap:6px; background:linear-gradient(135deg,#10b981,#0284c7); border:none; border-radius:8px; cursor:pointer;" onclick="playVideoAtTimestamp('${esc(item.mediaUrl || '')}', 0, '${esc(item.title)}', '${item.mediaUrl ? 'local' : 'youtube'}', '${item.youtubeId || ''}', 'Introduction', '${esc(item.source)}')">
-                    <i class="ri-play-circle-fill"></i> Lancer avec Doublage VF
-                  </button>
-                  <button type="button" class="btn-secondary" style="padding:8px 10px; font-size:0.78rem; border-radius:8px; cursor:pointer;" title="Tester la voix" onclick="testFirstSpeakerVoice('${item.videoId}')">
-                    🔊 Test
-                  </button>
-                </div>
-              </div>
-            `;
-          }).join('')}
-        </div>
-      </div>
     </div>
 
     <!-- Conteneur des Résultats Dynamiques de Recherche -->
@@ -8517,17 +8237,14 @@ function renderResources() {
         <button type="button" class="btn-tab ${_resourcesCatalogTab === 'all' ? 'active' : ''}" onclick="setResourcesCatalogTab('all')">
           🌟 Tout (${allBooks.length + videos.length})
         </button>
-        <button type="button" class="btn-tab ${_resourcesCatalogTab === 'dubbing' ? 'active' : ''}" onclick="setResourcesCatalogTab('dubbing')">
-          🎙️ Doublage Multi-Voix FR (${videos.filter(v => v.hasDubbing).length})
-        </button>
         <button type="button" class="btn-tab ${_resourcesCatalogTab === 'fr' ? 'active' : ''}" onclick="setResourcesCatalogTab('fr')">
-          🇫🇷 Ouvrages en Français (${allBooks.filter(b => b.lang === 'fr').length})
+          🇫🇷 Ouvrages & Vidéos en Français (${allBooks.filter(b => b.lang === 'fr').length + videos.filter(v => v.type === 'local-video' || v.badgeText.includes('FR')).length})
         </button>
         <button type="button" class="btn-tab ${_resourcesCatalogTab === 'en' ? 'active' : ''}" onclick="setResourcesCatalogTab('en')">
           🇬🇧 Original English Editions (${allBooks.filter(b => b.lang === 'en').length})
         </button>
         <button type="button" class="btn-tab ${_resourcesCatalogTab === 'videos' ? 'active' : ''}" onclick="setResourcesCatalogTab('videos')">
-          🎬 Tous les Médias Vidéo (${videos.length})
+          🎬 Vidéos & Documentaires (${videos.length})
         </button>
       </div>
 
@@ -8541,7 +8258,7 @@ function renderResources() {
                 <h2 style="font-size:1.15rem; font-weight:800; margin:0; color:#fff;">
                   ${_resourcesCatalogTab === 'fr' ? 'Ouvrages Fondateurs en Français (Traduction Intégrale)' : _resourcesCatalogTab === 'en' ? 'Authentic English Original Editions' : 'Ouvrages & Guides PDF Fondateurs (Bilingue FR / EN)'}
                 </h2>
-                <p style="font-size:0.8rem; color:var(--text-dim); margin:0;">Tous les textes intégraux téléchargeables et consultables directement en local (sans lien tiers)</p>
+                <p style="font-size:0.8rem; color:var(--text-dim); margin:0;">Tous les textes intégraux téléchargeables et consultables directement en local</p>
               </div>
             </div>
             <span class="badge badge-success" style="font-size:0.78rem;">${filteredBooks.length} ouvrage${filteredBooks.length > 1 ? 's' : ''} disponible${filteredBooks.length > 1 ? 's' : ''}</span>
@@ -8599,31 +8316,20 @@ function renderResources() {
               <span style="font-size:1.4rem;">🎬</span>
               <div>
                 <h2 style="font-size:1.15rem; font-weight:800; margin:0; color:#fff;">Documentaires & Médias Vidéo</h2>
-                <p style="font-size:0.8rem; color:var(--text-dim); margin:0;">Enquêtes, conférences et entretiens de référence sur la régénération cellulaire</p>
+                <p style="font-size:0.8rem; color:var(--text-dim); margin:0;">Enquêtes, conférences et entretiens de référence directement prêts à visionner</p>
               </div>
             </div>
-            <span class="badge badge-warning" style="font-size:0.78rem;">${displayedVideos.length} média${displayedVideos.length > 1 ? 's' : ''}</span>
+            <span class="badge badge-warning" style="font-size:0.78rem;">${displayedVideos.length} vidéo${displayedVideos.length > 1 ? 's' : ''}</span>
           </div>
 
           <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(min(380px, 100%), 1fr)); gap:18px;">
             ${displayedVideos.map(r => `
-              <div class="dash-card glass" style="padding:18px; display:flex; flex-direction:column; justify-content:space-between;">
+              <div class="dash-card glass" style="padding:18px; display:flex; flex-direction:column; justify-content:space-between; border-radius:16px;">
                 <div>
                   <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
                     <h3 style="margin:0; font-size:1.05rem; font-weight:700; color:#fff;">${esc(r.title)}</h3>
-                    <span class="badge ${r.badgeClass || 'badge-success'}">${esc(r.source)}</span>
+                    <span class="badge ${r.badgeClass || 'badge-success'}">${esc(r.badgeText || r.source)}</span>
                   </div>
-
-                  ${r.hasDubbing ? `
-                    <div style="display:flex; align-items:center; justify-content:space-between; background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.3); border-radius:10px; padding:6px 10px; margin-bottom:10px;">
-                      <span style="font-size:0.75rem; color:#38bdf8; font-weight:700; display:inline-flex; align-items:center; gap:5px;">
-                        <i class="ri-voiceprint-fill"></i> ${esc(r.speakersText || 'Doublage Multi-Voix FR Actif')}
-                      </span>
-                      <button type="button" style="background:rgba(255,255,255,0.1); border:none; color:#fff; border-radius:6px; padding:2px 8px; font-size:0.72rem; cursor:pointer;" onclick="testFirstSpeakerVoice('${r.id}')">
-                        🔊 Tester la voix
-                      </button>
-                    </div>
-                  ` : ''}
 
                   <!-- Aperçu Lecteur / Poster -->
                   <div style="position:relative; width:100%; border-radius:12px; overflow:hidden; border:1px solid var(--border); background:#000; box-shadow:0 6px 24px rgba(0,0,0,0.4); margin-bottom:12px;">
@@ -8641,10 +8347,10 @@ function renderResources() {
                   <p style="font-size:0.85rem; color:var(--text-dim); line-height:1.5; margin:0 0 12px 0;">${esc(r.description)}</p>
                 </div>
 
-                <!-- Bouton Lancer Lecteur avec Doublage Multi-Voix -->
+                <!-- Bouton Lancer Lecteur Grand Format -->
                 <div style="display:flex; gap:8px; margin-top:auto;">
                   <button type="button" class="btn-primary" style="flex:1; padding:10px 14px; font-size:0.88rem; font-weight:700; display:inline-flex; align-items:center; justify-content:center; gap:8px; background:linear-gradient(135deg,#10b981,#0284c7); border:none; border-radius:10px; cursor:pointer; box-shadow:0 4px 14px rgba(16,185,129,0.3);" onclick="playVideoAtTimestamp('${esc(r.localSrc || r.url || '')}', 0, '${esc(r.title)}', '${r.type === 'local-video' ? 'local' : 'youtube'}', '${r.youtubeId || ''}', 'Introduction', '${esc(r.source)}')">
-                    <i class="ri-voiceprint-fill" style="font-size:1.1rem;"></i> Ouvrir le Lecteur Doublé & Script
+                    <i class="ri-play-circle-fill" style="font-size:1.1rem;"></i> Visionner en Grand Écran & Chapitres
                   </button>
                   ${r.watchUrl ? `
                     <a href="${r.watchUrl}" target="_blank" rel="noopener noreferrer" class="btn-secondary" style="padding:10px 12px; font-size:0.85rem; text-decoration:none; display:inline-flex; align-items:center; justify-content:center;" title="Ouvrir dans un nouvel onglet">
