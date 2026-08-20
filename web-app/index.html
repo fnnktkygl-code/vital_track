@@ -286,8 +286,8 @@
       <!-- Greeting Card -->
       <div class="dash-greeting-card glass" style="display:flex; justify-content:space-between; align-items:center; padding:20px 24px; margin-bottom:24px; border-radius:var(--radius); border:1px solid var(--border); flex-wrap:wrap; gap:16px;">
         <div style="display:flex; align-items:center; gap:18px;">
-          <div style="width:84px; height:84px; border-radius:50%; background:linear-gradient(145deg, rgba(55,211,153,0.15), rgba(255,255,255,0.03)); display:flex; justify-content:center; align-items:center; border:2px solid var(--accent); box-shadow:0 8px 24px rgba(55,211,153,0.2); flex-shrink:0;">
-            <canvas id="mascotCanvas" width="84" height="84" style="width:84px; height:84px; object-fit:contain;"></canvas>
+          <div class="mascot-avatar-circle" onclick="window.triggerMascotInPlaceReaction && window.triggerMascotInPlaceReaction()" title="Vital Mascotte">
+            <canvas id="mascotCanvas" width="84" height="84"></canvas>
           </div>
           <div>
             <h2 id="greetName" style="font-size:1.25rem; font-weight:700; color:var(--text,#f3f6f9); margin:0;">Bonjour ! 👋</h2>

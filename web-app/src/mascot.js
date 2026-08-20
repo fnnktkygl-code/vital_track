@@ -923,10 +923,16 @@ export class VitalMascot {
     if (!this.canvas) return;
 
     const dpr = (typeof window !== 'undefined' && window.devicePixelRatio) || 1;
-    this.canvas.width = 100 * dpr;
-    this.canvas.height = 125 * dpr;
-    this.canvas.style.width = '100px';
-    this.canvas.style.height = '125px';
+    const initialW = this.canvas.offsetWidth || this.canvas.width || 84;
+    const initialH = this.canvas.offsetHeight || this.canvas.height || 84;
+    this.canvas.width = initialW * dpr;
+    this.canvas.height = initialH * dpr;
+    this.canvas.style.width = initialW + 'px';
+    this.canvas.style.height = initialH + 'px';
+    this.canvas.style.background = 'transparent';
+    this.canvas.style.webkitTapHighlightColor = 'transparent';
+    this.canvas.style.outline = 'none';
+    this.canvas.style.userSelect = 'none';
 
     this.pigeon = new Pigeon(this.canvas);
     this.startTime = performance.now();
@@ -934,18 +940,25 @@ export class VitalMascot {
     this.running = true;
     requestAnimationFrame(this.loop);
 
-    // Click on canvas triggers playful in-place reaction without opening any popup/modal
+    // Click on canvas triggers playful in-place reaction without opening any popup/modal or rectangle overlay
     this.canvas.style.cursor = 'pointer';
     this.canvas.removeAttribute('title');
-    this.canvas.addEventListener('click', (e) => {
-      e.stopPropagation();
+    const handleClick = (e) => {
+      if (e) {
+        if (e.cancelable) e.preventDefault();
+        e.stopPropagation();
+      }
       const actions = ['laugh', 'celebrate', 'coo', 'walk', 'think'];
       const next = actions[Math.floor(Math.random() * actions.length)];
       this.setAction(next);
       if (typeof window !== 'undefined' && window.triggerMascotInPlaceReaction) {
         window.triggerMascotInPlaceReaction(next);
       }
-    });
+    };
+    this.canvas.addEventListener('click', handleClick);
+    this.canvas.addEventListener('touchend', (e) => {
+      handleClick(e);
+    }, { passive: true });
   }
 
   setMood(mood, isSpeaking = false) {
