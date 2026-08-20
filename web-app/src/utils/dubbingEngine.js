@@ -181,6 +181,14 @@ class DubbingEngine {
     if (typeof window === 'undefined' || !window.speechSynthesis) return;
 
     this.stopSpeech();
+
+    // Re-verify voices if not loaded initially
+    if (this.frenchVoices.length === 0) {
+      const allVoices = window.speechSynthesis.getVoices() || [];
+      this.frenchVoices = allVoices.filter(v => v.lang && (v.lang.startsWith('fr') || v.lang.startsWith('FR')));
+      if (this.frenchVoices.length > 0) this._assignSpeakerVoices();
+    }
+
     const config = this.speakerVoiceAssignments.get(line.speaker) || { pitch: 1.0, rate: 0.96, voice: null };
 
     const utterance = new SpeechSynthesisUtterance(line.textFr);
@@ -205,6 +213,25 @@ class DubbingEngine {
     };
 
     this.currentUtterance = utterance;
+    if (window.speechSynthesis.paused) {
+      window.speechSynthesis.resume();
+    }
+    window.speechSynthesis.speak(utterance);
+  }
+
+  testSpeakerVoice(speakerId) {
+    if (typeof window === 'undefined' || !window.speechSynthesis) return;
+    this.stopSpeech();
+    const speaker = this.dubbingData?.speakers?.[speakerId] || { name: speakerId };
+    const config = this.speakerVoiceAssignments.get(speakerId) || { pitch: 1.0, rate: 0.96, voice: null };
+    const utterance = new SpeechSynthesisUtterance(`Bonjour, je suis la voix française de ${speaker.name}. Le doublage est actif.`);
+    utterance.lang = 'fr-FR';
+    if (config.voice) utterance.voice = config.voice;
+    utterance.pitch = config.pitch;
+    utterance.rate = config.rate;
+    if (window.speechSynthesis.paused) {
+      window.speechSynthesis.resume();
+    }
     window.speechSynthesis.speak(utterance);
   }
 

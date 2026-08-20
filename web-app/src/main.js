@@ -7903,6 +7903,16 @@ function jumpToDialogueTime(startSec, mediaUrl, type, youtubeId, title, source) 
   }
 }
 
+function testFirstSpeakerVoice(videoId) {
+  const data = VIDEO_DUBBING_DATABASE[videoId];
+  if (!data || !data.speakers) return;
+  const firstSpeakerId = Object.keys(data.speakers)[0];
+  dubbingEngine.loadVideo(data);
+  dubbingEngine.testSpeakerVoice(firstSpeakerId);
+}
+
+window.testFirstSpeakerVoice = testFirstSpeakerVoice;
+
 function playVideoAtTimestamp(mediaUrl, seconds = 0, title = '', type = 'local', youtubeId = '', chapter = '', source = '') {
   const modal = document.getElementById('mediaVideoModal');
   const modalSource = document.getElementById('mediaVideoModalSource');
@@ -8299,54 +8309,101 @@ function renderResources() {
 
   const videos = [
     {
+      id: "dr_sebi_interview",
       title: "Documentaire : The Rock Newman Show ft. Dr. Sebi",
       localSrc: "/videos/dr-sebi-documentary.mp4",
       poster: "/videos/posters/dr-sebi-documentary.jpg",
       source: "WHUT TV / Dr. Sebi (Média Local HD • 56 min)",
       badgeClass: "badge-success",
       type: "local-video",
+      hasDubbing: true,
+      speakersText: "2 Voix : Rock Newman (Journaliste) & Dr. Sebi (Chercheur)",
       description: "L'entretien télévisé et documentaire historique (56 min) avec le Dr. Sebi sur Howard University Television : explications détaillées sur la biochimie alcaline, la nutrition électrique cellulaire, le nettoyage du mucus et les protocoles thérapeutiques naturels."
     },
     {
-      title: "Le jeûne, une nouvelle thérapie ?",
-      url: "https://www.youtube-nocookie.com/embed/_ufnGrKmL1c",
-      watchUrl: "https://www.youtube.com/watch?v=_ufnGrKmL1c",
-      source: "ARTE Documentaire (56 min)",
+      id: "wim_hof_vice",
+      title: "Inside the Superhuman World of Wim Hof (Vice Documentaire)",
+      url: "https://www.youtube-nocookie.com/embed/Np0jGp6442A",
+      watchUrl: "https://www.youtube.com/watch?v=Np0jGp6442A",
+      youtubeId: "Np0jGp6442A",
+      source: "Vice Media (39 min)",
       badgeClass: "badge-warning",
       type: "video",
-      description: "Enquête médicale et scientifique d'ARTE sur les mécanismes de l'autophagie et les protocoles cliniques de jeûne thérapeutique."
+      hasDubbing: true,
+      speakersText: "3 Voix : Matt Shea (Reporter), Wim Hof, Dr. Pickkers (Chercheur)",
+      description: "Le grand reportage d'investigation de Vice Media suivant Wim Hof et les tests scientifiques à l'Université Radboud prouvant le contrôle volontaire du système immunitaire."
     },
     {
-      title: "What The Health",
+      id: "wim_hof_breathing",
+      title: "Guided Wim Hof Breathing (Session Guidée)",
+      url: "https://www.youtube-nocookie.com/embed/tybOi4hjZFQ",
+      watchUrl: "https://www.youtube.com/watch?v=tybOi4hjZFQ",
+      youtubeId: "tybOi4hjZFQ",
+      source: "Wim Hof Official (11 min)",
+      badgeClass: "badge-warning",
+      type: "video",
+      hasDubbing: true,
+      speakersText: "1 Voix : Wim Hof (Guidage Respiratoire)",
+      description: "Session complète de respiration guidée en 3 cycles avec Wim Hof, avec doublage français fluide et calage des rétentions."
+    },
+    {
+      id: "arnold_ehret_masterclass",
+      title: "Masterclass : Le Système de Guérison du Régime Sans Mucus",
+      url: "https://www.youtube-nocookie.com/embed/EjTWFoqLy34",
+      watchUrl: "https://www.youtube.com/watch?v=EjTWFoqLy34",
+      youtubeId: "EjTWFoqLy34",
+      source: "Masterclass Vitaliste (1h36)",
+      badgeClass: "badge-warning",
+      type: "video",
+      hasDubbing: true,
+      speakersText: "1 Voix : Professeur Arnold Ehret",
+      description: "Masterclass audio-vidéo intégrale sur l'équation vitale V = P - O et les lois fondamentales de la détoxination sans mucus."
+    },
+    {
+      id: "dr_morse_lymphatic",
+      title: "Dr. Robert Morse : Le Grand Système Lymphatique & Reins",
+      url: "https://www.youtube-nocookie.com/embed/_ufnGrKmL1c",
+      watchUrl: "https://www.youtube.com/watch?v=_ufnGrKmL1c",
+      youtubeId: "_ufnGrKmL1c",
+      source: "Club Santé Naturelle (56 min)",
+      badgeClass: "badge-warning",
+      type: "video",
+      hasDubbing: true,
+      speakersText: "1 Voix : Dr. Robert Morse N.D.",
+      description: "Explication magistrale du Dr. Morse sur les deux fluides majeurs (sang et lymphe), la filtration rénale et le drainage des acides cellulaires."
+    },
+    {
+      id: "what_the_health",
+      title: "What The Health (Film Documentaire)",
       url: "https://www.youtube-nocookie.com/embed/_ymX8x0IqM8",
       watchUrl: "https://www.youtube.com/watch?v=_ymX8x0IqM8",
       source: "AUM Films (VOSTFR 1h32)",
       badgeClass: "badge-warning",
       type: "video",
       description: "Film d'investigation sur les impacts des aliments ultra-transformés et les bénéfices prouvés de la nutrition végétale intégrale."
-    },
-    {
-      title: "La Santé Dans L'Assiette (Forks Over Knives)",
-      url: "https://www.youtube-nocookie.com/embed/EjTWFoqLy34",
-      watchUrl: "https://www.youtube.com/watch?v=EjTWFoqLy34",
-      source: "Forks Over Knives (1h36)",
-      badgeClass: "badge-warning",
-      type: "video",
-      description: "Documentaire pionnier mené par les Drs Campbell et Esselstyn démontrant comment inverser les maladies chroniques par l'alimentation végétale vivante."
     }
   ];
 
-  // Filter books according to active tab
+  // Filter books and videos according to active tab
   let filteredBooks = allBooks;
+  let displayedVideos = videos;
+
   if (_resourcesCatalogTab === 'fr') {
     filteredBooks = allBooks.filter(b => b.lang === 'fr');
+    displayedVideos = [];
   } else if (_resourcesCatalogTab === 'en') {
     filteredBooks = allBooks.filter(b => b.lang === 'en');
+    displayedVideos = [];
+  } else if (_resourcesCatalogTab === 'dubbing') {
+    filteredBooks = [];
+    displayedVideos = videos.filter(v => v.hasDubbing);
   } else if (_resourcesCatalogTab === 'videos') {
     filteredBooks = [];
+    displayedVideos = videos;
   }
 
-  const showVideos = _resourcesCatalogTab === 'all' || _resourcesCatalogTab === 'videos';
+  const showVideos = displayedVideos.length > 0;
+  const dubbedList = Object.values(VIDEO_DUBBING_DATABASE);
 
   let html = `
     <!-- Module Moteur de Recherche Multimédia & Deep Search -->
@@ -8383,6 +8440,62 @@ function renderResources() {
           <button type="button" class="media-tag-chip" onclick="applyMediaTopicTag('wim hof')">🌬️ Respiration Wim Hof</button>
         </div>
       </div>
+
+      <!-- 🎙️ SHOWCASE DOUBLAGE MULTI-VOIX SYNCHRONISÉ IA -->
+      <div class="dash-card glass" style="padding:18px 20px; margin-bottom:24px; border:1px solid rgba(56,189,248,0.35); background:linear-gradient(135deg, rgba(56,189,248,0.08), rgba(15,23,42,0.9)); border-radius:18px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <div style="width:42px; height:42px; border-radius:12px; background:linear-gradient(135deg,#38bdf8,#10b981); display:flex; align-items:center; justify-content:center; font-size:1.4rem; color:#042f2e; box-shadow:0 4px 14px rgba(56,189,248,0.35);">
+              🎙️
+            </div>
+            <div>
+              <h3 style="margin:0; font-size:1.1rem; font-weight:800; color:#fff; display:flex; align-items:center; gap:6px;">
+                Médiathèque avec Doublage Multi-Voix Français Actif
+              </h3>
+              <p style="margin:0; font-size:0.8rem; color:var(--text-dim);">
+                Entretiens et documentaires doublés en français naturel multi-locuteurs avec synchronisation temporelle
+              </p>
+            </div>
+          </div>
+          <span class="badge" style="background:rgba(52,211,153,0.18); color:#34d399; border:1px solid rgba(52,211,153,0.4); font-size:0.75rem; font-weight:700;">
+            ✨ Synthèse Vocale & Script Cliquable
+          </span>
+        </div>
+
+        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(min(320px, 100%), 1fr)); gap:14px;">
+          ${dubbedList.map(item => {
+            const spkList = Object.values(item.speakers || {});
+            return `
+              <div class="dash-card glass" style="padding:14px; background:rgba(0,0,0,0.35); border:1px solid rgba(255,255,255,0.08); border-radius:14px; display:flex; flex-direction:column; justify-content:space-between;">
+                <div>
+                  <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:6px; margin-bottom:8px;">
+                    <span class="badge badge-success" style="font-size:0.72rem;">🎙️ ${spkList.length} voix configurées</span>
+                    <span style="font-size:0.75rem; color:var(--text-dim);"><i class="ri-time-line"></i> ${Math.round(item.duration / 60)} min</span>
+                  </div>
+                  <h4 style="margin:0 0 6px 0; font-size:0.95rem; font-weight:700; color:#fff; line-height:1.35;">${esc(item.title)}</h4>
+                  
+                  <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px;">
+                    ${spkList.map(s => `
+                      <span class="badge" style="background:${s.color}22; color:${s.color}; border:1px solid ${s.color}44; font-size:0.72rem; padding:2px 7px; display:inline-flex; align-items:center; gap:3px;">
+                        ${s.avatar || '🎙️'} ${esc(s.name)}
+                      </span>
+                    `).join('')}
+                  </div>
+                </div>
+
+                <div style="display:flex; gap:8px; margin-top:8px;">
+                  <button type="button" class="btn-primary" style="flex:1; padding:8px 12px; font-size:0.82rem; font-weight:700; display:inline-flex; align-items:center; justify-content:center; gap:6px; background:linear-gradient(135deg,#10b981,#0284c7); border:none; border-radius:8px; cursor:pointer;" onclick="playVideoAtTimestamp('${esc(item.mediaUrl || '')}', 0, '${esc(item.title)}', '${item.mediaUrl ? 'local' : 'youtube'}', '${item.youtubeId || ''}', 'Introduction', '${esc(item.source)}')">
+                    <i class="ri-play-circle-fill"></i> Lancer avec Doublage VF
+                  </button>
+                  <button type="button" class="btn-secondary" style="padding:8px 10px; font-size:0.78rem; border-radius:8px; cursor:pointer;" title="Tester la voix" onclick="testFirstSpeakerVoice('${item.videoId}')">
+                    🔊 Test
+                  </button>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
     </div>
 
     <!-- Conteneur des Résultats Dynamiques de Recherche -->
@@ -8395,6 +8508,9 @@ function renderResources() {
         <button type="button" class="btn-tab ${_resourcesCatalogTab === 'all' ? 'active' : ''}" onclick="setResourcesCatalogTab('all')">
           🌟 Tout (${allBooks.length + videos.length})
         </button>
+        <button type="button" class="btn-tab ${_resourcesCatalogTab === 'dubbing' ? 'active' : ''}" onclick="setResourcesCatalogTab('dubbing')">
+          🎙️ Doublage Multi-Voix FR (${videos.filter(v => v.hasDubbing).length})
+        </button>
         <button type="button" class="btn-tab ${_resourcesCatalogTab === 'fr' ? 'active' : ''}" onclick="setResourcesCatalogTab('fr')">
           🇫🇷 Ouvrages en Français (${allBooks.filter(b => b.lang === 'fr').length})
         </button>
@@ -8402,7 +8518,7 @@ function renderResources() {
           🇬🇧 Original English Editions (${allBooks.filter(b => b.lang === 'en').length})
         </button>
         <button type="button" class="btn-tab ${_resourcesCatalogTab === 'videos' ? 'active' : ''}" onclick="setResourcesCatalogTab('videos')">
-          🎬 Vidéos & Documentaires (${videos.length})
+          🎬 Tous les Médias Vidéo (${videos.length})
         </button>
       </div>
 
@@ -8426,7 +8542,6 @@ function renderResources() {
             ${filteredBooks.map(b => `
               <div class="dash-card glass" style="padding:22px; display:flex; flex-direction:column; justify-content:space-between; border-left:4px solid ${b.color}; background:linear-gradient(145deg, rgba(255,255,255,0.035), rgba(15,23,42,0.8)); box-shadow:0 10px 30px rgba(0,0,0,0.3); border-radius:16px;">
                 <div>
-                  <!-- Top Meta Bar: Language Badge on Left, File Size on Right -->
                   <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; gap:8px;">
                     ${b.badgeText ? `
                       <span style="font-size:0.75rem; font-weight:700; color:${b.lang === 'fr' ? '#34d399' : '#38bdf8'}; background:${b.lang === 'fr' ? 'rgba(52,211,153,0.12)' : 'rgba(56,189,248,0.12)'}; padding:4px 10px; border-radius:20px; border:1px solid ${b.lang === 'fr' ? 'rgba(52,211,153,0.3)' : 'rgba(56,189,248,0.3)'}; display:inline-flex; align-items:center; gap:5px;">
@@ -8436,7 +8551,6 @@ function renderResources() {
                     <span class="badge ${b.badgeClass}" style="font-size:0.72rem; padding:4px 9px; font-weight:600; white-space:nowrap; border-radius:8px;">${esc(b.size)}</span>
                   </div>
 
-                  <!-- Book Title & Icon Header -->
                   <div style="display:flex; align-items:flex-start; gap:12px; margin-bottom:10px;">
                     <div style="width:44px; height:44px; border-radius:12px; background:rgba(255,255,255,0.06); color:${b.color}; border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-size:1.35rem; flex-shrink:0; box-shadow:0 4px 12px rgba(0,0,0,0.25);">
                       <i class="${b.icon}"></i>
@@ -8447,16 +8561,13 @@ function renderResources() {
                     </div>
                   </div>
 
-                  <!-- Author Meta Pill -->
                   <div style="display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); padding:3px 10px; border-radius:8px; font-size:0.76rem; color:var(--accent); font-weight:600; margin-bottom:12px;">
                     <i class="ri-quill-pen-line"></i> Auteur : <span style="color:#fff;">${esc(b.author)}</span>
                   </div>
 
-                  <!-- Description -->
                   <p style="font-size:0.85rem; color:var(--text-dim); line-height:1.55; margin:0 0 18px 0;">${esc(b.description)}</p>
                 </div>
 
-                <!-- Balanced 50/50 Action Buttons -->
                 <div style="display:flex; gap:10px; margin-top:auto;">
                   <a href="${b.url}" target="_blank" rel="noopener noreferrer" class="btn-primary" style="flex:1; text-align:center; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:6px; font-size:0.85rem; font-weight:700; padding:10px 14px; border-radius:10px; box-shadow:0 4px 14px rgba(16,185,129,0.25);">
                     <i class="ri-file-pdf-line"></i> Consulter
@@ -8482,49 +8593,58 @@ function renderResources() {
                 <p style="font-size:0.8rem; color:var(--text-dim); margin:0;">Enquêtes, conférences et entretiens de référence sur la régénération cellulaire</p>
               </div>
             </div>
-            <span class="badge badge-warning" style="font-size:0.78rem;">${videos.length} médias vidéo</span>
+            <span class="badge badge-warning" style="font-size:0.78rem;">${displayedVideos.length} média${displayedVideos.length > 1 ? 's' : ''}</span>
           </div>
 
-          <div style="display:grid; grid-template-columns:1fr; gap:18px;">
-            ${videos.map(r => {
-        if (r.type === 'local-video') {
-          return `
-                  <div class="dash-card glass" style="padding:18px;">
-                    <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
-                      <h3 style="margin:0; font-size:1.05rem; font-weight:700; color:#fff;">${esc(r.title)}</h3>
-                      <span class="badge ${r.badgeClass || 'badge-success'}">${esc(r.source)}</span>
+          <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(min(380px, 100%), 1fr)); gap:18px;">
+            ${displayedVideos.map(r => `
+              <div class="dash-card glass" style="padding:18px; display:flex; flex-direction:column; justify-content:space-between;">
+                <div>
+                  <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+                    <h3 style="margin:0; font-size:1.05rem; font-weight:700; color:#fff;">${esc(r.title)}</h3>
+                    <span class="badge ${r.badgeClass || 'badge-success'}">${esc(r.source)}</span>
+                  </div>
+
+                  ${r.hasDubbing ? `
+                    <div style="display:flex; align-items:center; justify-content:space-between; background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.3); border-radius:10px; padding:6px 10px; margin-bottom:10px;">
+                      <span style="font-size:0.75rem; color:#38bdf8; font-weight:700; display:inline-flex; align-items:center; gap:5px;">
+                        <i class="ri-voiceprint-fill"></i> ${esc(r.speakersText || 'Doublage Multi-Voix FR Actif')}
+                      </span>
+                      <button type="button" style="background:rgba(255,255,255,0.1); border:none; color:#fff; border-radius:6px; padding:2px 8px; font-size:0.72rem; cursor:pointer;" onclick="testFirstSpeakerVoice('${r.id}')">
+                        🔊 Tester la voix
+                      </button>
                     </div>
-                    <div style="position:relative; width:100%; border-radius:12px; overflow:hidden; border:1px solid var(--border); background:#000; box-shadow:0 6px 24px rgba(0,0,0,0.4); margin-bottom:12px;">
-                      <video controls playsinline preload="metadata" poster="${r.poster}" style="width:100%; height:auto; display:block; max-height:420px; background:#000;">
+                  ` : ''}
+
+                  <!-- Aperçu Lecteur / Poster -->
+                  <div style="position:relative; width:100%; border-radius:12px; overflow:hidden; border:1px solid var(--border); background:#000; box-shadow:0 6px 24px rgba(0,0,0,0.4); margin-bottom:12px;">
+                    ${r.type === 'local-video' ? `
+                      <video controls playsinline preload="metadata" poster="${r.poster}" style="width:100%; height:auto; display:block; max-height:260px; background:#000;">
                         <source src="${r.localSrc}" type="video/mp4">
-                        Votre navigateur ne supporte pas la lecture directe de cette vidéo.
                       </video>
-                    </div>
-                    <p style="font-size:0.85rem; color:var(--text-dim); line-height:1.5; margin:0;">${esc(r.description)}</p>
-                  </div>
-                `;
-        } else {
-          return `
-                  <div class="dash-card glass" style="padding:18px;">
-                    <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
-                      <h3 style="margin:0; font-size:1.05rem; font-weight:700; color:#fff;">${esc(r.title)}</h3>
-                      <span class="badge ${r.badgeClass || 'badge-warning'}">${esc(r.source)}</span>
-                    </div>
-                    <div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:12px; border:1px solid var(--border); background:#000; box-shadow:0 6px 24px rgba(0,0,0,0.4); margin-bottom:12px;">
-                      <iframe src="${r.url}" style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;" allowfullscreen loading="lazy"></iframe>
-                    </div>
-                    <p style="font-size:0.85rem; color:var(--text-dim); line-height:1.5; margin-bottom:10px;">${esc(r.description)}</p>
-                    ${r.watchUrl ? `
-                      <div style="text-align:right;">
-                        <a href="${r.watchUrl}" target="_blank" rel="noopener noreferrer" style="font-size:0.8rem; color:var(--accent); text-decoration:none; display:inline-flex; align-items:center; gap:4px;">
-                          <i class="ri-external-link-line"></i> Ouvrir dans un nouvel onglet
-                        </a>
+                    ` : `
+                      <div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden;">
+                        <iframe src="${r.url}" style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;" allowfullscreen loading="lazy"></iframe>
                       </div>
-                    ` : ''}
+                    `}
                   </div>
-                `;
-        }
-      }).join('')}
+
+                  <p style="font-size:0.85rem; color:var(--text-dim); line-height:1.5; margin:0 0 12px 0;">${esc(r.description)}</p>
+                </div>
+
+                <!-- Bouton Lancer Lecteur avec Doublage Multi-Voix -->
+                <div style="display:flex; gap:8px; margin-top:auto;">
+                  <button type="button" class="btn-primary" style="flex:1; padding:10px 14px; font-size:0.88rem; font-weight:700; display:inline-flex; align-items:center; justify-content:center; gap:8px; background:linear-gradient(135deg,#10b981,#0284c7); border:none; border-radius:10px; cursor:pointer; box-shadow:0 4px 14px rgba(16,185,129,0.3);" onclick="playVideoAtTimestamp('${esc(r.localSrc || r.url || '')}', 0, '${esc(r.title)}', '${r.type === 'local-video' ? 'local' : 'youtube'}', '${r.youtubeId || ''}', 'Introduction', '${esc(r.source)}')">
+                    <i class="ri-voiceprint-fill" style="font-size:1.1rem;"></i> Ouvrir le Lecteur Doublé & Script
+                  </button>
+                  ${r.watchUrl ? `
+                    <a href="${r.watchUrl}" target="_blank" rel="noopener noreferrer" class="btn-secondary" style="padding:10px 12px; font-size:0.85rem; text-decoration:none; display:inline-flex; align-items:center; justify-content:center;" title="Ouvrir dans un nouvel onglet">
+                      <i class="ri-external-link-line"></i>
+                    </a>
+                  ` : ''}
+                </div>
+              </div>
+            `).join('')}
           </div>
         </div>
       ` : ''}
@@ -10007,6 +10127,7 @@ if (typeof window !== "undefined") window.closeMediaVideoModal = closeMediaVideo
 if (typeof window !== "undefined") window.toggleVideoDubbing = toggleVideoDubbing;
 if (typeof window !== "undefined") window.setVideoSubtitleMode = setVideoSubtitleMode;
 if (typeof window !== "undefined") window.jumpToDialogueTime = jumpToDialogueTime;
+if (typeof window !== "undefined") window.testFirstSpeakerVoice = testFirstSpeakerVoice;
 if (typeof window !== "undefined") window.openPdfPassageModal = openPdfPassageModal;
 if (typeof window !== "undefined") window.closePdfPassageModal = closePdfPassageModal;
 if (typeof window !== "undefined") window.setResourcesCatalogTab = setResourcesCatalogTab;
