@@ -2966,6 +2966,83 @@ input.jn-field-control { padding-right: 14px; }
 .btn-secondary{padding:10px 20px;border-radius:50px;border:1px solid var(--border);cursor:pointer;background:rgba(255,255,255,0.05);color:var(--text-dim);font-family:var(--font);font-weight:600;font-size:0.88rem;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:all var(--transition)}
 .btn-secondary:hover{background:rgba(255,255,255,0.1);color:var(--text);border-color:rgba(255,255,255,0.2)}
 
+/* ═══════ CHIP BUTTONS (MODAL SLOTS, CARD ACTIONS, WEIGHT BUTTONS) ═══════ */
+.chip-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 12px;
+  background: var(--surface-2, rgba(255, 255, 255, 0.06));
+  border: 1.5px solid var(--border, rgba(255, 255, 255, 0.12));
+  color: var(--text, #f8fafc);
+  font-family: var(--font, -apple-system, sans-serif);
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  white-space: nowrap;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.chip-btn:hover {
+  background: var(--surface-hover, rgba(255, 255, 255, 0.1));
+  border-color: var(--accent, #059669);
+  color: var(--text-hi, #ffffff);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.chip-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.chip-btn.active {
+  background: var(--accent, #059669) !important;
+  border-color: var(--accent, #059669) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(5, 150, 105, 0.35) !important;
+}
+
+/* Light Mode Overrides for .chip-btn */
+[data-theme="light"] .chip-btn,
+body.light-theme .chip-btn,
+.light-mode .chip-btn {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #0f172a;
+}
+
+[data-theme="light"] .chip-btn:hover,
+body.light-theme .chip-btn:hover,
+.light-mode .chip-btn:hover {
+  background: #e2e8f0;
+  border-color: #059669;
+  color: #047857;
+}
+
+[data-theme="light"] .chip-btn.active,
+body.light-theme .chip-btn.active,
+.light-mode .chip-btn.active {
+  background: #059669 !important;
+  border-color: #059669 !important;
+  color: #ffffff !important;
+}
+
+/* Dark Mode explicit contrast */
+[data-theme="dark"] .chip-btn,
+body.dark-theme .chip-btn,
+:root:not([data-theme="light"]) .chip-btn {
+  background: #162434;
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #f1f5f9;
+}
+
 /* ═══════ FLOATING GLOBAL TOOLTIP (BODY-ATTACHED & BOUNDARY CLAMPED) ═══════ */
 #vitalGlobalTooltip {
   position: fixed;

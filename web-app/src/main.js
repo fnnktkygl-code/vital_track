@@ -2833,58 +2833,45 @@ async function sendChat(e) {
 const MODEL_TAXONOMY = [
   {
     id: 'auto',
-    name: 'Rotateur Auto',
+    name: 'Cascade Automatique',
     icon: 'ri-instance-line',
     iconColor: '#34d399',
-    tagline: 'Bascule dynamique anti-surcharge',
+    tagline: 'Failover dynamique anti-surcharge',
     models: [
-      { id: 'auto', name: 'Rotateur Automatique', badge: 'Recommandé', tagline: 'Sélectionne le meilleur modèle selon la charge & la complexité' }
+      { id: 'auto', name: 'Cascade Automatique', badge: 'Recommandé', tagline: 'Bascule fluide du meilleur modèle au modèle de secours en cas de quota' }
     ]
   },
   {
     id: 'flash',
-    name: 'Flash (Ultra Rapide)',
+    name: 'Gemini Flash (Rapide & Intelligent)',
     icon: 'ri-flashlight-fill',
     iconColor: '#4ade80',
     tagline: 'Vitesse maximale & réponse instantanée',
     models: [
-      { id: 'gemini-3.7-flash', name: 'Gemini 3.7 Flash', badge: 'Fastest & Smartest ⚡', tagline: 'Dernière génération hybride multimodale à réactivité instantanée' },
-      { id: 'gemini-3.6-flash', name: 'Gemini 3.6 Flash', badge: 'Ultra Rapide', tagline: 'Modèle réactif de haute précision pour le chat instantané' },
-      { id: 'gemini-3.5-flash', name: 'Gemini 3.5 Flash', badge: 'Équilibré', tagline: 'Vitesse élevée et excellente précision nutritionnelle' }
-    ]
-  },
-  {
-    id: 'premium',
-    name: 'Pro (Raisonnement Scientifique)',
-    icon: 'ri-brain-line',
-    iconColor: '#fbbf24',
-    tagline: 'Analyse approfondie & protocoles complexes',
-    models: [
-      { id: 'gemini-3.5-pro', name: 'Gemini 3.5 Pro', badge: 'Raisonnement', tagline: 'Analyse approfondie des terrains biologiques et pathologies' },
-      { id: 'gemini-3.1-pro', name: 'Gemini 3.1 Pro', badge: 'Pro Stable', tagline: 'Synthèse médicale et protocoles de régénération avancés' }
+      { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash', badge: 'Principal ⚡', tagline: 'Génération ultra-réactive avec raisonnement multimodal' },
+      { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash', badge: 'Haute Précision', tagline: 'Modèle stable et véloce pour le coaching quotidien' },
+      { id: 'gemini-1.5-flash', name: 'Gemini 1.5 Flash', badge: 'Éprouvé', tagline: 'Haute fiabilité et débit constant' }
     ]
   },
   {
     id: 'lite',
-    name: 'Lite (Haute Capacité & Vélocité)',
+    name: 'Gemini Flash Lite (Haute Disponibilité)',
     icon: 'ri-bolt-line',
     iconColor: '#a78bfa',
-    tagline: 'Léger, grand contexte & haute disponibilité (1400 RPD)',
+    tagline: 'Léger, grand débit & zéro temps d\'attente',
     models: [
-      { id: 'gemini-3.6-flash-lite', name: 'Gemini 3.6 Flash Lite', badge: '1400 RPD', tagline: 'Modèle léger ultra-véloce' },
-      { id: 'gemini-3.5-flash-lite', name: 'Gemini 3.5 Flash Lite', badge: 'Économe', tagline: 'Traitement fluide à consommation optimisée' },
-      { id: 'gemini-3.1-flash-lite', name: 'Gemini 3.1 Flash Lite', badge: 'Grand Contexte', tagline: 'Idéal pour absorber de longs documents ou fichiers PDF' }
+      { id: 'gemini-2.0-flash-lite', name: 'Gemini 2.0 Flash Lite', badge: 'Véloce 🚀', tagline: 'Exécution ultrarapide idéale pour les connexions mobiles' },
+      { id: 'gemini-1.5-flash-8b', name: 'Gemini 1.5 Flash 8B', badge: 'Économe', tagline: 'Modèle ultraléger haute tolérance aux quotas' }
     ]
   },
   {
-    id: 'gemma',
-    name: 'Open Weights (Gemma 4)',
-    icon: 'ri-cpu-line',
-    iconColor: '#22d3ee',
-    tagline: 'Modèles DeepMind à très haute disponibilité (124.2K RPD)',
+    id: 'premium',
+    name: 'Gemini Pro (Raisonnement Avancé)',
+    icon: 'ri-brain-line',
+    iconColor: '#fbbf24',
+    tagline: 'Analyse approfondie & protocoles complexes',
     models: [
-      { id: 'gemma-4-31b-it', name: 'Gemma 4 31B', badge: '31B Params', tagline: 'Grand modèle open-weights à haute fiabilité et résilience' },
-      { id: 'gemma-4-26b-a4b-it', name: 'Gemma 4 26B', badge: '26B Params', tagline: 'Modèle ouvert rapide et agile' }
+      { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro', badge: 'Raisonnement', tagline: 'Synthèse approfondie des terrains biologiques et monographies Raintree' }
     ]
   }
 ];
