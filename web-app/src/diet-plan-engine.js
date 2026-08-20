@@ -312,8 +312,9 @@
     var dayOfWeek = date.getDay(); // 0 = Dimanche, 6 = Samedi
     var isSpecialRemineralizingDay = allowWeeklyMollusks && (dayOfWeek === 0 || (dayIndex > 0 && dayIndex % 7 === 6));
 
+    var focusFoods = opts.focusFoods || [];
     // Sélection d'aliments du jour en évitant ceux de la veille
-    var morningHerb = pickSmart(herbs, dayIndex, seed, 0, prevDayFoods);
+    var morningHerb = (dayIndex === 0 && focusFoods.length > 0) ? focusFoods[0] : pickSmart(herbs, dayIndex, seed, 0, prevDayFoods);
     var morningFruits = pickSmartN(fruits, weekNum === 1 ? 1 : 2, dayIndex, seed, 1, prevDayFoods);
     
     var lunchVeggies = pickSmartN(veggies, 2, dayIndex, seed, 3, prevDayFoods);
@@ -395,6 +396,18 @@
     }
 
     var pools = buildPools(restrictions, userContext);
+    var focusFoods = req.focusFoods || req.preferredFoods || req.customFoods || [];
+    if (!Array.isArray(focusFoods) && typeof focusFoods === 'string') focusFoods = [focusFoods];
+    
+    // Also scan combined request/objective for explicitly mentioned medicinal herbs/foods
+    var textToScan = (combinedReq + ' ' + (objective || '')).toLowerCase();
+    if (textToScan.indexOf('bardane') !== -1 && focusFoods.indexOf('Décoction de racine de bardane') === -1) {
+      focusFoods.push('Décoction de racine de bardane');
+    }
+    if (textToScan.indexOf('chaga') !== -1 && focusFoods.indexOf('Décoction de Chaga boréal') === -1) {
+      focusFoods.push('Décoction de Chaga boréal');
+    }
+
     var meals = [];
     var phaseByDate = {};
     var prevDayFoods = [];
@@ -411,7 +424,8 @@
         pools: pools,
         seed: i * 13,
         prevDayFoods: prevDayFoods,
-        allowWeeklyMollusks: allowWeeklyMollusks
+        allowWeeklyMollusks: allowWeeklyMollusks,
+        focusFoods: focusFoods
       });
 
       meals = meals.concat(dayMeals);
