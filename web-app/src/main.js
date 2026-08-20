@@ -2275,6 +2275,50 @@ async function _transcribeWithFallbackApi(audioBlob) {
   }
 }
 
+// ═══════ SPEECH MERGER & DEDUPLICATION HELPER ═══════
+function _mergeTranscripts(accumulated, currentChunk) {
+  if (!accumulated) return (currentChunk || '').trim();
+  if (!currentChunk) return (accumulated || '').trim();
+  
+  const acc = accumulated.trim();
+  const curr = currentChunk.trim();
+  
+  // 1. If curr already contains or starts with acc (Chrome buffer replay)
+  if (curr.toLowerCase().startsWith(acc.toLowerCase())) {
+    return curr;
+  }
+  
+  // 2. If acc already ends with curr
+  if (acc.toLowerCase().endsWith(curr.toLowerCase())) {
+    return acc;
+  }
+
+  // 3. Find overlap between end of acc and start of curr
+  const accWords = acc.split(/\s+/);
+  const currWords = curr.split(/\s+/);
+  
+  let maxOverlap = 0;
+  const maxCheck = Math.min(accWords.length, currWords.length, 12);
+  
+  for (let len = 1; len <= maxCheck; len++) {
+    const accEnd = accWords.slice(-len).join(' ').toLowerCase();
+    const currStart = currWords.slice(0, len).join(' ').toLowerCase();
+    if (accEnd === currStart) {
+      maxOverlap = len;
+    }
+  }
+  
+  if (maxOverlap > 0) {
+    const nonOverlappingCurr = currWords.slice(maxOverlap).join(' ');
+    return (acc + ' ' + nonOverlappingCurr).trim();
+  }
+  
+  return (acc + ' ' + curr).trim();
+}
+window._mergeTranscripts = _mergeTranscripts;
+
+let _accumulatedFinalText = '';
+
 function toggleVoiceInput(forceState, e) {
   if (e && typeof e.preventDefault === 'function') {
     e.preventDefault();
@@ -2329,6 +2373,7 @@ function toggleVoiceInput(forceState, e) {
   _isListening = true;
   _webSpeechCapturedText = false;
   _sessionBaseText = input && input.value ? input.value.trim() : '';
+  _accumulatedFinalText = '';
 
   _updateVoiceUI(true, false);
 
@@ -2367,31 +2412,37 @@ function toggleVoiceInput(forceState, e) {
       _speechRecognition.interimResults = true;
       _speechRecognition.maxAlternatives = 1;
 
+      let sessionFinal = '';
+
       _speechRecognition.onstart = () => {
         if (input) input.focus();
       };
 
       _speechRecognition.onresult = (event) => {
-        let finalStr = '';
-        let interimStr = '';
+        let currentFinal = '';
+        let currentInterim = '';
 
         for (let i = 0; i < event.results.length; ++i) {
           const piece = (event.results[i] && event.results[i][0] && event.results[i][0].transcript) ? event.results[i][0].transcript : '';
           if (event.results[i].isFinal) {
-            finalStr += (finalStr ? ' ' : '') + piece.trim();
+            currentFinal += (currentFinal ? ' ' : '') + piece.trim();
           } else {
-            interimStr += (interimStr ? ' ' : '') + piece.trim();
+            currentInterim += (currentInterim ? ' ' : '') + piece.trim();
           }
         }
 
-        const spoken = [finalStr, interimStr].filter(Boolean).join(' ').trim();
-        if (spoken) {
+        sessionFinal = currentFinal;
+
+        const sessionSpoken = [currentFinal, currentInterim].filter(Boolean).join(' ').trim();
+        if (sessionSpoken) {
           _webSpeechCapturedText = true;
         }
 
+        const totalSpoken = _mergeTranscripts(_accumulatedFinalText, sessionSpoken);
+
         const fullText = _sessionBaseText
-          ? (_sessionBaseText + ' ' + spoken).trim()
-          : spoken;
+          ? (_sessionBaseText + ' ' + totalSpoken).trim()
+          : totalSpoken;
 
         if (input) {
           input.value = fullText;
@@ -2411,8 +2462,8 @@ function toggleVoiceInput(forceState, e) {
 
       _speechRecognition.onend = () => {
         if (_isListening && !_userExplicitStop) {
-          if (input && input.value) {
-            _sessionBaseText = input.value.trim();
+          if (sessionFinal) {
+            _accumulatedFinalText = _mergeTranscripts(_accumulatedFinalText, sessionFinal);
           }
           _voiceRestartTimer = setTimeout(() => {
             if (_isListening && !_userExplicitStop) {
