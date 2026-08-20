@@ -1296,14 +1296,14 @@
         <div class="dash-card glass" style="margin-bottom:20px;">
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
             <h3 id="wimHofActiveTitle" style="display:flex; align-items:center; gap:8px; margin:0; font-size:1.1rem;">
-              <i class="ri-video-fill" style="color:var(--accent);"></i> Vidéo Guidée Officielle Wim Hof (3 Rounds)
+              <i class="ri-video-fill" style="color:var(--accent);"></i> Vidéo Guidée Wim Hof (3 Rounds) • 🇫🇷 Version Française
             </h3>
-            <span class="badge badge-success" style="display:inline-flex; align-items:center; gap:5px; font-size:0.75rem; padding:4px 10px;">
-              <i class="ri-checkbox-circle-fill"></i> Média Local Intégré (HD)
+            <span id="wimHofActiveBadge" class="badge badge-success" style="display:inline-flex; align-items:center; gap:5px; font-size:0.75rem; padding:4px 10px;">
+              <i class="ri-checkbox-circle-fill"></i> 🇫🇷 VF Guidée HD
             </span>
           </div>
           <p id="wimHofActiveDesc" style="font-size:0.85rem; color:var(--text-dim); margin-bottom:16px;">
-            Pratiquez directement en rythme avec Wim Hof lui-même. Suivez les cloches et les indications vocales.
+            Pratiquez directement en rythme avec le guidage vocal français calé en direct sur les cloches, inspirations et temps de rétention.
           </p>
           
           <!-- Native HTML5 Responsive Video Player -->
@@ -1314,21 +1314,48 @@
                    preload="metadata"
                    poster="/videos/posters/wim-hof-3-rounds.jpg"
                    style="width:100%; height:auto; display:block; max-height:480px; background:#000;">
-              <source id="wimHofVideoSource" src="/videos/wim-hof-3-rounds.mp4" type="video/mp4">
+              <source id="wimHofVideoSource" src="/videos/wim-hof-3-rounds-fr.mp4?v=20260820_v4_full" type="video/mp4">
               Votre navigateur ne supporte pas la lecture vidéo directe.
             </video>
           </div>
 
-          <!-- Video Selector Buttons -->
-          <div style="display:flex; gap:10px; margin-top:16px; flex-wrap:wrap;">
-            <button type="button" class="preset-pill active" onclick="loadBreathingVideo('3-rounds', this)">
-              🎬 Session Complète 3 Rounds <span style="opacity:0.7; font-size:0.75rem;">(11:00)</span>
+          <!-- Language Selector Bar for Breathing Videos -->
+          <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-top:18px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.08);">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:0.8rem; font-weight:700; color:var(--text-dim);"><i class="ri-translate-2"></i> Piste Audio :</span>
+              <button type="button" class="preset-pill breathing-lang-btn active" data-lang="fr" onclick="setBreathingVideoLang('fr')" style="font-size:0.8rem; padding:5px 12px;">
+                🇫🇷 Version Française
+              </button>
+              <button type="button" class="preset-pill breathing-lang-btn" data-lang="en" onclick="setBreathingVideoLang('en')" style="font-size:0.8rem; padding:5px 12px;">
+                🇬🇧 English Original
+              </button>
+            </div>
+            <span style="font-size:0.75rem; color:var(--text-dim);">Audio et sous-titres synchronisés</span>
+          </div>
+
+          <!-- Video Selector Buttons FR -->
+          <div class="breathing-video-group" data-lang="fr" style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;">
+            <button type="button" class="preset-pill active" onclick="loadBreathingVideo('3-rounds-fr', this)">
+              🎬 3 Rounds Guidés VF <span style="opacity:0.7; font-size:0.75rem;">(11:00)</span>
             </button>
-            <button type="button" class="preset-pill" onclick="loadBreathingVideo('tutorial', this)">
-              📖 Tutoriel & Technique <span style="opacity:0.7; font-size:0.75rem;">(10:08)</span>
+            <button type="button" class="preset-pill" onclick="loadBreathingVideo('tutorial-fr', this)">
+              📖 Tutoriel & Technique VF <span style="opacity:0.7; font-size:0.75rem;">(10:08)</span>
             </button>
-            <button type="button" class="preset-pill" onclick="loadBreathingVideo('science', this)">
-              🔬 Science & Immunité <span style="opacity:0.7; font-size:0.75rem;">(44:13)</span>
+            <button type="button" class="preset-pill" onclick="loadBreathingVideo('science-fr', this)">
+              🔬 Science & Immunité VF <span style="opacity:0.7; font-size:0.75rem;">(44:13)</span>
+            </button>
+          </div>
+
+          <!-- Video Selector Buttons EN -->
+          <div class="breathing-video-group" data-lang="en" style="display:none; gap:10px; margin-top:12px; flex-wrap:wrap;">
+            <button type="button" class="preset-pill" onclick="loadBreathingVideo('3-rounds-en', this)">
+              🎬 Guided 3 Rounds EN <span style="opacity:0.7; font-size:0.75rem;">(11:00)</span>
+            </button>
+            <button type="button" class="preset-pill" onclick="loadBreathingVideo('tutorial-en', this)">
+              📖 Method Tutorial EN <span style="opacity:0.7; font-size:0.75rem;">(20:00)</span>
+            </button>
+            <button type="button" class="preset-pill" onclick="loadBreathingVideo('science-en', this)">
+              🔬 Science & Immunity EN <span style="opacity:0.7; font-size:0.75rem;">(71:00)</span>
             </button>
           </div>
         </div>

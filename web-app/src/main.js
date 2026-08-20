@@ -6510,62 +6510,107 @@ function switchBreathingTab(tabName) {
 };
 
 const WIM_HOF_VIDEOS = {
-  '3-rounds': {
-    title: "Vidéo Guidée Officielle Wim Hof (3 Rounds)",
-    desc: "Pratiquez directement en rythme avec Wim Hof lui-même. Suivez les cloches et les indications vocales.",
+  '3-rounds-fr': {
+    title: "Vidéo Guidée Wim Hof (3 Rounds) • 🇫🇷 Version Française",
+    desc: "Pratiquez directement en rythme avec le guidage vocal français calé en direct sur les cloches, inspirations et temps de rétention.",
+    src: "/videos/wim-hof-3-rounds-fr.mp4?v=20260820_v4_full",
+    poster: "/videos/posters/wim-hof-3-rounds.jpg",
+    badge: "🇫🇷 VF Guidée HD"
+  },
+  '3-rounds-en': {
+    title: "Guided Wim Hof Breathing (3 Rounds) • 🇬🇧 Original English",
+    desc: "Practice directly in rhythm with Wim Hof himself. Authentic original English session with retention bells.",
     src: "/videos/wim-hof-3-rounds.mp4",
-    poster: "/videos/posters/wim-hof-3-rounds.jpg"
+    poster: "/videos/posters/wim-hof-3-rounds.jpg",
+    badge: "🇬🇧 Authentic English"
+  },
+  'tutorial-fr': {
+    title: "Tutoriel Officiel Wim Hof • 🇫🇷 Version Française",
+    desc: "Explications complètes de la méthode par Wim Hof doublé intégralement en français studio : respiration diaphragmatique, rétentions et alcalinisation.",
+    src: "/videos/wim-hof-tutorial-fr.mp4?v=20260820_v4_full",
+    poster: "/videos/posters/wim-hof-3-rounds.jpg",
+    badge: "🇫🇷 VF Complète HD"
+  },
+  'tutorial-en': {
+    title: "Wim Hof Method Tutorial • 🇬🇧 Original English",
+    desc: "In-depth technique tutorial by Wim Hof on breathing mechanics, cold exposure progression, and mental focus.",
+    src: "/videos/wim-hof-tutorial.mp4",
+    poster: "/videos/posters/wim-hof-tutorial.jpg",
+    badge: "🇬🇧 Authentic English"
+  },
+  'science-fr': {
+    title: "Documentaire : Wim Hof & La Science de l'Immunité • 🇫🇷 Version Française",
+    desc: "Grand documentaire scientifique avec Wim Hof et les chercheurs universitaires doublés en français multi-voix sur la modulation du système immunitaire.",
+    src: "/videos/wim-hof-science-fr.mp4?v=20260820_v4_full",
+    poster: "/videos/posters/wim-hof-science.jpg",
+    badge: "🇫🇷 VF Multi-Voix HD"
+  },
+  'science-en': {
+    title: "Wim Hof: Testing the Immune System • 🇬🇧 Original English",
+    desc: "Comprehensive scientific documentary documenting clinical trials at Radboud University and immune modulation in original English.",
+    src: "/videos/wim-hof-science.mp4",
+    poster: "/videos/posters/wim-hof-science.jpg",
+    badge: "🇬🇧 Authentic English"
+  },
+
+  // Aliases for compatibility
+  '3-rounds': {
+    title: "Vidéo Guidée Wim Hof (3 Rounds) • 🇫🇷 Version Française",
+    desc: "Pratiquez directement en rythme avec le guidage vocal français calé en direct sur les cloches, inspirations et temps de rétention.",
+    src: "/videos/wim-hof-3-rounds-fr.mp4?v=20260820_v4_full",
+    poster: "/videos/posters/wim-hof-3-rounds.jpg",
+    badge: "🇫🇷 VF Guidée HD"
   },
   'tutorial': {
-    title: "Tutoriel & Technique Pas-à-Pas",
-    desc: "Explications détaillées de la technique de respiration par Wim Hof : posture, volume pulmonaire, et rétention.",
-    src: "/videos/wim-hof-tutorial.mp4",
-    poster: "/videos/posters/wim-hof-tutorial.jpg"
+    title: "Tutoriel Officiel Wim Hof • 🇫🇷 Version Française",
+    desc: "Explications complètes de la méthode par Wim Hof doublé intégralement en français studio : respiration diaphragmatique, rétentions et alcalinisation.",
+    src: "/videos/wim-hof-tutorial-fr.mp4?v=20260820_v4_full",
+    poster: "/videos/posters/wim-hof-3-rounds.jpg",
+    badge: "🇫🇷 VF Complète HD"
   },
   'science': {
-    title: "La Science, l'Immunité & l'Étude Radboud",
-    desc: "Analyse médicale et scientifique de l'impact de l'hyperventilation contrôlée et du froid sur le système nerveux autonome.",
-    src: "/videos/wim-hof-science.mp4",
-    poster: "/videos/posters/wim-hof-science.jpg"
-  },
-  'tybOi4hjZFQ': {
-    title: "Vidéo Guidée Officielle Wim Hof (3 Rounds)",
-    desc: "Pratiquez directement en rythme avec Wim Hof lui-même. Suivez les cloches et les indications vocales.",
-    src: "/videos/wim-hof-3-rounds.mp4",
-    poster: "/videos/posters/wim-hof-3-rounds.jpg"
-  },
-  'nzCaZBQkeP8': {
-    title: "Tutoriel & Technique Pas-à-Pas",
-    desc: "Explications détaillées de la technique de respiration par Wim Hof : posture, volume pulmonaire, et rétention.",
-    src: "/videos/wim-hof-tutorial.mp4",
-    poster: "/videos/posters/wim-hof-tutorial.jpg"
-  },
-  'nzCaZQqAs9I': {
-    title: "Tutoriel & Technique Pas-à-Pas",
-    desc: "Explications détaillées de la technique de respiration par Wim Hof : posture, volume pulmonaire, et rétention.",
-    src: "/videos/wim-hof-tutorial.mp4",
-    poster: "/videos/posters/wim-hof-tutorial.jpg"
-  },
-  'D6EPuUdIC1E': {
-    title: "La Science, l'Immunité & l'Étude Radboud",
-    desc: "Analyse médicale et scientifique de l'impact de l'hyperventilation contrôlée et du froid sur le système nerveux autonome.",
-    src: "/videos/wim-hof-science.mp4",
-    poster: "/videos/posters/wim-hof-science.jpg"
+    title: "Documentaire : Wim Hof & La Science de l'Immunité • 🇫🇷 Version Française",
+    desc: "Grand documentaire scientifique avec Wim Hof et les chercheurs universitaires doublés en français multi-voix sur la modulation du système immunitaire.",
+    src: "/videos/wim-hof-science-fr.mp4?v=20260820_v4_full",
+    poster: "/videos/posters/wim-hof-science.jpg",
+    badge: "🇫🇷 VF Multi-Voix HD"
   }
 };
 
+let _breathingVideoActiveLang = 'fr';
+
+function setBreathingVideoLang(lang) {
+  _breathingVideoActiveLang = lang;
+  document.querySelectorAll('.breathing-lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.lang === lang);
+  });
+  document.querySelectorAll('.breathing-video-group').forEach(group => {
+    group.style.display = group.dataset.lang === lang ? 'flex' : 'none';
+  });
+  // Auto-switch to first video of selected language
+  const firstPill = document.querySelector(`.breathing-video-group[data-lang="${lang}"] .preset-pill`);
+  if (firstPill) {
+    firstPill.click();
+  }
+}
+window.setBreathingVideoLang = setBreathingVideoLang;
+
 function loadBreathingVideo(videoKey, btnEl) {
-  const videoData = WIM_HOF_VIDEOS[videoKey] || WIM_HOF_VIDEOS['3-rounds'];
+  const videoData = WIM_HOF_VIDEOS[videoKey] || WIM_HOF_VIDEOS['3-rounds-fr'];
   const videoPlayer = document.getElementById('wimHofVideoPlayer');
   const sourceEl = document.getElementById('wimHofVideoSource');
   const titleEl = document.getElementById('wimHofActiveTitle');
   const descEl = document.getElementById('wimHofActiveDesc');
+  const badgeEl = document.getElementById('wimHofActiveBadge');
 
   if (titleEl) {
-    titleEl.innerHTML = `<i class="ri-video-fill" style="color:var(--accent);"></i> ${videoData.title}`;
+    titleEl.innerHTML = `<i class="ri-video-fill" style="color:var(--accent);"></i> ${esc(videoData.title)}`;
   }
   if (descEl) {
     descEl.textContent = videoData.desc;
+  }
+  if (badgeEl && videoData.badge) {
+    badgeEl.textContent = videoData.badge;
   }
 
   if (videoPlayer) {
@@ -6581,8 +6626,8 @@ function loadBreathingVideo(videoKey, btnEl) {
     }
   }
 
-  if (btnEl && btnEl.parentElement) {
-    btnEl.parentElement.querySelectorAll('.preset-pill').forEach(b => b.classList.remove('active'));
+  if (btnEl) {
+    document.querySelectorAll('#breathingTabVideos .preset-pill').forEach(b => b.classList.remove('active'));
     btnEl.classList.add('active');
   }
 };
