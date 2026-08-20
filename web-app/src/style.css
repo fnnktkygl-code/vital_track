@@ -713,7 +713,7 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 0 35px rgba(56, 189, 248, 0.2);
+  box-shadow: 0 4px 25px rgba(56, 189, 248, 0.18);
   touch-action: none;
   user-select: none;
   cursor: grab;
@@ -727,11 +727,13 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
 .clock-ring::before {
   content: '';
   position: absolute;
-  inset: 12px;
-  background: var(--surface);
+  inset: 26px;
+  background: var(--bg-card, #121b27);
+  border: 2px solid var(--border);
   border-radius: 50%;
-  box-shadow: inset 0 2px 14px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 18px rgba(0,0,0,0.15), inset 0 2px 8px rgba(0,0,0,0.08);
   pointer-events: none;
+  z-index: 1;
 }
 .clock-center {
   position: relative;
@@ -6615,23 +6617,49 @@ input[type=number] {
 }
 
 .media-card-excerpt {
-  font-size: 0.83rem;
-  color: var(--text-dim);
-  line-height: 1.5;
+  font-size: 0.84rem;
+  color: var(--text);
+  line-height: 1.55;
   margin-bottom: 14px;
-  background: rgba(0, 0, 0, 0.2);
-  padding: 10px 12px;
-  border-radius: 8px;
-  border-left: 2px solid var(--accent);
+  background: var(--surface-2, rgba(0, 0, 0, 0.2));
+  padding: 11px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
 }
 
 /* Highlighted search terms */
 mark.search-highlight {
-  background: rgba(52, 211, 153, 0.3);
+  background: rgba(52, 211, 153, 0.28);
   color: #34d399;
   font-weight: 700;
-  padding: 1px 4px;
-  border-radius: 4px;
+  padding: 2px 6px;
+  border-radius: 5px;
+  border: 1px solid rgba(52, 211, 153, 0.4);
+}
+
+[data-theme="light"] .media-card-excerpt {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+  border: 1px solid #cbd5e1 !important;
+  border-left: 3px solid #059669 !important;
+}
+
+[data-theme="light"] mark.search-highlight {
+  background: #bbf7d0 !important;
+  color: #065f46 !important;
+  font-weight: 800 !important;
+  padding: 2px 6px !important;
+  border-radius: 5px !important;
+  border: 1px solid #86efac !important;
+}
+
+[data-theme="light"] .media-card-title {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .media-card-chapter {
+  color: #047857 !important;
 }
 
 /* Badges */

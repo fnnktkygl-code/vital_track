@@ -8097,7 +8097,9 @@ function filterWisdomGrimoire() {
   if (author !== 'all') {
     items = items.filter(w => w.author.toLowerCase().includes(author));
   }
-  if (cat !== 'all') {
+  if (cat === 'favorites') {
+    items = items.filter(w => _wisdomFavorites.includes(w.id));
+  } else if (cat !== 'all') {
     items = items.filter(w => w.category === cat);
   }
   if (q) {
@@ -11473,7 +11475,7 @@ function updateCircadianDisplay(h, m, isScrubbing = false) {
     const minutesTotal = h * 60 + m;
     const angle = 180 + (minutesTotal / 1440) * 360;
     clockIndicator.innerHTML = `<i class="${data.iconClass}" style="color:${data.phaseColor}"></i>`;
-    clockIndicator.style.transform = `rotate(${angle}deg) translateY(-110px) rotate(-${angle}deg)`;
+    clockIndicator.style.transform = `rotate(${angle}deg) translateY(-97px) rotate(-${angle}deg)`;
   }
 
   if (hintEl) {
