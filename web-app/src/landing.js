@@ -40,11 +40,11 @@ function initThreeScene() {
   const colors = new Float32Array(particleCount * 3);
 
   const colorPalette = [
-    new THREE.Color('#34d399'), // Emerald Life Energy
-    new THREE.Color('#10b981'), // Deep Forest
-    new THREE.Color('#38bdf8'), // Electric Oxygen Cyan
-    new THREE.Color('#8b5cf6'), // Cosmic Lymph Violet
-    new THREE.Color('#fbbf24')  // Solar Photon Gold
+    new THREE.Color('#34d399'), // Emerald Vitality
+    new THREE.Color('#10b981'), // Chlorophyll Green
+    new THREE.Color('#059669'), // Deep Vitalist
+    new THREE.Color('#38bdf8'), // Soft Hydration Cyan
+    new THREE.Color('#f8fafc')  // Pure Photon White
   ];
 
   for (let i = 0; i < particleCount; i++) {

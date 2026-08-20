@@ -9,7 +9,7 @@
   <meta name="description" content="VitalTrack réunit les enseignements d'Arnold Ehret, Dr. Sebi, Dr. Robert Morse, David Wolfe et Wim Hof avec un Coach IA multimodal, scanner visuel PRAL, et traqueur d'autophagie.">
   <meta name="keywords" content="vitalisme, régénération cellulaire, régime sans mucus, dr sebi, arnold ehret, wim hof, autophagie, jeûne intermittent, indice pral, santé naturelle">
   <meta property="og:title" content="VitalTrack — Santé Vitaliste & Régénération Cellulaire">
-  <meta property="og:description" content="Le premier compagnon IA holistique dédié au vitalisme, à la nutrition bio-électrique et à l'autophagie.">
+  <meta property="og:description" content="Le premier compagnon holistique dédié au vitalisme, à la nutrition bio-électrique et à l'autophagie.">
   <meta property="og:image" content="screenshots/desktop_dashboard_dark.png">
   <meta property="og:url" content="https://vitaltrackapp.vercel.app/landing.html">
   <meta name="twitter:card" content="summary_large_image">
@@ -35,16 +35,34 @@
     <div class="nav-container">
       <a href="/landing.html" class="brand">
         <div class="brand-logo">
-          <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" class="logo-svg">
-            <circle cx="18" cy="18" r="16" stroke="url(#logo-grad)" stroke-width="2.5" fill="rgba(16, 185, 129, 0.08)"/>
-            <path d="M12 21C14 24 22 24 24 21M18 9V14M14 11L16 14M22 11L20 14" stroke="#34d399" stroke-width="2" stroke-linecap="round"/>
+          <!-- Official VitalTrack Mascot SVG -->
+          <svg viewBox="0 0 100 100" width="36" height="36" style="width:36px; height:36px; border-radius:50%;">
             <defs>
-              <linearGradient id="logo-grad" x1="2" y1="2" x2="34" y2="34" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#34d399"/>
-                <stop offset="0.5" stop-color="#38bdf8"/>
-                <stop offset="1" stop-color="#8b5cf6"/>
+              <radialGradient id="landHeadGrad" cx="40%" cy="35%" r="60%">
+                <stop offset="0%" stop-color="#C5CFE2"/>
+                <stop offset="60%" stop-color="#8A95AC"/>
+                <stop offset="100%" stop-color="#505970"/>
+              </radialGradient>
+              <linearGradient id="landIridGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#34D399"/>
+                <stop offset="50%" stop-color="#2DD4BF"/>
+                <stop offset="100%" stop-color="#38BDF8"/>
               </linearGradient>
             </defs>
+            <circle cx="50" cy="50" r="48" fill="#1E293B" stroke="rgba(255,255,255,0.15)" stroke-width="2"/>
+            <path d="M 28 85 Q 50 68 72 85 Q 50 98 28 85 Z" fill="url(#landIridGrad)"/>
+            <ellipse cx="50" cy="46" rx="30" ry="32" fill="url(#landHeadGrad)"/>
+            <circle cx="38" cy="42" r="9" fill="#FB923C"/>
+            <circle cx="38" cy="42" r="6" fill="#EA580C"/>
+            <circle cx="38" cy="42" r="3.5" fill="#141416"/>
+            <circle cx="36.5" cy="40.5" r="1.2" fill="#FFFFFF"/>
+            <circle cx="62" cy="42" r="9" fill="#FB923C"/>
+            <circle cx="62" cy="42" r="6" fill="#EA580C"/>
+            <circle cx="62" cy="42" r="3.5" fill="#141416"/>
+            <circle cx="60.5" cy="40.5" r="1.2" fill="#FFFFFF"/>
+            <ellipse cx="50" cy="53" rx="7" ry="4" fill="#F5F2EB"/>
+            <path d="M 44 55 Q 50 67 56 55 Z" fill="#353942"/>
+            <path d="M 45 55 Q 50 65 55 55 Z" fill="#1E2128"/>
           </svg>
         </div>
         <span class="brand-text">Vital<span>Track</span></span>
@@ -59,7 +77,7 @@
       </nav>
 
       <div class="nav-actions">
-        <a href="/" class="btn-primary glow-btn">
+        <a href="/" class="btn-primary">
           <span>Ouvrir l'App</span>
           <i class="ri-arrow-right-up-line"></i>
         </a>
@@ -69,25 +87,22 @@
 
   <!-- 🚀 HERO SECTION -->
   <section class="hero-section">
-    <div class="hero-glow"></div>
     <div class="hero-content">
       <div class="hero-badge">
         <span class="pulse-dot"></span>
-        <span>NOUVELLE VERSION 2.0 • IA MULTIMODALE & BIO-ÉLECTRICITÉ</span>
+        <span>VERSION 2.0 • SANTÉ VITALISTE & BIO-ÉLECTRICITÉ</span>
       </div>
 
       <h1 class="hero-title">
-        La Révolution de la <span class="gradient-text">Santé Vitaliste</span> & de la Régénération Cellulaire.
+        La Science de la <span class="accent-text">Santé Vitaliste</span> & de la Régénération Cellulaire.
       </h1>
 
       <p class="hero-desc">
-        Le premier compagnon holistique tout-en-un combinant les enseignements des grands maîtres 
-        (<em>Dr. Sebi, Arnold Ehret, Dr. Robert Morse, David Wolfe, Wim Hof</em>) avec un Coach IA de pointe, 
-        une dictée vocale temps réel sans quota et un scanner de repas bio-minéral.
+        Le premier compagnon holistique tout-en-un réunissant les enseignements d'<em>Arnold Ehret, Dr. Sebi, Dr. Robert Morse, David Wolfe et Wim Hof</em> avec un Coach IA, une dictée vocale temps réel sans quota et un scanner de repas bio-minéral.
       </p>
 
       <div class="hero-cta-group">
-        <a href="/" class="btn-hero-primary glow-btn">
+        <a href="/" class="btn-hero-primary">
           <i class="ri-rocket-2-fill"></i>
           <span>Lancer l'Application Web</span>
         </a>
@@ -134,10 +149,10 @@
   <!-- 🎬 SECTION VIDÉOS & SHOWCASE INTERACTIF PAR ONGLETS -->
   <section id="videos" class="section-container">
     <div class="section-header text-center">
-      <div class="sub-badge">DÉMONSTRATION EN DIRECT</div>
-      <h2 class="section-title">Découvrez VitalTrack en <span class="gradient-text">Extraits Vidéo</span></h2>
+      <div class="sub-badge">DÉMONSTRATIONS INTERACTIVES</div>
+      <h2 class="section-title">Découvrez VitalTrack en <span class="accent-text">Extraits Vidéo</span></h2>
       <p class="section-desc">
-        Explorez chaque fonctionnalité interactive capturée en haute définition, conçue pour vous accompagner chaque jour.
+        Explorez chaque fonctionnalité en haute définition, conçue pour vous accompagner vers la régénération.
       </p>
     </div>
 
@@ -180,7 +195,7 @@
                 <i class="ri-pause-line"></i>
               </button>
               <div class="video-badge-live">
-                <span class="pulse-dot"></span> ENREGISTREMENT LIVE 60 FPS
+                <span class="pulse-dot"></span> CAPTURE LIVE 60 FPS
               </div>
             </div>
           </div>
@@ -198,9 +213,9 @@
               Parlez naturellement à votre coach. Le texte est transcrit en direct dans le champ de saisie sans temps d'attente et sans consommer votre quota d'API. L'IA analyse votre terrain et génère automatiquement des protocoles complets avec des cartes d'action interactives.
             </p>
             <ul class="feature-bullet-list">
-              <li><i class="ri-checkbox-circle-fill"></i> <strong>Zero-Quota Voice :</strong> Dictée vocale native avec indicateur d'ondes sonores en temps réel.</li>
-              <li><i class="ri-checkbox-circle-fill"></i> <strong>RAG Vitaliste :</strong> Réponses fondées sur les écrits authentiques des docteurs Sebi, Ehret et Morse.</li>
-              <li><i class="ri-checkbox-circle-fill"></i> <strong>Cartes d'Action 1-Clic :</strong> Application immédiate du protocole généré dans votre calendrier de repas.</li>
+              <li><i class="ri-checkbox-circle-fill"></i> <div><strong>Zero-Quota Voice :</strong> Dictée vocale native avec indicateur d'ondes sonores en temps réel.</div></li>
+              <li><i class="ri-checkbox-circle-fill"></i> <div><strong>RAG Vitaliste :</strong> Réponses fondées sur les écrits authentiques des docteurs Sebi, Ehret et Morse.</div></li>
+              <li><i class="ri-checkbox-circle-fill"></i> <div><strong>Cartes d'Action 1-Clic :</strong> Application immédiate du protocole généré dans votre calendrier de repas.</div></li>
             </ul>
             <div class="feature-action-row">
               <a href="/" class="btn-feature-try">
@@ -218,9 +233,9 @@
   <section id="piliers" class="section-container">
     <div class="section-header text-center">
       <div class="sub-badge">FONDATIONS PHYSIOLOGIQUES</div>
-      <h2 class="section-title">Les 6 Piliers Fondateurs de <span class="gradient-text">VitalTrack</span></h2>
+      <h2 class="section-title">Les 6 Piliers Fondateurs de <span class="accent-text">VitalTrack</span></h2>
       <p class="section-desc">
-        Une synergie scientifique et naturelle bâtie sur les travaux de référence de la santé holistique mondiale.
+        Une synergie naturelle et rigoureuse bâtie sur les œuvres majeures de la santé holistique.
       </p>
     </div>
 
@@ -233,7 +248,7 @@
         <p class="pilier-desc">
           Formule fondamentale <strong>V = P - E</strong>. Détection du potentiel mucogène des aliments cuits et transition sécurisée vers l'alimentation vivante sans crise d'élimination brutale.
         </p>
-        <div class="pilier-tag">Équation Vitale : Vitalité = Puissance - Obstruction</div>
+        <div class="pilier-tag">Vitalité = Puissance - Obstruction</div>
       </div>
 
       <!-- 2. Dr. Sebi -->
@@ -298,7 +313,7 @@
     <div class="simulator-box glass">
       <div class="sim-header text-center">
         <div class="sub-badge">SIMULATEUR INSTANTANÉ</div>
-        <h2 class="section-title">Évaluez Votre <span class="gradient-text">Niveau de Vitalité</span> en 3 Questions</h2>
+        <h2 class="section-title">Évaluez Votre <span class="accent-text">Niveau de Vitalité</span> en 3 Questions</h2>
         <p class="section-desc">Découvrez votre charge d'obstruction mucique et votre potentiel de régénération.</p>
       </div>
 
@@ -352,7 +367,7 @@
     <div class="privacy-showcase glass">
       <div class="privacy-left">
         <div class="sub-badge"><i class="ri-lock-2-fill"></i> PRIVACY-BY-DESIGN</div>
-        <h2 class="section-title">Vos Données de Santé Vous Appartiennent. <span class="gradient-text">Point Final.</span></h2>
+        <h2 class="section-title">Vos Données de Santé Vous Appartiennent. <span class="accent-text">Point Final.</span></h2>
         <p class="section-desc">
           Contrairement aux applications traditionnelles qui revendent vos habitudes alimentaires à des tiers, VitalTrack applique une politique <strong>Zero-Knowledge hermétique</strong>.
         </p>
@@ -396,13 +411,12 @@
   <!-- 🚀 FOOTER CTA BANNER -->
   <section class="footer-cta-section">
     <div class="footer-cta-card glass text-center">
-      <div class="cta-glow"></div>
-      <h2 class="cta-title">Prêt à Réveiller Votre <span class="gradient-text">Vitalité Cellulaire</span> ?</h2>
+      <h2 class="cta-title">Prêt à Réveiller Votre <span class="accent-text">Vitalité Cellulaire</span> ?</h2>
       <p class="cta-desc">
         Rejoignez l'application VitalTrack gratuitement dès aujourd'hui. Aucun abonnement requis pour débuter.
       </p>
       <div class="cta-buttons">
-        <a href="/" class="btn-hero-primary glow-btn">
+        <a href="/" class="btn-hero-primary">
           <i class="ri-rocket-fill"></i>
           <span>Accéder Immédiatement à l'App</span>
         </a>
@@ -418,7 +432,31 @@
   <footer class="footer">
     <div class="footer-container">
       <div class="footer-brand">
-        <span class="brand-text">Vital<span>Track</span></span>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <!-- Mascot SVG in footer -->
+          <svg viewBox="0 0 100 100" width="30" height="30" style="width:30px; height:30px; border-radius:50%;">
+            <defs>
+              <radialGradient id="footHeadGrad" cx="40%" cy="35%" r="60%">
+                <stop offset="0%" stop-color="#C5CFE2"/>
+                <stop offset="60%" stop-color="#8A95AC"/>
+                <stop offset="100%" stop-color="#505970"/>
+              </radialGradient>
+            </defs>
+            <circle cx="50" cy="50" r="48" fill="#1E293B" stroke="rgba(255,255,255,0.15)" stroke-width="2"/>
+            <ellipse cx="50" cy="46" rx="30" ry="32" fill="url(#footHeadGrad)"/>
+            <circle cx="38" cy="42" r="9" fill="#FB923C"/>
+            <circle cx="38" cy="42" r="6" fill="#EA580C"/>
+            <circle cx="38" cy="42" r="3.5" fill="#141416"/>
+            <circle cx="36.5" cy="40.5" r="1.2" fill="#FFFFFF"/>
+            <circle cx="62" cy="42" r="9" fill="#FB923C"/>
+            <circle cx="62" cy="42" r="6" fill="#EA580C"/>
+            <circle cx="62" cy="42" r="3.5" fill="#141416"/>
+            <circle cx="60.5" cy="40.5" r="1.2" fill="#FFFFFF"/>
+            <ellipse cx="50" cy="53" rx="7" ry="4" fill="#F5F2EB"/>
+            <path d="M 44 55 Q 50 67 56 55 Z" fill="#353942"/>
+          </svg>
+          <span class="brand-text">Vital<span>Track</span></span>
+        </div>
         <p>L'intelligence artificielle dédiée à la santé vitaliste, à la bio-électricité et à la régénération.</p>
       </div>
 

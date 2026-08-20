@@ -9,8 +9,35 @@ const PUBLIC_DIR = path.resolve(__dirname, '../web-app/public/screenshots');
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 });
 
+// Exact Real Mobile Device Specifications
+const IPHONE_16_DEVICE = {
+  name: 'iPhone 16 / 15 Pro',
+  userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1',
+  viewport: {
+    width: 393,
+    height: 852,
+    deviceScaleFactor: 3,
+    isMobile: true,
+    hasTouch: true,
+    isLandscape: false
+  }
+};
+
+const PIXEL_9_DEVICE = {
+  name: 'Google Pixel 9 / 8 Pro',
+  userAgent: 'Mozilla/5.0 (Linux; Android 14; Pixel 9 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Mobile Safari/537.36',
+  viewport: {
+    width: 412,
+    height: 915,
+    deviceScaleFactor: 2.625,
+    isMobile: true,
+    hasTouch: true,
+    isLandscape: false
+  }
+};
+
 (async () => {
-  console.log('🚀 Démarrage de la capture vitrine 100% épurée (Zéro notification / Zéro toast)...');
+  console.log('🚀 Démarrage de la capture vitrine avec vraies dimensions iPhone 16 & Google Pixel 9...');
   const browser = await puppeteer.launch({
     executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
     headless: true,
@@ -26,10 +53,9 @@ const PUBLIC_DIR = path.resolve(__dirname, '../web-app/public/screenshots');
   await page.goto('http://localhost:5173', { waitUntil: 'networkidle0' });
 
   // ═════════════════════════════════════════════════════════════════════════
-  // 1. NEUTER ALL TOASTS, NOTIFICATIONS, MASCOT NUDGES & INJECT CSS
+  // 1. NEUTER ALL NOTIFICATIONS / TOASTS & INJECT HEALTH STATE
   // ═════════════════════════════════════════════════════════════════════════
   await page.evaluate(() => {
-    // Disable all notification mechanisms
     window.showToast = () => {};
     window.showMascotNotification = () => {};
     if (window.mascotNudges) {
@@ -38,7 +64,6 @@ const PUBLIC_DIR = path.resolve(__dirname, '../web-app/public/screenshots');
       window.mascotNudges.show = () => {};
     }
 
-    // Permanent CSS kill-switch for any toast or popup
     const style = document.createElement('style');
     style.id = 'kill-all-notifications-style';
     style.innerHTML = `
@@ -58,7 +83,6 @@ const PUBLIC_DIR = path.resolve(__dirname, '../web-app/public/screenshots');
     const now = Date.now();
     const fastingStart = now - (14 * 3600 * 1000 + 32 * 60 * 1000); // 14h 32m
 
-    // Fasting State
     window.fastingState = {
       active: true,
       startTime: fastingStart,
@@ -72,7 +96,6 @@ const PUBLIC_DIR = path.resolve(__dirname, '../web-app/public/screenshots');
       type: 'intermittent'
     });
 
-    // Today Logged Meals (High vitality, electric, dissolvant, alkaline)
     const sampleMeals = [
       {
         id: 'meal_1',
@@ -105,30 +128,24 @@ const PUBLIC_DIR = path.resolve(__dirname, '../web-app/public/screenshots');
     ];
     window.store.set('meals', sampleMeals);
 
-    // Fasting History
     window.store.set('fasting-history', [
       { id: 'f1', type: '16:8', duration: 16 * 60, startTime: now - 86400000, elapsed: 16 * 3600000, completed: true },
       { id: 'f2', type: '18:6', duration: 18 * 60, startTime: now - 2 * 86400000, elapsed: 18 * 3600000, completed: true },
       { id: 'f3', type: '20:4', duration: 20 * 60, startTime: now - 3 * 86400000, elapsed: 20 * 3600000, completed: true },
-      { id: 'f4', type: '16:8', duration: 16 * 60, startTime: now - 4 * 86400000, elapsed: 16 * 3600000, completed: true },
-      { id: 'f5', type: '24h', duration: 24 * 60, startTime: now - 5 * 86400000, elapsed: 24 * 3600000, completed: true }
+      { id: 'f4', type: '16:8', duration: 16 * 60, startTime: now - 4 * 86400000, elapsed: 16 * 3600000, completed: true }
     ]);
 
-    // Breathing History
     window.store.set('breathing-history', [
       { id: 'b1', type: 'wim-hof', rounds: 3, retentionMax: 145, timestamp: now - 3600000 },
       { id: 'b2', type: 'box', duration: 10, timestamp: now - 7200000 },
-      { id: 'b3', type: 'coherence', duration: 15, timestamp: now - 2 * 86400000 },
-      { id: 'b4', type: 'wim-hof', rounds: 4, retentionMax: 180, timestamp: now - 3 * 86400000 }
+      { id: 'b3', type: 'coherence', duration: 15, timestamp: now - 2 * 86400000 }
     ]);
 
-    // Favorites
     window.store.set('favorites', [
       'Chanca Piedra', 'Pau d\'Arco', 'Chaga boréal', 'Bleuets sauvages',
       'Pourpier sauvage', 'Sea Moss', 'Espinheira Santa', 'Ortie sauvage'
     ]);
 
-    // 7-Day Diet Plan for Calendar Cockpit
     const planReq = { protocol: 'personalized', numDays: 7, objective: 'Détox Hivernale & Muqueuses' };
     if (window.applyDietPlanRequest) window.applyDietPlanRequest(planReq, 'replace');
 
@@ -141,9 +158,9 @@ const PUBLIC_DIR = path.resolve(__dirname, '../web-app/public/screenshots');
     }
   });
 
-  // Helper for taking pristine screenshots
-  async function take(name, width, height, isMobile = false) {
-    await page.setViewport({ width, height, deviceScaleFactor: 2, isMobile, hasTouch: isMobile });
+  async function take(name, viewportConfig, userAgent = null) {
+    if (userAgent) await page.setUserAgent(userAgent);
+    await page.setViewport(viewportConfig);
     await page.evaluate(() => {
       window.showToast = () => {};
       window.showMascotNotification = () => {};
@@ -156,7 +173,6 @@ const PUBLIC_DIR = path.resolve(__dirname, '../web-app/public/screenshots');
     });
     await new Promise(r => setTimeout(r, 600));
     
-    // Purge again immediately before screenshot
     await page.evaluate(() => {
       document.querySelectorAll(`
         #toastContainer, .toast-container, .toast, .vital-toast, 
@@ -170,8 +186,10 @@ const PUBLIC_DIR = path.resolve(__dirname, '../web-app/public/screenshots');
     const destPublic = path.join(PUBLIC_DIR, name);
     await page.screenshot({ path: destDocs });
     fs.copyFileSync(destDocs, destPublic);
-    console.log(`📸 Capturé net sans notification : ${name}`);
+    console.log(`📸 Capturé fidèle (${viewportConfig.width}x${viewportConfig.height}) : ${name}`);
   }
+
+  const DESKTOP_VIEWPORT = { width: 1440, height: 920, deviceScaleFactor: 2 };
 
   // ═════════════════════════════════════════════════════════════════════════
   // DESKTOP CAPTURES (1440x920)
@@ -185,7 +203,7 @@ const PUBLIC_DIR = path.resolve(__dirname, '../web-app/public/screenshots');
     if (window.showPage) window.showPage('dashboard');
     if (window.renderDashboard) window.renderDashboard();
   });
-  await take('desktop_dashboard_dark.png', 1440, 920);
+  await take('desktop_dashboard_dark.png', DESKTOP_VIEWPORT);
 
   // 2. Desktop Dashboard - Light Theme
   await page.evaluate(() => {
@@ -195,9 +213,8 @@ const PUBLIC_DIR = path.resolve(__dirname, '../web-app/public/screenshots');
     if (window.showPage) window.showPage('dashboard');
     if (window.renderDashboard) window.renderDashboard();
   });
-  await take('desktop_dashboard_light.png', 1440, 920);
+  await take('desktop_dashboard_light.png', DESKTOP_VIEWPORT);
 
-  // Switch back to Dark for the rest
   await page.evaluate(() => {
     document.documentElement.setAttribute('data-theme', 'dark');
     document.body.classList.add('dark-theme');
@@ -210,7 +227,7 @@ const PUBLIC_DIR = path.resolve(__dirname, '../web-app/public/screenshots');
     if (window.renderDay) window.renderDay();
     if (window.renderStrip) window.renderStrip();
   });
-  await take('desktop_calendar_cockpit.png', 1440, 920);
+  await take('desktop_calendar_cockpit.png', DESKTOP_VIEWPORT);
 
   // 4. Desktop AI Chat with Rich Vitalist Protocol & Action Plan Card
   await page.evaluate(() => {
@@ -225,7 +242,7 @@ const PUBLIC_DIR = path.resolve(__dirname, '../web-app/public/screenshots');
       window.addMessage(sampleAnswer, false, 'gemini-3.7-flash', null, 1);
     }
   });
-  await take('desktop_ai_chat_actions.png', 1440, 920);
+  await take('desktop_ai_chat_actions.png', DESKTOP_VIEWPORT);
 
   // 5. Desktop Food Scanner Diagnostic
   await page.evaluate(() => {
@@ -264,16 +281,16 @@ Cet assortiment cru et vivant présente une densité photonique et enzymatique e
       if (resBox) resBox.style.display = 'block';
     }
   });
-  await take('desktop_scanner_analysis.png', 1440, 920);
+  await take('desktop_scanner_analysis.png', DESKTOP_VIEWPORT);
 
-  // 6. Desktop Breathing Studio (Wim Hof / Box Breathing)
+  // 6. Desktop Breathing Studio
   await page.evaluate(() => {
     if (window.showPage) window.showPage('breathing');
     if (window.renderBreathingHistory) window.renderBreathingHistory();
   });
-  await take('desktop_breathing_studio.png', 1440, 920);
+  await take('desktop_breathing_studio.png', DESKTOP_VIEWPORT);
 
-  // 7. Desktop Media Library (Masterclasses Vidéos & Doublage Français)
+  // 7. Desktop Media Library
   await page.evaluate(() => {
     if (window.showPage) window.showPage('resources');
     const filterBtns = document.querySelectorAll('.res-filter-btn');
@@ -283,20 +300,21 @@ Cet assortiment cru et vivant présente une densité photonique et enzymatique e
       }
     });
   });
-  await take('desktop_media_player.png', 1440, 920);
+  await take('desktop_media_player.png', DESKTOP_VIEWPORT);
 
-  // 8. Desktop Privacy & RGPD Center (Zero-Knowledge, Portabilité, Droit à l'oubli)
+  // 8. Desktop Privacy & RGPD Center
   await page.evaluate(() => {
     if (window.showPage) window.showPage('modes');
     const secTab = document.querySelector('.settings-tab-btn[onclick*="security"]');
     if (secTab) secTab.click();
     else if (window.switchSettingsTab) window.switchSettingsTab('security');
   });
-  await take('desktop_privacy_gdpr.png', 1440, 920);
+  await take('desktop_privacy_gdpr.png', DESKTOP_VIEWPORT);
 
   // ═════════════════════════════════════════════════════════════════════════
-  // MOBILE CAPTURES (390x844 - iPhone / Android Viewport)
+  // MOBILE IPHONE 16 / 15 PRO (393 x 852 @3x)
   // ═════════════════════════════════════════════════════════════════════════
+  console.log('\n📱 Capture de la suite mobile iPhone 16 / 15 Pro (393 x 852 @3x)...');
 
   // 9. Mobile Dashboard - Dark Theme
   await page.evaluate(() => {
@@ -306,7 +324,7 @@ Cet assortiment cru et vivant présente une densité photonique et enzymatique e
     if (window.showPage) window.showPage('dashboard');
     if (window.renderDashboard) window.renderDashboard();
   });
-  await take('mobile_dashboard_dark.png', 390, 844, true);
+  await take('mobile_dashboard_dark.png', IPHONE_16_DEVICE.viewport, IPHONE_16_DEVICE.userAgent);
 
   // 10. Mobile Dashboard - Light Theme
   await page.evaluate(() => {
@@ -316,7 +334,7 @@ Cet assortiment cru et vivant présente une densité photonique et enzymatique e
     if (window.showPage) window.showPage('dashboard');
     if (window.renderDashboard) window.renderDashboard();
   });
-  await take('mobile_dashboard_light.png', 390, 844, true);
+  await take('mobile_dashboard_light.png', IPHONE_16_DEVICE.viewport, IPHONE_16_DEVICE.userAgent);
 
   // Back to dark
   await page.evaluate(() => {
@@ -325,7 +343,7 @@ Cet assortiment cru et vivant présente une densité photonique et enzymatique e
     document.body.classList.remove('light-theme');
   });
 
-  // 11. Mobile AI Chat with Live Voice Streaming HUD & Contextual Plan
+  // 11. Mobile AI Chat with Live Voice Streaming HUD
   await page.evaluate(() => {
     if (window.showPage) window.showPage('chat');
     const hud = document.getElementById('voiceStreamingHUD');
@@ -333,9 +351,8 @@ Cet assortiment cru et vivant présente une densité photonique et enzymatique e
     const input = document.getElementById('chatInput');
     if (input) input.value = "Comment adapter ce protocole si je dois voyager ?";
   });
-  await take('mobile_chat_voice_live.png', 390, 844, true);
+  await take('mobile_chat_voice_live.png', IPHONE_16_DEVICE.viewport, IPHONE_16_DEVICE.userAgent);
 
-  // Stop voice HUD
   await page.evaluate(() => {
     const hud = document.getElementById('voiceStreamingHUD');
     if (hud) hud.classList.remove('active');
@@ -372,15 +389,15 @@ Densité enzymatique et photonique maximale.
       if (resBox) resBox.style.display = 'block';
     }
   });
-  await take('mobile_scanner_analysis.png', 390, 844, true);
+  await take('mobile_scanner_analysis.png', IPHONE_16_DEVICE.viewport, IPHONE_16_DEVICE.userAgent);
 
-  // 13. Mobile Calendar Cockpit with Progress Badges & Tactile Validation
+  // 13. Mobile Calendar Cockpit
   await page.evaluate(() => {
     if (window.showPage) window.showPage('calendar');
     if (window.renderDay) window.renderDay();
     if (window.renderStrip) window.renderStrip();
   });
-  await take('mobile_calendar_cockpit.png', 390, 844, true);
+  await take('mobile_calendar_cockpit.png', IPHONE_16_DEVICE.viewport, IPHONE_16_DEVICE.userAgent);
 
   // 14. Mobile Fasting Tracker (Autophagy Stage & Ring)
   await page.evaluate(() => {
@@ -398,20 +415,20 @@ Densité enzymatique et photonique maximale.
       statusEl.classList.add('active');
     }
   });
-  await take('mobile_fasting_timer.png', 390, 844, true);
+  await take('mobile_fasting_timer.png', IPHONE_16_DEVICE.viewport, IPHONE_16_DEVICE.userAgent);
 
   // 15. Mobile Breathing Studio
   await page.evaluate(() => {
     if (window.showPage) window.showPage('breathing');
   });
-  await take('mobile_breathing_wimhof.png', 390, 844, true);
+  await take('mobile_breathing_wimhof.png', IPHONE_16_DEVICE.viewport, IPHONE_16_DEVICE.userAgent);
 
   // 16. Mobile Pharmacopoeia / Plants Search
   await page.evaluate(() => {
     if (window.showPage) window.showPage('materia-medica');
     else if (window.showPage) window.showPage('search');
   });
-  await take('mobile_pharmacopeia_plants.png', 390, 844, true);
+  await take('mobile_pharmacopeia_plants.png', IPHONE_16_DEVICE.viewport, IPHONE_16_DEVICE.userAgent);
 
   // 17. Mobile Privacy Vault
   await page.evaluate(() => {
@@ -420,8 +437,31 @@ Densité enzymatique et photonique maximale.
     if (secTab) secTab.click();
     else if (window.switchSettingsTab) window.switchSettingsTab('security');
   });
-  await take('mobile_privacy_vault.png', 390, 844, true);
+  await take('mobile_privacy_vault.png', IPHONE_16_DEVICE.viewport, IPHONE_16_DEVICE.userAgent);
+
+  // ═════════════════════════════════════════════════════════════════════════
+  // ANDROID GOOGLE PIXEL 9 / 8 PRO (412 x 915 @2.625x)
+  // ═════════════════════════════════════════════════════════════════════════
+  console.log('\n🤖 Capture supplémentaire Google Pixel 9 / 8 Pro (412 x 915)...');
+  await page.evaluate(() => {
+    if (window.showPage) window.showPage('dashboard');
+    if (window.renderDashboard) window.renderDashboard();
+  });
+  await take('pixel9_dashboard_dark.png', PIXEL_9_DEVICE.viewport, PIXEL_9_DEVICE.userAgent);
+
+  await page.evaluate(() => {
+    if (window.showPage) window.showPage('calendar');
+    if (window.renderDay) window.renderDay();
+    if (window.renderStrip) window.renderStrip();
+  });
+  await take('pixel9_calendar_cockpit.png', PIXEL_9_DEVICE.viewport, PIXEL_9_DEVICE.userAgent);
+
+  await page.evaluate(() => {
+    if (window.showPage) window.showPage('fasting');
+    if (window.updateFastingUI) window.updateFastingUI();
+  });
+  await take('pixel9_fasting_timer.png', PIXEL_9_DEVICE.viewport, PIXEL_9_DEVICE.userAgent);
 
   await browser.close();
-  console.log('🎉 Toutes les 17 captures vitrines ont été générées SANS AUCUNE notification !');
+  console.log('🎉 Toutes les captures Desktop, iPhone 16 et Pixel 9 sont générées fidèlement !');
 })();
