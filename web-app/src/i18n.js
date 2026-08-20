@@ -8,13 +8,13 @@ export const SUPPORTED_LANGS = ['fr', 'fr-CA', 'en', 'es'];
 
 export const LANG_CONFIG = {
   fr: { code: 'fr', name: 'Français', flag: '🇫🇷', short: 'FR' },
-  'fr-CA': { code: 'fr-CA', name: 'Français (Canada)', flag: '🍁', short: 'FR-CA' },
+  'fr-CA': { code: 'fr-CA', name: 'Français (Québec)', flag: '⚜️', short: 'FR-CA' },
   en: { code: 'en', name: 'English', flag: '🇬🇧', short: 'EN' },
   es: { code: 'es', name: 'Español', flag: '🇪🇸', short: 'ES' }
 };
 
 let currentLang = localStorage.getItem(STORAGE_KEY) || 'fr';
-if (!SUPPORTED_LANGS.includes(currentLang) || currentLang === 'fr-CA') {
+if (!SUPPORTED_LANGS.includes(currentLang)) {
   currentLang = 'fr';
   localStorage.setItem(STORAGE_KEY, 'fr');
 }
@@ -312,6 +312,7 @@ export const TRANSLATIONS = {
     },
     auth: {
       signInWithGoogle: 'Se connecter avec Google',
+      signInShort: 'Connexion',
       signOut: 'Se déconnecter',
       guestBadge: 'Invité (Local)',
       accountTitle: 'Espace Privé & Sécurisé',
@@ -366,13 +367,13 @@ export const TRANSLATIONS = {
       more: 'Plus'
     },
     header: {
-      title: 'VitalTrack — Santé Cellulaire & Flore Boréale 🍁',
+      title: 'VitalTrack — Santé Cellulaire & Flore Boréale ⚜️',
       searchPlaceholder: 'Chercher un aliment, une plante boréale...',
       langToggleTitle: 'Changer de langue',
       themeToggleTitle: 'Basculer le mode sombre/clair'
     },
     dashboard: {
-      greeting: 'Bonjour',
+      greeting: 'Bon matin',
       scoreTitle: 'Score de Vitalité Biologique',
       scoreSub: 'Équilibre PRAL, hydratation boréale et élimination lymphatique',
       circadianTitle: 'Horloge Circadienne & Rythme Boréal',
@@ -510,6 +511,7 @@ export const TRANSLATIONS = {
     },
     auth: {
       signInWithGoogle: 'Se connecter avec Google',
+      signInShort: 'Connexion',
       signOut: 'Se déconnecter',
       guestBadge: 'Invité (Local)',
       accountTitle: 'Espace Privé & Sécurisé',
@@ -539,7 +541,7 @@ export const TRANSLATIONS = {
       loading: 'Chargement...',
       success: 'Succès',
       error: 'Erreur',
-      langName: 'Français (Canada) 🍁'
+      langName: 'Français (Québec) ⚜️'
     }
   },
 
@@ -708,7 +710,8 @@ export const TRANSLATIONS = {
     },
     auth: {
       signInWithGoogle: 'Sign in with Google',
-      signOut: 'Sign Out',
+      signInShort: 'Sign in',
+      signOut: 'Sign out',
       guestBadge: 'Guest (Local)',
       accountTitle: 'Private & Secure Workspace',
       welcomeBack: 'Welcome back, {name}!',
@@ -903,6 +906,7 @@ export const TRANSLATIONS = {
     },
     auth: {
       signInWithGoogle: 'Iniciar sesión con Google',
+      signInShort: 'Acceder',
       signOut: 'Cerrar sesión',
       guestBadge: 'Invitado (Local)',
       accountTitle: 'Espacio Privado y Seguro',

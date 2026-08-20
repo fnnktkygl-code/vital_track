@@ -748,7 +748,7 @@ function updateAuthUI(user) {
       container.innerHTML = `
         <button class="google-auth-btn ${isCompact ? 'compact' : ''}" onclick="window.openGoogleAuthModal()" title="${t('auth.signInWithGoogle', {}, 'Se connecter avec Google')}">
           <svg class="google-icon-svg" viewBox="0 0 24 24" width="${isCompact ? '15' : '16'}" height="${isCompact ? '15' : '16'}"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
-          <span class="${isCompact ? 'auth-btn-label-mobile' : 'auth-btn-label'}" data-i18n="auth.signInWithGoogle">${isCompact ? 'Connexion' : t('auth.signInWithGoogle', {}, 'Connexion Google')}</span>
+          <span class="${isCompact ? 'auth-btn-label-mobile' : 'auth-btn-label'}" data-i18n="${isCompact ? 'auth.signInShort' : 'auth.signInWithGoogle'}">${isCompact ? (window.vitalTrackI18n?.t('auth.signInShort') || 'Connexion') : (window.vitalTrackI18n?.t('auth.signInWithGoogle') || 'Connexion Google')}</span>
         </button>
       `;
     });
@@ -1367,7 +1367,7 @@ function loadProfile() {
   if (document.getElementById('profileTargetWeight')) document.getElementById('profileTargetWeight').value = p.targetWeight || '';
   if (document.getElementById('profileAge')) document.getElementById('profileAge').value = p.age || '';
   if (document.getElementById('profileActivity')) document.getElementById('profileActivity').value = p.activityLevel || 'moderate';
-  if (document.getElementById('profileCountry')) document.getElementById('profileCountry').value = p.country || 'Canada 🍁';
+  if (document.getElementById('profileCountry')) document.getElementById('profileCountry').value = p.country || 'Québec ⚜️';
   if (document.getElementById('profileCity')) document.getElementById('profileCity').value = p.city || 'Montréal';
   if (document.getElementById('profileBioregion')) document.getElementById('profileBioregion').value = p.bioregion || 'boreal';
   if (document.getElementById('profileRestrictions')) document.getElementById('profileRestrictions').value = p.restrictions || '';
@@ -1421,7 +1421,7 @@ function updateLiveAiPreview() {
   const transEl = document.getElementById('profileTransitionLevel');
   const transLevel = transEl ? transEl.options?.[transEl.selectedIndex]?.text : 'Intermédiaire';
   const city = document.getElementById('profileCity')?.value?.trim() || 'Montréal';
-  const country = document.getElementById('profileCountry')?.value?.trim() || 'Canada 🍁';
+  const country = document.getElementById('profileCountry')?.value?.trim() || 'Québec ⚜️';
   const bioregionEl = document.getElementById('profileBioregion');
   const bioregion = bioregionEl ? bioregionEl.options?.[bioregionEl.selectedIndex]?.text : 'Boréale';
 
@@ -1474,7 +1474,7 @@ function saveProfile() {
     age: document.getElementById('profileAge') ? document.getElementById('profileAge').value.trim() : '',
     activityLevel: document.getElementById('profileActivity') ? document.getElementById('profileActivity').value : 'moderate',
     targetOrgans: targetOrgans.length > 0 ? targetOrgans : ['reins', 'lymphe'],
-    country: document.getElementById('profileCountry') ? document.getElementById('profileCountry').value.trim() : 'Canada 🍁',
+    country: document.getElementById('profileCountry') ? document.getElementById('profileCountry').value.trim() : 'Québec ⚜️',
     city: document.getElementById('profileCity') ? document.getElementById('profileCity').value.trim() : 'Montréal',
     bioregion: document.getElementById('profileBioregion') ? document.getElementById('profileBioregion').value : 'boreal',
     restrictions: document.getElementById('profileRestrictions') ? document.getElementById('profileRestrictions').value.trim() : '',
@@ -1548,7 +1548,9 @@ function renderDashboard() {
   const greetEl = document.getElementById('greetName');
   if (greetEl) {
     const p = getUserProfile();
-    greetEl.textContent = p.name ? `${t('dashboard.greeting')} ${p.name} ! 👋` : `${t('dashboard.greeting')} ! 👋`;
+    const isQc = (window.vitalTrackI18n?.getLanguage() === 'fr-CA') || (p.country && (p.country.includes('Québec') || p.country.includes('Quebec') || p.country.includes('Canada') || p.country.includes('⚜️')));
+    const greetWord = isQc ? 'Bon matin' : (window.vitalTrackI18n?.t('dashboard.greeting') || 'Bonjour');
+    greetEl.textContent = p.name ? `${greetWord} ${p.name} ! 👋` : `${greetWord} ! 👋`;
   }
 
   // Date
@@ -3079,42 +3081,42 @@ const ALL_NEURAL_VOICES = [
   {
     id: 'fr-CA-SylvieNeural',
     name: 'Sylvie (Québec)',
-    region: '🍁 Canada / Québec',
+    region: '⚜️ Québec / Canada',
     gender: 'female',
-    flag: '🍁',
+    flag: '⚜️',
     badge: 'Recommandée',
     desc: 'Voix féminine québécoise chaleureuse, posée et ultra-naturelle.',
-    sample: 'Bonjour ! Je suis Sylvie, votre coach vitaliste VitalTrack pour vous accompagner chaque jour.'
+    sample: 'Bon matin ! Je suis Sylvie, votre coach vitaliste VitalTrack pour vous accompagner chaque jour.'
   },
   {
     id: 'fr-CA-AntoineNeural',
     name: 'Antoine (Québec)',
-    region: '🍁 Canada / Québec',
+    region: '⚜️ Québec / Canada',
     gender: 'male',
-    flag: '🍁',
+    flag: '⚜️',
     badge: 'Dynamique',
     desc: 'Voix masculine québécoise énergique, articulée et motivante.',
-    sample: 'Bonjour ! Je suis Antoine. Prêt à dynamiser votre énergie vitale et votre régénération ?'
+    sample: 'Bon matin ! Je suis Antoine. Prêt à dynamiser votre énergie vitale et votre régénération ?'
   },
   {
     id: 'fr-CA-JeanNeural',
     name: 'Jean (Québec)',
-    region: '🍁 Canada / Québec',
+    region: '⚜️ Québec / Canada',
     gender: 'male',
-    flag: '🍁',
+    flag: '⚜️',
     badge: 'Posée',
     desc: 'Voix masculine québécoise sage, bienveillante et rassurante.',
-    sample: 'Bonjour, ici Jean. Prenons le temps d’écouter votre corps et de soutenir vos émonctoires.'
+    sample: 'Bon matin, ici Jean. Prenons le temps d’écouter votre corps et de soutenir vos émonctoires.'
   },
   {
     id: 'fr-CA-ThierryNeural',
     name: 'Thierry (Québec)',
-    region: '🍁 Canada / Québec',
+    region: '⚜️ Québec / Canada',
     gender: 'male',
-    flag: '🍁',
+    flag: '⚜️',
     badge: 'Moderne',
     desc: 'Voix masculine québécoise jeune, claire et percutante.',
-    sample: 'Salut ! C’est Thierry. Regardons ensemble les meilleurs aliments vivants pour votre journée.'
+    sample: 'Bon matin ! C’est Thierry. Regardons ensemble les meilleurs aliments vivants pour votre journée.'
   },
   {
     id: 'fr-FR-DeniseNeural',

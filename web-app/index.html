@@ -526,7 +526,7 @@
             </div>
           </div>
           <div class="chat-voice-picker-btn" onclick="openVoiceSelectorModal()" id="chatVoiceSelectorBtn" data-tooltip="Choisir la voix du Coach (14 voix Neural Studio)">
-            <span id="chatVoiceGenderIcon" style="font-size:1.05rem;">🍁</span>
+            <span id="chatVoiceGenderIcon" style="font-size:1.05rem;">⚜️</span>
             <span id="chatActiveVoiceLabel" style="font-weight:700;">Sylvie (Québec)</span>
             <i class="ri-equalizer-line" style="color:#34d399; font-size:0.85rem; margin-left:2px;"></i>
           </div>
@@ -1654,7 +1654,7 @@
               </label>
               <select id="profileLanguage" class="form-input-v2 custom-vital-select" onchange="window.vitalTrackI18n?.setLanguage(this.value); updateLiveAiPreview();">
                 <option value="fr">🇫🇷 Français (Standard / International)</option>
-                <option value="fr-CA">🍁 Français Canadien (Québec / Boréal)</option>
+                <option value="fr-CA">⚜️ Français (Québec / Boréal)</option>
                 <option value="en">🇬🇧 English (US / Global)</option>
                 <option value="es">🇪🇸 Español (España / América Latina)</option>
               </select>
@@ -1668,11 +1668,11 @@
               </label>
               <div style="display:flex; gap:8px;">
                 <select id="profileVoice" class="form-input-v2 custom-vital-select" style="flex:1;" onchange="setCustomVoice(this.value)">
-                  <optgroup label="🍁 Canada / Québec (Français Boréal)">
-                    <option value="fr-CA-SylvieNeural" selected>🍁 Sylvie (Québec) — Femme Chaleureuse</option>
-                    <option value="fr-CA-AntoineNeural">🍁 Antoine (Québec) — Homme Dynamique</option>
-                    <option value="fr-CA-JeanNeural">🍁 Jean (Québec) — Homme Posé &amp; Sage</option>
-                    <option value="fr-CA-ThierryNeural">🍁 Thierry (Québec) — Homme Jeune</option>
+                  <optgroup label="⚜️ Québec / Canada (Français Boréal)">
+                    <option value="fr-CA-SylvieNeural" selected>⚜️ Sylvie (Québec) — Femme Chaleureuse</option>
+                    <option value="fr-CA-AntoineNeural">⚜️ Antoine (Québec) — Homme Dynamique</option>
+                    <option value="fr-CA-JeanNeural">⚜️ Jean (Québec) — Homme Posé &amp; Sage</option>
+                    <option value="fr-CA-ThierryNeural">⚜️ Thierry (Québec) — Homme Jeune</option>
                   </optgroup>
                   <optgroup label="🇫🇷 France (Français Métropolitain)">
                     <option value="fr-FR-DeniseNeural">🇫🇷 Denise (France) — Femme Douce Studio</option>
@@ -1849,7 +1849,7 @@
               <label class="form-label" for="profileCountry">
                 <span class="form-label-left"><i class="ri-map-pin-2-line"></i> Pays</span>
               </label>
-              <input type="text" id="profileCountry" placeholder="France 🇫🇷, Canada 🍁..." class="form-input-v2" oninput="updateLiveAiPreview()">
+              <input type="text" id="profileCountry" placeholder="France 🇫🇷, Québec ⚜️..." class="form-input-v2" oninput="updateLiveAiPreview()">
             </div>
             <div class="form-group">
               <label class="form-label" for="profileCity">
