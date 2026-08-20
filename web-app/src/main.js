@@ -974,17 +974,17 @@ function renderUserProfileModal() {
 
   content.innerHTML = `
     <!-- Header Profil Card -->
-    <div style="display:flex; align-items:center; gap:18px; padding-bottom:20px; border-bottom:1px solid rgba(255,255,255,0.08); margin-bottom:20px; flex-wrap:wrap;">
+    <div style="display:flex; align-items:center; gap:18px; padding-bottom:20px; border-bottom:1px solid var(--border); margin-bottom:20px; flex-wrap:wrap;">
       <div style="position:relative;">
-        <img src="${avatarUrl}" alt="${displayName}" style="width:72px; height:72px; border-radius:50%; object-fit:cover; border:2.5px solid var(--accent); box-shadow:0 0 16px rgba(52,211,153,0.3);" />
-        <div style="position:absolute; bottom:-4px; right:-4px; background:#0f172a; border:1px solid var(--accent); border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:800; color:var(--accent);">
+        <img src="${avatarUrl}" alt="${displayName}" style="width:72px; height:72px; border-radius:50%; object-fit:cover; border:2.5px solid var(--accent); box-shadow:0 0 16px var(--accent-glow);" />
+        <div style="position:absolute; bottom:-4px; right:-4px; background:var(--bg); border:1px solid var(--accent); border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:800; color:var(--accent);">
           ${userLevel}
         </div>
       </div>
       <div style="flex:1; min-width:200px;">
         <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
           <h2 style="font-size:1.35rem; font-weight:800; color:var(--text); margin:0;">${displayName}</h2>
-          <span style="background:rgba(52,211,153,0.15); border:1px solid rgba(52,211,153,0.3); color:var(--accent); font-size:0.75rem; font-weight:700; padding:2px 8px; border-radius:20px;">
+          <span style="background:var(--accent-glow); border:1px solid var(--accent); color:var(--accent); font-size:0.75rem; font-weight:700; padding:2px 8px; border-radius:20px;">
             ${levelTitle}
           </span>
         </div>
@@ -995,30 +995,30 @@ function renderUserProfileModal() {
           <span>Niveau ${userLevel}</span>
           <span style="color:var(--accent);">${totalXp} / ${nextLevelXp} XP</span>
         </div>
-        <div style="width:100%; height:7px; background:rgba(255,255,255,0.08); border-radius:10px; overflow:hidden;">
-          <div style="width:${levelProgressPct}%; height:100%; background:linear-gradient(90deg, #34d399, #60a5fa); border-radius:10px; transition:width 0.4s ease;"></div>
+        <div style="width:100%; height:7px; background:var(--surface-2); border:1px solid var(--border); border-radius:10px; overflow:hidden;">
+          <div style="width:${levelProgressPct}%; height:100%; background:linear-gradient(90deg, var(--accent), #60a5fa); border-radius:10px; transition:width 0.4s ease;"></div>
         </div>
       </div>
     </div>
 
     <!-- KPI Summary Grid -->
     <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:12px; margin-bottom:24px;">
-      <div style="background:rgba(255,255,255,0.03); border:1px solid var(--border); padding:12px 14px; border-radius:14px; text-align:center;">
+      <div style="background:var(--surface); border:1px solid var(--border); box-shadow:var(--shadow-sm); padding:12px 14px; border-radius:14px; text-align:center;">
         <div style="font-size:1.2rem; margin-bottom:2px;">🔥</div>
         <div style="font-size:1.1rem; font-weight:800; color:var(--text);">${Math.round(totalFastHours)} h</div>
         <div style="font-size:0.72rem; color:var(--text-dim); font-weight:600;">Autophagie Totale</div>
       </div>
-      <div style="background:rgba(255,255,255,0.03); border:1px solid var(--border); padding:12px 14px; border-radius:14px; text-align:center;">
+      <div style="background:var(--surface); border:1px solid var(--border); box-shadow:var(--shadow-sm); padding:12px 14px; border-radius:14px; text-align:center;">
         <div style="font-size:1.2rem; margin-bottom:2px;">🥗</div>
         <div style="font-size:1.1rem; font-weight:800; color:var(--text);">${livingMealsCount}</div>
         <div style="font-size:0.72rem; color:var(--text-dim); font-weight:600;">Repas Vivants</div>
       </div>
-      <div style="background:rgba(255,255,255,0.03); border:1px solid var(--border); padding:12px 14px; border-radius:14px; text-align:center;">
+      <div style="background:var(--surface); border:1px solid var(--border); box-shadow:var(--shadow-sm); padding:12px 14px; border-radius:14px; text-align:center;">
         <div style="font-size:1.2rem; margin-bottom:2px;">✨</div>
         <div style="font-size:1.1rem; font-weight:800; color:var(--accent);">${avgVitality}/100</div>
         <div style="font-size:0.72rem; color:var(--text-dim); font-weight:600;">Score Vitalité</div>
       </div>
-      <div style="background:rgba(255,255,255,0.03); border:1px solid var(--border); padding:12px 14px; border-radius:14px; text-align:center;">
+      <div style="background:var(--surface); border:1px solid var(--border); box-shadow:var(--shadow-sm); padding:12px 14px; border-radius:14px; text-align:center;">
         <div style="font-size:1.2rem; margin-bottom:2px;">🧘</div>
         <div style="font-size:1.1rem; font-weight:800; color:#60a5fa;">${breathingHistory.length}</div>
         <div style="font-size:0.72rem; color:var(--text-dim); font-weight:600;">Respirations</div>
@@ -1031,21 +1031,21 @@ function renderUserProfileModal() {
         <h3 style="font-size:1.05rem; font-weight:800; color:var(--text); margin:0; display:flex; align-items:center; gap:8px;">
           <i class="ri-medal-fill" style="color:var(--accent);"></i> Badges &amp; Quêtes Vitalistes
         </h3>
-        <span style="font-size:0.78rem; font-weight:700; color:var(--accent); background:rgba(52,211,153,0.1); border:1px solid rgba(52,211,153,0.25); padding:3px 10px; border-radius:20px;">
+        <span style="font-size:0.78rem; font-weight:700; color:var(--accent); background:var(--accent-glow); border:1px solid var(--accent); padding:3px 10px; border-radius:20px;">
           ${unlockedCount} / ${badges.length} Débloqués
         </span>
       </div>
 
       <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:12px;">
         ${badges.map(b => `
-          <div style="display:flex; gap:12px; padding:12px 14px; border-radius:14px; background:${b.unlocked ? 'rgba(52,211,153,0.06)' : 'rgba(255,255,255,0.02)'}; border:1px solid ${b.unlocked ? 'rgba(52,211,153,0.3)' : 'rgba(255,255,255,0.06)'}; position:relative; overflow:hidden;">
+          <div style="display:flex; gap:12px; padding:12px 14px; border-radius:14px; background:${b.unlocked ? 'var(--accent-glow)' : 'var(--surface-2)'}; border:1px solid ${b.unlocked ? 'var(--accent)' : 'var(--border)'}; box-shadow:var(--shadow-sm); position:relative; overflow:hidden;">
             <div style="font-size:1.8rem; flex-shrink:0; line-height:1; filter:${b.unlocked ? 'none' : 'grayscale(1) opacity(0.5)'};">
               ${b.icon}
             </div>
             <div style="flex:1;">
               <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:6px; margin-bottom:3px;">
                 <h4 style="font-size:0.88rem; font-weight:700; color:${b.unlocked ? 'var(--text)' : 'var(--text-dim)'}; margin:0;">${b.title}</h4>
-                <span style="font-size:0.68rem; font-weight:700; padding:2px 6px; border-radius:6px; background:${b.unlocked ? 'rgba(52,211,153,0.2)' : 'rgba(255,255,255,0.06)'}; color:${b.unlocked ? 'var(--accent)' : 'var(--text-dim)'};">
+                <span style="font-size:0.68rem; font-weight:700; padding:2px 6px; border-radius:6px; background:${b.unlocked ? 'var(--accent)' : 'var(--badge-bg)'}; color:${b.unlocked ? '#000' : 'var(--text-dim)'};">
                   ${b.unlocked ? '✨ DÉBLOQUÉ' : '🔒 EN COURS'}
                 </span>
               </div>
@@ -1054,7 +1054,7 @@ function renderUserProfileModal() {
               <!-- Progress Bar -->
               ${!b.unlocked ? `
                 <div style="display:flex; align-items:center; gap:6px;">
-                  <div style="flex:1; height:4px; background:rgba(255,255,255,0.06); border-radius:4px; overflow:hidden;">
+                  <div style="flex:1; height:4px; background:var(--border); border-radius:4px; overflow:hidden;">
                     <div style="width:${Math.min(100, Math.round((b.current / b.target) * 100))}%; height:100%; background:var(--accent); border-radius:4px;"></div>
                   </div>
                   <span style="font-size:0.68rem; font-weight:700; color:var(--text-dim);">${b.current}/${b.target}${b.unit || ''}</span>
@@ -1067,7 +1067,7 @@ function renderUserProfileModal() {
     </div>
 
     <!-- Quick Action Footer -->
-    <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; border-top:1px solid rgba(255,255,255,0.08); padding-top:16px; flex-wrap:wrap;">
+    <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; border-top:1px solid var(--border); padding-top:16px; flex-wrap:wrap;">
       <div style="display:flex; gap:8px;">
         <button type="button" class="btn-secondary" style="font-size:0.82rem; padding:8px 12px; border-radius:10px;" onclick="closeUserProfileModal(null); showPage('modes');">
           <i class="ri-settings-3-line"></i> Paramètres &amp; RGPD
@@ -3394,14 +3394,14 @@ function renderVoiceModalList() {
     voices.forEach(v => {
       const isSelected = v.id === activeId;
       html += `
-        <div class="voice-card ${isSelected ? 'selected' : ''}" style="display:flex; flex-direction:column; justify-content:space-between; background:${isSelected ? 'rgba(52,211,153,0.12)' : 'rgba(255,255,255,0.03)'}; border:1px solid ${isSelected ? '#34d399' : 'rgba(255,255,255,0.08)'}; border-radius:14px; padding:14px; transition:all 0.2s ease;">
+        <div class="voice-card ${isSelected ? 'selected' : ''}" style="display:flex; flex-direction:column; justify-content:space-between; background:${isSelected ? 'var(--accent-glow)' : 'var(--surface-2)'}; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--border)'}; border-radius:14px; padding:14px; transition:all 0.2s ease;">
           <div>
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
               <div style="display:flex; align-items:center; gap:8px;">
                 <span style="font-size:1.3rem;">${v.flag}</span>
-                <span style="font-weight:700; font-size:0.95rem; color:#fff;">${esc(v.name)}</span>
+                <span style="font-weight:700; font-size:0.95rem; color:var(--text);">${esc(v.name)}</span>
               </div>
-              <span style="font-size:0.7rem; font-weight:700; background:${isSelected ? '#34d399' : 'rgba(255,255,255,0.08)'}; color:${isSelected ? '#000' : 'var(--text-dim)'}; padding:2px 8px; border-radius:10px;">
+              <span style="font-size:0.7rem; font-weight:700; background:${isSelected ? 'var(--accent)' : 'var(--badge-bg)'}; color:${isSelected ? '#000' : 'var(--text-dim)'}; padding:2px 8px; border-radius:10px;">
                 ${v.badge || (v.gender === 'female' ? 'Femme' : 'Homme')}
               </span>
             </div>
@@ -3410,10 +3410,10 @@ function renderVoiceModalList() {
             </p>
           </div>
           <div style="display:flex; gap:8px; align-items:center;">
-            <button type="button" class="btn-voice-sample" onclick="testVoiceSample('${v.id}', this)" style="flex:1; padding:8px 12px; border-radius:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); color:#fff; font-size:0.8rem; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:all 0.2s ease;">
+            <button type="button" class="btn-voice-sample" onclick="testVoiceSample('${v.id}', this)" style="flex:1; padding:8px 12px; border-radius:10px; background:var(--surface); border:1px solid var(--border); color:var(--text); font-size:0.8rem; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:all 0.2s ease;">
               <i class="ri-play-circle-line"></i> Écouter
             </button>
-            <button type="button" class="btn-voice-select" onclick="setCustomVoice('${v.id}'); renderVoiceModalList();" style="flex:1.2; padding:8px 14px; border-radius:10px; background:${isSelected ? '#34d399' : 'rgba(52,211,153,0.2)'}; border:1px solid #34d399; color:${isSelected ? '#000' : '#34d399'}; font-size:0.8rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:all 0.2s ease;">
+            <button type="button" class="btn-voice-select" onclick="setCustomVoice('${v.id}'); renderVoiceModalList();" style="flex:1.2; padding:8px 14px; border-radius:10px; background:${isSelected ? 'var(--accent)' : 'var(--accent-glow)'}; border:1px solid var(--accent); color:${isSelected ? '#000' : 'var(--accent)'}; font-size:0.8rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:all 0.2s ease;">
               <i class="${isSelected ? 'ri-check-line' : 'ri-check-double-line'}"></i> ${isSelected ? 'Active ✓' : 'Choisir'}
             </button>
           </div>
@@ -9419,10 +9419,10 @@ function renderResources() {
   let html = `
     <!-- Module Moteur de Recherche Multimédia & Deep Search -->
     <div class="media-search-container">
-      <div class="dash-card glass" style="padding:20px; margin-bottom:20px; border:1px solid rgba(52,211,153,0.3); background:linear-gradient(135deg,rgba(16,185,129,0.06),rgba(15,23,42,0.85));">
+      <div class="dash-card glass" style="padding:20px; margin-bottom:20px; border:1px solid var(--border); background:var(--surface); box-shadow:var(--card-shadow);">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
           <div>
-            <h2 style="font-size:1.15rem; font-weight:800; margin:0; color:#fff; display:flex; align-items:center; gap:8px;">
+            <h2 style="font-size:1.15rem; font-weight:800; margin:0; color:var(--text); display:flex; align-items:center; gap:8px;">
               <span>🔍</span> Recherche Transversale Bilingue & Horodatée
             </h2>
             <p style="font-size:0.8rem; color:var(--text-dim); margin:2px 0 0 0;">Recherchez un mot-clé ou concept dans les 12 ouvrages intégraux (FR & EN) et vidéos</p>

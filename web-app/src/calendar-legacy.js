@@ -636,32 +636,32 @@ window.openSubstituteModal = function(mealId, tagIdx, currentFoodName, currentFo
   overlay.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.65);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:16px;animation:fadeIn 0.2s ease;';
   
   overlay.innerHTML = `
-    <div style="background:var(--surface,#121b27);border:1px solid rgba(52,211,153,0.3);border-radius:24px;padding:24px;max-width:500px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,0.75);color:var(--text,#f3f6f9);position:relative;max-height:90vh;overflow-y:auto;">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:24px;max-width:500px;width:100%;box-shadow:var(--card-shadow);color:var(--text);position:relative;max-height:90vh;overflow-y:auto;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
         <div style="display:flex;align-items:center;gap:10px;">
-          <div style="width:38px;height:38px;border-radius:12px;background:rgba(52,211,153,0.15);color:#34d399;display:grid;place-items:center;font-size:1.2rem;">
+          <div style="width:38px;height:38px;border-radius:12px;background:var(--accent-glow);color:var(--accent);display:grid;place-items:center;font-size:1.2rem;">
             <i class="ri-loop-right-line"></i>
           </div>
           <div>
-            <h3 style="margin:0;font-size:1.15rem;font-weight:800;color:#fff;">Varier / Remplacer l'aliment</h3>
-            <div style="font-size:0.8rem;color:var(--text-dim,#9aa7b8);">${meal.title} · ${meal.dateStr}</div>
+            <h3 style="margin:0;font-size:1.15rem;font-weight:800;color:var(--text);">Varier / Remplacer l'aliment</h3>
+            <div style="font-size:0.8rem;color:var(--text-dim);">${meal.title} · ${meal.dateStr}</div>
           </div>
         </div>
-        <button onclick="document.getElementById('substituteModalOverlay').remove()" style="background:rgba(255,255,255,0.06);border:none;color:var(--text-dim,#9aa7b8);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;"><i class="ri-close-line"></i></button>
+        <button onclick="document.getElementById('substituteModalOverlay').remove()" style="background:var(--surface-hover);border:1px solid var(--border);color:var(--text-dim);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;"><i class="ri-close-line"></i></button>
       </div>
 
       <!-- Current Food Display -->
-      <div style="margin-bottom:16px;padding:10px 14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;display:flex;align-items:center;justify-content:space-between;">
-        <span style="font-size:0.82rem;color:var(--text-dim,#9aa7b8);">Aliment actuel du créneau :</span>
-        <span style="font-weight:700;font-size:0.95rem;color:#34d399;display:inline-flex;align-items:center;gap:6px;">
+      <div style="margin-bottom:16px;padding:10px 14px;background:var(--surface-2);border:1px solid var(--border);border-radius:14px;display:flex;align-items:center;justify-content:space-between;">
+        <span style="font-size:0.82rem;color:var(--text-dim);">Aliment actuel du créneau :</span>
+        <span style="font-weight:700;font-size:0.95rem;color:var(--accent);display:inline-flex;align-items:center;gap:6px;">
           <span>${foodEmoji}</span> <span>${foodName}</span>
         </span>
       </div>
 
       <!-- Suggested Substitutes -->
       <div style="margin-bottom:14px;">
-        <div style="font-size:0.82rem;font-weight:700;color:var(--text-dim,#9aa7b8);margin-bottom:8px;display:flex;align-items:center;gap:6px;">
-          <i class="ri-sparkling-fill" style="color:#34d399"></i> Alternatives vitalistes 1-clic :
+        <div style="font-size:0.82rem;font-weight:700;color:var(--text-dim);margin-bottom:8px;display:flex;align-items:center;gap:6px;">
+          <i class="ri-sparkling-fill" style="color:var(--accent)"></i> Alternatives vitalistes 1-clic :
         </div>
         <div style="display:flex;flex-wrap:wrap;gap:8px;" id="subChipsContainer">
           ${chipsHtml}
@@ -670,26 +670,26 @@ window.openSubstituteModal = function(mealId, tagIdx, currentFoodName, currentFo
 
       <!-- Custom Food Input -->
       <div style="margin-bottom:16px;">
-        <label style="display:block;font-size:0.82rem;font-weight:700;color:var(--text-dim,#9aa7b8);margin-bottom:6px;">Ou saisir un aliment / envie / restes du frigo :</label>
-        <input type="text" id="substituteCustomInput" value="${defaultSelection}" placeholder="Ex: Racine de bardane, Avocat et fenouil, Courge..." style="width:100%;box-sizing:border-box;background:rgba(0,0,0,0.35);border:1px solid rgba(255,255,255,0.15);color:#fff;padding:12px 14px;border-radius:12px;font-size:0.92rem;outline:none;">
+        <label style="display:block;font-size:0.82rem;font-weight:700;color:var(--text-dim);margin-bottom:6px;">Ou saisir un aliment / envie / restes du frigo :</label>
+        <input type="text" id="substituteCustomInput" value="${defaultSelection}" placeholder="Ex: Racine de bardane, Avocat et fenouil, Courge..." style="width:100%;box-sizing:border-box;background:var(--input-bg);border:1px solid var(--input-border);color:var(--input-text);padding:12px 14px;border-radius:12px;font-size:0.92rem;outline:none;">
       </div>
 
       <!-- In-Modal AI Evaluation Box (Dynamically injected) -->
-      <div id="aiSubResultBox" style="display:none; margin-bottom:16px; padding:14px; border-radius:14px; background:rgba(52,211,153,0.08); border:1px solid rgba(52,211,153,0.25);">
+      <div id="aiSubResultBox" style="display:none; margin-bottom:16px; padding:14px; border-radius:14px; background:var(--accent-glow); border:1px solid var(--accent);">
       </div>
 
       <!-- Action Buttons -->
       <div style="display:flex; flex-direction:column; gap:10px;">
         <div style="display:flex; gap:8px;">
-          <button type="button" onclick="window.applySubstitution()" style="flex:1; padding:12px;border-radius:12px;border:none;background:linear-gradient(135deg,#34d399,#059669);color:#000;font-weight:800;font-size:0.9rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;box-shadow:0 4px 15px rgba(52,211,153,0.25);">
+          <button type="button" onclick="window.applySubstitution()" style="flex:1; padding:12px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--accent),#059669);color:#ffffff;font-weight:800;font-size:0.9rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;box-shadow:0 4px 15px var(--accent-glow);">
             <i class="ri-check-line" style="font-size:1.1rem"></i> Valider direct
           </button>
-          <button type="button" id="btnAiAnalyzeSub" onclick="window.analyzeAiSubstitution()" style="flex:1.2; padding:12px;border-radius:12px;border:1px solid rgba(251,191,36,0.5);background:rgba(251,191,36,0.12);color:#fbbf24;font-weight:700;font-size:0.9rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:all 0.2s;">
+          <button type="button" id="btnAiAnalyzeSub" onclick="window.analyzeAiSubstitution()" style="flex:1.2; padding:12px;border-radius:12px;border:1px solid rgba(251,191,36,0.5);background:rgba(251,191,36,0.12);color:#d97706;font-weight:700;font-size:0.9rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:all 0.2s;">
             <i class="ri-sparkling-fill"></i> Analyser avec l'IA
           </button>
         </div>
 
-        <button type="button" onclick="window.askAiAboutSubstitution()" style="padding:8px;border:none;background:transparent;color:var(--text-dim,#9aa7b8);font-size:0.8rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;">
+        <button type="button" onclick="window.askAiAboutSubstitution()" style="padding:8px;border:none;background:transparent;color:var(--text-dim);font-size:0.8rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;">
           <i class="ri-chat-smile-2-line"></i> Discuter de cette recette dans le Chat ➔
         </button>
       </div>
@@ -701,13 +701,13 @@ window.openSubstituteModal = function(mealId, tagIdx, currentFoodName, currentFo
 
 window.selectSubstituteChip = function(btn, foodName, emoji) {
   document.querySelectorAll('#subChipsContainer .sub-chip').forEach(c => {
-    c.style.background = 'rgba(52,211,153,0.08)';
-    c.style.borderColor = 'rgba(52,211,153,0.3)';
+    c.style.background = 'var(--surface-2)';
+    c.style.borderColor = 'var(--border)';
     c.style.color = 'var(--text)';
   });
-  btn.style.background = '#34d399';
-  btn.style.borderColor = '#34d399';
-  btn.style.color = '#000';
+  btn.style.background = 'var(--accent)';
+  btn.style.borderColor = 'var(--accent)';
+  btn.style.color = '#ffffff';
 
   const input = document.getElementById('substituteCustomInput');
   if (input) input.value = foodName;
@@ -767,7 +767,7 @@ window.analyzeAiSubstitution = async function() {
 
   resultBox.style.display = 'block';
   resultBox.innerHTML = `
-    <div style="display:flex; align-items:center; gap:8px; color:#34d399; font-weight:600; font-size:0.85rem;">
+    <div style="display:flex; align-items:center; gap:8px; color:var(--accent); font-weight:600; font-size:0.85rem;">
       <i class="ri-loader-4-line ri-spin" style="font-size:1.1rem;"></i>
       <span>Le Coach Vitaliste analyse la compatibilité de "${targetFood}"...</span>
     </div>
@@ -809,20 +809,20 @@ Reste très concis (3 à 4 phrases au total). Termine par une ligne JSON : {"foo
     }
 
     resultBox.innerHTML = `
-      <div style="font-size:0.82rem; line-height:1.5; color:#e2e8f0; margin-bottom:12px;">
-        <div style="font-weight:700; color:#34d399; margin-bottom:6px; display:flex; align-items:center; gap:6px;">
+      <div style="font-size:0.82rem; line-height:1.5; color:var(--text); margin-bottom:12px;">
+        <div style="font-weight:700; color:var(--accent); margin-bottom:6px; display:flex; align-items:center; gap:6px;">
           <i class="ri-shield-check-line"></i> Avis du Coach Vitaliste :
         </div>
         <div>${cleanExplanation.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>')}</div>
       </div>
-      <button type="button" onclick="window.applyAiAnalyzedSubstitution('${targetFood.replace(/'/g, "\\'")}', '${finalEmoji}')" style="width:100%; padding:10px; border-radius:10px; background:#34d399; color:#000; font-weight:800; font-size:0.88rem; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow:0 4px 12px rgba(52,211,153,0.3);">
+      <button type="button" onclick="window.applyAiAnalyzedSubstitution('${targetFood.replace(/'/g, "\\'")}', '${finalEmoji}')" style="width:100%; padding:10px; border-radius:10px; background:var(--accent); color:#ffffff; font-weight:800; font-size:0.88rem; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; box-shadow:0 4px 12px var(--accent-glow);">
         <i class="ri-check-line"></i> Appliquer "${finalEmoji} ${targetFood}" au calendrier
       </button>
     `;
   } catch (err) {
     console.error('AI analysis error:', err);
     resultBox.innerHTML = `
-      <div style="font-size:0.82rem; color:#f87171;">
+      <div style="font-size:0.82rem; color:var(--danger);">
         ⚠️ Analyse instantanée indisponible. Vous pouvez valider directement le remplacement ci-dessus.
       </div>
     `;
@@ -899,55 +899,55 @@ window.openMealAiSuggestModal = function(mealId) {
   overlay.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.65);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:16px;animation:fadeIn 0.2s ease;';
 
   overlay.innerHTML = `
-    <div style="background:var(--surface,#121b27);border:1px solid rgba(52,211,153,0.35);border-radius:24px;padding:24px;max-width:520px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,0.75);color:var(--text,#f3f6f9);position:relative;max-height:90vh;overflow-y:auto;">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:24px;max-width:520px;width:100%;box-shadow:var(--card-shadow);color:var(--text);position:relative;max-height:90vh;overflow-y:auto;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
         <div style="display:flex;align-items:center;gap:10px;">
-          <div style="width:38px;height:38px;border-radius:12px;background:rgba(52,211,153,0.15);color:#34d399;display:grid;place-items:center;font-size:1.2rem;">
+          <div style="width:38px;height:38px;border-radius:12px;background:var(--accent-glow);color:var(--accent);display:grid;place-items:center;font-size:1.2rem;">
             <i class="ri-sparkling-fill"></i>
           </div>
           <div>
-            <h3 style="margin:0;font-size:1.15rem;font-weight:800;color:#fff;">Suggérer un repas avec l'IA</h3>
-            <div style="font-size:0.8rem;color:var(--text-dim,#9aa7b8);">${meal.title} · ${meal.dateStr}</div>
+            <h3 style="margin:0;font-size:1.15rem;font-weight:800;color:var(--text);">Suggérer un repas avec l'IA</h3>
+            <div style="font-size:0.8rem;color:var(--text-dim);">${meal.title} · ${meal.dateStr}</div>
           </div>
         </div>
-        <button onclick="document.getElementById('mealAiModalOverlay').remove()" style="background:rgba(255,255,255,0.06);border:none;color:var(--text-dim,#9aa7b8);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;"><i class="ri-close-line"></i></button>
+        <button onclick="document.getElementById('mealAiModalOverlay').remove()" style="background:var(--surface-hover);border:1px solid var(--border);color:var(--text-dim);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;"><i class="ri-close-line"></i></button>
       </div>
 
       <!-- Current Meal Summary -->
-      <div style="margin-bottom:14px;padding:10px 14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;">
-        <span style="font-size:0.78rem;color:var(--text-dim,#9aa7b8);display:block;margin-bottom:2px;">Plat actuellement prévu :</span>
-        <span style="font-weight:700;font-size:0.9rem;color:#fff;">${meal.title} : ${currentTags || 'Aucun aliment'}</span>
+      <div style="margin-bottom:14px;padding:10px 14px;background:var(--surface-2);border:1px solid var(--border);border-radius:14px;">
+        <span style="font-size:0.78rem;color:var(--text-dim);display:block;margin-bottom:2px;">Plat actuellement prévu :</span>
+        <span style="font-weight:700;font-size:0.9rem;color:var(--text);">${meal.title} : ${currentTags || 'Aucun aliment'}</span>
       </div>
 
       <!-- Mood & Preference Quick Pills -->
       <div style="margin-bottom:14px;">
-        <div style="font-size:0.8rem;font-weight:700;color:var(--text-dim,#9aa7b8);margin-bottom:8px;">
+        <div style="font-size:0.8rem;font-weight:700;color:var(--text-dim);margin-bottom:8px;">
           🌿 Choisissez une orientation ou ambiance :
         </div>
         <div style="display:flex;flex-wrap:wrap;gap:6px;" id="mealAiPills">
-          <button type="button" class="chip-btn" onclick="window.selectMealAiPill(this, 'Plat crémeux et rassasiant')" style="background:rgba(52,211,153,0.1); border:1px solid rgba(52,211,153,0.3); color:#34d399; border-radius:16px; padding:6px 12px; font-size:0.8rem; cursor:pointer;">🥑 Crémeux & Doux</button>
-          <button type="button" class="chip-btn" onclick="window.selectMealAiPill(this, 'Plat chaud ou cuit à la vapeur douce')" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:var(--text); border-radius:16px; padding:6px 12px; font-size:0.8rem; cursor:pointer;">🍲 Chaud / Vapeur</button>
-          <button type="button" class="chip-btn" onclick="window.selectMealAiPill(this, 'Assiette crue, croquante et très vivante')" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:var(--text); border-radius:16px; padding:6px 12px; font-size:0.8rem; cursor:pointer;">🥗 Cru & Croquant</button>
-          <button type="button" class="chip-btn" onclick="window.selectMealAiPill(this, 'Repas très léger détoxifiant et hydratant')" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:var(--text); border-radius:16px; padding:6px 12px; font-size:0.8rem; cursor:pointer;">🥣 Détox & Léger</button>
-          <button type="button" class="chip-btn" onclick="window.selectMealAiPill(this, 'Recette optimisée avec les restes du frigo')" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:var(--text); border-radius:16px; padding:6px 12px; font-size:0.8rem; cursor:pointer;">🧑‍🍳 Selon mon frigo</button>
+          <button type="button" class="chip-btn" onclick="window.selectMealAiPill(this, 'Plat crémeux et rassasiant')" style="background:var(--accent-glow); border:1px solid var(--accent); color:var(--accent); border-radius:16px; padding:6px 12px; font-size:0.8rem; cursor:pointer;">🥑 Crémeux & Doux</button>
+          <button type="button" class="chip-btn" onclick="window.selectMealAiPill(this, 'Plat chaud ou cuit à la vapeur douce')" style="background:var(--surface-2); border:1px solid var(--border); color:var(--text); border-radius:16px; padding:6px 12px; font-size:0.8rem; cursor:pointer;">🍲 Chaud / Vapeur</button>
+          <button type="button" class="chip-btn" onclick="window.selectMealAiPill(this, 'Assiette crue, croquante et très vivante')" style="background:var(--surface-2); border:1px solid var(--border); color:var(--text); border-radius:16px; padding:6px 12px; font-size:0.8rem; cursor:pointer;">🥗 Cru & Croquant</button>
+          <button type="button" class="chip-btn" onclick="window.selectMealAiPill(this, 'Repas très léger détoxifiant et hydratant')" style="background:var(--surface-2); border:1px solid var(--border); color:var(--text); border-radius:16px; padding:6px 12px; font-size:0.8rem; cursor:pointer;">🥣 Détox & Léger</button>
+          <button type="button" class="chip-btn" onclick="window.selectMealAiPill(this, 'Recette optimisée avec les restes du frigo')" style="background:var(--surface-2); border:1px solid var(--border); color:var(--text); border-radius:16px; padding:6px 12px; font-size:0.8rem; cursor:pointer;">🧑‍🍳 Selon mon frigo</button>
         </div>
       </div>
 
       <!-- Freeform prompt / fridge items -->
       <div style="margin-bottom:16px;">
-        <label style="display:block;font-size:0.8rem;font-weight:700;color:var(--text-dim,#9aa7b8);margin-bottom:6px;">
+        <label style="display:block;font-size:0.8rem;font-weight:700;color:var(--text-dim);margin-bottom:6px;">
           Vos envies précises ou ingrédients disponibles (optionnel) :
         </label>
-        <textarea id="mealAiCustomPrompt" rows="2" placeholder="Ex: J'ai des courgettes, un avocat et du citron. Pas de salade verte." style="width:100%;box-sizing:border-box;background:rgba(0,0,0,0.35);border:1px solid rgba(255,255,255,0.15);color:#fff;padding:10px 12px;border-radius:12px;font-size:0.88rem;outline:none;font-family:var(--font);resize:vertical;"></textarea>
+        <textarea id="mealAiCustomPrompt" rows="2" placeholder="Ex: J'ai des courgettes, un avocat et du citron. Pas de salade verte." style="width:100%;box-sizing:border-box;background:var(--input-bg);border:1px solid var(--input-border);color:var(--input-text);padding:10px 12px;border-radius:12px;font-size:0.88rem;outline:none;font-family:var(--font);resize:vertical;"></textarea>
       </div>
 
       <!-- Generated Suggestion Preview Card -->
-      <div id="mealAiSuggestionResult" style="display:none; margin-bottom:16px; padding:14px; border-radius:14px; background:rgba(52,211,153,0.08); border:1px solid rgba(52,211,153,0.3);">
+      <div id="mealAiSuggestionResult" style="display:none; margin-bottom:16px; padding:14px; border-radius:14px; background:var(--accent-glow); border:1px solid var(--accent);">
       </div>
 
       <!-- Actions -->
       <div style="display:flex; flex-direction:column; gap:8px;">
-        <button type="button" id="btnGenerateMealAi" onclick="window.generateMealAiProposal('${meal.id}')" style="padding:12px;border-radius:12px;border:none;background:linear-gradient(135deg,#34d399,#059669);color:#000;font-weight:800;font-size:0.92rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 15px rgba(52,211,153,0.25);">
+        <button type="button" id="btnGenerateMealAi" onclick="window.generateMealAiProposal('${meal.id}')" style="padding:12px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--accent),#059669);color:#ffffff;font-weight:800;font-size:0.92rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 15px var(--accent-glow);">
           <i class="ri-sparkling-fill"></i> Générer la proposition du Coach IA
         </button>
       </div>
