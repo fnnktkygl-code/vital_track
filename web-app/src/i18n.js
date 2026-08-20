@@ -946,6 +946,30 @@ export function getLanguage() {
   return currentLang;
 }
 
+export function getCircadianGreeting(lang = currentLang) {
+  const hour = new Date().getHours();
+  if (lang === 'fr-CA') {
+    if (hour >= 5 && hour < 12) return 'Bon matin';
+    if (hour >= 12 && hour < 18) return 'Bon après-midi';
+    return 'Bonsoir';
+  }
+  if (lang === 'fr') {
+    if (hour >= 5 && hour < 18) return 'Bonjour';
+    return 'Bonsoir';
+  }
+  if (lang === 'en') {
+    if (hour >= 5 && hour < 12) return 'Good morning';
+    if (hour >= 12 && hour < 18) return 'Good afternoon';
+    return 'Good evening';
+  }
+  if (lang === 'es') {
+    if (hour >= 5 && hour < 12) return 'Buenos días';
+    if (hour >= 12 && hour < 18) return 'Buenas tardes';
+    return 'Buenas noches';
+  }
+  return 'Bonjour';
+}
+
 export function setLanguage(lang) {
   if (!SUPPORTED_LANGS.includes(lang)) return;
   currentLang = lang;
@@ -1062,10 +1086,12 @@ if (typeof window !== 'undefined') {
     setLanguage,
     toggleLanguage,
     onLanguageChange,
+    getCircadianGreeting,
     updateDOMTranslations,
     t,
     TAXONOMY
   };
   window.t = t;
   window.setLanguage = setLanguage;
+  window.getCircadianGreeting = getCircadianGreeting;
 }

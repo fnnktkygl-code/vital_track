@@ -1100,7 +1100,8 @@ async function initApp() {
   onLanguageChange((newLang) => {
     const p = getUserProfile();
     if (document.getElementById('greetName')) {
-      document.getElementById('greetName').textContent = p.name ? `${t('dashboard.greeting')} ${p.name} ! 👋` : `${t('dashboard.greeting')} ! 👋`;
+      const greetWord = window.vitalTrackI18n?.getCircadianGreeting ? window.vitalTrackI18n.getCircadianGreeting(newLang) : (t('dashboard.greeting') || 'Bonjour');
+      document.getElementById('greetName').textContent = p.name ? `${greetWord} ${p.name} ! 👋` : `${greetWord} ! 👋`;
     }
     const bubble = document.getElementById('inAppMascotBubble');
     if (bubble) bubble.textContent = `🐦 ${t('mascot.idle')}`;
@@ -1376,7 +1377,11 @@ function loadProfile() {
   });
 
   updateTtsVoiceUI();
-  if (document.getElementById('greetName')) document.getElementById('greetName').textContent = p.name ? `${t('dashboard.greeting')} ${p.name} ! 👋` : `${t('dashboard.greeting')} ! 👋`;
+  if (document.getElementById('greetName')) {
+    const curL = getLanguage();
+    const greetWord = window.vitalTrackI18n?.getCircadianGreeting ? window.vitalTrackI18n.getCircadianGreeting(curL) : (t('dashboard.greeting') || 'Bonjour');
+    document.getElementById('greetName').textContent = p.name ? `${greetWord} ${p.name} ! 👋` : `${greetWord} ! 👋`;
+  }
   updateLiveAiPreview();
 }
 
@@ -1458,9 +1463,9 @@ function saveProfile() {
     age: document.getElementById('profileAge') ? document.getElementById('profileAge').value.trim() : '',
     activityLevel: document.getElementById('profileActivity') ? document.getElementById('profileActivity').value : 'moderate',
     targetOrgans: targetOrgans.length > 0 ? targetOrgans : ['reins', 'lymphe'],
-    country: document.getElementById('profileCountry') ? document.getElementById('profileCountry').value.trim() : 'Québec ⚜️',
-    city: document.getElementById('profileCity') ? document.getElementById('profileCity').value.trim() : 'Montréal',
-    bioregion: document.getElementById('profileBioregion') ? document.getElementById('profileBioregion').value : 'boreal',
+    country: document.getElementById('profileCountry') ? document.getElementById('profileCountry').value.trim() : 'France 🇫🇷',
+    city: document.getElementById('profileCity') ? document.getElementById('profileCity').value.trim() : 'Paris',
+    bioregion: document.getElementById('profileBioregion') ? document.getElementById('profileBioregion').value : 'temperate',
     restrictions: document.getElementById('profileRestrictions') ? document.getElementById('profileRestrictions').value.trim() : '',
     memories: mems
   };
@@ -1470,7 +1475,11 @@ function saveProfile() {
     setLanguage(chosenLang);
   }
 
-  if (document.getElementById('greetName')) document.getElementById('greetName').textContent = p.name ? `${t('dashboard.greeting')} ${p.name} ! 👋` : `${t('dashboard.greeting')} ! 👋`;
+  if (document.getElementById('greetName')) {
+    const curL = getLanguage();
+    const greetWord = window.vitalTrackI18n?.getCircadianGreeting ? window.vitalTrackI18n.getCircadianGreeting(curL) : (t('dashboard.greeting') || 'Bonjour');
+    document.getElementById('greetName').textContent = p.name ? `${greetWord} ${p.name} ! 👋` : `${greetWord} ! 👋`;
+  }
   updateLiveAiPreview();
   if (window.renderWeightChart) window.renderWeightChart();
   showToast(t('settings.saveSuccess', {}, '✅ Bio-Profil & Directives IA sauvegardés !'), 'success');
@@ -1528,12 +1537,12 @@ function renderDashboard() {
   document.getElementById('statBreaths').textContent = weekBreaths.length;
   document.getElementById('statFavs').textContent = favs.length;
 
-  // Greeting
+  // Greeting (synchronisé dynamiquement avec la langue sélectionnée)
   const greetEl = document.getElementById('greetName');
   if (greetEl) {
     const p = getUserProfile();
-    const isQc = (window.vitalTrackI18n?.getLanguage() === 'fr-CA') || (p.country && (p.country.includes('Québec') || p.country.includes('Quebec') || p.country.includes('Canada') || p.country.includes('⚜️')));
-    const greetWord = isQc ? 'Bon matin' : (window.vitalTrackI18n?.t('dashboard.greeting') || 'Bonjour');
+    const currentLang = window.vitalTrackI18n?.getLanguage?.() || 'fr';
+    const greetWord = window.vitalTrackI18n?.getCircadianGreeting ? window.vitalTrackI18n.getCircadianGreeting(currentLang) : (window.vitalTrackI18n?.t('dashboard.greeting') || 'Bonjour');
     greetEl.textContent = p.name ? `${greetWord} ${p.name} ! 👋` : `${greetWord} ! 👋`;
   }
 
