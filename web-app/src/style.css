@@ -990,16 +990,67 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
   -webkit-user-select: none !important;
 }
 
+.dash-greeting-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 18px 24px;
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.dash-greet-name {
+  font-family: var(--font, 'Outfit', -apple-system, sans-serif);
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--text, #f3f6f9);
+  margin: 0;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.dash-protocol-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 12px;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  color: var(--accent, #10b981);
+  margin-top: 6px;
+}
+
 .mascot-speech-bubble {
+  flex: 1;
+  min-width: 280px;
+  max-width: 580px;
   background: var(--surface-hover);
   border: 1px solid var(--border);
-  border-radius: 18px;
+  border-radius: 16px;
   padding: 12px 18px;
-  font-size: 0.9rem;
-  line-height: 1.4;
-  color: var(--text, #f3f6f9);
   position: relative;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mascot-speech-bubble:hover {
+  transform: translateY(-1px);
+  border-color: var(--accent);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.15);
 }
 
 @media (min-width: 769px) {
@@ -1014,7 +1065,65 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
     background: var(--surface-hover);
     border-left: 1px solid var(--border);
     border-bottom: 1px solid var(--border);
+    transition: border-color 0.2s ease;
   }
+  .mascot-speech-bubble:hover::before {
+    border-left-color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+}
+
+.speech-bubble-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.speech-bubble-sender {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.speech-bubble-avatar {
+  font-size: 1rem;
+}
+
+.speech-bubble-name {
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: var(--accent, #10b981);
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.speech-bubble-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+
+.speech-bubble-badge:hover {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.speech-bubble-text {
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: var(--text, #f3f6f9);
+  font-weight: 500;
+  font-family: var(--font, 'Outfit', -apple-system, sans-serif);
 }
 
 .vitality-bar-row { display: flex; align-items: center; gap: 12px; font-size: 0.85rem; }

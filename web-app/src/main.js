@@ -8728,41 +8728,77 @@ function highlightMatches(text, query) {
   return escapedText;
 }
 
-// ═══════ PROACTIVE MASCOT ═══════
-function updateProactiveMascot(actionContext = null) {
+// ═══════ PROACTIVE MASCOT & RICH SPEECH BUBBLE ═══════
+function renderMascotSpeechBubble(text, mood = 'talking') {
   const bubble = document.getElementById('mascotSpeechBubble') || document.getElementById('greetingContext');
   if (!bubble) return;
 
+  // Clean text from any legacy markup prefix
+  let cleanText = text.replace(/^[💬🐦]\s*(<strong>.*?<\/strong>)?\s*[:«]?\s*/i, '').replace(/[»"]$/g, '').trim();
+  if (!cleanText) cleanText = text;
+
+  const moodBadges = {
+    excited: { label: 'Énergie', icon: 'ri-flashlight-fill' },
+    proud: { label: 'Bravo', icon: 'ri-award-fill' },
+    loving: { label: 'Détox', icon: 'ri-drop-fill' },
+    sleepy: { label: 'Régénération', icon: 'ri-moon-fill' },
+    talking: { label: 'Conseil', icon: 'ri-sparkling-fill' },
+    walk: { label: 'Lymphe & Marche', icon: 'ri-walk-fill' },
+    laugh: { label: 'Vitalité', icon: 'ri-emotion-happy-fill' },
+    celebrate: { label: 'Victoire', icon: 'ri-magic-fill' },
+    coo: { label: 'Roucoulement', icon: 'ri-chat-voice-fill' },
+    think: { label: 'Connaissance', icon: 'ri-brain-line' }
+  };
+  const b = moodBadges[mood] || { label: 'Conseil', icon: 'ri-sparkling-fill' };
+
+  bubble.innerHTML = `
+    <div class="speech-bubble-header">
+      <div class="speech-bubble-sender">
+        <span class="speech-bubble-avatar">🕊️</span>
+        <span class="speech-bubble-name">Vital · Guide Biologique</span>
+      </div>
+      <span class="speech-bubble-badge">
+        <i class="${b.icon}"></i> ${b.label}
+      </span>
+    </div>
+    <div class="speech-bubble-text">
+      « ${cleanText} »
+    </div>
+  `;
+}
+window.renderMascotSpeechBubble = renderMascotSpeechBubble;
+
+function updateProactiveMascot(actionContext = null) {
   const hour = new Date().getHours();
   let msg = '';
   let mood = 'talking';
 
   if (actionContext === 'scan') {
-    msg = "💬 <strong>Bravo pour ce scan !</strong> Vérifie bien l'indice PRAL (acidité) de cet aliment. 🍎";
+    msg = "Bravo pour ce scan ! Vérifie bien l'indice PRAL (acidité) et la charge vitale de cet aliment. 🍎";
     mood = 'excited';
   } else if (actionContext === 'meal') {
-    msg = "💬 <strong>Repas enregistré !</strong> N'oublie pas de bien mastiquer pour aider ta digestion. 🥗";
+    msg = "Repas enregistré ! N'oublie pas de bien mastiquer pour faciliter l'assimilation enzymatique. 🥗";
     mood = 'proud';
   } else if (actionContext === 'fast_start') {
-    msg = "💬 <strong>C'est parti pour le jeûne !</strong> Ton corps commence son nettoyage profond. 💧";
+    msg = "C'est parti pour le jeûne ! Ton organisme enclenche son processus d'autophagie et de drainage cellulaire. 💧";
     mood = 'loving';
   } else {
     // Time-based circadian messages
     if (hour >= 4 && hour < 12) {
       msg = currentProtocol === 'vitalist'
-        ? "💬 <strong>Matin (Élimination) :</strong> L'organisme élimine les toxines. Privilégie l'hydratation, les tisanes et les fruits aqueux. 🍋"
-        : "💬 <strong>Bonjour !</strong> Pense à bien t'hydrater dès le réveil. 💧";
+        ? "Matinée d'élimination : L'organisme filtre les toxines. Privilégie l'hydratation, les tisanes et les fruits aqueux. 🍋"
+        : "Bonjour ! Pense à bien réhydrater tes cellules dès le réveil avec une eau pure et vivante. 💧";
       mood = 'excited';
     } else if (hour >= 12 && hour < 20) {
-      msg = "💬 <strong>Journée (Appropriation) :</strong> Le feu digestif est au maximum ! Moment propice pour des repas vivants et nourrissants. 🍉";
+      msg = "Journée d'appropriation : Le feu digestif est au maximum ! Moment propice pour des repas vivants et nourrissants. 🍉";
       mood = 'talking';
     } else {
-      msg = "💬 <strong>Soir & Nuit (Régénération) :</strong> Mettre le système digestif au repos pour permettre la réparation cellulaire nocturne. 🌙";
+      msg = "Soirée d'assimilation : Mets le système digestif au repos pour permettre la réparation cellulaire nocturne. 🌙";
       mood = 'sleepy';
     }
   }
 
-  bubble.innerHTML = msg;
+  renderMascotSpeechBubble(msg, mood);
 
   if (window.appMascot) {
     window.appMascot.setMood(mood, true);
@@ -11576,7 +11612,7 @@ function triggerMascotInPlaceReaction(action) {
   
   const speechEl = document.getElementById('mascotSpeechBubble');
   if (speechEl && _mascotQuotes[act]) {
-    speechEl.innerHTML = `💬 <strong>Vital :</strong> ${_mascotQuotes[act]}`;
+    renderMascotSpeechBubble(_mascotQuotes[act], act);
     speechEl.style.transform = 'scale(1.02)';
     speechEl.style.transition = 'transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)';
     setTimeout(() => {

@@ -284,18 +284,21 @@
         </div>
 
       <!-- Greeting Card -->
-      <div class="dash-greeting-card glass" style="display:flex; justify-content:space-between; align-items:center; padding:20px 24px; margin-bottom:24px; border-radius:var(--radius); border:1px solid var(--border); flex-wrap:wrap; gap:16px;">
+      <div class="dash-greeting-card glass">
         <div style="display:flex; align-items:center; gap:18px;">
           <div class="mascot-avatar-wrapper" onclick="window.triggerMascotInPlaceReaction && window.triggerMascotInPlaceReaction()">
             <canvas id="mascotCanvas" width="96" height="120"></canvas>
           </div>
           <div>
-            <h2 id="greetName" style="font-size:1.25rem; font-weight:700; color:var(--text,#f3f6f9); margin:0;">Bonjour ! 👋</h2>
-            <p id="greetMode" style="color:var(--accent); font-size:0.85rem; font-weight:600; margin:4px 0 0 0;">Mode Vitaliste</p>
+            <h2 id="greetName" class="dash-greet-name">Bonjour ! 👋</h2>
+            <div class="dash-protocol-pill">
+              <span class="pulse-dot"></span>
+              <span id="greetMode">Mode Vitaliste</span>
+            </div>
           </div>
         </div>
-        <div id="mascotSpeechBubble" class="mascot-speech-bubble" style="flex:1; min-width:260px;">
-          <!-- Dynamically populated by JS -->
+        <div id="mascotSpeechBubble" class="mascot-speech-bubble" onclick="window.triggerMascotInPlaceReaction && window.triggerMascotInPlaceReaction()">
+          <!-- Dynamically populated by renderMascotSpeechBubble -->
         </div>
       </div>
 
