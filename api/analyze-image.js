@@ -20,8 +20,12 @@ module.exports = async function handler(req, res) {
   if (!authGuard(req, res)) return;
 
   try {
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) return res.status(500).json({ error: 'Server GEMINI_API_KEY not configured' });
+    const apiKey = process.env.GEMINI_API_KEY || req.headers?.['x-gemini-key'] || req.headers?.get?.('x-gemini-key') || req.body?.geminiApiKey;
+    if (!apiKey) {
+      return res.status(500).json({
+        error: 'Clé API Gemini non configurée. Veuillez ajouter GEMINI_API_KEY sur Vercel ou renseigner votre clé dans Paramètres ⚙️.'
+      });
+    }
 
     const { imageData, mimeType } = req.body || {};
 

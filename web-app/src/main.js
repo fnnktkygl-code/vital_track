@@ -27,6 +27,27 @@ window.dubbingEngine = dubbingEngine;
 const API_BASE = window.location.origin;
 const VT_APP_KEY = import.meta.env.VITE_VT_APP_KEY || '';
 
+function getApiHeaders(extraHeaders = {}) {
+  const headers = { 'Content-Type': 'application/json', ...extraHeaders };
+  if (VT_APP_KEY) headers['X-VT-API-Key'] = VT_APP_KEY;
+  const userGeminiKey = localStorage.getItem('vital_custom_gemini_key') || '';
+  if (userGeminiKey) headers['X-Gemini-Key'] = userGeminiKey;
+  return headers;
+}
+window.getApiHeaders = getApiHeaders;
+
+function saveCustomGeminiKey(key) {
+  const clean = (key || '').trim();
+  if (clean) {
+    localStorage.setItem('vital_custom_gemini_key', clean);
+    showToast('✨ Clé Gemini enregistrée avec succès !', 'success');
+  } else {
+    localStorage.removeItem('vital_custom_gemini_key');
+    showToast('Clé personnalisée supprimée.', 'info');
+  }
+}
+window.saveCustomGeminiKey = saveCustomGeminiKey;
+
 // ═══════ STATE ═══════
 let vitalDb = [];
 let currentBreathMode = 'wimhof';
@@ -1336,6 +1357,9 @@ function loadProfile() {
   if (document.getElementById('profileMemories')) {
     document.getElementById('profileMemories').value = Array.isArray(p.memories) ? p.memories.join('\n') : (p.memories || '');
   }
+  if (document.getElementById('customGeminiKeyInput')) {
+    document.getElementById('customGeminiKeyInput').value = localStorage.getItem('vital_custom_gemini_key') || '';
+  }
 
   // Restore emonctoires chips
   const activeOrgans = p.targetOrgans || ['reins', 'lymphe'];
@@ -2029,10 +2053,7 @@ async function _transcribeWithGoogleGemini(audioBlob) {
         const lang = window.vitalTrackI18n?.getLanguage ? window.vitalTrackI18n.getLanguage() : 'fr';
         const resp = await fetch('/api/transcribe', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-VT-API-Key': VT_APP_KEY
-          },
+          headers: getApiHeaders(),
           body: JSON.stringify({
             audioData: base64Data,
             mimeType: audioBlob.type || 'audio/webm',
@@ -2389,7 +2410,7 @@ async function sendChat(e) {
     // Call the backend with stream=true to bypass the 10s Vercel timeout
     const resp = await fetch(`${API_BASE}/api/chat?stream=true`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...(VT_APP_KEY ? { 'X-VT-API-Key': VT_APP_KEY } : {}) },
+      headers: getApiHeaders(),
       body: JSON.stringify(reqBody),
     });
 
@@ -3395,10 +3416,7 @@ async function askAIToFindFood(query) {
     try {
       const res = await fetch('/api/searchFood', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-VT-API-Key': VT_APP_KEY
-        },
+        headers: getApiHeaders(),
         body: JSON.stringify({ query: q, language: getLanguage() })
       });
       if (res.ok) {
@@ -5278,7 +5296,7 @@ async function analyzeDishWithAI() {
     try {
       const res = await fetch('/api/analyze-text', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getApiHeaders(),
         body: JSON.stringify({ query: q })
       });
       if (res.ok) {
@@ -5408,7 +5426,7 @@ async function askAIToAddMealFood(query) {
     try {
       const res = await fetch('/api/analyze-text', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getApiHeaders(),
         body: JSON.stringify({ query: q })
       });
       if (res.ok) {
@@ -6939,7 +6957,7 @@ Inclus un bloc json avec "actionMeal" (avec nom, catégorie, emoji, items, note)
 
       const resp = await fetch(`${API_BASE}/api/chat`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...(VT_APP_KEY ? { 'X-VT-API-Key': VT_APP_KEY } : {}) },
+        headers: getApiHeaders(),
         body: JSON.stringify({
           query,
           profile,

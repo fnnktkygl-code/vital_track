@@ -161,7 +161,7 @@ module.exports = async function handler(req, res) {
   const cleanQuery = rawQuery.trim();
 
   try {
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey = process.env.GEMINI_API_KEY || req.headers?.['x-gemini-key'] || req.headers?.get?.('x-gemini-key') || req.body?.geminiApiKey;
     if (!apiKey) {
       const fallbackList = extractHeuristicFoods(cleanQuery);
       return res.status(200).json({ data: { items: fallbackList, foods: fallbackList } });
