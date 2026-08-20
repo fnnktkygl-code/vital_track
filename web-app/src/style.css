@@ -724,17 +724,26 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
 @media (max-width: 768px) {
   .clock-ring { transform: scale(0.85); margin: -16px 0; }
 }
-.clock-ring::before {
+.clock-ring::before,
+.clock-inner-disc {
   content: '';
   position: absolute;
-  inset: 14px;
-  background: var(--bg-card);
+  inset: 16px;
+  background: var(--bg-card, #121b27);
   border-radius: 50%;
   box-shadow: inset 0 4px 20px rgba(0, 0, 0, 0.4);
   border: 1px solid var(--border);
   z-index: 1;
   pointer-events: none;
 }
+
+[data-theme="light"] .clock-ring::before,
+[data-theme="light"] .clock-inner-disc {
+  background: #FFFFFF !important;
+  border: 1px solid rgba(148, 163, 184, 0.35) !important;
+  box-shadow: inset 0 2px 14px rgba(15, 23, 42, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+}
+
 .clock-center {
   position: relative;
   z-index: 2;
