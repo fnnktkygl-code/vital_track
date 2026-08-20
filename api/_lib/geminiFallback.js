@@ -1,29 +1,8 @@
 /**
- * Smart Gemini Model Cascade Rotator — VitalTrack
+ * Smart Gemini Model & Multi-Key Cascade Matrix — VitalTrack
  * 
- * Uses Google AI Studio free tier (generativelanguage.googleapis.com)
- * with automatic fallback across model tiers on quota exhaustion.
- *
- * Tier Hierarchy & Free Quotas (as of 2026-08):
- * 
- * 1. High-Capacity Lite (15 RPM / 500 RPD / 250K TPM):
- *    - gemini-3.5-flash-lite
- *    - gemini-3.1-flash-lite
- *    - gemini-2.5-flash-lite
- * 
- * 2. Premium Flash (5 RPM / 20 RPD / 250K TPM):
- *    - gemini-3.5-flash
- *    - gemini-3.6-flash
- *    - gemini-2.5-flash
- * 
- * 3. Gemma Reserve (30 RPM / 14,400 RPD):
- *    - gemma-4-31b-it
- *    - gemma-4-26b-a4b-it
- *    - gemma-2-27b-it
- * 
- * 4. Legacy Fallbacks:
- *    - gemini-2.0-flash
- *    - gemini-1.5-flash
+ * Routes queries dynamically across multiple API keys (multi-project failover)
+ * and tiered model cascades with intelligent per-(key, model) cooldown tracking.
  */
 
 const COMPLEX_CASCADE = [
@@ -48,15 +27,43 @@ const SIMPLE_CASCADE = [
   'gemma-4-26b-a4b-it'
 ];
 
-// In-memory cooldown registry (persists across warm serverless invocations)
-const modelCooldownMap = new Map();
+// In-memory 2D cooldown map: `${keyId}::${modelName}` -> timestamp
+const keyModelCooldownMap = new Map();
 let lastCallTimestamp = 0;
 
+function getKeyIdentifier(key) {
+  if (!key) return 'none';
+  return key.length > 8 ? key.slice(-8) : key;
+}
+
+function getAvailableKeys(explicitKey) {
+  const keys = [];
+  if (explicitKey && typeof explicitKey === 'string' && explicitKey.trim()) {
+    keys.push(explicitKey.trim());
+  }
+
+  const envVars = [
+    process.env.GEMINI_API_KEY,
+    process.env.GEMINI_API_KEY_2,
+    process.env.GEMINI_BACKUP_KEYS,
+    process.env.GEMINI_API_KEYS
+  ];
+
+  for (const envVal of envVars) {
+    if (!envVal) continue;
+    const split = envVal.split(/[,;\s]+/).map(k => k.trim()).filter(Boolean);
+    for (const k of split) {
+      if (!keys.includes(k)) keys.push(k);
+    }
+  }
+
+  return keys;
+}
+
 /**
- * Enforce a minimum delay between consecutive API calls
- * to avoid triggering RPM limits.
+ * Enforce pacing delay between calls to avoid burst RPM throttling.
  */
-async function enforcePacingDelay(delayMs = 200) {
+async function enforcePacingDelay(delayMs = 150) {
   const now = Date.now();
   const elapsed = now - lastCallTimestamp;
   if (elapsed < delayMs) {
@@ -66,17 +73,7 @@ async function enforcePacingDelay(delayMs = 200) {
 }
 
 /**
- * Call Gemini API with automatic model cascade on quota/rate-limit errors.
- * 
- * @param {Object} options
- * @param {string} options.apiKey - Gemini API key
- * @param {string} [options.prompt] - Simple text prompt (alternative to contents)
- * @param {Array} [options.contents] - Full contents array for the API
- * @param {Object} [options.generationConfig] - Generation configuration
- * @param {Object} [options.systemInstruction] - System instruction (text string)
- * @param {boolean} [options.stream] - Whether to use streaming
- * @param {string} [options.requestedModel] - Specific model selected by user
- * @returns {Promise<Response|Object>} Generated text or fetch Response
+ * Call Gemini API using intelligent 2D multi-key and multi-model matrix.
  */
 async function callGeminiApi({
   apiKey,
@@ -87,12 +84,10 @@ async function callGeminiApi({
   stream = false,
   requestedModel = null,
 }) {
-  if (!apiKey) {
-    throw new Error('GEMINI_API_KEY is missing');
+  const keysPool = getAvailableKeys(apiKey);
+  if (keysPool.length === 0) {
+    throw new Error('Aucune clé GEMINI_API_KEY disponible');
   }
-
-  let lastErr = null;
-  const now = Date.now();
 
   let isComplex = false;
   if (contents && Array.isArray(contents)) {
@@ -104,109 +99,106 @@ async function callGeminiApi({
   }
 
   let modelsToTry = isComplex ? [...COMPLEX_CASCADE] : [...SIMPLE_CASCADE];
-
   if (requestedModel && requestedModel !== 'auto' && requestedModel.trim()) {
-    // Put user requested model first in cascade
     modelsToTry = [requestedModel.trim(), ...modelsToTry.filter(m => m !== requestedModel.trim())];
   }
 
-  console.log(`[VT Router] Routing query (Complex: ${isComplex}, Requested: ${requestedModel || 'auto'}) via cascade...`);
+  let lastErr = null;
+  const now = Date.now();
+
+  console.log(`[VT Matrix] Routing query (Complex: ${isComplex}, Keys in pool: ${keysPool.length})`);
 
   for (const modelName of modelsToTry) {
-    // Skip models in cooldown
-    const cooldownUntil = modelCooldownMap.get(modelName) || 0;
-    if (now < cooldownUntil) {
-      console.log(`[VT Rotator] Skipping ${modelName} (cooldown until ${new Date(cooldownUntil).toISOString()})`);
-      continue;
-    }
+    for (let keyIdx = 0; keyIdx < keysPool.length; keyIdx++) {
+      const activeKey = keysPool[keyIdx];
+      const keyId = getKeyIdentifier(activeKey);
+      const cooldownKey = `${keyId}::${modelName}`;
 
-    try {
-      await enforcePacingDelay(200);
-
-      const method = stream ? 'streamGenerateContent?alt=sse' : 'generateContent';
-      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:${method}${stream ? '&' : '?'}key=${apiKey}`;
-
-      const bodyPayload = {};
-
-      if (contents) {
-        bodyPayload.contents = contents;
-      } else if (prompt) {
-        bodyPayload.contents = [{ parts: [{ text: prompt }] }];
-      }
-
-      if (generationConfig) {
-        bodyPayload.generationConfig = generationConfig;
-      }
-
-      if (systemInstruction) {
-        bodyPayload.systemInstruction = { parts: [{ text: systemInstruction }] };
-      }
-
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(bodyPayload),
-      });
-
-      if (!response.ok) {
-        const errorBody = await response.json().catch(() => ({}));
-        console.warn(`[VT Rotator] Model ${modelName} status ${response.status}:`, JSON.stringify(errorBody));
-
-        // Rate limited → 5min cooldown, cascade to next
-        if (response.status === 429) {
-          console.warn(`🚨 [QUOTA] ${modelName} rate-limited (429). 5min cooldown. Cascading...`);
-          modelCooldownMap.set(modelName, Date.now() + 5 * 60 * 1000);
-          lastErr = new Error(errorBody.error?.message || `Rate limit on ${modelName}`);
-          continue;
-        }
-
-        // Model unavailable or server overloaded (503, 500, 502, 404, 400) → cascade immediately
-        if (response.status === 404 || response.status === 400 || response.status === 503 || response.status === 500 || response.status === 502) {
-          console.warn(`⚠️ [CASCADE] ${modelName} returned ${response.status}. 1min cooldown. Cascading to next model...`);
-          modelCooldownMap.set(modelName, Date.now() + 60 * 1000);
-          lastErr = new Error(errorBody.error?.message || `Unavailable ${modelName} (${response.status})`);
-          continue;
-        }
-
-        throw new Error(errorBody.error?.message || `Gemini API error: ${response.status}`);
-      }
-
-      // Handle streaming response
-      if (stream) {
-        console.log(`✅ [VT AI] Streaming via ${modelName}`);
-        response.model = modelName;
-        return response; // Return raw Response for SSE forwarding
-      }
-
-      // Non-streaming: extract text
-      const data = await response.json();
-      const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-
-      if (generatedText) {
-        console.log(`✅ [VT AI] Success via ${modelName}`);
-        return { text: generatedText, model: modelName };
-      }
-
-      // Empty response — try next model
-      console.warn(`⚠️ [VT AI] ${modelName} returned empty response. Cascading...`);
-      lastErr = new Error(`Empty response from ${modelName}`);
-      continue;
-
-    } catch (err) {
-      console.warn(`[VT Rotator] ${modelName} failed:`, err.message);
-      lastErr = err;
-      
-      // On quota-related errors, cascade
-      if (err.message?.includes('429') || err.message?.toLowerCase().includes('quota')) {
-        modelCooldownMap.set(modelName, Date.now() + 5 * 60 * 1000);
+      const cooldownUntil = keyModelCooldownMap.get(cooldownKey) || 0;
+      if (now < cooldownUntil) {
         continue;
+      }
+
+      try {
+        await enforcePacingDelay(150);
+
+        const method = stream ? 'streamGenerateContent?alt=sse' : 'generateContent';
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:${method}${stream ? '&' : '?'}key=${activeKey}`;
+
+        const bodyPayload = {};
+        if (contents) bodyPayload.contents = contents;
+        else if (prompt) bodyPayload.contents = [{ parts: [{ text: prompt }] }];
+        if (generationConfig) bodyPayload.generationConfig = generationConfig;
+        if (systemInstruction) bodyPayload.systemInstruction = { parts: [{ text: systemInstruction }] };
+
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(bodyPayload),
+        });
+
+        if (!response.ok) {
+          const errorBody = await response.json().catch(() => ({}));
+          const errMsg = errorBody.error?.message || `HTTP ${response.status}`;
+          console.warn(`[VT Matrix] Key [${keyId}] Model [${modelName}] Status ${response.status}:`, errMsg);
+
+          // 429 Quota Exceeded (RPM or RPD)
+          if (response.status === 429) {
+            const isDaily = errMsg.toLowerCase().includes('quota') || errMsg.toLowerCase().includes('daily') || errMsg.includes('per day');
+            const cooldownDuration = isDaily ? (4 * 3600 * 1000) : (60 * 1000);
+            keyModelCooldownMap.set(cooldownKey, Date.now() + cooldownDuration);
+            lastErr = new Error(`Quota limit on key [${keyId}] model [${modelName}]`);
+            continue; // Try next key for this same model!
+          }
+
+          // 503 Overloaded
+          if (response.status === 503 || response.status === 500 || response.status === 502) {
+            keyModelCooldownMap.set(cooldownKey, Date.now() + 45 * 1000);
+            lastErr = new Error(`Overload on key [${keyId}] model [${modelName}]`);
+            continue; // Try next key for this same model!
+          }
+
+          // 404 / 400 Unsupported model
+          if (response.status === 404 || response.status === 400) {
+            keyModelCooldownMap.set(cooldownKey, Date.now() + 6 * 3600 * 1000);
+            lastErr = new Error(`Unsupported model [${modelName}]`);
+            continue;
+          }
+
+          throw new Error(errMsg);
+        }
+
+        // Streaming Response
+        if (stream) {
+          console.log(`✅ [VT Matrix] Streaming via Key [${keyId}] / Model [${modelName}]`);
+          response.model = modelName;
+          response.keyId = keyId;
+          return response;
+        }
+
+        // Non-streaming JSON response
+        const data = await response.json();
+        const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (generatedText) {
+          console.log(`✅ [VT Matrix] Success via Key [${keyId}] / Model [${modelName}]`);
+          return { text: generatedText, model: modelName, keyId };
+        }
+
+        lastErr = new Error(`Empty response from ${modelName}`);
+        continue;
+      } catch (err) {
+        console.warn(`[VT Matrix] Error on Key [${keyId}] / Model [${modelName}]:`, err.message);
+        lastErr = err;
+        if (err.message?.includes('429') || err.message?.toLowerCase().includes('quota')) {
+          keyModelCooldownMap.set(cooldownKey, Date.now() + 60 * 1000);
+        }
       }
     }
   }
 
-  // All models exhausted — clear cooldowns for next request cycle
-  modelCooldownMap.clear();
-  throw lastErr || new Error('All Gemini model tiers are temporarily busy. Please retry.');
+  // All pairs exhausted — reset registry
+  keyModelCooldownMap.clear();
+  throw lastErr || new Error('Tous les modèles et clés sont momentanément occupés. Veuillez réessayer dans un instant.');
 }
 
 module.exports = { callGeminiApi, COMPLEX_CASCADE, SIMPLE_CASCADE };
