@@ -683,18 +683,61 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
   color: #ef4444;
 }
 
-/* User Context Quote Tag in Messages */
-.msg-context-quote {
-  display: inline-flex;
+/* WhatsApp / Telegram / iMessage Style Quoted Reply Card in User Messages */
+.message.user .message-bubble {
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 10px 14px !important;
+  border-radius: 18px 18px 4px 18px !important;
+  background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+  box-shadow: 0 4px 14px rgba(5, 150, 105, 0.22) !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.msg-quoted-reply {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  background: rgba(0, 0, 0, 0.24);
+  border-left: 3.5px solid #ffffff;
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 0.8rem;
+  line-height: 1.35;
+  user-select: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.msg-quoted-header {
+  display: flex;
   align-items: center;
   gap: 6px;
-  padding: 3px 8px;
-  margin-bottom: 6px;
-  background: rgba(0, 0, 0, 0.25);
-  border-left: 3px solid rgba(255, 255, 255, 0.7);
-  border-radius: 4px;
-  font-size: 0.74rem;
+  font-weight: 700;
+  font-size: 0.7rem;
   color: rgba(255, 255, 255, 0.92);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.msg-quoted-subject {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #ffffff;
+  white-space: normal;
+  word-break: break-word;
+  opacity: 0.95;
+}
+
+.msg-user-content {
+  font-size: 0.92rem;
+  font-weight: 500;
+  line-height: 1.5;
+  color: #ffffff;
+  word-break: break-word;
 }
 
 .chat-voice-indicator {

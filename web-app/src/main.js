@@ -1951,7 +1951,7 @@ function renderActiveConversation() {
   container.innerHTML = '';
 
   conv.messages.forEach((m, idx) => {
-    addMessage(m.text, m.role === 'user', m.model, m.image, idx, m.role === 'error', m.failedQuery);
+    addMessage(m.text, m.role === 'user', m.model, m.image, idx, m.role === 'error', m.failedQuery, m.contextData || m.contextQuote);
   });
 }
 
@@ -2454,11 +2454,15 @@ async function sendChat(e) {
 
   let messageText = userRawQuery;
   let displayUserText = userRawQuery;
-  let contextQuoteTag = null;
+  let contextData = null;
 
   if (activeCtx) {
     messageText = activeCtx.buildPrompt ? activeCtx.buildPrompt(userRawQuery) : `${activeCtx.label} (${activeCtx.subject}) : ${userRawQuery}`;
-    contextQuoteTag = `${activeCtx.icon || '💬'} ${activeCtx.label} : ${activeCtx.subject}`;
+    contextData = {
+      icon: activeCtx.icon || '💬',
+      label: activeCtx.label || 'Contexte',
+      subject: activeCtx.subject || ''
+    };
     displayUserText = userRawQuery || `Adapter "${activeCtx.subject}"`;
     clearChatContext();
   } else if (!userRawQuery && attachedImage) {
@@ -2492,12 +2496,12 @@ async function sendChat(e) {
     role: 'user',
     text: displayUserText,
     fullPrompt: messageText,
-    contextQuote: contextQuoteTag,
+    contextData: contextData,
     image: attachedImage ? attachedImage.dataUri : null,
     timestamp: Date.now()
   });
   saveConversations();
-  addMessage(displayUserText, true, null, attachedImage ? attachedImage.dataUri : null, conv.messages.length - 1, false, null, contextQuoteTag);
+  addMessage(displayUserText, true, null, attachedImage ? attachedImage.dataUri : null, conv.messages.length - 1, false, null, contextData);
 
   // Configure Stop Button during generation
   activeChatAbortController = new AbortController();
@@ -2889,12 +2893,40 @@ function addMessage(text, isUser, modelUsed = null, imageUri = null, msgIndex = 
       }
     }
 
-    let contextQuoteHtml = '';
+    let quoteHtml = '';
     if (isUser && contextQuote) {
-      contextQuoteHtml = `<div class="msg-context-quote"><i class="ri-corner-down-right-line"></i> ${esc(contextQuote)}</div>`;
+      let icon = '💬';
+      let label = 'Contexte';
+      let subject = '';
+      if (typeof contextQuote === 'object' && contextQuote !== null) {
+        icon = contextQuote.icon || '💬';
+        label = contextQuote.label || 'Contexte';
+        subject = contextQuote.subject || '';
+      } else if (typeof contextQuote === 'string') {
+        const parts = contextQuote.split(':');
+        if (parts.length > 1) {
+          label = parts[0].trim();
+          subject = parts.slice(1).join(':').trim();
+        } else {
+          subject = contextQuote;
+        }
+      }
+      quoteHtml = `
+        <div class="msg-quoted-reply">
+          <div class="msg-quoted-header">
+            <span>${icon}</span>
+            <span>${esc(label)}</span>
+          </div>
+          <div class="msg-quoted-subject">${esc(subject)}</div>
+        </div>
+      `;
     }
 
-    div.innerHTML = `${avatarHtml}<div class="message-bubble">${imgHtml}${contextQuoteHtml}${isUser ? esc(text) : renderMarkdown(text)}${quickReplies}${badgeHtml}</div>`;
+    const contentHtml = isUser 
+      ? `<div class="msg-user-content">${esc(text)}</div>` 
+      : renderMarkdown(text);
+
+    div.innerHTML = `${avatarHtml}<div class="message-bubble">${imgHtml}${quoteHtml}${contentHtml}${quickReplies}${badgeHtml}</div>`;
     wrapper.appendChild(div);
 
     // Modern Message Action Toolbar (Safe Index-Based Calling)
@@ -7973,12 +8005,15 @@ function renderMarkdown(text) {
     } catch { return match; }
   });
 
-  // Handle dividers and clean formatting
+  // Handle headings from ###### down to #
   text = text
     .replace(/^---$/gm, '<hr style="border:none;border-top:1px solid var(--border);margin:14px 0">')
-    .replace(/^### (.*$)/gm, '<h4 style="margin:14px 0 6px 0;color:var(--accent);font-size:1.02rem;font-weight:700;">$1</h4>')
-    .replace(/^## (.*$)/gm, '<h3 style="margin:16px 0 8px 0;color:var(--text);font-size:1.12rem;font-weight:700;">$1</h3>')
-    .replace(/^# (.*$)/gm, '<h2 style="margin:18px 0 10px 0;color:var(--text);font-size:1.22rem;font-weight:700;">$1</h2>')
+    .replace(/^######\s*(.*$)/gm, '<h6 style="margin:10px 0 4px 0;color:var(--text-dim);font-size:0.9rem;font-weight:700;">$1</h6>')
+    .replace(/^#####\s*(.*$)/gm, '<h5 style="margin:12px 0 4px 0;color:var(--text-dim);font-size:0.95rem;font-weight:700;">$1</h5>')
+    .replace(/^####\s*(.*$)/gm, '<h4 style="margin:14px 0 6px 0;color:var(--text);font-size:1.0rem;font-weight:700;">$1</h4>')
+    .replace(/^###\s*(.*$)/gm, '<h4 style="margin:14px 0 6px 0;color:var(--accent,#34d399);font-size:1.05rem;font-weight:700;">$1</h4>')
+    .replace(/^##\s*(.*$)/gm, '<h3 style="margin:16px 0 8px 0;color:var(--text);font-size:1.15rem;font-weight:700;">$1</h3>')
+    .replace(/^#\s*(.*$)/gm, '<h2 style="margin:18px 0 10px 0;color:var(--text);font-size:1.25rem;font-weight:700;">$1</h2>')
     .replace(/```([\s\S]*?)```/g, (_, code) => `<pre style="background:rgba(0,0,0,0.3);padding:10px 14px;border-radius:10px;overflow-x:auto;margin:8px 0;"><code>${esc(code.trim())}</code></pre>`)
     .replace(/`([^`]+)`/g, '<code style="background:rgba(255,255,255,0.08);padding:2px 6px;border-radius:4px;font-size:0.9em;">$1</code>')
     .replace(/^\s*[\*\-]\s+(.*$)/gm, '<li style="margin-bottom:4px;line-height:1.5;">$1</li>')
