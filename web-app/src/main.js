@@ -11,7 +11,7 @@ import { auth } from './auth.js';
 import { MEDIA_SEARCH_DATABASE, searchMediaKnowledge, getExpandedSearchTokens } from './data/mediaSearchIndex.js';
 import { VIDEO_DUBBING_DATABASE, getDubbingDataForVideo } from './data/videoDubbingData.js';
 import { dubbingEngine } from './utils/dubbingEngine.js';
-import { VITALIST_WISDOM, getRandomWisdom, getCircadianContextWisdom } from './data/vitalistWisdom.js';
+import { VITALIST_WISDOM, getRandomWisdom, getCircadianContextWisdom, getDailyWisdom } from './data/vitalistWisdom.js';
 
 // Exposer globalement pour l'interface utilisateur
 window.vitalTrackI18n = { t, getLanguage, setLanguage, toggleLanguage, onLanguageChange };
@@ -20,6 +20,7 @@ window.vitalTrackAuth = auth;
 window.VITALIST_WISDOM = VITALIST_WISDOM;
 window.getRandomWisdom = getRandomWisdom;
 window.getCircadianContextWisdom = getCircadianContextWisdom;
+window.getDailyWisdom = getDailyWisdom;
 window.MEDIA_SEARCH_DATABASE = MEDIA_SEARCH_DATABASE;
 window.searchMediaKnowledge = searchMediaKnowledge;
 window.getExpandedSearchTokens = getExpandedSearchTokens;
@@ -7974,7 +7975,7 @@ let _currentWisdom = null;
 let _wisdomFavorites = JSON.parse(localStorage.getItem('vital_wisdom_favorites') || '[]');
 
 function renderWisdomCapsule(wisdomItem = null) {
-  const item = wisdomItem || getCircadianContextWisdom();
+  const item = wisdomItem || getDailyWisdom();
   if (!item) return;
   _currentWisdom = item;
 
