@@ -10245,6 +10245,26 @@ function stepWeight(delta) {
   valInput.value = curr.toFixed(1);
 };
 
+function sanitizeWeightHistory(history) {
+  if (!Array.isArray(history) || history.length === 0) return [];
+  const map = new Map();
+  history.forEach(item => {
+    if (!item || item.weight === undefined || item.weight === null) return;
+    const w = parseFloat(item.weight);
+    if (isNaN(w) || w <= 0) return;
+    const dateObj = new Date(item.date);
+    if (isNaN(dateObj.getTime())) return;
+    const dateStr = dateObj.toISOString().split('T')[0];
+    map.set(dateStr, {
+      id: item.id || ('w_' + dateStr.replace(/-/g, '')),
+      date: `${dateStr}T12:00:00.000Z`,
+      weight: Math.round(w * 10) / 10,
+      note: item.note || ''
+    });
+  });
+  return Array.from(map.values()).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+}
+
 function saveWeightEntry() {
   const dateInput = document.getElementById('weightDateInput');
   const valInput = document.getElementById('weightValInput');
@@ -10259,20 +10279,18 @@ function saveWeightEntry() {
     return;
   }
 
-  const history = store.get('weight_history', []);
-  const entryDate = new Date(`${dateStr}T12:00:00`).toISOString();
+  let history = sanitizeWeightHistory(store.get('weight_history', []));
+  const entryDate = `${dateStr}T12:00:00.000Z`;
 
-  if (window._editingWeightId) {
-    const idx = history.findIndex(h => h.id === window._editingWeightId);
-    if (idx !== -1) {
-      history[idx].date = entryDate;
-      history[idx].weight = w;
-      history[idx].note = note;
-      showToast(`Pesée mise à jour (${w} kg) !`, 'success');
-    }
-    window._editingWeightId = null;
+  const existingIdx = history.findIndex(h => h.date.startsWith(dateStr) || (window._editingWeightId && h.id === window._editingWeightId));
+
+  if (existingIdx !== -1) {
+    history[existingIdx].date = entryDate;
+    history[existingIdx].weight = w;
+    history[existingIdx].note = note;
+    showToast(`Pesée du ${dateStr} mise à jour (${w} kg) !`, 'success');
   } else {
-    const newId = 'w_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
+    const newId = 'w_' + dateStr.replace(/-/g, '') + '_' + Math.random().toString(36).substr(2, 4);
     history.push({
       id: newId,
       date: entryDate,
@@ -10282,12 +10300,8 @@ function saveWeightEntry() {
     showToast(`Pesée de ${w} kg enregistrée pour le ${dateStr} !`, 'success');
   }
 
-  // Ensure every item has an id
-  history.forEach((item, idx) => {
-    if (!item.id) item.id = 'w_' + (Date.now() + idx);
-  });
-
-  history.sort((a, b) => new Date(a.date) - new Date(b.date));
+  window._editingWeightId = null;
+  history = sanitizeWeightHistory(history);
   store.set('weight_history', history);
 
   renderWeightChart();
@@ -10407,7 +10421,7 @@ function renderWeightChart() {
   const tooltip = document.getElementById('weightChartTooltip');
   if (!container || !empty || !svg) return;
 
-  const history = store.get('weight_history', []);
+  const history = sanitizeWeightHistory(store.get('weight_history', []));
   const profile = typeof getUserProfile === 'function' ? getUserProfile() : {};
 
   // Sort all entries chronologically
@@ -10578,12 +10592,11 @@ function renderWeightChart() {
   // Points and Non-Overlapping X date labels
   let pointsHtml = '';
   let xLabelsHtml = '';
-  const stride = Math.max(1, Math.ceil(coords.length / 5));
+  let lastRenderedX = -999;
 
   coords.forEach((pt, i) => {
     const isFirst = (i === 0);
     const isLast = (i === coords.length - 1);
-    const isMajor = isFirst || isLast || (i % stride === 0);
     const d = new Date(pt.entry.date);
     const dateFormatted = isNaN(d.getTime()) ? pt.entry.date : d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
 
@@ -10595,8 +10608,10 @@ function renderWeightChart() {
       </g>
     `;
 
-    if (isMajor) {
-      // Prevent label collision at origins
+    // Only render label if not colliding with last rendered label (min 50px clearance)
+    const isFarEnough = (pt.x - lastRenderedX >= 50);
+    const isNotTooCloseToEnd = (margin.left + chartW - pt.x >= 35);
+    if (isFirst || isLast || (isFarEnough && isNotTooCloseToEnd)) {
       let anchor = 'middle';
       let xPos = pt.x;
       if (isFirst) {
@@ -10610,6 +10625,7 @@ function renderWeightChart() {
       xLabelsHtml += `
         <text x="${xPos}" y="${margin.top + chartH + 22}" fill="var(--text-dim, #94a3b8)" font-size="10.5" font-weight="600" font-family="'Outfit', 'Inter', -apple-system, sans-serif" text-anchor="${anchor}">${dateFormatted}</text>
       `;
+      lastRenderedX = pt.x;
     }
   });
 
@@ -10726,79 +10742,226 @@ function updateDashStats() {
   updateCircadianWidget();
 };
 
-// ═══════ CIRCADIAN RHYTHM ═══════
-function updateCircadianWidget() {
-  const timeEl = document.getElementById('circadianTimePill');
-  const clockTime = document.getElementById('clockTime');
-  const clockPhase = document.getElementById('clockPhase');
-  const clockIndicator = document.getElementById('clockIndicator');
-  const phaseIcon = document.getElementById('phaseIcon');
-  const phaseTitle = document.getElementById('phaseTitle');
-  const phaseDesc = document.getElementById('phaseDesc');
+// ═══════ INTERACTIVE 24H CIRCADIAN RHYTHM SCRUBBER ═══════
+let _isCircadianDragging = false;
 
-  if (!timeEl) return; // Not on dashboard
-
-  const now = new Date();
-  const h = now.getHours();
-  const m = now.getMinutes().toString().padStart(2, '0');
-  const timeStr = `${h.toString().padStart(2, '0')}:${m}`;
-  timeEl.textContent = timeStr;
-  if (clockTime) clockTime.textContent = timeStr;
-
+function getCircadianPhaseData(h, m = 0) {
   let shortCycle = '';
   let fullCycle = '';
   let iconClass = '';
   let descText = '';
   let phaseColor = '';
 
-  if (h >= 4 && h < 12) {
-    shortCycle = 'ÉLIMINATION';
-    fullCycle = 'ÉLIMINATION';
+  if (h >= 4 && h < 8) {
+    shortCycle = 'ÉLIMINATION (Aube)';
+    fullCycle = 'ÉLIMINATION ACTIVE & DRAINAGE';
     iconClass = 'ri-sun-cloudy-fill';
-    descText = "04h - 12h • Nettoyage corporel & détox. Privilégiez l'eau, les tisanes et les fruits aqueux.";
+    descText = "04h - 08h • Pic d'élimination des toxines & filtration rénale. Hydratation à jeun (eau tiède, citron, sève).";
     phaseColor = '#f59e0b';
-  } else if (h >= 12 && h < 20) {
-    shortCycle = 'APPROPRIATION';
-    fullCycle = 'APPROPRIATION';
+  } else if (h >= 8 && h < 12) {
+    shortCycle = 'ÉLIMINATION (Matin)';
+    fullCycle = 'ÉLIMINATION DIGESTIVE';
+    iconClass = 'ri-sun-foggy-fill';
+    descText = "08h - 12h • Nettoyage intestinal & réveil enzymatique. Privilégiez les fruits aqueux, jus ou jeûne matinal.";
+    phaseColor = '#eab308';
+  } else if (h >= 12 && h < 16) {
+    shortCycle = 'APPROPRIATION (Zénith)';
+    fullCycle = 'APPROPRIATION MAXIMALE';
     iconClass = 'ri-sun-fill';
-    descText = "12h - 20h • Feu digestif au maximum. Moment propice pour les repas et la nutrition.";
+    descText = "12h - 16h • Feu digestif au maximum. Fenêtre idéale pour le repas principal dense, vivant & nutritif.";
     phaseColor = '#10b981';
+  } else if (h >= 16 && h < 20) {
+    shortCycle = 'APPROPRIATION (Soir)';
+    fullCycle = 'DIGESTION & TRANSITION';
+    iconClass = 'ri-sunset-fill';
+    descText = "16h - 20h • Fin de la fenêtre d'alimentation. Dîner léger, légumes vapeurs minéralisants et tisanes digestives.";
+    phaseColor = '#14b8a6';
+  } else if (h >= 20 && h < 24) {
+    shortCycle = 'ASSIMILATION';
+    fullCycle = 'ASSIMILATION CELLULAIRE';
+    iconClass = 'ri-moon-fill';
+    descText = "20h - 00h • Assimilation des nutriments & sécrétion de mélatonine. Repos digestif et détente nerveuse.";
+    phaseColor = '#818cf8';
   } else {
     shortCycle = 'RÉGÉNÉRATION';
-    fullCycle = 'ASSIMILATION & RÉGÉNÉRATION';
+    fullCycle = 'RÉGÉNÉRATION & AUTOPHAGIE';
     iconClass = 'ri-moon-clear-fill';
-    descText = "20h - 04h • Réparation cellulaire nocturne. Système digestif au repos complet.";
-    phaseColor = '#818cf8';
+    descText = "00h - 04h • Sommeil profond, autophagie cellulaire & détox hépatique nocturne. Repos absolu.";
+    phaseColor = '#a855f7';
   }
 
+  return { shortCycle, fullCycle, iconClass, descText, phaseColor };
+}
+
+function updateCircadianDisplay(h, m, isScrubbing = false) {
+  const clockTime = document.getElementById('clockTime');
+  const clockPhase = document.getElementById('clockPhase');
+  const clockIndicator = document.getElementById('clockIndicator');
+  const phaseIcon = document.getElementById('phaseIcon');
+  const phaseTitle = document.getElementById('phaseTitle');
+  const phaseDesc = document.getElementById('phaseDesc');
+  const timePill = document.getElementById('circadianTimePill');
+  const hintEl = document.getElementById('clockDragHint');
+
+  const mPad = m.toString().padStart(2, '0');
+  const timeStr = `${h.toString().padStart(2, '0')}:${mPad}`;
+
+  if (clockTime) clockTime.textContent = timeStr;
+  if (!isScrubbing && timePill) timePill.textContent = timeStr;
+
+  const data = getCircadianPhaseData(h, m);
+
   if (clockPhase) {
-    clockPhase.textContent = shortCycle;
-    clockPhase.style.color = phaseColor;
+    clockPhase.textContent = data.shortCycle;
+    clockPhase.style.color = data.phaseColor;
   }
   if (phaseTitle) {
-    phaseTitle.textContent = fullCycle;
-    phaseTitle.style.color = phaseColor;
+    phaseTitle.textContent = data.fullCycle;
+    phaseTitle.style.color = data.phaseColor;
   }
   if (phaseDesc) {
-    phaseDesc.textContent = descText;
+    phaseDesc.textContent = data.descText;
   }
   if (phaseIcon) {
-    phaseIcon.className = iconClass;
-    phaseIcon.style.color = phaseColor;
+    phaseIcon.className = data.iconClass;
+    phaseIcon.style.color = data.phaseColor;
   }
 
   if (clockIndicator) {
     // 0h = 180deg (bottom), 6h = 270deg (left), 12h = 0deg (top), 18h = 90deg (right)
-    const minutesTotal = h * 60 + parseInt(m);
+    const minutesTotal = h * 60 + m;
     const angle = 180 + (minutesTotal / 1440) * 360;
-    clockIndicator.innerHTML = `<i class="${iconClass}" style="color:${phaseColor}"></i>`;
+    clockIndicator.innerHTML = `<i class="${data.iconClass}" style="color:${data.phaseColor}"></i>`;
     clockIndicator.style.transform = `rotate(${angle}deg) translateY(-110px) rotate(-${angle}deg)`;
   }
-};
+
+  if (hintEl) {
+    if (isScrubbing) {
+      hintEl.innerHTML = `<i class="ri-refresh-line ri-spin" style="color:var(--accent)"></i> <strong style="color:var(--accent)">Exploration en cours : Relâchez pour revenir à l'heure actuelle</strong>`;
+    } else {
+      hintEl.innerHTML = `<i class="ri-drag-move-2-line"></i> <span>Faites tourner l'horloge pour explorer le cycle 24h</span>`;
+    }
+  }
+}
+
+function updateCircadianWidget() {
+  if (_isCircadianDragging) return;
+  const timeEl = document.getElementById('circadianTimePill');
+  if (!timeEl) return;
+
+  const now = new Date();
+  const h = now.getHours();
+  const m = now.getMinutes();
+  updateCircadianDisplay(h, m, false);
+}
+
+function initCircadianClockInteractivity() {
+  const ring = document.getElementById('circadianClockRing');
+  if (!ring || ring._hasCircadianEvents) return;
+  ring._hasCircadianEvents = true;
+
+  function getTimeFromEvent(clientX, clientY) {
+    const rect = ring.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const dx = clientX - centerX;
+    const dy = clientY - centerY;
+
+    let deg = Math.atan2(dx, -dy) * (180 / Math.PI);
+    if (deg < 0) deg += 360;
+
+    let normDeg = (deg - 180 + 360) % 360;
+    let totalMinutes = Math.round((normDeg / 360) * 1440);
+    if (totalMinutes >= 1440) totalMinutes = 0;
+
+    totalMinutes = Math.round(totalMinutes / 5) * 5;
+    if (totalMinutes >= 1440) totalMinutes = 0;
+
+    const h = Math.floor(totalMinutes / 60);
+    const m = totalMinutes % 60;
+    return { h, m };
+  }
+
+  function handleStart(clientX, clientY) {
+    _isCircadianDragging = true;
+    ring.classList.add('dragging');
+    if (navigator.vibrate) {
+      try { navigator.vibrate(8); } catch (_) {}
+    }
+    const { h, m } = getTimeFromEvent(clientX, clientY);
+    updateCircadianDisplay(h, m, true);
+  }
+
+  function handleMove(clientX, clientY) {
+    if (!_isCircadianDragging) return;
+    const { h, m } = getTimeFromEvent(clientX, clientY);
+    updateCircadianDisplay(h, m, true);
+  }
+
+  function handleEnd() {
+    if (!_isCircadianDragging) return;
+    _isCircadianDragging = false;
+    ring.classList.remove('dragging');
+    if (navigator.vibrate) {
+      try { navigator.vibrate(12); } catch (_) {}
+    }
+    setTimeout(() => {
+      updateCircadianWidget();
+    }, 50);
+  }
+
+  // Pointer Events (Mouse, Pen, Touch modern)
+  ring.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    if (ring.setPointerCapture && e.pointerId) {
+      try { ring.setPointerCapture(e.pointerId); } catch (_) {}
+    }
+    handleStart(e.clientX, e.clientY);
+  });
+  ring.addEventListener('pointermove', (e) => {
+    if (_isCircadianDragging) {
+      e.preventDefault();
+      handleMove(e.clientX, e.clientY);
+    }
+  });
+  ring.addEventListener('pointerup', (e) => {
+    handleEnd();
+  });
+  ring.addEventListener('pointercancel', (e) => {
+    handleEnd();
+  });
+
+  // Touch Events fallback for iOS WebKit
+  ring.addEventListener('touchstart', (e) => {
+    if (e.touches && e.touches[0]) {
+      e.preventDefault();
+      handleStart(e.touches[0].clientX, e.touches[0].clientY);
+    }
+  }, { passive: false });
+
+  ring.addEventListener('touchmove', (e) => {
+    if (_isCircadianDragging && e.touches && e.touches[0]) {
+      e.preventDefault();
+      handleMove(e.touches[0].clientX, e.touches[0].clientY);
+    }
+  }, { passive: false });
+
+  ring.addEventListener('touchend', (e) => {
+    handleEnd();
+  }, { passive: true });
+
+  ring.addEventListener('touchcancel', (e) => {
+    handleEnd();
+  }, { passive: true });
+}
 
 updateCircadianWidget();
 setInterval(updateCircadianWidget, 30000);
-document.addEventListener('DOMContentLoaded', updateCircadianWidget);
+document.addEventListener('DOMContentLoaded', () => {
+  updateCircadianWidget();
+  initCircadianClockInteractivity();
+});
+window.initCircadianClockInteractivity = initCircadianClockInteractivity;
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // MASCOT STUDIO HD MODAL CONTROLLER
