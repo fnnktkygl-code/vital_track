@@ -7836,8 +7836,10 @@ function playVideoAtTimestamp(mediaUrl, seconds = 0, title = '', type = 'local',
   document.body.style.overflow = 'hidden';
 }
 
+let videoTimeSyncInterval = null;
+
 function closeMediaVideoModal(e) {
-  if (videoTimeSyncInterval) {
+  if (typeof videoTimeSyncInterval !== 'undefined' && videoTimeSyncInterval) {
     clearInterval(videoTimeSyncInterval);
     videoTimeSyncInterval = null;
   }

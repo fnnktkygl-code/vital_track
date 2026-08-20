@@ -5,7 +5,48 @@
 [![AI Engine](https://img.shields.io/badge/AI-Google%20Gemini%20Flash-orange?logo=google&style=flat-square)](https://vitaltrackapp.vercel.app)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
 
-> **VitalTrack** est l'application compagnon ultime dédiée à la **santé holistique, la nutrition vitaliste et la régénération cellulaire**. Elle réunit les enseignements des plus grands pionniers de la santé naturelle (Arnold Ehret, Dr. Sebi, Dr. Robert Morse, David Wolfe, Dr. Leslie Taylor, Wim Hof) avec une intelligence artificielle multimodale de pointe.
+> **VitalTrack** est l'application compagnon ultime dédiée à la **santé holistique, la nutrition vitaliste et la régénération cellulaire**. Elle réunit les enseignements des plus grands pionniers de la santé naturelle (*Arnold Ehret, Dr. Sebi, Dr. Robert Morse, David Wolfe, Dr. Leslie Taylor, Wim Hof*) avec une intelligence artificielle multimodale de pointe.
+
+---
+
+## 📱 Aperçu & Captures d'Écran (Showcase App Store)
+
+### 💻 Expérience Desktop (Grand Écran)
+<div align="center">
+  <img src="docs/screenshots/desktop_dashboard.png" alt="VitalTrack Desktop Dashboard" width="900" style="border-radius:12px; box-shadow:0 12px 30px rgba(0,0,0,0.5);" />
+  <p><em>Tableau de bord vitaliste unifié : Chronomètre de jeûne, Score de Vitalité Biologique et Suivi des repas vivants.</em></p>
+</div>
+
+<br/>
+
+### 📱 Expérience Mobile (iPhone 15 Pro & Android)
+
+<div align="center">
+  <table>
+    <tr>
+      <td align="center" width="25%">
+        <img src="docs/screenshots/mobile_dashboard.png" width="100%" style="border-radius:16px;" alt="Mobile Dashboard" /><br/>
+        <strong>📊 1. Tableau de Bord</strong><br/>
+        <sub>Autophagie & Vitalité</sub>
+      </td>
+      <td align="center" width="25%">
+        <img src="docs/screenshots/mobile_ai_chat.png" width="100%" style="border-radius:16px;" alt="Coach IA Vitaliste" /><br/>
+        <strong>💬 2. Coach IA</strong><br/>
+        <sub>Conseils & RAG Vitaliste</sub>
+      </td>
+      <td align="center" width="25%">
+        <img src="docs/screenshots/mobile_scanner.png" width="100%" style="border-radius:16px;" alt="Scanner Visuel IA" /><br/>
+        <strong>📸 3. Scanner IA</strong><br/>
+        <sub>PRAL & Électrisation</sub>
+      </td>
+      <td align="center" width="25%">
+        <img src="docs/screenshots/mobile_media.png" width="100%" style="border-radius:16px;" alt="Médiathèque Bilingue" /><br/>
+        <strong>🎬 4. Vidéos & Masterclasses</strong><br/>
+        <sub>Doublage Français Multi-Voix</sub>
+      </td>
+    </tr>
+  </table>
+</div>
 
 ---
 
@@ -31,21 +72,21 @@ graph TD
 
 1. **🍇 Arnold Ehret (Système de Guérison du Régime Sans Mucus)** :
    * Analyse du potentiel mucogène des aliments et protocoles de transition progressive.
-   * Théorie de la vitalité : $V = P - E$ (Vitalité = Puissance - Élimination/Obstruction).
+   * Équation fondamentale : $V = P - E$ (Vitalité = Puissance - Élimination/Obstruction).
 
 2. **⚡ Dr. Sebi (Nutrition Bio-Électrique Cellulaire)** :
-   * Recommandations d'aliments natifs vivants, non hybridés à graines fertiles (Sea Moss, Fucus, Fonio, etc.).
-   * Maintien du pH alcalin intra-cellulaire et élimination des acides toxiques.
+   * Recommandations d'aliments natifs vivants, non hybridés à graines fertiles (Sea Moss, Fucus, Fonio, Burdock).
+   * Maintien du pH alcalin intra-cellulaire et élimination des dépôts acides.
 
 3. **🌊 Dr. Robert Morse (Miracle de la Détoxication Cellulaire)** :
-   * Drainage du système lymphatique et ouverture des émonctoires (reins, peau, intestins, poumons).
-   * Mono-diètes de fruits astringents (raisins, agrumes, melons).
+   * Drainage du système lymphatique et ouverture des 4 grands émonctoires (reins, peau, intestins, poumons).
+   * Mono-diètes de fruits astringents (raisins noirs, agrumes sauvages, pastèques à pépins).
 
 4. **🥑 David Wolfe (Sunfood Diet & Superaliments)** :
-   * Alimentation vivante à haute densité photonique et enzymes actives.
+   * Alimentation vivante à haute énergie photonique, huiles végétales crues et minéralisation profonde.
 
 5. **🌳 Dr. Leslie Taylor (Pharmacopée Amazonienne Raintree)** :
-   * Base de données complète de monographies botaniques certifiées (Pau d'Arco, Cat's Claw, Chuchuhuasi, etc.).
+   * Base de données complète de monographies botaniques (Pau d'Arco, Griffe de Chat, Chuchuhuasi, etc.).
 
 6. **🧘 Wim Hof (Maîtrise du Souffle & Régénération)** :
    * Sessions de respiration guidées immersives avec rétentions d'oxygène et stimulation de l'autophagie.
@@ -56,14 +97,14 @@ graph TD
 
 ### 🤖 1. Coach IA Vitaliste Multimodal
 * Dialogue intelligent en streaming propulsé par **Google Gemini**.
-* Réponses fondées rigoureusement sur les corpus documentaires des maîtres du vitalisme.
-* Synthèse vocale et transcription audio neuronale.
+* Réponses étayées par le corpus documentaire authentique des pionniers de la santé naturelle.
+* Reconnaissance vocale et transcription en direct.
 
 ### 📸 2. Scanner Visuel & Diagnostic d'Assiette IA
-* Prenez une photo de votre plat : l'IA identifie instantanément les ingrédients, calcule la classification **NOVA**, l'indice **PRAL** rénal (potentiel acidifiant ou alcalinisant) et suggère des substituts vivants pour électriser le repas.
+* Prenez une photo de votre plat : l'IA identifie instantanément les ingrédients, calcule la classification **NOVA**, l'indice **PRAL** rénal (+/- mEq/100g) et suggère des substituts vivants pour électriser le repas.
 
 ### ⏳ 3. Traqueur de Jeûne & Autophagie
-* Gestion de tous les rythmes de jeûne : **16:8, 18:6, 20:4 (Warrior), 24h, 36h (Moine), Jeûne sec ou hydrique, et Ramadan**.
+* Suivi de tous les rythmes de jeûne : **16:8, 18:6, 20:4 (Warrior), 24h, 36h (Moine), Jeûne sec ou hydrique, et Ramadan**.
 * Chronomètre dynamique, paliers métaboliques en temps réel (cétose, autophagie, pic d'hormone de croissance).
 
 ### 🫁 4. Studio de Respiration Prānique
@@ -71,13 +112,17 @@ graph TD
 * Compte à rebours visuel et guidage audio immersif.
 
 ### 📚 5. Médiathèque Bilingue HD & Masterclasses
-* Vidéos de référence (Documentaires Dr. Sebi, Masterclasses Wim Hof) disponibles en **Version Originale Anglaise** et en **Version Française avec Doublage Studio Continu (Whisper AI + Edge Neural Voices)**.
+* Vidéos de référence disponibles en **Version Originale Anglaise** et en **Version Française avec Doublage Studio Multi-Voix Continu** (alternance des voix de Rock Newman et du Dr. Sebi avec synchronisation Whisper).
 
 ### 🔒 6. Confidentialité & RGPD Intégral
 * **Architecture Zero-Knowledge** : vos données sont isolées localement sur votre appareil.
-* **Droit à la portabilité (Art. 20)** : export JSON en un clic.
-* **Droit à l'oubli (Art. 17)** : effacement complet et définitif en un clic.
-* **Authentification Google Identity Services** hermétique par compte utilisateur.
+* **Droit à la portabilité (Art. 20)** : export JSON complet en 1 clic.
+* **Droit à l'oubli (Art. 17)** : effacement complet et définitif en 1 clic.
+* **Bouton de déconnexion immédiate** et gestion hermétique par profil Google.
+
+<div align="center">
+  <img src="docs/screenshots/desktop_privacy.png" alt="VitalTrack Privacy and GDPR Center" width="800" style="border-radius:12px;" />
+</div>
 
 ---
 
@@ -93,13 +138,6 @@ graph TD
 
 ## 💻 Installation & Développement Local
 
-### Prérequis
-* **Node.js** >= 18.0.0
-* **npm** >= 9.0.0
-* **Python** 3.10+ & **FFmpeg** (pour les scripts de traitement média)
-
-### Installation
-
 ```bash
 # 1. Cloner le dépôt
 git clone https://github.com/fnnktkygl-code/vital_track.git
@@ -111,15 +149,6 @@ npm install
 
 # 3. Lancer le serveur de développement local
 npm run dev
-```
-
-Ouvrez ensuite votre navigateur sur `http://localhost:5173`.
-
-### Build de Production
-
-```bash
-cd web-app
-npm run build
 ```
 
 ---

@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """
-🎙️ VITALTRACK SEAMLESS 100% CONTINUOUS MASTER DUBBING PIPELINE (TURBO MULTI-THREAD)
-Génère une piste audio française continue de 56 minutes sans aucun blanc ni délai,
-calée sur les 1053 segments réels de la transcription Whisper.
+🎙️ VITALTRACK MULTI-SPEAKER STUDIO DUBBING PIPELINE
+Génère une piste audio française continue de 56 minutes avec 3 voix distinctes :
+- Rock Newman (Journaliste TV) : fr-FR-HenriNeural
+- Dr. Sebi (Sage / Herboriste aîné) : fr-BE-GerardNeural (timbre chaud et profond)
+- Annonces / Narratrice : fr-FR-VivienneMultilingualNeural
 """
 
 import os
@@ -19,11 +21,12 @@ BASE_DIR = Path("/Users/richard/Developer/vital_track")
 WEB_APP_DIR = BASE_DIR / "web-app"
 PUBLIC_VIDEOS_DIR = WEB_APP_DIR / "public" / "videos"
 SCRATCH_DIR = BASE_DIR / "scratch"
-CLIPS_DIR = SCRATCH_DIR / "master_dubbing_clips"
+CLIPS_DIR = SCRATCH_DIR / "master_dubbing_clips_multi"
 SILENCE_DIR = SCRATCH_DIR / "silence_cache"
 
 VOICE_ROCK = "fr-FR-HenriNeural"
-VOICE_SEBI = "fr-FR-RemyMultilingualNeural"
+VOICE_SEBI = "fr-BE-GerardNeural"
+VOICE_FEMALE = "fr-FR-VivienneMultilingualNeural"
 
 def get_audio_duration(file_path):
     cmd = [
@@ -114,19 +117,33 @@ def translate_single(item):
         translator = GoogleTranslator(source='en', target='fr')
         fr = translator.translate(txt_en)
         item['text_fr'] = fix_translation(fr)
-    except Exception as e:
+    except Exception:
         item['text_fr'] = txt_en
     return item
 
-async def generate_speech_for_sentence(idx, item, voice, out_path, sem):
+async def generate_speech_for_sentence(idx, item, out_path, sem):
     async with sem:
         text = item['text_fr']
         dur = item['end'] - item['start']
-        rate = "+6%" if dur < 5.0 else "+2%"
-        comm = edge_tts.Communicate(text, voice, rate=rate, pitch="+0Hz")
+        speaker = item['speaker']
+        voice = item['voice']
+        
+        # Ajustement des tonalités selon le personnage pour un contraste humain maximal
+        if speaker == "sebi":
+            # Voix du sage : plus posée, chaude et profonde
+            rate = "-1%" if dur > 8 else "+2%"
+            pitch = "-2Hz"
+        elif speaker == "female":
+            rate = "+2%"
+            pitch = "+0Hz"
+        else: # rock (journaliste)
+            rate = "+5%" if dur < 6.0 else "+2%"
+            pitch = "+1Hz"
+            
+        comm = edge_tts.Communicate(text, voice, rate=rate, pitch=pitch)
         await comm.save(str(out_path))
-        if (idx + 1) % 25 == 0 or idx == 0:
-            print(f"  [TTS] Phrase #{idx+1} terminée [{item['start']:.1f}s -> {item['end']:.1f}s] ({voice})", flush=True)
+        if (idx + 1) % 40 == 0 or idx == 0:
+            print(f"  [TTS Multi-Voix] #{idx+1} [{speaker.upper()}] [{item['start']:.1f}s -> {item['end']:.1f}s]: {text[:45]}...", flush=True)
 
 async def build_sebi_continuous_audio():
     CLIPS_DIR.mkdir(parents=True, exist_ok=True)
@@ -137,44 +154,55 @@ async def build_sebi_continuous_audio():
     sentences = clean_and_group_transcript(json_path)
     print(f"   ➔ {len(sentences)} phrases continues identifiées sur 56 minutes.", flush=True)
 
-    print("\n🌐 2. Traduction française ultra-rapide (30 workers parallèles)...", flush=True)
+    print("\n🎭 2. Détection contextuelle des rôles (Rock Newman vs Dr. Sebi)...", flush=True)
     current_speaker = "rock"
+    
     for i, s in enumerate(sentences):
-        txt_en = s['text']
-        if i == 0 or "Welcome to The Rock Newman Show" in txt_en or "I'm Rock Newman" in txt_en or "We wanna find out today" in txt_en:
+        txt_en = s['text'].lower()
+        
+        # Détection précise de l'orateur
+        if i == 0 or "welcome to the rock newman show" in txt_en or "i'm rock newman" in txt_en or "this evening on the rock newman" in txt_en:
             current_speaker = "rock"
-        elif "When the first patient" in txt_en or "I was born" in txt_en or "I went to" in txt_en or "Because" in txt_en and current_speaker == "rock":
+        elif "this program was produced by whut" in txt_en:
+            current_speaker = "female"
+        elif "when the first patient" in txt_en or "i was born" in txt_en or "i went to mexico" in txt_en or "alfredo cortez" in txt_en or "my grandmother" in txt_en:
             current_speaker = "sebi"
-        elif txt_en.startswith("- "):
+        elif "the mucus" in txt_en or "the starch" in txt_en or "gorilla does not eat" in txt_en or "we have people at the village" in txt_en:
+            current_speaker = "sebi"
+        elif txt_en.startswith("- ") or txt_en.startswith("well, ") or txt_en.startswith("yes, ") or txt_en.startswith("no, "):
             current_speaker = "sebi" if current_speaker == "rock" else "rock"
-        elif "?" in txt_en and len(txt_en) < 120 and current_speaker == "sebi":
+        elif "?" in s['text'] and len(s['text']) < 140 and current_speaker == "sebi":
+            current_speaker = "rock"
+        elif "thank you so much for joining us" in txt_en:
             current_speaker = "rock"
             
         s['speaker'] = current_speaker
-        s['voice'] = VOICE_ROCK if current_speaker == "rock" else VOICE_SEBI
+        if current_speaker == "rock":
+            s['voice'] = VOICE_ROCK
+        elif current_speaker == "sebi":
+            s['voice'] = VOICE_SEBI
+        else:
+            s['voice'] = VOICE_FEMALE
 
+    print("\n🌐 3. Traduction française ultra-rapide (30 workers parallèles)...", flush=True)
     with ThreadPoolExecutor(max_workers=30) as executor:
         sentences = list(executor.map(translate_single, sentences))
     print(f"   ✅ Les {len(sentences)} phrases ont été traduites avec succès !", flush=True)
 
-    # Sauvegarder la transcription française complète pour consultation ou sous-titres
-    with open(SCRATCH_DIR / "sebi_french_full_transcript.json", "w", encoding="utf-8") as f:
-        json.dump(sentences, f, ensure_ascii=False, indent=2)
-
-    print("\n🎙️ 3. Synthèse vocale neuronale studio pour les 359 phrases...", flush=True)
+    print("\n🎙️ 4. Synthèse vocale multi-voix neuronale studio...", flush=True)
     sem = asyncio.Semaphore(15)
     tasks = []
     
     for i, s in enumerate(sentences):
         clip_path = CLIPS_DIR / f"clip_{i+1:04d}.mp3"
         s['clip_path'] = clip_path
-        tasks.append(generate_speech_for_sentence(i, s, s['voice'], clip_path, sem))
+        tasks.append(generate_speech_for_sentence(i, s, clip_path, sem))
         
     await asyncio.gather(*tasks)
-    print("   ✅ Toutes les 359 synthèses vocales sont générées !", flush=True)
+    print("   ✅ Toutes les synthèses multi-voix sont prêtes !", flush=True)
 
-    print("\n🎚️ 4. Concaténation de la piste continue 56 minutes...", flush=True)
-    concat_list_file = SCRATCH_DIR / "concat_dub_list.txt"
+    print("\n🎚️ 5. Concaténation de la piste continue 56 minutes multi-personnages...", flush=True)
+    concat_list_file = SCRATCH_DIR / "concat_dub_multi_list.txt"
     with open(concat_list_file, "w", encoding="utf-8") as f_concat:
         curr_timeline_pos = 0.0
         for i, s in enumerate(sentences):
@@ -194,7 +222,7 @@ async def build_sebi_continuous_audio():
             clip_dur = get_audio_duration(clip_path)
             curr_timeline_pos += clip_dur
 
-    master_speech_path = SCRATCH_DIR / "dr_sebi_full_french_speech.mp3"
+    master_speech_path = SCRATCH_DIR / "dr_sebi_multi_french_speech.mp3"
     print(f"   Assemblage ffmpeg vers {master_speech_path.name}...", flush=True)
     cmd_concat = [
         "/opt/homebrew/bin/ffmpeg", "-y",
@@ -204,9 +232,9 @@ async def build_sebi_continuous_audio():
         str(master_speech_path)
     ]
     subprocess.run(cmd_concat, capture_output=True)
-    print(f"   ✅ Piste vocale maîtresse continue de {curr_timeline_pos/60:.1f} minutes créée !", flush=True)
+    print(f"   ✅ Piste vocale maîtresse multi-voix de {curr_timeline_pos/60:.1f} minutes créée !", flush=True)
 
-    print("\n🎬 5. Mixage final vidéo avec Audio Ducking automatique...", flush=True)
+    print("\n🎬 6. Mixage final vidéo avec Audio Ducking automatique...", flush=True)
     out_video = PUBLIC_VIDEOS_DIR / "dr-sebi-documentary-fr.mp4"
     orig_video = PUBLIC_VIDEOS_DIR / "dr-sebi-documentary.mp4"
 
@@ -228,7 +256,7 @@ async def build_sebi_continuous_audio():
     res = subprocess.run(cmd_mix, capture_output=True, text=True)
     if res.returncode == 0:
         size_mb = out_video.stat().st_size / (1024 * 1024)
-        print(f"🎉 VIDÉO DR. SEBI FINALE CONTINUE RENDUE : {out_video.name} ({size_mb:.1f} MB)", flush=True)
+        print(f"🎉 VIDÉO DR. SEBI MULTI-VOIX RENDUE : {out_video.name} ({size_mb:.1f} MB)", flush=True)
     else:
         print(f"❌ Erreur ffmpeg : {res.stderr[-500:]}", flush=True)
 
