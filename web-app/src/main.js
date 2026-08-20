@@ -11,11 +11,15 @@ import { auth } from './auth.js';
 import { MEDIA_SEARCH_DATABASE, searchMediaKnowledge, getExpandedSearchTokens } from './data/mediaSearchIndex.js';
 import { VIDEO_DUBBING_DATABASE, getDubbingDataForVideo } from './data/videoDubbingData.js';
 import { dubbingEngine } from './utils/dubbingEngine.js';
+import { VITALIST_WISDOM, getRandomWisdom, getCircadianContextWisdom } from './data/vitalistWisdom.js';
 
 // Exposer globalement pour l'interface utilisateur
 window.vitalTrackI18n = { t, getLanguage, setLanguage, toggleLanguage, onLanguageChange };
 window.pigeonNudges = pigeonNudges;
 window.vitalTrackAuth = auth;
+window.VITALIST_WISDOM = VITALIST_WISDOM;
+window.getRandomWisdom = getRandomWisdom;
+window.getCircadianContextWisdom = getCircadianContextWisdom;
 window.MEDIA_SEARCH_DATABASE = MEDIA_SEARCH_DATABASE;
 window.searchMediaKnowledge = searchMediaKnowledge;
 window.getExpandedSearchTokens = getExpandedSearchTokens;
@@ -7964,29 +7968,185 @@ function renderBreathingHistory() {
 }
 window.renderBreathingHistory = renderBreathingHistory;
 
-// ═══════ SMART INSIGHT ═══════
-function initSmartInsight() {
-  const insights = [
-    '🌿 Les aliments électriques du Dr. Sebi sont naturellement alcalins et non hybridés — privilégiez-les !',
-    '💧 Buvez de l\'eau de source au minimum 1L avant 10h du matin pour aider le drainage lymphatique.',
-    '🍇 Le Dr. Morse recommande les mono-diètes de raisins pour les cures de detox lymphatique.',
-    '❄️ 2 minutes de douche froide après vos respirations Wim Hof activent les graisses brunes.',
-    '🌾 Arnold Ehret : la transition est la clé. Ne passez pas brutalement au cru, réduisez progressivement le mucus.',
-    '🍋 Le citron, bien qu\'acide au goût, est l\'un des aliments les plus alcalinisants (PRAL très négatif).',
-    '🧘 La respiration Box (4-4-4-4) est utilisée par les Navy SEALs pour gérer le stress.',
-    '🌙 Le jeûne de Ramadan combine abstinence hydrique diurne et alimentation nocturne — hydratez-vous au ftour et au shour.',
-    '👅 Ehret (Miroir Magique) : La couche de mucus sur votre langue après un jour de jeûne reflète l\'encrassement de vos organes internes.',
-    '🌬️ Arnold Ehret : "L\'air pur constitue le carburant fondamental du moteur humain". Gardez vos fenêtres ouvertes !',
-    '🩺 Ehret : Une abondance de globules blancs n\'est pas optimale, c\'est la manifestation directe de mucus mort dans la circulation.',
-    '🩸 Ehret : La vitalité = puissance motrice - obstruction interne (mucus et toxines).'
-  ];
-  const smartInsightText = document.querySelector('#smartInsight span');
-  if (smartInsightText) {
-    smartInsightText.textContent = insights[Math.floor(Math.random() * insights.length)];
-  } else {
-    document.getElementById('smartInsight').textContent = insights[Math.floor(Math.random() * insights.length)];
+// ═══════ DYNAMIC WISDOM CAPSULE & GRIMOIRE ENGINE ═══════
+let _currentWisdom = null;
+let _wisdomFavorites = JSON.parse(localStorage.getItem('vital_wisdom_favorites') || '[]');
+
+function renderWisdomCapsule(wisdomItem = null) {
+  const item = wisdomItem || getCircadianContextWisdom();
+  if (!item) return;
+  _currentWisdom = item;
+
+  const avatar = document.getElementById('wisdomAuthorAvatar');
+  const name = document.getElementById('wisdomAuthorName');
+  const work = document.getElementById('wisdomWorkName');
+  const quote = document.getElementById('wisdomQuoteText');
+  const action = document.getElementById('wisdomTipAction');
+  const pill = document.getElementById('wisdomCategoryPill');
+  const favBtn = document.getElementById('wisdomFavoriteBtn');
+  const favIcon = document.getElementById('wisdomFavoriteIcon');
+
+  if (avatar) {
+    avatar.textContent = item.authorAvatar;
+    avatar.style.borderColor = `${item.authorColor}55`;
+    avatar.style.background = `${item.authorColor}18`;
+  }
+  if (name) name.textContent = item.author;
+  if (work) work.textContent = item.work;
+  if (quote) quote.textContent = `« ${item.quote} »`;
+  if (action) action.textContent = item.actionableTip;
+  if (pill) {
+    pill.textContent = item.categoryLabel;
+    pill.style.borderColor = `${item.authorColor}44`;
+    pill.style.color = item.authorColor;
+  }
+
+  const isFav = _wisdomFavorites.includes(item.id);
+  if (favBtn && favIcon) {
+    if (isFav) {
+      favBtn.classList.add('active-fav');
+      favIcon.className = 'ri-star-fill';
+    } else {
+      favBtn.classList.remove('active-fav');
+      favIcon.className = 'ri-star-line';
+    }
   }
 }
+window.renderWisdomCapsule = renderWisdomCapsule;
+
+function shuffleWisdomCapsule() {
+  const quoteBox = document.getElementById('wisdomQuoteBox');
+  if (quoteBox) {
+    quoteBox.style.opacity = '0.3';
+    quoteBox.style.transform = 'scale(0.98)';
+  }
+  setTimeout(() => {
+    const next = getRandomWisdom();
+    renderWisdomCapsule(next);
+    if (quoteBox) {
+      quoteBox.style.opacity = '1';
+      quoteBox.style.transform = 'scale(1)';
+    }
+  }, 180);
+}
+window.shuffleWisdomCapsule = shuffleWisdomCapsule;
+
+function toggleWisdomFavorite() {
+  if (!_currentWisdom) return;
+  const id = _currentWisdom.id;
+  const idx = _wisdomFavorites.indexOf(id);
+  if (idx > -1) {
+    _wisdomFavorites.splice(idx, 1);
+  } else {
+    _wisdomFavorites.push(id);
+  }
+  localStorage.setItem('vital_wisdom_favorites', JSON.stringify(_wisdomFavorites));
+  renderWisdomCapsule(_currentWisdom);
+}
+window.toggleWisdomFavorite = toggleWisdomFavorite;
+
+function searchWisdomInDocs() {
+  if (!_currentWisdom || !_currentWisdom.searchQuery) return;
+  const query = _currentWisdom.searchQuery;
+  showPage('knowledge');
+  const input = document.getElementById('mediaSearchInput');
+  if (input) {
+    input.value = query;
+    if (typeof window.executeMediaSearch === 'function') {
+      window.executeMediaSearch(query);
+    }
+  }
+}
+window.searchWisdomInDocs = searchWisdomInDocs;
+
+// ── Grimoire de Sagesse Modal ──
+function openWisdomGrimoireModal() {
+  const modal = document.getElementById('wisdomGrimoireModal');
+  if (!modal) return;
+  modal.style.display = 'flex';
+  filterWisdomGrimoire();
+}
+window.openWisdomGrimoireModal = openWisdomGrimoireModal;
+
+function closeWisdomGrimoireModal(e) {
+  if (e && e.target && e.target.id !== 'wisdomGrimoireModal' && !e.target.closest('.modal-close-btn')) return;
+  const modal = document.getElementById('wisdomGrimoireModal');
+  if (modal) modal.style.display = 'none';
+}
+window.closeWisdomGrimoireModal = closeWisdomGrimoireModal;
+
+function filterWisdomGrimoire() {
+  const grid = document.getElementById('wisdomGrimoireGrid');
+  if (!grid) return;
+
+  const searchInput = document.getElementById('wisdomGrimoireSearch');
+  const authorSelect = document.getElementById('wisdomAuthorFilter');
+  const catSelect = document.getElementById('wisdomCategoryFilter');
+
+  const q = (searchInput ? searchInput.value : '').toLowerCase().trim();
+  const author = authorSelect ? authorSelect.value : 'all';
+  const cat = catSelect ? catSelect.value : 'all';
+
+  let items = VITALIST_WISDOM;
+
+  if (author !== 'all') {
+    items = items.filter(w => w.author.toLowerCase().includes(author));
+  }
+  if (cat !== 'all') {
+    items = items.filter(w => w.category === cat);
+  }
+  if (q) {
+    items = items.filter(w =>
+      w.quote.toLowerCase().includes(q) ||
+      w.actionableTip.toLowerCase().includes(q) ||
+      w.author.toLowerCase().includes(q) ||
+      w.work.toLowerCase().includes(q) ||
+      w.categoryLabel.toLowerCase().includes(q)
+    );
+  }
+
+  if (items.length === 0) {
+    grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:30px; color:var(--text-dim);">Aucun précepte ne correspond à vos filtres.</div>';
+    return;
+  }
+
+  grid.innerHTML = items.map(item => `
+    <div class="wisdom-grimoire-card" onclick="window.selectWisdomFromGrimoire('${item.id}')" style="cursor:pointer;" title="Afficher sur le tableau de bord">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span style="font-size:1.2rem;">${item.authorAvatar}</span>
+          <div>
+            <div style="font-weight:700; font-size:0.86rem; color:var(--text);">${item.author}</div>
+            <div style="font-size:0.72rem; color:var(--text-dim);">${item.work}</div>
+          </div>
+        </div>
+        <span class="wisdom-category-pill" style="color:${item.authorColor}; border-color:${item.authorColor}44;">${item.categoryLabel}</span>
+      </div>
+      <p style="font-size:0.86rem; font-style:italic; line-height:1.45; color:var(--text); margin:0;">
+        « ${item.quote} »
+      </p>
+      <div style="font-size:0.78rem; background:rgba(16,185,129,0.06); border-radius:8px; padding:8px 10px; border-left:3px solid ${item.authorColor};">
+        <strong>Application :</strong> ${item.actionableTip}
+      </div>
+    </div>
+  `).join('');
+}
+window.filterWisdomGrimoire = filterWisdomGrimoire;
+
+function selectWisdomFromGrimoire(id) {
+  const item = VITALIST_WISDOM.find(w => w.id === id);
+  if (item) {
+    renderWisdomCapsule(item);
+    const modal = document.getElementById('wisdomGrimoireModal');
+    if (modal) modal.style.display = 'none';
+  }
+}
+window.selectWisdomFromGrimoire = selectWisdomFromGrimoire;
+
+function initSmartInsight() {
+  renderWisdomCapsule();
+}
+window.initSmartInsight = initSmartInsight;
 
 // ═══════ SCANNER IA ═══════
 let _scanMascotRenderer = null;

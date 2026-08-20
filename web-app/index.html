@@ -595,13 +595,48 @@
         <div id="dashMealList"><p class="empty-state-sm">Aucun repas enregistré aujourd'hui.</p></div>
       </div>
 
-      <!-- Smart Insight -->
-      <div class="dash-card glass">
-        <h3><i class="ri-lightbulb-line"></i> Conseil du jour</h3>
-        <p id="smartInsight" class="insight-box">
-          <i class="ri-lightbulb-flash-line"></i>
-          <span>Chargement...</span>
-        </p>
+      <!-- Capsule de Savoir & Sagesse Vitaliste -->
+      <div class="wisdom-capsule-card glass" id="wisdomCapsule">
+        <div class="wisdom-header">
+          <div class="wisdom-author-badge">
+            <div class="wisdom-author-avatar" id="wisdomAuthorAvatar">🌿</div>
+            <div class="wisdom-author-info">
+              <div class="wisdom-author-name" id="wisdomAuthorName">Arnold Ehret</div>
+              <div class="wisdom-work-name" id="wisdomWorkName">Système de Guérison du Régime Sans Mucus</div>
+            </div>
+          </div>
+          <div class="wisdom-controls">
+            <button type="button" class="wisdom-btn-action" id="wisdomShuffleBtn" onclick="window.shuffleWisdomCapsule()" title="Découvrir un autre conseil">
+              <i class="ri-shuffle-line"></i> <span>Autre conseil</span>
+            </button>
+            <button type="button" class="wisdom-btn-action" id="wisdomGrimoireBtn" onclick="window.openWisdomGrimoireModal()" title="Explorer toute la bibliothèque de citations">
+              <i class="ri-book-open-line"></i> <span>Le Grimoire</span>
+            </button>
+            <button type="button" class="wisdom-btn-action" id="wisdomDeepSearchBtn" onclick="window.searchWisdomInDocs()" title="Lire l'extrait complet dans la bibliothèque">
+              <i class="ri-search-eye-line"></i> <span>Source</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="wisdom-quote-box" id="wisdomQuoteBox">
+          <p class="wisdom-quote-text" id="wisdomQuoteText">« La vitalité n'est pas le résultat d'une stimulation artificielle mais l'équation : Vitalité = Puissance Motrice – Obstruction interne. »</p>
+        </div>
+
+        <div class="wisdom-tip-box" id="wisdomTipBox">
+          <i class="ri-flashlight-line wisdom-tip-icon"></i>
+          <div class="wisdom-tip-content" id="wisdomTipContent">
+            <strong>Geste Pratique :</strong> <span id="wisdomTipAction">Réduisez les féculents cuits et les produits laitiers pour diminuer la viscosité du sang et le mucus intestinal.</span>
+          </div>
+        </div>
+
+        <div class="wisdom-footer">
+          <span class="wisdom-category-pill" id="wisdomCategoryPill">Régime Sans Mucus</span>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <button type="button" class="wisdom-btn-action" id="wisdomFavoriteBtn" onclick="window.toggleWisdomFavorite()" title="Ajouter aux favoris">
+              <i class="ri-star-line" id="wisdomFavoriteIcon"></i> <span>Favori</span>
+            </button>
+          </div>
+        </div>
       </div>
       </div>
     </div>
@@ -2763,6 +2798,56 @@
 
       <div style="font-size:0.75rem; color:var(--text-dim); line-height:1.4;">
         🔒 Conforme RGPD : Isolation locale hermétique par compte &amp; Droit à l'oubli intégral.
+      </div>
+    </div>
+  </div>
+  <!-- ═══════ MODALE GRIMOIRE DE SAGESSE VITALISTE ═══════ -->
+  <div id="wisdomGrimoireModal" class="modal-overlay" onclick="closeWisdomGrimoireModal(event)" style="display:none; z-index:99999;">
+    <div class="modal-card glass" onclick="event.stopPropagation()" style="max-width:820px; width:94%; max-height:88vh; display:flex; flex-direction:column; padding:26px 24px; border-radius:24px; border:1px solid rgba(16,185,129,0.3); box-shadow:0 20px 60px rgba(0,0,0,0.85); position:relative;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px;">
+        <div>
+          <h3 style="font-size:1.35rem; font-weight:800; color:var(--text); display:flex; align-items:center; gap:8px; margin:0 0 4px 0; font-family:var(--font);">
+            <i class="ri-book-open-line" style="color:var(--accent);"></i> Le Grimoire des Préceptes Vitalistes
+          </h3>
+          <p style="font-size:0.84rem; color:var(--text-dim); margin:0;">
+            Explorez les lois biologiques et conseils pratiques tirés des 13 ouvrages fondamentaux.
+          </p>
+        </div>
+        <button class="modal-close-btn" onclick="closeWisdomGrimoireModal(null)" style="background:var(--surface-hover); border:none; color:var(--text); width:34px; height:34px; border-radius:50%; cursor:pointer; font-size:1.2rem; display:flex; align-items:center; justify-content:center;">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+
+      <!-- Search & Filters -->
+      <div style="display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap;">
+        <div style="flex:1; min-width:200px; position:relative;">
+          <i class="ri-search-line" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-dim);"></i>
+          <input type="text" id="wisdomGrimoireSearch" placeholder="Rechercher par mot-clé (ex: lymphe, rein, jus, ehret)..." oninput="filterWisdomGrimoire()" style="width:100%; padding:10px 12px 10px 36px; border-radius:12px; background:var(--surface-hover); border:1px solid var(--border); color:var(--text); font-size:0.88rem; box-sizing:border-box;">
+        </div>
+        <select id="wisdomAuthorFilter" onchange="filterWisdomGrimoire()" style="padding:10px 14px; border-radius:12px; background:var(--surface-hover); border:1px solid var(--border); color:var(--text); font-size:0.88rem; cursor:pointer;">
+          <option value="all">Tous les Auteurs</option>
+          <option value="ehret">Arnold Ehret</option>
+          <option value="morse">Dr. Robert Morse</option>
+          <option value="sebi">Dr. Sebi</option>
+          <option value="wolfe">David Wolfe</option>
+          <option value="walker">Norman Walker</option>
+          <option value="taylor">Dr. Leslie Taylor</option>
+          <option value="hof">Wim Hof</option>
+        </select>
+        <select id="wisdomCategoryFilter" onchange="filterWisdomGrimoire()" style="padding:10px 14px; border-radius:12px; background:var(--surface-hover); border:1px solid var(--border); color:var(--text); font-size:0.88rem; cursor:pointer;">
+          <option value="all">Toutes les Thématiques</option>
+          <option value="mucusless">Régime Sans Mucus</option>
+          <option value="detox">Détox & Lymphe</option>
+          <option value="fasting">Jeûne & Autophagie</option>
+          <option value="pral">Aliments Électriques & PRAL</option>
+          <option value="herbs">Plantes & Dépuratifs</option>
+          <option value="breath">Respiration & Oxygénation</option>
+        </select>
+      </div>
+
+      <!-- Grimoire Grid -->
+      <div id="wisdomGrimoireGrid" class="wisdom-grimoire-grid">
+        <!-- Rendered dynamically -->
       </div>
     </div>
   </div>
