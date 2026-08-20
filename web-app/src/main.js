@@ -11074,60 +11074,129 @@ function updateDashStats() {
 let _isCircadianDragging = false;
 
 function getCircadianPhaseData(h, m = 0) {
-  let shortCycle = '';
-  let fullCycle = '';
-  let iconClass = '';
-  let descText = '';
-  let phaseColor = '';
-
   if (h >= 4 && h < 8) {
-    shortCycle = 'ÉLIMINATION (Aube)';
-    fullCycle = 'ÉLIMINATION ACTIVE & DRAINAGE';
-    iconClass = 'ri-sun-cloudy-fill';
-    descText = "04h - 08h • Pic d'élimination des toxines & filtration rénale. Hydratation à jeun (eau tiède, citron, sève).";
-    phaseColor = '#f59e0b';
+    return {
+      shortCycle: 'ÉLIMINATION (Aube)',
+      fullCycle: 'ÉLIMINATION ACTIVE',
+      timeSlot: '04h00 — 08h00',
+      iconClass: 'ri-sun-cloudy-fill',
+      tagline: "Pic d'élimination des toxines & filtration rénale",
+      phaseColor: '#f59e0b',
+      phaseBg: 'rgba(245,158,11,0.14)',
+      fireText: 'Feu digestif : Éteint (Jeûne hydrique)',
+      fireBadgeBg: 'rgba(245,158,11,0.15)',
+      fireBadgeColor: '#f59e0b',
+      chips: [
+        { icon: '💧', label: 'Eau tiède & Citron' },
+        { icon: '🫘', label: 'Filtration Rénale' },
+        { icon: '🌿', label: 'Sève de Bouleau' }
+      ]
+    };
   } else if (h >= 8 && h < 12) {
-    shortCycle = 'ÉLIMINATION (Matin)';
-    fullCycle = 'ÉLIMINATION DIGESTIVE';
-    iconClass = 'ri-sun-foggy-fill';
-    descText = "08h - 12h • Nettoyage intestinal & réveil enzymatique. Privilégiez les fruits aqueux, jus ou jeûne matinal.";
-    phaseColor = '#eab308';
+    return {
+      shortCycle: 'ÉLIMINATION (Matin)',
+      fullCycle: 'ÉLIMINATION DIGESTIVE',
+      timeSlot: '08h00 — 12h00',
+      iconClass: 'ri-sun-foggy-fill',
+      tagline: "Nettoyage intestinal & réveil enzymatique doux",
+      phaseColor: '#eab308',
+      phaseBg: 'rgba(234,179,8,0.14)',
+      fireText: 'Feu digestif : Échauffement doux',
+      fireBadgeBg: 'rgba(234,179,8,0.15)',
+      fireBadgeColor: '#eab308',
+      chips: [
+        { icon: '🍉', label: 'Fruits Aqueux' },
+        { icon: '🥤', label: 'Jus Verts Frais' },
+        { icon: '🚶', label: 'Stimulation Lymphe' }
+      ]
+    };
   } else if (h >= 12 && h < 16) {
-    shortCycle = 'APPROPRIATION (Zénith)';
-    fullCycle = 'APPROPRIATION MAXIMALE';
-    iconClass = 'ri-sun-fill';
-    descText = "12h - 16h • Feu digestif au maximum. Fenêtre idéale pour le repas principal dense, vivant & nutritif.";
-    phaseColor = '#10b981';
+    return {
+      shortCycle: 'APPROPRIATION (Zénith)',
+      fullCycle: 'APPROPRIATION MAXIMALE',
+      timeSlot: '12h00 — 16h00',
+      iconClass: 'ri-sun-fill',
+      tagline: "Capacité enzymatique & feu digestif à son apogée",
+      phaseColor: '#10b981',
+      phaseBg: 'rgba(16,185,129,0.15)',
+      fireText: 'Feu digestif : Maximum (Repas principal)',
+      fireBadgeBg: 'rgba(16,185,129,0.18)',
+      fireBadgeColor: '#10b981',
+      chips: [
+        { icon: '🥗', label: 'Repas Vivant & Dense' },
+        { icon: '🥑', label: 'Bonnes Graisses' },
+        { icon: '🔥', label: 'Digestion Optimale' }
+      ]
+    };
   } else if (h >= 16 && h < 20) {
-    shortCycle = 'APPROPRIATION (Soir)';
-    fullCycle = 'DIGESTION & TRANSITION';
-    iconClass = 'ri-sunset-fill';
-    descText = "16h - 20h • Fin de la fenêtre d'alimentation. Dîner léger, légumes vapeurs minéralisants et tisanes digestives.";
-    phaseColor = '#14b8a6';
+    return {
+      shortCycle: 'APPROPRIATION (Soir)',
+      fullCycle: 'DIGESTION & TRANSITION',
+      timeSlot: '16h00 — 20h00',
+      iconClass: 'ri-sunset-fill',
+      tagline: "Clôture de la fenêtre alimentaire & apaisement",
+      phaseColor: '#14b8a6',
+      phaseBg: 'rgba(20,184,166,0.14)',
+      fireText: 'Feu digestif : En décroissance',
+      fireBadgeBg: 'rgba(20,184,166,0.15)',
+      fireBadgeColor: '#14b8a6',
+      chips: [
+        { icon: '🍲', label: 'Dîner Léger' },
+        { icon: '🥦', label: 'Légumes Vapeur' },
+        { icon: '🍵', label: 'Tisane Digestive' }
+      ]
+    };
   } else if (h >= 20 && h < 24) {
-    shortCycle = 'ASSIMILATION';
-    fullCycle = 'ASSIMILATION CELLULAIRE';
-    iconClass = 'ri-moon-fill';
-    descText = "20h - 00h • Assimilation des nutriments & sécrétion de mélatonine. Repos digestif et détente nerveuse.";
-    phaseColor = '#818cf8';
+    return {
+      shortCycle: 'ASSIMILATION',
+      fullCycle: 'ASSIMILATION CELLULAIRE',
+      timeSlot: '20h00 — 00h00',
+      iconClass: 'ri-moon-fill',
+      tagline: "Absorption profonde des nutriments & sécrétion de mélatonine",
+      phaseColor: '#818cf8',
+      phaseBg: 'rgba(129,140,248,0.15)',
+      fireText: 'Feu digestif : Éteint (Repos complet)',
+      fireBadgeBg: 'rgba(129,140,248,0.18)',
+      fireBadgeColor: '#818cf8',
+      chips: [
+        { icon: '🧬', label: 'Réparation Tissulaire' },
+        { icon: '🛑', label: 'Zéro Solide' },
+        { icon: '🫖', label: 'Tisane Apaisante' }
+      ]
+    };
   } else {
-    shortCycle = 'RÉGÉNÉRATION';
-    fullCycle = 'RÉGÉNÉRATION & AUTOPHAGIE';
-    iconClass = 'ri-moon-clear-fill';
-    descText = "00h - 04h • Sommeil profond, autophagie cellulaire & détox hépatique nocturne. Repos absolu.";
-    phaseColor = '#a855f7';
+    return {
+      shortCycle: 'RÉGÉNÉRATION',
+      fullCycle: 'RÉGÉNÉRATION & AUTOPHAGIE',
+      timeSlot: '00h00 — 04h00',
+      iconClass: 'ri-moon-clear-fill',
+      tagline: "Sommeil profond, autophagie cellulaire & détox hépatique",
+      phaseColor: '#a855f7',
+      phaseBg: 'rgba(168,85,247,0.15)',
+      fireText: 'Feu digestif : Au repos absolu',
+      fireBadgeBg: 'rgba(168,85,247,0.18)',
+      fireBadgeColor: '#a855f7',
+      chips: [
+        { icon: '😴', label: 'Sommeil Profond' },
+        { icon: '🧹', label: 'Détox Hépatique' },
+        { icon: '🔬', label: 'Autophagie Active' }
+      ]
+    };
   }
-
-  return { shortCycle, fullCycle, iconClass, descText, phaseColor };
 }
 
 function updateCircadianDisplay(h, m, isScrubbing = false) {
   const clockTime = document.getElementById('clockTime');
   const clockPhase = document.getElementById('clockPhase');
   const clockIndicator = document.getElementById('clockIndicator');
+  const phaseIconBadge = document.getElementById('phaseIconBadge');
   const phaseIcon = document.getElementById('phaseIcon');
   const phaseTitle = document.getElementById('phaseTitle');
-  const phaseDesc = document.getElementById('phaseDesc');
+  const phaseTimeSlot = document.getElementById('phaseTimeSlot');
+  const phaseTagline = document.getElementById('phaseTagline');
+  const phaseFireStatus = document.getElementById('phaseFireStatus');
+  const phaseFireText = document.getElementById('phaseFireText');
+  const phaseChipsContainer = document.getElementById('phaseChipsContainer');
   const timePill = document.getElementById('circadianTimePill');
   const hintEl = document.getElementById('clockDragHint');
 
@@ -11147,12 +11216,36 @@ function updateCircadianDisplay(h, m, isScrubbing = false) {
     phaseTitle.textContent = data.fullCycle;
     phaseTitle.style.color = data.phaseColor;
   }
-  if (phaseDesc) {
-    phaseDesc.textContent = data.descText;
+  if (phaseTimeSlot) {
+    phaseTimeSlot.textContent = data.timeSlot;
+  }
+  if (phaseTagline) {
+    phaseTagline.textContent = data.tagline;
+  }
+  if (phaseIconBadge) {
+    phaseIconBadge.style.background = data.phaseBg;
+    phaseIconBadge.style.borderColor = data.phaseColor;
+    phaseIconBadge.style.color = data.phaseColor;
   }
   if (phaseIcon) {
     phaseIcon.className = data.iconClass;
     phaseIcon.style.color = data.phaseColor;
+  }
+  if (phaseFireStatus) {
+    phaseFireStatus.style.background = data.fireBadgeBg;
+    phaseFireStatus.style.color = data.fireBadgeColor;
+    phaseFireStatus.style.borderColor = data.phaseColor;
+  }
+  if (phaseFireText) {
+    phaseFireText.textContent = data.fireText;
+  }
+  if (phaseChipsContainer && Array.isArray(data.chips)) {
+    phaseChipsContainer.innerHTML = data.chips.map(c => `
+      <span class="phase-chip">
+        <span>${c.icon}</span>
+        <span>${c.label}</span>
+      </span>
+    `).join('');
   }
 
   if (clockIndicator) {
