@@ -4667,49 +4667,122 @@ function toggleProtocolsAccordion() {
   }
 };
 
+const HERB_PATHOLOGY_THESAURUS = {
+  crohn: ['crohn', 'colite', 'intestin', 'côlon', 'colon', 'mici', 'sii', 'muqueuse intestinale', 'muqueuses intestinales', 'muqueuses digestives', 'leaky gut', 'permeabilite', 'perméabilité', 'diverticulite', 'diarrhee', 'diarrhée', 'sangre de grado', 'griffe de chat', 'una de gato'],
+  colon: ['colon', 'côlon', 'colite', 'intestin', 'crohn', 'mici', 'sii', 'constipation', 'laxatif', 'diverticulite', 'péristaltisme'],
+  intestin: ['intestin', 'intestinal', 'intestinaux', 'crohn', 'colon', 'côlon', 'colite', 'sii', 'microbiote', 'flore', 'dysenterie', 'amibes'],
+  ulcere: ['ulcere', 'ulcère', 'ulceres', 'ulcères', 'estomac', 'gastrique', 'gastrite', 'duodenal', 'duodénum', 'rgo', 'reflux', 'brulure', 'brûlure', 'acidite', 'acidité', 'espinheira', 'guacatonga'],
+  reins: ['reins', 'rein', 'renal', 'rénale', 'renaux', 'rénaux', 'lithiase', 'lithiases', 'calcul', 'calculs', 'acide urique', 'filtration', 'nephro', 'néphron', 'urinaire', 'vessie', 'diuretique', 'diurétique', 'goutte', 'chanca piedra', 'quebra pedra'],
+  calculs: ['calcul', 'calculs', 'lithiase', 'lithiases', 'reins', 'rein', 'vesicule', 'vésicule', 'cristaux', 'urates', 'oxalate', 'chanca', 'quebra pedra', 'pierre'],
+  candida: ['candida', 'albicans', 'mycose', 'mycoses', 'champignon', 'champignons', 'fongique', 'antifongique', 'parasite', 'parasites', 'levure', 'biofilm', 'dysbiose', 'pau d\'arco', 'lapacho'],
+  foie: ['foie', 'hepatique', 'hépatique', 'bile', 'biliaire', 'biliaires', 'vesicule', 'vésicule', 'jaunisse', 'cholagogue', 'choleretique', 'cholérétique', 'cirrhose', 'boldo', 'carqueja'],
+  poumons: ['poumons', 'poumon', 'pulmonaire', 'bronches', 'bronchite', 'mucus', 'glaires', 'asthme', 'toux', 'expectorant', 'respiration', 'guaco', 'jatoba'],
+  vitalite: ['vitalite', 'vitalité', 'energie', 'énergie', 'fatigue', 'surrenales', 'surrénales', 'epuisement', 'épuisement', 'adaptogene', 'adaptogène', 'endurance', 'libido', 'tonique', 'maca', 'guarana', 'suma'],
+  immunite: ['immunite', 'immunité', 'defenses immunitaires', 'défenses immunitaires', 'systeme immunitaire', 'immunomodulateur', 'globules blancs', 'phagocytose', 'griffe de chat', 'una de gato'],
+  cerveau: ['cerveau', 'nerfs', 'nerveux', 'sommeil', 'insomnie', 'anxiete', 'anxiété', 'stress', 'memoire', 'mémoire', 'sedatif', 'sédatif', 'mulungu']
+};
+
 function filterAndRenderHerbs() {
-  const query = (_currentHerbQuery || '').trim().toLowerCase();
+  const rawQuery = (_currentHerbQuery || '').trim().toLowerCase();
   const filter = _currentHerbFilter;
 
+  // Normalize helper
+  const cleanStr = str => (str || '').normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
   let results = RAINTREE_HERBS.filter(herb => {
+    // Build full searchable text for this herb
+    const searchable = [
+      herb.name,
+      herb.latinName,
+      ...(herb.synonyms || []),
+      herb.category,
+      herb.family,
+      herb.origin,
+      herb.partsUsed,
+      ...(herb.activeCompounds || []),
+      herb.mechanisms,
+      ...(herb.indications || []),
+      ...(herb.tags || []),
+      herb.vitalistNote || '',
+      herb.tropismBadge?.label || ''
+    ].join(' ');
+
+    const normSearchable = cleanStr(searchable);
+
     // 1. Tag / Category filter
     if (filter !== 'all') {
-      const matchesFilter = (herb.category && herb.category.toLowerCase().includes(filter)) ||
-        (herb.tags && herb.tags.some(t => t.toLowerCase().includes(filter))) ||
-        (herb.id && herb.id.toLowerCase().includes(filter));
-      if (!matchesFilter) return false;
+      const thesaurusKeys = HERB_PATHOLOGY_THESAURUS[filter];
+      if (thesaurusKeys && thesaurusKeys.length > 0) {
+        const matchesThesaurus = thesaurusKeys.some(key => normSearchable.includes(cleanStr(key)));
+        if (!matchesThesaurus) return false;
+      } else {
+        const matchesFilter = (herb.category && cleanStr(herb.category).includes(cleanStr(filter))) ||
+          (herb.tags && herb.tags.some(t => cleanStr(t).includes(cleanStr(filter)))) ||
+          (herb.id && cleanStr(herb.id).includes(cleanStr(filter)));
+        if (!matchesFilter) return false;
+      }
     }
 
-    // 2. Query search across name, latinName, synonyms, activeCompounds, mechanisms, indications, tags
-    if (query) {
-      const qTerms = query.split(/\s+/).filter(Boolean);
-      const searchable = [
-        herb.name,
-        herb.latinName,
-        ...(herb.synonyms || []),
-        herb.category,
-        herb.family,
-        herb.origin,
-        herb.partsUsed,
-        ...(herb.activeCompounds || []),
-        herb.mechanisms,
-        ...(herb.indications || []),
-        ...(herb.tags || []),
-        herb.vitalistNote || '',
-        herb.tropismBadge?.label || ''
-      ].join(' ').toLowerCase();
-
-      // Normalize accents for fuzzy matching
-      const normSearchable = searchable.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    // 2. Query search across all fields + pathology expansion
+    if (rawQuery) {
+      const qTerms = rawQuery.split(/\s+/).filter(Boolean);
+      
       const allMatch = qTerms.every(term => {
-        const normTerm = term.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        return normSearchable.includes(normTerm);
+        const normTerm = cleanStr(term);
+        // Direct string inclusion
+        if (normSearchable.includes(normTerm)) return true;
+
+        // Check if term matches any thesaurus category
+        for (const [catKey, keywords] of Object.entries(HERB_PATHOLOGY_THESAURUS)) {
+          const normKey = cleanStr(catKey);
+          const normKeywords = keywords.map(cleanStr);
+          if (normKey === normTerm || normKeywords.includes(normTerm)) {
+            if (normKeywords.some(kw => normSearchable.includes(kw))) {
+              return true;
+            }
+          }
+        }
+
+        return false;
       });
+
       if (!allMatch) return false;
     }
 
     return true;
   });
+
+  // Sort results by relevance score so master herbs appear at the top
+  if (rawQuery || filter !== 'all') {
+    const activeTerm = rawQuery || filter;
+    const cleanActive = cleanStr(activeTerm);
+    results.sort((a, b) => {
+      const getScore = h => {
+        let s = 0;
+        const normName = cleanStr(h.name);
+        const normIndications = (h.indications || []).map(cleanStr).join(' ');
+        const normTags = (h.tags || []).map(cleanStr).join(' ');
+        const normCategory = cleanStr(h.category);
+        
+        if (normName.includes(cleanActive)) s += 50;
+        if (normIndications.includes(cleanActive)) s += 30;
+        if (normCategory.includes(cleanActive)) s += 20;
+        if (normTags.includes(cleanActive)) s += 15;
+        
+        // Primary targeted master herbs bonus
+        if (['crohn', 'colon', 'intestin'].includes(cleanActive) && ['sangre', 'catclaw', 'espinheira', 'guacatonga', 'copaiba', 'simaruba'].includes(h.id)) s += 100;
+        if (['reins', 'calculs'].includes(cleanActive) && ['chanca', 'abuta', 'ervatostao', 'nettles', 'cipocabeludo'].includes(h.id)) s += 100;
+        if (['candida'].includes(cleanActive) && ['paudarco', 'jatoba', 'anamu'].includes(h.id)) s += 100;
+        if (['foie'].includes(cleanActive) && ['boldo', 'carqueja', 'artichoke'].includes(h.id)) s += 100;
+        if (['ulcere'].includes(cleanActive) && ['espinheira', 'sangre', 'guacatonga', 'copaiba'].includes(h.id)) s += 100;
+        if (['poumons'].includes(cleanActive) && ['guaco', 'jatoba', 'amorseco'].includes(h.id)) s += 100;
+        if (['vitalite'].includes(cleanActive) && ['maca', 'guarana', 'suma'].includes(h.id)) s += 100;
+        if (['cerveau'].includes(cleanActive) && ['mulungu', 'maracuja', 'camomille'].includes(h.id)) s += 100;
+        return s;
+      };
+      return getScore(b) - getScore(a);
+    });
+  }
 
   const grid = document.getElementById('materiaHerbsGrid');
   const countEl = document.getElementById('herbResultCount');
