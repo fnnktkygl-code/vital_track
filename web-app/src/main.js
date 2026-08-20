@@ -1386,11 +1386,12 @@ function loadProfile() {
   });
 
   // Refresh all custom vital-select UI triggers
-  ['profileGoal', 'profileTransitionLevel', 'profileLanguage', 'profileActivity', 'profileBioregion'].forEach(id => {
+  ['profileGoal', 'profileTransitionLevel', 'profileLanguage', 'profileVoice', 'profileActivity', 'profileBioregion'].forEach(id => {
     const el = document.getElementById(id);
     if (el && el._updateVitalSelect) el._updateVitalSelect();
   });
 
+  updateTtsVoiceUI();
   if (document.getElementById('greetName')) document.getElementById('greetName').textContent = p.name ? `${t('dashboard.greeting')} ${p.name} ! 👋` : `${t('dashboard.greeting')} ! 👋`;
   updateLiveAiPreview();
 }
@@ -3074,32 +3075,361 @@ function copyChatMessage(text, btn) {
 }
 window.copyChatMessage = copyChatMessage;
 
+const ALL_NEURAL_VOICES = [
+  {
+    id: 'fr-CA-SylvieNeural',
+    name: 'Sylvie (Québec)',
+    region: '🍁 Canada / Québec',
+    gender: 'female',
+    flag: '🍁',
+    badge: 'Recommandée',
+    desc: 'Voix féminine québécoise chaleureuse, posée et ultra-naturelle.',
+    sample: 'Bonjour ! Je suis Sylvie, votre coach vitaliste VitalTrack pour vous accompagner chaque jour.'
+  },
+  {
+    id: 'fr-CA-AntoineNeural',
+    name: 'Antoine (Québec)',
+    region: '🍁 Canada / Québec',
+    gender: 'male',
+    flag: '🍁',
+    badge: 'Dynamique',
+    desc: 'Voix masculine québécoise énergique, articulée et motivante.',
+    sample: 'Bonjour ! Je suis Antoine. Prêt à dynamiser votre énergie vitale et votre régénération ?'
+  },
+  {
+    id: 'fr-CA-JeanNeural',
+    name: 'Jean (Québec)',
+    region: '🍁 Canada / Québec',
+    gender: 'male',
+    flag: '🍁',
+    badge: 'Posée',
+    desc: 'Voix masculine québécoise sage, bienveillante et rassurante.',
+    sample: 'Bonjour, ici Jean. Prenons le temps d’écouter votre corps et de soutenir vos émonctoires.'
+  },
+  {
+    id: 'fr-CA-ThierryNeural',
+    name: 'Thierry (Québec)',
+    region: '🍁 Canada / Québec',
+    gender: 'male',
+    flag: '🍁',
+    badge: 'Moderne',
+    desc: 'Voix masculine québécoise jeune, claire et percutante.',
+    sample: 'Salut ! C’est Thierry. Regardons ensemble les meilleurs aliments vivants pour votre journée.'
+  },
+  {
+    id: 'fr-FR-DeniseNeural',
+    name: 'Denise (France)',
+    region: '🇫🇷 France',
+    gender: 'female',
+    flag: '🇫🇷',
+    badge: 'Studio',
+    desc: 'Voix féminine classique douce, posée avec une diction claire.',
+    sample: 'Bonjour, je suis Denise. Ensemble, explorons le système sans mucus d’Arnold Ehret.'
+  },
+  {
+    id: 'fr-FR-HenriNeural',
+    name: 'Henri (France)',
+    region: '🇫🇷 France',
+    gender: 'male',
+    flag: '🇫🇷',
+    badge: 'Mentor',
+    desc: 'Voix masculine posée et rassurante, style mentor santé.',
+    sample: 'Bonjour, je suis Henri. Chaque repas vivant est une opportunité de purification cellulaire.'
+  },
+  {
+    id: 'fr-FR-VivienneMultilingualNeural',
+    name: 'Vivienne HD (France)',
+    region: '🇫🇷 France',
+    gender: 'female',
+    flag: '🇫🇷',
+    badge: 'HD Expressive',
+    desc: 'Voix féminine nouvelle génération HD, ultra-expressive et vivante.',
+    sample: 'Bonjour ! Je suis Vivienne. Découvrons ensemble les plantes électriques du Dr. Sebi.'
+  },
+  {
+    id: 'fr-FR-RemyMultilingualNeural',
+    name: 'Remy HD (France)',
+    region: '🇫🇷 France',
+    gender: 'male',
+    flag: '🇫🇷',
+    badge: 'HD Moderne',
+    desc: 'Voix masculine nouvelle génération HD, vivante et captivante.',
+    sample: 'Bonjour, je suis Remy. Prêt à libérer votre vitalité avec un protocole adapté ?'
+  },
+  {
+    id: 'fr-FR-EloiseNeural',
+    name: 'Eloïse (France)',
+    region: '🇫🇷 France',
+    gender: 'female',
+    flag: '🇫🇷',
+    badge: 'Pétillante',
+    desc: 'Voix féminine jeune, lumineuse et encourageante.',
+    sample: 'Coucou ! Je suis Eloïse. Bravo pour votre engagement sur le chemin de la santé vivante !'
+  },
+  {
+    id: 'fr-BE-CharlineNeural',
+    name: 'Charline (Belgique)',
+    region: '🇧🇪 Belgique',
+    gender: 'female',
+    flag: '🇧🇪',
+    badge: 'Douce',
+    desc: 'Voix féminine belge naturelle, douce et claire.',
+    sample: 'Bonjour, je suis Charline. Parlons détoxification et régénération naturelle.'
+  },
+  {
+    id: 'fr-CH-ArianeNeural',
+    name: 'Ariane (Suisse)',
+    region: '🇨🇭 Suisse',
+    gender: 'female',
+    flag: '🇨🇭',
+    badge: 'Précise',
+    desc: 'Voix féminine suisse précise, calme et bienveillante.',
+    sample: 'Bonjour, je suis Ariane. Voici vos recommandations vitalistes personnalisées.'
+  },
+  {
+    id: 'en-US-AvaMultilingualNeural',
+    name: 'Ava HD (English US)',
+    region: '🇺🇸 English',
+    gender: 'female',
+    flag: '🇺🇸',
+    badge: 'HD US',
+    desc: 'Ultra-natural HD female voice in English.',
+    sample: 'Hello! I am Ava, your personal VitalTrack health coach.'
+  },
+  {
+    id: 'en-US-AndrewMultilingualNeural',
+    name: 'Andrew HD (English US)',
+    region: '🇺🇸 English',
+    gender: 'male',
+    flag: '🇺🇸',
+    badge: 'HD US',
+    desc: 'Clear, modern HD male voice in English.',
+    sample: 'Hello! I am Andrew, ready to guide your wellness and detox journey.'
+  },
+  {
+    id: 'es-ES-ElviraNeural',
+    name: 'Elvira (Español)',
+    region: '🇪🇸 Español',
+    gender: 'female',
+    flag: '🇪🇸',
+    badge: 'Natural',
+    desc: 'Voz femenina natural en español.',
+    sample: '¡Hola! Soy Elvira, tu entrenadora de salud natural en VitalTrack.'
+  }
+];
+
 let _currentSpeakingBtn = null;
 let _currentAudioInstance = null;
+let _currentSampleAudio = null;
+let _currentSampleBtn = null;
+
+function getActiveVoiceId() {
+  const custom = store.get('preferred_voice_id');
+  if (custom) return custom;
+  const prof = store.get('user_profile', {});
+  const lang = typeof getLanguage === 'function' ? getLanguage() : (prof.language || 'fr-CA');
+  const gender = store.get('preferred_voice_gender', 'female');
+  
+  if (lang === 'fr-CA' || prof.country?.includes('Canada') || prof.bioregion === 'boreal') {
+    return gender === 'male' ? 'fr-CA-AntoineNeural' : 'fr-CA-SylvieNeural';
+  } else if (lang === 'en') {
+    return gender === 'male' ? 'en-US-AndrewMultilingualNeural' : 'en-US-AvaMultilingualNeural';
+  } else if (lang === 'es') {
+    return 'es-ES-ElviraNeural';
+  } else {
+    return gender === 'male' ? 'fr-FR-HenriNeural' : 'fr-CA-SylvieNeural';
+  }
+}
+window.getActiveVoiceId = getActiveVoiceId;
+
+function setCustomVoice(voiceId, silent = false) {
+  const voiceObj = ALL_NEURAL_VOICES.find(v => v.id === voiceId) || ALL_NEURAL_VOICES[0];
+  store.set('preferred_voice_id', voiceObj.id);
+  store.set('preferred_voice_gender', voiceObj.gender);
+  
+  updateTtsVoiceUI();
+  
+  const select = document.getElementById('profileVoice');
+  if (select && select.value !== voiceObj.id) select.value = voiceObj.id;
+  
+  if (!silent && window.showToast) {
+    showToast(`🎙️ Voix activée : ${voiceObj.flag} ${voiceObj.name}`, 'success');
+  }
+}
+window.setCustomVoice = setCustomVoice;
 
 function toggleTtsVoiceGender() {
-  const current = store.get('preferred_voice_gender', 'female');
-  const next = current === 'female' ? 'male' : 'female';
-  store.set('preferred_voice_gender', next);
-  updateTtsVoiceUI();
-  if (window.showToast) {
-    const lang = typeof getLanguage === 'function' ? getLanguage() : 'fr-CA';
-    const isCa = lang === 'fr-CA' || (store.get('user_profile', {})?.country?.includes('Canada'));
-    const femaleName = isCa ? 'Sylvie 🍁' : 'Denise 🇫🇷';
-    const maleName = isCa ? 'Antoine 🍁' : 'Henri 🇫🇷';
-    showToast(next === 'male' ? `🎙️ Voix Homme activée (${maleName} Studio)` : `🎙️ Voix Femme activée (${femaleName} Studio)`, 'success');
-  }
+  openVoiceSelectorModal();
 }
 window.toggleTtsVoiceGender = toggleTtsVoiceGender;
 
 function updateTtsVoiceUI() {
-  const gender = store.get('preferred_voice_gender', 'female');
+  const activeVoiceId = getActiveVoiceId();
+  const voiceObj = ALL_NEURAL_VOICES.find(v => v.id === activeVoiceId) || ALL_NEURAL_VOICES[0];
+  
   const icon = document.getElementById('chatVoiceGenderIcon');
-  const label = document.getElementById('chatVoiceGenderLabel');
-  if (icon) icon.textContent = gender === 'male' ? '👨' : '👩';
-  if (label) label.textContent = gender === 'male' ? 'Voix Homme' : 'Voix Femme';
+  const label = document.getElementById('chatActiveVoiceLabel');
+  if (icon) icon.textContent = voiceObj.flag;
+  if (label) label.textContent = voiceObj.name;
+  
+  const select = document.getElementById('profileVoice');
+  if (select && select.value !== voiceObj.id) select.value = voiceObj.id;
 }
 window.updateTtsVoiceUI = updateTtsVoiceUI;
+
+function openVoiceSelectorModal() {
+  const modal = document.getElementById('voiceSelectorModal');
+  if (!modal) return;
+  renderVoiceModalList();
+  modal.style.display = 'flex';
+}
+window.openVoiceSelectorModal = openVoiceSelectorModal;
+
+function closeVoiceSelectorModal(e) {
+  if (e && e.target && e.target !== e.currentTarget && !e.target.classList.contains('modal-close-btn') && !e.target.closest('.modal-close-btn')) return;
+  const modal = document.getElementById('voiceSelectorModal');
+  if (modal) modal.style.display = 'none';
+  stopVoiceSamplePlayback();
+}
+window.closeVoiceSelectorModal = closeVoiceSelectorModal;
+
+function stopVoiceSamplePlayback() {
+  if (_currentSampleAudio) {
+    _currentSampleAudio.pause();
+    _currentSampleAudio = null;
+  }
+  if (_currentSampleBtn) {
+    _currentSampleBtn.innerHTML = '<i class="ri-play-circle-line"></i> Écouter';
+    _currentSampleBtn.classList.remove('playing');
+    _currentSampleBtn = null;
+  }
+}
+
+async function testVoiceSample(voiceId, btn) {
+  if (_currentSampleBtn === btn) {
+    stopVoiceSamplePlayback();
+    return;
+  }
+  
+  stopVoiceSamplePlayback();
+  
+  const voiceObj = ALL_NEURAL_VOICES.find(v => v.id === voiceId);
+  if (!voiceObj) return;
+  
+  _currentSampleBtn = btn;
+  if (btn) {
+    btn.innerHTML = '<i class="ri-loader-4-line ri-spin"></i> Chargement...';
+    btn.classList.add('playing');
+  }
+  
+  try {
+    const resp = await fetch('/api/tts', {
+      method: 'POST',
+      headers: getApiHeaders(),
+      body: JSON.stringify({
+        text: voiceObj.sample,
+        voice: voiceObj.id
+      })
+    });
+    
+    if (!resp.ok) throw new Error(`TTS sample HTTP ${resp.status}`);
+    
+    const blob = await resp.blob();
+    const url = URL.createObjectURL(blob);
+    const audio = new Audio(url);
+    _currentSampleAudio = audio;
+    
+    audio.onplay = () => {
+      if (btn) btn.innerHTML = '<i class="ri-stop-circle-line" style="color:#ef4444;"></i> Arrêter';
+    };
+    
+    audio.onended = () => {
+      URL.revokeObjectURL(url);
+      stopVoiceSamplePlayback();
+    };
+    
+    audio.onerror = () => {
+      stopVoiceSamplePlayback();
+      if (window.showToast) showToast("Erreur lors de la lecture de l'extrait", "error");
+    };
+    
+    await audio.play();
+  } catch (err) {
+    console.error('Audio sample error:', err);
+    stopVoiceSamplePlayback();
+    if (window.showToast) showToast("Impossible de charger l'extrait audio", "error");
+  }
+}
+window.testVoiceSample = testVoiceSample;
+
+function previewCurrentVoice() {
+  const select = document.getElementById('profileVoice');
+  const voiceId = select ? select.value : getActiveVoiceId();
+  testVoiceSample(voiceId, event?.currentTarget || null);
+}
+window.previewCurrentVoice = previewCurrentVoice;
+
+function renderVoiceModalList() {
+  const container = document.getElementById('voiceCardsContainer');
+  if (!container) return;
+  
+  const activeId = getActiveVoiceId();
+  
+  const regions = {};
+  ALL_NEURAL_VOICES.forEach(v => {
+    if (!regions[v.region]) regions[v.region] = [];
+    regions[v.region].push(v);
+  });
+  
+  let html = '';
+  for (const [regionName, voices] of Object.entries(regions)) {
+    html += `
+      <div style="margin-top:6px;">
+        <div style="font-size:0.78rem; font-weight:800; text-transform:uppercase; letter-spacing:0.5px; color:#34d399; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+          <span>${regionName}</span>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:10px;">
+    `;
+    
+    voices.forEach(v => {
+      const isSelected = v.id === activeId;
+      html += `
+        <div class="voice-card ${isSelected ? 'selected' : ''}" style="display:flex; flex-direction:column; justify-content:space-between; background:${isSelected ? 'rgba(52,211,153,0.12)' : 'rgba(255,255,255,0.03)'}; border:1px solid ${isSelected ? '#34d399' : 'rgba(255,255,255,0.08)'}; border-radius:14px; padding:14px; transition:all 0.2s ease;">
+          <div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:1.3rem;">${v.flag}</span>
+                <span style="font-weight:700; font-size:0.95rem; color:#fff;">${esc(v.name)}</span>
+              </div>
+              <span style="font-size:0.7rem; font-weight:700; background:${isSelected ? '#34d399' : 'rgba(255,255,255,0.08)'}; color:${isSelected ? '#000' : 'var(--text-dim)'}; padding:2px 8px; border-radius:10px;">
+                ${v.badge || (v.gender === 'female' ? 'Femme' : 'Homme')}
+              </span>
+            </div>
+            <p style="font-size:0.8rem; color:var(--text-dim); line-height:1.4; margin:0 0 12px 0;">
+              ${esc(v.desc)}
+            </p>
+          </div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <button type="button" class="btn-voice-sample" onclick="testVoiceSample('${v.id}', this)" style="flex:1; padding:8px 12px; border-radius:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); color:#fff; font-size:0.8rem; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:all 0.2s ease;">
+              <i class="ri-play-circle-line"></i> Écouter
+            </button>
+            <button type="button" class="btn-voice-select" onclick="setCustomVoice('${v.id}'); renderVoiceModalList();" style="flex:1.2; padding:8px 14px; border-radius:10px; background:${isSelected ? '#34d399' : 'rgba(52,211,153,0.2)'}; border:1px solid #34d399; color:${isSelected ? '#000' : '#34d399'}; font-size:0.8rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:all 0.2s ease;">
+              <i class="${isSelected ? 'ri-check-line' : 'ri-check-double-line'}"></i> ${isSelected ? 'Active ✓' : 'Choisir'}
+            </button>
+          </div>
+        </div>
+      `;
+    });
+    
+    html += `
+        </div>
+      </div>
+    `;
+  }
+  
+  container.innerHTML = html;
+}
+window.renderVoiceModalList = renderVoiceModalList;
 
 function stopAudioPlayback() {
   if (_currentAudioInstance) {
@@ -3119,7 +3449,6 @@ window.stopAudioPlayback = stopAudioPlayback;
 window.stopSpeechSynthesis = stopAudioPlayback;
 
 async function speakChatMessageByIndex(idx, btn) {
-  // Toggle off if currently reading the same message
   if (_currentSpeakingBtn === btn) {
     stopAudioPlayback();
     return;
@@ -3144,10 +3473,9 @@ async function speakChatMessageByIndex(idx, btn) {
     btn.classList.add('speaking');
   }
 
-  const gender = store.get('preferred_voice_gender', 'female');
   const prof = store.get('user_profile', {});
   const language = typeof getLanguage === 'function' ? getLanguage() : (prof.language || 'fr-CA');
-  const customVoice = store.get('preferred_voice_id');
+  const activeVoiceId = getActiveVoiceId();
 
   try {
     const resp = await fetch('/api/tts', {
@@ -3155,9 +3483,8 @@ async function speakChatMessageByIndex(idx, btn) {
       headers: getApiHeaders(),
       body: JSON.stringify({
         text: textToSpeak,
-        gender,
-        language: language === 'fr' && (prof.country?.includes('Canada') || prof.bioregion === 'boreal') ? 'fr-CA' : language,
-        voice: customVoice
+        voice: activeVoiceId,
+        language: language === 'fr' && (prof.country?.includes('Canada') || prof.bioregion === 'boreal') ? 'fr-CA' : language
       })
     });
 
@@ -10720,11 +11047,17 @@ if (typeof window !== "undefined") window.resetChatSendBtn = resetChatSendBtn;
 if (typeof window !== "undefined") window.copyChatMessage = copyChatMessage;
 if (typeof window !== "undefined") window.copyChatMessageByIndex = copyChatMessageByIndex;
 if (typeof window !== "undefined") window.speakChatMessage = speakChatMessage;
-if (typeof window !== "undefined") window.speakChatMessageByIndex = speakChatMessageByIndex;
 if (typeof window !== "undefined") window.stopSpeechSynthesis = stopSpeechSynthesis;
 if (typeof window !== "undefined") window.stopAudioPlayback = stopAudioPlayback;
 if (typeof window !== "undefined") window.toggleTtsVoiceGender = toggleTtsVoiceGender;
 if (typeof window !== "undefined") window.updateTtsVoiceUI = updateTtsVoiceUI;
+if (typeof window !== "undefined") window.openVoiceSelectorModal = openVoiceSelectorModal;
+if (typeof window !== "undefined") window.closeVoiceSelectorModal = closeVoiceSelectorModal;
+if (typeof window !== "undefined") window.renderVoiceModalList = renderVoiceModalList;
+if (typeof window !== "undefined") window.testVoiceSample = testVoiceSample;
+if (typeof window !== "undefined") window.previewCurrentVoice = previewCurrentVoice;
+if (typeof window !== "undefined") window.setCustomVoice = setCustomVoice;
+if (typeof window !== "undefined") window.getActiveVoiceId = getActiveVoiceId;
 if (typeof window !== "undefined") window.editChatMessage = editChatMessage;
 if (typeof window !== "undefined") window.retryChatMessage = retryChatMessage;
 if (typeof window !== "undefined") window.switchModelAndRetry = switchModelAndRetry;

@@ -525,9 +525,10 @@
               <!-- Dynamically rendered by renderModelPicker() -->
             </div>
           </div>
-          <div class="chat-voice-gender-selector" onclick="toggleTtsVoiceGender()" id="chatVoiceGenderBtn" title="Changer la voix neuronale (Femme / Homme)">
-            <span id="chatVoiceGenderIcon">👩</span>
-            <span id="chatVoiceGenderLabel">Voix Femme</span>
+          <div class="chat-voice-picker-btn" onclick="openVoiceSelectorModal()" id="chatVoiceSelectorBtn" data-tooltip="Choisir la voix du Coach (14 voix Neural Studio)">
+            <span id="chatVoiceGenderIcon" style="font-size:1.05rem;">🍁</span>
+            <span id="chatActiveVoiceLabel" style="font-weight:700;">Sylvie (Québec)</span>
+            <i class="ri-equalizer-line" style="color:#34d399; font-size:0.85rem; margin-left:2px;"></i>
           </div>
           <button class="icon-btn" onclick="newConversation()" data-tooltip="Nouveau chat"><i class="ri-add-line"></i></button>
         </div>
@@ -1633,6 +1634,43 @@
               </select>
               <span class="form-hint">Langue utilisée pour les recettes, le chat et les audios.</span>
             </div>
+
+            <div class="form-group">
+              <label class="form-label" for="profileVoice">
+                <span class="form-label-left"><i class="ri-voiceprint-line"></i> Voix de Lecture Neural Studio</span>
+                <span class="form-label-badge" style="color:#34d399; background:rgba(52,211,153,0.1);">14 Voix HD</span>
+              </label>
+              <div style="display:flex; gap:8px;">
+                <select id="profileVoice" class="form-input-v2 custom-vital-select" style="flex:1;" onchange="setCustomVoice(this.value)">
+                  <optgroup label="🍁 Canada / Québec (Français Boréal)">
+                    <option value="fr-CA-SylvieNeural" selected>🍁 Sylvie (Québec) — Femme Chaleureuse</option>
+                    <option value="fr-CA-AntoineNeural">🍁 Antoine (Québec) — Homme Dynamique</option>
+                    <option value="fr-CA-JeanNeural">🍁 Jean (Québec) — Homme Posé &amp; Sage</option>
+                    <option value="fr-CA-ThierryNeural">🍁 Thierry (Québec) — Homme Jeune</option>
+                  </optgroup>
+                  <optgroup label="🇫🇷 France (Français Métropolitain)">
+                    <option value="fr-FR-DeniseNeural">🇫🇷 Denise (France) — Femme Douce Studio</option>
+                    <option value="fr-FR-HenriNeural">🇫🇷 Henri (France) — Homme Rassurant</option>
+                    <option value="fr-FR-VivienneMultilingualNeural">🇫🇷 Vivienne HD (France) — Femme Expressive</option>
+                    <option value="fr-FR-RemyMultilingualNeural">🇫🇷 Remy HD (France) — Homme Moderne</option>
+                    <option value="fr-FR-EloiseNeural">🇫🇷 Eloïse (France) — Femme Pétillante</option>
+                  </optgroup>
+                  <optgroup label="🇧🇪 Belgique &amp; 🇨🇭 Suisse">
+                    <option value="fr-BE-CharlineNeural">🇧🇪 Charline (Belgique) — Femme</option>
+                    <option value="fr-CH-ArianeNeural">🇨🇭 Ariane (Suisse) — Femme</option>
+                  </optgroup>
+                  <optgroup label="🇬🇧 English &amp; 🇪🇸 Español">
+                    <option value="en-US-AvaMultilingualNeural">🇺🇸 Ava HD (English US) — Female</option>
+                    <option value="en-US-AndrewMultilingualNeural">🇺🇸 Andrew HD (English US) — Male</option>
+                    <option value="es-ES-ElviraNeural">🇪🇸 Elvira (Español) — Femenino</option>
+                  </optgroup>
+                </select>
+                <button type="button" class="btn-secondary" onclick="previewCurrentVoice()" style="padding:10px 14px; border-radius:12px; font-weight:700; white-space:nowrap; display:inline-flex; align-items:center; gap:6px; background:rgba(52,211,153,0.12); border:1px solid rgba(52,211,153,0.35); color:#34d399;" data-tooltip="Écouter un extrait de cette voix">
+                  <i class="ri-play-circle-line" style="font-size:1.1rem;"></i> <span>Tester</span>
+                </button>
+              </div>
+              <span class="form-hint">Voix utilisée pour l'écoute des réponses du chat et des fiches aliments.</span>
+            </div>
           </div>
         </div>
       </div>
@@ -2580,6 +2618,29 @@
 
       <div style="font-size:0.75rem; color:var(--text-dim); line-height:1.4;">
         🔒 Conforme RGPD : Isolation locale hermétique par compte &amp; Droit à l'oubli intégral.
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ MODALE SÉLECTEUR DE VOIX NEURAL STUDIO (14 VOIX) ═══════ -->
+  <div id="voiceSelectorModal" class="modal-overlay" onclick="closeVoiceSelectorModal(event)" style="display:none; z-index:99999;">
+    <div class="modal-card glass" onclick="event.stopPropagation()" style="max-width:680px; width:92%; max-height:86vh; display:flex; flex-direction:column; padding:24px 22px; border-radius:24px; border:1px solid rgba(52,211,153,0.3); box-shadow:0 20px 60px rgba(0,0,0,0.85); position:relative;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px;">
+        <div>
+          <h3 style="font-size:1.25rem; font-weight:800; color:var(--text); display:flex; align-items:center; gap:8px; margin:0 0 4px 0;">
+            <i class="ri-voiceprint-line" style="color:#34d399;"></i> Studio des Voix Neuronales
+          </h3>
+          <p style="font-size:0.82rem; color:var(--text-dim); margin:0;">
+            Choisissez votre voix de lecture préférée (Français Canadien / France / International).
+          </p>
+        </div>
+        <button class="modal-close-btn" onclick="closeVoiceSelectorModal(null)" style="background:rgba(255,255,255,0.08); border:none; color:var(--text); width:34px; height:34px; border-radius:50%; cursor:pointer; font-size:1.2rem; display:flex; align-items:center; justify-content:center;">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+
+      <div id="voiceCardsContainer" style="flex:1; overflow-y:auto; padding-right:4px; display:flex; flex-direction:column; gap:12px;">
+        <!-- Dynamically injected via renderVoiceModalList() in main.js -->
       </div>
     </div>
   </div>
