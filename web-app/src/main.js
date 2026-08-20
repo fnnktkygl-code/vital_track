@@ -1675,6 +1675,7 @@ function renderDashboard() {
 
   // Also update widgets
   if (typeof updateCircadianWidget === 'function') updateCircadianWidget();
+  if (typeof initCircadianClockInteractivity === 'function') initCircadianClockInteractivity();
   if (typeof renderWeightChart === 'function') renderWeightChart();
 }
 

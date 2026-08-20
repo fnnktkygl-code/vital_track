@@ -309,21 +309,25 @@
             <span id="circadianTimePill" style="background:var(--surface-hover); padding:4px 10px; border-radius:50px; font-size:0.8rem; font-weight:600; color:var(--text-dim);">23:59</span>
           </div>
           
-          <div style="display:flex; justify-content:center; margin-bottom:24px;">
-            <div class="clock-ring">
+          <div style="display:flex; flex-direction:column; align-items:center; margin-bottom:18px;">
+            <div class="clock-ring" id="circadianClockRing" title="Faites glisser l'indicateur pour explorer le cycle des 24h">
               <div class="clock-indicator" id="clockIndicator">☀️</div>
               <div class="clock-center">
-                <span id="clockTime" style="font-size:2.2rem; font-weight:700;">12:00</span>
-                <span id="clockPhase" style="font-size:0.8rem; letter-spacing:1px; color:var(--accent); text-transform:uppercase; margin-top:4px;">APPROPRIATION</span>
+                <span id="clockTime" style="font-size:2.2rem; font-weight:700; font-variant-numeric:tabular-nums;">12:00</span>
+                <span id="clockPhase" style="font-size:0.78rem; letter-spacing:1px; color:var(--accent); text-transform:uppercase; margin-top:4px; font-weight:700;">APPROPRIATION</span>
               </div>
+            </div>
+            <div class="clock-interactive-hint" id="clockDragHint">
+              <i class="ri-drag-move-2-line"></i>
+              <span>Faites tourner l'horloge pour explorer le cycle 24h</span>
             </div>
           </div>
 
-          <div style="background:var(--surface-hover); border:1px solid var(--border); border-radius:12px; padding:12px 16px; display:flex; align-items:center; gap:12px;">
-            <i id="phaseIcon" class="ri-sun-fill" style="font-size:1.4rem; color:var(--accent);"></i>
+          <div id="phaseExplanationBox" style="background:var(--surface-hover); border:1px solid var(--border); border-radius:12px; padding:12px 16px; display:flex; align-items:center; gap:12px; transition:all 0.2s ease;">
+            <i id="phaseIcon" class="ri-sun-fill" style="font-size:1.4rem; color:var(--accent); transition:color 0.2s ease;"></i>
             <div>
-              <div id="phaseTitle" style="font-size:0.85rem; font-weight:600;">APPROPRIATION</div>
-              <div id="phaseDesc" style="font-size:0.75rem; color:var(--text-dim);">Feu digestif au maximum. Moment des repas denses.</div>
+              <div id="phaseTitle" style="font-size:0.85rem; font-weight:700; transition:color 0.2s ease;">APPROPRIATION</div>
+              <div id="phaseDesc" style="font-size:0.75rem; color:var(--text-dim); line-height:1.4;">Feu digestif au maximum. Moment des repas denses.</div>
             </div>
           </div>
         </div>
