@@ -8,12 +8,18 @@ import { RAINTREE_HERBS, RAINTREE_PROTOCOLS } from './raintree-data.js';
 import { t, getLanguage, setLanguage, toggleLanguage, onLanguageChange } from './i18n.js';
 import { pigeonNudges } from './mascot-nudges.js';
 import { auth } from './auth.js';
+import { store, formatLocalDate, parseLocalDate, addDaysLocal, getUserStorageKey } from './storage.js';
 import { MEDIA_SEARCH_DATABASE, searchMediaKnowledge, getExpandedSearchTokens } from './data/mediaSearchIndex.js';
 import { VIDEO_DUBBING_DATABASE, getDubbingDataForVideo } from './data/videoDubbingData.js';
 import { dubbingEngine } from './utils/dubbingEngine.js';
 import { VITALIST_WISDOM, getRandomWisdom, getCircadianContextWisdom, getDailyWisdom } from './data/vitalistWisdom.js';
 
 // Exposer globalement pour l'interface utilisateur
+window.store = store;
+window.formatLocalDate = formatLocalDate;
+window.parseLocalDate = parseLocalDate;
+window.addDaysLocal = addDaysLocal;
+window.getUserStorageKey = getUserStorageKey;
 window.vitalTrackI18n = { t, getLanguage, setLanguage, toggleLanguage, onLanguageChange };
 window.pigeonNudges = pigeonNudges;
 window.vitalTrackAuth = auth;
@@ -64,43 +70,6 @@ let currentSearchFilter = 'all';
 let selectedMealFoods = [];
 let currentModalFood = null;
 let currentProtocol = 'vitalist';
-
-// ═══════ STORAGE HELPERS (PARTITIONNEMENT PAR UTILISATEUR & RGPD) ═══════
-const getUserStorageKey = (k) => {
-  const user = window.vitalTrackAuth?.getCurrentUser();
-  if (user && user.uid) {
-    return `vt-u_${user.uid}-${k}`;
-  }
-  return `vt-guest-${k}`;
-};
-
-const store = {
-  get: (k, def) => {
-    try {
-      const key = getUserStorageKey(k);
-      const val = localStorage.getItem(key);
-      if (val !== null) return JSON.parse(val) ?? def;
-      // Fallback hérité pour invité
-      const legacyVal = localStorage.getItem(`vt-${k}`);
-      if (legacyVal !== null) {
-        return JSON.parse(legacyVal) ?? def;
-      }
-      return def;
-    } catch { return def; }
-  },
-  set: (k, v) => {
-    try {
-      const key = getUserStorageKey(k);
-      localStorage.setItem(key, JSON.stringify(v));
-    } catch { }
-  },
-  del: (k) => {
-    const key = getUserStorageKey(k);
-    localStorage.removeItem(key);
-    localStorage.removeItem(`vt-${k}`);
-  },
-};
-window.store = store;
 
 // ═══════ TOAST NOTIFICATIONS (UNIFIED STACK) ═══════
 function showToast(msg, type = 'success', duration = 3500, action = null) {
@@ -1254,7 +1223,12 @@ function showPage(page) {
 
   if (page === 'dashboard') renderDashboard();
   if (page === 'meals') renderMeals();
-  if (page === 'calendar') renderCalendar();
+  if (page === 'calendar') {
+    if (window.renderCalendar) window.renderCalendar();
+    if (window.renderStrip) window.renderStrip();
+    if (window.renderDay) window.renderDay();
+    if (window.updateProgramRing) window.updateProgramRing();
+  }
   if (page === 'materia-medica') renderRaintreeExplorer();
   if (page === 'favorites') renderFavorites();
   if (page === 'resources') renderResources();
@@ -10280,7 +10254,7 @@ function addMealsToCalendar(mealsJson) {
       // Calculate date based on dayOffset from today
       const d = new Date();
       d.setDate(d.getDate() + (m.dayOffset || 0));
-      const dateStr = d.toISOString().split('T')[0];
+      const dateStr = formatLocalDate(d);
 
       meals.push({
         id: 'meal_' + Date.now() + Math.random().toString(36).substr(2, 5),

@@ -1,4 +1,5 @@
 // calendar-legacy.js
+import { store, formatLocalDate, parseLocalDate, addDaysLocal } from './storage.js';
 
 window.PROGRAM_START = new Date(); 
 window.TOTAL_JOURS = 30;
@@ -6,32 +7,48 @@ window.TOTAL_REPAS_PROGRAMME = 150;
 window.completedGlobal = 0; 
 window.currentDateKey = "0"; // Offset in days from start
 
-function addDays(d, n){ var r = new Date(d); r.setDate(r.getDate()+n); return r; }
+function addDays(d, n){ return addDaysLocal(d, n); }
 function sameDay(a,b){ return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate(); }
 
 function getMealsByDate() {
-  const stored = window.store.get('calendar_meals', []);
+  const stored = (window.store || store).get('calendar_meals', []);
   const byDate = {};
   
-  // Initialize next 7 days at least
-  for(let i=0; i<7; i++) {
+  // Initialize next 14 days
+  for(let i=0; i<14; i++) {
     byDate[i.toString()] = { theme: "Programme Vitaliste", meals: [] };
   }
   
   const today = new Date();
-  today.setHours(0,0,0,0);
+  
+  // Mapping strict des dates locales sans décalage UTC
+  const dateToOffset = {};
+  for (let i = 0; i < 30; i++) {
+    const d = addDaysLocal(today, i);
+    dateToOffset[formatLocalDate(d)] = i.toString();
+  }
   
   stored.forEach(meal => {
-    const mealDate = new Date(meal.dateStr);
-    mealDate.setHours(0,0,0,0);
-    const diffTime = mealDate - today;
-    const offset = Math.round(diffTime / (1000 * 60 * 60 * 24));
-    
-    if (offset >= 0 && offset < 30) {
-      if (!byDate[offset.toString()]) {
-        byDate[offset.toString()] = { theme: "Programme Vitaliste", meals: [] };
+    let dateKey = null;
+    if (meal.dateStr) {
+      const cleanDateStr = meal.dateStr.split('T')[0];
+      if (dateToOffset[cleanDateStr] !== undefined) {
+        dateKey = dateToOffset[cleanDateStr];
+      } else {
+        const mealDate = parseLocalDate(meal.dateStr);
+        const diffTime = mealDate.getTime() - today.getTime();
+        const offset = Math.round(diffTime / (1000 * 60 * 60 * 24));
+        if (offset >= 0 && offset < 30) {
+          dateKey = offset.toString();
+        }
       }
-      byDate[offset.toString()].meals.push({
+    }
+    
+    if (dateKey !== null) {
+      if (!byDate[dateKey]) {
+        byDate[dateKey] = { theme: "Programme Vitaliste", meals: [] };
+      }
+      byDate[dateKey].meals.push({
         id: meal.id,
         time: meal.time || (meal.slot === "Petit-déjeuner" ? "8h-9h" : meal.slot === "Déjeuner" ? "12h-13h" : meal.slot === "Collation" ? "16h" : "19h-20h"),
         tone: meal.tone || (meal.slot === "Dîner" ? "soir" : meal.slot === "Déjeuner" ? "midi" : "matin"),
@@ -571,7 +588,7 @@ window.openCalMealModal = function(mealId) {
     const offset = parseInt(window.currentDateKey, 10) || 0;
     const target = new Date(today);
     target.setDate(target.getDate() + offset);
-    if (dateInput) dateInput.value = target.toISOString().split('T')[0];
+    if (dateInput) dateInput.value = formatLocalDate(target);
     if (desc) desc.value = '';
     slots.forEach((s, i) => { s.classList.toggle('active', i === 0); });
   }

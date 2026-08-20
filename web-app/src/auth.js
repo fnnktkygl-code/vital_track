@@ -4,6 +4,7 @@
  */
 
 import { t } from './i18n.js';
+import { store } from './storage.js';
 
 // Configuration Google Identity Services (GSI)
 const ENV_GOOGLE_CLIENT_ID = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env.VITE_GOOGLE_CLIENT_ID : '';
@@ -22,6 +23,9 @@ class VitalTrackAuth {
       const saved = localStorage.getItem('vt_auth_user');
       if (saved) {
         this.currentUser = JSON.parse(saved);
+        if (this.currentUser && this.currentUser.uid) {
+          store.migrateGuestDataToUser(this.currentUser.uid);
+        }
       }
     } catch (e) {
       console.warn('[Auth] Error restoring session:', e);
@@ -31,8 +35,10 @@ class VitalTrackAuth {
 
   _saveSession(user) {
     this.currentUser = user;
-    if (user) {
+    if (user && user.uid) {
       localStorage.setItem('vt_auth_user', JSON.stringify(user));
+      // Migration automatique instantanée de toutes les données invité vers le profil connecté
+      store.migrateGuestDataToUser(user.uid);
     } else {
       localStorage.removeItem('vt_auth_user');
     }
