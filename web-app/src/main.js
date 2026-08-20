@@ -98,7 +98,7 @@ const store = {
 window.store = store;
 
 // ═══════ TOAST NOTIFICATIONS (UNIFIED STACK) ═══════
-function showToast(msg, type = 'success', duration = 3500) {
+function showToast(msg, type = 'success', duration = 3500, action = null) {
   let container = document.getElementById('appToastContainer');
   if (!container) {
     container = document.createElement('div');
@@ -118,13 +118,28 @@ function showToast(msg, type = 'success', duration = 3500) {
   const toast = document.createElement('div');
   toast.className = `app-toast toast-${type}`;
   const iconClass = type === 'success' ? 'ri-checkbox-circle-fill' : (type === 'error' ? 'ri-error-warning-fill' : 'ri-information-fill');
+
+  let actionHtml = '';
+  if (action && action.label) {
+    const actionIcon = action.icon ? `<i class="${action.icon}" style="font-size:0.9rem;"></i>` : '';
+    const onClickStr = typeof action.onClick === 'string' ? action.onClick : '';
+    actionHtml = `<button type="button" class="app-toast-btn" id="toast-action-btn" ${onClickStr ? `onclick="${onClickStr}"` : ''}>${actionIcon}<span>${esc(action.label)}</span></button>`;
+  }
+
   toast.innerHTML = `
     <div style="display:flex; align-items:center; gap:10px; flex:1; min-width:0;">
       <i class="${iconClass}"></i>
       <span style="line-height:1.35; font-size:0.86rem; word-break:break-word;">${msg}</span>
     </div>
+    ${actionHtml}
     <button type="button" class="app-toast-close" onclick="this.closest('.app-toast').remove()" title="Fermer">&times;</button>
   `;
+
+  if (action && typeof action.onClick === 'function') {
+    const btn = toast.querySelector('#toast-action-btn');
+    if (btn) btn.addEventListener('click', action.onClick);
+  }
+
   container.appendChild(toast);
 
   let hideTimer = setTimeout(() => {
@@ -139,7 +154,7 @@ function showToast(msg, type = 'success', duration = 3500) {
     hideTimer = setTimeout(() => {
       toast.classList.add('toast-hiding');
       setTimeout(() => { if (toast.parentNode) toast.remove(); }, 300);
-    }, 2000);
+    }, 1500);
   });
 };
 
@@ -7408,20 +7423,38 @@ function renderMarkdown(text) {
         const categoryLabels = { breakfast: 'Petit-déjeuner', lunch: 'Déjeuner', dinner: 'Dîner', snack: 'Collation' };
         const catLabel = categoryLabels[meal.category] || 'Repas Vitaliste';
         const itemsPills = rawItems.map(it => `<span style="display:inline-block; padding:3px 9px; background:rgba(255,255,255,0.06); border:1px solid var(--border); border-radius:12px; font-size:0.8rem; margin:2px 4px 2px 0;">🥗 ${esc(typeof it === 'string' ? it : it.name)}</span>`).join('');
+        const safeMealName = (meal.name || 'ce repas').replace(/'/g, "\\'");
 
-        renderedCards += `<div class="ai-plan-card glass" style="margin:12px 0;padding:16px;border-radius:12px;border-left:4px solid var(--accent);background:rgba(55,211,153,0.06)">
+        renderedCards += `<div class="ai-plan-card glass" style="margin:12px 0;padding:16px;border-radius:14px;border-left:4px solid var(--accent);background:rgba(55,211,153,0.06)">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
             <span style="font-weight:700;font-size:1.05rem;color:var(--text)">${meal.emoji || '🍲'} ${esc(meal.name || 'Repas Proposé')}</span>
             <span class="food-badge badge-electric" style="font-size:0.75rem">${esc(catLabel)}</span>
           </div>
           <div style="font-size:0.88rem;color:var(--text);margin-bottom:8px">
-            <div style="font-weight:600; margin-bottom:4px; color:var(--text-dim);">Ingrédients :</div>
+            <div style="font-weight:600; margin-bottom:4px; color:var(--text-dim); font-size:0.8rem;">Ingrédients :</div>
             <div style="display:flex; flex-wrap:wrap; gap:2px;">${itemsPills}</div>
           </div>
           ${meal.note ? `<div style="font-size:0.82rem;color:var(--text-dim);margin-bottom:12px;font-style:italic">🌿 ${esc(meal.note)}</div>` : ''}
-          <button class="btn btn-primary" onclick="handleAddActionMeal('${encodedMeal}')" style="display:inline-flex;align-items:center;gap:6px">
-            <i class="ri-restaurant-line"></i> Enregistrer ce repas aux logs du jour
-          </button>
+          <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;">
+            <button class="btn btn-primary" onclick="handleAddActionMeal('${encodedMeal}')" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:10px;font-size:0.88rem;">
+              <i class="ri-restaurant-line"></i> Enregistrer ce repas aux logs du jour
+            </button>
+            <button type="button" class="btn-secondary" onclick="openMealCustomizer('${safeMealName}')" style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:10px;font-size:0.84rem;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--text);cursor:pointer;">
+              <i class="ri-shuffle-line"></i> 🔄 Personnaliser / Remplacer
+            </button>
+          </div>
+          <div style="margin-top:10px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.06); display:flex; flex-wrap:wrap; gap:4px; align-items:center;">
+            <span style="font-size:0.72rem; color:var(--text-dim); margin-right:4px;">Ajustements rapides :</span>
+            <button type="button" class="quick-reply-chip" onclick="askMealVariant('${safeMealName}', 'Comment adapter cette recette avec les ingrédients de mon frigo ?')" style="font-size:0.74rem; padding:3px 10px; border-radius:12px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); color:var(--text-dim); cursor:pointer;">
+              🥑 Avec mon frigo
+            </button>
+            <button type="button" class="quick-reply-chip" onclick="askMealVariant('${safeMealName}', 'Comment adapter ce plat en version 100% crue vivante ?')" style="font-size:0.74rem; padding:3px 10px; border-radius:12px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); color:var(--text-dim); cursor:pointer;">
+              🌿 Version 100% crue
+            </button>
+            <button type="button" class="quick-reply-chip" onclick="askMealVariant('${safeMealName}', 'Comment intégrer un aliment de transition (poisson sauvage doux / féculent sans gluten) ?')" style="font-size:0.74rem; padding:3px 10px; border-radius:12px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); color:var(--text-dim); cursor:pointer;">
+              🐟 Aliment de transition
+            </button>
+          </div>
         </div>`;
       }
 
@@ -8949,12 +8982,35 @@ function handleAddActionMeal(encodedMeal) {
     if (window.renderDashboard) renderDashboard();
     if (window.updateProactiveMascot) updateProactiveMascot('meal');
 
-    showToast(`🍽️ Repas "${newMeal.name}" enregistré dans votre journal !`, 'success');
+    showToast(`🍽️ Repas "${newMeal.name}" enregistré !`, 'success', 6000, {
+      label: 'Voir mon journal →',
+      icon: 'ri-book-open-line',
+      onClick: "showPage('meals')"
+    });
   } catch (err) {
     console.error('Erreur handleAddActionMeal:', err);
     showToast("Impossible d'enregistrer le repas.", 'error');
   }
 };
+
+function openMealCustomizer(mealName) {
+  const input = document.getElementById('chatInput');
+  if (input) {
+    input.value = `Je voudrais personnaliser ou remplacer des ingrédients dans "${mealName}". Voici ce que j'aimerais changer : `;
+    input.focus();
+    input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+}
+window.openMealCustomizer = openMealCustomizer;
+
+function askMealVariant(mealName, question) {
+  const input = document.getElementById('chatInput');
+  if (input) {
+    input.value = `À propos du plat "${mealName}" : ${question}`;
+    sendChatMessage();
+  }
+}
+window.askMealVariant = askMealVariant;
 
 function handleApplyFastingProgram(encodedProgram) {
   try {

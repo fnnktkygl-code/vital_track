@@ -2322,6 +2322,30 @@ input.jn-field-control { padding-right: 14px; }
   color: #fff;
 }
 
+.app-toast-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  background: rgba(55, 211, 153, 0.16);
+  border: 1px solid rgba(55, 211, 153, 0.45);
+  color: var(--accent, #34d399);
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  margin-left: 6px;
+  flex-shrink: 0;
+}
+.app-toast-btn:hover {
+  background: rgba(55, 211, 153, 0.3);
+  color: #ffffff;
+  border-color: rgba(55, 211, 153, 0.7);
+  transform: translateY(-1px);
+}
+
 .app-toast.toast-success {
   border-color: rgba(55, 211, 153, 0.4);
 }
