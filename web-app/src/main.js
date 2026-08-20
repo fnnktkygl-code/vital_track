@@ -1256,6 +1256,7 @@ function showPage(page) {
   if (page === 'calendar') renderCalendar();
   if (page === 'materia-medica') renderRaintreeExplorer();
   if (page === 'favorites') renderFavorites();
+  if (page === 'resources') renderResources();
   if (page === 'chat') initChatMascot();
 };
 
@@ -8048,14 +8049,18 @@ window.toggleWisdomFavorite = toggleWisdomFavorite;
 function searchWisdomInDocs() {
   if (!_currentWisdom || !_currentWisdom.searchQuery) return;
   const query = _currentWisdom.searchQuery;
-  showPage('knowledge');
-  const input = document.getElementById('mediaSearchInput');
-  if (input) {
-    input.value = query;
-    if (typeof window.executeMediaSearch === 'function') {
-      window.executeMediaSearch(query);
+  showPage('resources');
+  setTimeout(() => {
+    const input = document.getElementById('mediaSearchInput');
+    if (input) {
+      input.value = query;
+      if (typeof window.searchMediaResources === 'function') {
+        window.searchMediaResources(query);
+      }
+      input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      input.focus();
     }
-  }
+  }, 120);
 }
 window.searchWisdomInDocs = searchWisdomInDocs;
 
