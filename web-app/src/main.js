@@ -1950,7 +1950,9 @@ function renderActiveConversation() {
   title.textContent = conv.title;
   container.innerHTML = '';
 
-  conv.messages.forEach(m => addMessage(m.text, m.role === 'user', m.model, m.image));
+  conv.messages.forEach((m, idx) => {
+    addMessage(m.text, m.role === 'user', m.model, m.image, idx, m.role === 'error', m.failedQuery);
+  });
 }
 
 // ═══════ VOICE INPUT (OFFICIAL GOOGLE GEMINI AI & WEB SPEECH) ═══════
@@ -2493,14 +2495,34 @@ async function sendChat(e) {
       }
     }
 
-    conv.messages.push({ role: 'model', text: aiText, model: modelUsed });
+    conv.messages.push({ role: 'model', text: aiText, model: modelUsed, timestamp: Date.now() });
     conv.updated = Date.now();
     saveConversations();
-    addMessage(aiText, false, modelUsed);
+    addMessage(aiText, false, modelUsed, null, conv.messages.length - 1);
 
   } catch (err) {
-    typingEl.remove();
-    addMessage(`❌ Erreur : ${err.message}`, false);
+    if (typingEl && typingEl.parentNode) typingEl.remove();
+    const streamingContainer = document.getElementById('streaming-bubble-container');
+    if (streamingContainer) streamingContainer.remove();
+
+    const friendlyError = err.message?.includes('429') 
+      ? "Le quota de requêtes est temporairement atteint. Vous pouvez réessayer dans quelques secondes ou utiliser un modèle plus léger."
+      : (err.message?.includes('503') 
+        ? "Les serveurs IA de Google sont temporairement surchargés. Cliquez sur Réessayer pour relancer la cascade."
+        : `Impossible de contacter le coach IA : ${err.message || 'Erreur réseau'}`);
+
+    if (conv) {
+      conv.messages.push({
+        role: 'error',
+        text: friendlyError,
+        failedQuery: messageText,
+        timestamp: Date.now()
+      });
+      conv.updated = Date.now();
+      saveConversations();
+    }
+
+    addMessage(friendlyError, false, null, null, conv ? conv.messages.length - 1 : null, true, messageText);
     if (_chatMascotRenderer) _chatMascotRenderer.setAction('idle', false);
   } finally {
     sendBtn.disabled = false;
@@ -2689,36 +2711,199 @@ document.addEventListener('click', (e) => {
 });
 
 
-function addMessage(text, isUser, modelUsed = null, imageUri = null) {
+function addMessage(text, isUser, modelUsed = null, imageUri = null, msgIndex = null, isError = false, failedQuery = null) {
   const container = document.getElementById('chatMessages');
+  if (!container) return;
+
+  const conv = conversations.find(c => c.id === activeConvId);
+  const actualIndex = msgIndex !== null ? msgIndex : (conv ? conv.messages.length - 1 : 0);
+
+  const wrapper = document.createElement('div');
+  wrapper.className = `message-wrapper ${isUser ? 'user' : 'bot'}`;
+  wrapper.dataset.index = actualIndex;
+
   const div = document.createElement('div');
   div.className = `message ${isUser ? 'user' : 'bot'}`;
 
-  let badgeHtml = '';
-  if (!isUser) {
-    const displayModel = formatModelName(modelUsed);
-    badgeHtml = `<div style="margin-top:8px;font-size:0.72rem;color:var(--text-dim);opacity:0.85;display:inline-flex;align-items:center;gap:5px;border-top:1px solid rgba(255,255,255,0.08);padding-top:6px"><i class="ri-sparkling-fill" style="color:var(--accent);font-size:0.75rem;"></i><span>${esc(displayModel)}</span></div>`;
+  const avatarHtml = !isUser ? `<div class="message-avatar">${window.renderPigeonPortrait ? window.renderPigeonPortrait(24, 'talking') : '🐦'}</div>` : '';
+  const imgHtml = imageUri ? `<img src="${imageUri}" class="message-image" alt="Photo jointe">` : '';
+
+  if (isError) {
+    div.innerHTML = `${avatarHtml}<div class="message-bubble message-error-card">
+      <div class="message-error-header">
+        <i class="ri-error-warning-fill"></i>
+        <span>Génération interrompue</span>
+      </div>
+      <div class="message-error-body">${esc(text || 'Une interruption temporaire est survenue.')}</div>
+      <div class="message-error-actions">
+        <button type="button" class="btn-error-retry" onclick="retryChatMessage(${actualIndex})">
+          <i class="ri-refresh-line"></i> Réessayer
+        </button>
+        <button type="button" class="btn-error-secondary" onclick="copyChatMessage('${esc((failedQuery || '').replace(/'/g, "\\'"))}', this)">
+          <i class="ri-file-copy-line"></i> Copier la question
+        </button>
+        <button type="button" class="btn-error-secondary" onclick="switchModelAndRetry('lite', ${actualIndex})">
+          <i class="ri-flashlight-line"></i> Essayer avec Flash-Lite
+        </button>
+      </div>
+    </div>`;
+    wrapper.appendChild(div);
+  } else {
+    let badgeHtml = '';
+    if (!isUser) {
+      const displayModel = formatModelName(modelUsed);
+      badgeHtml = `<div style="margin-top:8px;font-size:0.72rem;color:var(--text-dim);opacity:0.85;display:inline-flex;align-items:center;gap:5px;border-top:1px solid rgba(255,255,255,0.08);padding-top:6px"><i class="ri-sparkling-fill" style="color:var(--accent);font-size:0.75rem;"></i><span>${esc(displayModel)}</span></div>`;
+    }
+
+    let quickReplies = '';
+    if (!isUser) {
+      const chips = detectQuickReplies(text);
+      if (chips.length) {
+        quickReplies = `<div class="quick-replies" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.08)">
+          ${chips.map(c => `<button class="quick-reply-chip" onclick="sendQuickReply(this, '${esc(c)}')" style="
+            padding:6px 14px;border-radius:18px;border:1px solid var(--accent);background:rgba(var(--accent-rgb,74,222,128),0.08);
+            color:var(--text);cursor:pointer;font-size:0.82rem;transition:all 0.2s;white-space:nowrap">${esc(c)}</button>`).join('')}
+        </div>`;
+      }
+    }
+
+    div.innerHTML = `${avatarHtml}<div class="message-bubble">${imgHtml}${isUser ? esc(text) : renderMarkdown(text)}${quickReplies}${badgeHtml}</div>`;
+    wrapper.appendChild(div);
+
+    // Modern Message Action Toolbar
+    const toolbar = document.createElement('div');
+    toolbar.className = 'message-toolbar';
+    const safeText = (text || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+
+    if (isUser) {
+      toolbar.innerHTML = `
+        <button type="button" class="msg-action-btn" onclick="copyChatMessage('${safeText}', this)" title="Copier la question">
+          <i class="ri-file-copy-line"></i> Copier
+        </button>
+        <button type="button" class="msg-action-btn" onclick="editChatMessage(${actualIndex})" title="Modifier et renvoyer la question">
+          <i class="ri-edit-line"></i> Modifier
+        </button>
+      `;
+    } else {
+      toolbar.innerHTML = `
+        <button type="button" class="msg-action-btn" onclick="copyChatMessage('${safeText}', this)" title="Copier la réponse">
+          <i class="ri-file-copy-line"></i> Copier
+        </button>
+        <button type="button" class="msg-action-btn" onclick="retryChatMessage(${actualIndex})" title="Régénérer cette réponse">
+          <i class="ri-refresh-line"></i> Régénérer
+        </button>
+        <button type="button" class="msg-action-btn" onclick="speakChatMessage('${safeText}', this)" title="Écouter la réponse">
+          <i class="ri-volume-up-line"></i> Écouter
+        </button>
+      `;
+    }
+    wrapper.appendChild(toolbar);
   }
 
-  // Generate quick-reply chips for AI messages
-  let quickReplies = '';
-  if (!isUser) {
-    const chips = detectQuickReplies(text);
-    if (chips.length) {
-      quickReplies = `<div class="quick-replies" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.08)">
-        ${chips.map(c => `<button class="quick-reply-chip" onclick="sendQuickReply(this, '${esc(c)}')" style="
-          padding:6px 14px;border-radius:18px;border:1px solid var(--accent);background:rgba(var(--accent-rgb,74,222,128),0.08);
-          color:var(--text);cursor:pointer;font-size:0.82rem;transition:all 0.2s;white-space:nowrap">${esc(c)}</button>`).join('')}
-      </div>`;
+  container.appendChild(wrapper);
+  container.scrollTop = container.scrollHeight;
+}
+
+function copyChatMessage(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    if (btn) {
+      const orig = btn.innerHTML;
+      btn.innerHTML = '<i class="ri-check-line" style="color:var(--accent)"></i> Copié !';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.innerHTML = orig;
+        btn.classList.remove('copied');
+      }, 2000);
+    }
+  }).catch(() => {
+    showToast("Impossible de copier dans le presse-papier", "error");
+  });
+}
+window.copyChatMessage = copyChatMessage;
+
+function speakChatMessage(text, btn) {
+  if (!('speechSynthesis' in window)) {
+    showToast("Synthèse vocale non supportée sur ce navigateur", "error");
+    return;
+  }
+  if (window.speechSynthesis.speaking) {
+    window.speechSynthesis.cancel();
+    if (btn) btn.innerHTML = '<i class="ri-volume-up-line"></i> Écouter';
+    return;
+  }
+  const cleanText = text.replace(/```[\s\S]*?```/g, '').replace(/[\*\#_`]/g, '').slice(0, 1000);
+  const utter = new SpeechSynthesisUtterance(cleanText);
+  utter.lang = getLanguage() === 'en' ? 'en-US' : 'fr-FR';
+  utter.rate = 1.05;
+  if (btn) btn.innerHTML = '<i class="ri-stop-circle-line" style="color:#ef4444;"></i> Arrêter';
+  utter.onend = () => { if (btn) btn.innerHTML = '<i class="ri-volume-up-line"></i> Écouter'; };
+  utter.onerror = () => { if (btn) btn.innerHTML = '<i class="ri-volume-up-line"></i> Écouter'; };
+  window.speechSynthesis.speak(utter);
+}
+window.speakChatMessage = speakChatMessage;
+
+function editChatMessage(msgIdx) {
+  const conv = conversations.find(c => c.id === activeConvId);
+  if (!conv || !conv.messages[msgIdx]) return;
+  const msg = conv.messages[msgIdx];
+  const input = document.getElementById('chatInput');
+  if (input) {
+    input.value = msg.text || '';
+    input.focus();
+    input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  conv.messages = conv.messages.slice(0, msgIdx);
+  saveConversations();
+  renderActiveConversation();
+}
+window.editChatMessage = editChatMessage;
+
+function retryChatMessage(msgIdx) {
+  const conv = conversations.find(c => c.id === activeConvId);
+  if (!conv) return;
+
+  let targetQuery = '';
+  if (msgIdx !== undefined && conv.messages[msgIdx]) {
+    const targetMsg = conv.messages[msgIdx];
+    if (targetMsg.role === 'user') {
+      targetQuery = targetMsg.text;
+      conv.messages = conv.messages.slice(0, msgIdx);
+    } else {
+      for (let i = msgIdx - 1; i >= 0; i--) {
+        if (conv.messages[i].role === 'user') {
+          targetQuery = conv.messages[i].text;
+          conv.messages = conv.messages.slice(0, i);
+          break;
+        }
+      }
+    }
+  } else {
+    for (let i = conv.messages.length - 1; i >= 0; i--) {
+      if (conv.messages[i].role === 'user') {
+        targetQuery = conv.messages[i].text;
+        conv.messages = conv.messages.slice(0, i);
+        break;
+      }
     }
   }
 
-  const avatarHtml = !isUser ? `<div class="message-avatar">${window.renderPigeonPortrait ? window.renderPigeonPortrait(24, 'talking') : '🐦'}</div>` : '';
-  const imgHtml = imageUri ? `<img src="${imageUri}" class="message-image" alt="Photo jointe">` : '';
-  div.innerHTML = `${avatarHtml}<div class="message-bubble">${imgHtml}${isUser ? esc(text) : renderMarkdown(text)}${quickReplies}${badgeHtml}</div>`;
-  container.appendChild(div);
-  container.scrollTop = container.scrollHeight;
+  if (targetQuery) {
+    saveConversations();
+    renderActiveConversation();
+    const input = document.getElementById('chatInput');
+    if (input) input.value = targetQuery;
+    sendChat();
+  }
 }
+window.retryChatMessage = retryChatMessage;
+
+function switchModelAndRetry(modelType, msgIdx) {
+  if (modelType === 'lite') {
+    selectModel('gemini-3.1-flash-lite-preview', 'Gemini 3.1 Flash Lite', 'ri-flashlight-line', '#22d3ee', 'Éco Rapide');
+  }
+  retryChatMessage(msgIdx);
+}
+window.switchModelAndRetry = switchModelAndRetry;
 
 function addTypingIndicator() {
   const container = document.getElementById('chatMessages');
@@ -10015,6 +10200,11 @@ if (typeof window !== "undefined") window.handleChatImageSelected = handleChatIm
 if (typeof window !== "undefined") window.removeChatImage = removeChatImage;
 if (typeof window !== "undefined") window.quickChat = quickChat;
 if (typeof window !== "undefined") window.sendChat = sendChat;
+if (typeof window !== "undefined") window.copyChatMessage = copyChatMessage;
+if (typeof window !== "undefined") window.speakChatMessage = speakChatMessage;
+if (typeof window !== "undefined") window.editChatMessage = editChatMessage;
+if (typeof window !== "undefined") window.retryChatMessage = retryChatMessage;
+if (typeof window !== "undefined") window.switchModelAndRetry = switchModelAndRetry;
 if (typeof window !== "undefined") window.renderModelPicker = renderModelPicker;
 if (typeof window !== "undefined") window.selectModel = selectModel;
 if (typeof window !== "undefined") window.toggleModelList = toggleModelList;
