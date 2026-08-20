@@ -2867,13 +2867,41 @@ input.jn-field-control { padding-right: 14px; }
 .btn-secondary{padding:10px 20px;border-radius:50px;border:1px solid var(--border);cursor:pointer;background:rgba(255,255,255,0.05);color:var(--text-dim);font-family:var(--font);font-weight:600;font-size:0.88rem;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:all var(--transition)}
 .btn-secondary:hover{background:rgba(255,255,255,0.1);color:var(--text);border-color:rgba(255,255,255,0.2)}
 
-/* ═══════ TOOLTIPS ═══════ */
-[data-tooltip]{position:relative}
-[data-tooltip]::after{content:attr(data-tooltip);position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%) translateY(4px);padding:6px 12px;border-radius:8px;background:#0f172a;border:1px solid rgba(255,255,255,0.15);color:#f8fafc;font-size:0.72rem;font-family:var(--font);font-weight:500;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity 0.2s ease,transform 0.2s ease;z-index:1000;backdrop-filter:blur(12px);box-shadow:0 4px 16px rgba(0,0,0,0.4)}
-[data-tooltip]:hover::after{opacity:1;transform:translateX(-50%) translateY(0)}
-[data-tooltip].tooltip-bottom::after{bottom:auto;top:calc(100% + 8px)}
-[data-tooltip].tooltip-left::after{left:auto;right:0;transform:translateX(0) translateY(4px)}
-[data-tooltip].tooltip-left:hover::after{transform:translateX(0) translateY(0)}
+/* ═══════ FLOATING GLOBAL TOOLTIP (BODY-ATTACHED & BOUNDARY CLAMPED) ═══════ */
+#vitalGlobalTooltip {
+  position: fixed;
+  z-index: 999999;
+  pointer-events: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #f8fafc;
+  font-size: 0.74rem;
+  font-family: var(--font, -apple-system, sans-serif);
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.18s cubic-bezier(0.16, 1, 0.3, 1), transform 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+}
+
+#vitalGlobalTooltip.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Neutralize legacy pseudo-element tooltips so they NEVER clip inside overflow:hidden cards */
+[data-tooltip]::after,
+[data-tooltip]::before {
+  display: none !important;
+  content: none !important;
+}
 
 /* ═══════ TYPING DOTS ═══════ */
 .typing-dots{display:flex;gap:4px;padding:8px 0}

@@ -12136,9 +12136,20 @@ if (typeof window !== "undefined") window.dismissPwaBanner = dismissPwaBanner;
 if (typeof window !== "undefined") window.initScreenshotProtection = initScreenshotProtection;
 if (typeof window !== "undefined") window.setScreenshotProtection = setScreenshotProtection;
 
-// ═══════ GLOBAL THEMED TOOLTIP SANITIZER ═══════
-// Converts any native HTML title="..." into dark-glass data-tooltip="..." so ugly browser tooltips NEVER show
-function initGlobalTooltipSanitizer() {
+// ═══════ UNIVERSAL FLOATING GLOBAL TOOLTIP ENGINE (NO OVERFLOW CLIPPING, VIEWPORT CLAMPED) ═══════
+function initGlobalFloatingTooltip() {
+  if (typeof document === 'undefined') return;
+
+  let tooltipEl = document.getElementById('vitalGlobalTooltip');
+  if (!tooltipEl) {
+    tooltipEl = document.createElement('div');
+    tooltipEl.id = 'vitalGlobalTooltip';
+    document.body.appendChild(tooltipEl);
+  }
+
+  let activeTarget = null;
+  let showTimer = null;
+
   function sanitize(root = document) {
     if (!root || !root.querySelectorAll) return;
     root.querySelectorAll('[title]').forEach(el => {
@@ -12150,50 +12161,124 @@ function initGlobalTooltipSanitizer() {
     });
   }
 
-  if (typeof document !== 'undefined') {
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => sanitize());
-    } else {
-      sanitize();
+  function showTooltip(el, text) {
+    if (!text || !el || !document.body.contains(el)) return;
+    activeTarget = el;
+    tooltipEl.textContent = text;
+    tooltipEl.style.display = 'block';
+    tooltipEl.classList.remove('visible');
+
+    // Measure target and tooltip in viewport coords
+    const targetRect = el.getBoundingClientRect();
+    const tipRect = tooltipEl.getBoundingClientRect();
+
+    const padding = 12;
+    const gap = 8;
+
+    // Calculate X centered horizontally on target
+    let x = targetRect.left + (targetRect.width / 2) - (tipRect.width / 2);
+    // Viewport clamping (left and right)
+    if (x < padding) x = padding;
+    if (x + tipRect.width > window.innerWidth - padding) {
+      x = window.innerWidth - tipRect.width - padding;
     }
 
-    if (typeof MutationObserver !== 'undefined') {
-      const observer = new MutationObserver((mutations) => {
-        for (const m of mutations) {
-          if (m.type === 'childList') {
-            m.addedNodes.forEach(node => {
-              if (node && node.nodeType === 1) {
-                if (node.hasAttribute('title')) {
-                  node.setAttribute('data-tooltip', node.getAttribute('title'));
-                  node.removeAttribute('title');
-                }
-                node.querySelectorAll?.('[title]')?.forEach(el => {
-                  el.setAttribute('data-tooltip', el.getAttribute('title'));
-                  el.removeAttribute('title');
-                });
-              }
-            });
-          } else if (m.type === 'attributes' && m.attributeName === 'title') {
-            const target = m.target;
-            const txt = target.getAttribute('title');
-            if (txt) {
-              target.setAttribute('data-tooltip', txt);
-              target.removeAttribute('title');
-            }
-          }
-        }
-      });
+    // Calculate Y (default: above target)
+    let y = targetRect.top - tipRect.height - gap;
+    // If not enough room above, place below target
+    if (y < padding) {
+      y = targetRect.bottom + gap;
+    }
 
-      observer.observe(document.documentElement, {
-        childList: true,
-        subtree: true,
-        attributes: true,
-        attributeFilter: ['title']
-      });
+    tooltipEl.style.left = `${Math.round(x)}px`;
+    tooltipEl.style.top = `${Math.round(y)}px`;
+
+    requestAnimationFrame(() => {
+      if (activeTarget === el) {
+        tooltipEl.classList.add('visible');
+      }
+    });
+  }
+
+  function hideTooltip() {
+    activeTarget = null;
+    clearTimeout(showTimer);
+    if (tooltipEl) {
+      tooltipEl.classList.remove('visible');
     }
   }
+
+  // Delegation mouse events
+  document.addEventListener('mouseover', (e) => {
+    const target = e.target.closest('[data-tooltip], [title]');
+    if (!target) return;
+
+    let text = target.getAttribute('data-tooltip');
+    if (!text && target.hasAttribute('title')) {
+      text = target.getAttribute('title');
+      target.setAttribute('data-tooltip', text);
+      target.removeAttribute('title');
+    }
+
+    if (!text || !text.trim()) return;
+
+    clearTimeout(showTimer);
+    showTimer = setTimeout(() => {
+      showTooltip(target, text.trim());
+    }, 60);
+  }, { passive: true });
+
+  document.addEventListener('mouseout', (e) => {
+    const target = e.target.closest('[data-tooltip]');
+    if (target && target === activeTarget) {
+      hideTooltip();
+    }
+  }, { passive: true });
+
+  // Hide on scroll, touch, or click
+  window.addEventListener('scroll', hideTooltip, { passive: true });
+  document.addEventListener('click', hideTooltip, { passive: true });
+  document.addEventListener('touchstart', hideTooltip, { passive: true });
+
+  // Observe DOM additions to strip native title attributes
+  if (typeof MutationObserver !== 'undefined') {
+    const observer = new MutationObserver((mutations) => {
+      for (const m of mutations) {
+        if (m.type === 'childList') {
+          m.addedNodes.forEach(node => {
+            if (node && node.nodeType === 1) {
+              if (node.hasAttribute('title')) {
+                node.setAttribute('data-tooltip', node.getAttribute('title'));
+                node.removeAttribute('title');
+              }
+              node.querySelectorAll?.('[title]')?.forEach(el => {
+                el.setAttribute('data-tooltip', el.getAttribute('title'));
+                el.removeAttribute('title');
+              });
+            }
+          });
+        } else if (m.type === 'attributes' && m.attributeName === 'title') {
+          const target = m.target;
+          const txt = target.getAttribute('title');
+          if (txt) {
+            target.setAttribute('data-tooltip', txt);
+            target.removeAttribute('title');
+          }
+        }
+      }
+    });
+
+    observer.observe(document.documentElement, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['title']
+    });
+  }
+
+  sanitize();
 }
-initGlobalTooltipSanitizer();
+initGlobalFloatingTooltip();
 
 // ═══════ BOOTSTRAP INITIALIZATION ═══════
 if (typeof document !== "undefined") {
