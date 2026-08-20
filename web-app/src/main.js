@@ -4344,7 +4344,7 @@ async function askAIToFindFood(query) {
     resultsEl.style.display = 'flex';
     const randTip = VITAL_EDUCATIONAL_TIPS[Math.floor(Math.random() * VITAL_EDUCATIONAL_TIPS.length)];
     resultsEl.innerHTML = `
-      <div class="search-mascot-loader glass" style="width:100%; text-align:center; padding:32px 20px; border-radius:18px; border:1px solid rgba(52,211,153,0.3); background:rgba(15,23,42,0.75); backdrop-filter:blur(20px); margin:12px 0;">
+      <div class="search-mascot-loader glass" style="width:100%; text-align:center; padding:32px 20px; border-radius:18px; border:1px solid rgba(52,211,153,0.3); background:var(--surface-2); backdrop-filter:blur(20px); margin:12px 0;">
         <div style="position:relative; width:110px; height:130px; margin:0 auto 16px auto; display:flex; align-items:center; justify-content:center;">
           <div class="scan-spinner-ring" style="width:125px; height:125px; top:-5px; left:-7px; border-color:rgba(52,211,153,0.15); border-top-color:#34d399;"></div>
           <canvas id="searchMascotCanvas" width="110" height="130" style="width:110px; height:130px; filter:drop-shadow(0 4px 16px rgba(52,211,153,0.35));"></canvas>
@@ -4354,7 +4354,7 @@ async function askAIToFindFood(query) {
         </div>
         <h3 style="font-size:1.15rem; font-weight:800; color:var(--text); margin:0 0 8px 0;">Analyse biochimique &amp; statut vitaliste...</h3>
         
-        <div id="searchMascotTipBox" style="min-height:56px; max-width:520px; margin:0 auto 18px auto; padding:12px 16px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:12px; font-size:0.86rem; color:var(--text); line-height:1.45; display:flex; align-items:center; justify-content:center; text-align:center; transition:opacity 0.3s ease;">
+        <div id="searchMascotTipBox" style="min-height:56px; max-width:520px; margin:0 auto 18px auto; padding:12px 16px; background:var(--surface-hover); border:1px solid var(--border); border-radius:12px; font-size:0.86rem; color:var(--text); line-height:1.45; display:flex; align-items:center; justify-content:center; text-align:center; transition:opacity 0.3s ease;">
           ${randTip}
         </div>
 
@@ -6632,7 +6632,7 @@ function renderMeals() {
       }
     }
     const cookingObj = COOKING_METHODS[m.cookingMethod];
-    const catBadge = m.category ? `<span class="food-badge" style="font-size:0.7rem; padding:2px 6px; background:rgba(255,255,255,0.06);">${esc(m.category.toUpperCase())}</span>` : '';
+    const catBadge = m.category ? `<span class="food-badge" style="font-size:0.7rem; padding:2px 6px; background:var(--surface-hover);">${esc(m.category.toUpperCase())}</span>` : '';
     const cookingBadge = cookingObj ? `<span class="food-badge" style="font-size:0.7rem; padding:2px 6px; background:rgba(55,211,153,0.1); color:var(--accent);">${cookingObj.emoji} ${esc(cookingObj.label.split(' ')[0])}</span>` : '';
 
     return `<div class="meal-item clickable" onclick="openFoodModalFromMeal(${i})" style="cursor:pointer;" title="Cliquer pour ouvrir la fiche détaillée du repas">
@@ -6817,7 +6817,7 @@ function openMasterclass(index) {
       </div>
       <div>
         <div style="font-size:0.8rem; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:${mc.color}; margin-bottom:4px;">${mc.pill}</div>
-        <h2 style="margin:0; font-size:1.55rem; color:#fff; line-height:1.2; font-weight:800;">${mc.title}</h2>
+        <h2 style="margin:0; font-size:1.55rem; color:var(--text); line-height:1.2; font-weight:800;">${mc.title}</h2>
       </div>
     </div>
     <p style="margin:0; color:var(--text-dim); font-size:0.95rem;">${mc.shortDesc}</p>
@@ -8749,7 +8749,7 @@ function _renderMediaSearchResults() {
     resultsContainer.innerHTML = `
       <div class="dash-card glass" style="text-align:center; padding:40px 20px; border-radius:16px;">
         <div style="font-size:2.4rem; margin-bottom:10px;">🔍</div>
-        <h3 style="color:#fff; font-size:1.1rem; margin-bottom:6px;">Aucun résultat pour « ${esc(_mediaSearchQuery)} »</h3>
+        <h3 style="color:var(--text); font-size:1.1rem; margin-bottom:6px;">Aucun résultat pour « ${esc(_mediaSearchQuery)} »</h3>
         <p style="color:var(--text-dim); font-size:0.85rem; max-width:480px; margin:0 auto 18px; line-height:1.5;">
           Aucun passage de livre ni extrait vidéo ne correspond à ce terme. Essayez un autre mot-clé (ex: <em>yeux, intestins, colon, crohn, reins, mucus, jeûne, autophagie, dr sebi</em>).
         </p>
@@ -8765,9 +8765,9 @@ function _renderMediaSearchResults() {
 
   resultsContainer.innerHTML = `
     <!-- Barre de Filtrage des Résultats de Recherche -->
-    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:18px; padding:12px 16px; background:rgba(15,23,42,0.6); border:1px solid rgba(255,255,255,0.08); border-radius:12px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:18px; padding:12px 16px; background:var(--surface-2); border:1px solid var(--border); border-radius:12px;">
       <div style="display:flex; align-items:center; gap:8px;">
-        <span style="font-size:0.88rem; font-weight:700; color:#fff;">
+        <span style="font-size:0.88rem; font-weight:700; color:var(--text);">
           🎯 ${allMatches.length} passage${allMatches.length > 1 ? 's' : ''} trouvé${allMatches.length > 1 ? 's' : ''} pour « <span style="color:var(--accent);">${esc(_mediaSearchQuery)}</span> »
         </span>
       </div>
@@ -9007,8 +9007,8 @@ function openPdfPassageModal(itemId) {
             ${item.lang === 'fr' ? '🇫🇷 Français' : '🇬🇧 English'}
           </span>
         </div>
-        <h3 style="margin:0 0 4px 0; font-size:1.15rem; color:#fff; font-weight:800; line-height:1.3;">${highlightMatches(item.title, _mediaSearchQuery)}</h3>
-        <div style="font-size:0.82rem; color:var(--accent); font-weight:600;"><i class="ri-quill-pen-line"></i> Auteur : <span style="color:#fff;">${esc(item.author || 'Inconnu')}</span></div>
+        <h3 style="margin:0 0 4px 0; font-size:1.15rem; color:var(--text); font-weight:800; line-height:1.3;">${highlightMatches(item.title, _mediaSearchQuery)}</h3>
+        <div style="font-size:0.82rem; color:var(--accent); font-weight:600;"><i class="ri-quill-pen-line"></i> Auteur : <span style="color:var(--text);">${esc(item.author || 'Inconnu')}</span></div>
       </div>
       <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
         <span class="pdf-page-pill" style="font-size:0.85rem; padding:6px 14px; white-space:nowrap; flex-shrink:0;">
@@ -9018,7 +9018,7 @@ function openPdfPassageModal(itemId) {
     </div>
 
     <div style="background:rgba(16,185,129,0.08); border-left:3px solid var(--accent); padding:14px 16px; border-radius:12px; margin-bottom:18px;">
-      <div style="font-size:0.88rem; font-weight:700; color:#fff; margin-bottom:6px;">${highlightMatches(item.chapterTitle || '', _mediaSearchQuery)}</div>
+      <div style="font-size:0.88rem; font-weight:700; color:var(--text); margin-bottom:6px;">${highlightMatches(item.chapterTitle || '', _mediaSearchQuery)}</div>
       <p style="font-size:0.92rem; color:var(--text); line-height:1.6; margin:0; font-style:italic;">
         « ${highlightMatches(displayExcerpt, _mediaSearchQuery)} »
       </p>
@@ -9481,7 +9481,7 @@ function renderResources() {
             <div style="display:flex; align-items:center; gap:10px;">
               <span style="font-size:1.4rem;">📚</span>
               <div>
-                <h2 style="font-size:1.15rem; font-weight:800; margin:0; color:#fff;">
+                <h2 style="font-size:1.15rem; font-weight:800; margin:0; color:var(--text);">
                   ${_resourcesCatalogTab === 'fr' ? 'Ouvrages Fondateurs en Français (Traduction Intégrale)' : _resourcesCatalogTab === 'en' ? 'Authentic English Original Editions' : 'Ouvrages & Guides PDF Fondateurs (Bilingue FR / EN)'}
                 </h2>
                 <p style="font-size:0.8rem; color:var(--text-dim); margin:0;">Tous les textes intégraux téléchargeables et consultables directement en local</p>
@@ -9492,7 +9492,7 @@ function renderResources() {
 
           <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(min(360px, 100%), 1fr)); gap:22px;">
             ${filteredBooks.map(b => `
-              <div class="dash-card glass" style="padding:22px; display:flex; flex-direction:column; justify-content:space-between; border-left:4px solid ${b.color}; background:linear-gradient(145deg, rgba(255,255,255,0.035), rgba(15,23,42,0.8)); box-shadow:0 10px 30px rgba(0,0,0,0.3); border-radius:16px;">
+              <div class="dash-card glass" style="padding:22px; display:flex; flex-direction:column; justify-content:space-between; border-left:4px solid ${b.color}; background:var(--surface-2); box-shadow:var(--card-shadow); border-radius:16px;">
                 <div>
                   <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; gap:8px;">
                     ${b.badgeText ? `
@@ -9504,17 +9504,17 @@ function renderResources() {
                   </div>
 
                   <div style="display:flex; align-items:flex-start; gap:12px; margin-bottom:10px;">
-                    <div style="width:44px; height:44px; border-radius:12px; background:rgba(255,255,255,0.06); color:${b.color}; border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-size:1.35rem; flex-shrink:0; box-shadow:0 4px 12px rgba(0,0,0,0.25);">
+                    <div style="width:44px; height:44px; border-radius:12px; background:var(--surface-hover); color:${b.color}; border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:1.35rem; flex-shrink:0; box-shadow:var(--card-shadow);">
                       <i class="${b.icon}"></i>
                     </div>
                     <div style="flex:1; min-width:0;">
-                      <h3 style="margin:0 0 4px 0; font-size:1.05rem; font-weight:800; color:#fff; line-height:1.3; word-break:break-word;">${esc(b.title)}</h3>
+                      <h3 style="margin:0 0 4px 0; font-size:1.05rem; font-weight:800; color:var(--text); line-height:1.3; word-break:break-word;">${esc(b.title)}</h3>
                       <div style="font-size:0.78rem; color:${b.color}; font-weight:600; line-height:1.35;">${esc(b.subtitle)}</div>
                     </div>
                   </div>
 
-                  <div style="display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); padding:3px 10px; border-radius:8px; font-size:0.76rem; color:var(--accent); font-weight:600; margin-bottom:12px;">
-                    <i class="ri-quill-pen-line"></i> Auteur : <span style="color:#fff;">${esc(b.author)}</span>
+                  <div style="display:inline-flex; align-items:center; gap:6px; background:var(--surface-hover); border:1px solid var(--border); padding:3px 10px; border-radius:8px; font-size:0.76rem; color:var(--accent); font-weight:600; margin-bottom:12px;">
+                    <i class="ri-quill-pen-line"></i> Auteur : <span style="color:var(--text);">${esc(b.author)}</span>
                   </div>
 
                   <p style="font-size:0.85rem; color:var(--text-dim); line-height:1.55; margin:0 0 18px 0;">${esc(b.description)}</p>
@@ -9524,7 +9524,7 @@ function renderResources() {
                   <a href="${b.url}" target="_blank" rel="noopener noreferrer" class="btn-primary" style="flex:1; text-align:center; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:6px; font-size:0.85rem; font-weight:700; padding:10px 14px; border-radius:10px; box-shadow:0 4px 14px rgba(16,185,129,0.25);">
                     <i class="ri-file-pdf-line"></i> Consulter
                   </a>
-                  <a href="${b.url}" download class="btn-secondary" style="flex:1; text-align:center; text-decoration:none; padding:10px 14px; display:inline-flex; align-items:center; justify-content:center; gap:6px; font-size:0.85rem; font-weight:600; border-radius:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.15); color:#fff;" title="Télécharger le fichier PDF">
+                  <a href="${b.url}" download class="btn-secondary" style="flex:1; text-align:center; text-decoration:none; padding:10px 14px; display:inline-flex; align-items:center; justify-content:center; gap:6px; font-size:0.85rem; font-weight:600; border-radius:10px; background:var(--surface-hover); border:1px solid var(--border); color:var(--text);" title="Télécharger le fichier PDF">
                     <i class="ri-download-2-line"></i> Télécharger
                   </a>
                 </div>
@@ -9541,7 +9541,7 @@ function renderResources() {
             <div style="display:flex; align-items:center; gap:10px;">
               <span style="font-size:1.4rem;">🎬</span>
               <div>
-                <h2 style="font-size:1.15rem; font-weight:800; margin:0; color:#fff;">Documentaires & Médias Vidéo</h2>
+                <h2 style="font-size:1.15rem; font-weight:800; margin:0; color:var(--text);">Documentaires & Médias Vidéo</h2>
                 <p style="font-size:0.8rem; color:var(--text-dim); margin:0;">Enquêtes, conférences et entretiens de référence directement prêts à visionner</p>
               </div>
             </div>
@@ -9553,7 +9553,7 @@ function renderResources() {
               <div class="dash-card glass" style="padding:18px; display:flex; flex-direction:column; justify-content:space-between; border-radius:16px;">
                 <div>
                   <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
-                    <h3 style="margin:0; font-size:1.05rem; font-weight:700; color:#fff;">${esc(r.title)}</h3>
+                    <h3 style="margin:0; font-size:1.05rem; font-weight:700; color:var(--text);">${esc(r.title)}</h3>
                     <span class="badge ${r.badgeClass || 'badge-success'}">${esc(r.badgeText || r.source)}</span>
                   </div>
 
@@ -9594,7 +9594,7 @@ function renderResources() {
       <div class="dash-card glass" style="margin-top:20px; padding:16px 20px; background:linear-gradient(135deg,rgba(16,185,129,0.06),rgba(59,130,246,0.04)); border:1px dashed var(--border); display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
         <div style="font-size:2rem; color:var(--accent);">🛡️</div>
         <div style="flex:1; min-width:240px;">
-          <h4 style="margin:0 0 4px 0; font-size:0.95rem; font-weight:700; color:#fff;">Pérennité & Souveraineté Locale Maximale</h4>
+          <h4 style="margin:0 0 4px 0; font-size:0.95rem; font-weight:700; color:var(--text);">Pérennité & Souveraineté Locale Maximale</h4>
           <p style="margin:0; font-size:0.8rem; color:var(--text-dim); line-height:1.4;">
             Tous les ouvrages en français et en anglais ainsi que les documentaires sont hébergés et servis localement. Aucun risque de lien brisé ou de censure externe.
           </p>
@@ -9979,7 +9979,7 @@ function handleAddActionMeal(encodedMeal) {
     if (window.updateProactiveMascot) updateProactiveMascot('meal');
 
     showToast(
-      `<div style="display:flex;flex-direction:column;gap:1px;"><span style="font-weight:700;color:#fff;">Repas enregistré !</span><span style="color:var(--text-dim);font-size:0.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px;">« ${esc(newMeal.name)} »</span></div>`,
+      `<div style="display:flex;flex-direction:column;gap:1px;"><span style="font-weight:700;color:var(--text);">Repas enregistré !</span><span style="color:var(--text-dim);font-size:0.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px;">« ${esc(newMeal.name)} »</span></div>`,
       'success',
       6000,
       {
@@ -10673,7 +10673,7 @@ function renderWeightChart() {
       const deltaFormatted = deltaText !== null ? (parseFloat(deltaText) <= 0 ? `📉 ${deltaText} kg` : `📈 +${deltaText} kg`) : 'Première pesée';
 
       tooltip.innerHTML = `
-        <div style="font-weight:800; font-size:0.92rem; color:#fff; display:flex; align-items:baseline; gap:8px;">
+        <div style="font-weight:800; font-size:0.92rem; color:var(--text); display:flex; align-items:baseline; gap:8px;">
           <span>${nearest.entry.weight} kg</span>
           <span style="font-size:0.75rem; font-weight:700; color:${deltaText && parseFloat(deltaText) <= 0 ? '#34d399' : '#f87171'};">${deltaFormatted}</span>
         </div>
