@@ -606,8 +606,13 @@
     <div class="search-container">
       <!-- Header -->
       <div class="search-header glass">
-        <h2>🔍 Moteur de Recherche VitalTrack</h2>
-        <p class="subtitle">Aliments bio-électriques, pharmacopée, ouvrages intégraux & vidéos horodatées</p>
+        <div class="page-header-wrap">
+          <div class="header-icon-tile">🔍</div>
+          <div>
+            <h2>Moteur de Recherche VitalTrack</h2>
+            <p class="subtitle">Aliments bio-électriques, pharmacopée, ouvrages intégraux & vidéos horodatées</p>
+          </div>
+        </div>
       </div>
 
       <!-- Quick Switch Tabs : Aliments vs Pharmacopée vs Vidéos & PDF -->
@@ -700,9 +705,12 @@
       <!-- Header -->
       <div class="materia-header glass">
         <div class="materia-header-top">
-          <div>
-            <h2>🌿 Pharmacopée Amazonienne & Plantes Médicinales</h2>
-            <p class="subtitle" style="margin-top:4px">Materia Medica Botanique & Clinique — Reins, Intestin, Foie, Poumons & Lymphe</p>
+          <div class="page-header-wrap">
+            <div class="header-icon-tile">🌿</div>
+            <div>
+              <h2>Pharmacopée Amazonienne & Plantes Médicinales</h2>
+              <p class="subtitle" style="margin-top:4px">Materia Medica Botanique & Clinique — Reins, Intestin, Foie, Poumons & Lymphe</p>
+            </div>
           </div>
           <div class="materia-scientist-badge">
             <i class="ri-microscope-line"></i> Base Dr. Leslie Taylor (Raintree)
@@ -802,8 +810,13 @@
   <main class="page" id="page-meals">
     <div class="meals-container">
       <div class="meals-header glass">
-        <h2>🍽️ Mes repas</h2>
-        <p class="subtitle">Suivez votre alimentation quotidienne</p>
+        <div class="page-header-wrap">
+          <div class="header-icon-tile">🍽️</div>
+          <div>
+            <h2>Mes repas</h2>
+            <p class="subtitle">Suivez votre alimentation quotidienne</p>
+          </div>
+        </div>
       </div>
       <button class="btn-primary full-w" onclick="showAddMealModal()"><i class="ri-add-line"></i> Ajouter un repas</button>
       <div class="meal-axis-row" id="mealAxisRow" style="display:none">
@@ -921,11 +934,12 @@
   <main class="page" id="page-favorites">
     <div class="favs-container">
       <div class="favs-header glass" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; padding:18px 22px;">
-        <div>
-          <h2 style="display:flex; align-items:center; gap:8px; margin:0 0 4px 0;">
-            <i class="ri-heart-3-fill" style="color:#ef4444;"></i> Mes Favoris &amp; Plats
-          </h2>
-          <p class="subtitle" style="margin:0;">Aliments, tisanes et recettes personnalisées prêtes à l'emploi</p>
+        <div class="page-header-wrap">
+          <div class="header-icon-tile">❤️</div>
+          <div>
+            <h2 style="margin:0 0 4px 0;">Mes Favoris &amp; Plats</h2>
+            <p class="subtitle" style="margin:0;">Aliments, tisanes et recettes personnalisées prêtes à l'emploi</p>
+          </div>
         </div>
         <button class="btn-primary" onclick="window.openCreateDishModal()" style="display:inline-flex; align-items:center; gap:8px; padding:10px 18px; font-weight:700; border-radius:12px;">
           <i class="ri-add-circle-line"></i> + Créer un plat personnalisé
@@ -1221,8 +1235,13 @@
     <div class="breathing-container" style="max-width:760px; margin:0 auto;">
       <!-- Header with Tabs -->
       <div class="breathing-header glass" style="margin-bottom:16px;">
-        <h2>🌬️ Respiration & Méthode Wim Hof</h2>
-        <p class="subtitle">Alcalinisation sanguine · Contrôle du système nerveux · Réduction de l'inflammation</p>
+        <div class="page-header-wrap" style="margin-bottom:10px;">
+          <div class="header-icon-tile">🌬️</div>
+          <div>
+            <h2>Respiration &amp; Méthode Wim Hof</h2>
+            <p class="subtitle">Alcalinisation sanguine · Contrôle du système nerveux · Réduction de l'inflammation</p>
+          </div>
+        </div>
         
         <!-- Safety Alert Banner -->
         <div class="breathing-safety-alert" style="margin-top:14px; background:rgba(239, 68, 68, 0.12); border:1px solid rgba(239, 68, 68, 0.35); border-radius:12px; padding:10px 14px; font-size:0.82rem; color:var(--text); display:flex; align-items:center; gap:10px; text-align:left;">
@@ -1459,9 +1478,14 @@
   <!-- ═══════ RESOURCES ═══════ -->
   <main class="page" id="page-resources">
     <div class="container" style="max-width:960px; padding:80px 20px 100px;">
-      <div class="dash-greeting glass" style="margin-bottom:24px; flex-direction:column; align-items:flex-start; gap:6px;">
-        <h1 style="margin:0; font-size:1.5rem;">Bibliothèque &amp; Médias 📚🎬</h1>
-        <p class="subtitle" style="margin:0;">Ouvrages fondamentaux intégraux, guides PDF et documentaires scientifiques hébergés en haute disponibilité.</p>
+      <div class="dash-greeting glass" style="margin-bottom:24px; padding:18px 24px;">
+        <div class="page-header-wrap">
+          <div class="header-icon-tile">📚</div>
+          <div>
+            <h1 style="margin:0; font-size:1.4rem; font-weight:800; color:var(--text);">Bibliothèque &amp; Médias</h1>
+            <p class="subtitle" style="margin:0;">Ouvrages fondamentaux intégraux, guides PDF et documentaires scientifiques hébergés en haute disponibilité.</p>
+          </div>
+        </div>
       </div>
       
       <div id="resourcesContainer" style="display:flex; flex-direction:column; gap:20px;">
@@ -1475,12 +1499,14 @@
     <div class="modes-container">
       <div class="modes-header glass" style="margin-bottom:20px;">
         <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
-          <div>
-            <h2 style="display:flex; align-items:center; gap:10px; margin:0 0 6px 0; font-size:1.4rem;">
-              <i class="ri-settings-3-fill" style="color:var(--accent,#34d399);"></i>
-              <span>Protocoles &amp; Paramètres</span>
-            </h2>
-            <p class="subtitle" style="margin:0; font-size:0.88rem;">Calibrez vos approches vitalistes, vos émonctoires et la mémoire contextuelle de votre Coach IA.</p>
+          <div class="page-header-wrap">
+            <div class="header-icon-tile">⚙️</div>
+            <div>
+              <h2 style="margin:0 0 4px 0; font-size:1.35rem; font-weight:800; color:var(--text);">
+                Protocoles &amp; Paramètres
+              </h2>
+              <p class="subtitle" style="margin:0; font-size:0.88rem;">Calibrez vos approches vitalistes, vos émonctoires et la mémoire contextuelle de votre Coach IA.</p>
+            </div>
           </div>
           <button class="settings-save-btn" onclick="saveProfile()">
             <i class="ri-save-3-fill"></i> Sauvegarder
