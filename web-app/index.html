@@ -438,9 +438,12 @@
               <div style="font-size:0.72rem; color:var(--text-dim); text-transform:uppercase; font-weight:600;">Moyenne 7 Jours</div>
               <div id="kpiAvg7d" style="font-size:1.35rem; font-weight:800; color:var(--accent); margin-top:3px;">-- kg</div>
             </div>
-            <div class="weight-kpi-card" style="padding:10px 14px; border-radius:12px; background:var(--surface-hover); border:1px solid var(--border);">
-              <div style="font-size:0.72rem; color:var(--text-dim); text-transform:uppercase; font-weight:600;">Poids Cible</div>
-              <div id="kpiTargetWeight" style="font-size:1.35rem; font-weight:800; color:#60a5fa; margin-top:3px;">-- kg</div>
+            <div class="weight-kpi-card clickable" onclick="openTargetWeightModal()" style="padding:10px 14px; border-radius:12px; background:var(--surface-hover); border:1px solid var(--border);">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:0.72rem; color:var(--text-dim); text-transform:uppercase; font-weight:600;">Poids Cible</span>
+                <i class="ri-edit-line" style="font-size:0.8rem; color:#60a5fa;" title="Définir ou modifier l'objectif"></i>
+              </div>
+              <div id="kpiTargetWeight" style="font-size:1.35rem; font-weight:800; color:#60a5fa; margin-top:3px; min-height:30px; display:flex; align-items:center;">-- kg</div>
             </div>
           </div>
 
@@ -2672,6 +2675,44 @@
       <div id="voiceCardsContainer" style="flex:1; overflow-y:auto; padding-right:4px; display:flex; flex-direction:column; gap:12px;">
         <!-- Dynamically injected via renderVoiceModalList() in main.js -->
       </div>
+    </div>
+  </div>
+
+  <!-- ═══════ MODALE DÉFINIR POIDS CIBLE ═══════ -->
+  <div id="targetWeightModal" class="modal-overlay" onclick="closeTargetWeightModal(event)" style="display:none; z-index:99999;">
+    <div class="modal-card glass" onclick="event.stopPropagation()" style="max-width:440px; width:92%; padding:28px 24px; border-radius:24px; border:1px solid rgba(96,165,250,0.4); box-shadow:0 20px 60px rgba(0,0,0,0.85); position:relative; text-align:center;">
+      <button class="modal-close-btn" onclick="closeTargetWeightModal(null)" style="position:absolute; top:18px; right:18px; background:var(--surface-hover); border:none; color:var(--text); width:34px; height:34px; border-radius:50%; cursor:pointer; font-size:1.2rem; display:flex; align-items:center; justify-content:center;">
+        <i class="ri-close-line"></i>
+      </button>
+
+      <div style="width:58px; height:58px; margin:0 auto 14px; background:rgba(96,165,250,0.15); border:1px solid rgba(96,165,250,0.3); border-radius:50%; display:flex; align-items:center; justify-content:center; color:#60a5fa; font-size:1.6rem;">
+        <i class="ri-focus-3-line"></i>
+      </div>
+
+      <h3 style="font-size:1.3rem; font-weight:800; margin-bottom:6px; color:var(--text);">Objectif de Poids Cible</h3>
+      <p style="color:var(--text-dim); font-size:0.85rem; line-height:1.4; margin-bottom:20px;">
+        Définissez votre poids physiologique idéal pour tracer votre ligne d'objectif sur le graphique.
+      </p>
+
+      <form onsubmit="handleTargetWeightForm(event)">
+        <div style="display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom:20px;">
+          <button type="button" class="stepper-btn" onclick="stepTargetWeight(-0.5)" style="width:42px; height:42px; font-size:1.2rem; border-radius:50%; cursor:pointer;">-</button>
+          <div style="position:relative; width:140px;">
+            <input type="number" step="0.1" min="20" max="300" id="targetWeightModalInput" placeholder="70.0" required style="width:100%; font-size:1.8rem; font-weight:800; text-align:center; padding:10px 8px; background:var(--surface-hover); border:2px solid rgba(96,165,250,0.5); border-radius:14px; color:var(--text); font-family:var(--font); outline:none; box-sizing:border-box;">
+            <span style="position:absolute; right:12px; top:50%; transform:translateY(-50%); font-size:0.9rem; font-weight:700; color:var(--text-dim);">kg</span>
+          </div>
+          <button type="button" class="stepper-btn" onclick="stepTargetWeight(0.5)" style="width:42px; height:42px; font-size:1.2rem; border-radius:50%; cursor:pointer;">+</button>
+        </div>
+
+        <div style="display:flex; gap:10px;">
+          <button type="button" class="btn-outline" onclick="clearTargetWeight()" style="flex:1; padding:12px; font-size:0.85rem; border-radius:12px; cursor:pointer;">
+            Effacer
+          </button>
+          <button type="submit" class="btn-primary" style="flex:2; padding:12px; font-weight:700; border-radius:12px; background:linear-gradient(135deg, #3b82f6, #60a5fa); border:none; cursor:pointer; color:#fff;">
+            <i class="ri-check-line"></i> Enregistrer
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 

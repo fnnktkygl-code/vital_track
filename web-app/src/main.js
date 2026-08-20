@@ -10381,6 +10381,91 @@ function renderWeightHistoryInModal() {
   }).join('');
 };
 
+// ═══════ TARGET WEIGHT MODAL CONTROLLER ═══════
+function openTargetWeightModal() {
+  const modal = document.getElementById('targetWeightModal');
+  const input = document.getElementById('targetWeightModalInput');
+  if (!modal) return;
+
+  const profile = typeof getUserProfile === 'function' ? getUserProfile() : {};
+  const currentTarget = parseFloat(profile.targetWeight);
+  const currentActual = parseFloat(profile.currentWeight) || (store.get('weight_history', []).slice(-1)[0]?.weight) || 70.0;
+
+  if (input) {
+    input.value = (!isNaN(currentTarget) && currentTarget > 20) ? currentTarget.toFixed(1) : currentActual.toFixed(1);
+    setTimeout(() => {
+      input.focus();
+      input.select();
+    }, 60);
+  }
+
+  modal.style.display = 'flex';
+  modal.classList.add('open');
+}
+
+function closeTargetWeightModal(e) {
+  if (e && e.target && e.target !== e.currentTarget && !e.target.classList.contains('modal-close-btn') && !e.target.closest('.modal-close-btn')) return;
+  const modal = document.getElementById('targetWeightModal');
+  if (modal) {
+    modal.style.display = 'none';
+    modal.classList.remove('open');
+  }
+}
+
+function stepTargetWeight(delta) {
+  const input = document.getElementById('targetWeightModalInput');
+  if (!input) return;
+  let val = parseFloat(input.value) || 70.0;
+  val = Math.round((val + delta) * 10) / 10;
+  if (val < 20) val = 20;
+  if (val > 300) val = 300;
+  input.value = val.toFixed(1);
+}
+
+function handleTargetWeightForm(event) {
+  if (event) event.preventDefault();
+  const input = document.getElementById('targetWeightModalInput');
+  if (!input) return;
+
+  const tw = parseFloat(input.value.replace(',', '.'));
+  if (isNaN(tw) || tw < 20 || tw > 300) {
+    showToast('Veuillez entrer un objectif de poids réaliste (ex: 68.5 kg).', 'error');
+    return;
+  }
+
+  const profile = typeof getUserProfile === 'function' ? getUserProfile() : {};
+  profile.targetWeight = tw.toFixed(1);
+  store.set('user_profile', profile);
+
+  if (document.getElementById('profileTargetWeight')) {
+    document.getElementById('profileTargetWeight').value = profile.targetWeight;
+  }
+
+  showToast(`🎯 Objectif de poids fixé à ${tw.toFixed(1)} kg !`, 'success');
+  closeTargetWeightModal();
+  renderWeightChart();
+}
+
+function clearTargetWeight() {
+  const profile = typeof getUserProfile === 'function' ? getUserProfile() : {};
+  profile.targetWeight = '';
+  store.set('user_profile', profile);
+
+  if (document.getElementById('profileTargetWeight')) {
+    document.getElementById('profileTargetWeight').value = '';
+  }
+
+  showToast('Objectif de poids réinitialisé.', 'info');
+  closeTargetWeightModal();
+  renderWeightChart();
+}
+
+window.openTargetWeightModal = openTargetWeightModal;
+window.closeTargetWeightModal = closeTargetWeightModal;
+window.stepTargetWeight = stepTargetWeight;
+window.handleTargetWeightForm = handleTargetWeightForm;
+window.clearTargetWeight = clearTargetWeight;
+
 // ═══════ MODERN WEIGHT ANALYTICS & INTERACTIVE CHART ═══════
 let currentWeightPeriod = 'all';
 
@@ -10489,7 +10574,36 @@ function renderWeightChart() {
   }
 
   if (targetWeightEl) {
-    targetWeightEl.textContent = profile.targetWeight ? `${profile.targetWeight} kg` : 'Non défini';
+    const tw = parseFloat(profile.targetWeight);
+    if (!isNaN(tw) && tw > 20 && tw < 300) {
+      const curW = allSorted.length > 0 ? allSorted[allSorted.length - 1].weight : null;
+      let diffBadge = '';
+      if (curW !== null) {
+        const remaining = Math.round((curW - tw) * 10) / 10;
+        if (remaining > 0) {
+          diffBadge = `<span style="font-size:0.7rem; color:#60a5fa; font-weight:700; background:rgba(96,165,250,0.12); padding:1px 5px; border-radius:4px;">-${remaining} kg</span>`;
+        } else if (remaining < 0) {
+          diffBadge = `<span style="font-size:0.7rem; color:#34d399; font-weight:700; background:rgba(52,211,153,0.12); padding:1px 5px; border-radius:4px;">+${Math.abs(remaining)} kg</span>`;
+        } else {
+          diffBadge = `<span style="font-size:0.7rem; color:#34d399; font-weight:700; background:rgba(52,211,153,0.12); padding:1px 5px; border-radius:4px;">🎯 Atteint !</span>`;
+        }
+      }
+      targetWeightEl.innerHTML = `
+        <div style="display:flex; align-items:baseline; justify-content:space-between; width:100%;">
+          <div style="display:flex; align-items:baseline; gap:6px;">
+            <span>${tw.toFixed(1)} kg</span>
+            ${diffBadge}
+          </div>
+          <button type="button" onclick="event.stopPropagation(); openTargetWeightModal()" class="target-edit-chip" title="Modifier le poids cible"><i class="ri-pencil-line"></i></button>
+        </div>
+      `;
+    } else {
+      targetWeightEl.innerHTML = `
+        <button type="button" onclick="event.stopPropagation(); openTargetWeightModal()" class="btn-set-target-cta">
+          <i class="ri-add-circle-fill"></i> <span>Définir ma cible</span>
+        </button>
+      `;
+    }
   }
 
   if (!history || history.length === 0) {
