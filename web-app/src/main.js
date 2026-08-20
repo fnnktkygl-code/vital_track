@@ -1139,6 +1139,7 @@ async function initApp() {
 
   if (window.VitalMascot) {
     window.appMascot = new window.VitalMascot('mascotCanvas');
+    window.mascot = window.appMascot;
   }
 
   updateProactiveMascot();
@@ -11443,11 +11444,18 @@ function triggerInAppPigeonAction() {
 };
 
 function triggerMascotInPlaceReaction(action) {
-  const actions = ['laugh', 'celebrate', 'coo', 'walk', 'think'];
+  const actions = ['walk', 'laugh', 'celebrate', 'coo', 'think'];
   const act = action || actions[Math.floor(Math.random() * actions.length)];
   
-  if (window.mascot && typeof window.mascot.setAction === 'function') {
-    window.mascot.setAction(act);
+  const m = window.appMascot || window.mascot;
+  if (m && typeof m.setAction === 'function') {
+    m.setAction(act);
+    clearTimeout(window._mascotIdleTimer);
+    window._mascotIdleTimer = setTimeout(() => {
+      if (m && typeof m.setAction === 'function') {
+        m.setAction('idle');
+      }
+    }, 4500);
   }
   
   if (act === 'coo' && window.pigeonAudio) {
@@ -11465,6 +11473,21 @@ function triggerMascotInPlaceReaction(action) {
   }
 }
 window.triggerMascotInPlaceReaction = triggerMascotInPlaceReaction;
+
+// Ambient life behavior: Natural stroll and curiosity every 12s on dashboard
+setInterval(() => {
+  const m = window.appMascot || window.mascot;
+  if (!m || typeof m.setAction !== 'function') return;
+  const dashPage = document.getElementById('dashboardPage');
+  if (!dashPage || !dashPage.classList.contains('active')) return;
+  
+  const ambientActions = ['walk', 'think', 'idle'];
+  const nextAmbient = ambientActions[Math.floor(Math.random() * ambientActions.length)];
+  m.setAction(nextAmbient);
+  setTimeout(() => {
+    if (m && typeof m.setAction === 'function') m.setAction('idle');
+  }, 3500);
+}, 12000);
 
 function toggleInAppAudioFx() {
   if (window.pigeonAudio) {
