@@ -3631,12 +3631,12 @@ window.switchModelAndRetry = switchModelAndRetry;
 let _thinkingStepTimer = null;
 let _thinkingSecondsTimer = null;
 const REAL_THINKING_STEPS = [
-  { icon: 'ri-search-eye-line', color: '#34d399', text: 'Analyse sémantique de votre question...' },
-  { icon: 'ri-book-read-line', color: '#60a5fa', text: 'Consultation des bases Raintree, Ehret & Morse...' },
-  { icon: 'ri-capsule-line', color: '#a78bfa', text: 'Vérification du niveau de transition & mucus...' },
-  { icon: 'ri-shield-check-line', color: '#34d399', text: 'Validation des synergies et contre-indications...' },
-  { icon: 'ri-sparkling-fill', color: '#f59e0b', text: 'Formulation des conseils personnalisés...' },
-  { icon: 'ri-quill-pen-line', color: '#38bdf8', text: 'Finalisation et mise en page de la réponse...' }
+  { icon: 'ri-search-eye-line', color: 'var(--accent)', text: 'Analyse sémantique de votre question...' },
+  { icon: 'ri-book-read-line', color: 'var(--accent-2)', text: 'Consultation des bases Raintree, Ehret & Morse...' },
+  { icon: 'ri-capsule-line', color: 'var(--purple)', text: 'Vérification du niveau de transition & mucus...' },
+  { icon: 'ri-shield-check-line', color: 'var(--accent)', text: 'Validation des synergies et contre-indications...' },
+  { icon: 'ri-sparkling-fill', color: 'var(--warn)', text: 'Formulation des conseils personnalisés...' },
+  { icon: 'ri-quill-pen-line', color: 'var(--accent-2)', text: 'Finalisation et mise en page de la réponse...' }
 ];
 
 function addTypingIndicator() {
@@ -5498,9 +5498,9 @@ function setModalTab(tab) {
 
     // Bio-enzymatic vitality score
     const vitalityScore = Math.max(20, Math.min(100, Math.round(cooking.vitalityRetention * (oil.isPositive ? 1.0 : 0.8))));
-    const vitalityColor = vitalityScore >= 85 ? '#4ade80' : vitalityScore >= 60 ? '#facc15' : '#ef4444';
+    const vitalityColor = vitalityScore >= 85 ? 'var(--accent)' : vitalityScore >= 60 ? 'var(--warn)' : 'var(--danger)';
     const effectiveNova = cooking.id === 'fry' ? Math.max(3, nova) : nova;
-    const novaColor = effectiveNova === 1 ? '#4ade80' : effectiveNova === 2 ? '#38bdf8' : effectiveNova === 3 ? '#facc15' : '#ef4444';
+    const novaColor = effectiveNova === 1 ? 'var(--accent)' : effectiveNova === 2 ? 'var(--accent-2)' : effectiveNova === 3 ? 'var(--warn)' : 'var(--danger)';
 
     content.innerHTML = `
       <!-- 1. Cuisson & Altération Thermique -->
@@ -5523,7 +5523,7 @@ function setModalTab(tab) {
       <div style="background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:12px; padding:12px; margin-bottom:12px;">
         <div style="font-size:0.82rem; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
           <span><i class="ri-drop-line"></i> Matières Grasses & Huiles</span>
-          <span style="font-size:0.75rem; color:${oil.isPositive ? '#4ade80' : '#ef4444'}; font-weight:600;">${oil.isPositive ? '🟢 Non-oxydé' : '🔴 Oxydé / Pro-inflammatoire'}</span>
+          <span style="font-size:0.75rem; color:${oil.isPositive ? 'var(--accent)' : 'var(--danger)'}; font-weight:600;">${oil.isPositive ? '🟢 Non-oxydé' : '🔴 Oxydé / Pro-inflammatoire'}</span>
         </div>
         <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px;">
           ${Object.values(OIL_QUALITIES).map(oq => `
@@ -5546,7 +5546,7 @@ function setModalTab(tab) {
       </div>
       <div class="data-row">
         <span class="data-label">Charge PRAL ajustée (après cuisson)</span>
-        <span class="data-value" style="font-weight:700; color:${adjustedIsAlkaline ? '#4ade80' : '#facc15'}">
+        <span class="data-value" style="font-weight:700; color:${adjustedIsAlkaline ? 'var(--accent)' : 'var(--warn)'}">
           ${adjustedPral > 0 ? '+' : ''}${adjustedPral.toFixed(1)} mEq ${adjustedIsAlkaline ? '(Alcalinisant)' : '(Acidifiant)'}
         </span>
       </div>
@@ -5564,7 +5564,7 @@ function setModalTab(tab) {
       </div>
       <div class="data-row">
         <span class="data-label">Impact Lymphatique & Mucus</span>
-        <span class="data-value" style="font-weight:600; color:${cooking.id === 'fry' || !oil.isPositive ? '#facc15' : '#4ade80'}">
+        <span class="data-value" style="font-weight:600; color:${cooking.id === 'fry' || !oil.isPositive ? 'var(--warn)' : 'var(--accent)'}">
           ${cooking.id === 'fry' || !oil.isPositive ? '⚠️ Colles lipidiques chauffées' : '🍃 Dissolvant & Non-obstruant'}
         </span>
       </div>
@@ -5612,7 +5612,7 @@ function setModalTab(tab) {
     content.innerHTML = `
       <div class="data-row">
         <span class="data-label">Charge PRAL (Remer & Manz)</span>
-        <span class="data-value" style="font-weight:700; color:${isAlkaline ? '#4ade80' : '#facc15'}">
+        <span class="data-value" style="font-weight:700; color:${isAlkaline ? 'var(--accent)' : 'var(--warn)'}">
           ${pral > 0 ? '+' : ''}${pral.toFixed(1)} mEq/100g
         </span>
       </div>
@@ -5634,7 +5634,7 @@ function setModalTab(tab) {
       </div>
     `;
   } else if (tab === 'vitality') {
-    const novaColor = nova === 1 ? '#4ade80' : nova === 2 ? '#38bdf8' : nova === 3 ? '#facc15' : '#ef4444';
+    const novaColor = nova === 1 ? 'var(--accent)' : nova === 2 ? 'var(--accent-2)' : nova === 3 ? 'var(--warn)' : 'var(--danger)';
     const novaDesc = nova === 1 ? 'Groupe 1 · Non transformé ou minimalement transformé' : nova === 2 ? 'Groupe 2 · Ingrédient culinaire' : nova === 3 ? 'Groupe 3 · Aliment transformé' : 'Groupe 4 · Produit ultra-transformé';
 
     content.innerHTML = `
@@ -5681,57 +5681,57 @@ function setModalTab(tab) {
     const sebiStatus = sp?.sebiStatus || item?.sebiStatus;
 
     let sebiLabel = '❌ Non Recommandé / Acidifiant';
-    let sebiColor = '#ef4444';
+    let sebiColor = 'var(--danger)';
     let hybridLabel = isHybrid ? '⚠️ Hybride / Amilacé' : '✅ Végétal Originel & Brut';
-    let hybridColor = isHybrid ? '#facc15' : '#4ade80';
+    let hybridColor = isHybrid ? 'var(--warn)' : 'var(--accent)';
 
     if (isAnimal) {
       sebiLabel = '❌ Non Recommandé / Produit Animal';
-      sebiColor = '#ef4444';
+      sebiColor = 'var(--danger)';
       hybridLabel = '❌ Non Végétal (Règne Animal)';
-      hybridColor = '#94a3b8';
+      hybridColor = 'var(--text-dim)';
     } else if (isMineral) {
       sebiLabel = '🌊 Minéral Naturel Pur';
-      sebiColor = '#38bdf8';
+      sebiColor = 'var(--accent-2)';
       hybridLabel = '🌊 Non Végétal (Règne Minéral)';
-      hybridColor = '#94a3b8';
+      hybridColor = 'var(--text-dim)';
     } else {
       if (sebiStatus === 'sebi_official' || (isElectric && !sp?.label?.includes('Sauvage') && !sp?.label?.includes('Indigène'))) {
         sebiLabel = '⚡ Liste Officielle Dr. Sebi';
-        sebiColor = '#4ade80';
+        sebiColor = 'var(--accent)';
       } else if (sebiStatus === 'wild_original' || isElectric) {
         sebiLabel = '⚡ Végétal Sauvage / Originel (Conforme Sebi)';
-        sebiColor = '#4ade80';
+        sebiColor = 'var(--accent)';
       } else if (isAlcalinFood && !isHybrid) {
         sebiLabel = '🌿 Végétal Naturel Alcalin (Hors liste Sebi)';
-        sebiColor = '#38bdf8';
+        sebiColor = 'var(--accent-2)';
       } else if (isHybrid) {
         sebiLabel = '⚠️ Hybride / Amilacé';
-        sebiColor = '#facc15';
+        sebiColor = 'var(--warn)';
       }
     }
 
     let mucusLabel = sp?.mucus ?? (isDissolvant ? 'Dissolvant' : 'Neutre');
-    let mucusColor = '#4ade80';
+    let mucusColor = 'var(--accent)';
     if (isAnimal) {
       mucusLabel = '🔴 Fortement mucogène (Protéines animales putrescibles)';
-      mucusColor = '#ef4444';
+      mucusColor = 'var(--danger)';
     } else if (isDissolvant) {
       mucusLabel = '🍃 Dissolvant de mucus (Astringent)';
-      mucusColor = '#4ade80';
+      mucusColor = 'var(--accent)';
     } else if (mucusStr.includes('neutre') || (!mucusStr.includes('mucog') && isAlcalinFood)) {
       mucusLabel = '🟢 Non-mucogène (Neutre)';
-      mucusColor = '#2dd4bf';
+      mucusColor = 'var(--accent)';
     } else if (mucusStr.includes('faible') || isHybrid) {
       mucusLabel = '🟡 Faiblement mucogène';
-      mucusColor = '#facc15';
+      mucusColor = 'var(--warn)';
     } else {
       mucusLabel = '🔴 Fortement mucogène';
-      mucusColor = '#ef4444';
+      mucusColor = 'var(--danger)';
     }
 
     let verdictLabel = sp?.label ?? (isElectric ? '⚡ Électrique & Régénérant' : isAlcalinFood ? '🌿 Végétal Vivant Alcalinisant & Dissolvant' : isHybrid ? '🔀 Hybride modéré' : isAnimal ? '⛔ Animal / Acidogène & Mucogène' : '⛔ Mucogène & Acidogène');
-    let verdictColor = isElectric ? '#4ade80' : isAlcalinFood ? '#38bdf8' : isHybrid ? '#facc15' : '#ef4444';
+    let verdictColor = isElectric ? 'var(--accent)' : isAlcalinFood ? 'var(--accent-2)' : isHybrid ? 'var(--warn)' : 'var(--danger)';
 
     const noteText = currentModalFood.note || item?.note;
 
@@ -9496,7 +9496,7 @@ function renderResources() {
                 <div>
                   <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; gap:8px;">
                     ${b.badgeText ? `
-                      <span style="font-size:0.75rem; font-weight:700; color:${b.lang === 'fr' ? '#34d399' : '#38bdf8'}; background:${b.lang === 'fr' ? 'rgba(52,211,153,0.12)' : 'rgba(56,189,248,0.12)'}; padding:4px 10px; border-radius:20px; border:1px solid ${b.lang === 'fr' ? 'rgba(52,211,153,0.3)' : 'rgba(56,189,248,0.3)'}; display:inline-flex; align-items:center; gap:5px;">
+                      <span style="font-size:0.75rem; font-weight:700; color:${b.lang === 'fr' ? 'var(--accent)' : 'var(--accent-2)'}; background:${b.lang === 'fr' ? 'var(--accent-glow)' : 'rgba(37,99,235,0.1)'}; padding:4px 10px; border-radius:20px; border:1px solid ${b.lang === 'fr' ? 'var(--accent)' : 'var(--accent-2)'}; display:inline-flex; align-items:center; gap:5px;">
                         ${esc(b.badgeText)}
                       </span>
                     ` : '<span></span>'}
