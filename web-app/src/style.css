@@ -607,9 +607,93 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
 
 /* ═══════ DASHBOARD ═══════ */
 .dash-container { max-width: 1200px; margin: 0 auto; }
-.dashboard-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; }
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 22px;
+  padding-top: 4px;
+}
+
+.dash-header-main {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dash-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.dash-page-title {
+  font-family: var(--font, 'Outfit', -apple-system, sans-serif);
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin: 0;
+}
+
+.live-sync-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  color: var(--accent, #10b981);
+}
+
+.dash-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.dash-date-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--text-dim);
+}
+
+.dash-date-badge i {
+  color: var(--accent);
+  font-size: 0.95rem;
+}
+
+.dash-circadian-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--surface-hover);
+  border: 1px solid var(--border);
+}
+
+.dash-circadian-tag i {
+  color: #38bdf8;
+}
+
 @media (max-width: 768px) {
-  .dashboard-header { flex-direction: column; align-items: flex-start; gap: 6px; margin-bottom: 18px; }
+  .dashboard-header { flex-direction: column; align-items: flex-start; gap: 8px; margin-bottom: 18px; }
+  .dash-page-title { font-size: 1.6rem; }
   .dash-greeting-card { flex-direction: column; text-align: center; gap: 16px; }
   .dash-greeting-card > div:first-child { flex-direction: column; }
 }

@@ -275,11 +275,26 @@
     <main class="page active" id="page-dashboard">
       <div class="dash-container">
         
-        <!-- Top Header (Clean, no duplicate controls) -->
+        <!-- Top Header (Elevated Modern Bio-Tracking Header) -->
         <div class="dashboard-header">
-          <div>
-            <h1 style="font-size: 1.8rem; font-weight: 700; color: var(--text); margin-bottom:4px;" data-i18n="dashboard.title">Tableau de bord</h1>
-            <p id="dashboardDate" style="color: var(--text-dim); font-size: 0.9rem;">Lundi 10 Août</p>
+          <div class="dash-header-main">
+            <div class="dash-title-row">
+              <h1 class="dash-page-title" data-i18n="dashboard.title">Tableau de bord</h1>
+              <span class="live-sync-pill">
+                <span class="pulse-dot"></span>
+                <span>En direct</span>
+              </span>
+            </div>
+            <div class="dash-meta-row">
+              <div class="dash-date-badge">
+                <i class="ri-calendar-event-line"></i>
+                <span id="dashboardDate">Lundi 10 Août</span>
+              </div>
+              <div class="dash-circadian-tag" id="dashCircadianSyncTag">
+                <i class="ri-heart-pulse-line"></i>
+                <span>Cycle 24h Synchronisé</span>
+              </div>
+            </div>
           </div>
         </div>
 
