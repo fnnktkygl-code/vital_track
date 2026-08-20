@@ -173,6 +173,7 @@ async function callGeminiApi({
       // Handle streaming response
       if (stream) {
         console.log(`✅ [VT AI] Streaming via ${modelName}`);
+        response.model = modelName;
         return response; // Return raw Response for SSE forwarding
       }
 

@@ -2421,7 +2421,7 @@ async function sendChat(e) {
     }
 
     let aiText = '';
-    let modelUsed = 'Inconnu';
+    let modelUsed = resp.headers.get('X-Model-Used') || 'Gemini 3.7 Flash';
     const reader = resp.body.getReader();
     const decoder = new TextDecoder('utf-8');
     let buffer = '';
@@ -2448,7 +2448,8 @@ async function sendChat(e) {
         if (line.startsWith('data: ')) {
           try {
             const dataObj = JSON.parse(line.substring(6));
-            if (dataObj.model) modelUsed = dataObj.model;
+            if (dataObj.modelVersion) modelUsed = dataObj.modelVersion;
+            else if (dataObj.model) modelUsed = dataObj.model;
             if (dataObj.candidates && dataObj.candidates[0].content) {
               aiText += dataObj.candidates[0].content.parts[0].text;
               const streamingBubble = document.getElementById('streaming-bubble');
@@ -2467,14 +2468,13 @@ async function sendChat(e) {
     // Update badge UI
     const badge = document.getElementById('currentModelBadge');
     if (badge) {
+      const displayModel = formatModelName(modelUsed);
       if (modelUsed.includes('gemma')) {
-        badge.innerHTML = `<i class="ri-cpu-line" style="color:#22d3ee"></i> ${modelUsed}`;
-      } else if (modelUsed.includes('flash-exp')) {
-        badge.innerHTML = `<i class="ri-bard-fill" style="color:#a78bfa"></i> ${modelUsed}`;
+        badge.innerHTML = `<i class="ri-cpu-line" style="color:#22d3ee"></i> ${displayModel}`;
       } else if (modelUsed.includes('pro')) {
-        badge.innerHTML = `<i class="ri-server-line" style="color:#fbbf24"></i> ${modelUsed}`;
+        badge.innerHTML = `<i class="ri-server-line" style="color:#fbbf24"></i> ${displayModel}`;
       } else {
-        badge.innerHTML = `<i class="ri-flashlight-fill" style="color:#4ade80"></i> ${modelUsed}`;
+        badge.innerHTML = `<i class="ri-flashlight-fill" style="color:#4ade80"></i> ${displayModel}`;
       }
     }
 
@@ -2680,8 +2680,9 @@ function addMessage(text, isUser, modelUsed = null, imageUri = null) {
   div.className = `message ${isUser ? 'user' : 'bot'}`;
 
   let badgeHtml = '';
-  if (!isUser && modelUsed) {
-    badgeHtml = `<div style="margin-top:8px;font-size:0.65rem;color:var(--text-dim);opacity:0.7;display:flex;align-items:center;gap:4px;border-top:1px solid rgba(255,255,255,0.1);padding-top:4px"><i class="ri-braces-line"></i> ${esc(modelUsed)}</div>`;
+  if (!isUser) {
+    const displayModel = formatModelName(modelUsed);
+    badgeHtml = `<div style="margin-top:8px;font-size:0.72rem;color:var(--text-dim);opacity:0.85;display:inline-flex;align-items:center;gap:5px;border-top:1px solid rgba(255,255,255,0.08);padding-top:6px"><i class="ri-sparkling-fill" style="color:var(--accent);font-size:0.75rem;"></i><span>${esc(displayModel)}</span></div>`;
   }
 
   // Generate quick-reply chips for AI messages
@@ -7375,6 +7376,19 @@ function askAIAboutScannedDish(dishName) {
 // ═══════ UTILS ═══════
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 function esc(t) { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+function formatModelName(rawName) {
+  if (!rawName || rawName === 'Inconnu' || rawName === 'auto') return 'Gemini 3.7 Flash';
+  const clean = rawName.replace(/^models\//, '');
+  if (clean.includes('3.7-flash') || clean.includes('3.6-flash') || clean.includes('3-flash')) return 'Gemini 3.7 Flash';
+  if (clean.includes('2.5-flash')) return 'Gemini 2.5 Flash';
+  if (clean.includes('2.5-pro') || clean.includes('3.1-pro') || clean.includes('pro')) return 'Gemini Pro AI';
+  if (clean.includes('1.5-flash')) return 'Gemini 1.5 Flash';
+  if (clean.includes('1.5-pro')) return 'Gemini 1.5 Pro';
+  if (clean.includes('gemma')) return 'Gemma 2';
+  return clean;
+}
+window.formatModelName = formatModelName;
+
 function renderMarkdown(text) {
   if (!text) return '';
   text = formatChemicals(text);
@@ -7469,20 +7483,26 @@ function renderMarkdown(text) {
     } catch { return match; }
   });
 
-  // Handle dividers and clean lists first
+  // Handle dividers and clean formatting
   text = text
     .replace(/^---$/gm, '<hr style="border:none;border-top:1px solid var(--border);margin:14px 0">')
-    .replace(/^\s*[\*\-]\s+(.*$)/gm, '<li>$1</li>')
-    .replace(/(<li>[\s\S]*?<\/li>)/g, '<ul style="padding-left:20px;margin:8px 0">$1</ul>')
+    .replace(/^### (.*$)/gm, '<h4 style="margin:14px 0 6px 0;color:var(--accent);font-size:1.02rem;font-weight:700;">$1</h4>')
+    .replace(/^## (.*$)/gm, '<h3 style="margin:16px 0 8px 0;color:var(--text);font-size:1.12rem;font-weight:700;">$1</h3>')
+    .replace(/^# (.*$)/gm, '<h2 style="margin:18px 0 10px 0;color:var(--text);font-size:1.22rem;font-weight:700;">$1</h2>')
+    .replace(/```([\s\S]*?)```/g, (_, code) => `<pre style="background:rgba(0,0,0,0.3);padding:10px 14px;border-radius:10px;overflow-x:auto;margin:8px 0;"><code>${esc(code.trim())}</code></pre>`)
+    .replace(/`([^`]+)`/g, '<code style="background:rgba(255,255,255,0.08);padding:2px 6px;border-radius:4px;font-size:0.9em;">$1</code>')
+    .replace(/^\s*[\*\-]\s+(.*$)/gm, '<li style="margin-bottom:4px;line-height:1.5;">$1</li>')
+    .replace(/(<li[\s\S]*?<\/li>)/g, '<ul style="padding-left:20px;margin:8px 0 10px 0;">$1</ul>')
     .replace(/<\/ul>\s*<ul[^>]*>/g, '')
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*([^\*]+)\*/g, '<em>$1</em>')
-    .replace(/^### (.*$)/gm, '<h4 style="margin:12px 0 6px 0;color:var(--accent)">$1</h4>')
-    .replace(/^## (.*$)/gm, '<h3 style="margin:14px 0 8px 0;color:var(--text)">$1</h3>')
-    .replace(/^# (.*$)/gm, '<h2 style="margin:16px 0 10px 0;color:var(--text)">$1</h2>')
-    .replace(/```([\s\S]*?)```/g, (_, code) => `<pre><code>${esc(code.trim())}</code></pre>`)
-    .replace(/`([^`]+)`/g, '<code>$1</code>')
-    .replace(/\n\n+/g, '</p><p style="margin-bottom:8px">')
+    // Bold: complete inline/multiline pairs
+    .replace(/\*\*([\s\S]*?)\*\*/g, '<strong style="color:var(--text);font-weight:700;">$1</strong>')
+    // Bold: unclosed asterisks at end of lines or streaming chunks (e.g. **word...)
+    .replace(/\*\*([^\*\n<]+)(?=\n|<|$)/g, '<strong style="color:var(--text);font-weight:700;">$1</strong>')
+    // Italics
+    .replace(/\*([^\*\n<]+)\*/g, '<em style="color:rgba(255,255,255,0.9);">$1</em>')
+    // Clean any remaining orphaned asterisks
+    .replace(/\*\*/g, '')
+    .replace(/\n\n+/g, '</p><p style="margin-bottom:10px;line-height:1.6;">')
     .replace(/\n/g, '<br>');
 
   return text;

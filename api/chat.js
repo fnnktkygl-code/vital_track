@@ -121,6 +121,8 @@ Restrictions & Allergies strictes: ${restrictions}${memoriesText}
       res.setHeader('Content-Type', 'text/event-stream');
       res.setHeader('Cache-Control', 'no-cache');
       res.setHeader('Connection', 'keep-alive');
+      res.setHeader('Access-Control-Expose-Headers', 'X-Model-Used');
+      res.setHeader('X-Model-Used', result.model || 'gemini-3.7-flash');
       res.flushHeaders();
 
       const reader = result.body.getReader();
