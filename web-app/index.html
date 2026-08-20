@@ -356,7 +356,7 @@
         </div>
 
         <!-- Vitality Score Widget -->
-        <div class="dash-card glass" id="vitalityCard" style="padding: 24px;">
+        <div class="dash-card glass" id="vitalityCard" style="display:flex; flex-direction:column; padding: 24px;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
             <h3 style="font-size:1rem; display:flex; align-items:center; gap:8px; margin:0;"><i class="ri-heart-pulse-fill" style="color:var(--accent);"></i> Score Vitalité</h3>
             <button type="button" class="info-badge-btn" onclick="openVitalityInfoModal()" title="Comprendre le calcul transparent du score">
@@ -364,9 +364,16 @@
             </button>
           </div>
           
-          <div style="display:flex; flex-direction:column; align-items:center; margin-bottom: 24px;">
+          <!-- Arc Gauge & Dynamic Level Badge -->
+          <div style="display:flex; flex-direction:column; align-items:center; margin-bottom: 16px;">
             <div class="vitality-arc">
               <svg viewBox="0 0 200 120" class="arc-svg">
+                <defs>
+                  <linearGradient id="vitalityArcGradient" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stop-color="#10b981" />
+                    <stop offset="100%" stop-color="#34d399" />
+                  </linearGradient>
+                </defs>
                 <path d="M 20 100 A 80 80 0 0 1 180 100" class="arc-track" />
                 <path d="M 20 100 A 80 80 0 0 1 180 100" class="arc-progress" id="arcProgress" />
               </svg>
@@ -375,24 +382,84 @@
                 <span class="arc-label" style="color:var(--text-dim);">/ 100</span>
               </div>
             </div>
-            <div id="vitalityScoreComment" style="color:var(--text-dim); font-size:0.85rem; font-weight:500; display:flex; align-items:center; gap:4px; margin-top:-10px;"><i class="ri-information-line"></i> Aucune donnée aujourd'hui</div>
+            
+            <div id="vitalityLevelBadge" class="vitality-level-pill">
+              <span class="pulse-dot"></span>
+              <span id="vitalityScoreComment">Aucune donnée enregistrée</span>
+            </div>
           </div>
 
-          <div style="display:flex; flex-direction:column; gap: 12px; border-top:1px solid var(--border); padding-top:16px;">
-            <div class="vitality-bar-row">
-              <span class="v-label" title="Alcalinité PRAL, absence de mucus, score NOVA, Dr. Sebi">🥗 Nutrition</span>
-              <div class="v-bar"><div class="v-fill" id="vFillNutrition" style="width: 0%; background: var(--accent);"></div></div>
-              <span class="v-pct" id="vPctNutrition">--</span>
+          <!-- 3 Vital Pillars Mini-Cards -->
+          <div class="vitality-pillars-container">
+            <!-- Nutrition Pillar -->
+            <div class="vital-pillar-card" title="Alcalinité PRAL, absence de mucus, score NOVA, Dr. Sebi">
+              <div class="pillar-icon-badge" style="background:rgba(16,185,129,0.12); color:#10b981;">
+                <span>🥗</span>
+              </div>
+              <div class="pillar-body">
+                <div class="pillar-header">
+                  <span class="pillar-title">Nutrition Vivante &amp; Électrique</span>
+                  <span class="pillar-score-pill" id="vPctNutrition">--</span>
+                </div>
+                <div class="pillar-bar">
+                  <div class="pillar-fill" id="vFillNutrition" style="width: 0%; background: linear-gradient(90deg, #059669, #34d399);"></div>
+                </div>
+              </div>
             </div>
-            <div class="vitality-bar-row">
-              <span class="v-label" title="Heures de jeûne actif ou respect de la fenêtre de repos">💧 Jeûne & Repos</span>
-              <div class="v-bar"><div class="v-fill" id="vFillFasting" style="width: 0%; background: #38bdf8;"></div></div>
-              <span class="v-pct" id="vPctFasting">--</span>
+
+            <!-- Fasting Pillar -->
+            <div class="vital-pillar-card" title="Heures de jeûne actif ou respect de la fenêtre de repos">
+              <div class="pillar-icon-badge" style="background:rgba(56,189,248,0.12); color:#38bdf8;">
+                <span>💧</span>
+              </div>
+              <div class="pillar-body">
+                <div class="pillar-header">
+                  <span class="pillar-title">Jeûne &amp; Émonctoires</span>
+                  <span class="pillar-score-pill" id="vPctFasting">--</span>
+                </div>
+                <div class="pillar-bar">
+                  <div class="pillar-fill" id="vFillFasting" style="width: 0%; background: linear-gradient(90deg, #0284c7, #38bdf8);"></div>
+                </div>
+              </div>
             </div>
-            <div class="vitality-bar-row">
-              <span class="v-label" title="Séances de respiration guidée validées aujourd'hui">🌬️ Respiration</span>
-              <div class="v-bar"><div class="v-fill" id="vFillBreathing" style="width: 0%; background: #a855f7;"></div></div>
-              <span class="v-pct" id="vPctBreathing">--</span>
+
+            <!-- Breathing Pillar -->
+            <div class="vital-pillar-card" title="Séances de respiration guidée validées aujourd'hui">
+              <div class="pillar-icon-badge" style="background:rgba(168,85,247,0.12); color:#a855f7;">
+                <span>🌬️</span>
+              </div>
+              <div class="pillar-body">
+                <div class="pillar-header">
+                  <span class="pillar-title">Respiration &amp; Oxygénation</span>
+                  <span class="pillar-score-pill" id="vPctBreathing">--</span>
+                </div>
+                <div class="pillar-bar">
+                  <div class="pillar-fill" id="vFillBreathing" style="width: 0%; background: linear-gradient(90deg, #7c3aed, #a855f7);"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Actionable Vitalist Focus Card -->
+          <div id="vitalityFocusCard" class="vitality-focus-card">
+            <div class="phase-card-header">
+              <div class="phase-card-icon-badge" id="vitalityFocusIconBadge" style="background:rgba(16,185,129,0.15); border-color:#10b981; color:#10b981;">
+                <i id="vitalityFocusIcon" class="ri-sparkling-fill"></i>
+              </div>
+              <div class="phase-card-title-area">
+                <div style="display:flex; justify-content:space-between; align-items:center; width:100%; flex-wrap:wrap; gap:6px;">
+                  <span class="phase-card-title" id="vitalityFocusTitle" style="color:#10b981;">FOCUS VITALISTE</span>
+                  <span class="phase-time-pill" id="vitalityFocusTag">Recommandation</span>
+                </div>
+                <div id="vitalityFocusInsight" class="phase-card-tagline">Maintenez une hydratation continue pour fluidifier la lymphe.</div>
+              </div>
+            </div>
+
+            <!-- Action Chips -->
+            <div id="vitalityFocusChips" class="phase-chips-container">
+              <span class="phase-chip"><span>🍋</span><span>Eau Tiède Citronnée</span></span>
+              <span class="phase-chip"><span>🫁</span><span>Cohérence Cardiaque</span></span>
+              <span class="phase-chip"><span>🥗</span><span>Aliments Vivants</span></span>
             </div>
           </div>
         </div>

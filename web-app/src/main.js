@@ -1577,30 +1577,39 @@ function renderDashboard() {
     arcProgress.style.stroke = isZero ? 'rgba(255,255,255,0.1)' : (score >= 70 ? 'var(--accent)' : score >= 40 ? 'var(--warn)' : 'var(--danger)');
   }
 
+  const levelBadge = document.getElementById('vitalityLevelBadge');
   const commentEl = document.getElementById('vitalityScoreComment');
-  if (commentEl) {
+  if (commentEl && levelBadge) {
     if (todayMeals.length === 0 && !breakdown.hasFasting && !breakdown.hasBreathing) {
-      commentEl.style.color = 'var(--text-dim)';
-      commentEl.innerHTML = '<i class="ri-information-line"></i> Aucune donnée enregistrée aujourd\'hui';
+      levelBadge.style.background = 'var(--surface-hover)';
+      levelBadge.style.borderColor = 'var(--border)';
+      levelBadge.style.color = 'var(--text-dim)';
+      commentEl.textContent = "En attente d'enregistrements aujourd'hui";
     } else if (score >= 70) {
-      commentEl.style.color = 'var(--accent)';
-      commentEl.innerHTML = `<i class="ri-checkbox-circle-fill"></i> Excellente vitalité cellulaire (${score}/100)`;
+      levelBadge.style.background = 'rgba(16,185,129,0.14)';
+      levelBadge.style.borderColor = 'rgba(16,185,129,0.3)';
+      levelBadge.style.color = '#10b981';
+      commentEl.textContent = `Vitalité rayonnante · Électrolytes optimaux (${score}/100)`;
     } else if (score >= 40) {
-      commentEl.style.color = 'var(--warn)';
-      commentEl.innerHTML = `<i class="ri-error-warning-fill"></i> Vitalité moyenne, marge d'optimisation (${score}/100)`;
+      levelBadge.style.background = 'rgba(245,158,11,0.14)';
+      levelBadge.style.borderColor = 'rgba(245,158,11,0.3)';
+      levelBadge.style.color = '#f59e0b';
+      commentEl.textContent = `Vitalité modérée · Marge d'optimisation (${score}/100)`;
     } else {
-      commentEl.style.color = 'var(--danger)';
-      commentEl.innerHTML = `<i class="ri-close-circle-fill"></i> Vitalité faible ou acidose (${score}/100)`;
+      levelBadge.style.background = 'rgba(239,68,68,0.14)';
+      levelBadge.style.borderColor = 'rgba(239,68,68,0.3)';
+      levelBadge.style.color = '#ef4444';
+      commentEl.textContent = `Terrain acidifié · Priorité élimination & repos (${score}/100)`;
     }
   }
 
-  // Sub-bars updates (100% factual)
+  // 3 Vital Pillars Mini-Cards
   const vFillN = document.getElementById('vFillNutrition');
   const vPctN = document.getElementById('vPctNutrition');
   if (vFillN && vPctN) {
     if (breakdown.hasMeals) {
       vFillN.style.width = `${breakdown.nutritionScore}%`;
-      vFillN.style.background = breakdown.nutritionScore >= 70 ? 'var(--accent)' : breakdown.nutritionScore >= 40 ? 'var(--warn)' : 'var(--danger)';
+      vFillN.style.background = breakdown.nutritionScore >= 70 ? 'linear-gradient(90deg, #059669, #34d399)' : breakdown.nutritionScore >= 40 ? 'linear-gradient(90deg, #d97706, #f59e0b)' : 'linear-gradient(90deg, #dc2626, #ef4444)';
       vPctN.textContent = `${breakdown.nutritionScore}%`;
     } else {
       vFillN.style.width = '0%';
@@ -1613,6 +1622,7 @@ function renderDashboard() {
   if (vFillF && vPctF) {
     if (breakdown.hasFasting) {
       vFillF.style.width = `${breakdown.fastingScore}%`;
+      vFillF.style.background = breakdown.fastingScore >= 70 ? 'linear-gradient(90deg, #0284c7, #38bdf8)' : 'linear-gradient(90deg, #0369a1, #0ea5e9)';
       vPctF.textContent = `${breakdown.fastingScore}%`;
     } else {
       vFillF.style.width = '0%';
@@ -1625,11 +1635,113 @@ function renderDashboard() {
   if (vFillB && vPctB) {
     if (breakdown.hasBreathing) {
       vFillB.style.width = `${breakdown.breathingScore}%`;
+      vFillB.style.background = 'linear-gradient(90deg, #7c3aed, #a855f7)';
       vPctB.textContent = `${breakdown.breathingScore}%`;
     } else {
       vFillB.style.width = '0%';
       vPctB.textContent = '--';
     }
+  }
+
+  // Dynamic Actionable Vitalist Focus Card
+  const focusCard = document.getElementById('vitalityFocusCard');
+  const focusIconBadge = document.getElementById('vitalityFocusIconBadge');
+  const focusIcon = document.getElementById('vitalityFocusIcon');
+  const focusTitle = document.getElementById('vitalityFocusTitle');
+  const focusTag = document.getElementById('vitalityFocusTag');
+  const focusInsight = document.getElementById('vitalityFocusInsight');
+  const focusChips = document.getElementById('vitalityFocusChips');
+
+  if (focusCard && focusInsight && focusChips) {
+    let fIcon = 'ri-sparkling-fill';
+    let fColor = '#10b981';
+    let fBg = 'rgba(16,185,129,0.15)';
+    let fTag = 'Recommandation';
+    let fInsight = '';
+    let fChipsList = [];
+
+    const nScore = breakdown.hasMeals ? breakdown.nutritionScore : 0;
+    const fScore = breakdown.hasFasting ? breakdown.fastingScore : 0;
+    const bScore = breakdown.hasBreathing ? breakdown.breathingScore : 0;
+
+    if (!breakdown.hasMeals && !breakdown.hasFasting && !breakdown.hasBreathing) {
+      fIcon = 'ri-seedling-fill';
+      fColor = '#10b981';
+      fBg = 'rgba(16,185,129,0.15)';
+      fTag = 'Réveil Cellulaire';
+      fInsight = 'Démarrez par une hydratation tiède citronnée et un premier repas vivant riche en micronutriments.';
+      fChipsList = [
+        { icon: '🍋', label: 'Eau Citronnée' },
+        { icon: '🍉', label: 'Fruits Aqueux' },
+        { icon: '🫁', label: 'Cohérence Cardiaque' }
+      ];
+    } else if (breakdown.hasFasting && fScore < 40) {
+      fIcon = 'ri-drop-fill';
+      fColor = '#38bdf8';
+      fBg = 'rgba(56,189,248,0.15)';
+      fTag = 'Émonctoires & Repos';
+      fInsight = 'Prolongez la fenêtre de repos digestif pour relancer l\'autophagie et soulager la filtration rénale.';
+      fChipsList = [
+        { icon: '🛑', label: 'Repos Digestif' },
+        { icon: '🫖', label: 'Tisane Dépurative' },
+        { icon: '🫘', label: 'Filtration Rénale' }
+      ];
+    } else if (breakdown.hasMeals && nScore < 60) {
+      fIcon = 'ri-leaf-fill';
+      fColor = '#f59e0b';
+      fBg = 'rgba(245,158,11,0.15)';
+      fTag = 'Équilibre PRAL';
+      fInsight = 'Charge acide détectée : Augmentez la part de fruits aqueux, pastèque, raisin ou jus verts frais.';
+      fChipsList = [
+        { icon: '🥗', label: 'Salade Vivante' },
+        { icon: '🥤', label: 'Jus Verts Frais' },
+        { icon: '🥑', label: 'Bonnes Graisses' }
+      ];
+    } else if (!breakdown.hasBreathing || bScore < 40) {
+      fIcon = 'ri-windy-fill';
+      fColor = '#a855f7';
+      fBg = 'rgba(168,85,247,0.15)';
+      fTag = 'Oxygénation';
+      fInsight = 'Activez 5 minutes de cohérence cardiaque pour stimuler le flux lymphatique et apaiser le système nerveux.';
+      fChipsList = [
+        { icon: '🫁', label: '5 min Respiration' },
+        { icon: '🚶', label: 'Marche Lente' },
+        { icon: '🌿', label: 'Détente Nerveuse' }
+      ];
+    } else {
+      fIcon = 'ri-sparkling-fill';
+      fColor = '#10b981';
+      fBg = 'rgba(16,185,129,0.15)';
+      fTag = 'Excellence';
+      fInsight = 'Électrolytes et vitalité au sommet ! Vos cellules disposent d\'un potentiel électromagnétique maximal.';
+      fChipsList = [
+        { icon: '✨', label: 'Rayonnement' },
+        { icon: '⚡', label: 'Énergie Cellulaire' },
+        { icon: '🧬', label: 'Régénération' }
+      ];
+    }
+
+    if (focusIconBadge) {
+      focusIconBadge.style.background = fBg;
+      focusIconBadge.style.borderColor = fColor;
+      focusIconBadge.style.color = fColor;
+    }
+    if (focusIcon) {
+      focusIcon.className = fIcon;
+    }
+    if (focusTitle) {
+      focusTitle.style.color = fColor;
+    }
+    if (focusTag) {
+      focusTag.textContent = fTag;
+    }
+    focusInsight.textContent = fInsight;
+    focusChips.innerHTML = fChipsList.map(c => `
+      <span class="phase-chip">
+        <span>${c.icon}</span>
+        <span>${c.label}</span>
+      </span>
+    `).join('');
   }
 
   // Active fasting card (if exists)
