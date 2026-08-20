@@ -112,7 +112,10 @@ Restrictions & Allergies strictes: ${restrictions}${memoriesText}
       apiKey,
       contents,
       systemInstruction: fullSystemInstruction,
-      generationConfig: { temperature: 0.3 },
+      generationConfig: { 
+        temperature: 0.3,
+        maxOutputTokens: 8192
+      },
       stream: isStream,
       requestedModel: model || null,
     });

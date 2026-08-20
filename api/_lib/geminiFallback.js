@@ -178,10 +178,15 @@ async function callGeminiApi({
 
         // Non-streaming JSON response
         const data = await response.json();
-        const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (generatedText) {
+        const parts = data.candidates?.[0]?.content?.parts || [];
+        const generatedText = parts
+          .filter(p => !p.thought && p.text)
+          .map(p => p.text)
+          .join('');
+
+        if (generatedText && generatedText.trim()) {
           console.log(`✅ [VT Matrix] Success via Key [${keyId}] / Model [${modelName}]`);
-          return { text: generatedText, model: modelName, keyId };
+          return { text: generatedText.trim(), model: modelName, keyId };
         }
 
         lastErr = new Error(`Empty response from ${modelName}`);

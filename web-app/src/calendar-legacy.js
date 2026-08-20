@@ -65,16 +65,27 @@ window.renderStrip = function() {
     chip.dataset.key = key;
 
     var data = byDate[key] || { meals: [] };
-    var dotsHtml = "";
-    for(var m=0; m<Math.max(3, Math.min(5, data.meals.length)); m++){
-      var isDone = (data.meals[m] && data.meals[m].done) ? "done" : "";
-      dotsHtml += "<i class='" + isDone + "'></i>";
+    var totalMeals = data.meals.length;
+    var doneMeals = data.meals.filter(function(m) { return m.done; }).length;
+    var isAllDone = totalMeals > 0 && doneMeals === totalMeals;
+
+    var statusHtml = "";
+    if (totalMeals > 0) {
+      if (isAllDone) {
+        statusHtml = "<span class='day-badge-done' title='Tous les repas validés !'><i class='ri-check-line'></i> " + doneMeals + "/" + totalMeals + "</span>";
+      } else if (doneMeals > 0) {
+        statusHtml = "<span class='day-badge-prog' title='" + doneMeals + " sur " + totalMeals + " validés'>" + doneMeals + "/" + totalMeals + "</span>";
+      } else {
+        statusHtml = "<span class='day-badge-todo' title='" + totalMeals + " repas à consommer'>0/" + totalMeals + "</span>";
+      }
+    } else {
+      statusHtml = "<span class='day-badge-empty'>—</span>";
     }
 
     chip.innerHTML =
       "<span class='wd'>" + wd + "</span>" +
       "<span class='dt'>" + d.getDate() + "</span>" +
-      "<span class='day-dots'>" + dotsHtml + "</span>" +
+      statusHtml +
       (isToday ? "<span class='today-mark'></span>" : "");
 
     chip.addEventListener("click", function(){
@@ -84,7 +95,7 @@ window.renderStrip = function() {
     });
     dayStrip.appendChild(chip);
   }
-}
+};
 
 window.renderDay = function() {
   var dayCard = document.getElementById("dayCard");
@@ -102,83 +113,157 @@ window.renderDay = function() {
   if(!data || data.meals.length === 0){
     dayCard.innerHTML =
       "<div class='empty-state'>" +
-      "<svg class='icon' viewBox='0 0 20 20' fill='none' stroke='currentColor' stroke-width='1.4'><rect x='3' y='4' width='14' height='13' rx='2'/><line x1='3' y1='8' x2='17' y2='8'/></svg>" +
-      "<div><b style='color:var(--text-mid)'>" + dateLabel + "</b></div>" +
-      "<div style='margin-top:4px'>Aucun repas prévu ce jour. Cliquez sur l'icône baguette magique en haut pour générer un plan avec l'IA.</div>" +
+      "<div class='empty-icon-wrap'><i class='ri-calendar-event-line'></i></div>" +
+      "<div><b style='color:var(--text-hi); font-size:1.15rem;'>" + dateLabel + "</b></div>" +
+      "<div style='margin-top:8px;color:var(--text-low);font-size:0.92rem;max-width:420px;margin-left:auto;margin-right:auto;line-height:1.5;'>Aucun repas n'est encore programmé pour cette journée. Générez un plan avec l'IA ou ajoutez vos propres repas.</div>" +
+      "<div style='margin-top:18px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;'>" +
+      "  <button class='btn btn-primary' onclick='window.promptAIPlan ? window.promptAIPlan() : window.openAddMealModal()' style='padding:10px 18px;font-size:0.9rem;border-radius:12px;'><i class='ri-magic-line'></i> Créer un plan IA</button>" +
+      "  <button class='btn btn-secondary' onclick='window.openAddMealModal()' style='padding:10px 18px;font-size:0.9rem;border-radius:12px;'><i class='ri-add-line'></i> Ajouter un repas</button>" +
+      "</div>" +
       "</div>";
     updateProgramRing();
     return;
   }
 
-  var toneColors = {
-    matin:{ bg:"var(--amber-dim)", fg:"var(--amber-2)" },
-    midi: { bg:"var(--blue-dim)",  fg:"var(--blue)" },
-    soir: { bg:"var(--violet-dim)",fg:"var(--violet)" }
+  var done = data.meals.filter(function(m) { return m.done; }).length;
+  var total = data.meals.length;
+  var pct = total > 0 ? (done / total) : 0;
+  var pctRounded = Math.round(pct * 100);
+  var allDone = total > 0 && done === total;
+
+  var toneConfigs = {
+    matin: { bg: "rgba(245, 158, 11, 0.15)", fg: "#d97706", label: "Matin", icon: "🌅" },
+    midi: { bg: "rgba(16, 185, 129, 0.15)", fg: "#059669", label: "Midi", icon: "🥗" },
+    collation: { bg: "rgba(217, 119, 6, 0.15)", fg: "#b45309", label: "En-cas", icon: "🌰" },
+    soir: { bg: "rgba(139, 92, 246, 0.15)", fg: "#7c3aed", label: "Soir", icon: "🌙" }
   };
 
+  var motivationMsg = allDone
+    ? "🎉 Félicitations ! Tous tes repas sont validés pour cette journée."
+    : (done > 0
+      ? "🌿 Plus que <strong>" + (total - done) + " repas</strong> à valider pour compléter ta journée."
+      : "💪 Coche chaque repas consommé pour suivre ton avancée en direct.");
+
   var html = "";
+  
+  // Card Header with Date, Day Badge and Actions
   html += "<div class='day-card-head'>";
-  html += "<div class='day-card-title'><div><h2 style='display:inline'>"+dateLabel+"</h2> <span class='jour-pill'>Jour "+jourIndex+"</span>";
-  html += "<div class='day-theme'>🔀 "+(data.theme || 'Programme')+"</div></div></div>";
-  html += "<button class='refresh-btn' id='regenDayBtn' title='Régénérer les aliments de ce jour' onclick='window.confirmRegenerateDay()'><svg class='icon' viewBox='0 0 20 20' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round'><path d='M4 10a6 6 0 0 1 10.5-4M16 10a6 6 0 0 1-10.5 4'/><path d='M14.5 3v3h-3M5.5 17v-3h3'/></svg></button>";
+  html += "  <div class='day-card-title'>";
+  html += "    <div>";
+  html += "      <div class='day-title-row'>";
+  html += "        <h2>" + dateLabel + "</h2>";
+  html += "        <span class='jour-pill'><i class='ri-calendar-check-line'></i> Jour " + jourIndex + "</span>";
+  html += "      </div>";
+  html += "      <div class='day-theme'><i class='ri-sparkling-fill' style='color:var(--accent)'></i> " + (data.theme || 'Programme Vitaliste') + "</div>";
+  html += "    </div>";
+  html += "  </div>";
+  html += "  <div class='day-head-actions'>";
+  html += "    <button class='refresh-btn' id='regenDayBtn' title='Régénérer les aliments de ce jour' onclick='window.confirmRegenerateDay()'><i class='ri-refresh-line'></i></button>";
+  html += "  </div>";
   html += "</div>";
 
-  html += "<div class='timeline'><div class='timeline-track'></div><div class='timeline-fill' id='timelineFill'></div>";
+  // Daily Progress Cockpit Banner
+  html += "<div class='day-progress-banner " + (allDone ? "all-done" : "") + "'>";
+  html += "  <div class='day-prog-header'>";
+  html += "    <div class='day-prog-title'>";
+  html += "      <span class='prog-status-icon'>" + (allDone ? "🏆" : "🎯") + "</span>";
+  html += "      <div>";
+  html += "        <div class='prog-main-label'><strong>" + done + " sur " + total + " repas validés</strong> <span class='prog-pct-tag'>(" + pctRounded + "%)</span></div>";
+  html += "        <div class='prog-sub-msg'>" + motivationMsg + "</div>";
+  html += "      </div>";
+  html += "    </div>";
+  html += "    <div class='day-prog-actions'>";
+  if (!allDone) {
+    html += "      <button type='button' class='day-batch-btn validate-all' onclick='window.validateAllDay()' title='Tout cocher comme consommé pour aujourd\\'hui'><i class='ri-checkbox-circle-line'></i> Tout valider</button>";
+  }
+  if (done > 0) {
+    html += "      <button type='button' class='day-batch-btn reset-all' onclick='window.resetDay()' title='Décocher tous les repas de ce jour'><i class='ri-restart-line'></i> Réinitialiser</button>";
+  }
+  html += "    </div>";
+  html += "  </div>";
+  html += "  <div class='day-prog-track'>";
+  html += "    <div class='day-prog-fill' id='dayBarFill' style='width:" + pctRounded + "%;'></div>";
+  html += "  </div>";
+  html += "</div>";
+
+  // Meal Cards List (Unified Modern Card Container)
+  html += "<div class='meals-container'>";
   data.meals.forEach(function(meal, idx){
-    var checked = meal.done;
-    var tone = toneColors[meal.tone] || toneColors.matin;
-    html += "<div class='meal-row-wrap" + (checked?" checked":"") + "'>";
-    html += "<button class='meal-row' onclick='window.toggleMeal(\""+meal.id+"\")'>";
-    html += "<span class='meal-marker'><svg viewBox='0 0 20 20' fill='none' stroke='#06170f' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><path d='M4 10l4 4 8-8'/></svg></span>";
-    html += "<span class='meal-body'>";
-    html += "<span class='meal-top'><span class='meal-icon' style='background:"+tone.bg+";color:"+tone.fg+"'>"+meal.icon+"</span>";
-    html += "<span><span class='meal-title'>"+meal.title+"</span><br><span class='meal-time'>"+meal.time+"</span></span></span>";
+    var checked = !!meal.done;
+    var toneKey = meal.tone || (meal.slot === "Dîner" ? "soir" : (meal.slot === "Collation" ? "collation" : (meal.slot === "Déjeuner" ? "midi" : "matin")));
+    var tone = toneConfigs[toneKey] || toneConfigs.matin;
+    var safeTitle = (meal.title || meal.slot || 'Repas').replace(/"/g, '&quot;');
+
+    html += "<div class='meal-card " + (checked ? "is-checked" : "") + "' id='mealCard_" + meal.id + "'>";
     
-    html += "<span class='meal-tags'>";
-    if (meal.tags) {
+    // 1. Integrated Validation Checkbox
+    html += "  <div class='meal-check-col'>";
+    html += "    <button type='button' class='meal-check-btn " + (checked ? "checked" : "") + "' onclick='event.stopPropagation(); window.toggleMeal(\"" + meal.id + "\")' title='" + (checked ? "Cliquer pour marquer comme non consommé" : "Cliquer pour valider ce repas") + "' aria-label='Valider le repas'>";
+    html += "      <span class='check-inner'><i class='ri-check-line'></i></span>";
+    html += "    </button>";
+    html += "  </div>";
+
+    // 2. Main Card Content
+    html += "  <div class='meal-card-content' onclick='window.toggleMeal(\"" + meal.id + "\")'>";
+    
+    // Top Row: Meal Icon, Title, Status Badge, Time
+    html += "    <div class='meal-top'>";
+    html += "      <div class='meal-icon-badge' style='background:" + tone.bg + "; color:" + tone.fg + ";' title='" + tone.label + "'>" + (meal.icon || tone.icon) + "</div>";
+    html += "      <div class='meal-title-wrap'>";
+    html += "        <div class='meal-title-row'>";
+    html += "          <span class='meal-title'>" + safeTitle + "</span>";
+    html += "          <span class='meal-status-pill " + (checked ? "done" : "pending") + "' onclick='event.stopPropagation(); window.toggleMeal(\"" + meal.id + "\")'>";
+    html += "            " + (checked ? "<i class='ri-checkbox-circle-fill'></i> Validé" : "<i class='ri-time-line'></i> À consommer");
+    html += "          </span>";
+    html += "        </div>";
+    html += "        <span class='meal-time'><i class='ri-time-line'></i> " + (meal.time || 'Horaire libre') + "</span>";
+    html += "      </div>";
+    html += "    </div>";
+    
+    // Food Ingredient Tags
+    html += "    <div class='meal-tags'>";
+    if (meal.tags && meal.tags.length > 0) {
       meal.tags.forEach(function(t, tagIdx){
         var safeTagN = (t.n || '').replace(/"/g, '&quot;').replace(/'/g, "\\'");
         var safeEmoji = t.e || '🍽️';
-        html += "<span class='meal-tag meal-tag-interactive' title='Cliquer pour remplacer ou demander l\\'avis du Coach IA' onclick='event.stopPropagation();window.openSubstituteModal(\""+meal.id+"\", "+tagIdx+", \""+safeTagN+"\", \""+safeEmoji+"\")'>"+t.e+" "+t.n+" <i class=\"ri-loop-right-line sub-tag-icon\"></i></span>";
+        html += "<span class='meal-tag meal-tag-interactive' title='Cliquer pour remplacer ou demander l\\'avis du Coach IA' onclick='event.stopPropagation(); window.openSubstituteModal(\"" + meal.id + "\", " + tagIdx + ", \"" + safeTagN + "\", \"" + safeEmoji + "\")'>";
+        html += "  <span class='tag-emoji'>" + safeEmoji + "</span> <span class='tag-text'>" + t.n + "</span> <span class='sub-tag-icon'><i class='ri-loop-right-line'></i></span>";
+        html += "</span>";
       });
+    } else {
+      html += "<span class='meal-tag-empty' style='font-size:0.8rem;color:var(--text-low);font-style:italic;'>Aucun aliment spécifique associé.</span>";
     }
-    html += "</span>";
+    html += "    </div>";
     
-    html += "<span class='meal-note'><svg class='icon' viewBox='0 0 20 20' fill='none' stroke='currentColor' stroke-width='1.6'><circle cx='10' cy='10' r='7'/><line x1='10' y1='9' x2='10' y2='14'/><circle cx='10' cy='6.5' r='.6' fill='currentColor'/></svg>"+meal.note+"</span>";
-    html += "</span></button>";
-    html += "<span class='meal-actions'>";
+    // Meal Note / Advice
+    if (meal.note) {
+      html += "    <div class='meal-note'><i class='ri-information-line note-icon'></i><span>" + meal.note + "</span></div>";
+    }
+    html += "  </div>";
+
+    // 3. Quick Action Buttons
+    html += "  <div class='meal-actions'>";
     var firstFood = (meal.tags && meal.tags[0] && meal.tags[0].n) ? meal.tags[0].n.replace(/"/g, '&quot;').replace(/'/g, "\\'") : '';
     var firstEmoji = (meal.tags && meal.tags[0] && meal.tags[0].e) || '🍽️';
-    html += "<button class='meal-action-btn' data-tooltip='Varier un aliment' onclick='event.stopPropagation();window.openSubstituteModal(\""+meal.id+"\", 0, \""+firstFood+"\", \""+firstEmoji+"\")'><svg class='icon' viewBox='0 0 20 20' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><path d='M4 10a6 6 0 0 1 10.5-4M16 10a6 6 0 0 1-10.5 4'/><path d='M14.5 3v3h-3M5.5 17v-3h3'/></svg></button>";
-    html += "<button class='meal-action-btn ai-btn' data-tooltip='Suggérer un autre plat avec l\\'IA' onclick='event.stopPropagation();window.openMealAiSuggestModal(\""+meal.id+"\")' style='color:#34d399; background:rgba(52,211,153,0.1); border-color:rgba(52,211,153,0.3);'><i class=\"ri-sparkling-fill\"></i></button>";
-    html += "<button class='meal-action-btn' data-tooltip='Modifier' onclick='event.stopPropagation();window.openCalMealModal(\""+meal.id+"\")'><svg class='icon' viewBox='0 0 20 20' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><path d='M13.5 3.5l3 3L7 16l-4 1 1-4z'/></svg></button>";
-    html += "<button class='meal-action-btn danger' data-tooltip='Supprimer' onclick='event.stopPropagation();window.deleteMealConfirm(\""+meal.id+"\")'><svg class='icon' viewBox='0 0 20 20' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round'><path d='M4 6h12M8 6V4h4v2M6 6l1 10h6l1-10'/></svg></button>";
-    html += "</span>";
+    html += "    <button type='button' class='meal-action-btn' data-tooltip='Varier un aliment' onclick='event.stopPropagation(); window.openSubstituteModal(\"" + meal.id + "\", 0, \"" + firstFood + "\", \"" + firstEmoji + "\")'><i class='ri-loop-right-line'></i></button>";
+    html += "    <button type='button' class='meal-action-btn ai-btn' data-tooltip='Suggérer un autre plat avec l\\'IA' onclick='event.stopPropagation(); window.openMealAiSuggestModal(\"" + meal.id + "\")'><i class='ri-sparkling-fill'></i></button>";
+    html += "    <button type='button' class='meal-action-btn' data-tooltip='Modifier l\\'horaire ou le plat' onclick='event.stopPropagation(); window.openCalMealModal(\"" + meal.id + "\")'><i class='ri-edit-line'></i></button>";
+    html += "    <button type='button' class='meal-action-btn danger' data-tooltip='Supprimer ce créneau' onclick='event.stopPropagation(); window.deleteMealConfirm(\"" + meal.id + "\")'><i class='ri-delete-bin-line'></i></button>";
+    html += "  </div>";
+
     html += "</div>";
   });
   html += "</div>";
 
-  html += "<div class='day-footer'><div class='bar'><div class='bar-fill' id='dayBarFill'></div></div><div class='lbl' id='dayFooterLbl'>0 sur "+data.meals.length+" repas complétés</div></div>";
-  html += "<button class='uncheck-link' onclick='window.resetDay()'>↺ Tout décocher ce jour</button>";
-
   dayCard.innerHTML = html;
   
-  var done = data.meals.filter(m => m.done).length;
-  var total = data.meals.length;
-  var pct = total > 0 ? (done/total) : 0;
-  
   setTimeout(() => {
-    const timeline = document.getElementById("timelineFill");
     const dayBar = document.getElementById("dayBarFill");
-    if (timeline) timeline.style.height = (pct*100) + "%";
-    if (dayBar) dayBar.style.width = (pct*100) + "%";
-  }, 50);
-  
-  var lbl = document.getElementById("dayFooterLbl");
-  if (lbl) lbl.textContent = done + " sur " + total + " repas complétés";
+    if (dayBar) dayBar.style.width = pctRounded + "%";
+  }, 30);
   
   updateProgramRing();
-}
+};
 
 window.toggleMeal = function(mealId) {
   let stored = window.store.get('calendar_meals', []);
@@ -188,8 +273,35 @@ window.toggleMeal = function(mealId) {
     window.store.set('calendar_meals', stored);
     window.renderDay();
     window.renderStrip();
+    if (window.showToast && meal.done) {
+      window.showToast(`✅ Repas "${meal.title || meal.slot}" validé !`, 'success');
+    }
   }
-}
+};
+
+window.validateAllDay = function() {
+  let stored = window.store.get('calendar_meals', []);
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  let count = 0;
+  
+  stored.forEach(meal => {
+    const mealDate = new Date(meal.dateStr);
+    mealDate.setHours(0,0,0,0);
+    const offset = Math.round((mealDate - today) / (1000 * 60 * 60 * 24));
+    if (offset.toString() === window.currentDateKey) {
+      if (!meal.done) count++;
+      meal.done = true;
+    }
+  });
+  
+  window.store.set('calendar_meals', stored);
+  window.renderDay();
+  window.renderStrip();
+  if (window.showToast) {
+    window.showToast(`🎉 Tous les repas de la journée ont été validés !`, 'success');
+  }
+};
 
 window.resetDay = function() {
   let stored = window.store.get('calendar_meals', []);
@@ -208,7 +320,10 @@ window.resetDay = function() {
   window.store.set('calendar_meals', stored);
   window.renderDay();
   window.renderStrip();
-}
+  if (window.showToast) {
+    window.showToast('↺ Validations réinitialisées pour ce jour.', 'info');
+  }
+};
 
 window.updateProgramRing = function() {
   const ringFg = document.getElementById("progRingFg");

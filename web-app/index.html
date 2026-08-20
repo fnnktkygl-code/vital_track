@@ -981,8 +981,8 @@
           </div>
         </div>
         <div class="topbar-actions">
-          <button class="icon-btn" onclick="window.openAddMealModal()" style="background:rgba(255,255,255,.06);color:var(--text);border:1px solid rgba(255,255,255,.1)"><i class="ri-add-line"></i></button>
-          <button class="icon-btn" onclick="promptAIPlan()" style="background:var(--accent);color:#000;border:none"><i class="ri-magic-line"></i></button>
+          <button class="icon-btn" onclick="window.openAddMealModal()" data-tooltip="Ajouter un repas manuellement" title="Ajouter un repas"><i class="ri-add-line"></i></button>
+          <button class="icon-btn" onclick="window.promptAIPlan ? window.promptAIPlan() : promptAIPlan()" data-tooltip="Générer un plan avec l'IA" title="Générer un plan IA" style="background:linear-gradient(135deg,var(--accent),#047857);color:#ffffff;border:none;box-shadow:0 3px 10px rgba(5,150,105,0.3);"><i class="ri-magic-line"></i></button>
         </div>
       </header>
 

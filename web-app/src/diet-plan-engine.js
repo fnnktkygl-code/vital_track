@@ -117,14 +117,15 @@
         if (!name) return;
         var cap = name.charAt(0).toUpperCase() + name.slice(1);
         
-        var targetKey = 'fruits';
-        if (cat === 'Fruits') targetKey = 'fruits';
-        else if (cat === 'Légumes') targetKey = 'veggies';
-        else if (cat === 'Céréales') targetKey = 'grains';
-        else if (cat === 'Herbes & Thés') targetKey = 'herbs';
-        else if (cat === 'Huiles') targetKey = 'oils';
-        else if (cat === 'Noix & Graines') targetKey = 'nuts';
-        else if (cat === 'Épices & Assaisonnements') targetKey = 'spices';
+        var targetKey = 'veggies';
+        var catLower = (cat || '').toLowerCase();
+        if (cat === 'Fruits' || catLower.indexOf('fruit') !== -1) targetKey = 'fruits';
+        else if (cat === 'Légumes' || catLower.indexOf('légume') !== -1 || catLower.indexOf('tubercule') !== -1) targetKey = 'veggies';
+        else if (cat === 'Céréales' || catLower.indexOf('céréale') !== -1) targetKey = 'grains';
+        else if (cat === 'Herbes & Thés' || catLower.indexOf('herbe') !== -1 || catLower.indexOf('thé') !== -1) targetKey = 'herbs';
+        else if (cat === 'Huiles' || catLower.indexOf('huile') !== -1) targetKey = 'oils';
+        else if (cat === 'Noix & Graines' || catLower.indexOf('noix') !== -1 || catLower.indexOf('graine') !== -1) targetKey = 'nuts';
+        else if (cat === 'Épices & Assaisonnements' || catLower.indexOf('épice') !== -1) targetKey = 'spices';
 
         if (!out[targetKey]) out[targetKey] = [];
         if (out[targetKey].indexOf(cap) === -1) out[targetKey].push(cap);

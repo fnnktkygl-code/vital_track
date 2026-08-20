@@ -2169,6 +2169,36 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
   transform: translateY(-1px);
 }
 
+[data-theme="light"] .chat-voice-indicator,
+body.light-theme .chat-voice-indicator {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(254, 226, 226, 0.6) 100%);
+  border-top: 1px solid rgba(239, 68, 68, 0.2);
+  color: #b91c1c;
+}
+[data-theme="light"] .voice-cancel-btn,
+body.light-theme .voice-cancel-btn {
+  background: #ffffff;
+  border-color: #cbd5e1;
+  color: #475569;
+}
+[data-theme="light"] .voice-cancel-btn:hover,
+body.light-theme .voice-cancel-btn:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #b91c1c;
+}
+[data-theme="light"] .voice-done-btn,
+body.light-theme .voice-done-btn {
+  background: #ecfdf5;
+  border-color: #059669;
+  color: #047857;
+}
+[data-theme="light"] .voice-done-btn:hover,
+body.light-theme .voice-done-btn:hover {
+  background: #059669;
+  color: #ffffff;
+}
+
 .message-image{max-width:240px;max-height:200px;border-radius:12px;margin-bottom:8px;display:block;object-fit:cover;border:1px solid rgba(255,255,255,0.15);box-shadow:0 4px 12px rgba(0,0,0,0.2)}
 .chat-input-bar input {
   flex: 1;
@@ -7911,6 +7941,8 @@ mark.search-highlight {
   backdrop-filter: blur(14px) !important;
   -webkit-backdrop-filter: blur(14px) !important;
   animation: fadeUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  max-width: min(100%, 480px) !important;
+  box-sizing: border-box !important;
 }
 
 .dynamic-thinking-icon-wrap {
@@ -7935,12 +7967,20 @@ mark.search-highlight {
   color: var(--text) !important;
   letter-spacing: 0.01em;
   transition: opacity 0.18s ease, transform 0.18s ease;
-  white-space: nowrap;
+  white-space: normal !important;
+  word-break: break-word !important;
+  line-height: 1.35 !important;
+  flex: 1 !important;
+  min-width: 0 !important;
 }
 
 .dynamic-thinking-text.step-switching {
   opacity: 0;
   transform: translateY(-4px);
+}
+
+.dynamic-thinking-timer {
+  flex-shrink: 0 !important;
 }
 
 /* ═══════════════════════════════════════════════════════════

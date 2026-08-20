@@ -2121,19 +2121,20 @@ function renderActiveConversation() {
   });
 }
 
-// ═══════ VOICE INPUT (OFFICIAL GOOGLE GEMINI AI & WEB SPEECH) ═══════
+// ═══════ VOICE INPUT (ZERO-QUOTA REAL-TIME LIVE STREAMING & WEB SPEECH) ═══════
 let _speechRecognition = null;
 let _mediaRecorder = null;
 let _audioStream = null;
 let _audioChunks = [];
 let _isListening = false;
 let _sessionBaseText = '';
-let _sessionFinalSegments = [];
-let _sessionInterim = '';
 let _voiceRestartTimer = null;
+let _voiceSecondsTimer = null;
+let _voiceSeconds = 0;
 let _userExplicitStop = false;
+let _webSpeechCapturedText = false;
 
-function _updateVoiceUI(listening) {
+function _updateVoiceUI(listening, isFallbackProcessing) {
   const voiceBtn = document.getElementById('chatVoiceBtn');
   const indicator = document.getElementById('chatVoiceIndicator');
   const statusText = document.getElementById('chatVoiceStatus');
@@ -2141,22 +2142,42 @@ function _updateVoiceUI(listening) {
   if (voiceBtn) {
     if (listening) {
       voiceBtn.classList.add('recording');
-      voiceBtn.innerHTML = '<i class="ri-mic-fill" style="color:#ef4444; animation:pulse 1.2s infinite;"></i>';
-      voiceBtn.title = "Arrêter et transcrire";
+      voiceBtn.innerHTML = '<i class="ri-mic-fill" style="color:#ef4444; animation:pulse 1s infinite;"></i>';
+      voiceBtn.title = "Arrêter et valider";
     } else {
       voiceBtn.classList.remove('recording');
       voiceBtn.innerHTML = '<i class="ri-mic-line"></i>';
-      voiceBtn.title = "Saisie vocale Google";
+      voiceBtn.title = "Saisie vocale en direct";
     }
   }
 
   if (indicator) {
-    indicator.style.display = listening ? 'flex' : 'none';
+    indicator.style.display = (listening || isFallbackProcessing) ? 'flex' : 'none';
   }
-  if (statusText) {
-    statusText.textContent = listening
-      ? '🎙️ Écoute active... Parlez naturellement'
-      : '✨ Traitement Google IA...';
+
+  if (listening) {
+    _voiceSeconds = 0;
+    if (_voiceSecondsTimer) clearInterval(_voiceSecondsTimer);
+    const updateTimerLabel = () => {
+      const mins = Math.floor(_voiceSeconds / 60);
+      const secs = String(_voiceSeconds % 60).padStart(2, '0');
+      if (statusText && _isListening) {
+        statusText.textContent = `🎙️ Écoute en direct (${mins}:${secs}) · Parlez à votre rythme`;
+      }
+    };
+    updateTimerLabel();
+    _voiceSecondsTimer = setInterval(() => {
+      _voiceSeconds++;
+      updateTimerLabel();
+    }, 1000);
+  } else {
+    if (_voiceSecondsTimer) {
+      clearInterval(_voiceSecondsTimer);
+      _voiceSecondsTimer = null;
+    }
+    if (isFallbackProcessing && statusText) {
+      statusText.textContent = '⏳ Transcription en cours...';
+    }
   }
 }
 
@@ -2220,18 +2241,22 @@ function _cleanupAudioStream() {
   _mediaRecorder = null;
 }
 
-async function _transcribeWithGoogleGemini(audioBlob) {
-  if (!audioBlob || audioBlob.size < 1200) return;
+async function _transcribeWithFallbackApi(audioBlob) {
+  if (!audioBlob || audioBlob.size < 1200) {
+    _updateVoiceUI(false, false);
+    return;
+  }
   try {
-    const statusText = document.getElementById('chatVoiceStatus');
-    if (statusText) statusText.textContent = '✨ Transcription Google Gemini de haute précision...';
-
+    _updateVoiceUI(false, true);
     const reader = new FileReader();
     reader.readAsDataURL(audioBlob);
     reader.onloadend = async () => {
       try {
         const base64Data = (reader.result || '').split(',')[1];
-        if (!base64Data) return;
+        if (!base64Data) {
+          _updateVoiceUI(false, false);
+          return;
+        }
 
         const lang = window.vitalTrackI18n?.getLanguage ? window.vitalTrackI18n.getLanguage() : 'fr';
         const resp = await fetch('/api/transcribe', {
@@ -2252,18 +2277,18 @@ async function _transcribeWithGoogleGemini(audioBlob) {
               const prefix = _sessionBaseText ? _sessionBaseText.trim() + ' ' : '';
               input.value = (prefix + resJson.text.trim()).replace(/\s+/g, ' ').trim();
               input.focus();
-              if (window.showToast) {
-                window.showToast('✨ Transcrit avec l\'IA Google Gemini', 'success', 2500);
-              }
             }
           }
         }
       } catch (err) {
-        console.warn('[Voice] Gemini transcription error:', err);
+        console.warn('[Voice] Fallback transcription error:', err);
+      } finally {
+        _updateVoiceUI(false, false);
       }
     };
   } catch (err) {
     console.warn('[Voice] FileReader error:', err);
+    _updateVoiceUI(false, false);
   }
 }
 
@@ -2298,36 +2323,35 @@ function toggleVoiceInput(forceState, e) {
       _speechRecognition = null;
     }
 
-    // Consolidation finale propre sans doublons
-    const fullText = [_sessionBaseText, ..._sessionFinalSegments, _sessionInterim].filter(Boolean).join(' ').replace(/\s+/g, ' ').trim();
-    if (input) {
-      input.value = fullText;
-      input.focus();
+    _updateVoiceUI(false, false);
+    if (input) input.focus();
+
+    // Si WebSpeech était actif, le texte est DÉJÀ écrit en direct dans le champ (0 latence, 0 quota !)
+    if (_webSpeechCapturedText || SpeechRecognition) {
+      _stopMediaRecorder();
+      return;
     }
 
-    _updateVoiceUI(false);
-
-    // Déclenchement de la transcription haute fidélité Google Gemini en tâche de fond
+    // Fallback pour navigateurs sans WebSpeech (ex: Firefox)
     _stopMediaRecorder().then(audioBlob => {
       if (audioBlob) {
-        _transcribeWithGoogleGemini(audioBlob);
+        _transcribeWithFallbackApi(audioBlob);
       }
     });
     return;
   }
 
-  // 🎙️ Démarrage d'une nouvelle session vocale
+  // 🎙️ Démarrage d'une nouvelle session vocale en direct
   _userExplicitStop = false;
   _isListening = true;
+  _webSpeechCapturedText = false;
   _sessionBaseText = input && input.value ? input.value.trim() : '';
-  _sessionFinalSegments = [];
-  _sessionInterim = '';
 
-  _updateVoiceUI(true);
-  _startMediaRecorder();
+  _updateVoiceUI(true, false);
 
   if (!SpeechRecognition) {
-    // Navigateur sans WebSpeech (ex: Firefox) : l'enregistrement Google Gemini prend le relais
+    // Navigateur sans WebSpeech (ex: Firefox) : enregistrement audio de secours
+    _startMediaRecorder();
     return;
   }
 
@@ -2365,34 +2389,34 @@ function toggleVoiceInput(forceState, e) {
       };
 
       _speechRecognition.onresult = (event) => {
-        let interimText = '';
+        let finalStr = '';
+        let interimStr = '';
 
-        // Lecture linéaire garantie sans ré-accumulation
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
-          const item = event.results[i];
-          if (item && item[0] && item[0].transcript) {
-            const txt = item[0].transcript.trim();
-            if (!txt) continue;
-            if (item.isFinal) {
-              if (!_sessionFinalSegments.includes(txt)) {
-                _sessionFinalSegments.push(txt);
-              }
-            } else {
-              interimText = txt;
-            }
+        for (let i = 0; i < event.results.length; ++i) {
+          const piece = (event.results[i] && event.results[i][0] && event.results[i][0].transcript) ? event.results[i][0].transcript : '';
+          if (event.results[i].isFinal) {
+            finalStr += (finalStr ? ' ' : '') + piece.trim();
+          } else {
+            interimStr += (interimStr ? ' ' : '') + piece.trim();
           }
         }
 
-        _sessionInterim = interimText;
+        const spoken = [finalStr, interimStr].filter(Boolean).join(' ').trim();
+        if (spoken) {
+          _webSpeechCapturedText = true;
+        }
 
-        const liveText = [_sessionBaseText, ..._sessionFinalSegments, _sessionInterim].filter(Boolean).join(' ').replace(/\s+/g, ' ').trim();
+        const fullText = _sessionBaseText
+          ? (_sessionBaseText + ' ' + spoken).trim()
+          : spoken;
+
         if (input) {
-          input.value = liveText;
+          input.value = fullText;
         }
       };
 
       _speechRecognition.onerror = (event) => {
-        console.warn('[Voice] WebSpeech warning:', event.error);
+        console.warn('[Voice] WebSpeech notice:', event.error);
         if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
           if (window.showToast) {
             window.showToast("⚠️ Accès micro refusé. Autorisez le microphone pour parler.", "error");
@@ -2400,15 +2424,13 @@ function toggleVoiceInput(forceState, e) {
           toggleVoiceInput(false);
           return;
         }
-        if (event.error === 'no-speech') {
-          return;
-        }
       };
 
       _speechRecognition.onend = () => {
-        // En cas d'interruption temporaire du moteur de reconnaissance sans arrêt explicite
-        _sessionInterim = '';
         if (_isListening && !_userExplicitStop) {
+          if (input && input.value) {
+            _sessionBaseText = input.value.trim();
+          }
           _voiceRestartTimer = setTimeout(() => {
             if (_isListening && !_userExplicitStop) {
               startRecognitionSession();
@@ -2419,7 +2441,8 @@ function toggleVoiceInput(forceState, e) {
 
       _speechRecognition.start();
     } catch (err) {
-      console.warn('[Voice] WebSpeech fallback:', err);
+      console.warn('[Voice] WebSpeech fallback initialization:', err);
+      _startMediaRecorder();
     }
   }
 
@@ -2434,6 +2457,7 @@ function cancelVoiceInput(e) {
 
   _userExplicitStop = true;
   _isListening = false;
+  _webSpeechCapturedText = false;
 
   if (_voiceRestartTimer) {
     clearTimeout(_voiceRestartTimer);
@@ -2458,10 +2482,7 @@ function cancelVoiceInput(e) {
     input.focus();
   }
 
-  _sessionFinalSegments = [];
-  _sessionInterim = '';
-
-  _updateVoiceUI(false);
+  _updateVoiceUI(false, false);
 }
 
 // ═══════ IMAGE UPLOAD & PREVIEW ═══════
@@ -2754,11 +2775,20 @@ async function sendChat(e) {
             const dataObj = JSON.parse(line.substring(6));
             if (dataObj.modelVersion) modelUsed = dataObj.modelVersion;
             else if (dataObj.model) modelUsed = dataObj.model;
-            if (dataObj.candidates && dataObj.candidates[0].content) {
-              aiText += dataObj.candidates[0].content.parts[0].text;
-              const streamingBubble = document.getElementById('streaming-bubble');
-              if (streamingBubble) streamingBubble.innerHTML = renderMarkdown(aiText);
-              container.scrollTop = container.scrollHeight;
+            if (dataObj.candidates && dataObj.candidates[0] && dataObj.candidates[0].content) {
+              const parts = dataObj.candidates[0].content.parts || [];
+              let chunkText = '';
+              for (const p of parts) {
+                if (p && !p.thought && p.text) {
+                  chunkText += p.text;
+                }
+              }
+              if (chunkText) {
+                aiText += chunkText;
+                const streamingBubble = document.getElementById('streaming-bubble');
+                if (streamingBubble) streamingBubble.innerHTML = renderMarkdown(aiText);
+                container.scrollTop = container.scrollHeight;
+              }
             }
           } catch (e) { }
         }
@@ -3127,6 +3157,7 @@ function addMessage(text, isUser, modelUsed = null, imageUri = null, msgIndex = 
   container.appendChild(wrapper);
   container.scrollTop = container.scrollHeight;
 }
+window.addMessage = addMessage;
 
 // ═══════ SAFE CLIPBOARD COPY & SPEECHSYNTHESIS ═══════
 function copyChatMessageByIndex(idx, btn) {
@@ -3842,6 +3873,7 @@ function addTypingIndicator() {
   container.scrollTop = container.scrollHeight;
   return div;
 }
+window.addTypingIndicator = addTypingIndicator;
 
 // ═══════ SEARCH ENGINE ═══════
 // Inverted index: token → Set of vitalDb indices
@@ -10181,14 +10213,46 @@ function handleApplyDietPlanRequest(encodedReq, mode) {
 
       const overlay = document.createElement('div');
       overlay.id = 'conflictModalOverlay';
-      overlay.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:20px;';
-      overlay.innerHTML = `<div style="background:var(--surface,#121b27);border:1px solid rgba(255,255,255,0.12);border-radius:22px;padding:24px;max-width:440px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,0.6);color:var(--text,#f3f6f9);">
-        <h3 style="margin:0 0 12px;font-size:1.15rem;font-weight:700;color:var(--text,#f3f6f9)">⚠️ Repas existants détectés</h3>
-        <p style="font-size:0.9rem;color:var(--text-mid,#9aa7b8);margin:0 0 20px;line-height:1.4;">Des repas existent déjà dans votre calendrier sur <strong>${res.conflictCount} créneau(x)</strong> pendant cette période. Que souhaitez-vous faire ?</p>
-        <div style="display:flex;flex-direction:column;gap:10px;">
-          <button onclick="document.getElementById('conflictModalOverlay').remove(); window.handleApplyDietPlanRequest('${encodedReq}', 'replace')" style="padding:12px;border-radius:12px;border:none;background:var(--accent,#37d399);color:#000;font-weight:700;cursor:pointer;font-size:0.95rem;">🔄 Remplacer les jours du plan</button>
-          <button onclick="document.getElementById('conflictModalOverlay').remove(); window.handleApplyDietPlanRequest('${encodedReq}', 'merge')" style="padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:var(--text,#f3f6f9);font-weight:600;cursor:pointer;font-size:0.95rem;">➕ Fusionner (ajouter à côté)</button>
-          <button onclick="document.getElementById('conflictModalOverlay').remove()" style="padding:10px;border-radius:12px;border:none;background:transparent;color:var(--text-low,#5f6b7c);cursor:pointer;font-size:0.9rem;">Annuler</button>
+      overlay.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn 0.2s ease;';
+      overlay.innerHTML = `<div class="conflict-modal-card" style="background:var(--surface,#ffffff);border:1.5px solid var(--border,#cbd5e1);border-radius:24px;padding:28px 24px;max-width:480px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,0.35);color:var(--text,#0f172a);position:relative;">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
+          <div style="width:46px;height:46px;border-radius:14px;background:rgba(245,158,11,0.18);color:#d97706;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;">
+            <i class="ri-calendar-event-line"></i>
+          </div>
+          <div>
+            <h3 style="margin:0;font-size:1.2rem;font-weight:800;color:var(--text,#0f172a);line-height:1.2;">Repas existants détectés</h3>
+            <span style="font-size:0.85rem;color:var(--text-dim,#64748b);font-weight:600;">${res.conflictCount} créneau(x) déjà planifié(s) sur cette période</span>
+          </div>
+        </div>
+        <p style="font-size:0.92rem;color:var(--text-mid,#334155);margin:0 0 20px;line-height:1.5;">Des repas sont déjà programmés sur ces dates dans votre calendrier. Choisissez comment intégrer ce nouveau plan :</p>
+        
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <!-- Option 1 : Remplacer -->
+          <button type="button" class="conflict-btn-replace" onclick="document.getElementById('conflictModalOverlay').remove(); window.handleApplyDietPlanRequest('${encodedReq}', 'replace')" style="padding:14px 18px;border-radius:16px;border:none;background:linear-gradient(135deg, var(--accent, #059669), #047857);color:#ffffff;font-weight:700;cursor:pointer;font-size:0.95rem;display:flex;align-items:center;gap:12px;box-shadow:0 6px 18px rgba(5,150,105,0.3);text-align:left;transition:all 0.2s ease;">
+            <div style="width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">
+              <i class="ri-refresh-line"></i>
+            </div>
+            <div style="flex:1;">
+              <div style="font-weight:800;font-size:0.96rem;">Remplacer les jours du plan</div>
+              <div style="font-size:0.78rem;opacity:0.9;font-weight:500;">Écrase le planning actuel sur ces dates</div>
+            </div>
+          </button>
+
+          <!-- Option 2 : Fusionner (Haute visibilité & contour net) -->
+          <button type="button" class="conflict-btn-merge" onclick="document.getElementById('conflictModalOverlay').remove(); window.handleApplyDietPlanRequest('${encodedReq}', 'merge')" style="padding:14px 18px;border-radius:16px;border:2px solid var(--accent, #059669);background:var(--surface-2, #f8fafc);color:var(--text, #0f172a);font-weight:700;cursor:pointer;font-size:0.95rem;display:flex;align-items:center;gap:12px;box-shadow:0 4px 14px rgba(0,0,0,0.06);text-align:left;transition:all 0.2s ease;">
+            <div style="width:36px;height:36px;border-radius:10px;background:rgba(5,150,105,0.12);color:var(--accent, #059669);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;">
+              <i class="ri-add-circle-line"></i>
+            </div>
+            <div style="flex:1;">
+              <div style="font-weight:800;font-size:0.96rem;color:var(--text, #0f172a);">Fusionner (ajouter à côté)</div>
+              <div style="font-size:0.78rem;color:var(--text-dim, #64748b);font-weight:500;">Conserve vos repas actuels et ajoute les nouveaux</div>
+            </div>
+          </button>
+
+          <!-- Option 3 : Annuler -->
+          <button type="button" onclick="document.getElementById('conflictModalOverlay').remove()" style="padding:11px;border-radius:12px;border:1px solid transparent;background:transparent;color:var(--text-dim,#64748b);cursor:pointer;font-size:0.88rem;font-weight:600;margin-top:2px;transition:all 0.2s ease;">
+            Annuler
+          </button>
         </div>
       </div>`;
       document.body.appendChild(overlay);
