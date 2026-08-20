@@ -2393,6 +2393,50 @@ function quickChat(query) {
   document.getElementById('chatForm').dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
 };
 
+// ═══════ GENERATION ABORT & STOP CONTROLLER ═══════
+let activeChatAbortController = null;
+
+function stopChatGeneration() {
+  if (activeChatAbortController) {
+    try {
+      activeChatAbortController.abort();
+    } catch (e) { }
+    activeChatAbortController = null;
+  }
+  resetChatSendBtn();
+  const typingEl = document.getElementById('chat-typing-indicator');
+  if (typingEl) typingEl.remove();
+
+  const streamingContainer = document.getElementById('streaming-bubble-container');
+  if (streamingContainer) {
+    streamingContainer.id = '';
+    const bubble = streamingContainer.querySelector('.message-bubble');
+    if (bubble) {
+      bubble.innerHTML += '<div style="font-size:0.75rem;color:var(--text-dim);font-style:italic;margin-top:6px;border-top:1px solid rgba(255,255,255,0.06);padding-top:4px;">⏹️ Réflexion arrêtée par l\'utilisateur</div>';
+    }
+  }
+  if (_chatMascotRenderer) {
+    _chatMascotRenderer.setAction('idle', false);
+  }
+  if (window.showToast) {
+    window.showToast("Génération arrêtée.", "info");
+  }
+}
+window.stopChatGeneration = stopChatGeneration;
+
+function resetChatSendBtn() {
+  const sendBtn = document.getElementById('sendBtn');
+  if (sendBtn) {
+    sendBtn.disabled = false;
+    sendBtn.classList.remove('btn-stop-generating');
+    sendBtn.title = "Envoyer";
+    sendBtn.innerHTML = '<i class="ri-send-plane-2-fill"></i>';
+    sendBtn.onclick = null;
+  }
+  activeChatAbortController = null;
+}
+window.resetChatSendBtn = resetChatSendBtn;
+
 async function sendChat(e) {
   if (e) e.preventDefault();
   if (!requireAuthForAi("le Coach Vitaliste IA")) return;
@@ -2455,8 +2499,21 @@ async function sendChat(e) {
   saveConversations();
   addMessage(displayUserText, true, null, attachedImage ? attachedImage.dataUri : null, conv.messages.length - 1, false, null, contextQuoteTag);
 
+  // Configure Stop Button during generation
+  activeChatAbortController = new AbortController();
   const sendBtn = document.getElementById('sendBtn');
-  sendBtn.disabled = true;
+  if (sendBtn) {
+    sendBtn.disabled = false;
+    sendBtn.classList.add('btn-stop-generating');
+    sendBtn.title = "Arrêter la réflexion";
+    sendBtn.innerHTML = '<i class="ri-stop-mini-fill"></i>';
+    sendBtn.onclick = (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      stopChatGeneration();
+    };
+  }
+
   const typingEl = addTypingIndicator();
 
   // Le Pigeon passe en mode réflexion / analyse
@@ -2488,6 +2545,7 @@ async function sendChat(e) {
       method: 'POST',
       headers: getApiHeaders(),
       body: JSON.stringify(reqBody),
+      signal: activeChatAbortController.signal
     });
 
     typingEl.remove();
@@ -2564,6 +2622,11 @@ async function sendChat(e) {
     const streamingContainer = document.getElementById('streaming-bubble-container');
     if (streamingContainer) streamingContainer.remove();
 
+    if (err.name === 'AbortError') {
+      console.log('Generation aborted by user.');
+      return;
+    }
+
     const friendlyError = err.message?.includes('429') 
       ? "Le quota de requêtes est temporairement atteint. Vous pouvez réessayer dans quelques secondes ou utiliser un modèle plus léger."
       : (err.message?.includes('503') 
@@ -2584,7 +2647,7 @@ async function sendChat(e) {
     addMessage(friendlyError, false, null, null, conv ? conv.messages.length - 1 : null, true, messageText);
     if (_chatMascotRenderer) _chatMascotRenderer.setAction('idle', false);
   } finally {
-    sendBtn.disabled = false;
+    resetChatSendBtn();
     input.focus();
     if (_chatMascotRenderer) _chatMascotRenderer.setAction('coo', false);
   }
@@ -2798,7 +2861,7 @@ function addMessage(text, isUser, modelUsed = null, imageUri = null, msgIndex = 
         <button type="button" class="btn-error-retry" onclick="retryChatMessage(${actualIndex})">
           <i class="ri-refresh-line"></i> Réessayer
         </button>
-        <button type="button" class="btn-error-secondary" onclick="copyChatMessage('${esc((failedQuery || '').replace(/'/g, "\\'"))}', this)">
+        <button type="button" class="btn-error-secondary" onclick="copyChatMessageByIndex(${actualIndex}, this)">
           <i class="ri-file-copy-line"></i> Copier la question
         </button>
         <button type="button" class="btn-error-secondary" onclick="switchModelAndRetry('lite', ${actualIndex})">
@@ -2834,14 +2897,13 @@ function addMessage(text, isUser, modelUsed = null, imageUri = null, msgIndex = 
     div.innerHTML = `${avatarHtml}<div class="message-bubble">${imgHtml}${contextQuoteHtml}${isUser ? esc(text) : renderMarkdown(text)}${quickReplies}${badgeHtml}</div>`;
     wrapper.appendChild(div);
 
-    // Modern Message Action Toolbar
+    // Modern Message Action Toolbar (Safe Index-Based Calling)
     const toolbar = document.createElement('div');
     toolbar.className = 'message-toolbar';
-    const safeText = (text || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
 
     if (isUser) {
       toolbar.innerHTML = `
-        <button type="button" class="msg-action-btn" onclick="copyChatMessage('${safeText}', this)" title="Copier la question">
+        <button type="button" class="msg-action-btn" onclick="copyChatMessageByIndex(${actualIndex}, this)" title="Copier la question">
           <i class="ri-file-copy-line"></i> Copier
         </button>
         <button type="button" class="msg-action-btn" onclick="editChatMessage(${actualIndex})" title="Modifier et renvoyer la question">
@@ -2850,13 +2912,13 @@ function addMessage(text, isUser, modelUsed = null, imageUri = null, msgIndex = 
       `;
     } else {
       toolbar.innerHTML = `
-        <button type="button" class="msg-action-btn" onclick="copyChatMessage('${safeText}', this)" title="Copier la réponse">
+        <button type="button" class="msg-action-btn" onclick="copyChatMessageByIndex(${actualIndex}, this)" title="Copier la réponse">
           <i class="ri-file-copy-line"></i> Copier
         </button>
         <button type="button" class="msg-action-btn" onclick="retryChatMessage(${actualIndex})" title="Régénérer cette réponse">
           <i class="ri-refresh-line"></i> Régénérer
         </button>
-        <button type="button" class="msg-action-btn" onclick="speakChatMessage('${safeText}', this)" title="Écouter la réponse">
+        <button type="button" class="msg-action-btn" onclick="speakChatMessageByIndex(${actualIndex}, this)" title="Écouter la réponse">
           <i class="ri-volume-up-line"></i> Écouter
         </button>
       `;
@@ -2868,7 +2930,69 @@ function addMessage(text, isUser, modelUsed = null, imageUri = null, msgIndex = 
   container.scrollTop = container.scrollHeight;
 }
 
+// ═══════ SAFE CLIPBOARD COPY & SPEECHSYNTHESIS ═══════
+function copyChatMessageByIndex(idx, btn) {
+  const conv = conversations.find(c => c.id === activeConvId);
+  let textToCopy = '';
+  if (conv && conv.messages && conv.messages[idx]) {
+    textToCopy = conv.messages[idx].text || '';
+  } else if (btn) {
+    const bubble = btn.closest('.message-wrapper')?.querySelector('.message-bubble');
+    if (bubble) textToCopy = bubble.innerText.trim();
+  }
+
+  if (!textToCopy) return;
+
+  const onSuccess = () => {
+    if (btn) {
+      const orig = btn.innerHTML;
+      btn.innerHTML = '<i class="ri-check-line" style="color:var(--accent,#34d399)"></i> Copié !';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.innerHTML = orig;
+        btn.classList.remove('copied');
+      }, 2000);
+    }
+    if (window.showToast) {
+      window.showToast("✓ Texte copié dans le presse-papier", "success");
+    }
+  };
+
+  const fallbackCopy = (t) => {
+    const ta = document.createElement('textarea');
+    ta.value = t;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      return true;
+    } catch (e) {
+      document.body.removeChild(ta);
+      return false;
+    }
+  };
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(textToCopy).then(onSuccess).catch(() => {
+      if (fallbackCopy(textToCopy)) onSuccess();
+      else showToast("Impossible de copier", "error");
+    });
+  } else {
+    if (fallbackCopy(textToCopy)) onSuccess();
+    else showToast("Presse-papier non disponible", "error");
+  }
+}
+window.copyChatMessageByIndex = copyChatMessageByIndex;
+
+// Backward-compatible string-based copy
 function copyChatMessage(text, btn) {
+  if (typeof text === 'number') {
+    return copyChatMessageByIndex(text, btn);
+  }
+  if (!text) return;
   navigator.clipboard.writeText(text).then(() => {
     if (btn) {
       const orig = btn.innerHTML;
@@ -2879,30 +3003,105 @@ function copyChatMessage(text, btn) {
         btn.classList.remove('copied');
       }, 2000);
     }
+    if (window.showToast) window.showToast("✓ Texte copié dans le presse-papier", "success");
   }).catch(() => {
-    showToast("Impossible de copier dans le presse-papier", "error");
+    showToast("Impossible de copier", "error");
   });
 }
 window.copyChatMessage = copyChatMessage;
 
-function speakChatMessage(text, btn) {
+let _currentSpeakingBtn = null;
+let _currentUtterance = null;
+
+function stopSpeechSynthesis() {
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+  }
+  if (_currentSpeakingBtn) {
+    _currentSpeakingBtn.innerHTML = '<i class="ri-volume-up-line"></i> Écouter';
+    _currentSpeakingBtn.classList.remove('speaking');
+    _currentSpeakingBtn = null;
+  }
+  _currentUtterance = null;
+}
+window.stopSpeechSynthesis = stopSpeechSynthesis;
+
+function speakChatMessageByIndex(idx, btn) {
   if (!('speechSynthesis' in window)) {
     showToast("Synthèse vocale non supportée sur ce navigateur", "error");
     return;
   }
-  if (window.speechSynthesis.speaking) {
-    window.speechSynthesis.cancel();
-    if (btn) btn.innerHTML = '<i class="ri-volume-up-line"></i> Écouter';
+
+  // Toggle off if currently reading the same message
+  if (window.speechSynthesis.speaking && _currentSpeakingBtn === btn) {
+    stopSpeechSynthesis();
     return;
   }
-  const cleanText = text.replace(/```[\s\S]*?```/g, '').replace(/[\*\#_`]/g, '').slice(0, 1000);
-  const utter = new SpeechSynthesisUtterance(cleanText);
-  utter.lang = getLanguage() === 'en' ? 'en-US' : 'fr-FR';
+
+  stopSpeechSynthesis();
+
+  const conv = conversations.find(c => c.id === activeConvId);
+  let textToSpeak = '';
+  if (conv && conv.messages && conv.messages[idx]) {
+    textToSpeak = conv.messages[idx].text || '';
+  } else if (btn) {
+    const bubble = btn.closest('.message-wrapper')?.querySelector('.message-bubble');
+    if (bubble) textToSpeak = bubble.innerText.trim();
+  }
+
+  if (!textToSpeak) return;
+
+  // Clean markdown, JSON blocks, actionMeal tags and emojis
+  let cleanText = textToSpeak
+    .replace(/```[\s\S]*?```/g, '') // strip code blocks
+    .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1') // links
+    .replace(/[*#_~`>]/g, '') // markdown chars
+    .replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '') // emojis
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  if (!cleanText) {
+    showToast("Aucun texte à lire.", "info");
+    return;
+  }
+
+  const utter = new SpeechSynthesisUtterance(cleanText.slice(0, 2000));
+  const isEn = getLanguage() === 'en';
+  utter.lang = isEn ? 'en-US' : 'fr-FR';
   utter.rate = 1.05;
-  if (btn) btn.innerHTML = '<i class="ri-stop-circle-line" style="color:#ef4444;"></i> Arrêter';
-  utter.onend = () => { if (btn) btn.innerHTML = '<i class="ri-volume-up-line"></i> Écouter'; };
-  utter.onerror = () => { if (btn) btn.innerHTML = '<i class="ri-volume-up-line"></i> Écouter'; };
+
+  const voices = window.speechSynthesis.getVoices();
+  if (voices && voices.length) {
+    const targetPrefix = isEn ? 'en' : 'fr';
+    const naturalVoice = voices.find(v => v.lang.startsWith(targetPrefix) && (v.name.includes('Google') || v.name.includes('Natural') || v.name.includes('Premium') || v.name.includes('Thomas') || v.name.includes('Amelie') || v.name.includes('Audrey')));
+    if (naturalVoice) utter.voice = naturalVoice;
+  }
+
+  _currentSpeakingBtn = btn;
+  _currentUtterance = utter;
+
+  if (btn) {
+    btn.innerHTML = '<i class="ri-stop-circle-line" style="color:#ef4444;"></i> Arrêter';
+    btn.classList.add('speaking');
+  }
+
+  utter.onend = () => {
+    stopSpeechSynthesis();
+  };
+  utter.onerror = () => {
+    stopSpeechSynthesis();
+  };
+
   window.speechSynthesis.speak(utter);
+}
+window.speakChatMessageByIndex = speakChatMessageByIndex;
+
+// Backward-compatible string-based speech
+function speakChatMessage(text, btn) {
+  if (typeof text === 'number') {
+    return speakChatMessageByIndex(text, btn);
+  }
+  speakChatMessageByIndex(null, btn);
 }
 window.speakChatMessage = speakChatMessage;
 
@@ -10308,8 +10507,13 @@ if (typeof window !== "undefined") window.handleChatImageSelected = handleChatIm
 if (typeof window !== "undefined") window.removeChatImage = removeChatImage;
 if (typeof window !== "undefined") window.quickChat = quickChat;
 if (typeof window !== "undefined") window.sendChat = sendChat;
+if (typeof window !== "undefined") window.stopChatGeneration = stopChatGeneration;
+if (typeof window !== "undefined") window.resetChatSendBtn = resetChatSendBtn;
 if (typeof window !== "undefined") window.copyChatMessage = copyChatMessage;
+if (typeof window !== "undefined") window.copyChatMessageByIndex = copyChatMessageByIndex;
 if (typeof window !== "undefined") window.speakChatMessage = speakChatMessage;
+if (typeof window !== "undefined") window.speakChatMessageByIndex = speakChatMessageByIndex;
+if (typeof window !== "undefined") window.stopSpeechSynthesis = stopSpeechSynthesis;
 if (typeof window !== "undefined") window.editChatMessage = editChatMessage;
 if (typeof window !== "undefined") window.retryChatMessage = retryChatMessage;
 if (typeof window !== "undefined") window.switchModelAndRetry = switchModelAndRetry;

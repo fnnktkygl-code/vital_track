@@ -564,6 +564,25 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
 .msg-action-btn{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:6px;color:var(--text-dim);font-size:0.75rem;font-weight:500;cursor:pointer;transition:all 0.15s ease}
 .msg-action-btn:hover{background:rgba(255,255,255,0.12);color:#fff;border-color:rgba(255,255,255,0.2)}
 .msg-action-btn.copied{color:var(--accent,#34d399);border-color:var(--accent,#34d399);background:rgba(55,211,153,0.12)}
+.msg-action-btn.speaking{color:#ef4444;border-color:#ef4444;background:rgba(239,68,68,0.12);animation:pulse-speaker 1.5s infinite}
+@keyframes pulse-speaker{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,0.4)}50%{box-shadow:0 0 0 4px rgba(239,68,68,0)}}
+
+/* Stop Generating Button (Gemini / Claude / ChatGPT style) */
+.send-btn.btn-stop-generating {
+  background: #ef4444 !important;
+  color: #fff !important;
+  border-radius: 50% !important;
+  animation: pulse-stop 1.5s infinite !important;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.45) !important;
+  cursor: pointer !important;
+}
+.send-btn.btn-stop-generating i {
+  font-size: 1.1rem !important;
+}
+@keyframes pulse-stop {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
 
 /* Modern error card bubble */
 .message-error-card{border-left:4px solid #ef4444 !important;background:rgba(239,68,68,0.08) !important;border-radius:12px;padding:14px 16px;width:100%}
