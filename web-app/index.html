@@ -848,14 +848,14 @@
             </div>
           </div>
           <div class="program-info">
-            <div class="program-title" id="progTitle">⚡ Programme Personnalisé</div>
+            <div class="program-title" id="progTitle">📅 Aucun programme actif</div>
             <div class="info-chips">
               <div class="info-chip"><i class="ri-leaf-line"></i> Vitaliste</div>
               <div class="info-chip strong" id="progRepasChip">🍽 0/0 repas</div>
-              <div class="info-chip strong" id="progJourChip">Jour 1/1</div>
+              <div class="info-chip strong" id="progJourChip">Aucun plan actif</div>
             </div>
           </div>
-          <button class="btn-stop" onclick="window.clearCalendar()">
+          <button class="btn-stop disabled" id="btnStopCalendar" onclick="window.clearCalendar()" disabled style="opacity:0.35; pointer-events:none; cursor:not-allowed;" data-tooltip="Aucun programme à arrêter">
             <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><rect x="5" y="5" width="10" height="10" rx="1.5"/></svg>
             Arrêter
           </button>

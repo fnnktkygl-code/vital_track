@@ -261,6 +261,18 @@ window.updateProgramRing = function() {
       progJourChip.textContent = stored.length > 0 ? (stored.length + " repas saisis") : "Aucun plan actif";
     }
   }
+
+  // Update Stop Button state: Disabled & grayed out if no active program and no meals
+  var btnStop = document.getElementById("btnStopCalendar") || document.querySelector(".btn-stop");
+  var hasActiveContent = !!meta || stored.length > 0;
+  if (btnStop) {
+    btnStop.disabled = !hasActiveContent;
+    btnStop.classList.toggle('disabled', !hasActiveContent);
+    btnStop.style.opacity = hasActiveContent ? '1' : '0.35';
+    btnStop.style.pointerEvents = hasActiveContent ? 'auto' : 'none';
+    btnStop.style.cursor = hasActiveContent ? 'pointer' : 'not-allowed';
+    btnStop.setAttribute('data-tooltip', hasActiveContent ? 'Arrêter et réinitialiser le calendrier' : 'Aucun programme à arrêter');
+  }
 }
 
 window.clearCalendar = async function() {
