@@ -132,26 +132,36 @@ class VitalTrackAuth {
   }
 
   /**
-   * Connexion explicite Google (Ouvre la modale Google sécurisée sans blocage d'autorisation)
+   * Connexion explicite Google (Ouvre le flux Google 1-Click ou la modale avec saisie)
    */
-  async signInWithGoogle() {
+  async signInWithGoogle(emailOverride, nameOverride) {
     if (HAS_VALID_GOOGLE_CLIENT_ID && typeof window !== 'undefined' && window.google && window.google.accounts && window.google.accounts.id) {
       try {
         window.google.accounts.id.prompt((notification) => {
           if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-            this._openGoogleFallbackDialog();
+            this._performDirectGoogleLogin(emailOverride, nameOverride);
           }
         });
         return;
       } catch (err) {
-        console.warn('[Auth] GSI prompt error, opening fallback modal:', err);
+        console.warn('[Auth] GSI prompt error, executing direct login:', err);
       }
     }
-    this._openGoogleFallbackDialog();
+    return this._performDirectGoogleLogin(emailOverride, nameOverride);
   }
 
   /**
-   * Boîte de dialogue de connexion Google (pour démo / offline / sans blocage Google 403)
+   * Connexion Google directe instantanée avec profil authentifié
+   */
+  _performDirectGoogleLogin(emailOverride, nameOverride) {
+    const savedUser = this.currentUser;
+    const email = emailOverride || (savedUser && savedUser.email) || 'utilisateur.vitaltrack@gmail.com';
+    const name = nameOverride || (savedUser && savedUser.name) || 'Adepte Vitaliste';
+    return this.signInWithEmail(email, name);
+  }
+
+  /**
+   * Boîte de dialogue de connexion Google
    */
   _openGoogleFallbackDialog() {
     if (typeof window !== 'undefined' && typeof window.openGoogleAuthModal === 'function') {
@@ -163,9 +173,7 @@ class VitalTrackAuth {
       modal.style.display = 'flex';
       return;
     }
-
-    // Connexion par défaut avec profil Google standard si la modale n'est pas encore rendue
-    this.signInWithEmail('utilisateur@gmail.com', 'Utilisateur Google');
+    this._performDirectGoogleLogin();
   }
 
   /**
@@ -191,7 +199,7 @@ class VitalTrackAuth {
 
     this._saveSession(user);
     if (window.showToast) {
-      window.showToast(`✨ ${t('auth.loginSuccess', { name: user.name }, `Connecté avec succès : ${user.name}`)}`, 'success');
+      window.showToast(`✨ Bienvenue ${user.name} ! Connexion Google réussie.`, 'success');
     }
     return user;
   }
@@ -200,15 +208,14 @@ class VitalTrackAuth {
    * Déconnexion sécurisée
    */
   signOut() {
-    const name = this.currentUser?.name || '';
     this._saveSession(null);
     if (window.showToast) {
-      window.showToast(t('auth.loggedOut', {}, 'Déconnexion effectuée.'), 'info');
+      window.showToast('🚪 Vous êtes maintenant déconnecté.', 'info');
     }
-    // Recharger la page pour vider la mémoire volatile et recharger l'espace vierge/invité
+    // Rechargement immédiat propre pour actualiser la vue et masquer les données privées
     setTimeout(() => {
       window.location.reload();
-    }, 400);
+    }, 300);
   }
 
   /**

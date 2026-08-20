@@ -721,10 +721,30 @@ function updateAuthUI(user) {
   }
 }
 
-// ═══════ GOOGLE AUTH MODAL CONTROLLERS ═══════
-function openGoogleAuthModal() {
+// ═══════ GOOGLE AUTH MODAL CONTROLLERS & AI ACCESS GATE ═══════
+function requireAuthForAi(featureName = "cette fonctionnalité IA") {
+  const isAuth = window.vitalTrackAuth ? window.vitalTrackAuth.isAuthenticated() : false;
+  if (isAuth) {
+    return true;
+  }
+  openGoogleAuthModal(featureName);
+  if (window.showToast) {
+    window.showToast(`🔒 Connexion requise : Veuillez vous connecter avec Google pour utiliser ${featureName}.`, 'warning', 4500);
+  }
+  return false;
+}
+
+function openGoogleAuthModal(reason) {
   const modal = document.getElementById('googleAuthModal');
-  if (modal) modal.style.display = 'flex';
+  if (modal) {
+    const desc = modal.querySelector('p');
+    if (desc && reason) {
+      desc.innerHTML = `🔒 <strong>Connexion requise</strong> pour accéder à <em>${reason}</em>.<br>Connectez-vous avec votre compte Google pour continuer en illimité et synchroniser vos données.`;
+    } else if (desc) {
+      desc.textContent = "Synchronisez vos repas, vos cycles de jeûne et vos conversations avec l'IA en toute sécurité sur tous vos appareils.";
+    }
+    modal.style.display = 'flex';
+  }
 };
 
 function closeGoogleAuthModal(e) {
@@ -734,6 +754,14 @@ function closeGoogleAuthModal(e) {
   const modal = document.getElementById('googleAuthModal');
   if (modal) modal.style.display = 'none';
 };
+
+async function handleDirectGoogleLogin() {
+  if (window.vitalTrackAuth) {
+    await window.vitalTrackAuth.signInWithGoogle();
+  }
+  closeGoogleAuthModal(null);
+  closeAiAuthGateModal(null);
+}
 
 function handleGoogleAuthForm(e) {
   if (e) e.preventDefault();
@@ -2226,6 +2254,10 @@ function cancelVoiceInput(e) {
 let pendingChatImage = null; // { mimeType, data, dataUri }
 
 function handleChatImageSelected(e) {
+  if (!requireAuthForAi("l'Analyse d'Image par IA")) {
+    if (e && e.target) e.target.value = '';
+    return;
+  }
   const file = e.target.files && e.target.files[0];
   if (!file) return;
 
@@ -2270,39 +2302,20 @@ function removeChatImage() {
 };
 
 function quickChat(query) {
+  if (!requireAuthForAi("le Coach Vitaliste IA")) return;
   document.getElementById('chatInput').value = query;
   document.getElementById('chatForm').dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
 };
 
 async function sendChat(e) {
-  e.preventDefault();
+  if (e) e.preventDefault();
+  if (!requireAuthForAi("le Coach Vitaliste IA")) return;
+
   const input = document.getElementById('chatInput');
   const query = input.value.trim();
   const attachedImage = pendingChatImage;
 
   if (!query && !attachedImage) return;
-
-  // 🛡️ Contrôle d'Accès IA : 3 Requêtes d'Essai pour Invités puis Connexion Google Obligatoire
-  const isAuth = window.vitalTrackAuth ? window.vitalTrackAuth.isAuthenticated() : false;
-  if (!isAuth) {
-    let guestAiCount = parseInt(localStorage.getItem('vt_guest_ai_count') || '0', 10);
-    if (guestAiCount >= 3) {
-      window.openAiAuthGateModal();
-      return;
-    }
-    guestAiCount++;
-    localStorage.setItem('vt_guest_ai_count', guestAiCount.toString());
-    const remaining = 3 - guestAiCount;
-    if (remaining > 0) {
-      if (window.showToast) {
-        window.showToast(`✨ Requête IA d'essai ${guestAiCount}/3 (${remaining} restante${remaining > 1 ? 's' : ''} avant connexion Google)`, 'info', 4000);
-      }
-    } else {
-      if (window.showToast) {
-        window.showToast(`⚠️ Dernière requête IA d'essai (3/3). Connectez-vous avec Google pour continuer en illimité !`, 'info', 5000);
-      }
-    }
-  }
 
   if (_isListening) {
     window.toggleVoiceInput(false);
@@ -5236,6 +5249,7 @@ function classifyFoodLocally(token) {
 }
 
 async function analyzeDishWithAI() {
+  if (!requireAuthForAi("l'Analyse IA de Plat")) return;
   const input = document.getElementById('aiDishInput');
   const btn = document.getElementById('btnAnalyzeDish');
   const q = (input?.value || '').trim();
@@ -6789,6 +6803,10 @@ function initSmartInsight() {
 // ═══════ SCANNER IA ═══════
 let _scanMascotRenderer = null;
 function handleScanUpload(event) {
+  if (!requireAuthForAi("le Scanner Visuel & Analyse de Repas IA")) {
+    if (event && event.target) event.target.value = '';
+    return;
+  }
   const file = event.target.files[0];
   if (!file) return;
 
@@ -9791,6 +9809,8 @@ if (typeof window !== "undefined") window.initVitalSelect = initVitalSelect;
 if (typeof window !== "undefined") window.initAllVitalSelects = initAllVitalSelects;
 if (typeof window !== "undefined") window.openGoogleAuthModal = openGoogleAuthModal;
 if (typeof window !== "undefined") window.closeGoogleAuthModal = closeGoogleAuthModal;
+if (typeof window !== "undefined") window.handleDirectGoogleLogin = handleDirectGoogleLogin;
+if (typeof window !== "undefined") window.requireAuthForAi = requireAuthForAi;
 if (typeof window !== "undefined") window.handleGoogleAuthForm = handleGoogleAuthForm;
 if (typeof window !== "undefined") window.openUserProfileModal = openUserProfileModal;
 if (typeof window !== "undefined") window.closeUserProfileModal = closeUserProfileModal;
