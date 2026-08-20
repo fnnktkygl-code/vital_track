@@ -1,14 +1,21 @@
 {
-    "chat.tools.terminal.autoApprove": {
-        "command": true,
-        "true": true,
-        "/^python3 -m git_filter_repo --help >/dev/null 2>&1; echo \\$\\?$/": {
-            "approve": true,
-            "matchCommandLine": true
-        },
-        "/^python3 -m git_filter_repo --force --invert-paths --path docs/vital_track\\.apk --path landing_page/vital_track\\.apk$/": {
-            "approve": true,
-            "matchCommandLine": true
-        }
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python3",
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}/.venv/lib/python3.11/site-packages"
+  ],
+  "python.analysis.diagnosticSeverityOverrides": {
+    "reportMissingImports": "none"
+  },
+  "chat.tools.terminal.autoApprove": {
+    "command": true,
+    "true": true,
+    "/^python3 -m git_filter_repo --help >/dev/null 2>&1; echo \\$\\?$/": {
+      "approve": true,
+      "matchCommandLine": true
+    },
+    "/^python3 -m git_filter_repo --force --invert-paths --path docs/vital_track\\.apk --path landing_page/vital_track\\.apk$/": {
+      "approve": true,
+      "matchCommandLine": true
     }
+  }
 }
