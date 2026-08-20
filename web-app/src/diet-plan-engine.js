@@ -396,7 +396,7 @@
     }
 
     var pools = buildPools(restrictions, userContext);
-    var focusFoods = req.focusFoods || req.preferredFoods || req.customFoods || [];
+    var focusFoods = (request && (request.focusFoods || request.preferredFoods || request.customFoods)) || [];
     if (!Array.isArray(focusFoods) && typeof focusFoods === 'string') focusFoods = [focusFoods];
     
     // Also scan combined request/objective for explicitly mentioned medicinal herbs/foods
