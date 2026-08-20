@@ -341,34 +341,11 @@
             </div>
           </div>
 
-          <div id="phaseExplanationBox" class="circadian-phase-card">
-            <!-- Header: Luminous Icon + Title + Time Slot -->
-            <div class="phase-card-header">
-              <div class="phase-card-icon-badge" id="phaseIconBadge">
-                <i id="phaseIcon" class="ri-moon-fill"></i>
-              </div>
-              <div class="phase-card-title-area">
-                <div style="display:flex; justify-content:space-between; align-items:center; width:100%; flex-wrap:wrap; gap:6px;">
-                  <span id="phaseTitle" class="phase-card-title">ASSIMILATION CELLULAIRE</span>
-                  <span id="phaseTimeSlot" class="phase-time-pill">20h00 — 00h00</span>
-                </div>
-                <div id="phaseTagline" class="phase-card-tagline">Absorption profonde des nutriments &amp; sécrétion de mélatonine</div>
-              </div>
-            </div>
-
-            <!-- Status Row (Feu Digestif) -->
-            <div class="phase-card-status-row">
-              <div id="phaseFireStatus" class="phase-fire-badge">
-                <span class="pulse-dot"></span>
-                <span id="phaseFireText">Feu digestif : Éteint (Repos complet)</span>
-              </div>
-            </div>
-
-            <!-- Micro Action Chips -->
-            <div id="phaseChipsContainer" class="phase-chips-container">
-              <span class="phase-chip">🧬 Réparation Tissulaire</span>
-              <span class="phase-chip">🛑 Zéro Solide</span>
-              <span class="phase-chip">🫖 Tisane Apaisante</span>
+          <div id="phaseExplanationBox" style="background:var(--surface-hover); border:1px solid var(--border); border-radius:12px; padding:12px 16px; display:flex; align-items:center; gap:12px; transition:all 0.2s ease;">
+            <i id="phaseIcon" class="ri-sun-fill" style="font-size:1.4rem; color:var(--accent); transition:color 0.2s ease;"></i>
+            <div>
+              <div id="phaseTitle" style="font-size:0.85rem; font-weight:700; transition:color 0.2s ease;">APPROPRIATION</div>
+              <div id="phaseDesc" style="font-size:0.75rem; color:var(--text-dim); line-height:1.4;">Feu digestif au maximum. Moment des repas denses.</div>
             </div>
           </div>
         </div>
