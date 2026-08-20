@@ -3272,7 +3272,10 @@ function updateTtsVoiceUI() {
   const icon = document.getElementById('chatVoiceGenderIcon');
   const label = document.getElementById('chatActiveVoiceLabel');
   if (icon) icon.textContent = voiceObj.flag;
-  if (label) label.textContent = voiceObj.name;
+  if (label) {
+    const firstName = (voiceObj.name || '').split(' ')[0] || voiceObj.name;
+    label.innerHTML = `<span class="voice-name-full">${esc(voiceObj.name)}</span><span class="voice-name-short">${esc(firstName)}</span>`;
+  }
   
   const select = document.getElementById('profileVoice');
   if (select && select.value !== voiceObj.id) select.value = voiceObj.id;
