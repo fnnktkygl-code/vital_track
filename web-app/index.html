@@ -63,6 +63,7 @@
       <div class="sidebar-section">
         <div class="sidebar-section-title">Principal</div>
         <a href="#" class="sidebar-link active" data-page="dashboard" onclick="showPage('dashboard')"><i class="ri-dashboard-fill"></i> Tableau</a>
+        <a href="#" class="sidebar-link" data-page="recipes" onclick="showPage('recipes')"><i class="ri-restaurant-2-line"></i> Recettes</a>
         <a href="#" class="sidebar-link" data-page="meals" onclick="showPage('meals')"><i class="ri-restaurant-fill"></i> Repas</a>
         <a href="#" class="sidebar-link" data-page="fasting" onclick="showPage('fasting')"><i class="ri-fire-fill"></i> Jeûne</a>
         <a href="#" class="sidebar-link" data-page="chat" onclick="showPage('chat')"><i class="ri-chat-smile-3-fill"></i> Chat</a>
@@ -164,6 +165,15 @@
     </div>
 
     <div class="more-drawer-grid">
+      <a href="#" class="more-drawer-card" onclick="showPage('recipes'); window.toggleMoreDrawer(false); event.preventDefault();">
+        <div class="more-card-icon" style="background:linear-gradient(135deg, rgba(16,185,129,0.2), rgba(56,189,248,0.2)); color:#10b981;"><i class="ri-restaurant-2-line"></i></div>
+        <div class="more-card-body">
+          <strong>Recettes &amp; Pharmacopée</strong>
+          <span>Sebi, Ehret, Morse, Kallas &amp; Christopher</span>
+        </div>
+        <i class="ri-arrow-right-s-line more-card-arrow"></i>
+      </a>
+
       <a href="#" class="more-drawer-card" onclick="showPage('resources'); window.toggleMoreDrawer(false); event.preventDefault();">
         <div class="more-card-icon" style="background:rgba(59,130,246,0.15); color:#60a5fa;"><i class="ri-play-circle-line"></i></div>
         <div class="more-card-body">
@@ -621,6 +631,27 @@
           <span class="dash-fast-type" id="dashFastType"></span>
         </div>
         <div class="dash-fast-bar"><div class="dash-fast-fill" id="dashFastFill"></div></div>
+      </div>
+
+      <!-- Pharmacopée Culinaire & Recettes Shortcut Card -->
+      <div class="dash-card glass" style="padding:16px 20px; border-radius:18px; border:1px solid rgba(16,185,129,0.3); background:linear-gradient(135deg, rgba(16,185,129,0.08), rgba(56,189,248,0.08)); cursor:pointer; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; transition:all 0.2s ease;" onclick="showPage('recipes')">
+        <div style="display:flex; align-items:center; gap:14px;">
+          <div style="width:44px; height:44px; border-radius:12px; background:linear-gradient(135deg, rgba(16,185,129,0.25), rgba(56,189,248,0.25)); font-size:1.5rem; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+            🍽️
+          </div>
+          <div>
+            <div style="font-weight:800; font-size:0.95rem; color:var(--text); display:flex; align-items:center; gap:6px;">
+              Pharmacopée Culinaire &amp; Recettes Éprouvées
+              <span class="badge badge-success" style="font-size:0.7rem; padding:2px 8px;">Nouveau</span>
+            </div>
+            <div style="font-size:0.78rem; color:var(--text-dim); margin-top:2px;">
+              Explorez les formules de Dr. Sebi, Arnold Ehret, Dr. Morse, Kallas &amp; Christopher avec filtre multi-ingrédients
+            </div>
+          </div>
+        </div>
+        <button type="button" class="btn-primary" style="padding:8px 16px; font-size:0.8rem; border-radius:14px; pointer-events:none;">
+          Découvrir <i class="ri-arrow-right-line"></i>
+        </button>
       </div>
 
       <!-- Today's Meals -->
@@ -1660,6 +1691,15 @@
         </div>
       </div>
 
+    </div>
+  </main>
+
+  <!-- ═══════ PHARMACOPÉE CULINAIRE & RECETTES ÉPROUVÉES ═══════ -->
+  <main class="page" id="page-recipes">
+    <div class="container" style="max-width:1100px; padding:80px 20px 100px;">
+      <div id="recipesContainer">
+        <!-- Rendu dynamique via recipesModule.js -->
+      </div>
     </div>
   </main>
 
