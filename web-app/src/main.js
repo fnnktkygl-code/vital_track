@@ -1210,8 +1210,8 @@ function populateVitalApprovedFoods() {
   window.VITAL_FOOD_EMOJIS = emojis;
 }
 
-// ═══════ NAVIGATION ═══════
-function showPage(page) {
+// ═══════ NAVIGATION & HISTORIQUE INTELLIGENT (MOBILE BACK BUTTON) ═══════
+function showPage(page, options = {}) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-link, .bnav-item, .sidebar-link').forEach(l => l.classList.remove('active'));
   const el = document.getElementById(`page-${page}`);
@@ -1228,6 +1228,23 @@ function showPage(page) {
   // Toujours fermer la sidebar de chat et le drawer Plus quand on change de page
   if (window.toggleSidebar) window.toggleSidebar(false);
   if (window.toggleMoreDrawer) window.toggleMoreDrawer(false);
+
+  // Gestion intelligente de l'historique du navigateur (évite de quitter l'app au retour)
+  if (!options.fromPopState && typeof history !== 'undefined' && history.pushState) {
+    try {
+      const stateObj = { type: 'page', page: page };
+      if (location.hash !== `#${page}`) {
+        history.pushState(stateObj, '', `#${page}`);
+      } else {
+        history.replaceState(stateObj, '', `#${page}`);
+      }
+    } catch (e) {
+      console.warn('History pushState error', e);
+    }
+  }
+
+  // Remonter en haut de l'écran en douceur
+  window.scrollTo({ top: 0, behavior: 'instant' });
 
   if (page === 'dashboard') renderDashboard();
   if (page === 'deep-search') {
@@ -1248,6 +1265,68 @@ function showPage(page) {
   if (page === 'resources') renderResources();
   if (page === 'chat') initChatMascot();
 };
+
+// Écouteur global pour intercepter le bouton retour du navigateur / mobile swipe-back
+if (typeof window !== 'undefined') {
+  window.addEventListener('popstate', (e) => {
+    // 1. Fermer BookReader si ouvert
+    const brModal = document.getElementById('bookReaderModalOverlay');
+    if (brModal && brModal.classList.contains('active')) {
+      if (window.closeBookReader) window.closeBookReader();
+      return;
+    }
+
+    // 2. Fermer le Popover du glossaire s'il est ouvert
+    const popover = document.getElementById('brGlossaryPopover');
+    if (popover && popover.classList.contains('open')) {
+      if (window.closeGlossaryPopover) window.closeGlossaryPopover();
+      return;
+    }
+
+    // 3. Fermer la modale Recette si ouverte
+    const recipeModal = document.getElementById('recipeDetailModal');
+    if (recipeModal && recipeModal.style.display !== 'none' && recipeModal.innerHTML.trim() !== '') {
+      if (window.closeRecipeModal) window.closeRecipeModal();
+      return;
+    }
+
+    // 4. Fermer le Drawer "Plus" si ouvert
+    const moreDrawer = document.getElementById('moreDrawer');
+    if (moreDrawer && moreDrawer.classList.contains('open')) {
+      if (window.toggleMoreDrawer) window.toggleMoreDrawer(false);
+      return;
+    }
+
+    // 5. Fermer la sidebar de chat si ouverte
+    const chatSidebar = document.getElementById('chatSidebar');
+    if (chatSidebar && chatSidebar.classList.contains('open')) {
+      if (window.toggleSidebar) window.toggleSidebar(false);
+      return;
+    }
+
+    // 6. Fermer toute autre modale overlay active
+    const activeModals = document.querySelectorAll('.modal-overlay:not([style*="display: none"]):not([style*="display:none"]), .modal.active');
+    if (activeModals.length > 0) {
+      activeModals.forEach(m => {
+        m.style.display = 'none';
+        m.classList.remove('active');
+      });
+      return;
+    }
+
+    // 7. Navigation par page
+    if (e.state && e.state.page) {
+      showPage(e.state.page, { fromPopState: true });
+    } else {
+      const hash = (location.hash || '').replace('#', '').trim();
+      if (hash && document.getElementById(`page-${hash}`)) {
+        showPage(hash, { fromPopState: true });
+      } else {
+        showPage('dashboard', { fromPopState: true });
+      }
+    }
+  });
+}
 
 function toggleMoreDrawer(forceOpen) {
   const drawer = document.getElementById('moreDrawer');

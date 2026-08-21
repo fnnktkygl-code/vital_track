@@ -33,6 +33,7 @@ export function initDeepSearchModule() {
   window.resetDeepSearchForm = resetDeepSearchForm;
   window.printDeepSearchReport = printDeepSearchReport;
   window.exportDeepSearchJson = exportDeepSearchJson;
+  window.closeDeepSearch = closeDeepSearch;
 
   // Charger le dernier rapport sauvegardé s'il existe
   try {
@@ -42,6 +43,12 @@ export function initDeepSearchModule() {
     }
   } catch (e) {
     console.warn('Could not load saved deep search report', e);
+  }
+}
+
+export function closeDeepSearch() {
+  if (window.showPage) {
+    window.showPage('dashboard');
   }
 }
 
@@ -67,14 +74,19 @@ function renderIntakeWizard() {
   const userProfile = window.currentUserProfile || {};
   
   return `
-    <div class="dash-card glass" style="max-width:850px; margin:0 auto 30px auto; padding:28px 24px; border-radius:24px; border:1px solid var(--border); box-shadow:0 18px 45px rgba(0,0,0,0.2);">
+    <div class="dash-card glass" style="max-width:850px; margin:0 auto 30px auto; padding:28px 24px; border-radius:24px; border:1px solid var(--border); box-shadow:0 18px 45px rgba(0,0,0,0.2); position:relative;">
       
+      <!-- BOUTON DE FERMETURE UNIFIÉ -->
+      <button type="button" class="modal-close-unified" onclick="closeDeepSearch()" aria-label="Fermer le bilan et revenir à l'accueil" title="Fermer (Échap)">
+        <i class="ri-close-line"></i>
+      </button>
+
       <!-- ENTÊTE DE LA PAGE DEEP SEARCH -->
-      <div style="text-align:center; margin-bottom:28px;">
+      <div style="text-align:center; margin-bottom:28px; padding:0 36px;">
         <div style="display:inline-flex; align-items:center; gap:8px; padding:6px 14px; border-radius:20px; background:linear-gradient(135deg, rgba(16,185,129,0.15), rgba(56,189,248,0.15)); border:1px solid rgba(16,185,129,0.3); margin-bottom:12px;">
           <span style="font-size:1.1rem;">🔬</span>
           <span style="font-size:0.78rem; font-weight:800; color:var(--accent); text-transform:uppercase; letter-spacing:0.8px;">
-            Bilan Vitaliste Deep Search · 100% Inclus (0 €)
+            Bilan Vitaliste Deep Search · Analyse Clinique IA
           </span>
         </div>
         <h2 style="margin:0 0 8px 0; font-size:1.6rem; font-weight:800; color:var(--text);">
@@ -491,15 +503,20 @@ function renderReportView(rep) {
   ];
 
   return `
-    <div class="deep-search-report-view" style="max-width:920px; margin:0 auto 40px auto;">
+    <div class="deep-search-report-view" style="max-width:920px; margin:0 auto 40px auto; position:relative;">
       
+      <!-- BOUTON DE FERMETURE UNIFIÉ -->
+      <button type="button" class="modal-close-unified" onclick="closeDeepSearch()" aria-label="Fermer le bilan et revenir à l'accueil" title="Fermer (Échap)">
+        <i class="ri-close-line"></i>
+      </button>
+
       <!-- BARRE D'ACTIONS DU RAPPORT -->
-      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:20px;">
-        <div style="display:flex; align-items:center; gap:8px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:20px; padding-right:48px;">
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
           <span class="badge badge-success" style="font-size:0.75rem; padding:4px 10px;">
             Bilan Clinique Réalisé le ${new Date(rep.generatedAt || Date.now()).toLocaleDateString('fr-FR')}
           </span>
-          <span style="font-size:0.75rem; color:var(--text-dim);">100% Gratuit · Gemini Deep Knowledge</span>
+          <span style="font-size:0.75rem; color:var(--text-dim);">Analyse IA Holistique · Gemini Deep Knowledge</span>
         </div>
         <div style="display:flex; gap:8px;">
           <button type="button" class="btn-secondary" onclick="printDeepSearchReport()" style="padding:8px 14px; border-radius:12px; font-size:0.8rem;">

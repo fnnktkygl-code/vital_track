@@ -541,8 +541,8 @@ function renderReaderDOM() {
             <i class="ri-file-pdf-line"></i> <span class="hide-mobile">PDF</span>
           </a>
 
-          <button type="button" class="br-close-btn" onclick="closeBookReader()" aria-label="Fermer le lecteur" title="Fermer (Échap)">
-            &times;
+          <button type="button" class="modal-close-unified br-topbar-close-btn" onclick="closeBookReader()" aria-label="Fermer le lecteur" title="Fermer (Échap)" style="position:static!important; width:32px!important; height:32px!important; font-size:18px!important;">
+            <i class="ri-close-line"></i>
           </button>
         </div>
       </header>

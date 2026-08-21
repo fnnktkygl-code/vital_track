@@ -426,7 +426,9 @@ export function openRecipeModal(recipeId) {
   }
 
   renderModalContent();
+  modalOverlay.classList.add('open');
   modalOverlay.style.display = 'flex';
+  modalOverlay.style.zIndex = '10050';
   document.body.style.overflow = 'hidden';
 }
 
@@ -447,9 +449,9 @@ function renderModalContent() {
   modalOverlay.innerHTML = `
     <div class="modal-card glass" onclick="event.stopPropagation()" style="max-width:800px; width:95%; max-height:92vh; overflow-y:auto; border-radius:24px; padding:24px; position:relative; border:1px solid var(--border); box-shadow:0 25px 60px rgba(0,0,0,0.5);">
       
-      <!-- BOUTON FERMER -->
-      <button type="button" class="modal-close-btn" onclick="closeRecipeModal()" style="position:absolute; top:16px; right:16px; background:rgba(239,68,68,0.2); border:1px solid rgba(239,68,68,0.4); color:#fff; padding:6px 14px; border-radius:20px; cursor:pointer; font-size:0.82rem; font-weight:700; display:inline-flex; align-items:center; gap:4px; z-index:10;">
-        <i class="ri-close-line"></i> Fermer
+      <!-- BOUTON FERMER UNIFIÉ -->
+      <button type="button" class="modal-close-unified" onclick="closeRecipeModal()" aria-label="Fermer la recette" title="Fermer (Échap)">
+        <i class="ri-close-line"></i>
       </button>
 
       <!-- ENTÊTE SOURCE ET AUTEUR -->
