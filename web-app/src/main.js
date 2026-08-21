@@ -9510,7 +9510,7 @@ function closePdfPassageModal(e) {
   document.body.style.overflow = '';
 };
 
-let _resourcesCatalogTab = 'all';
+let _resourcesCatalogTab = 'fr';
 
 function setResourcesCatalogTab(tab) {
   _resourcesCatalogTab = tab;
@@ -9632,6 +9632,96 @@ function renderResources() {
     },
 
     // 🇬🇧 AUTHENTIC ORIGINAL ENGLISH EDITIONS
+    {
+      id: "buhner-antibiotics-en",
+      lang: "en",
+      title: "Herbal Antibiotics: Natural Alternatives (180 Pages)",
+      subtitle: "Stephen Harrod Buhner — Foreword by James A. Duke, Ph.D.",
+      url: "https://archive.org/download/165045454HerbalAntibioticsByStephenHarrodBuhner/165045454-Herbal-Antibiotics-by-Stephen-Harrod-Buhner.pdf",
+      author: "Stephen Harrod Buhner",
+      source: "Authentic English Edition (180 Pages)",
+      size: "533 Ko",
+      badgeClass: "badge-purple",
+      badgeText: "🇬🇧 Authentic English Edition",
+      icon: "ri-shield-cross-line",
+      color: "#6366f1",
+      description: "The complete unabridged clinical masterwork on systemic wild herbs, cryptolepine topoisomerase inhibition, cellular membrane preservation, and synergistic botanical antibiotics."
+    },
+    {
+      id: "buhner-antivirals-en",
+      lang: "en",
+      title: "Herbal Antivirals: Natural Remedies for Resistant Infections",
+      subtitle: "Stephen Harrod Buhner — Complete Clinical Reference Book",
+      url: "https://archive.org/details/herbal-antivirals",
+      author: "Stephen Harrod Buhner",
+      source: "Authentic English Edition",
+      size: "1.3 Mo",
+      badgeClass: "badge-purple",
+      badgeText: "🇬🇧 Authentic English Edition",
+      icon: "ri-virus-line",
+      color: "#8b5cf6",
+      description: "Complete clinical compendium on systemic antiviral phytotherapy, cytokine storm modulation, Scutellaria baicalensis, Isatis, Cordyceps, and elderberry mechanisms."
+    },
+    {
+      id: "duke-herbs-en",
+      lang: "en",
+      title: "Handbook of Medicinal Herbs (USDA Reference)",
+      subtitle: "Dr. James A. Duke, Ph.D. — CRC Press / USDA",
+      url: "https://archive.org/details/handbook-of-medicinal-herbs-james-a-duke",
+      author: "Dr. James A. Duke, Ph.D.",
+      source: "CRC Press / USDA",
+      size: "2.8 Mo",
+      badgeClass: "badge-success",
+      badgeText: "🇬🇧 USDA Reference Book",
+      icon: "ri-test-tube-line",
+      color: "#10b981",
+      description: "The definitive phytochemical reference quantifying PPM active constituents, biological activities, organic silica, inulin, and clinical actions across thousands of plant species."
+    },
+    {
+      id: "christopher-snh-en",
+      lang: "en",
+      title: "School of Natural Healing (313 Monographs & Formulas)",
+      subtitle: "Dr. John R. Christopher, M.H. — Herbal Legacy Complete Edition",
+      url: "https://www.herballegacy.com/Single_Herbs.html",
+      author: "Dr. John R. Christopher, M.H.",
+      source: "School of Natural Healing",
+      size: "1.6 Mo",
+      badgeClass: "badge-warning",
+      badgeText: "🇬🇧 Complete SNH Library",
+      icon: "ri-medicine-bottle-line",
+      color: "#f59e0b",
+      description: "Complete authentic collection of 313 clinical monographs, master formulas (Kidney, Lower Bowel, Blood Stream, BF&C), and 3-Day cleansing protocols."
+    },
+    {
+      id: "sebi-compendium-en",
+      lang: "en",
+      title: "The Dr. Sebi Compendium (3-in-1 Healing Journey, 397 Pages)",
+      subtitle: "Dr. Sebi Research Center — Herbs, Cures, Treatments & Diet",
+      url: "https://archive.org/details/397pg-dr.-sebi-research-center-the-dr.-sebi-compendium-o-a-healing-journey-the-3",
+      author: "Dr. Sebi Research Center",
+      source: "Dr. Sebi Research Center (397 Pages)",
+      size: "444 Ko",
+      badgeClass: "badge-success",
+      badgeText: "🇬🇧 Authentic 397-Page Book",
+      icon: "ri-flashlight-line",
+      color: "#34d399",
+      description: "Comprehensive 3-in-1 master compendium covering cellular food therapy, intra-cellular mineral balance, wildcrafted herbs, recipes, and detoxification protocols."
+    },
+    {
+      id: "kallas-wildplants-en",
+      lang: "en",
+      title: "Edible Wild Plants: Wild Foods from Dirt to Plate",
+      subtitle: "Dr. John Kallas, Ph.D. — Nutrient Density & Wild Greens",
+      url: "https://archive.org/details/Edible_Wild_Plants_Wild_Foods_From_Dirt_To_Plate_by_John_Kallas",
+      author: "Dr. John Kallas, Ph.D.",
+      source: "Authentic Edition",
+      size: "650 Ko",
+      badgeClass: "badge-success",
+      badgeText: "🇬🇧 Complete Wild Food Book",
+      icon: "ri-leaf-fill",
+      color: "#22c55e",
+      description: "Foundational ethnobotanical guide on nutrient-dense wild greens (purslane omega-3, wild amaranth, stinging nettle, dandelion) compared to cultivated hybrids."
+    },
     {
       id: "morse-detox-en",
       lang: "en",

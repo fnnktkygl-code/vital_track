@@ -102,7 +102,7 @@ Restrictions & Allergies strictes: ${restrictions}${memoriesText}
       ? `\n\n[RÈGLE STRICTE] Ceci est la suite d'une conversation en cours. NE DIS PAS BONJOUR. Reprends directement le fil de la discussion.` 
       : `\n\n[RÈGLE STRICTE] C'est le début d'une nouvelle conversation. Tu peux saluer l'utilisateur si c'est pertinent.`;
     const userLang = profile?.language || req.body?.language || 'fr';
-    const targetedKnowledge = retrieveRelevantKnowledge(query, 4);
+    const targetedKnowledge = retrieveRelevantKnowledge(query, 4, userLang);
     const dynamicSystemPrompt = getChatSystemPrompt(userLang);
     const fullSystemInstruction = `${dynamicSystemPrompt}${profileContext}${conversationRule}${targetedKnowledge ? `\n\n[RAG_KNOWLEDGE_BASE]\nExtraits pertinents de nos livres de référence pour t'aider à répondre :\n${targetedKnowledge}` : ''}`;
 
