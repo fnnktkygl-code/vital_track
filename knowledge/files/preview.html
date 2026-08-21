@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>BookReader — aperçu</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Source+Serif+4:opsz,wght@8..60,400&family=Inter:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" />
+<link rel="stylesheet" href="./BookReader.css" />
+<style>
+  body { margin: 0; padding: 40px 16px; background: #fbfaf6; font-family: Inter, sans-serif; }
+  .br-page-wrap { max-width: 900px; margin: 0 auto; }
+  .br-note { max-width: 900px; margin: 0 auto 16px; font-size: 13px; color: #6b6656; }
+</style>
+</head>
+<body>
+  <p class="br-note">Aperçu autonome, sans installation — ouvre ce fichier avec BookReader.css dans le même dossier.</p>
+  <div class="br-page-wrap" id="root"></div>
+
+<script>
+var READING_THEMES = [["bone", "Papier"], ["sepia", "Sépia"], ["dusk", "Nuit"]];
+var MIN_FONT = 15, MAX_FONT = 21;
+
+var books = [
+  {
+    id: "ehret", title: "Le régime sans mucus", author: "Prof. Arnold Ehret", year: "1922",
+    glossary: {
+      "mucus": "Terme central de la théorie d'Ehret : résidus alimentaires non digérés qu'il tient pour responsables des troubles de santé. Cette théorie n'a pas de fondement reconnu par la médecine actuelle.",
+      "encombrement": "Dans le vocabulaire d'Ehret, l'accumulation de résidus non éliminés qui entraverait la vitalité de l'organisme. Notion propre à sa théorie, non validée cliniquement."
+    },
+    chapters: [
+      { id: "l1", tag: "I", title: "Principes généraux", paragraphs: [
+        "Ehret ouvre son cours par une affirmation radicale : toute maladie, quel que soit son nom clinique, ne serait qu'une forme d'encombrement généralisé par le {{mucus}} dans les tissus.",
+        "Son diagnostic ne s'attarde donc pas sur le nom du mal, mais sur son ampleur et sa localisation."
+      ]},
+      { id: "l3", tag: "III", title: "Le diagnostic", paragraphs: [
+        "Plutôt que de nommer la maladie, Ehret propose d'évaluer cinq critères : la quantité d'encombrement, sa nature dominante, la présence de résidus, l'état des tissus et le niveau de vitalité restant.",
+        "Un diagnostic, selon lui, se lit d'abord sur le teint et la langue du patient, avant tout examen instrumental."
+      ]},
+      { id: "l6", tag: "VI", title: "La nouvelle physiologie", paragraphs: [
+        "Cette leçon remet en question cinq points de la physiologie médicale de l'époque, dont la circulation sanguine et le métabolisme. Ehret y décrit le corps comme un système pneumatique, où les poumons agiraient comme la pompe véritable.",
+        "Toute la démonstration s'appuie sur sa formule de la vitalité, où la force vitale résulte de la puissance diminuée de l'{{encombrement}} accumulé."
+      ]},
+      { id: "l18", tag: "XVIII", title: "Le jeûne" },
+      { id: "l22", tag: "XXII", title: "Le régime destructeur de la civilisation et le régime sans mucus" },
+      { id: "l26", tag: "XXVI", title: "Message aux Ehretistes" }
+    ]
+  },
+  {
+    id: "morse", title: "Le manuel de la détox miracle", author: "Dr Robert Morse, N.D.", year: "2012",
+    glossary: {
+      "plaque mucoïde": "Terme employé par Robert Morse pour désigner un dépôt intestinal qu'il tient responsable d'une mauvaise absorption des nutriments. Ce concept n'est pas reconnu par la gastro-entérologie actuelle."
+    },
+    chapters: [
+      { id: "c1", tag: "1", title: "Comprendre notre espèce", paragraphs: [
+        "Le premier chapitre soutient que l'anatomie humaine — dentition, longueur du tube digestif, structure de la main — se rapprocherait de celle des primates frugivores plutôt que des carnivores ou omnivores.",
+        "L'auteur en tire une règle alimentaire générale : privilégier fruits, légumes et aliments crus, et limiter la cuisson."
+      ]},
+      { id: "c2", tag: "2", title: "Comment fonctionne le corps", paragraphs: [
+        "Ce chapitre décrit la digestion en quatre étapes — digestion, absorption, utilisation, élimination — et attribue une part des troubles de santé à l'accumulation d'une {{plaque mucoïde}} qui gênerait l'absorption intestinale.",
+        "L'ouvrage présente ensuite le corps comme une société cellulaire, où chaque organe jouerait un rôle spécialisé au service de l'ensemble."
+      ]},
+      { id: "c5", tag: "5", title: "La nature de la maladie" },
+      { id: "c6", tag: "6", title: "Éliminer la maladie par le nettoyage et la régénération des tissus" },
+      { id: "c8", tag: "8", title: "Le pouvoir des plantes" }
+    ]
+  },
+  {
+    id: "wolfe", title: "Le système de réussite du régime Sunfood", author: "David Wolfe", year: "2008",
+    glossary: {
+      "loi de production": "Dans le vocabulaire de David Wolfe, l'idée que toute action ou pensée produirait un effet de même nature. Présentée comme une loi universelle, il s'agit d'une thèse personnelle de l'auteur plutôt que d'un principe scientifique établi."
+    },
+    chapters: [
+      { id: "s1", tag: "1", title: "Le principe de la transformation de vie", paragraphs: [
+        "La première leçon pose un principe central du livre : la transformation extérieure commencerait toujours par un changement intérieur.",
+        "L'auteur invite le lecteur à tenir un journal et à se considérer comme pleinement responsable de son état de santé actuel."
+      ]},
+      { id: "s2", tag: "2", title: "La loi fondamentale", paragraphs: [
+        "Cette leçon énonce ce que l'auteur appelle la {{loi de production}} : les choix faits aujourd'hui produiraient nécessairement des effets de même nature dans l'avenir.",
+        "Une reformulation du principe de cause à effet, présentée ici comme une loi cosmique plutôt que comme une simple observation de bon sens."
+      ]},
+      { id: "s7", tag: "7", title: "Le régime Sunfood" },
+      { id: "s10", tag: "10", title: "La détoxification" },
+      { id: "s33", tag: "33", title: "La gestion du temps par le jeûne" }
+    ]
+  }
+];
+
+var state = { bookId: books[0].id, chapterIndex: 0, theme: "bone", fontSize: 17, sidebarOpen: false, activeTerm: null };
+
+function currentBook() { return books.find(function (b) { return b.id === state.bookId; }); }
+
+function renderParagraph(text) {
+  var parts = text.split(/(\{\{.+?\}\})/g);
+  return parts.map(function (part) {
+    var m = part.match(/^\{\{(.+?)\}\}$/);
+    if (!m) return document.createTextNode(part);
+    var span = document.createElement("span");
+    span.className = "br-glossary-term";
+    span.textContent = m[1];
+    span.tabIndex = 0;
+    span.addEventListener("click", function () { state.activeTerm = m[1]; render(); });
+    return span;
+  });
+}
+
+function el(tag, className, children) {
+  var e = document.createElement(tag);
+  if (className) e.className = className;
+  (children || []).forEach(function (c) { if (c) e.appendChild(typeof c === "string" ? document.createTextNode(c) : c); });
+  return e;
+}
+
+function render() {
+  var book = currentBook();
+  var chapters = book.chapters;
+  var chapter = chapters[state.chapterIndex];
+  var progressPct = Math.round(((state.chapterIndex + 1) / chapters.length) * 100);
+
+  var root = el("div", "br-root");
+
+  var switcher = el("div", "br-switcher");
+  books.forEach(function (b) {
+    var tab = el("button", "br-switcher-tab", [b.title]);
+    tab.dataset.active = String(b.id === book.id);
+    tab.addEventListener("click", function () { state.bookId = b.id; state.chapterIndex = 0; state.activeTerm = null; render(); });
+    switcher.appendChild(tab);
+  });
+  root.appendChild(switcher);
+
+  var shell = el("div", "br-shell");
+
+  var sidebar = el("aside", "br-sidebar");
+  sidebar.dataset.open = String(state.sidebarOpen);
+  sidebar.appendChild(el("p", "br-book-eyebrow", [book.author]));
+  sidebar.appendChild(el("h2", "br-book-title", [book.title]));
+  sidebar.appendChild(el("p", "br-book-meta", [book.year]));
+
+  var progressLine = el("div", "br-progress-line");
+  var track = el("div", "br-progress-track");
+  var fill = el("div", "br-progress-fill");
+  fill.style.width = progressPct + "%";
+  track.appendChild(fill);
+  progressLine.appendChild(track);
+  progressLine.appendChild(el("span", "br-progress-label", [(state.chapterIndex + 1) + " / " + chapters.length]));
+  sidebar.appendChild(progressLine);
+
+  var list = el("ul", "br-chapter-list");
+  chapters.forEach(function (c, i) {
+    var li = el("li", "br-chapter-item");
+    var btn = el("button", "br-chapter-btn", [
+      el("span", "br-chapter-tag", [c.tag]),
+      el("span", "br-chapter-title", [c.title])
+    ]);
+    btn.dataset.active = String(i === state.chapterIndex);
+    btn.addEventListener("click", function () { state.chapterIndex = i; state.activeTerm = null; state.sidebarOpen = false; render(); });
+    li.appendChild(btn);
+    list.appendChild(li);
+  });
+  sidebar.appendChild(list);
+  shell.appendChild(sidebar);
+
+  var main = el("div", "br-main");
+  var toolbar = el("div", "br-toolbar");
+
+  var sidebarToggle = el("button", "br-btn br-sidebar-toggle", ["Sommaire"]);
+  sidebarToggle.addEventListener("click", function () { state.sidebarOpen = !state.sidebarOpen; render(); });
+  toolbar.appendChild(sidebarToggle);
+
+  var themeGroup = el("div", "br-toolbar-group");
+  READING_THEMES.forEach(function (t) {
+    var b = el("button", "br-btn", [t[1]]);
+    b.dataset.active = String(state.theme === t[0]);
+    b.addEventListener("click", function () { state.theme = t[0]; render(); });
+    themeGroup.appendChild(b);
+  });
+  toolbar.appendChild(themeGroup);
+
+  var sizeGroup = el("div", "br-toolbar-group");
+  var dn = el("button", "br-btn br-btn-icon", ["A-"]);
+  dn.addEventListener("click", function () { state.fontSize = Math.max(MIN_FONT, state.fontSize - 1); render(); });
+  var readout = el("span", "br-size-readout", [state.fontSize + " px"]);
+  var up = el("button", "br-btn br-btn-icon", ["A+"]);
+  up.addEventListener("click", function () { state.fontSize = Math.min(MAX_FONT, state.fontSize + 1); render(); });
+  sizeGroup.appendChild(dn); sizeGroup.appendChild(readout); sizeGroup.appendChild(up);
+  toolbar.appendChild(sizeGroup);
+
+  main.appendChild(toolbar);
+
+  var page = el("div", "br-page");
+  page.dataset.theme = state.theme;
+  page.appendChild(el("p", "br-eyebrow", [chapter.tag]));
+  page.appendChild(el("h1", "br-title", [chapter.title]));
+
+  if (chapter.paragraphs && chapter.paragraphs.length) {
+    var body = el("div", "br-body");
+    body.style.fontSize = state.fontSize + "px";
+    chapter.paragraphs.forEach(function (p) {
+      var pEl = document.createElement("p");
+      renderParagraph(p).forEach(function (node) { pEl.appendChild(node); });
+      body.appendChild(pEl);
+    });
+    page.appendChild(body);
+  } else {
+    page.appendChild(el("p", "br-placeholder", ["Contenu à connecter — ajoutez book.chapters[" + state.chapterIndex + "].paragraphs."]));
+  }
+
+  if (state.activeTerm && book.glossary && book.glossary[state.activeTerm]) {
+    var card = el("div", "br-glossary-card", [
+      el("p", "br-glossary-card-term", [state.activeTerm]),
+      el("p", "br-glossary-card-def", [book.glossary[state.activeTerm]])
+    ]);
+    page.appendChild(card);
+  }
+
+  var nav = el("div", "br-nav");
+  var prev = el("button", "br-nav-btn", ["← précédent"]);
+  prev.disabled = state.chapterIndex === 0;
+  prev.addEventListener("click", function () { state.chapterIndex--; state.activeTerm = null; render(); });
+  var next = el("button", "br-nav-btn", ["suivant →"]);
+  next.disabled = state.chapterIndex === chapters.length - 1;
+  next.addEventListener("click", function () { state.chapterIndex++; state.activeTerm = null; render(); });
+  nav.appendChild(prev);
+  nav.appendChild(el("span", "br-nav-spacer", []));
+  nav.appendChild(el("span", "br-nav-count", [progressPct + "%"]));
+  nav.appendChild(el("span", "br-nav-spacer", []));
+  nav.appendChild(next);
+  page.appendChild(nav);
+
+  main.appendChild(page);
+  shell.appendChild(main);
+  root.appendChild(shell);
+
+  var mount = document.getElementById("root");
+  mount.innerHTML = "";
+  mount.appendChild(root);
+}
+
+render();
+</script>
+</body>
+</html>

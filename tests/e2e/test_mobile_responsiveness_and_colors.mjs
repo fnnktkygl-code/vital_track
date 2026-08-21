@@ -11,9 +11,16 @@
  */
 
 import puppeteer from '/Users/richard/Developer/vital_track/web-app/node_modules/puppeteer-core/lib/esm/puppeteer/puppeteer-core.js';
+import { createServer } from '/Users/richard/Developer/vital_track/web-app/node_modules/vite/dist/node/index.js';
 
 async function runMobileAndDesignAudit() {
   console.log('🚀 [TEST SUITE 3] Lancement de l\'Audit E2E Mobile & Design System...');
+
+  const server = await createServer({
+    root: '/Users/richard/Developer/vital_track/web-app',
+    server: { port: 5188 }
+  });
+  await server.listen();
 
   const browser = await puppeteer.launch({
     headless: 'new',
@@ -21,14 +28,15 @@ async function runMobileAndDesignAudit() {
     args: ['--no-sandbox', '--disable-setuid-sandbox']
   });
 
-  const page = await browser.newPage();
-  
-  // ── 1. TEST SUR SMARTPHONE COMPACT (360x780 - Ex: Galaxy S21 / iPhone SE) ──
-  console.log('\n📱 --- 1. Audit Viewport 360px (Compact Mobile) ---');
-  await page.setViewport({ width: 360, height: 780, isMobile: true, hasTouch: true });
+  try {
+    const page = await browser.newPage();
+    
+    // ── 1. TEST SUR SMARTPHONE COMPACT (360x780 - Ex: Galaxy S21 / iPhone SE) ──
+    const baseUrl = server.resolvedUrls.local[0] || 'http://localhost:5188';
+    console.log(`  🌐 Vite server actif sur ${baseUrl}`);
 
-  await page.goto('http://127.0.0.1:5173', { waitUntil: 'networkidle2' });
-  await new Promise(r => setTimeout(r, 600));
+    await page.goto(baseUrl, { waitUntil: 'domcontentloaded' });
+    await new Promise(r => setTimeout(r, 600));
 
   // Vérifier le non-débordement horizontal du dashboard
   const overflowCheck = await page.evaluate(() => {
@@ -133,7 +141,10 @@ async function runMobileAndDesignAudit() {
   console.log(`  🔍 Carte "Bilan Deep Search" dans le drawer : ${hasDeepSearchCard ? '✅ OUI' : '❌ NON'}`);
   console.log(`  🔍 Carte "Recettes & Pharmacopée" dans le drawer : ${hasRecipesCard ? '✅ OUI' : '❌ NON'}`);
 
-  await browser.close();
+  } finally {
+    await browser.close();
+    await server.close();
+  }
   console.log('\n🎉 [RÉSULTAT SUITE 3] AUDIT MOBILE & DESIGN SYSTEM TERMINÉ AVEC SUCCÈS !');
 }
 

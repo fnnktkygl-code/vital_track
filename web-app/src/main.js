@@ -15,6 +15,8 @@ import { dubbingEngine } from './utils/dubbingEngine.js';
 import { VITALIST_WISDOM, getRandomWisdom, getCircadianContextWisdom, getDailyWisdom } from './data/vitalistWisdom.js';
 import { initRecipesModule } from './recipesModule.js';
 import { initDeepSearchModule } from './deepSearchModule.js';
+import './styles/bookReader.css';
+import { initBookReaderModule, openBookReader } from './bookReaderModule.js';
 
 // Exposer globalement pour l'interface utilisateur
 window.store = store;
@@ -1094,6 +1096,7 @@ async function initApp() {
   initExpertAccordion();
   initRecipesModule();
   initDeepSearchModule();
+  initBookReaderModule();
 
   // Initialize Custom Controls
   initAllVitalDatePickers();
@@ -10084,11 +10087,17 @@ function renderResources() {
                 </div>
 
                 <div style="display:flex; gap:10px; margin-top:auto;">
-                  <a href="${b.url}" target="_blank" rel="noopener noreferrer" class="btn-primary" style="flex:1; text-align:center; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:6px; font-size:0.85rem; font-weight:700; padding:10px 14px; border-radius:10px; box-shadow:0 4px 14px rgba(16,185,129,0.25);">
-                    <i class="ri-file-pdf-line"></i> Consulter
-                  </a>
-                  <a href="${b.url}" download class="btn-secondary" style="flex:1; text-align:center; text-decoration:none; padding:10px 14px; display:inline-flex; align-items:center; justify-content:center; gap:6px; font-size:0.85rem; font-weight:600; border-radius:10px; background:var(--surface-hover); border:1px solid var(--border); color:var(--text);" title="Télécharger le fichier PDF">
-                    <i class="ri-download-2-line"></i> Télécharger
+                  ${b.id === 'ehret-mucusless-fr' ? `
+                    <button type="button" onclick="openBookReader('${b.id}')" class="btn-primary" style="flex:1.2; text-align:center; display:inline-flex; align-items:center; justify-content:center; gap:6px; font-size:0.85rem; font-weight:700; padding:10px 14px; border-radius:10px; box-shadow:0 4px 14px rgba(16,185,129,0.25); cursor:pointer;">
+                      <i class="ri-book-read-line"></i> Lire l'Ouvrage
+                    </button>
+                  ` : `
+                    <a href="${b.url}" target="_blank" rel="noopener noreferrer" class="btn-primary" style="flex:1; text-align:center; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:6px; font-size:0.85rem; font-weight:700; padding:10px 14px; border-radius:10px; box-shadow:0 4px 14px rgba(16,185,129,0.25);">
+                      <i class="ri-file-pdf-line"></i> Consulter
+                    </a>
+                  `}
+                  <a href="${b.url}" download class="btn-secondary" style="flex:0.8; text-align:center; text-decoration:none; padding:10px 12px; display:inline-flex; align-items:center; justify-content:center; gap:6px; font-size:0.85rem; font-weight:600; border-radius:10px; background:var(--surface-hover); border:1px solid var(--border); color:var(--text);" title="Télécharger le fichier PDF original">
+                    <i class="ri-download-2-line"></i> PDF
                   </a>
                 </div>
               </div>

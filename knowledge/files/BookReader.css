@@ -1,0 +1,457 @@
+/*
+  BookReader — design tokens
+  Direction : "carte de bibliothèque" — fiches d'herbier, tampons de laiton,
+  ligne éditoriale sobre. Volontairement différent du cliché "cream + terracotta".
+  Toutes les couleurs sont exposées en variables CSS sur .br-root pour être
+  surchargées par l'application hôte si besoin.
+*/
+
+.br-root {
+  --br-bone: #ede9de;
+  --br-surface: #f7f5ef;
+  --br-ink: #211d16;
+  --br-ink-soft: #6b6656;
+  --br-moss: #435a3b;
+  --br-moss-bg: #e1e8d9;
+  --br-plum: #5b3a52;
+  --br-plum-bg: #efe3ea;
+  --br-brass: #9c7a3c;
+  --br-line: #d9d3c4;
+  --br-line-strong: #c3bca7;
+
+  --br-font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --br-font-body: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --br-font-ui: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --br-font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  --br-radius: 2px;
+
+  font-family: var(--br-font-ui);
+  color: var(--br-ink);
+  background: var(--br-bone);
+  border: 1px solid var(--br-line);
+  border-radius: 6px;
+  overflow: hidden;
+  max-width: 100%;
+}
+
+.br-root * {
+  box-sizing: border-box;
+}
+
+/* ---------- book switcher (ledger tabs) ---------- */
+
+.br-switcher {
+  display: flex;
+  gap: 2px;
+  padding: 10px 12px 0;
+  background: var(--br-surface);
+  border-bottom: 1px solid var(--br-line);
+  overflow-x: auto;
+}
+
+.br-switcher-tab {
+  font-family: var(--br-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--br-ink-soft);
+  background: transparent;
+  border: 1px solid transparent;
+  border-bottom: none;
+  border-radius: var(--br-radius) var(--br-radius) 0 0;
+  padding: 8px 14px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.br-switcher-tab:hover {
+  color: var(--br-ink);
+}
+
+.br-switcher-tab[data-active="true"] {
+  color: var(--br-ink);
+  background: var(--br-bone);
+  border-color: var(--br-line);
+  position: relative;
+  top: 1px;
+}
+
+/* ---------- shell ---------- */
+
+.br-shell {
+  display: flex;
+  min-height: 460px;
+}
+
+/* ---------- sidebar ---------- */
+
+.br-sidebar {
+  width: 232px;
+  flex-shrink: 0;
+  background: var(--br-surface);
+  border-right: 1px solid var(--br-line);
+  padding: 20px 16px;
+  overflow-y: auto;
+}
+
+.br-book-eyebrow {
+  font-family: var(--br-font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--br-brass);
+  margin: 0 0 4px;
+}
+
+.br-book-title {
+  font-family: var(--br-font-display);
+  font-weight: 600;
+  font-size: 17px;
+  line-height: 1.25;
+  margin: 0 0 2px;
+}
+
+.br-book-meta {
+  font-size: 11px;
+  color: var(--br-ink-soft);
+  margin: 0 0 16px;
+}
+
+.br-progress-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.br-progress-track {
+  flex: 1;
+  height: 3px;
+  background: var(--br-line);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.br-progress-fill {
+  height: 100%;
+  background: var(--br-moss);
+}
+
+.br-progress-label {
+  font-family: var(--br-font-mono);
+  font-size: 10px;
+  color: var(--br-ink-soft);
+  white-space: nowrap;
+}
+
+.br-chapter-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--br-line);
+}
+
+.br-chapter-item {
+  border-bottom: 1px solid var(--br-line);
+}
+
+.br-chapter-btn {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  border-left: 2px solid transparent;
+  padding: 9px 6px 9px 8px;
+  cursor: pointer;
+  font-family: var(--br-font-ui);
+}
+
+.br-chapter-btn:hover {
+  background: var(--br-bone);
+}
+
+.br-chapter-btn[data-active="true"] {
+  border-left-color: var(--br-moss);
+  background: var(--br-bone);
+}
+
+.br-chapter-tag {
+  flex-shrink: 0;
+  font-family: var(--br-font-mono);
+  font-size: 10px;
+  color: var(--br-ink-soft);
+  border: 1px solid var(--br-line-strong);
+  border-radius: var(--br-radius);
+  padding: 1px 5px;
+  min-width: 22px;
+  text-align: center;
+}
+
+.br-chapter-btn[data-active="true"] .br-chapter-tag {
+  color: var(--br-moss);
+  border-color: var(--br-moss);
+}
+
+.br-chapter-title {
+  font-size: 12.5px;
+  line-height: 1.35;
+  color: var(--br-ink-soft);
+}
+
+.br-chapter-btn[data-active="true"] .br-chapter-title {
+  color: var(--br-ink);
+}
+
+/* ---------- main / page ---------- */
+
+.br-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.br-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 14px 28px 0;
+}
+
+.br-toolbar-group {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.br-btn {
+  font-family: var(--br-font-ui);
+  font-size: 11.5px;
+  color: var(--br-ink-soft);
+  background: var(--br-surface);
+  border: 1px solid var(--br-line-strong);
+  border-radius: var(--br-radius);
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.br-btn:hover {
+  color: var(--br-ink);
+}
+
+.br-btn[data-active="true"] {
+  color: var(--br-moss);
+  border-color: var(--br-moss);
+  background: var(--br-moss-bg);
+}
+
+.br-btn-icon {
+  width: 28px;
+  padding: 5px 0;
+  text-align: center;
+}
+
+.br-size-readout {
+  font-family: var(--br-font-mono);
+  font-size: 10.5px;
+  color: var(--br-ink-soft);
+  min-width: 38px;
+  text-align: center;
+}
+
+.br-sidebar-toggle {
+  display: none;
+}
+
+.br-page {
+  flex: 1;
+  padding: 20px 28px 28px;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.br-eyebrow {
+  font-family: var(--br-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  opacity: 0.65;
+  margin: 0 0 6px;
+}
+
+.br-title {
+  font-family: var(--br-font-display);
+  font-weight: 600;
+  font-size: 27px;
+  line-height: 1.2;
+  margin: 0 0 18px;
+}
+
+.br-body {
+  font-family: var(--br-font-body);
+  line-height: 1.75;
+  max-width: 62ch;
+}
+
+.br-body p {
+  margin: 0 0 14px;
+}
+
+.br-body p:first-of-type::first-letter {
+  float: left;
+  font-family: var(--br-font-display);
+  font-weight: 600;
+  font-size: 2.9em;
+  line-height: 0.8;
+  padding: 4px 8px 0 0;
+}
+
+.br-glossary-term {
+  cursor: pointer;
+  border-bottom: 1px dotted currentColor;
+  color: var(--br-plum);
+}
+
+.br-glossary-card {
+  max-width: 62ch;
+  margin-top: 6px;
+  padding: 12px 14px;
+  background: var(--br-plum-bg);
+  border-top: 2px solid var(--br-plum);
+  border-radius: 0 var(--br-radius) var(--br-radius) 0;
+}
+
+.br-glossary-card-term {
+  font-family: var(--br-font-mono);
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--br-plum);
+  margin: 0 0 4px;
+}
+
+.br-glossary-card-def {
+  font-family: var(--br-font-ui);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--br-ink);
+  margin: 0;
+}
+
+.br-placeholder {
+  font-family: var(--br-font-ui);
+  font-size: 13px;
+  color: var(--br-ink-soft);
+  font-style: italic;
+  max-width: 62ch;
+}
+
+.br-nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 62ch;
+  margin-top: 28px;
+  padding-top: 16px;
+  border-top: 1px solid var(--br-line);
+}
+
+.br-nav-btn {
+  font-family: var(--br-font-ui);
+  font-size: 12.5px;
+  color: var(--br-ink);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.br-nav-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.br-nav-spacer {
+  flex: 1;
+}
+
+.br-nav-count {
+  font-family: var(--br-font-mono);
+  font-size: 10.5px;
+  color: var(--br-ink-soft);
+}
+
+/* ---------- reading themes (apply to .br-page only) ---------- */
+
+.br-page[data-theme="bone"] {
+  background: #f7f4ea;
+  color: #211d16;
+}
+
+.br-page[data-theme="sepia"] {
+  background: #efe2c4;
+  color: #3a2c18;
+}
+
+.br-page[data-theme="dusk"] {
+  background: #1b1810;
+  color: #e8dfc7;
+}
+
+.br-page[data-theme="dusk"] .br-glossary-card {
+  background: #2a2115;
+  border-top-color: #b98fae;
+}
+
+.br-page[data-theme="dusk"] .br-glossary-card-term,
+.br-page[data-theme="dusk"] .br-glossary-term {
+  color: #d9a9c9;
+}
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 720px) {
+  .br-shell {
+    flex-direction: column;
+  }
+
+  .br-sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--br-line);
+    max-height: 0;
+    padding: 0 16px;
+    overflow: hidden;
+    transition: max-height 0.2s ease, padding 0.2s ease;
+  }
+
+  .br-sidebar[data-open="true"] {
+    max-height: 420px;
+    padding: 16px;
+    overflow-y: auto;
+  }
+
+  .br-sidebar-toggle {
+    display: inline-flex;
+  }
+
+  .br-page {
+    padding: 18px 18px 24px;
+  }
+
+  .br-toolbar {
+    padding: 12px 18px 0;
+  }
+
+  .br-title {
+    font-size: 22px;
+  }
+}
