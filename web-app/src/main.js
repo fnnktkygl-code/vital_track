@@ -9666,19 +9666,20 @@ function renderResources() {
       description: "Traduction intégrale, exhaustive et annotée en français moderne d'après le texte historique de 1922 du Prof. Arnold Ehret. Architecture de lecture interactive, 536 annotations cliniques, dictionnaire vitaliste et mémoire de lecture exacte créés et structurés par VitalTrack Academy."
     },
     {
-      id: "morse-detox-fr",
+      id: "morse-detox-miracle-fr",
       lang: "fr",
       title: "Le Guide du Miracle de la Détox & Régénération",
       subtitle: "Dr. Robert Morse, N.D. — The Detox Miracle Sourcebook en Français",
       url: "/pdfs/dr-robert-morse-le-guide-du-miracle-de-la-detox-fr.pdf",
       author: "Dr. Robert Morse, N.D.",
-      source: "Édition Complète Française",
-      size: "265 Ko",
+      source: "Création & Traduction VitalTrack (D'après l'Édition Américaine)",
+      size: "639 Ko",
       badgeClass: "badge-purple",
-      badgeText: "🇫🇷 Édition Intégrale Française",
+      badgeText: "✨ Édition & Traduction Interactive VitalTrack",
+      extraBadge: "💡 31 Définitions · 7 Tables Cliniques",
       icon: "ri-leaf-line",
       color: "#8b5cf6",
-      description: "La bible complète de la régénération cellulaire en français : filtration rénale, grand système lymphatique, pouvoir dissolvant des fruits, iridologie clinique et formules botaniques."
+      description: "Traduction intégrale et exhaustive de l'ouvrage magistral du Dr. Robert Morse, N.D. : filtration rénale, grand système lymphatique, pouvoir dissolvant des fruits, iridologie clinique, tableau d'anatomie comparée et pharmacopée des formules botaniques."
     },
     {
       id: "ehret-fasting-fr",
@@ -10233,10 +10234,32 @@ function renderResources() {
                       </div>
                     </div>
                   ` : ''}
+
+                  ${b.id === 'morse-detox-miracle-fr' ? `
+                    <div style="background:rgba(139,92,246,0.06); border:1px solid rgba(139,92,246,0.25); border-radius:10px; padding:10px 12px; margin-bottom:16px;">
+                      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; font-size:0.75rem; flex-wrap:wrap; gap:4px;">
+                        <span style="font-weight:700; color:#8b5cf6; display:flex; align-items:center; gap:5px;">
+                          <i class="ri-sparkling-fill"></i> Traduction & Structure VitalTrack
+                        </span>
+                        <span style="font-family:var(--font-mono); font-size:0.72rem; color:var(--text); font-weight:700;">
+                          14 Sections · 31 Définitions · 7 Tables
+                        </span>
+                      </div>
+                      <p style="margin:0 0 6px 0; font-size:0.75rem; color:var(--text-dim); line-height:1.4;">
+                        Ouvrage du Dr. Robert Morse intégralement traduit en français avec table d'anatomie comparée, formules de plantes, tests de Barnes et glossaire sourcé.
+                      </p>
+                      <div style="display:flex; align-items:center; justify-content:space-between; font-size:0.73rem; border-top:1px dashed rgba(139,92,246,0.25); padding-top:6px; margin-top:4px;">
+                        <span style="color:var(--text-dim);">Source originale américaine :</span>
+                        <a href="/pdfs/robert-morse-the-detox-miracle-sourcebook-ebook.pdf" target="_blank" rel="noopener noreferrer" style="color:#8b5cf6; text-decoration:none; font-weight:700; display:inline-flex; align-items:center; gap:4px;">
+                          <i class="ri-file-pdf-line"></i> 🇬🇧 The Detox Miracle Sourcebook
+                        </a>
+                      </div>
+                    </div>
+                  ` : ''}
                 </div>
 
                 <div style="display:flex; gap:10px; margin-top:auto;">
-                  ${b.id === 'ehret-mucusless-fr' ? `
+                  ${['ehret-mucusless-fr', 'morse-detox-miracle-fr'].includes(b.id) ? `
                     <button type="button" onclick="openBookReader('${b.id}')" class="btn-primary" style="flex:1.2; text-align:center; display:inline-flex; align-items:center; justify-content:center; gap:6px; font-size:0.85rem; font-weight:700; padding:10px 14px; border-radius:10px; box-shadow:0 4px 14px rgba(16,185,129,0.25); cursor:pointer;">
                       <i class="ri-book-read-line"></i> Lire l'Ouvrage
                     </button>
