@@ -324,14 +324,19 @@
       <!-- Main Grid: Clock & Vitality -->
       <div class="dash-grid-top">
         
-        <!-- Circadian Rhythm Widget -->
+        <!-- Circadian Rhythm & Chronobiology Widget -->
         <div class="dash-card glass" id="circadianCard" style="display:flex; flex-direction:column; padding: 24px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 24px;">
-            <h3 style="font-size:1rem; display:flex; align-items:center; gap:8px;"><i class="ri-time-line" style="color:var(--accent);"></i> Horloge Interne</h3>
-            <span id="circadianTimePill" style="background:var(--surface-hover); padding:4px 10px; border-radius:50px; font-size:0.8rem; font-weight:600; color:var(--text-dim);">23:59</span>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+            <h3 style="font-size:1rem; display:flex; align-items:center; gap:8px; margin:0;"><i class="ri-time-line" style="color:var(--accent);"></i> Horloge Interne &amp; Chronobiologie</h3>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <button type="button" class="info-badge-btn" onclick="openCircadianScienceModal()" title="Comprendre les 3 cycles circadiens et la chronobiologie des organes">
+                <i class="ri-book-read-line"></i> Science des Cycles
+              </button>
+              <span id="circadianTimePill" style="background:var(--surface-hover); padding:4px 10px; border-radius:50px; font-size:0.8rem; font-weight:600; color:var(--text-dim);">12:00</span>
+            </div>
           </div>
           
-          <div style="display:flex; flex-direction:column; align-items:center; margin-bottom:18px;">
+          <div style="display:flex; flex-direction:column; align-items:center; margin-bottom: 16px;">
             <div class="clock-ring" id="circadianClockRing" title="Faites glisser l'indicateur pour explorer le cycle des 24h">
               <div class="clock-inner-disc"></div>
               <div class="clock-indicator" id="clockIndicator">☀️</div>
@@ -346,11 +351,58 @@
             </div>
           </div>
 
-          <div id="phaseExplanationBox" style="background:var(--surface-hover); border:1px solid var(--border); border-radius:12px; padding:12px 16px; display:flex; align-items:center; gap:12px; transition:all 0.2s ease;">
-            <i id="phaseIcon" class="ri-sun-fill" style="font-size:1.4rem; color:var(--accent); transition:color 0.2s ease;"></i>
-            <div>
-              <div id="phaseTitle" style="font-size:0.85rem; font-weight:700; transition:color 0.2s ease;">APPROPRIATION</div>
-              <div id="phaseDesc" style="font-size:0.75rem; color:var(--text-dim); line-height:1.4;">Feu digestif au maximum. Moment des repas denses.</div>
+          <!-- Chronobiology Factual Metrics Grid -->
+          <div class="circadian-metrics-container" style="display:flex; flex-direction:column; gap:8px; margin-bottom:12px;">
+            
+            <!-- Organ Peak Card -->
+            <div class="vital-pillar-card" title="Organe et émonctoire en pic de bio-activité selon la chronobiologie">
+              <div class="pillar-icon-badge" id="circadianOrganIconBadge" style="background:rgba(245,158,11,0.12); color:#f59e0b;">
+                <span id="circadianOrganIcon">🫘</span>
+              </div>
+              <div class="pillar-body">
+                <div class="pillar-header">
+                  <span class="pillar-title">Organe en Pic d'Activité</span>
+                  <span class="pillar-score-pill" id="circadianOrganWindow">07h - 09h</span>
+                </div>
+                <div id="circadianOrganName" style="font-size:0.82rem; font-weight:700; color:var(--text); line-height:1.3;">Estomac &amp; Chauffage Digestif</div>
+              </div>
+            </div>
+
+            <!-- Hormonal & Metabolic Status Card -->
+            <div class="vital-pillar-card" title="Statut endocrinien, sécrétion d'insuline/cortisol/mélatonine et niveau métabolique">
+              <div class="pillar-icon-badge" id="circadianHormoneIconBadge" style="background:rgba(56,189,248,0.12); color:#38bdf8;">
+                <span id="circadianHormoneIcon">⚡</span>
+              </div>
+              <div class="pillar-body">
+                <div class="pillar-header">
+                  <span class="pillar-title">Statut Hormonal &amp; Métabolisme</span>
+                  <span class="pillar-score-pill" id="circadianMetabolismTag">Catabolisme</span>
+                </div>
+                <div id="circadianHormoneStatus" style="font-size:0.82rem; font-weight:600; color:var(--text); line-height:1.3;">Pic de Cortisol (Éveil) • Insuline basse (Détox)</div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Bottom Actionable Phase Card (Harmonized with Vitality Focus) -->
+          <div id="phaseExplanationBox" class="vitality-focus-card" style="margin-top:auto; padding:14px 16px;">
+            <div class="phase-card-header" style="display:flex; gap:12px; align-items:flex-start;">
+              <div class="phase-card-icon-badge" id="phaseIconBadge" style="background:rgba(16,185,129,0.15); border:1px solid #10b981; color:#10b981; width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:1.1rem;">
+                <i id="phaseIcon" class="ri-sun-fill"></i>
+              </div>
+              <div class="phase-card-title-area" style="flex:1; min-width:0;">
+                <div style="display:flex; justify-content:space-between; align-items:center; width:100%; flex-wrap:wrap; gap:4px; margin-bottom:3px;">
+                  <span class="phase-card-title" id="phaseTitle" style="color:#10b981; font-size:0.84rem; font-weight:700; letter-spacing:0.5px;">APPROPRIATION MAXIMALE</span>
+                  <span class="phase-time-pill" id="phaseWindowPill">12h - 16h</span>
+                </div>
+                <div id="phaseDesc" class="phase-card-tagline" style="font-size:0.76rem; line-height:1.4; color:var(--text-dim);">Feu digestif au maximum. Fenêtre idéale pour le repas principal dense, vivant &amp; nutritif.</div>
+              </div>
+            </div>
+
+            <!-- Action Chips -->
+            <div id="phaseActionChips" class="phase-chips-container" style="display:flex; flex-wrap:wrap; gap:6px; margin-top:10px;">
+              <span class="phase-chip"><span>🥗</span><span>Repas Vivant</span></span>
+              <span class="phase-chip"><span>🥑</span><span>Lipides Sains</span></span>
             </div>
           </div>
         </div>
@@ -2220,6 +2272,68 @@
       </div>
 
       <button type="button" class="btn-primary full-w" onclick="closeVitalityInfoModal()"><i class="ri-check-line"></i> Compris</button>
+    </div>
+  </div>
+
+  <!-- Circadian Science Modal -->
+  <div class="modal-overlay" id="circadianScienceModal" onclick="closeCircadianScienceModal(event)">
+    <div class="modal-content glass" style="max-width: 600px; max-height: 85vh; overflow-y: auto;" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeCircadianScienceModal()"><i class="ri-close-line"></i></button>
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+        <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(56, 189, 248, 0.15); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #38bdf8;">
+          <i class="ri-time-line"></i>
+        </div>
+        <div>
+          <h3 style="margin: 0; font-size: 1.2rem; color: var(--text);">Chronobiologie &amp; Cycles Circadiens</h3>
+          <p style="margin: 0; font-size: 0.8rem; color: var(--text-dim);">Fondements physiologiques &amp; bio-rythmes naturels des 24 heures</p>
+        </div>
+      </div>
+
+      <div style="background: var(--surface-hover); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 16px; font-size: 0.84rem; color: var(--text-dim); line-height: 1.5;">
+        <strong style="color: var(--text);">🔬 Découverte Scientifique Majeure :</strong>
+        Le fonctionnement cellulaire humain est régi par une horloge génétique interne synchronisée sur 24 heures (gènes <em>CLOCK</em>, <em>BMAL1</em>, <em>PER</em> et <em>CRY</em>), récompensée par le <strong>Prix Nobel de Physiologie ou Médecine 2017</strong> (Hall, Rosbash &amp; Young). En nutrition vitaliste (Dr. Arnold Ehret, Dr. Robert Morse), cette horloge se décompose en 3 cycles de 8 heures complémentaires.
+      </div>
+
+      <!-- Cycle 1 -->
+      <div class="v-info-section" style="margin-bottom: 16px; border-top: 1px solid var(--border); padding-top: 14px;">
+        <h4 style="color: #f59e0b; display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 0.95rem;">
+          <i class="ri-sun-foggy-fill"></i> 1. Cycle d'Élimination &amp; Détox (04h00 – 12h00)
+        </h4>
+        <p style="font-size: 0.84rem; color: var(--text-dim); line-height: 1.5;">
+          <strong>Physiologie :</strong> Le corps mobilise ses toxines acides vers les émonctoires. Pic d'activité du <em>Gros Intestin (05h-07h)</em> et de l'<em>Estomac (07h-09h)</em>. Le pic matinal de <strong>cortisol</strong> réveille l'organisme sans nécessiter de digestion lourde.
+        </p>
+        <p style="font-size: 0.82rem; color: var(--text); background: rgba(245, 158, 11, 0.08); border-left: 3px solid #f59e0b; padding: 6px 10px; border-radius: 4px; margin-top: 6px;">
+          💡 <strong>Règle d'or :</strong> Boire tiède (eau citronnée, sève, tisanes douces). Privilégier les fruits aqueux vivants ou prolonger le jeûne pour ne pas bloquer l'épuration lymphatique.
+        </p>
+      </div>
+
+      <!-- Cycle 2 -->
+      <div class="v-info-section" style="margin-bottom: 16px; border-top: 1px solid var(--border); padding-top: 14px;">
+        <h4 style="color: #10b981; display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 0.95rem;">
+          <i class="ri-sun-fill"></i> 2. Cycle d'Appropriation &amp; Digestion (12h00 – 20h00)
+        </h4>
+        <p style="font-size: 0.84rem; color: var(--text-dim); line-height: 1.5;">
+          <strong>Physiologie :</strong> Le feu digestif, les enzymes hépato-pancréatiques et la <strong>sensibilité à l'insuline</strong> atteignent leur zénith. Pic d'absorption de l'<em>Intestin Grêle (13h-15h)</em> et filtration rénale des <em>Reins (17h-19h)</em>.
+        </p>
+        <p style="font-size: 0.82rem; color: var(--text); background: rgba(16, 185, 129, 0.08); border-left: 3px solid #10b981; padding: 6px 10px; border-radius: 4px; margin-top: 6px;">
+          💡 <strong>Règle d'or :</strong> C'est la fenêtre optimale pour consommer vos repas denses, riches en chlorophylle, acides aminés et minéraux vivants. Dîner léger avant 20h pour libérer l'estomac avant la nuit.
+        </p>
+      </div>
+
+      <!-- Cycle 3 -->
+      <div class="v-info-section" style="margin-bottom: 20px; border-top: 1px solid var(--border); padding-top: 14px;">
+        <h4 style="color: #a855f7; display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 0.95rem;">
+          <i class="ri-moon-clear-fill"></i> 3. Cycle d'Assimilation &amp; Régénération (20h00 – 04h00)
+        </h4>
+        <p style="font-size: 0.84rem; color: var(--text-dim); line-height: 1.5;">
+          <strong>Physiologie :</strong> Montée de la <strong>mélatonine</strong>, baisse de l'insuline et de la température corporelle. Activation du <em>Complexe Moteur Migrant (CMM)</em>, pic d'<strong>hormone de croissance</strong>, <strong>autophagie cellulaire</strong> (recyclage des déchets) et purification du <em>Foie (01h-03h)</em>.
+        </p>
+        <p style="font-size: 0.82rem; color: var(--text); background: rgba(168, 85, 247, 0.08); border-left: 3px solid #a855f7; padding: 6px 10px; border-radius: 4px; margin-top: 6px;">
+          💡 <strong>Règle d'or :</strong> Jeûne nocturne strict, obscurité complète et sommeil profond pour maximiser la régénération tissulaire et neuronale.
+        </p>
+      </div>
+
+      <button type="button" class="btn-primary full-w" onclick="closeCircadianScienceModal()"><i class="ri-check-line"></i> Compris</button>
     </div>
   </div>
 

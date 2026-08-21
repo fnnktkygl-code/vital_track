@@ -11559,56 +11559,322 @@ function updateDashStats() {
   updateCircadianWidget();
 };
 
-// ═══════ INTERACTIVE 24H CIRCADIAN RHYTHM SCRUBBER ═══════
+// ═══════ INTERACTIVE 24H CIRCADIAN RHYTHM & CHRONOBIOLOGY CONTROLLER ═══════
 let _isCircadianDragging = false;
+
+function openCircadianScienceModal() {
+  const modal = document.getElementById('circadianScienceModal');
+  if (modal) {
+    modal.style.display = 'flex';
+  }
+}
+window.openCircadianScienceModal = openCircadianScienceModal;
+
+function closeCircadianScienceModal(e) {
+  if (e && e.target && e.target.id !== 'circadianScienceModal' && !e.target.closest('.modal-close') && !e.target.closest('.btn-primary')) {
+    return;
+  }
+  const modal = document.getElementById('circadianScienceModal');
+  if (modal) {
+    modal.style.display = 'none';
+  }
+}
+window.closeCircadianScienceModal = closeCircadianScienceModal;
 
 function getCircadianPhaseData(h, m = 0) {
   const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  
   let shortCycle = '';
   let fullCycle = '';
   let iconClass = '';
   let descText = '';
   let phaseColor = '';
+  let phaseWindow = '';
+  let organName = '';
+  let organWindow = '';
+  let organIcon = '🫘';
+  let organBadgeBg = 'rgba(245,158,11,0.12)';
+  let organColor = '#f59e0b';
+  let hormoneStatus = '';
+  let metabolismTag = '';
+  let hormoneIcon = '⚡';
+  let hormoneBadgeBg = 'rgba(56,189,248,0.12)';
+  let hormoneColor = '#38bdf8';
+  let actionChips = [];
 
-  if (h >= 4 && h < 8) {
+  if (h >= 4 && h < 6) {
     shortCycle = 'ÉLIMINATION (Aube)';
-    fullCycle = 'ÉLIMINATION ACTIVE & DRAINAGE';
+    fullCycle = 'ÉLIMINATION & DRAINAGE LYMPHATIQUE';
     iconClass = 'ri-sun-cloudy-fill';
-    descText = "04h - 08h • Pic d'élimination des toxines & filtration rénale. Hydratation à jeun (eau tiède, citron, sève).";
+    phaseWindow = '04h - 06h';
+    descText = "04h - 06h • Pic de filtration rénale et réveil des émonctoires. Hydratation tiède à jeun (eau citronnée, sève).";
     phaseColor = isLight ? '#b45309' : '#f59e0b';
-  } else if (h >= 8 && h < 12) {
+    organName = "Poumons & Lymphe (03h-05h) • Gros Intestin (05h-07h)";
+    organWindow = "04h - 06h";
+    organIcon = "🫁";
+    organBadgeBg = "rgba(245,158,11,0.15)";
+    organColor = "#f59e0b";
+    hormoneStatus = "Montée du Cortisol • Insuline Basse (Détox active)";
+    metabolismTag = "Catabolisme Détox";
+    hormoneIcon = "⚡";
+    hormoneBadgeBg = "rgba(56,189,248,0.15)";
+    hormoneColor = "#38bdf8";
+    actionChips = [
+      { icon: '💧', label: 'Eau Tiède Citronnée' },
+      { icon: '🌬️', label: 'Respiration Prānique' }
+    ];
+  } else if (h >= 6 && h < 8) {
     shortCycle = 'ÉLIMINATION (Matin)';
-    fullCycle = 'ÉLIMINATION DIGESTIVE';
+    fullCycle = 'ÉVACUATION DU CÔLON & RÉVEIL';
     iconClass = 'ri-sun-foggy-fill';
-    descText = "08h - 12h • Nettoyage intestinal & réveil enzymatique. Privilégiez les fruits aqueux, jus ou jeûne matinal.";
+    phaseWindow = '06h - 08h';
+    descText = "06h - 08h • Le côlon est en motilité péristaltique maximale. Favorisez l'élimination et la lumière naturelle.";
     phaseColor = isLight ? '#a16207' : '#eab308';
-  } else if (h >= 12 && h < 16) {
-    shortCycle = 'APPROPRIATION (Zénith)';
-    fullCycle = 'APPROPRIATION MAXIMALE';
-    iconClass = 'ri-sun-fill';
-    descText = "12h - 16h • Feu digestif au maximum. Fenêtre idéale pour le repas principal dense, vivant & nutritif.";
+    organName = "Gros Intestin (05h-07h) • Estomac (07h-09h)";
+    organWindow = "06h - 08h";
+    organIcon = "🌱";
+    organBadgeBg = "rgba(234,179,8,0.15)";
+    organColor = "#eab308";
+    hormoneStatus = "Pic Matinal de Cortisol (Éveil) • Arrêt Mélatonine";
+    metabolismTag = "Éveil & Motilité";
+    hormoneIcon = "☀️";
+    hormoneBadgeBg = "rgba(245,158,11,0.15)";
+    hormoneColor = "#f59e0b";
+    actionChips = [
+      { icon: '🍋', label: 'Hydratation Électrolytique' },
+      { icon: '🚶', label: 'Mouvement & Étirements' }
+    ];
+  } else if (h >= 8 && h < 10) {
+    shortCycle = 'ÉLIMINATION DIGESTIVE';
+    fullCycle = 'RÉVEIL ENZYMATIQUE & ESTOMAC';
+    iconClass = 'ri-sun-foggy-fill';
+    phaseWindow = '08h - 10h';
+    descText = "08h - 10h • Préchauffage des sucs gastriques. Privilégiez les fruits vivants aqueux ou prolongez le jeûne.";
+    phaseColor = isLight ? '#a16207' : '#eab308';
+    organName = "Estomac (07h-09h) • Rate & Pancréas (09h-11h)";
+    organWindow = "08h - 10h";
+    organIcon = "🫘";
+    organBadgeBg = "rgba(234,179,8,0.15)";
+    organColor = "#eab308";
+    hormoneStatus = "Sécrétion de Ghréline • Enzymes Salivaires Actives";
+    metabolismTag = "Transition Digestive";
+    hormoneIcon = "⚡";
+    hormoneBadgeBg = "rgba(56,189,248,0.15)";
+    hormoneColor = "#38bdf8";
+    actionChips = [
+      { icon: '🍉', label: 'Fruits Aqueux Vivants' },
+      { icon: '🍵', label: 'Infusion Dépurative' }
+    ];
+  } else if (h >= 10 && h < 12) {
+    shortCycle = 'TRANSITION NUTRITIONNELLE';
+    fullCycle = 'ACTIVATION PANCRÉATIQUE & VIGILANCE';
+    iconClass = 'ri-sun-line';
+    phaseWindow = '10h - 12h';
+    descText = "10h - 12h • Pic de clarté mentale et préparation enzymatique de la rate et du pancréas avant le déjeuner.";
     phaseColor = isLight ? '#047857' : '#10b981';
-  } else if (h >= 16 && h < 20) {
-    shortCycle = 'APPROPRIATION (Soir)';
-    fullCycle = 'DIGESTION & TRANSITION';
+    organName = "Rate & Pancréas (09h-11h) • Cœur (11h-13h)";
+    organWindow = "10h - 12h";
+    organIcon = "⚡";
+    organBadgeBg = "rgba(16,185,129,0.15)";
+    organColor = "#10b981";
+    hormoneStatus = "Pic de Vigilance Cérébrale • Dopamine Active";
+    metabolismTag = "Optimisation Énergétique";
+    hormoneIcon = "🧠";
+    hormoneBadgeBg = "rgba(168,85,247,0.15)";
+    hormoneColor = "#a855f7";
+    actionChips = [
+      { icon: '💧', label: 'Hydratation Pré-Repas' },
+      { icon: '🥗', label: 'Repas Vivant' }
+    ];
+  } else if (h >= 12 && h < 14) {
+    shortCycle = 'APPROPRIATION (Zénith)';
+    fullCycle = 'APPROPRIATION & FEU DIGESTIF';
+    iconClass = 'ri-sun-fill';
+    phaseWindow = '12h - 14h';
+    descText = "12h - 14h • Feu digestif au maximum. Fenêtre optimale pour le repas principal dense, alcalinisant et nutritif.";
+    phaseColor = isLight ? '#047857' : '#10b981';
+    organName = "Cœur (11h-13h) • Intestin Grêle (13h-15h)";
+    organWindow = "12h - 14h";
+    organIcon = "🔥";
+    organBadgeBg = "rgba(16,185,129,0.15)";
+    organColor = "#10b981";
+    hormoneStatus = "Sensibilité Maximale à l'Insuline • Pic Sucs Gastriques";
+    metabolismTag = "Anabolisme Nutritionnel";
+    hormoneIcon = "🥗";
+    hormoneBadgeBg = "rgba(16,185,129,0.15)";
+    hormoneColor = "#10b981";
+    actionChips = [
+      { icon: '🥗', label: 'Repas Dense & Vivant' },
+      { icon: '🥑', label: 'Lipides Sains & Chlorophylle' }
+    ];
+  } else if (h >= 14 && h < 16) {
+    shortCycle = 'ASSIMILATION DU GRÊLE';
+    fullCycle = 'ABSORPTION MICRONUTRITIONNELLE';
+    iconClass = 'ri-sun-fill';
+    phaseWindow = '14h - 16h';
+    descText = "14h - 16h • L'intestin grêle filtre et absorbe les micronutriments. Marche digestive recommandée.";
+    phaseColor = isLight ? '#047857' : '#10b981';
+    organName = "Intestin Grêle (13h-15h) • Vessie (15h-17h)";
+    organWindow = "14h - 16h";
+    organIcon = "🧬";
+    organBadgeBg = "rgba(16,185,129,0.15)";
+    organColor = "#10b981";
+    hormoneStatus = "Captation Cellulaire du Glucose • Transport Actif";
+    metabolismTag = "Assimilation & Stockage";
+    hormoneIcon = "🚶";
+    hormoneBadgeBg = "rgba(56,189,248,0.15)";
+    hormoneColor = "#38bdf8";
+    actionChips = [
+      { icon: '🚶', label: 'Marche Post-Prandiale' },
+      { icon: '🫖', label: 'Tisane Digestive (Boldo/Camomille)' }
+    ];
+  } else if (h >= 16 && h < 18) {
+    shortCycle = 'FILTRATION & ÉPURATION';
+    fullCycle = 'DRAINAGE URINAIRE & REINS';
     iconClass = 'ri-sunset-fill';
-    descText = "16h - 20h • Fin de la fenêtre d'alimentation. Dîner léger, légumes vapeurs minéralisants et tisanes digestives.";
+    phaseWindow = '16h - 18h';
+    descText = "16h - 18h • Filtration active de l'urée et des toxines par les reins. Idéal pour une tisane minéralisante.";
     phaseColor = isLight ? '#0f766e' : '#14b8a6';
-  } else if (h >= 20 && h < 24) {
-    shortCycle = 'ASSIMILATION';
-    fullCycle = 'ASSIMILATION CELLULAIRE';
+    organName = "Vessie (15h-17h) • Reins & Filtration (17h-19h)";
+    organWindow = "16h - 18h";
+    organIcon = "💧";
+    organBadgeBg = "rgba(20,184,166,0.15)";
+    organColor = "#14b8a6";
+    hormoneStatus = "Chute Graduelle du Cortisol • Thermorégulation";
+    metabolismTag = "Épuration Rénale";
+    hormoneIcon = "🫖";
+    hormoneBadgeBg = "rgba(20,184,166,0.15)";
+    hormoneColor = "#14b8a6";
+    actionChips = [
+      { icon: '🌿', label: 'Infusion Ortie / Abuta' },
+      { icon: '💧', label: 'Hydratation Rénale' }
+    ];
+  } else if (h >= 18 && h < 20) {
+    shortCycle = 'APPROPRIATION (Soir)';
+    fullCycle = 'CLÔTURE DU REPAS & TRANSITION';
+    iconClass = 'ri-sunset-fill';
+    phaseWindow = '18h - 20h';
+    descText = "18h - 20h • Fin de la fenêtre d'alimentation. Dîner léger avant 20h pour permettre la vidange gastrique.";
+    phaseColor = isLight ? '#0f766e' : '#14b8a6';
+    organName = "Reins (17h-19h) • Péricarde & Circulation (19h-21h)";
+    organWindow = "18h - 20h";
+    organIcon = "🥣";
+    organBadgeBg = "rgba(20,184,166,0.15)";
+    organColor = "#14b8a6";
+    hormoneStatus = "Baisse de l'Insuline • Début du Repos Digestif";
+    metabolismTag = "Transition Nocturne";
+    hormoneIcon = "🍵";
+    hormoneBadgeBg = "rgba(56,189,248,0.15)";
+    hormoneColor = "#38bdf8";
+    actionChips = [
+      { icon: '🍲', label: 'Dîner Léger & Minéral' },
+      { icon: '🍵', label: 'Tisane Digestive' }
+    ];
+  } else if (h >= 20 && h < 22) {
+    shortCycle = 'ASSIMILATION (Soir)';
+    fullCycle = 'ASSIMILATION CELLULAIRE & DÉTENTE';
     iconClass = 'ri-moon-fill';
-    descText = "20h - 00h • Assimilation des nutriments & sécrétion de mélatonine. Repos digestif et détente nerveuse.";
+    phaseWindow = '20h - 22h';
+    descText = "20h - 22h • Montée de la mélatonine et activation du Complexe Moteur Migrant (CMM) pour nettoyer le tube digestif.";
     phaseColor = isLight ? '#4338ca' : '#818cf8';
-  } else {
-    shortCycle = 'RÉGÉNÉRATION';
-    fullCycle = 'RÉGÉNÉRATION & AUTOPHAGIE';
+    organName = "Péricarde (19h-21h) • Système Endocrinien (21h-23h)";
+    organWindow = "20h - 22h";
+    organIcon = "🌙";
+    organBadgeBg = "rgba(129,140,248,0.15)";
+    organColor = "#818cf8";
+    hormoneStatus = "Sécrétion de Mélatonine • Chute Température Corporelle";
+    metabolismTag = "Repos Métabolique";
+    hormoneIcon = "🕯️";
+    hormoneBadgeBg = "rgba(129,140,248,0.15)";
+    hormoneColor = "#818cf8";
+    actionChips = [
+      { icon: '🕯️', label: 'Lumière Tamisée / Sans Écrans' },
+      { icon: '🫁', label: 'Cohérence Cardiaque 5.5s' }
+    ];
+  } else if (h >= 22 || h < 0) {
+    shortCycle = 'SOMMEIL & RÉPARATION';
+    fullCycle = 'ÉQUILIBRE ENDOCRINIEN & SOMMEIL';
+    iconClass = 'ri-moon-fill';
+    phaseWindow = '22h - 00h';
+    descText = "22h - 00h • Sommeil réparateur. Le cerveau active le drainage glymphatique pour évacuer les déchets métaboliques.";
+    phaseColor = isLight ? '#4338ca' : '#818cf8';
+    organName = "Système Endocrinien (21h-23h) • Vésicule (23h-01h)";
+    organWindow = "22h - 00h";
+    organIcon = "😴";
+    organBadgeBg = "rgba(129,140,248,0.15)";
+    organColor = "#818cf8";
+    hormoneStatus = "Hormone de Croissance (GH) • Chute Tension Artérielle";
+    metabolismTag = "Régénération Tissulaire";
+    hormoneIcon = "🛌";
+    hormoneBadgeBg = "rgba(168,85,247,0.15)";
+    hormoneColor = "#a855f7";
+    actionChips = [
+      { icon: '🛌', label: 'Sommeil Réparateur' },
+      { icon: '🧠', label: 'Nettoyage Glymphatique' }
+    ];
+  } else if (h >= 0 && h < 2) {
+    shortCycle = 'RÉGÉNÉRATION & AUTOPHAGIE';
+    fullCycle = 'DÉTOX VÉSICULAIRE & AUTOLYSE';
     iconClass = 'ri-moon-clear-fill';
-    descText = "00h - 04h • Sommeil profond, autophagie cellulaire & détox hépatique nocturne. Repos absolu.";
+    phaseWindow = '00h - 02h';
+    descText = "00h - 02h • Autophagie cellulaire active : recyclage des mitochondries usées et des protéines altérées.";
     phaseColor = isLight ? '#7e22ce' : '#a855f7';
+    organName = "Vésicule Biliaire (23h-01h) • Foie (01h-03h)";
+    organWindow = "00h - 02h";
+    organIcon = "🧬";
+    organBadgeBg = "rgba(168,85,247,0.15)";
+    organColor = "#a855f7";
+    hormoneStatus = "Pic d'Hormone de Croissance • Autophagie Phase 1";
+    metabolismTag = "Autophagie & Réparation ADN";
+    hormoneIcon = "🛡️";
+    hormoneBadgeBg = "rgba(168,85,247,0.15)";
+    hormoneColor = "#a855f7";
+    actionChips = [
+      { icon: '🛡️', label: 'Autophagie Cellulaire' },
+      { icon: '✨', label: 'Recyclage Mitochondries' }
+    ];
+  } else {
+    shortCycle = 'RÉGÉNÉRATION HÉPATIQUE';
+    fullCycle = 'PURIFICATION DU FOIE & SANG';
+    iconClass = 'ri-moon-clear-fill';
+    phaseWindow = '02h - 04h';
+    descText = "02h - 04h • Le foie accomplit son pic de bio-transformation enzymatique nocturne. Tout le sang est filtré et épuré.";
+    phaseColor = isLight ? '#7e22ce' : '#a855f7';
+    organName = "Foie & Détox Profonde (01h-03h) • Poumons (03h-05h)";
+    organWindow = "02h - 04h";
+    organIcon = "🌿";
+    organBadgeBg = "rgba(168,85,247,0.15)";
+    organColor = "#a855f7";
+    hormoneStatus = "Filtration Hépato-Biliaire • Synthèse Antioxydante";
+    metabolismTag = "Dépuration Sanguine";
+    hormoneIcon = "🩸";
+    hormoneBadgeBg = "rgba(239,68,68,0.15)";
+    hormoneColor = "#ef4444";
+    actionChips = [
+      { icon: '🩸', label: 'Purification du Sang' },
+      { icon: '💤', label: 'Repos Réparateur Total' }
+    ];
   }
 
-  return { shortCycle, fullCycle, iconClass, descText, phaseColor };
+  return {
+    shortCycle,
+    fullCycle,
+    iconClass,
+    descText,
+    phaseColor,
+    phaseWindow,
+    organName,
+    organWindow,
+    organIcon,
+    organBadgeBg,
+    organColor,
+    hormoneStatus,
+    metabolismTag,
+    hormoneIcon,
+    hormoneBadgeBg,
+    hormoneColor,
+    actionChips
+  };
 }
 
 function updateCircadianDisplay(h, m, isScrubbing = false) {
@@ -11616,10 +11882,23 @@ function updateCircadianDisplay(h, m, isScrubbing = false) {
   const clockPhase = document.getElementById('clockPhase');
   const clockIndicator = document.getElementById('clockIndicator');
   const phaseIcon = document.getElementById('phaseIcon');
+  const phaseIconBadge = document.getElementById('phaseIconBadge');
   const phaseTitle = document.getElementById('phaseTitle');
   const phaseDesc = document.getElementById('phaseDesc');
+  const phaseWindowPill = document.getElementById('phaseWindowPill');
+  const phaseActionChips = document.getElementById('phaseActionChips');
   const timePill = document.getElementById('circadianTimePill');
   const hintEl = document.getElementById('clockDragHint');
+
+  // Chrono elements
+  const organNameEl = document.getElementById('circadianOrganName');
+  const organWindowEl = document.getElementById('circadianOrganWindow');
+  const organIconEl = document.getElementById('circadianOrganIcon');
+  const organBadgeEl = document.getElementById('circadianOrganIconBadge');
+  const hormoneStatusEl = document.getElementById('circadianHormoneStatus');
+  const metabolismTagEl = document.getElementById('circadianMetabolismTag');
+  const hormoneIconEl = document.getElementById('circadianHormoneIcon');
+  const hormoneBadgeEl = document.getElementById('circadianHormoneIconBadge');
 
   const mPad = m.toString().padStart(2, '0');
   const timeStr = `${h.toString().padStart(2, '0')}:${mPad}`;
@@ -11640,9 +11919,41 @@ function updateCircadianDisplay(h, m, isScrubbing = false) {
   if (phaseDesc) {
     phaseDesc.textContent = data.descText;
   }
+  if (phaseWindowPill) {
+    phaseWindowPill.textContent = data.phaseWindow;
+  }
   if (phaseIcon) {
     phaseIcon.className = data.iconClass;
     phaseIcon.style.color = data.phaseColor;
+  }
+  if (phaseIconBadge) {
+    phaseIconBadge.style.borderColor = data.phaseColor;
+    phaseIconBadge.style.color = data.phaseColor;
+  }
+
+  // Update Action Chips
+  if (phaseActionChips && data.actionChips) {
+    phaseActionChips.innerHTML = data.actionChips.map(c => `
+      <span class="phase-chip"><span>${c.icon}</span><span>${c.label}</span></span>
+    `).join('');
+  }
+
+  // Update Organ Peak Card
+  if (organNameEl) organNameEl.textContent = data.organName;
+  if (organWindowEl) organWindowEl.textContent = data.organWindow;
+  if (organIconEl) organIconEl.textContent = data.organIcon;
+  if (organBadgeEl) {
+    organBadgeEl.style.background = data.organBadgeBg;
+    organBadgeEl.style.color = data.organColor;
+  }
+
+  // Update Hormonal Card
+  if (hormoneStatusEl) hormoneStatusEl.textContent = data.hormoneStatus;
+  if (metabolismTagEl) metabolismTagEl.textContent = data.metabolismTag;
+  if (hormoneIconEl) hormoneIconEl.textContent = data.hormoneIcon;
+  if (hormoneBadgeEl) {
+    hormoneBadgeEl.style.background = data.hormoneBadgeBg;
+    hormoneBadgeEl.style.color = data.hormoneColor;
   }
 
   if (clockIndicator) {
