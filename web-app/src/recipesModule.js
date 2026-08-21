@@ -341,14 +341,21 @@ function renderRecipeCard(recipe) {
       onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';"
     >
       <div>
-        <!-- ENTÊTE DE CARTE : AUTEUR & PRAL -->
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; gap:8px;">
+        <!-- ENTÊTE DE CARTE : AUTEUR, PRAL & VIDÉO -->
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; gap:8px; flex-wrap:wrap;">
           <span style="font-size:0.72rem; font-weight:800; padding:4px 10px; border-radius:12px; background:${ac.bg}; color:${ac.text}; border:1px solid ${ac.border}; text-transform:uppercase; letter-spacing:0.5px;">
             ${esc(recipe.author)}
           </span>
-          <span style="font-size:0.72rem; font-weight:700; color:#10b981; background:rgba(16,185,129,0.12); padding:3px 8px; border-radius:10px;">
-            PRAL ${recipe.pralScore}
-          </span>
+          <div style="display:flex; align-items:center; gap:6px;">
+            ${recipe.videoUrl ? `
+              <span style="font-size:0.7rem; font-weight:700; color:#ef4444; background:rgba(239,68,68,0.12); padding:3px 7px; border-radius:10px; display:inline-flex; align-items:center; gap:3px;">
+                <i class="ri-youtube-fill"></i> Vidéo
+              </span>
+            ` : ''}
+            <span style="font-size:0.72rem; font-weight:700; color:#10b981; background:rgba(16,185,129,0.12); padding:3px 8px; border-radius:10px;">
+              PRAL ${recipe.pralScore}
+            </span>
+          </div>
         </div>
 
         <!-- TITRE & SOUS-TITRE -->
@@ -556,6 +563,29 @@ function renderModalContent() {
           `).join('')}
         </div>
       </div>
+
+      <!-- BLOC DÉMONSTRATION VIDÉO VÉRIFIÉE -->
+      ${r.videoUrl ? `
+        <div class="dash-card glass" style="padding:14px 18px; margin-bottom:20px; border-radius:16px; border:1px solid rgba(239,68,68,0.3); background:linear-gradient(135deg, rgba(239,68,68,0.08), rgba(245,158,11,0.08)); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div style="width:40px; height:40px; border-radius:12px; background:rgba(239,68,68,0.18); color:#ef4444; font-size:1.4rem; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+              <i class="ri-youtube-fill"></i>
+            </div>
+            <div>
+              <div style="font-weight:800; font-size:0.9rem; color:var(--text); display:flex; align-items:center; gap:6px;">
+                Démonstration Vidéo Vérifiée
+                <span class="badge badge-danger" style="font-size:0.68rem; padding:1px 6px;">Tutoriel</span>
+              </div>
+              <div style="font-size:0.76rem; color:var(--text-dim); margin-top:2px;">
+                Visionnez la préparation pas-à-pas de cette recette exacte sur YouTube.
+              </div>
+            </div>
+          </div>
+          <a href="${esc(r.videoUrl)}" target="_blank" rel="noopener noreferrer" class="btn-primary" style="background:linear-gradient(135deg, #ef4444, #dc2626); color:#ffffff; font-size:0.82rem; font-weight:700; padding:8px 18px; border-radius:12px; display:inline-flex; align-items:center; gap:6px; text-decoration:none; box-shadow:0 4px 12px rgba(239,68,68,0.3);">
+            <i class="ri-play-circle-fill" style="font-size:1rem;"></i> Voir la Vidéo <i class="ri-external-link-line" style="font-size:0.8rem;"></i>
+          </a>
+        </div>
+      ` : ''}
 
       <!-- BOUTONS D'ACTION RAPIDE -->
       <div style="display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap; border-top:1px solid var(--border); padding-top:16px;">

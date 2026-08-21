@@ -48,7 +48,8 @@ export const VITALIST_RECIPES = [
       "Posologie : Consommez 1 à 2 cuillères à soupe par jour, pur ou dilué dans vos tisanes de bardane ou smoothies alcalins."
     ],
     vitalistAction: "Le Sea Moss est riche en potassium, soufre organique, iode naturel et acide alginique. Il dissout le biofilm muqueux dans l'intestin grêle tout en apportant une charge électrolytique qui optimise le potentiel d'action membranaire des cellules.",
-    nutritionalHighlights: ["Iode Organique", "Potassium Naturel", "Soufre", "Silice Bio-disponible", "Magnésium"]
+    nutritionalHighlights: ["Iode Organique", "Potassium Naturel", "Soufre", "Silice Bio-disponible", "Magnésium"],
+    videoUrl: "https://www.youtube.com/results?search_query=how+to+make+sea+moss+gel+dr+sebi"
   },
   {
     id: "sebi-wild-rice-alkaline-bowl",
@@ -87,7 +88,8 @@ export const VITALIST_RECIPES = [
       "Mélangez le riz sauvage égoutté avec la poêlée de légumes, assaisonnez de sel marin pur et d'un filet d'huile d'avocat crue."
     ],
     vitalistAction: "Le riz sauvage est une herbe aquatique alcaline très riche en phosphore bio-électrique et en fibres douces non agressives pour la paroi intestinale. Il fournit une énergie durable sans générer de résidus d'acide urique.",
-    nutritionalHighlights: ["Zinc", "Magnésium", "Fibres Douces", "Antioxydants Anthocyanes", "Capsaïcine"]
+    nutritionalHighlights: ["Zinc", "Magnésium", "Fibres Douces", "Antioxydants Anthocyanes", "Capsaïcine"],
+    videoUrl: "https://www.youtube.com/results?search_query=dr+sebi+wild+rice+recipe"
   },
   {
     id: "sebi-soursop-key-lime-nectar",
@@ -2367,7 +2369,344 @@ export const VITALIST_RECIPES = [
       "Dégustez aussitôt."
     ],
     vitalistAction: "La taurine naturelle des Saint-Jacques crues renforce la pompe cardiaque et améliore la régulation du sodium cellulaire.",
-    nutritionalHighlights: ["Taurine Naturelle", "Magnésium Océanique", "Zinc", "Glycine"]
+    nutritionalHighlights: ["Taurine Naturelle", "Magnésium Océanique", "Zinc", "Glycine"],
+    videoUrl: "https://www.youtube.com/results?search_query=carpaccio+saint+jacques+citron+vert"
+  },
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // 🥫 8. SAUCES, MAYONNAISES & CONDIMENTS FONDAMENTAUX SAINS
+  // (Alternatives Saines au Minimum d'Ingrédients & Dosage Posologique Recommandé)
+  // ══════════════════════════════════════════════════════════════════════════
+  {
+    id: "sauce-avocado-mayo",
+    title: "La Mayonnaise Crue d'Avocat & Citron Vert (Alternative Sans Œuf)",
+    subtitle: "Avocat Mûr Émulsionné, Huile d'Avocat & Graines de Moutarde",
+    author: "Régime de Transition Douce",
+    authorTitle: "Condiments & Substituts Sains",
+    bookReference: "Guide Pratique des Substituts Culinaires Vitalistes (p. 24)",
+    category: "sauce-condiment",
+    categoryLabel: "Mayonnaise Crue Végétale",
+    prepTime: "5 min",
+    cookTime: "0 min (Cru)",
+    servings: 4,
+    difficulty: "Très Facile",
+    vitalityScore: 98,
+    pralScore: -14.5,
+    targetEmunctories: ["Foie", "Peau", "Cerveau"],
+    tags: ["Sauces & Condiments", "100% Cru", "Sans Mucus", "Sans Gluten", "100% Électrique", "Transition Douce"],
+    description: "L'alternative végétale suprême à la mayonnaise industrielle. Une émulsion crémeuse, satinée et savoureuse faite en 2 minutes au mixeur plongeant avec un avocat bien mûr, du jus de citron frais et de l'huile d'avocat.",
+    ingredients: [
+      { name: "Avocat Bien Mûr (Chair crémeuse)", quantity: 1, unit: "pièce", isElectric: true, note: "Base liante et onctueuse" },
+      { name: "Huile d'Avocat Pure ou Huile d'Olive Douce", quantity: 2, unit: "c. à soupe", isElectric: true, note: "Pression à froid" },
+      { name: "Jus de Citron Jaune ou Vert Clé Frais", quantity: 1.5, unit: "c. à soupe", isElectric: true, note: "Acidité stabilisante" },
+      { name: "Graines de Moutarde Dorée Moulues", quantity: 0.5, unit: "c. à café", isElectric: true, note: "Émulsifiant naturel sans vinaigre blanc" },
+      { name: "Sel Marin Non Raffiné", quantity: 0.25, unit: "c. à café", isElectric: true, note: "Exhausteur" },
+      { name: "Pointe d'Ail Frais Écrasé", quantity: 0.5, unit: "gousse", isElectric: true, note: "Optionnel pour style aïoli doux" }
+    ],
+    instructions: [
+      "Dans le bol d'un mixeur plongeant ou un petit blender, déposez la chair de l'avocat, le jus de citron frais, la moutarde et le sel marin.",
+      "Commencez à mixer en versant l'huile d'avocat en filet continu jusqu'à formation d'une émulsion épaisse et brillante.",
+      "Goûtez et ajustez le trait de citron si nécessaire.",
+      "Conservez dans un petit bocal en verre fermé au réfrigérateur jusqu'à 3 jours.",
+      "⚠️ RECOMMANDATION CLINIQUE & DOSAGE : Bien qu'infiniment supérieure aux mayonnaises industrielles bourrées d'huiles raffinées pro-inflammatoires (tournesol chauffé, conservateurs, sucre), cette sauce reste une émulsion lipidique dense. Limitez-vous à 1 à 2 cuillères à soupe par repas pour ne pas ralentir la vidange gastrique ni surcharger le foie."
+    ],
+    vitalistAction: "L'acide oléique mono-insaturé de l'avocat protège les membranes cellulaires et fluidifie la bile sans générer d'acides gras trans ni de radicaux libres.",
+    nutritionalHighlights: ["Acide Oléique Oméga-9", "Glutathion", "Vitamine E Active", "Zéro Gras Trans"],
+    videoUrl: "https://www.youtube.com/results?search_query=raw+vegan+avocado+mayonnaise+recipe"
+  },
+  {
+    id: "sauce-hemp-mayo",
+    title: "La Mayonnaise Blanche de Graines de Chanvre (100% Végétale)",
+    subtitle: "Graines de Chanvre Décortiquées & Émulsion Citrique Pure",
+    author: "David Wolfe",
+    authorTitle: "Sunfood Living Kitchen & Superfoods",
+    bookReference: "The Sunfood Diet Success System (p. 228)",
+    category: "sauce-condiment",
+    categoryLabel: "Mayonnaise Protéinée Blanche",
+    prepTime: "4 min",
+    cookTime: "0 min (Cru)",
+    servings: 4,
+    difficulty: "Très Facile",
+    vitalityScore: 100,
+    pralScore: -12.2,
+    targetEmunctories: ["Cerveau", "Sang", "Muscles"],
+    tags: ["Sauces & Condiments", "100% Cru", "Sans Mucus", "Sans Gluten", "100% Électrique", "Super-Aliments"],
+    description: "Une mayonnaise blanche bluffante sans aucun œuf ni soja. Les graines de chanvre mixées à haute vitesse avec de l'eau et du citron s'émulsionnent d'elles-mêmes en une crème ferme et aérée.",
+    ingredients: [
+      { name: "Graines de Chanvre Décortiquées Crues", quantity: 60, unit: "g", isElectric: true, note: "Source naturelle de lécithine végétale" },
+      { name: "Eau de Source Tiède", quantity: 40, unit: "ml", isElectric: true, note: "Pour amorcer l'émulsion" },
+      { name: "Jus de Citron Jaune Frais", quantity: 1.5, unit: "c. à soupe", isElectric: true, note: "Acide citrique vivant" },
+      { name: "Huile d'Olive Extra Vierge ou Chanvre", quantity: 1, unit: "c. à soupe", isElectric: true, note: "Pour la brillance" },
+      { name: "Moutarde Douce à l'Ancienne", quantity: 0.5, unit: "c. à café", isElectric: true, note: "Saveur authentique" },
+      { name: "Sel Marin Non Raffiné", quantity: 0.25, unit: "c. à café", isElectric: true, note: "Minéraux" }
+    ],
+    instructions: [
+      "Placez les graines de chanvre, l'eau tiède, le jus de citron, la moutarde et le sel dans un petit blender haute puissance.",
+      "Mixez à vitesse maximale pendant 45 secondes sans interruption : le mélange blanchit et épaissit instantanément.",
+      "Ajoutez la cuillère d'huile d'olive en filet sur la fin pour lisser la texture.",
+      "Transvasez dans un ramequin. La texture devient encore plus ferme après 30 minutes au frais.",
+      "⚠️ DOSAGE CONSEILLÉ : 1 à 2 cuillères à soupe par repas suffisent amplement à combler les besoins journaliers en acides gras essentiels oméga-3."
+    ],
+    vitalistAction: "La lécithine et les globulines naturelles du chanvre créent une émulsion stable qui nourrit les gaines de myéline du système nerveux sans encrasser le système lymphatique.",
+    nutritionalHighlights: ["Protéine Édestine", "Oméga-3 ALA", "Lécithine Naturelle", "Magnésium"],
+    videoUrl: "https://www.youtube.com/results?search_query=hemp+seed+mayo+recipe"
+  },
+  {
+    id: "sauce-vitalist-vinaigrette",
+    title: "La Vinaigrette Vitaliste au Citron Vivant & Huile Première Pression",
+    subtitle: "Zéro Vinaigre d'Alcool Décapant · Acide Citrique Métabolisé Alcalin",
+    author: "Prof. Arnold Ehret",
+    authorTitle: "Leçon 16 : Assaisonnements Physiologiques",
+    bookReference: "Système de Guérison du Régime Sans Mucus (p. 80)",
+    category: "sauce-condiment",
+    categoryLabel: "Vinaigrette Physiologique",
+    prepTime: "3 min",
+    cookTime: "0 min (Cru)",
+    servings: 4,
+    difficulty: "Très Facile",
+    vitalityScore: 100,
+    pralScore: -16.8,
+    targetEmunctories: ["Foie", "Estomac", "Reins"],
+    tags: ["Sauces & Condiments", "100% Cru", "Sans Mucus", "Sans Gluten", "Drainage Rénal"],
+    description: "Pourquoi remplacer le vinaigre blanc ou de vin ? Arnold Ehret et le Dr. Christopher alertent sur l'acide acétique des vinaigres industriels qui agresse les globules rouges et irrite l'estomac. Cette vinaigrette vivante au citron pressé minute est la référence absolue.",
+    ingredients: [
+      { name: "Huile d'Olive Vierge Extra Première Pression à Froid", quantity: 3, unit: "c. à soupe", isElectric: false, note: "Acides gras purs non chauffés" },
+      { name: "Jus de Citron Frais Pressé Minute", quantity: 1.5, unit: "c. à soupe", isElectric: true, note: "Acide citrique transformé en bicarbonate" },
+      { name: "Herbes Fraîches Ciselées (Persil, Ciboulette, Aneth)", quantity: 1, unit: "c. à soupe", isElectric: true, note: "Chlorophylle et potassium" },
+      { name: "Gousse d'Ail Écrasée", quantity: 0.25, unit: "gousse", isElectric: true, note: "Allicine antiseptique" },
+      { name: "Sel Marin Non Raffiné", quantity: 0.25, unit: "c. à café", isElectric: true, note: "Sans anti-agglomérant" }
+    ],
+    instructions: [
+      "Dans un bol ou petit bocal en verre, déposez le sel marin et l'ail écrasé.",
+      "Versez le jus de citron frais et mélangez pour dissoudre le sel.",
+      "Ajoutez l'huile d'olive en fouettant à la fourchette pour créer une émulsion dorée fluide.",
+      "Incorporez les herbes fraîches hachées au dernier moment.",
+      "Nappez vos salades balais, vos carottes râpées ou vos légumes étuves.",
+      "⚠️ RECOMMANDATION : 1 à 1.5 cuillère à soupe par assiette suffit pour lubrifier les fibres cellulosiques et maximiser l'absorption des caroténoïdes liposolubles."
+    ],
+    vitalistAction: "Le jus de citron vivant stimule la sécrétion d'acide chlorhydrique gastrique naturel sans brûler la muqueuse, tandis que l'huile d'olive favorise la vidange douce de la vésicule biliaire.",
+    nutritionalHighlights: ["Polyphénols d'Olive", "Vitamine C Vivante", "Allicine", "Acides Gras Mono-insaturés"],
+    videoUrl: "https://www.youtube.com/results?search_query=lemon+olive+oil+dressing+healthy"
+  },
+  {
+    id: "sauce-raw-sun-dried-ketchup",
+    title: "Le Ketchup Vivant Cru aux Tomates Séchées & Dattes Medjool",
+    subtitle: "Zéro Sucre Raffiné ni Sirop de Glucose · Lycopène Concentré",
+    author: "David Wolfe",
+    authorTitle: "Condiments Vivants & Superfoods",
+    bookReference: "The Sunfood Diet Success System (p. 234)",
+    category: "sauce-condiment",
+    categoryLabel: "Ketchup Vivant Artisanal",
+    prepTime: "8 min (+ 1h réhydratation)",
+    cookTime: "0 min (Cru)",
+    servings: 6,
+    difficulty: "Très Facile",
+    vitalityScore: 99,
+    pralScore: -18.2,
+    targetEmunctories: ["Cœur", "Prostate", "Intestins"],
+    tags: ["Sauces & Condiments", "100% Cru", "Sans Mucus", "Sans Gluten", "Santé Intestinale"],
+    description: "Un ketchup artisanal rubis, sucré uniquement par la pulpe de dattes fraîches et acidulé au jus de citron. Sans aucun sucre blanc, sans vinaigre d'alcool et sans conservateurs.",
+    ingredients: [
+      { name: "Tomates Roma Mûres", quantity: 2, unit: "pièces", isElectric: true, note: "Chair rouge et pulpeuse" },
+      { name: "Tomates Séchées au Soleil (Non Salées)", quantity: 40, unit: "g", isElectric: true, note: "Trempées 1h dans l'eau tiède" },
+      { name: "Dattes Medjool Dénoyautées", quantity: 2, unit: "pièces", isElectric: true, note: "Sucre simple lévogyre naturel" },
+      { name: "Jus de Citron Jaune Frais", quantity: 1.5, unit: "c. à soupe", isElectric: true, note: "Acidité vivante" },
+      { name: "Origan et Basilic Séchés", quantity: 0.5, unit: "c. à café", isElectric: true, note: "Arômes italiens" },
+      { name: "Pincée de Piment de Cayenne & Sel Marin", quantity: 0.25, unit: "c. à café", isElectric: true, note: "Chaleur" }
+    ],
+    instructions: [
+      "Égouttez les tomates séchées réhydratées (réservez 2 cuillères à soupe de l'eau de trempage parfumée).",
+      "Dans le bol du blender, placez les tomates fraîches en quartiers, les tomates séchées, les dattes Medjool, le jus de citron, les herbes, le sel et le piment.",
+      "Mixez à haute vitesse pendant 60 secondes jusqu'à consistance soyeuse, rouge vif et nappante.",
+      "Ajustez l'épaisseur avec une cuillère d'eau de trempage si nécessaire.",
+      "Conservez au frais dans un bocal hermétique jusqu'à 7 jours.",
+      "⚠️ UTILISATION : Parfait pour accompagner des galettes de teff, des frites de courge butternut au four ou des légumes rôtis."
+    ],
+    vitalistAction: "Le lycopène concentré des tomates séchées est un antioxydant puissant qui protège la prostate et les parois artérielles sans provoquer d'hyperglycémie réactionnelle.",
+    nutritionalHighlights: ["Lycopène Ultra-Concentré", "Potassium", "Fibres Douces de Dattes", "Zéro Sucre Ajouté"],
+    videoUrl: "https://www.youtube.com/results?search_query=raw+vegan+ketchup+recipe"
+  },
+  {
+    id: "sauce-sunflower-ranch-cream",
+    title: "La Crème Fraîche Végétale & Sauce Ranch aux Graines de Tournesol",
+    subtitle: "Graines Activées, Aneth Frais & Ail Doux · Onctuosité Sans Lactose",
+    author: "Dr. Robert Morse, N.D.",
+    authorTitle: "Substituts Laitiers & Régénération Intestinale",
+    bookReference: "The Detox Miracle Sourcebook (p. 262)",
+    category: "sauce-condiment",
+    categoryLabel: "Crème & Sauce Ranch Crue",
+    prepTime: "8 min (+ 4h trempage)",
+    cookTime: "0 min (Cru)",
+    servings: 4,
+    difficulty: "Très Facile",
+    vitalityScore: 97,
+    pralScore: -11.5,
+    targetEmunctories: ["Intestins", "Peau", "Reins"],
+    tags: ["Sauces & Condiments", "100% Cru", "Sans Mucus", "Sans Gluten", "Santé Intestinale"],
+    description: "Le substitut idéal à la crème fraîche et à la sauce ranch américaine. Les graines de tournesol trempées et mixées deviennent aussi onctueuses qu'une crème laitière, sans produire une seule goutte de mucus bronchique ou colique.",
+    ingredients: [
+      { name: "Graines de Tournesol Crues (Trempées 4h)", quantity: 80, unit: "g", isElectric: true, note: "Activées, faciles à digérer" },
+      { name: "Eau de Source Pure", quantity: 60, unit: "ml", isElectric: true, note: "Pour la fluidité" },
+      { name: "Jus de Citron Jaune Frais", quantity: 1.5, unit: "c. à soupe", isElectric: true, note: "Apporte la note acidulée de crème" },
+      { name: "Aneth Frais Ciselé Finement", quantity: 1.5, unit: "c. à soupe", isElectric: true, note: "Herbe digestive" },
+      { name: "Gousse d'Ail Doux", quantity: 0.5, unit: "gousse", isElectric: true, note: "Arôme ranch" },
+      { name: "Poudre d'Oignon & Sel Marin", quantity: 0.5, unit: "c. à café", isElectric: true, note: "Assaisonnement" }
+    ],
+    instructions: [
+      "Rincez et égouttez soigneusement les graines de tournesol trempées.",
+      "Placez les graines dans le blender avec l'eau de source, le jus de citron, l'ail, la poudre d'oignon et le sel marin.",
+      "Mixez 60 secondes à pleine puissance jusqu'à obtenir une crème blanche ultra-lisse sans aucun grain.",
+      "Versez dans un bol et incorporez l'aneth frais ciselé à la cuillère.",
+      "Servez pour tremper des bâtonnets de concombres, carottes, céleri ou napper des pommes de terre au four.",
+      "⚠️ RECOMMANDATION : 2 cuillères à soupe par repas. Les graines de tournesol activées fournissent une richesse incomparable en vitamine E et zinc."
+    ],
+    vitalistAction: "L'absence totale de caséine et de lactose prévient la formation d'anticorps anti-bovins et n'obstrue pas les villosités intestinales.",
+    nutritionalHighlights: ["Vitamine E Végétale", "Zinc Organique", "Zéro Caséine", "Enzymes Activées"],
+    videoUrl: "https://www.youtube.com/results?search_query=sunflower+seed+sour+cream+recipe"
+  },
+  {
+    id: "sauce-turmeric-raw-mustard",
+    title: "Moutarde Crue Vivante au Curcuma & Graines Dorées",
+    subtitle: "Brassica alba & Curcuma longa · Stimulant Gastrique Doux Sans Vinaigre Blanc",
+    author: "Dr. John R. Christopher",
+    authorTitle: "Herboristerie Clinique & Épices Digestives",
+    bookReference: "School of Natural Healing (p. 232)",
+    category: "sauce-condiment",
+    categoryLabel: "Condiment Dépuratif Vivant",
+    prepTime: "10 min (+ 12h trempage)",
+    cookTime: "0 min (Cru)",
+    servings: 8,
+    difficulty: "Facile",
+    vitalityScore: 99,
+    pralScore: -13.0,
+    targetEmunctories: ["Estomac", "Foie", "Articulations"],
+    tags: ["Sauces & Condiments", "100% Cru", "Sans Mucus", "Sans Gluten"],
+    description: "Une véritable moutarde maison naturelle et vivante : des graines de moutarde jaune trempées avec du jus de citron frais (ou vinaigre de cidre de pomme brut non pasteurisé), du curcuma et une larme de nectar d'agave.",
+    ingredients: [
+      { name: "Graines de Moutarde Jaune/Dorée", quantity: 50, unit: "g", isElectric: true, note: "Trempées 12h dans l'eau pure" },
+      { name: "Jus de Citron Jaune Frais ou Vinaigre de Cidre Brut", quantity: 3, unit: "c. à soupe", isElectric: true, note: "Non pasteurisé avec la mère" },
+      { name: "Eau de Source Pure", quantity: 30, unit: "ml", isElectric: true, note: "Pour le broyage" },
+      { name: "Curcuma en Poudre ou Râpé Frais", quantity: 0.5, unit: "c. à café", isElectric: true, note: "Curcumine anti-inflammatoire" },
+      { name: "Nectar d'Agave Pur", quantity: 1, unit: "c. à café", isElectric: true, note: "Adoucit le piquant" },
+      { name: "Sel Marin Non Raffiné", quantity: 0.5, unit: "c. à café", isElectric: true, note: "Minéraux" }
+    ],
+    instructions: [
+      "Égouttez les graines de moutarde trempées.",
+      "Dans un petit robot ou un mortier en pierre, réunissez les graines, le jus de citron (ou vinaigre de cidre brut), l'eau, le curcuma, l'agave et le sel.",
+      "Broyez pendant 2 à 3 minutes pour obtenir une texture à l'ancienne avec des grains concassés ou continuez pour une pâte lisse.",
+      "Mettez en bocal de verre et laissez reposer 24h au frais pour que les arômes s'harmonisent.",
+      "⚠️ RECOMMANDATION : 1 cuillère à café par portion suffit amplement à stimuler les sucs digestifs sans agresser l'estomac."
+    ],
+    vitalistAction: "La sinigrine et la curcumine activent la thermogenèse gastrique et facilitent la digestion des lipides sans provoquer de brûlures d'estomac.",
+    nutritionalHighlights: ["Sinigrine Stimulante", "Curcumine", "Sélénium", "Enzymes Myrosinases"],
+    videoUrl: "https://www.youtube.com/results?search_query=how+to+make+raw+mustard+from+seeds"
+  },
+  {
+    id: "sauce-dairy-free-cheese-creamy",
+    title: "Sauce Crémeuse Fromagère Alcaline (Courge & Lait de Coco)",
+    subtitle: "Courge Butternut Douce, Curcuma & Levure Maltée Optionnelle",
+    author: "Dr. Sebi",
+    authorTitle: "Cuisine Électrique & Substituts Sains",
+    bookReference: "The Dr. Sebi Compendium (p. 248)",
+    category: "sauce-condiment",
+    categoryLabel: "Sauce Fromagère Sans Lait",
+    prepTime: "10 min",
+    cookTime: "12 min",
+    servings: 4,
+    difficulty: "Facile",
+    vitalityScore: 94,
+    pralScore: -15.0,
+    targetEmunctories: ["Côlon", "Estomac"],
+    tags: ["Sauces & Condiments", "100% Électrique", "Sans Mucus", "Sans Gluten", "Transition Douce"],
+    description: "Une sauce veloutée, jaune dorée et nappante qui rappelle la texture d'une sauce au fromage fondu, préparée uniquement à base de courge butternut cuite à la vapeur douce, lait de coco frais et sel marin.",
+    ingredients: [
+      { name: "Courge Butternut Pelée en Cubes", quantity: 200, unit: "g", isElectric: true, note: "Cuite à la vapeur douce" },
+      { name: "Lait de Coco Frais Maison", quantity: 100, unit: "ml", isElectric: true, note: "Onctuosité naturelle" },
+      { name: "Jus de Citron Vert Clé", quantity: 1, unit: "c. à soupe", isElectric: true, note: "Touche acidulée" },
+      { name: "Poudre d'Oignon Séché", quantity: 0.5, unit: "c. à café", isElectric: true, note: "Saveur umami végétale" },
+      { name: "Sel Marin Non Raffiné & Curcuma", quantity: 0.5, unit: "c. à café", isElectric: true, note: "Couleur dorée et minéraux" }
+    ],
+    instructions: [
+      "Faites cuire les cubes de courge à la vapeur douce pendant 10 à 12 minutes jusqu'à ce qu'ils soient très tendres.",
+      "Transvasez la courge chaude dans le blender.",
+      "Ajoutez le lait de coco frais, le jus de citron vert, la poudre d'oignon, le curcuma et le sel marin.",
+      "Mixez à haute vitesse pendant 45 secondes pour obtenir une sauce crémeuse, fumante et brillante.",
+      "Nappez immédiatement vos pâtes d'épeautre ancestral, vos légumes vapeur ou vos galettes de teff."
+    ],
+    vitalistAction: "Apporte le réconfort et l'onctuosité des plats fromagers traditionnels sans introduire de graisses saturées animales colmatantes ni de lactose.",
+    nutritionalHighlights: ["Bêta-Carotène", "Acides Gras TCM", "Potassium Soluble", "Zéro Mucus"],
+    videoUrl: "https://www.youtube.com/results?search_query=vegan+butternut+squash+cheese+sauce"
+  },
+  {
+    id: "sauce-vitalist-herbal-pesto",
+    title: "Le Pesto Dépuratif au Basilic Frais & Graines de Chanvre",
+    subtitle: "Ocimum basilicum · Zéro Fromage Ni Produits Laitiers",
+    author: "David Wolfe",
+    authorTitle: "Alimentation Vivante & Pesto Méditerranéen",
+    bookReference: "The Sunfood Diet Success System (p. 238)",
+    category: "sauce-condiment",
+    categoryLabel: "Pesto Végétal Vivant",
+    prepTime: "6 min",
+    cookTime: "0 min (Cru)",
+    servings: 4,
+    difficulty: "Très Facile",
+    vitalityScore: 99,
+    pralScore: -17.5,
+    targetEmunctories: ["Intestins", "Foie", "Système Nerveux"],
+    tags: ["Sauces & Condiments", "100% Cru", "Sans Mucus", "Sans Gluten", "100% Électrique"],
+    description: "Le pesto authentique revitalisé : feuilles de basilic odorant gorgées de soleil, graines de chanvre crémeuses à la place du parmesan et huile d'olive première pression à froid.",
+    ingredients: [
+      { name: "Grand Bouquet de Basilic Frais Entier", quantity: 1, unit: "gros bouquet", isElectric: true, note: "Feuilles et sommités tendres" },
+      { name: "Graines de Chanvre Décortiquées", quantity: 40, unit: "g", isElectric: true, note: "Remplacent le parmesan avec brio" },
+      { name: "Huile d'Olive Vierge Extra", quantity: 60, unit: "ml", isElectric: true, note: "Première pression à froid" },
+      { name: "Gousse d'Ail Doux", quantity: 0.5, unit: "gousse", isElectric: true, note: "Antiseptique" },
+      { name: "Jus de Citron Frais & Sel Marin", quantity: 1, unit: "portion", isElectric: true, note: "Assaisonnement" }
+    ],
+    instructions: [
+      "Placez le basilic frais, les graines de chanvre, l'ail, le jus de citron et le sel marin dans le bol du mixeur.",
+      "Mixez par impulsions en versant l'huile d'olive en filet continu jusqu'à texture granuleuse et parfumée.",
+      "Conservez dans un bocal en verre hermétique au frais recouvert d'un filet d'huile.",
+      "⚠️ RECOMMANDATION : 1 à 2 cuillères à soupe sur vos salades ou pâtes d'épeautre."
+    ],
+    vitalistAction: "L'eugénol et le linalol du basilic détendent les spasmes digestifs et régulent le microbiote du côlon.",
+    nutritionalHighlights: ["Eugénol Antispasmodique", "Oméga-3/6", "Chlorophylle", "Magnésium"],
+    videoUrl: "https://www.youtube.com/results?search_query=dairy+free+hemp+pesto+recipe"
+  },
+  {
+    id: "sauce-transition-egg-mayo",
+    title: "Mayonnaise de Transition au Jaune d'Œuf Cru Bio & Huile d'Olive",
+    subtitle: "Jaune d'Œuf de Poule Sauvage/Plein Air & Huile d'Olive Extra Vierge",
+    author: "Régime de Transition Douce",
+    authorTitle: "Hygiénisme & Transition Progressive",
+    bookReference: "Protocole de Transition Vitaliste (p. 52)",
+    category: "sauce-condiment",
+    categoryLabel: "Mayonnaise Traditionnelle Saine",
+    prepTime: "6 min",
+    cookTime: "0 min (Cru)",
+    servings: 6,
+    difficulty: "Facile",
+    vitalityScore: 92,
+    pralScore: -3.2,
+    targetEmunctories: ["Foie", "Vésicule", "Cerveau"],
+    tags: ["Sauces & Condiments", "Transition Douce", "Sans Gluten", "100% Cru"],
+    description: "Pour les personnes en transition venant d'une alimentation standard et désirant une vraie mayonnaise maison sans les huiles oxydées, sans conservateurs et sans sucre du commerce.",
+    ingredients: [
+      { name: "Jaune d'Œuf Biologique Extra-Frais (Poule nourrie à l'herbe)", quantity: 1, unit: "pièce", isElectric: false, note: "À température ambiante" },
+      { name: "Huile d'Olive Douce ou Huile d'Avocat", quantity: 120, unit: "ml", isElectric: false, note: "Première pression à froid" },
+      { name: "Jus de Citron Jaune Frais", quantity: 1, unit: "c. à soupe", isElectric: true, note: "Fixe l'émulsion" },
+      { name: "Moutarde Douce à l'Ancienne", quantity: 0.5, unit: "c. à café", isElectric: true, note: "Liant" },
+      { name: "Sel Marin Non Raffiné", quantity: 0.25, unit: "c. à café", isElectric: true, note: "Exhausteur" }
+    ],
+    instructions: [
+      "Dans un bol à fond rond, mélangez le jaune d'œuf cru extra-frais, la moutarde et une pincée de sel.",
+      "Fouettez au batteur ou au fouet à main en versant l'huile d'olive goutte à goutte au début, puis en filet très mince et continu.",
+      "Dès que la mayonnaise prend et devient ferme, incorporez la cuillère de jus de citron frais en fouettant.",
+      "Conservez au réfrigérateur et consommez dans les 48 heures.",
+      "⚠️ AVERTISSEMENT CLINIQUE : À réserver aux repas de transition. Ne dépassez pas 1 cuillère à soupe par repas car le jaune d'œuf et l'huile constituent une charge lipidique importante pour le foie."
+    ],
+    vitalistAction: "La choline et la lutéine du jaune d'œuf de poule élevée en plein air soutiennent la synthèse d'acétylcholine dans le cerveau sans les effets néfastes des additifs industriels.",
+    nutritionalHighlights: ["Choline Native", "Lutéine & Zéaxanthine", "Acide Oléique", "Zéro Additif"],
+    videoUrl: "https://www.youtube.com/results?search_query=homemade+olive+oil+mayonnaise"
   }
 ];
 
@@ -2384,6 +2723,7 @@ export const RECIPE_AUTHORS = [
 
 export const RECIPE_TAGS = [
   { id: "all", label: "Toutes les Recettes", icon: "🌟" },
+  { id: "Sauces & Condiments", label: "🥫 Sauces, Mayonnaises & Condiments", icon: "🥫" },
   { id: "100% Électrique", label: "⚡ 100% Électrique (Dr. Sebi)", icon: "⚡" },
   { id: "Sans Mucus", label: "🍏 Sans Mucus (Arnold Ehret)", icon: "🍏" },
   { id: "100% Cru", label: "🥗 100% Cru / Raw Food", icon: "🥗" },
@@ -2402,5 +2742,7 @@ export const POPULAR_INGREDIENTS = [
   "Corossol", "Graines de Chanvre", "Pommes", "Pruneaux", "Orme Rouge",
   "Cacao Cru", "Huile d'Avocat", "Piment de Cayenne", "Spiruline", "Concombre",
   "Saumon Sauvage", "Crevettes Sauvages", "Cabillaud Sauvage", "Huîtres", "Sardines", "Dorade",
-  "Fenouil", "Gombo", "Chayote", "Courgette", "Pleurotes", "Poireaux", "Graines de Lin"
+  "Fenouil", "Gombo", "Chayote", "Courgette", "Pleurotes", "Poireaux", "Graines de Lin",
+  "Graines de Tournesol", "Dattes", "Tomates Séchées", "Moutarde"
 ];
+
