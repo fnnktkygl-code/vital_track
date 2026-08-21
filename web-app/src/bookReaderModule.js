@@ -331,6 +331,7 @@ export function showGlossaryPopover(triggerEl, term, definitionItem) {
   let defText = '';
   let noteText = '';
   let noteType = 'science';
+  let sources = [];
 
   if (typeof definitionItem === 'string') {
     defText = definitionItem;
@@ -338,6 +339,7 @@ export function showGlossaryPopover(triggerEl, term, definitionItem) {
     defText = definitionItem.def || '';
     noteText = definitionItem.note || '';
     noteType = definitionItem.type || 'science';
+    sources = definitionItem.sources || [];
   }
 
   const isWarning = noteType === 'warning';
@@ -360,9 +362,18 @@ export function showGlossaryPopover(triggerEl, term, definitionItem) {
         <div class="br-popover-scientific-note ${isWarning ? 'is-warning' : 'is-science'}">
           <div class="br-popover-note-title">
             <i class="${isWarning ? 'ri-alert-fill' : 'ri-scales-3-line'}"></i>
-            <span>${isWarning ? 'Mise en Garde Médicale & Sécurité' : 'Éclairage Scientifique & Recul Factuel'}</span>
+            <span>${isWarning ? 'Mise en Garde Médicale & Sécurité' : 'Éclairage Scientifique Factuel VitalTrack'}</span>
           </div>
           <p class="br-popover-note-text">${esc(noteText)}</p>
+
+          ${sources.length > 0 ? `
+            <div class="br-popover-sources">
+              <span class="br-popover-sources-label"><i class="ri-book-read-line"></i> Sources vérifiables :</span>
+              <ul class="br-popover-sources-list">
+                ${sources.map(s => `<li>${esc(s)}</li>`).join('')}
+              </ul>
+            </div>
+          ` : ''}
         </div>
       ` : ''}
     </div>
@@ -372,7 +383,7 @@ export function showGlossaryPopover(triggerEl, term, definitionItem) {
   const rootRect = root.getBoundingClientRect();
   const triggerRect = triggerEl.getBoundingClientRect();
 
-  const popoverWidth = Math.min(380, rootRect.width - 32);
+  const popoverWidth = Math.min(420, rootRect.width - 32);
   let left = (triggerRect.left - rootRect.left) + (triggerRect.width / 2) - (popoverWidth / 2);
 
   // Gardes-fous horizontaux
@@ -383,7 +394,7 @@ export function showGlossaryPopover(triggerEl, term, definitionItem) {
 
   // Gardes-fous verticaux (au-dessous si possible, sinon au-dessus)
   let top = (triggerRect.bottom - rootRect.top) + 10;
-  const estimatedHeight = noteText ? 240 : 150;
+  const estimatedHeight = noteText ? (sources.length > 0 ? 320 : 220) : 150;
   if (top + estimatedHeight > rootRect.height - 60) {
     top = (triggerRect.top - rootRect.top) - estimatedHeight - 10;
     if (top < 55) top = 55;
@@ -403,15 +414,15 @@ export function closeGlossaryPopover() {
 }
 
 export function filterGlossaryCards(query) {
-  const cards = document.querySelectorAll('.br-glossary-index-card');
   const q = (query || '').toLowerCase().trim();
-  cards.forEach(c => {
-    const term = c.getAttribute('data-term') || '';
-    const text = c.textContent.toLowerCase();
+  const cards = document.querySelectorAll('.br-glossary-index-card');
+  cards.forEach(card => {
+    const term = card.getAttribute('data-term') || '';
+    const text = card.textContent.toLowerCase();
     if (!q || term.includes(q) || text.includes(q)) {
-      c.style.display = 'block';
+      card.style.display = 'flex';
     } else {
-      c.style.display = 'none';
+      card.style.display = 'none';
     }
   });
 }
@@ -593,6 +604,7 @@ function renderReaderDOM() {
                     const defText = typeof item === 'string' ? item : (item.def || '');
                     const noteText = typeof item === 'object' ? (item.note || '') : '';
                     const isWarning = typeof item === 'object' && item.type === 'warning';
+                    const sources = (typeof item === 'object' && item.sources) ? item.sources : [];
                     return `
                     <div class="br-glossary-index-card" data-term="${esc(term.toLowerCase())}">
                       <div class="br-glossary-card-header">
@@ -619,6 +631,15 @@ function renderReaderDOM() {
                             <span>${isWarning ? 'Mise en Garde Médicale & Sécurité' : 'Éclairage Scientifique & Factuel VitalTrack'}</span>
                           </div>
                           <p class="br-glossary-note-body">${esc(noteText)}</p>
+
+                          ${sources.length > 0 ? `
+                            <div class="br-glossary-card-sources">
+                              <span class="br-sources-label"><i class="ri-book-open-line"></i> Sources & Références Scientifiques :</span>
+                              <ul class="br-sources-list">
+                                ${sources.map(s => `<li>${esc(s)}</li>`).join('')}
+                              </ul>
+                            </div>
+                          ` : ''}
                         </div>
                       ` : ''}
                     </div>

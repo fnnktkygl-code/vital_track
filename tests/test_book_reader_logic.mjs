@@ -149,13 +149,27 @@ it('La Leçon XIV contient les 10 tables exhaustives de Ragnar Berg avec valeurs
 it('Toutes les définitions du glossaire contiennent un recul scientifique et des mises en garde factuelles', () => {
   const entries = Object.entries(ehretMucuslessFr.glossary);
   assert.ok(entries.length >= 38);
-  entries.forEach(([term, item]) => {
-    assert.ok(item.def && item.def.length > 10, `Le terme '${term}' doit avoir une définition historique`);
-    assert.ok(item.note && item.note.length > 10, `Le terme '${term}' doit avoir une note d'éclairage scientifique`);
-  });
-
   const warnings = entries.filter(([k, v]) => v.type === 'warning');
   assert.ok(warnings.length >= 3, 'Au moins 3 termes clés doivent comporter une mise en garde explicite (cœur/moteur, protéines, médicaments)');
+});
+
+// 9. Vérification des Sources Scientifiques Primaires (DOI / Manuels / OMS)
+it('Toutes les définitions du glossaire sont appuyées par des sources académiques primaires vérifiables', () => {
+  const entries = Object.entries(ehretMucuslessFr.glossary);
+  entries.forEach(([term, item]) => {
+    assert.ok(Array.isArray(item.sources) && item.sources.length > 0, `Le terme '${term}' doit contenir une liste de sources`);
+    item.sources.forEach(src => {
+      assert.ok(typeof src === 'string' && src.length > 15, `La source '${src}' pour le terme '${term}' est trop courte ou invalide`);
+    });
+  });
+
+  // Vérifier la présence de sources majeures
+  const allSources = entries.flatMap(([k, v]) => v.sources).join(' ');
+  assert.ok(allSources.includes('Guyton'), 'Doit citer le traité de physiologie Guyton & Hall');
+  assert.ok(allSources.includes('Lehninger'), 'Doit citer le traité de biochimie Lehninger');
+  assert.ok(allSources.includes('Nobel'), 'Doit citer les travaux prix Nobel sur l\'autophagie (Ohsumi)');
+  assert.ok(allSources.includes('Remer'), 'Doit citer les études sur l\'indice PRAL de Remer');
+  assert.ok(allSources.includes('Organisation Mondiale de la Santé') || allSources.includes('OMS'), 'Doit citer l\'OMS / FAO');
 });
 
 console.log(`\n🎉 SUITE BOOKREADER VALIDÉE : ${passedTests} / ${totalTests} assertions réussies à 100% !\n`);

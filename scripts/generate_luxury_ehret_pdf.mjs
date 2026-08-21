@@ -558,6 +558,29 @@ export function generateLuxuryHtml() {
       border-left: 2.5pt solid #dc2626;
       color: #991b1b;
     }
+
+    .pdf-sources-section {
+      margin-top: 5pt;
+      padding-top: 4pt;
+      border-top: 0.5pt solid #cbd5e1;
+    }
+
+    .pdf-sources-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 6.8pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #0f766e;
+      margin-bottom: 2pt;
+    }
+
+    .pdf-sources-list {
+      margin: 0;
+      padding-left: 10pt;
+      font-size: 7.2pt;
+      line-height: 1.35;
+      color: #64748b;
+    }
   </style>
 </head>
 <body>
@@ -663,6 +686,7 @@ export function generateLuxuryHtml() {
         const defText = typeof item === 'string' ? item : (item.def || '');
         const noteText = typeof item === 'object' ? (item.note || '') : '';
         const isWarning = typeof item === 'object' && item.type === 'warning';
+        const sources = (typeof item === 'object' && item.sources) ? item.sources : [];
         return `
         <div class="glossary-box">
           <div class="glossary-term-heading">${esc(term)}</div>
@@ -671,6 +695,14 @@ export function generateLuxuryHtml() {
             <div class="pdf-glossary-note ${isWarning ? 'is-warning' : 'is-science'}">
               <strong>${isWarning ? '⚠️ Mise en Garde Médicale :' : '⚖️ Recul Scientifique :'}</strong>
               ${esc(noteText)}
+            </div>
+          ` : ''}
+          ${sources.length > 0 ? `
+            <div class="pdf-sources-section">
+              <div class="pdf-sources-label">Sources & Références Primaires :</div>
+              <ul class="pdf-sources-list">
+                ${sources.map(s => `<li>${esc(s)}</li>`).join('')}
+              </ul>
             </div>
           ` : ''}
         </div>
