@@ -14,6 +14,7 @@ import { VIDEO_DUBBING_DATABASE, getDubbingDataForVideo } from './data/videoDubb
 import { dubbingEngine } from './utils/dubbingEngine.js';
 import { VITALIST_WISDOM, getRandomWisdom, getCircadianContextWisdom, getDailyWisdom } from './data/vitalistWisdom.js';
 import { initRecipesModule } from './recipesModule.js';
+import { initDeepSearchModule } from './deepSearchModule.js';
 
 // Exposer globalement pour l'interface utilisateur
 window.store = store;
@@ -1092,6 +1093,7 @@ async function initApp() {
   initMasterclass();
   initExpertAccordion();
   initRecipesModule();
+  initDeepSearchModule();
 
   // Initialize Custom Controls
   initAllVitalDatePickers();
@@ -1214,7 +1216,7 @@ function showPage(page) {
   document.querySelectorAll(`[data-page="${page}"]`).forEach(l => l.classList.add('active'));
 
   // Highlight Plus tab if current page is in secondary drawer
-  const morePages = ['recipes', 'resources', 'materia-medica', 'breathing', 'search', 'meals', 'favorites', 'modes'];
+  const morePages = ['recipes', 'deep-search', 'resources', 'materia-medica', 'breathing', 'search', 'meals', 'favorites', 'modes'];
   if (morePages.includes(page)) {
     const moreBtn = document.getElementById('bnavMoreBtn');
     if (moreBtn) moreBtn.classList.add('active');
@@ -1225,6 +1227,9 @@ function showPage(page) {
   if (window.toggleMoreDrawer) window.toggleMoreDrawer(false);
 
   if (page === 'dashboard') renderDashboard();
+  if (page === 'deep-search') {
+    if (window.renderDeepSearchView) window.renderDeepSearchView();
+  }
   if (page === 'recipes') {
     if (window.renderRecipesView) window.renderRecipesView();
   }

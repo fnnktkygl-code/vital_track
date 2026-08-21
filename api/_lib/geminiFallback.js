@@ -88,8 +88,17 @@ async function callGeminiApi({
   systemInstruction,
   stream = false,
   requestedModel = null,
+  forceFreeTierOnly = false,
 }) {
-  const tiers = getTierKeys(apiKey);
+  let tiers = getTierKeys(apiKey);
+  if (forceFreeTierOnly) {
+    tiers = tiers.filter(t => t.tier === 'free_tier_500rpd' || t.tier === 'explicit');
+    if (tiers.length === 0) {
+      // If only standard key is available, use it without paid fallback
+      const primaryKey = (process.env.GEMINI_API_KEY_FREE || process.env.GEMINI_API_KEY || '').trim();
+      if (primaryKey) tiers = [{ key: primaryKey, tier: 'free_tier_enforced' }];
+    }
+  }
   if (tiers.length === 0) {
     throw new Error('Aucune clé GEMINI_API_KEY configurée sur le serveur');
   }

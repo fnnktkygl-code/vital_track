@@ -8789,3 +8789,46 @@ mark.search-highlight {
     grid-template-columns: 1fr !important;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════
+   BILAN VITALISTE DEEP SEARCH
+   ══════════════════════════════════════════════════════════════ */
+.step-indicator {
+  transition: transform 0.2s ease;
+}
+.step-indicator:hover {
+  transform: translateY(-2px);
+}
+
+.pulse-icon {
+  animation: pulseScan 1.8s infinite ease-in-out;
+}
+
+@keyframes pulseScan {
+  0% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.15); opacity: 1; filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.6)); }
+  100% { transform: scale(1); opacity: 0.8; }
+}
+
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  .navbar, .sidebar, .bottom-nav, #moreDrawer, #toastContainer, .dash-greeting {
+    display: none !important;
+  }
+  .deep-search-report-view {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .dash-card {
+    background: #ffffff !important;
+    color: #000000 !important;
+    border: 1px solid #cccccc !important;
+    box-shadow: none !important;
+    break-inside: avoid;
+  }
+}
+

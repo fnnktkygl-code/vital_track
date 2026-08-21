@@ -71,6 +71,8 @@
       
       <div class="sidebar-section">
         <div class="sidebar-section-title">Suivi & Plantes</div>
+        <a href="#" class="sidebar-link" data-page="deep-search" onclick="showPage('deep-search')"><i class="ri-microscope-line"></i> Bilan Deep Search</a>
+        <a href="#" class="sidebar-link" data-page="recipes" onclick="showPage('recipes')"><i class="ri-restaurant-2-line"></i> Recettes</a>
         <a href="#" class="sidebar-link" data-page="search" onclick="showPage('search')"><i class="ri-search-line"></i> Aliments</a>
         <a href="#" class="sidebar-link" data-page="materia-medica" onclick="showPage('materia-medica')"><i class="ri-plant-line"></i> Pharmacopée</a>
         <a href="#" class="sidebar-link" data-page="scan" onclick="showPage('scan')"><i class="ri-camera-lens-line"></i> Scanner</a>
@@ -165,6 +167,15 @@
     </div>
 
     <div class="more-drawer-grid">
+      <a href="#" class="more-drawer-card" onclick="showPage('deep-search'); window.toggleMoreDrawer(false); event.preventDefault();">
+        <div class="more-card-icon" style="background:linear-gradient(135deg, rgba(56,189,248,0.2), rgba(16,185,129,0.2)); color:#38bdf8;"><i class="ri-microscope-fill"></i></div>
+        <div class="more-card-body">
+          <strong>Bilan Deep Search (0 €)</strong>
+          <span>Diagnostic holistique &amp; 5 émonctoires</span>
+        </div>
+        <i class="ri-arrow-right-s-line more-card-arrow"></i>
+      </a>
+
       <a href="#" class="more-drawer-card" onclick="showPage('recipes'); window.toggleMoreDrawer(false); event.preventDefault();">
         <div class="more-card-icon" style="background:linear-gradient(135deg, rgba(16,185,129,0.2), rgba(56,189,248,0.2)); color:#10b981;"><i class="ri-restaurant-2-line"></i></div>
         <div class="more-card-body">
@@ -631,6 +642,27 @@
           <span class="dash-fast-type" id="dashFastType"></span>
         </div>
         <div class="dash-fast-bar"><div class="dash-fast-fill" id="dashFastFill"></div></div>
+      </div>
+
+      <!-- Deep Search Clinical Assessment Banner -->
+      <div class="dash-card glass" style="padding:18px 22px; border-radius:20px; border:1px solid rgba(56,189,248,0.35); background:linear-gradient(135deg, rgba(56,189,248,0.1), rgba(16,185,129,0.1)); cursor:pointer; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; transition:all 0.25s ease;" onclick="showPage('deep-search')">
+        <div style="display:flex; align-items:center; gap:16px;">
+          <div style="width:48px; height:48px; border-radius:14px; background:linear-gradient(135deg, rgba(56,189,248,0.25), rgba(16,185,129,0.25)); font-size:1.6rem; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+            🔬
+          </div>
+          <div>
+            <div style="font-weight:900; font-size:1rem; color:var(--text); display:flex; align-items:center; gap:8px;">
+              Bilan Vitaliste Clinique Approfondi (Deep Search)
+              <span class="badge badge-success" style="font-size:0.7rem; padding:2px 8px;">100% Inclus (0 €)</span>
+            </div>
+            <div style="font-size:0.8rem; color:var(--text-dim); margin-top:2px;">
+              Analyse complète de vos 5 émonctoires, vérification médicamenteuse &amp; protocole 7 jours sur mesure.
+            </div>
+          </div>
+        </div>
+        <button type="button" class="btn-primary" style="padding:9px 18px; font-size:0.85rem; border-radius:14px; pointer-events:none; background:linear-gradient(135deg, #38bdf8, #0ea5e9); color:#fff; box-shadow:0 4px 14px rgba(14,165,233,0.35);">
+          Lancer l'Analyse <i class="ri-arrow-right-line"></i>
+        </button>
       </div>
 
       <!-- Pharmacopée Culinaire & Recettes Shortcut Card -->
@@ -1691,6 +1723,15 @@
         </div>
       </div>
 
+    </div>
+  </main>
+
+  <!-- ═══════ BILAN VITALISTE CLINIQUE APPROFONDI (DEEP SEARCH 100% GRATUIT) ═══════ -->
+  <main class="page" id="page-deep-search">
+    <div class="container" style="max-width:1050px; padding:80px 20px 100px;">
+      <div id="deepSearchContainer">
+        <!-- Rendu dynamique via deepSearchModule.js -->
+      </div>
     </div>
   </main>
 
