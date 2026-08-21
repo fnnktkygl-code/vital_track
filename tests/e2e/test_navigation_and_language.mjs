@@ -7,23 +7,26 @@ console.log('🚀 TEST E2E NAVIGATION MULTILINGUE & STABILITÉ DU ROUTEUR');
 console.log('═══════════════════════════════════════════════════════════\n');
 
 async function run() {
+  const port = 5240 + Math.floor(Math.random() * 100);
   const server = await createServer({
     root: '/Users/richard/Developer/vital_track/web-app',
-    server: { port: 5240 }
+    server: { port }
   });
   await server.listen();
-  const baseUrl = server.resolvedUrls.local[0] || 'http://localhost:5240';
+  const baseUrl = server.resolvedUrls.local[0] || `http://localhost:${port}`;
 
   const browser = await puppeteer.launch({
     headless: 'new',
     executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-    args: ['--no-sandbox', '--disable-setuid-sandbox']
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-gpu',
+      '--no-first-run',
+      '--no-zygote'
+    ]
   });
-
-  const page = await browser.newPage();
-  await page.setViewport({ width: 1280, height: 900 });
-  await page.goto(baseUrl, { waitUntil: 'domcontentloaded' });
-  await new Promise(r => setTimeout(r, 600));
 
   let passed = 0;
   function check(desc, cond) {
@@ -35,6 +38,12 @@ async function run() {
       process.exit(1);
     }
   }
+
+  try {
+    const page = await browser.newPage();
+    await page.setViewport({ width: 1280, height: 900 });
+    await page.goto(baseUrl, { waitUntil: 'domcontentloaded' });
+    await new Promise(r => setTimeout(r, 800));
 
   // 1. Initial State
   const initialPage = await page.evaluate(() => document.querySelector('.page.active')?.id);
@@ -178,10 +187,11 @@ async function run() {
   const greetFRCA = await page.evaluate(() => document.getElementById('greetName')?.textContent);
   check('La salutation en FR-CA contient "Bon matin" ou "Bonjour"', greetFRCA?.includes('Bon matin') || greetFRCA?.includes('Bonjour'));
 
-  await browser.close();
-  await server.close();
-
   console.log(`\n🎉 TOUS LES TESTS MULTILINGUES & NAVIGATION (${passed}/${passed}) SONT 100% VALIDÉS SANS ERREUR !\n`);
+  } finally {
+    if (browser) await browser.close().catch(() => {});
+    if (server) await server.close().catch(() => {});
+  }
 }
 
 run().catch(err => {

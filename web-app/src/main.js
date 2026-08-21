@@ -1116,6 +1116,12 @@ async function initApp() {
       updateAuthUI(window.vitalTrackAuth.getCurrentUser());
     }
     
+    // Refresh proactive components with new language
+    updateCircadianWidget();
+    updateProactiveMascot();
+    renderWeightChart();
+    if (typeof renderWisdomCapsule === 'function') renderWisdomCapsule();
+    
     // Mettre à jour la vue active courante sans forcer de redirection vers l'accueil
     const activePageEl = document.querySelector('.page.active');
     const activePageId = activePageEl ? activePageEl.id.replace('page-', '') : 'dashboard';
@@ -1774,13 +1780,49 @@ function renderDashboard() {
   const focusChips = document.getElementById('vitalityFocusChips');
 
   if (focusCard && focusInsight && focusChips) {
+    const currentLang = window.vitalTrackI18n?.getLanguage?.() || 'fr';
+    const langKey = currentLang.startsWith('fr') ? (currentLang === 'fr-CA' ? 'fr-CA' : 'fr') : currentLang;
+
+    const focusDict = {
+      fr: {
+        wake: { tag: 'Réveil Cellulaire', insight: 'Démarrez par une hydratation tiède citronnée et un premier repas vivant riche en micronutriments.', chips: [{ icon: '🍋', label: 'Eau Citronnée' }, { icon: '🍉', label: 'Fruits Aqueux' }, { icon: '🫁', label: 'Cohérence Cardiaque' }] },
+        fast: { tag: 'Émonctoires & Repos', insight: "Prolongez la fenêtre de repos digestif pour relancer l'autophagie et soulager la filtration rénale.", chips: [{ icon: '🛑', label: 'Repos Digestif' }, { icon: '🫖', label: 'Tisane Dépurative' }, { icon: '🫘', label: 'Filtration Rénale' }] },
+        pral: { tag: 'Équilibre PRAL', insight: 'Charge acide détectée : Augmentez la part de fruits aqueux, pastèque, raisin ou jus verts frais.', chips: [{ icon: '🥗', label: 'Salade Vivante' }, { icon: '🥤', label: 'Jus Verts Frais' }, { icon: '🥑', label: 'Bonnes Graisses' }] },
+        breath: { tag: 'Oxygénation', insight: 'Activez 5 minutes de cohérence cardiaque pour stimuler le flux lymphatique et apaiser le système nerveux.', chips: [{ icon: '🫁', label: '5 min Respiration' }, { icon: '🚶', label: 'Marche Lente' }, { icon: '🌿', label: 'Détente Nerveuse' }] },
+        excel: { tag: 'Excellence', insight: "Électrolytes et vitalité au sommet ! Vos cellules disposent d'un potentiel électromagnétique maximal.", chips: [{ icon: '✨', label: 'Rayonnement' }, { icon: '⚡', label: 'Énergie Cellulaire' }, { icon: '🧬', label: 'Régénération' }] }
+      },
+      'fr-CA': {
+        wake: { tag: 'Réveil Cellulaire', insight: 'Démarrez par une hydratation tiède citronnée et un premier repas vivant riche en micronutriments.', chips: [{ icon: '🍋', label: 'Eau Citronnée' }, { icon: '🍉', label: 'Fruits Aqueux' }, { icon: '🫁', label: 'Cohérence Cardiaque' }] },
+        fast: { tag: 'Émonctoires & Repos', insight: "Prolongez la fenêtre de repos digestif pour relancer l'autophagie et soulager la filtration rénale.", chips: [{ icon: '🛑', label: 'Repos Digestif' }, { icon: '🫖', label: 'Tisane Dépurative' }, { icon: '🫘', label: 'Filtration Rénale' }] },
+        pral: { tag: 'Équilibre PRAL', insight: 'Charge acide détectée : Augmentez la part de fruits aqueux, pastèque, raisin ou jus verts frais.', chips: [{ icon: '🥗', label: 'Salade Vivante' }, { icon: '🥤', label: 'Jus Verts Frais' }, { icon: '🥑', label: 'Bonnes Graisses' }] },
+        breath: { tag: 'Oxygénation', insight: 'Activez 5 minutes de cohérence cardiaque pour stimuler le flux lymphatique et apaiser le système nerveux.', chips: [{ icon: '🫁', label: '5 min Respiration' }, { icon: '🚶', label: 'Marche Lente' }, { icon: '🌿', label: 'Détente Nerveuse' }] },
+        excel: { tag: 'Excellence', insight: "Électrolytes et vitalité au sommet ! Vos cellules disposent d'un potentiel électromagnétique maximal.", chips: [{ icon: '✨', label: 'Rayonnement' }, { icon: '⚡', label: 'Énergie Cellulaire' }, { icon: '🧬', label: 'Régénération' }] }
+      },
+      en: {
+        wake: { tag: 'Cellular Awakening', insight: 'Start with warm lemon water and a living, micronutrient-dense first meal.', chips: [{ icon: '🍋', label: 'Lemon Water' }, { icon: '🍉', label: 'Aqueous Fruits' }, { icon: '🫁', label: 'Heart Coherence' }] },
+        fast: { tag: 'Emunctories & Rest', insight: 'Extend the digestive resting window to stimulate autophagy and ease kidney filtration.', chips: [{ icon: '🛑', label: 'Digestive Rest' }, { icon: '🫖', label: 'Detox Tea' }, { icon: '🫘', label: 'Kidney Filtration' }] },
+        pral: { tag: 'PRAL Balance', insight: 'Acid load detected: Increase living fruits, watermelon, grapes, or fresh green juices.', chips: [{ icon: '🥗', label: 'Living Salad' }, { icon: '🥤', label: 'Fresh Green Juice' }, { icon: '🥑', label: 'Healthy Fats' }] },
+        breath: { tag: 'Oxygenation', insight: 'Activate 5 minutes of heart coherence to stimulate lymph flow and soothe the nervous system.', chips: [{ icon: '🫁', label: '5 min Breathing' }, { icon: '🚶', label: 'Slow Walk' }, { icon: '🌿', label: 'Nerve Relaxation' }] },
+        excel: { tag: 'Excellence', insight: 'Electrolytes and vitality at their peak! Your cells have maximum electromagnetic potential.', chips: [{ icon: '✨', label: 'Radiance' }, { icon: '⚡', label: 'Bio-Energy' }, { icon: '💧', label: 'Optimal Hydration' }] }
+      },
+      es: {
+        wake: { tag: 'Despertar Celular', insight: 'Comience con hidratación tibia con limón y una primera comida viva rica en micronutrientes.', chips: [{ icon: '🍋', label: 'Agua con Limón' }, { icon: '🍉', label: 'Frutas Acuosas' }, { icon: '🫁', label: 'Coherencia Cardíaca' }] },
+        fast: { tag: 'Emuntorios y Reposo', insight: 'Prolongue el reposo digestivo para activar la autofagia y aliviar la filtración renal.', chips: [{ icon: '🛑', label: 'Reposo Digestivo' }, { icon: '🫖', label: 'Infusión Depurativa' }, { icon: '🫘', label: 'Filtración Renal' }] },
+        pral: { tag: 'Equilibrio PRAL', insight: 'Carga ácida detectada: Aumente el consumo de frutas acuosas, sandía, uvas o jugos verdes.', chips: [{ icon: '🥗', label: 'Ensalada Viva' }, { icon: '🥤', label: 'Jugos Verdes' }, { icon: '🥑', label: 'Grasas Sanas' }] },
+        breath: { tag: 'Oxigenación', insight: 'Active 5 minutos de coherencia cardíaca para estimular el flujo linfático y calmar el sistema nervioso.', chips: [{ icon: '🫁', label: '5 min Respiración' }, { icon: '🚶', label: 'Paseo Lento' }, { icon: '🌿', label: 'Relajación Nerviosa' }] },
+        excel: { tag: 'Excelencia', insight: '¡Electrolitos y vitalidad en la cima! Sus células disponen de un potencial electromagnético óptimo.', chips: [{ icon: '✨', label: 'Radiancia' }, { icon: '⚡', label: 'Bioenergía' }, { icon: '💧', label: 'Hidratación Óptima' }] }
+      }
+    };
+
+    const activeFD = focusDict[langKey] || focusDict.fr;
+
     let fIcon = 'ri-sparkling-fill';
     let fColor = isLight ? '#047857' : '#10b981';
     let fBg = isLight ? '#dcfce7' : 'rgba(16,185,129,0.15)';
     let fBorder = isLight ? '#86efac' : '#10b981';
-    let fTag = 'Recommandation';
-    let fInsight = '';
-    let fChipsList = [];
+    let fTag = activeFD.wake.tag;
+    let fInsight = activeFD.wake.insight;
+    let fChipsList = activeFD.wake.chips;
 
     const nScore = breakdown.hasMeals ? breakdown.nutritionScore : 0;
     const fScore = breakdown.hasFasting ? breakdown.fastingScore : 0;
@@ -1791,61 +1833,41 @@ function renderDashboard() {
       fColor = isLight ? '#047857' : '#10b981';
       fBg = isLight ? '#dcfce7' : 'rgba(16,185,129,0.15)';
       fBorder = isLight ? '#86efac' : '#10b981';
-      fTag = 'Réveil Cellulaire';
-      fInsight = 'Démarrez par une hydratation tiède citronnée et un premier repas vivant riche en micronutriments.';
-      fChipsList = [
-        { icon: '🍋', label: 'Eau Citronnée' },
-        { icon: '🍉', label: 'Fruits Aqueux' },
-        { icon: '🫁', label: 'Cohérence Cardiaque' }
-      ];
+      fTag = activeFD.wake.tag;
+      fInsight = activeFD.wake.insight;
+      fChipsList = activeFD.wake.chips;
     } else if (breakdown.hasFasting && fScore < 40) {
       fIcon = 'ri-drop-fill';
       fColor = isLight ? '#0369a1' : '#38bdf8';
       fBg = isLight ? '#e0f2fe' : 'rgba(56,189,248,0.15)';
       fBorder = isLight ? '#7dd3fc' : '#38bdf8';
-      fTag = 'Émonctoires & Repos';
-      fInsight = 'Prolongez la fenêtre de repos digestif pour relancer l\'autophagie et soulager la filtration rénale.';
-      fChipsList = [
-        { icon: '🛑', label: 'Repos Digestif' },
-        { icon: '🫖', label: 'Tisane Dépurative' },
-        { icon: '🫘', label: 'Filtration Rénale' }
-      ];
+      fTag = activeFD.fast.tag;
+      fInsight = activeFD.fast.insight;
+      fChipsList = activeFD.fast.chips;
     } else if (breakdown.hasMeals && nScore < 60) {
       fIcon = 'ri-leaf-fill';
       fColor = isLight ? '#92400e' : '#f59e0b';
       fBg = isLight ? '#fef3c7' : 'rgba(245,158,11,0.15)';
       fBorder = isLight ? '#fde68a' : '#f59e0b';
-      fTag = 'Équilibre PRAL';
-      fInsight = 'Charge acide détectée : Augmentez la part de fruits aqueux, pastèque, raisin ou jus verts frais.';
-      fChipsList = [
-        { icon: '🥗', label: 'Salade Vivante' },
-        { icon: '🥤', label: 'Jus Verts Frais' },
-        { icon: '🥑', label: 'Bonnes Graisses' }
-      ];
+      fTag = activeFD.pral.tag;
+      fInsight = activeFD.pral.insight;
+      fChipsList = activeFD.pral.chips;
     } else if (!breakdown.hasBreathing || bScore < 40) {
       fIcon = 'ri-windy-fill';
       fColor = isLight ? '#6b21a8' : '#a855f7';
       fBg = isLight ? '#f3e8ff' : 'rgba(168,85,247,0.15)';
       fBorder = isLight ? '#d8b4fe' : '#a855f7';
-      fTag = 'Oxygénation';
-      fInsight = 'Activez 5 minutes de cohérence cardiaque pour stimuler le flux lymphatique et apaiser le système nerveux.';
-      fChipsList = [
-        { icon: '🫁', label: '5 min Respiration' },
-        { icon: '🚶', label: 'Marche Lente' },
-        { icon: '🌿', label: 'Détente Nerveuse' }
-      ];
+      fTag = activeFD.breath.tag;
+      fInsight = activeFD.breath.insight;
+      fChipsList = activeFD.breath.chips;
     } else {
       fIcon = 'ri-sparkling-fill';
       fColor = isLight ? '#047857' : '#10b981';
       fBg = isLight ? '#dcfce7' : 'rgba(16,185,129,0.15)';
       fBorder = isLight ? '#86efac' : '#10b981';
-      fTag = 'Excellence';
-      fInsight = 'Électrolytes et vitalité au sommet ! Vos cellules disposent d\'un potentiel électromagnétique maximal.';
-      fChipsList = [
-        { icon: '✨', label: 'Rayonnement' },
-        { icon: '⚡', label: 'Énergie Cellulaire' },
-        { icon: '🧬', label: 'Régénération' }
-      ];
+      fTag = activeFD.excel.tag;
+      fInsight = activeFD.excel.insight;
+      fChipsList = activeFD.excel.chips;
     }
 
     if (focusIconBadge) {
@@ -1881,9 +1903,10 @@ function renderDashboard() {
   const dashList = document.getElementById('dashMealList');
   if (dashList) {
     if (todayMeals.length === 0) {
+      const emptyMealsText = window.vitalTrackI18n?.t?.('dashboard.noMealsToday') || "Aucun repas enregistré aujourd'hui.";
       dashList.innerHTML = `<div class="empty-state-card">
                               <i class="ri-restaurant-2-line"></i>
-                              <p>Aucun repas enregistré aujourd'hui.</p>
+                              <p data-i18n="dashboard.noMealsToday">${emptyMealsText}</p>
                             </div>`;
     }
     else {
@@ -9165,6 +9188,8 @@ function renderMascotSpeechBubble(text, mood = 'talking') {
   const bubble = document.getElementById('mascotSpeechBubble') || document.getElementById('greetingContext');
   if (!bubble) return;
 
+  const tFunc = window.vitalTrackI18n?.t || ((k) => k);
+
   // Clean text from any legacy markup prefix and any existing outer quotes («, », ", “, ”)
   let cleanText = (text || '')
     .replace(/^[💬🐦]\s*(<strong>.*?<\/strong>)?\s*[:«"“]?\s*/i, '')
@@ -9172,25 +9197,26 @@ function renderMascotSpeechBubble(text, mood = 'talking') {
     .trim();
   if (!cleanText) cleanText = text;
 
+  const guideName = tFunc('mascot.guideTitle') || 'Vital · Guide Biologique';
   const moodBadges = {
-    excited: { label: 'Énergie', icon: 'ri-flashlight-fill' },
-    proud: { label: 'Bravo', icon: 'ri-award-fill' },
-    loving: { label: 'Détox', icon: 'ri-drop-fill' },
-    sleepy: { label: 'Régénération', icon: 'ri-moon-fill' },
-    talking: { label: 'Conseil', icon: 'ri-sparkling-fill' },
-    walk: { label: 'Lymphe & Marche', icon: 'ri-walk-fill' },
-    laugh: { label: 'Vitalité', icon: 'ri-emotion-happy-fill' },
-    celebrate: { label: 'Victoire', icon: 'ri-magic-fill' },
-    coo: { label: 'Roucoulement', icon: 'ri-chat-voice-fill' },
-    think: { label: 'Connaissance', icon: 'ri-brain-line' }
+    excited: { label: tFunc('mascot.moodEnergy') || 'Énergie', icon: 'ri-flashlight-fill' },
+    proud: { label: tFunc('mascot.moodBravo') || 'Bravo', icon: 'ri-award-fill' },
+    loving: { label: tFunc('mascot.moodDetox') || 'Détox', icon: 'ri-drop-fill' },
+    sleepy: { label: tFunc('mascot.moodRegen') || 'Régénération', icon: 'ri-moon-fill' },
+    talking: { label: tFunc('mascot.moodTip') || 'Conseil', icon: 'ri-sparkling-fill' },
+    walk: { label: tFunc('mascot.walk') || 'Lymphe & Marche', icon: 'ri-walk-fill' },
+    laugh: { label: tFunc('mascot.laugh') || 'Vitalité', icon: 'ri-emotion-happy-fill' },
+    celebrate: { label: tFunc('mascot.celebrate') || 'Victoire', icon: 'ri-magic-fill' },
+    coo: { label: tFunc('mascot.audioBtn') || 'Roucoulement', icon: 'ri-chat-voice-fill' },
+    think: { label: tFunc('mascot.think') || 'Connaissance', icon: 'ri-brain-line' }
   };
-  const b = moodBadges[mood] || { label: 'Conseil', icon: 'ri-sparkling-fill' };
+  const b = moodBadges[mood] || { label: tFunc('mascot.moodTip') || 'Conseil', icon: 'ri-sparkling-fill' };
 
   bubble.innerHTML = `
     <div class="speech-bubble-header">
       <div class="speech-bubble-sender">
         <span class="speech-bubble-avatar">🕊️</span>
-        <span class="speech-bubble-name">Vital · Guide Biologique</span>
+        <span class="speech-bubble-name">${guideName}</span>
       </div>
       <span class="speech-bubble-badge">
         <i class="${b.icon}"></i> ${b.label}
@@ -9205,30 +9231,31 @@ window.renderMascotSpeechBubble = renderMascotSpeechBubble;
 
 function updateProactiveMascot(actionContext = null) {
   const hour = new Date().getHours();
+  const tFunc = window.vitalTrackI18n?.t || ((k) => k);
   let msg = '';
   let mood = 'talking';
 
   if (actionContext === 'scan') {
-    msg = "Bravo pour ce scan ! Vérifie bien l'indice PRAL (acidité) et la charge vitale de cet aliment. 🍎";
+    msg = tFunc('mascot.scanBravo');
     mood = 'excited';
   } else if (actionContext === 'meal') {
-    msg = "Repas enregistré ! N'oublie pas de bien mastiquer pour faciliter l'assimilation enzymatique. 🥗";
+    msg = tFunc('mascot.mealLogged');
     mood = 'proud';
   } else if (actionContext === 'fast_start') {
-    msg = "C'est parti pour le jeûne ! Ton organisme enclenche son processus d'autophagie et de drainage cellulaire. 💧";
+    msg = tFunc('mascot.fastStarted');
     mood = 'loving';
   } else {
     // Time-based circadian messages
     if (hour >= 4 && hour < 12) {
       msg = currentProtocol === 'vitalist'
-        ? "Matinée d'élimination : L'organisme filtre les toxines. Privilégie l'hydratation, les tisanes et les fruits aqueux. 🍋"
-        : "Bonjour ! Pense à bien réhydrater tes cellules dès le réveil avec une eau pure et vivante. 💧";
+        ? tFunc('mascot.morningElimination')
+        : tFunc('mascot.morningHydration');
       mood = 'excited';
     } else if (hour >= 12 && hour < 20) {
-      msg = "Journée d'appropriation : Le feu digestif est au maximum ! Moment propice pour des repas vivants et nourrissants. 🍉";
+      msg = tFunc('mascot.afternoonAppropriation');
       mood = 'talking';
     } else {
-      msg = "Soirée d'assimilation : Mets le système digestif au repos pour permettre la réparation cellulaire nocturne. 🌙";
+      msg = tFunc('mascot.eveningAssimilation');
       mood = 'sleepy';
     }
   }
@@ -11156,14 +11183,134 @@ function renderWeightHistoryInModal() {
 
 // ═══════ INTELLIGENT DYNAMIC TARGET WEIGHT ENGINE ═══════
 function calculateTargetWeightInsight(curWeight, targetWeight, startWeight) {
+  const currentLang = window.vitalTrackI18n?.getLanguage?.() || 'fr';
+  const langKey = currentLang.startsWith('fr') ? (currentLang === 'fr-CA' ? 'fr-CA' : 'fr') : currentLang;
+
+  const weightLocales = {
+    fr: {
+      define: '+ Définir',
+      unsetTitle: '🎯 Objectif de Poids Non Défini',
+      unsetMsg: 'Définissez votre poids physiologique idéal pour activer le suivi dynamique et tracer votre ligne de mire sur le graphique.',
+      targetPrefix: '🎯 Cible :',
+      targetSetNoCurMsg: 'Enregistrez votre première pesée pour calculer votre écart et votre trajectoire vitale.',
+      reachedBadge: '🎯 Atteint',
+      reachedTitle: '🌟 Félicitations ! Poids Cible Atteint',
+      reachedMsg: (cur, tgt) => `Vous êtes à ${cur} kg, exactement sur votre objectif de ${tgt} kg. Bravo pour cette harmonisation métabolique ! Maintenez l'équilibre de vitalité.`,
+      lossCloseBadge: (d) => `🔥 -${d} kg (Tout proche)`,
+      lossCloseTitle: (d) => `🔥 Dernière Ligne Droite : Plus que ${d} kg !`,
+      lossCloseMsg: (cur, tgt) => `Actuel : ${cur} kg (cible ${tgt} kg). Le but est à portée de main, continuez les fenêtres d'hydratation et le drainage doux.`,
+      lossProgBadge: (d) => `📉 -${d} kg restant`,
+      lossProgTitle: (d) => `📉 En Bonne Voie : -${d} kg pour atteindre la cible`,
+      lossProgMsg: (cur, tgt) => `Actuel : ${cur} kg ➔ Cible : ${tgt} kg. Le drainage lymphatique et l'alimentation vivante portent leurs fruits.`,
+      lossFarBadge: (d) => `📉 -${d} kg à perdre`,
+      lossFarTitle: (tgt, d) => `🎯 Cap sur ${tgt} kg (Écart : -${d} kg)`,
+      lossFarMsg: (cur) => `Actuel : ${cur} kg. Chaque cycle de régénération nettoie le terrain cellulaire. Progressez à votre rythme sans forcer.`,
+      gainCloseBadge: (d) => `💪 +${d} kg (Presque atteint)`,
+      gainCloseTitle: (d) => `💪 Presque au Sommet : Plus que +${d} kg !`,
+      gainCloseMsg: (cur, tgt) => `Actuel : ${cur} kg (cible ${tgt} kg). Excellente assimilation cellulaire des nutriments denses !`,
+      gainProgBadge: (d) => `📈 +${d} kg restant`,
+      gainProgTitle: (d) => `📈 Phase d'Assimilation : +${d} kg restant`,
+      gainProgMsg: (cur, tgt) => `Actuel : ${cur} kg ➔ Cible : ${tgt} kg. Poursuivez l'apport d'aliments reminéralisants (bananes, graines germées, oléagineux trempés).`,
+      gainFarBadge: (d) => `📈 +${d} kg à gagner`,
+      gainFarTitle: (d) => `🌱 Objectif Reminéralisation : +${d} kg`,
+      gainFarMsg: (cur, tgt) => `Actuel : ${cur} kg (Cible : ${tgt} kg). Soutenez l'anabolisme naturel avec une nutrition dense et un sommeil réparateur.`
+    },
+    'fr-CA': {
+      define: '+ Définir',
+      unsetTitle: '🎯 Objectif de Poids Non Défini',
+      unsetMsg: 'Définissez votre poids physiologique idéal pour activer le suivi dynamique et tracer votre ligne de mire sur le graphique.',
+      targetPrefix: '🎯 Cible :',
+      targetSetNoCurMsg: 'Enregistrez votre première pesée pour calculer votre écart et votre trajectoire vitale.',
+      reachedBadge: '🎯 Atteint',
+      reachedTitle: '🌟 Félicitations ! Poids Cible Atteint',
+      reachedMsg: (cur, tgt) => `Vous êtes à ${cur} kg, exactement sur votre objectif de ${tgt} kg. Bravo pour cette harmonisation métabolique ! Maintenez l'équilibre de vitalité.`,
+      lossCloseBadge: (d) => `🔥 -${d} kg (Tout proche)`,
+      lossCloseTitle: (d) => `🔥 Dernière Ligne Droite : Plus que ${d} kg !`,
+      lossCloseMsg: (cur, tgt) => `Actuel : ${cur} kg (cible ${tgt} kg). Le but est à portée de main, continuez les fenêtres d'hydratation et le drainage doux.`,
+      lossProgBadge: (d) => `📉 -${d} kg restant`,
+      lossProgTitle: (d) => `📉 En Bonne Voie : -${d} kg pour atteindre la cible`,
+      lossProgMsg: (cur, tgt) => `Actuel : ${cur} kg ➔ Cible : ${tgt} kg. Le drainage lymphatique et l'alimentation vivante portent leurs fruits.`,
+      lossFarBadge: (d) => `📉 -${d} kg à perdre`,
+      lossFarTitle: (tgt, d) => `🎯 Cap sur ${tgt} kg (Écart : -${d} kg)`,
+      lossFarMsg: (cur) => `Actuel : ${cur} kg. Chaque cycle de régénération nettoie le terrain cellulaire. Progressez à votre rythme sans forcer.`,
+      gainCloseBadge: (d) => `💪 +${d} kg (Presque atteint)`,
+      gainCloseTitle: (d) => `💪 Presque au Sommet : Plus que +${d} kg !`,
+      gainCloseMsg: (cur, tgt) => `Actuel : ${cur} kg (cible ${tgt} kg). Excellente assimilation cellulaire des nutriments denses !`,
+      gainProgBadge: (d) => `📈 +${d} kg restant`,
+      gainProgTitle: (d) => `📈 Phase d'Assimilation : +${d} kg restant`,
+      gainProgMsg: (cur, tgt) => `Actuel : ${cur} kg ➔ Cible : ${tgt} kg. Poursuivez l'apport d'aliments reminéralisants (bananes, graines germées, oléagineux trempés).`,
+      gainFarBadge: (d) => `📈 +${d} kg à gagner`,
+      gainFarTitle: (d) => `🌱 Objectif Reminéralisation : +${d} kg`,
+      gainFarMsg: (cur, tgt) => `Actuel : ${cur} kg (Cible : ${tgt} kg). Soutenez l'anabolisme naturel avec une nutrition dense et un sommeil réparateur.`
+    },
+    en: {
+      define: '+ Set Target',
+      unsetTitle: '🎯 Target Weight Not Set',
+      unsetMsg: 'Set your physiological ideal weight to activate dynamic tracking and chart your target line.',
+      targetPrefix: '🎯 Target:',
+      targetSetNoCurMsg: 'Log your first weight entry to calculate your progress and vital trajectory.',
+      reachedBadge: '🎯 Goal Reached',
+      reachedTitle: '🌟 Congratulations! Target Weight Reached',
+      reachedMsg: (cur, tgt) => `You are at ${cur} kg, right on your goal of ${tgt} kg. Well done on this metabolic alignment! Maintain your vital balance.`,
+      lossCloseBadge: (d) => `🔥 -${d} kg (Very close)`,
+      lossCloseTitle: (d) => `🔥 Final Stretch: Only ${d} kg left!`,
+      lossCloseMsg: (cur, tgt) => `Current: ${cur} kg (Target: ${tgt} kg). The goal is within reach, keep up hydration and gentle drainage.`,
+      lossProgBadge: (d) => `📉 -${d} kg remaining`,
+      lossProgTitle: (d) => `📉 On Track: -${d} kg to reach goal`,
+      lossProgMsg: (cur, tgt) => `Current: ${cur} kg ➔ Target: ${tgt} kg. Lymphatic drainage and living nutrition are paying off.`,
+      lossFarBadge: (d) => `📉 -${d} kg to lose`,
+      lossFarTitle: (tgt, d) => `🎯 Heading towards ${tgt} kg (Delta: -${d} kg)`,
+      lossFarMsg: (cur) => `Current: ${cur} kg. Each regeneration cycle clears cellular ground. Progress at your own rhythm without forcing.`,
+      gainCloseBadge: (d) => `💪 +${d} kg (Almost there)`,
+      gainCloseTitle: (d) => `💪 Almost at the Peak: Only +${d} kg left!`,
+      gainCloseMsg: (cur, tgt) => `Current: ${cur} kg (Target: ${tgt} kg). Excellent cellular uptake of dense nutrients!`,
+      gainProgBadge: (d) => `📈 +${d} kg remaining`,
+      gainProgTitle: (d) => `📈 Assimilation Phase: +${d} kg left`,
+      gainProgMsg: (cur, tgt) => `Current: ${cur} kg ➔ Target: ${tgt} kg. Keep adding remineralizing whole foods (bananas, sprouted seeds, soaked nuts).`,
+      gainFarBadge: (d) => `📈 +${d} kg to gain`,
+      gainFarTitle: (d) => `🌱 Remineralization Goal: +${d} kg`,
+      gainFarMsg: (cur, tgt) => `Current: ${cur} kg (Target: ${tgt} kg). Support natural anabolism with whole living nutrition and restorative sleep.`
+    },
+    es: {
+      define: '+ Definir',
+      unsetTitle: '🎯 Objetivo de Peso No Definido',
+      unsetMsg: 'Defina su peso fisiológico ideal para activar el seguimiento dinámico y trazar su meta en el gráfico.',
+      targetPrefix: '🎯 Meta:',
+      targetSetNoCurMsg: 'Registre su primer peso para calcular la diferencia y su trayectoria vital.',
+      reachedBadge: '🎯 Alcanzado',
+      reachedTitle: '🌟 ¡Felicitaciones! Peso Objetivo Alcanzado',
+      reachedMsg: (cur, tgt) => `Está en ${cur} kg, exactamente en su objetivo de ${tgt} kg. ¡Excelente armonización metabólica! Mantenga el equilibrio vital.`,
+      lossCloseBadge: (d) => `🔥 -${d} kg (Muy cerca)`,
+      lossCloseTitle: (d) => `🔥 Recta Final: ¡Solo faltan ${d} kg!`,
+      lossCloseMsg: (cur, tgt) => `Actual: ${cur} kg (Meta: ${tgt} kg). La meta está muy cerca, continúe con la hidratación y el drenaje suave.`,
+      lossProgBadge: (d) => `📉 -${d} kg restante`,
+      lossProgTitle: (d) => `📉 En Buen Camino: -${d} kg para alcanzar la meta`,
+      lossProgMsg: (cur, tgt) => `Actual: ${cur} kg ➔ Meta: ${tgt} kg. El drenaje linfático y la alimentación viva están dando frutos.`,
+      lossFarBadge: (d) => `📉 -${d} kg por perder`,
+      lossFarTitle: (tgt, d) => `🎯 Rumbo a ${tgt} kg (Diferencia: -${d} kg)`,
+      lossFarMsg: (cur) => `Actual: ${cur} kg. Cada ciclo de regeneración limpia el terreno celular. Progrese a su ritmo sin forzar.`,
+      gainCloseBadge: (d) => `💪 +${d} kg (Casi logrado)`,
+      gainCloseTitle: (d) => `💪 Casi en la Cima: ¡Solo faltan +${d} kg!`,
+      gainCloseMsg: (cur, tgt) => `Actual: ${cur} kg (Meta: ${tgt} kg). ¡Excelente asimilación celular de nutrientes densos!`,
+      gainProgBadge: (d) => `📈 +${d} kg restante`,
+      gainProgTitle: (d) => `📈 Fase de Asimilación: +${d} kg restante`,
+      gainProgMsg: (cur, tgt) => `Actual: ${cur} kg ➔ Meta: ${tgt} kg. Continúe con alimentos remineralizantes (plátanos, semillas germinadas, frutos secos remojados).`,
+      gainFarBadge: (d) => `📈 +${d} kg por ganar`,
+      gainFarTitle: (d) => `🌱 Objetivo de Remineralización: +${d} kg`,
+      gainFarMsg: (cur, tgt) => `Actual: ${cur} kg (Meta: ${tgt} kg). Apoye el anabolismo natural con nutrición densa y sueño reparador.`
+    }
+  };
+
+  const wDict = weightLocales[langKey] || weightLocales.fr;
+
   if (isNaN(targetWeight) || targetWeight <= 20 || targetWeight > 300) {
     return {
       status: 'unset',
-      badgeText: '+ Définir',
+      badgeText: wDict.define,
       badgeColor: '#60a5fa',
       badgeBg: 'rgba(96,165,250,0.14)',
-      title: '🎯 Objectif de Poids Non Défini',
-      message: 'Définissez votre poids physiologique idéal pour activer le suivi dynamique et tracer votre ligne de mire sur le graphique.',
+      title: wDict.unsetTitle,
+      message: wDict.unsetMsg,
       progressPct: null,
       delta: null,
       isGoalReached: false
@@ -11176,8 +11323,8 @@ function calculateTargetWeightInsight(curWeight, targetWeight, startWeight) {
       badgeText: `${targetWeight.toFixed(1)} kg`,
       badgeColor: '#60a5fa',
       badgeBg: 'rgba(96,165,250,0.14)',
-      title: `🎯 Cible : ${targetWeight.toFixed(1)} kg`,
-      message: 'Enregistrez votre première pesée pour calculer votre écart et votre trajectoire vitale.',
+      title: `${wDict.targetPrefix} ${targetWeight.toFixed(1)} kg`,
+      message: wDict.targetSetNoCurMsg,
       progressPct: null,
       delta: null,
       isGoalReached: false
@@ -11191,11 +11338,11 @@ function calculateTargetWeightInsight(curWeight, targetWeight, startWeight) {
   if (absDelta <= 0.2) {
     return {
       status: 'reached',
-      badgeText: `🎯 Atteint (${targetWeight.toFixed(1)} kg)`,
+      badgeText: `${wDict.reachedBadge} (${targetWeight.toFixed(1)} kg)`,
       badgeColor: '#34d399',
       badgeBg: 'rgba(52,211,153,0.18)',
-      title: '🌟 Félicitations ! Poids Cible Atteint',
-      message: `Vous êtes à ${curWeight.toFixed(1)} kg, exactement sur votre objectif de ${targetWeight.toFixed(1)} kg. Bravo pour cette harmonisation métabolique ! Maintenez l'équilibre de vitalité.`,
+      title: wDict.reachedTitle,
+      message: wDict.reachedMsg(curWeight.toFixed(1), targetWeight.toFixed(1)),
       progressPct: 100,
       delta: 0,
       isGoalReached: true
@@ -11219,11 +11366,11 @@ function calculateTargetWeightInsight(curWeight, targetWeight, startWeight) {
     if (isVeryClose) {
       return {
         status: 'loss_very_close',
-        badgeText: `🔥 -${delta.toFixed(1)} kg (Tout proche)`,
+        badgeText: wDict.lossCloseBadge(delta.toFixed(1)),
         badgeColor: '#10b981',
         badgeBg: 'rgba(16,185,129,0.18)',
-        title: `🔥 Dernière Ligne Droite : Plus que ${delta.toFixed(1)} kg !`,
-        message: `Actuel : ${curWeight.toFixed(1)} kg (cible ${targetWeight.toFixed(1)} kg). Le but est à portée de main, continuez les fenêtres d'hydratation et le drainage doux.`,
+        title: wDict.lossCloseTitle(delta.toFixed(1)),
+        message: wDict.lossCloseMsg(curWeight.toFixed(1), targetWeight.toFixed(1)),
         progressPct: progressPct !== null ? progressPct : 90,
         delta,
         isGoalReached: false
@@ -11231,11 +11378,11 @@ function calculateTargetWeightInsight(curWeight, targetWeight, startWeight) {
     } else if (isClose) {
       return {
         status: 'loss_in_progress',
-        badgeText: `📉 -${delta.toFixed(1)} kg restant`,
+        badgeText: wDict.lossProgBadge(delta.toFixed(1)),
         badgeColor: '#60a5fa',
         badgeBg: 'rgba(96,165,250,0.15)',
-        title: `📉 En Bonne Voie : -${delta.toFixed(1)} kg pour atteindre la cible`,
-        message: `Actuel : ${curWeight.toFixed(1)} kg ➔ Cible : ${targetWeight.toFixed(1)} kg. Le drainage lymphatique et l'alimentation vivante portent leurs fruits.`,
+        title: wDict.lossProgTitle(delta.toFixed(1)),
+        message: wDict.lossProgMsg(curWeight.toFixed(1), targetWeight.toFixed(1)),
         progressPct: progressPct !== null ? progressPct : 60,
         delta,
         isGoalReached: false
@@ -11243,11 +11390,11 @@ function calculateTargetWeightInsight(curWeight, targetWeight, startWeight) {
     } else {
       return {
         status: 'loss_far',
-        badgeText: `📉 -${delta.toFixed(1)} kg à perdre`,
+        badgeText: wDict.lossFarBadge(delta.toFixed(1)),
         badgeColor: '#818cf8',
         badgeBg: 'rgba(129,140,248,0.15)',
-        title: `🎯 Cap sur ${targetWeight.toFixed(1)} kg (Écart : -${delta.toFixed(1)} kg)`,
-        message: `Actuel : ${curWeight.toFixed(1)} kg. Chaque cycle de régénération nettoie le terrain cellulaire. Progressez à votre rythme sans forcer.`,
+        title: wDict.lossFarTitle(targetWeight.toFixed(1), delta.toFixed(1)),
+        message: wDict.lossFarMsg(curWeight.toFixed(1)),
         progressPct: progressPct !== null ? progressPct : 30,
         delta,
         isGoalReached: false
@@ -11272,11 +11419,11 @@ function calculateTargetWeightInsight(curWeight, targetWeight, startWeight) {
     if (isVeryClose) {
       return {
         status: 'gain_very_close',
-        badgeText: `💪 +${absDelta.toFixed(1)} kg (Presque atteint)`,
+        badgeText: wDict.gainCloseBadge(absDelta.toFixed(1)),
         badgeColor: '#34d399',
         badgeBg: 'rgba(52,211,153,0.18)',
-        title: `💪 Presque au Sommet : Plus que +${absDelta.toFixed(1)} kg !`,
-        message: `Actuel : ${curWeight.toFixed(1)} kg (cible ${targetWeight.toFixed(1)} kg). Excellente assimilation cellulaire des nutriments denses !`,
+        title: wDict.gainCloseTitle(absDelta.toFixed(1)),
+        message: wDict.gainCloseMsg(curWeight.toFixed(1), targetWeight.toFixed(1)),
         progressPct: progressPct !== null ? progressPct : 90,
         delta,
         isGoalReached: false
@@ -11284,11 +11431,11 @@ function calculateTargetWeightInsight(curWeight, targetWeight, startWeight) {
     } else if (isClose) {
       return {
         status: 'gain_in_progress',
-        badgeText: `📈 +${absDelta.toFixed(1)} kg restant`,
+        badgeText: wDict.gainProgBadge(absDelta.toFixed(1)),
         badgeColor: '#38bdf8',
         badgeBg: 'rgba(56,189,248,0.15)',
-        title: `📈 Phase d'Assimilation : +${absDelta.toFixed(1)} kg restant`,
-        message: `Actuel : ${curWeight.toFixed(1)} kg ➔ Cible : ${targetWeight.toFixed(1)} kg. Poursuivez l'apport d'aliments reminéralisants (bananes, graines germées, oléagineux trempés).`,
+        title: wDict.gainProgTitle(absDelta.toFixed(1)),
+        message: wDict.gainProgMsg(curWeight.toFixed(1), targetWeight.toFixed(1)),
         progressPct: progressPct !== null ? progressPct : 55,
         delta,
         isGoalReached: false
@@ -11296,11 +11443,11 @@ function calculateTargetWeightInsight(curWeight, targetWeight, startWeight) {
     } else {
       return {
         status: 'gain_far',
-        badgeText: `📈 +${absDelta.toFixed(1)} kg à gagner`,
+        badgeText: wDict.gainFarBadge(absDelta.toFixed(1)),
         badgeColor: '#a78bfa',
         badgeBg: 'rgba(167,139,250,0.15)',
-        title: `🌱 Objectif Reminéralisation : +${absDelta.toFixed(1)} kg`,
-        message: `Actuel : ${curWeight.toFixed(1)} kg (Cible : ${targetWeight.toFixed(1)} kg). Soutenez l'anabolisme naturel avec une nutrition dense et un sommeil réparateur.`,
+        title: wDict.gainFarTitle(absDelta.toFixed(1)),
+        message: wDict.gainFarMsg(curWeight.toFixed(1), targetWeight.toFixed(1)),
         progressPct: progressPct !== null ? progressPct : 25,
         delta,
         isGoalReached: false
@@ -11512,19 +11659,23 @@ function renderWeightChart() {
   // 🎯 Calculate Target Weight Insight
   const insight = calculateTargetWeightInsight(curWeightVal, targetWeightVal, startWeightVal);
 
+  const tFunc = window.vitalTrackI18n?.t || ((k) => k);
+
   if (targetWeightEl) {
     if (insight.status === 'unset') {
+      const setLabel = tFunc('weight.setTarget') || 'Définir cible';
       targetWeightEl.innerHTML = `
         <button type="button" onclick="event.stopPropagation(); openTargetWeightModal()" class="btn-set-target-cta">
-          <i class="ri-add-circle-fill"></i> <span>Définir cible</span>
+          <i class="ri-add-circle-fill"></i> <span>${setLabel}</span>
         </button>
       `;
     } else {
+      const modTitle = tFunc('weight.modifyGoal') || "Modifier l'objectif";
       targetWeightEl.innerHTML = `
         <div style="display:flex; flex-direction:column; gap:2px; width:100%;">
           <div style="display:flex; align-items:baseline; justify-content:space-between; width:100%;">
             <span style="font-size:1.35rem; font-weight:800; color:#60a5fa;">${targetWeightVal.toFixed(1)} kg</span>
-            <button type="button" onclick="event.stopPropagation(); openTargetWeightModal()" class="target-edit-chip" title="Modifier l'objectif"><i class="ri-pencil-line"></i></button>
+            <button type="button" onclick="event.stopPropagation(); openTargetWeightModal()" class="target-edit-chip" title="${modTitle}"><i class="ri-pencil-line"></i></button>
           </div>
           <div style="display:flex; align-items:center; gap:6px; margin-top:2px;">
             <span style="font-size:0.7rem; font-weight:700; color:${insight.badgeColor}; background:${insight.badgeBg}; padding:2px 6px; border-radius:6px;">
@@ -11539,6 +11690,7 @@ function renderWeightChart() {
   // 💡 Dynamic Insight Banner
   if (bannerEl) {
     if (insight.status === 'unset') {
+      const defBtn = tFunc('weight.defineBtn') || '+ Définir';
       bannerEl.style.display = 'flex';
       bannerEl.style.background = 'rgba(96,165,250,0.06)';
       bannerEl.style.borderColor = 'rgba(96,165,250,0.2)';
@@ -11551,7 +11703,7 @@ function renderWeightChart() {
           <div style="font-size:0.78rem; color:var(--text-dim); margin-top:2px; line-height:1.4;">${insight.message}</div>
         </div>
         <button type="button" onclick="openTargetWeightModal()" class="chip-btn" style="background:#60a5fa; color:#0f172a; font-weight:700; border:none; padding:6px 12px; font-size:0.78rem; flex-shrink:0; cursor:pointer;">
-          + Définir
+          ${defBtn}
         </button>
       `;
     } else {
@@ -11561,10 +11713,13 @@ function renderWeightChart() {
       bannerEl.style.background = bgCol;
       bannerEl.style.borderColor = borderCol;
 
+      const progressTitle = tFunc('weight.progressTowardsGoal') || "Progression vers l'objectif";
+      const modLabel = tFunc('common.modify') || 'Modifier';
+
       const progressHtml = insight.progressPct !== null ? `
         <div style="margin-top:8px;">
           <div style="display:flex; justify-content:space-between; font-size:0.72rem; font-weight:700; margin-bottom:4px;">
-            <span style="color:var(--text-dim);">Progression vers l'objectif</span>
+            <span style="color:var(--text-dim);">${progressTitle}</span>
             <span style="color:${insight.badgeColor};">${insight.progressPct}%</span>
           </div>
           <div style="height:6px; background:rgba(255,255,255,0.08); border-radius:10px; overflow:hidden;">
@@ -11582,7 +11737,7 @@ function renderWeightChart() {
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
               <div style="font-size:0.86rem; font-weight:800; color:${insight.badgeColor};">${insight.title}</div>
               <button type="button" onclick="openTargetWeightModal()" style="background:none; border:none; color:var(--text-dim); font-size:0.75rem; cursor:pointer; display:flex; align-items:center; gap:4px; padding:0;">
-                <i class="ri-edit-line"></i> Modifier
+                <i class="ri-edit-line"></i> ${modLabel}
               </button>
             </div>
             <div style="font-size:0.78rem; color:var(--text-dim); margin-top:3px; line-height:1.45;">${insight.message}</div>
@@ -11867,297 +12022,419 @@ window.closeCircadianScienceModal = closeCircadianScienceModal;
 
 function getCircadianPhaseData(h, m = 0) {
   const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-  
-  let shortCycle = '';
-  let fullCycle = '';
-  let iconClass = '';
-  let descText = '';
-  let phaseColor = '';
-  let phaseWindow = '';
-  let organName = '';
-  let organWindow = '';
-  let organIcon = '🫘';
-  let organBadgeBg = 'rgba(245,158,11,0.12)';
-  let organColor = '#f59e0b';
-  let hormoneStatus = '';
-  let metabolismTag = '';
-  let hormoneIcon = '⚡';
-  let hormoneBadgeBg = 'rgba(56,189,248,0.12)';
-  let hormoneColor = '#38bdf8';
-  let actionChips = [];
+  const currentLang = window.vitalTrackI18n?.getLanguage?.() || 'fr';
+  const langKey = currentLang.startsWith('fr') ? (currentLang === 'fr-CA' ? 'fr-CA' : 'fr') : currentLang;
+
+  const circadianPhases = {
+    fr: {
+      '4-6': {
+        short: 'ÉLIMINATION (Aube)', full: 'ÉLIMINATION & DRAINAGE LYMPHATIQUE', icon: 'ri-sun-cloudy-fill', window: '04h - 06h',
+        desc: "04h - 06h • Pic de filtration rénale et réveil des émonctoires. Hydratation tiède à jeun (eau citronnée, sève).",
+        organ: "Poumons & Lymphe (03h-05h) • Gros Intestin (05h-07h)", organIcon: "🫁", organBg: "rgba(245,158,11,0.15)", organColor: "#f59e0b",
+        hormone: "Montée du Cortisol • Insuline Basse (Détox active)", metabolism: "Catabolisme Détox", hormoneIcon: "⚡", hormoneBg: "rgba(56,189,248,0.15)", hormoneColor: "#38bdf8",
+        chips: [{ icon: '💧', label: 'Eau Tiède Citronnée' }, { icon: '🌬️', label: 'Respiration Prānique' }]
+      },
+      '6-8': {
+        short: 'ÉLIMINATION', full: 'ÉVACUATION DU CÔLON & RÉVEIL', icon: 'ri-sun-foggy-fill', window: '06h - 08h',
+        desc: "06h - 08h • Le côlon est en motilité péristaltique maximale. Favorisez l'élimination et la lumière naturelle.",
+        organ: "Gros Intestin (05h-07h) • Estomac (07h-09h)", organIcon: "🌱", organBg: "rgba(234,179,8,0.15)", organColor: "#eab308",
+        hormone: "Pic Matinal de Cortisol (Éveil) • Arrêt Mélatonine", metabolism: "Éveil & Motilité", hormoneIcon: "☀️", hormoneBg: "rgba(245,158,11,0.15)", hormoneColor: "#f59e0b",
+        chips: [{ icon: '🍋', label: 'Hydratation Électrolytique' }, { icon: '🚶', label: 'Mouvement & Étirements' }]
+      },
+      '8-10': {
+        short: 'PRÉPARATION', full: 'RÉVEIL ENZYMATIQUE & ESTOMAC', icon: 'ri-sun-foggy-fill', window: '08h - 10h',
+        desc: "08h - 10h • Préchauffage des sucs gastriques. Privilégiez les fruits vivants aqueux ou prolongez le jeûne.",
+        organ: "Estomac (07h-09h) • Rate & Pancréas (09h-11h)", organIcon: "🫘", organBg: "rgba(234,179,8,0.15)", organColor: "#eab308",
+        hormone: "Sécrétion de Ghréline • Enzymes Salivaires Actives", metabolism: "Transition Digestive", hormoneIcon: "⚡", hormoneBg: "rgba(56,189,248,0.15)", hormoneColor: "#38bdf8",
+        chips: [{ icon: '🍉', label: 'Fruits Aqueux Vivants' }, { icon: '🍵', label: 'Infusion Dépurative' }]
+      },
+      '10-12': {
+        short: 'TRANSITION', full: 'ACTIVATION PANCRÉATIQUE & VIGILANCE', icon: 'ri-sun-line', window: '10h - 12h',
+        desc: "10h - 12h • Pic de clarté mentale et préparation enzymatique de la rate et du pancréas avant le déjeuner.",
+        organ: "Rate & Pancréas (09h-11h) • Cœur (11h-13h)", organIcon: "⚡", organBg: "rgba(16,185,129,0.15)", organColor: "#10b981",
+        hormone: "Pic de Vigilance Cérébrale • Dopamine Active", metabolism: "Optimisation Énergétique", hormoneIcon: "🧠", hormoneBg: "rgba(168,85,247,0.15)", hormoneColor: "#a855f7",
+        chips: [{ icon: '💧', label: 'Hydratation Pré-Repas' }, { icon: '🥗', label: 'Repas Vivant' }]
+      },
+      '12-14': {
+        short: 'APPROPRIATION', full: 'APPROPRIATION & FEU DIGESTIF', icon: 'ri-sun-fill', window: '12h - 14h',
+        desc: "12h - 14h • Feu digestif au maximum. Fenêtre optimale pour le repas principal dense, alcalinisant et nutritif.",
+        organ: "Cœur (11h-13h) • Intestin Grêle (13h-15h)", organIcon: "🔥", organBg: "rgba(16,185,129,0.15)", organColor: "#10b981",
+        hormone: "Sensibilité Maximale à l'Insuline • Pic Sucs Gastriques", metabolism: "Anabolisme Nutritionnel", hormoneIcon: "🥗", hormoneBg: "rgba(16,185,129,0.15)", hormoneColor: "#10b981",
+        chips: [{ icon: '🥗', label: 'Repas Dense & Vivant' }, { icon: '🥑', label: 'Lipides Sains & Chlorophylle' }]
+      },
+      '14-16': {
+        short: 'ASSIMILATION', full: 'ABSORPTION MICRONUTRITIONNELLE', icon: 'ri-sun-fill', window: '14h - 16h',
+        desc: "14h - 16h • L'intestin grêle filtre et absorbe les micronutriments. Marche digestive recommandée.",
+        organ: "Intestin Grêle (13h-15h) • Vessie (15h-17h)", organIcon: "🧬", organBg: "rgba(16,185,129,0.15)", organColor: "#10b981",
+        hormone: "Captation Cellulaire du Glucose • Transport Actif", metabolism: "Assimilation & Stockage", hormoneIcon: "🚶", hormoneBg: "rgba(56,189,248,0.15)", hormoneColor: "#38bdf8",
+        chips: [{ icon: '🚶', label: 'Marche Post-Prandiale' }, { icon: '🫖', label: 'Tisane Digestive (Boldo/Camomille)' }]
+      },
+      '16-18': {
+        short: 'FILTRATION', full: 'DRAINAGE URINAIRE & REINS', icon: 'ri-sunset-fill', window: '16h - 18h',
+        desc: "16h - 18h • Filtration active de l'urée et des toxines par les reins. Idéal pour une tisane minéralisante.",
+        organ: "Vessie (15h-17h) • Reins & Filtration (17h-19h)", organIcon: "💧", organBg: "rgba(20,184,166,0.15)", organColor: "#14b8a6",
+        hormone: "Chute Graduelle du Cortisol • Thermorégulation", metabolism: "Épuration Rénale", hormoneIcon: "🫖", hormoneBg: "rgba(20,184,166,0.15)", hormoneColor: "#14b8a6",
+        chips: [{ icon: '🌿', label: 'Infusion Ortie / Abuta' }, { icon: '💧', label: 'Hydratation Rénale' }]
+      },
+      '18-20': {
+        short: 'APPROPRIATION', full: 'CLÔTURE DU REPAS & TRANSITION', icon: 'ri-sunset-fill', window: '18h - 20h',
+        desc: "18h - 20h • Fin de la fenêtre d'alimentation. Dîner léger avant 20h pour permettre la vidange gastrique.",
+        organ: "Reins (17h-19h) • Péricarde & Circulation (19h-21h)", organIcon: "🥣", organBg: "rgba(20,184,166,0.15)", organColor: "#14b8a6",
+        hormone: "Baisse de l'Insuline • Début du Repos Digestif", metabolism: "Transition Nocturne", hormoneIcon: "🍵", hormoneBg: "rgba(56,189,248,0.15)", hormoneColor: "#38bdf8",
+        chips: [{ icon: '🍲', label: 'Dîner Léger & Minéral' }, { icon: '🍵', label: 'Tisane Digestive' }]
+      },
+      '20-22': {
+        short: 'ASSIMILATION', full: 'ASSIMILATION CELLULAIRE & DÉTENTE', icon: 'ri-moon-fill', window: '20h - 22h',
+        desc: "20h - 22h • Montée de la mélatonine et activation du Complexe Moteur Migrant (CMM) pour nettoyer le tube digestif.",
+        organ: "Péricarde (19h-21h) • Système Endocrinien (21h-23h)", organIcon: "🌙", organBg: "rgba(129,140,248,0.15)", organColor: "#818cf8",
+        hormone: "Sécrétion de Mélatonine • Chute Température Corporelle", metabolism: "Repos Métabolique", hormoneIcon: "🕯️", hormoneBg: "rgba(129,140,248,0.15)", hormoneColor: "#818cf8",
+        chips: [{ icon: '🕯️', label: 'Lumière Tamisée / Sans Écrans' }, { icon: '🫁', label: 'Cohérence Cardiaque 5.5s' }]
+      },
+      '22-0': {
+        short: 'SOMMEIL', full: 'ÉQUILIBRE ENDOCRINIEN & SOMMEIL', icon: 'ri-moon-fill', window: '22h - 00h',
+        desc: "22h - 00h • Sommeil réparateur. Le cerveau active le drainage glymphatique pour évacuer les déchets métaboliques.",
+        organ: "Système Endocrinien (21h-23h) • Vésicule (23h-01h)", organIcon: "😴", organBg: "rgba(129,140,248,0.15)", organColor: "#818cf8",
+        hormone: "Hormone de Croissance (GH) • Chute Tension Artérielle", metabolism: "Régénération Tissulaire", hormoneIcon: "🛌", hormoneBg: "rgba(168,85,247,0.15)", hormoneColor: "#a855f7",
+        chips: [{ icon: '🛌', label: 'Sommeil Réparateur' }, { icon: '🧠', label: 'Nettoyage Glymphatique' }]
+      },
+      '0-2': {
+        short: 'AUTOPHAGIE', full: 'DÉTOX VÉSICULAIRE & AUTOLYSE', icon: 'ri-moon-clear-fill', window: '00h - 02h',
+        desc: "00h - 02h • Autophagie cellulaire active : recyclage des mitochondries usées et des protéines altérées.",
+        organ: "Vésicule Biliaire (23h-01h) • Foie (01h-03h)", organIcon: "🧬", organBg: "rgba(168,85,247,0.15)", organColor: "#a855f7",
+        hormone: "Pic d'Hormone de Croissance • Autophagie Phase 1", metabolism: "Autophagie & Réparation ADN", hormoneIcon: "🛡️", hormoneBg: "rgba(168,85,247,0.15)", hormoneColor: "#a855f7",
+        chips: [{ icon: '🛡️', label: 'Autophagie Cellulaire' }, { icon: '✨', label: 'Recyclage Mitochondries' }]
+      },
+      '2-4': {
+        short: 'RÉGÉNÉRATION', full: 'PURIFICATION DU FOIE & SANG', icon: 'ri-moon-clear-fill', window: '02h - 04h',
+        desc: "02h - 04h • Le foie accomplit son pic de bio-transformation enzymatique nocturne. Tout le sang est filtré et épuré.",
+        organ: "Foie & Détox Profonde (01h-03h) • Poumons (03h-05h)", organIcon: "🌿", organBg: "rgba(168,85,247,0.15)", organColor: "#a855f7",
+        hormone: "Filtration Hépato-Biliaire • Synthèse Antioxydante", metabolism: "Dépuration Sanguine", hormoneIcon: "🩸", hormoneBg: "rgba(239,68,68,0.15)", hormoneColor: "#ef4444",
+        chips: [{ icon: '🩸', label: 'Purification du Sang' }, { icon: '💤', label: 'Repos Réparateur Total' }]
+      }
+    },
+    'fr-CA': {
+      '4-6': {
+        short: 'ÉLIMINATION (Aube)', full: 'ÉLIMINATION & DRAINAGE LYMPHATIQUE', icon: 'ri-sun-cloudy-fill', window: '04h - 06h',
+        desc: "04h - 06h • Pic de filtration rénale et réveil des émonctoires. Hydratation tiède à jeun (eau citronnée, sève).",
+        organ: "Poumons & Lymphe (03h-05h) • Gros Intestin (05h-07h)", organIcon: "🫁", organBg: "rgba(245,158,11,0.15)", organColor: "#f59e0b",
+        hormone: "Montée du Cortisol • Insuline Basse (Détox active)", metabolism: "Catabolisme Détox", hormoneIcon: "⚡", hormoneBg: "rgba(56,189,248,0.15)", hormoneColor: "#38bdf8",
+        chips: [{ icon: '💧', label: 'Eau Tiède Citronnée' }, { icon: '🌬️', label: 'Respiration Prānique' }]
+      },
+      '6-8': {
+        short: 'ÉLIMINATION', full: 'ÉVACUATION DU CÔLON & RÉVEIL', icon: 'ri-sun-foggy-fill', window: '06h - 08h',
+        desc: "06h - 08h • Le côlon est en motilité péristaltique maximale. Favorisez l'élimination et la lumière du jour.",
+        organ: "Gros Intestin (05h-07h) • Estomac (07h-09h)", organIcon: "🌱", organBg: "rgba(234,179,8,0.15)", organColor: "#eab308",
+        hormone: "Pic Matinal de Cortisol (Éveil) • Arrêt Mélatonine", metabolism: "Éveil & Motilité", hormoneIcon: "☀️", hormoneBg: "rgba(245,158,11,0.15)", hormoneColor: "#f59e0b",
+        chips: [{ icon: '🍋', label: 'Hydratation Électrolytique' }, { icon: '🚶', label: 'Mouvement & Étirements' }]
+      },
+      '8-10': {
+        short: 'PRÉPARATION', full: 'RÉVEIL ENZYMATIQUE & ESTOMAC', icon: 'ri-sun-foggy-fill', window: '08h - 10h',
+        desc: "08h - 10h • Préchauffage des sucs gastriques. Privilégiez les fruits vivants et baies ou prolongez le jeûne.",
+        organ: "Estomac (07h-09h) • Rate & Pancréas (09h-11h)", organIcon: "🫘", organBg: "rgba(234,179,8,0.15)", organColor: "#eab308",
+        hormone: "Sécrétion de Ghréline • Enzymes Salivaires Actives", metabolism: "Transition Digestive", hormoneIcon: "⚡", hormoneBg: "rgba(56,189,248,0.15)", hormoneColor: "#38bdf8",
+        chips: [{ icon: '🍉', label: 'Fruits Aqueux & Baies' }, { icon: '🍵', label: 'Infusion Dépurative' }]
+      },
+      '10-12': {
+        short: 'TRANSITION', full: 'ACTIVATION PANCRÉATIQUE & VIGILANCE', icon: 'ri-sun-line', window: '10h - 12h',
+        desc: "10h - 12h • Pic de clarté mentale et préparation enzymatique de la rate et du pancréas avant le dîner.",
+        organ: "Rate & Pancréas (09h-11h) • Cœur (11h-13h)", organIcon: "⚡", organBg: "rgba(16,185,129,0.15)", organColor: "#10b981",
+        hormone: "Pic de Vigilance Cérébrale • Dopamine Active", metabolism: "Optimisation Énergétique", hormoneIcon: "🧠", hormoneBg: "rgba(168,85,247,0.15)", hormoneColor: "#a855f7",
+        chips: [{ icon: '💧', label: 'Hydratation Pré-Repas' }, { icon: '🥗', label: 'Repas Vivant' }]
+      },
+      '12-14': {
+        short: 'APPROPRIATION', full: 'APPROPRIATION & FEU DIGESTIF', icon: 'ri-sun-fill', window: '12h - 14h',
+        desc: "12h - 14h • Feu digestif au maximum. Fenêtre optimale pour le dîner principal dense, alcalinisant et nutritif.",
+        organ: "Cœur (11h-13h) • Intestin Grêle (13h-15h)", organIcon: "🔥", organBg: "rgba(16,185,129,0.15)", organColor: "#10b981",
+        hormone: "Sensibilité Maximale à l'Insuline • Pic Sucs Gastriques", metabolism: "Anabolisme Nutritionnel", hormoneIcon: "🥗", hormoneBg: "rgba(16,185,129,0.15)", hormoneColor: "#10b981",
+        chips: [{ icon: '🥗', label: 'Repas Dense & Vivant' }, { icon: '🥑', label: 'Lipides Sains & Chlorophylle' }]
+      },
+      '14-16': {
+        short: 'ASSIMILATION', full: 'ABSORPTION MICRONUTRITIONNELLE', icon: 'ri-sun-fill', window: '14h - 16h',
+        desc: "14h - 16h • L'intestin grêle filtre et absorbe les micronutriments. Marche digestive recommandée.",
+        organ: "Intestin Grêle (13h-15h) • Vessie (15h-17h)", organIcon: "🧬", organBg: "rgba(16,185,129,0.15)", organColor: "#10b981",
+        hormone: "Captation Cellulaire du Glucose • Transport Actif", metabolism: "Assimilation & Stockage", hormoneIcon: "🚶", hormoneBg: "rgba(56,189,248,0.15)", hormoneColor: "#38bdf8",
+        chips: [{ icon: '🚶', label: 'Marche Post-Prandiale' }, { icon: '🫖', label: 'Tisane Digestive' }]
+      },
+      '16-18': {
+        short: 'FILTRATION', full: 'DRAINAGE URINAIRE & REINS', icon: 'ri-sunset-fill', window: '16h - 18h',
+        desc: "16h - 18h • Filtration active de l'urée et des toxines par les reins. Idéal pour une tisane minéralisante.",
+        organ: "Vessie (15h-17h) • Reins & Filtration (17h-19h)", organIcon: "💧", organBg: "rgba(20,184,166,0.15)", organColor: "#14b8a6",
+        hormone: "Chute Graduelle du Cortisol • Thermorégulation", metabolism: "Épuration Rénale", hormoneIcon: "🫖", hormoneBg: "rgba(20,184,166,0.15)", hormoneColor: "#14b8a6",
+        chips: [{ icon: '🌿', label: 'Infusion Ortie / Abuta' }, { icon: '💧', label: 'Hydratation Rénale' }]
+      },
+      '18-20': {
+        short: 'APPROPRIATION', full: 'CLÔTURE DU REPAS & TRANSITION', icon: 'ri-sunset-fill', window: '18h - 20h',
+        desc: "18h - 20h • Fin de la fenêtre d'alimentation. Souper léger avant 20h pour permettre la vidange gastrique.",
+        organ: "Reins (17h-19h) • Péricarde & Circulation (19h-21h)", organIcon: "🥣", organBg: "rgba(20,184,166,0.15)", organColor: "#14b8a6",
+        hormone: "Baisse de l'Insuline • Début du Repos Digestif", metabolism: "Transition Nocturne", hormoneIcon: "🍵", hormoneBg: "rgba(56,189,248,0.15)", hormoneColor: "#38bdf8",
+        chips: [{ icon: '🍲', label: 'Souper Léger & Minéral' }, { icon: '🍵', label: 'Tisane Digestive' }]
+      },
+      '20-22': {
+        short: 'ASSIMILATION', full: 'ASSIMILATION CELLULAIRE & DÉTENTE', icon: 'ri-moon-fill', window: '20h - 22h',
+        desc: "20h - 22h • Montée de la mélatonine et activation du Complexe Moteur Migrant (CMM) pour nettoyer le tube digestif.",
+        organ: "Péricarde (19h-21h) • Système Endocrinien (21h-23h)", organIcon: "🌙", organBg: "rgba(129,140,248,0.15)", organColor: "#818cf8",
+        hormone: "Sécrétion de Mélatonine • Chute Température Corporelle", metabolism: "Repos Métabolique", hormoneIcon: "🕯️", hormoneBg: "rgba(129,140,248,0.15)", hormoneColor: "#818cf8",
+        chips: [{ icon: '🕯️', label: 'Lumière Tamisée / Sans Écrans' }, { icon: '🫁', label: 'Cohérence Cardiaque 5.5s' }]
+      },
+      '22-0': {
+        short: 'SOMMEIL', full: 'ÉQUILIBRE ENDOCRINIEN & SOMMEIL', icon: 'ri-moon-fill', window: '22h - 00h',
+        desc: "22h - 00h • Sommeil réparateur. Le cerveau active le drainage glymphatique pour évacuer les déchets métaboliques.",
+        organ: "Système Endocrinien (21h-23h) • Vésicule (23h-01h)", organIcon: "😴", organBg: "rgba(129,140,248,0.15)", organColor: "#818cf8",
+        hormone: "Hormone de Croissance (GH) • Chute Tension Artérielle", metabolism: "Régénération Tissulaire", hormoneIcon: "🛌", hormoneBg: "rgba(168,85,247,0.15)", hormoneColor: "#a855f7",
+        chips: [{ icon: '🛌', label: 'Sommeil Réparateur' }, { icon: '🧠', label: 'Nettoyage Glymphatique' }]
+      },
+      '0-2': {
+        short: 'AUTOPHAGIE', full: 'DÉTOX VÉSICULAIRE & AUTOLYSE', icon: 'ri-moon-clear-fill', window: '00h - 02h',
+        desc: "00h - 02h • Autophagie cellulaire active : recyclage des mitochondries usées et des protéines altérées.",
+        organ: "Vésicule Biliaire (23h-01h) • Foie (01h-03h)", organIcon: "🧬", organBg: "rgba(168,85,247,0.15)", organColor: "#a855f7",
+        hormone: "Pic d'Hormone de Croissance • Autophagie Phase 1", metabolism: "Autophagie & Réparation ADN", hormoneIcon: "🛡️", hormoneBg: "rgba(168,85,247,0.15)", hormoneColor: "#a855f7",
+        chips: [{ icon: '🛡️', label: 'Autophagie Cellulaire' }, { icon: '✨', label: 'Recyclage Mitochondries' }]
+      },
+      '2-4': {
+        short: 'RÉGÉNÉRATION', full: 'PURIFICATION DU FOIE & SANG', icon: 'ri-moon-clear-fill', window: '02h - 04h',
+        desc: "02h - 04h • Le foie accomplit son pic de bio-transformation enzymatique nocturne. Tout le sang est filtré et épuré.",
+        organ: "Foie & Détox Profonde (01h-03h) • Poumons (03h-05h)", organIcon: "🌿", organBg: "rgba(168,85,247,0.15)", organColor: "#a855f7",
+        hormone: "Filtration Hépato-Biliaire • Synthèse Antioxydante", metabolism: "Dépuration Sanguine", hormoneIcon: "🩸", hormoneBg: "rgba(239,68,68,0.15)", hormoneColor: "#ef4444",
+        chips: [{ icon: '🩸', label: 'Purification du Sang' }, { icon: '💤', label: 'Repos Réparateur Total' }]
+      }
+    },
+    en: {
+      '4-6': {
+        short: 'ELIMINATION (Dawn)', full: 'ELIMINATION & LYMPH DRAINAGE', icon: 'ri-sun-cloudy-fill', window: '04:00 - 06:00',
+        desc: '04:00 - 06:00 • Peak renal filtration and emunctory awakening. Warm fasting hydration (lemon water).',
+        organ: 'Lungs & Lymph (03:00-05:00) • Large Intestine (05:00-07:00)', organIcon: '🫁', organBg: 'rgba(245,158,11,0.15)', organColor: '#f59e0b',
+        hormone: 'Cortisol Surge • Low Insulin (Active Detox)', metabolism: 'Detox Catabolism', hormoneIcon: '⚡', hormoneBg: 'rgba(56,189,248,0.15)', hormoneColor: '#38bdf8',
+        chips: [{ icon: '💧', label: 'Warm Lemon Water' }, { icon: '🌬️', label: 'Pranic Breathing' }]
+      },
+      '6-8': {
+        short: 'ELIMINATION', full: 'COLON EVACUATION & AWAKENING', icon: 'ri-sun-foggy-fill', window: '06:00 - 08:00',
+        desc: '06:00 - 08:00 • Maximum peristaltic motility of the colon. Promote natural evacuation and sunlight.',
+        organ: 'Large Intestine (05:00-07:00) • Stomach (07:00-09:00)', organIcon: '🌱', organBg: 'rgba(234,179,8,0.15)', organColor: '#eab308',
+        hormone: 'Morning Cortisol Peak • Melatonin Cessation', metabolism: 'Awakening & Motility', hormoneIcon: '☀️', hormoneBg: 'rgba(245,158,11,0.15)', hormoneColor: '#f59e0b',
+        chips: [{ icon: '🍋', label: 'Electrolyte Hydration' }, { icon: '🚶', label: 'Movement & Stretching' }]
+      },
+      '8-10': {
+        short: 'PREPARATION', full: 'ENZYMATIC WAKE-UP & STOMACH', icon: 'ri-sun-foggy-fill', window: '08:00 - 10:00',
+        desc: '08:00 - 10:00 • Gastric juices warming up. Prioritize living aqueous fruits or extend morning fast.',
+        organ: 'Stomach (07:00-09:00) • Spleen & Pancreas (09:00-11:00)', organIcon: '🫘', organBg: 'rgba(234,179,8,0.15)', organColor: '#eab308',
+        hormone: 'Ghrelin Secretion • Salivary Enzymes Active', metabolism: 'Digestive Transition', hormoneIcon: '⚡', hormoneBg: 'rgba(56,189,248,0.15)', hormoneColor: '#38bdf8',
+        chips: [{ icon: '🍉', label: 'Living Aqueous Fruits' }, { icon: '🍵', label: 'Detox Herbal Tea' }]
+      },
+      '10-12': {
+        short: 'TRANSITION', full: 'PANCREATIC ACTIVATION & ALERTNESS', icon: 'ri-sun-line', window: '10:00 - 12:00',
+        desc: '10:00 - 12:00 • Peak mental clarity and enzymatic readiness of spleen and pancreas.',
+        organ: 'Spleen & Pancreas (09:00-11:00) • Heart (11:00-13:00)', organIcon: '⚡', organBg: 'rgba(16,185,129,0.15)', organColor: '#10b981',
+        hormone: 'Mental Alertness Peak • Dopamine Active', metabolism: 'Energy Optimization', hormoneIcon: '🧠', hormoneBg: 'rgba(168,85,247,0.15)', hormoneColor: '#a855f7',
+        chips: [{ icon: '💧', label: 'Pre-Meal Hydration' }, { icon: '🥗', label: 'Living Meal' }]
+      },
+      '12-14': {
+        short: 'APPROPRIATION', full: 'APPROPRIATION & DIGESTIVE FIRE', icon: 'ri-sun-fill', window: '12:00 - 14:00',
+        desc: '12:00 - 14:00 • Peak digestive fire. Optimal window for nutrient-dense, alkalizing main meal.',
+        organ: 'Heart (11:00-13:00) • Small Intestine (13:00-15:00)', organIcon: '🔥', organBg: 'rgba(16,185,129,0.15)', organColor: '#10b981',
+        hormone: 'Maximum Insulin Sensitivity • Gastric Juice Peak', metabolism: 'Nutritional Anabolism', hormoneIcon: '🥗', hormoneBg: 'rgba(16,185,129,0.15)', hormoneColor: '#10b981',
+        chips: [{ icon: '🥗', label: 'Dense Living Meal' }, { icon: '🥑', label: 'Healthy Fats & Chlorophyll' }]
+      },
+      '14-16': {
+        short: 'ASSIMILATION', full: 'MICRONUTRIENT ABSORPTION', icon: 'ri-sun-fill', window: '14:00 - 16:00',
+        desc: '14:00 - 16:00 • Small intestine filters and absorbs micronutrients. Post-meal walking recommended.',
+        organ: 'Small Intestine (13:00-15:00) • Bladder (15:00-17:00)', organIcon: '🧬', organBg: 'rgba(16,185,129,0.15)', organColor: '#10b981',
+        hormone: 'Cellular Glucose Uptake • Active Transport', metabolism: 'Assimilation & Storage', hormoneIcon: '🚶', hormoneBg: 'rgba(56,189,248,0.15)', hormoneColor: '#38bdf8',
+        chips: [{ icon: '🚶', label: 'Post-Prandial Walk' }, { icon: '🫖', label: 'Digestive Herbal Tea' }]
+      },
+      '16-18': {
+        short: 'FILTRATION', full: 'URINARY & KIDNEY DRAINAGE', icon: 'ri-sunset-fill', window: '16:00 - 18:00',
+        desc: '16:00 - 18:00 • Active filtration of urea and acids by kidneys. Ideal for mineralizing herbal tea.',
+        organ: 'Bladder (15:00-17:00) • Kidneys & Filtration (17:00-19:00)', organIcon: '💧', organBg: 'rgba(20,184,166,0.15)', organColor: '#14b8a6',
+        hormone: 'Gradual Cortisol Drop • Thermoregulation', metabolism: 'Renal Clearance', hormoneIcon: '🫖', hormoneBg: 'rgba(20,184,166,0.15)', hormoneColor: '#14b8a6',
+        chips: [{ icon: '🌿', label: 'Nettle / Abuta Tea' }, { icon: '💧', label: 'Kidney Hydration' }]
+      },
+      '18-20': {
+        short: 'APPROPRIATION', full: 'MEAL CLOSING & TRANSITION', icon: 'ri-sunset-fill', window: '18:00 - 20:00',
+        desc: '18:00 - 20:00 • End of eating window. Light dinner before 20:00 to allow complete gastric emptying.',
+        organ: 'Kidneys (17:00-19:00) • Pericardium & Circulation (19:00-21:00)', organIcon: '🥣', organBg: 'rgba(20,184,166,0.15)', organColor: '#14b8a6',
+        hormone: 'Insulin Drop • Beginning of Digestive Rest', metabolism: 'Nocturnal Transition', hormoneIcon: '🍵', hormoneBg: 'rgba(56,189,248,0.15)', hormoneColor: '#38bdf8',
+        chips: [{ icon: '🍲', label: 'Light Mineral Dinner' }, { icon: '🍵', label: 'Digestive Tea' }]
+      },
+      '20-22': {
+        short: 'ASSIMILATION', full: 'CELLULAR ASSIMILATION & RELAXATION', icon: 'ri-moon-fill', window: '20:00 - 22:00',
+        desc: '20:00 - 22:00 • Melatonin surge and Migrating Motor Complex (MMC) activation to sweep the gut.',
+        organ: 'Pericardium (19:00-21:00) • Endocrine System (21:00-23:00)', organIcon: '🌙', organBg: 'rgba(129,140,248,0.15)', organColor: '#818cf8',
+        hormone: 'Melatonin Secretion • Body Temperature Drop', metabolism: 'Metabolic Rest', hormoneIcon: '🕯️', hormoneBg: 'rgba(129,140,248,0.15)', hormoneColor: '#818cf8',
+        chips: [{ icon: '🕯️', label: 'Dimmed Light / No Screens' }, { icon: '🫁', label: 'Heart Coherence 5.5s' }]
+      },
+      '22-0': {
+        short: 'SLEEP', full: 'ENDOCRINE BALANCE & SLEEP', icon: 'ri-moon-fill', window: '22:00 - 00:00',
+        desc: '22:00 - 00:00 • Restorative sleep. Glymphatic brain clearance washes away metabolic byproducts.',
+        organ: 'Endocrine System (21:00-23:00) • Gallbladder (23:00-01:00)', organIcon: '😴', organBg: 'rgba(129,140,248,0.15)', organColor: '#818cf8',
+        hormone: 'Growth Hormone (GH) • Blood Pressure Drop', metabolism: 'Tissue Regeneration', hormoneIcon: '🛌', hormoneBg: 'rgba(168,85,247,0.15)', hormoneColor: '#a855f7',
+        chips: [{ icon: '🛌', label: 'Restorative Sleep' }, { icon: '🧠', label: 'Glymphatic Clearance' }]
+      },
+      '0-2': {
+        short: 'AUTOPHAGY', full: 'GALLBLADDER DETOX & AUTOLYSIS', icon: 'ri-moon-clear-fill', window: '00:00 - 02:00',
+        desc: '00:00 - 02:00 • Active cellular autophagy: recycling damaged mitochondria and misfolded proteins.',
+        organ: 'Gallbladder (23:00-01:00) • Liver (01:00-03:00)', organIcon: '🧬', organBg: 'rgba(168,85,247,0.15)', organColor: '#a855f7',
+        hormone: 'Growth Hormone Peak • Autophagy Phase 1', metabolism: 'Autophagy & DNA Repair', hormoneIcon: '🛡️', hormoneBg: 'rgba(168,85,247,0.15)', hormoneColor: '#a855f7',
+        chips: [{ icon: '🛡️', label: 'Cellular Autophagy' }, { icon: '✨', label: 'Mitochondrial Recycling' }]
+      },
+      '2-4': {
+        short: 'REGENERATION', full: 'LIVER & BLOOD PURIFICATION', icon: 'ri-moon-clear-fill', window: '02:00 - 04:00',
+        desc: '02:00 - 04:00 • The liver completes its nocturnal enzymatic biotransformation peak. Blood is filtered.',
+        organ: 'Liver & Deep Detox (01:00-03:00) • Lungs (03:00-05:00)', organIcon: '🌿', organBg: 'rgba(168,85,247,0.15)', organColor: '#a855f7',
+        hormone: 'Hepato-Biliary Clearance • Antioxidant Synthesis', metabolism: 'Blood Depuration', hormoneIcon: '🩸', hormoneBg: 'rgba(239,68,68,0.15)', hormoneColor: '#ef4444',
+        chips: [{ icon: '🩸', label: 'Blood Purification' }, { icon: '💤', label: 'Deep Restorative Sleep' }]
+      }
+    },
+    es: {
+      '4-6': {
+        short: 'ELIMINACIÓN (Alba)', full: 'ELIMINACIÓN Y DRENAJE LINFÁTICO', icon: 'ri-sun-cloudy-fill', window: '04:00 - 06:00',
+        desc: '04:00 - 06:00 • Pico de filtración renal y despertar de emuntorios. Hidratación tibia en ayunas (agua con limón).',
+        organ: 'Pulmones y Linfa (03:00-05:00) • Intestino Grueso (05:00-07:00)', organIcon: '🫁', organBg: 'rgba(245,158,11,0.15)', organColor: '#f59e0b',
+        hormone: 'Subida de Cortisol • Insulina Baja (Desintoxicación)', metabolism: 'Catabolismo Détox', hormoneIcon: '⚡', hormoneBg: 'rgba(56,189,248,0.15)', hormoneColor: '#38bdf8',
+        chips: [{ icon: '💧', label: 'Agua Tibia con Limón' }, { icon: '🌬️', label: 'Respiración Pránica' }]
+      },
+      '6-8': {
+        short: 'ELIMINACIÓN', full: 'EVACUACIÓN DEL COLON Y DESPERTAR', icon: 'ri-sun-foggy-fill', window: '06:00 - 08:00',
+        desc: '06:00 - 08:00 • Motilidad peristáltica máxima del colon. Favorezca la evacuación y la luz natural.',
+        organ: 'Intestino Grueso (05:00-07:00) • Estómago (07:00-09:00)', organIcon: '🌱', organBg: 'rgba(234,179,8,0.15)', organColor: '#eab308',
+        hormone: 'Pico Matinal de Cortisol • Cese de Melatonina', metabolism: 'Despertar y Motilidad', hormoneIcon: '☀️', hormoneBg: 'rgba(245,158,11,0.15)', hormoneColor: '#f59e0b',
+        chips: [{ icon: '🍋', label: 'Hidratación Electrolítica' }, { icon: '🚶', label: 'Movimiento y Estiramientos' }]
+      },
+      '8-10': {
+        short: 'PREPARACIÓN', full: 'DESPERTAR ENZIMÁTICO Y ESTÓMAGO', icon: 'ri-sun-foggy-fill', window: '08:00 - 10:00',
+        desc: '08:00 - 10:00 • Calentamiento de jugos gástricos. Priorice frutas acuosas vivas o prolongue el ayuno.',
+        organ: 'Estómago (07:00-09:00) • Bazo y Páncreas (09:00-11:00)', organIcon: '🫘', organBg: 'rgba(234,179,8,0.15)', organColor: '#eab308',
+        hormone: 'Secreción de Grelina • Enzimas Salivales Activas', metabolism: 'Transición Digestiva', hormoneIcon: '⚡', hormoneBg: 'rgba(56,189,248,0.15)', hormoneColor: '#38bdf8',
+        chips: [{ icon: '🍉', label: 'Frutas Acuosas Vivas' }, { icon: '🍵', label: 'Infusión Depurativa' }]
+      },
+      '10-12': {
+        short: 'TRANSICIÓN', full: 'ACTIVACIÓN PANCREÁTICA Y ALERTA', icon: 'ri-sun-line', window: '10:00 - 12:00',
+        desc: '10:00 - 12:00 • Pico de claridad mental y preparación enzimática de bazo y páncreas.',
+        organ: 'Bazo y Páncreas (09:00-11:00) • Corazón (11:00-13:00)', organIcon: '⚡', organBg: 'rgba(16,185,129,0.15)', organColor: '#10b981',
+        hormone: 'Pico de Alerta Mental • Dopamina Activa', metabolism: 'Optimización Energética', hormoneIcon: '🧠', hormoneBg: 'rgba(168,85,247,0.15)', hormoneColor: '#a855f7',
+        chips: [{ icon: '💧', label: 'Hidratación Pre-Comida' }, { icon: '🥗', label: 'Comida Viva' }]
+      },
+      '12-14': {
+        short: 'APROPIACIÓN', full: 'APROPIACIÓN Y FUEGO DIGESTIVO', icon: 'ri-sun-fill', window: '12:00 - 14:00',
+        desc: '12:00 - 14:00 • Fuego digestivo al máximo. Ventana óptima para la comida principal alcalinizante y densa.',
+        organ: 'Corazón (11:00-13:00) • Intestino Delgado (13:00-15:00)', organIcon: '🔥', organBg: 'rgba(16,185,129,0.15)', organColor: '#10b981',
+        hormone: 'Sensibilidad Máxima a la Insulina • Pico de Jugos Gástricos', metabolism: 'Anabolismo Nutricional', hormoneIcon: '🥗', hormoneBg: 'rgba(16,185,129,0.15)', hormoneColor: '#10b981',
+        chips: [{ icon: '🥗', label: 'Comida Densa y Viva' }, { icon: '🥑', label: 'Grasas Sanas y Clorofila' }]
+      },
+      '14-16': {
+        short: 'ASIMILACIÓN', full: 'ABSORCIÓN MICRONUTRICIONAL', icon: 'ri-sun-fill', window: '14:00 - 16:00',
+        desc: '14:00 - 16:00 • El intestino delgado filtra y absorbe micronutrientes. Paseo digestivo recomendado.',
+        organ: 'Intestino Delgado (13:00-15:00) • Vejiga (15:00-17:00)', organIcon: '🧬', organBg: 'rgba(16,185,129,0.15)', organColor: '#10b981',
+        hormone: 'Captación Celular de Glucosa • Transporte Activo', metabolism: 'Asimilación y Almacenamiento', hormoneIcon: '🚶', hormoneBg: 'rgba(56,189,248,0.15)', hormoneColor: '#38bdf8',
+        chips: [{ icon: '🚶', label: 'Paseo Postprandial' }, { icon: '🫖', label: 'Infusión Digestiva' }]
+      },
+      '16-18': {
+        short: 'FILTRACIÓN', full: 'DRENAJE URINARIO Y RIÑONES', icon: 'ri-sunset-fill', window: '16:00 - 18:00',
+        desc: '16:00 - 18:00 • Filtración activa de urea y toxinas por los riñones. Ideal para infusión mineralizante.',
+        organ: 'Vejiga (15:00-17:00) • Riñones y Filtración (17:00-19:00)', organIcon: '💧', organBg: 'rgba(20,184,166,0.15)', organColor: '#14b8a6',
+        hormone: 'Caída Gradual de Cortisol • Termorregulación', metabolism: 'Depuración Renal', hormoneIcon: '🫖', hormoneBg: 'rgba(20,184,166,0.15)', hormoneColor: '#14b8a6',
+        chips: [{ icon: '🌿', label: 'Infusión Ortiga / Abuta' }, { icon: '💧', label: 'Hidratación Renal' }]
+      },
+      '18-20': {
+        short: 'APROPIACIÓN', full: 'CIERRE DE COMIDA Y TRANSICIÓN', icon: 'ri-sunset-fill', window: '18:00 - 20:00',
+        desc: '18:00 - 20:00 • Fin de la ventana de alimentación. Cena ligera antes de las 20:00 para vaciado gástrico.',
+        organ: 'Riñones (17:00-19:00) • Pericardio y Circulación (19:00-21:00)', organIcon: '🥣', organBg: 'rgba(20,184,166,0.15)', organColor: '#14b8a6',
+        hormone: 'Descenso de Insulina • Inicio del Reposo Digestivo', metabolism: 'Transición Nocturna', hormoneIcon: '🍵', hormoneBg: 'rgba(56,189,248,0.15)', hormoneColor: '#38bdf8',
+        chips: [{ icon: '🍲', label: 'Cena Ligera y Mineral' }, { icon: '🍵', label: 'Infusión Digestiva' }]
+      },
+      '20-22': {
+        short: 'ASIMILACIÓN', full: 'ASIMILACIÓN CELULAR Y RELAJACIÓN', icon: 'ri-moon-fill', window: '20:00 - 22:00',
+        desc: '20:00 - 22:00 • Aumento de melatonina y activación del Complejo Motor Migratorio (CMM) intestinal.',
+        organ: 'Pericardio (19:00-21:00) • Sistema Endocrino (21:00-23:00)', organIcon: '🌙', organBg: 'rgba(129,140,248,0.15)', organColor: '#818cf8',
+        hormone: 'Secreción de Melatonina • Caída de Temperatura', metabolism: 'Reposo Metabólico', hormoneIcon: '🕯️', hormoneBg: 'rgba(129,140,248,0.15)', hormoneColor: '#818cf8',
+        chips: [{ icon: '🕯️', label: 'Luz Tenue / Sin Pantallas' }, { icon: '🫁', label: 'Coherencia Cardíaca' }]
+      },
+      '22-0': {
+        short: 'SUEÑO', full: 'EQUILIBRIO ENDOCRINO Y SUEÑO', icon: 'ri-moon-fill', window: '22:00 - 00:00',
+        desc: '22:00 - 00:00 • Sueño reparador. El cerebro activa la limpieza glinfática para drenar desechos.',
+        organ: 'Sistema Endocrino (21:00-23:00) • Vesícula (23:00-01:00)', organIcon: '😴', organBg: 'rgba(129,140,248,0.15)', organColor: '#818cf8',
+        hormone: 'Hormona de Crecimiento (GH) • Caída de Presión', metabolism: 'Regeneración Tisular', hormoneIcon: '🛌', hormoneBg: 'rgba(168,85,247,0.15)', hormoneColor: '#a855f7',
+        chips: [{ icon: '🛌', label: 'Sueño Reparador' }, { icon: '🧠', label: 'Limpieza Glinfática' }]
+      },
+      '0-2': {
+        short: 'AUTOFAGIA', full: 'DESINTOXICACIÓN VESICULAR Y AUTÓLISIS', icon: 'ri-moon-clear-fill', window: '00:00 - 02:00',
+        desc: '00:00 - 02:00 • Autofagia celular activa: reciclaje de mitocondrias desgastadas y proteínas alteradas.',
+        organ: 'Vesícula Biliar (23:00-01:00) • Hígado (01:00-03:00)', organIcon: '🧬', organBg: 'rgba(168,85,247,0.15)', organColor: '#a855f7',
+        hormone: 'Pico de Hormona de Crecimiento • Autofagia Fase 1', metabolism: 'Autofagia y Reparación ADN', hormoneIcon: '🛡️', hormoneBg: 'rgba(168,85,247,0.15)', hormoneColor: '#a855f7',
+        chips: [{ icon: '🛡️', label: 'Autofagia Celular' }, { icon: '✨', label: 'Reciclaje Mitocondrial' }]
+      },
+      '2-4': {
+        short: 'REGENERACIÓN', full: 'PURIFICACIÓN DEL HÍGADO Y SANGRE', icon: 'ri-moon-clear-fill', window: '02:00 - 04:00',
+        desc: '02:00 - 04:00 • El hígado cumple su pico de biotransformación enzimática nocturna. La sangre se purifica.',
+        organ: 'Hígado y Détox Profundo (01:00-03:00) • Pulmones (03:00-05:00)', organIcon: '🌿', organBg: 'rgba(168,85,247,0.15)', organColor: '#a855f7',
+        hormone: 'Filtración Hepatobiliar • Síntesis Antioxidante', metabolism: 'Depuración Sanguínea', hormoneIcon: '🩸', hormoneBg: 'rgba(239,68,68,0.15)', hormoneColor: '#ef4444',
+        chips: [{ icon: '🩸', label: 'Purificación de la Sangre' }, { icon: '💤', label: 'Reposo Reparador Total' }]
+      }
+    }
+  };
+
+  const activeLangPhases = circadianPhases[langKey] || circadianPhases.fr;
+
+  let key = '12-14';
+  let phaseColor = isLight ? '#047857' : '#10b981';
 
   if (h >= 4 && h < 6) {
-    shortCycle = 'ÉLIMINATION (Aube)';
-    fullCycle = 'ÉLIMINATION & DRAINAGE LYMPHATIQUE';
-    iconClass = 'ri-sun-cloudy-fill';
-    phaseWindow = '04h - 06h';
-    descText = "04h - 06h • Pic de filtration rénale et réveil des émonctoires. Hydratation tiède à jeun (eau citronnée, sève).";
+    key = '4-6';
     phaseColor = isLight ? '#b45309' : '#f59e0b';
-    organName = "Poumons & Lymphe (03h-05h) • Gros Intestin (05h-07h)";
-    organWindow = "04h - 06h";
-    organIcon = "🫁";
-    organBadgeBg = "rgba(245,158,11,0.15)";
-    organColor = "#f59e0b";
-    hormoneStatus = "Montée du Cortisol • Insuline Basse (Détox active)";
-    metabolismTag = "Catabolisme Détox";
-    hormoneIcon = "⚡";
-    hormoneBadgeBg = "rgba(56,189,248,0.15)";
-    hormoneColor = "#38bdf8";
-    actionChips = [
-      { icon: '💧', label: 'Eau Tiède Citronnée' },
-      { icon: '🌬️', label: 'Respiration Prānique' }
-    ];
   } else if (h >= 6 && h < 8) {
-    shortCycle = 'ÉLIMINATION';
-    fullCycle = 'ÉVACUATION DU CÔLON & RÉVEIL';
-    iconClass = 'ri-sun-foggy-fill';
-    phaseWindow = '06h - 08h';
-    descText = "06h - 08h • Le côlon est en motilité péristaltique maximale. Favorisez l'élimination et la lumière naturelle.";
+    key = '6-8';
     phaseColor = isLight ? '#a16207' : '#eab308';
-    organName = "Gros Intestin (05h-07h) • Estomac (07h-09h)";
-    organWindow = "06h - 08h";
-    organIcon = "🌱";
-    organBadgeBg = "rgba(234,179,8,0.15)";
-    organColor = "#eab308";
-    hormoneStatus = "Pic Matinal de Cortisol (Éveil) • Arrêt Mélatonine";
-    metabolismTag = "Éveil & Motilité";
-    hormoneIcon = "☀️";
-    hormoneBadgeBg = "rgba(245,158,11,0.15)";
-    hormoneColor = "#f59e0b";
-    actionChips = [
-      { icon: '🍋', label: 'Hydratation Électrolytique' },
-      { icon: '🚶', label: 'Mouvement & Étirements' }
-    ];
   } else if (h >= 8 && h < 10) {
-    shortCycle = 'PRÉPARATION';
-    fullCycle = 'RÉVEIL ENZYMATIQUE & ESTOMAC';
-    iconClass = 'ri-sun-foggy-fill';
-    phaseWindow = '08h - 10h';
-    descText = "08h - 10h • Préchauffage des sucs gastriques. Privilégiez les fruits vivants aqueux ou prolongez le jeûne.";
+    key = '8-10';
     phaseColor = isLight ? '#a16207' : '#eab308';
-    organName = "Estomac (07h-09h) • Rate & Pancréas (09h-11h)";
-    organWindow = "08h - 10h";
-    organIcon = "🫘";
-    organBadgeBg = "rgba(234,179,8,0.15)";
-    organColor = "#eab308";
-    hormoneStatus = "Sécrétion de Ghréline • Enzymes Salivaires Actives";
-    metabolismTag = "Transition Digestive";
-    hormoneIcon = "⚡";
-    hormoneBadgeBg = "rgba(56,189,248,0.15)";
-    hormoneColor = "#38bdf8";
-    actionChips = [
-      { icon: '🍉', label: 'Fruits Aqueux Vivants' },
-      { icon: '🍵', label: 'Infusion Dépurative' }
-    ];
   } else if (h >= 10 && h < 12) {
-    shortCycle = 'TRANSITION';
-    fullCycle = 'ACTIVATION PANCRÉATIQUE & VIGILANCE';
-    iconClass = 'ri-sun-line';
-    phaseWindow = '10h - 12h';
-    descText = "10h - 12h • Pic de clarté mentale et préparation enzymatique de la rate et du pancréas avant le déjeuner.";
+    key = '10-12';
     phaseColor = isLight ? '#047857' : '#10b981';
-    organName = "Rate & Pancréas (09h-11h) • Cœur (11h-13h)";
-    organWindow = "10h - 12h";
-    organIcon = "⚡";
-    organBadgeBg = "rgba(16,185,129,0.15)";
-    organColor = "#10b981";
-    hormoneStatus = "Pic de Vigilance Cérébrale • Dopamine Active";
-    metabolismTag = "Optimisation Énergétique";
-    hormoneIcon = "🧠";
-    hormoneBadgeBg = "rgba(168,85,247,0.15)";
-    hormoneColor = "#a855f7";
-    actionChips = [
-      { icon: '💧', label: 'Hydratation Pré-Repas' },
-      { icon: '🥗', label: 'Repas Vivant' }
-    ];
   } else if (h >= 12 && h < 14) {
-    shortCycle = 'APPROPRIATION';
-    fullCycle = 'APPROPRIATION & FEU DIGESTIF';
-    iconClass = 'ri-sun-fill';
-    phaseWindow = '12h - 14h';
-    descText = "12h - 14h • Feu digestif au maximum. Fenêtre optimale pour le repas principal dense, alcalinisant et nutritif.";
+    key = '12-14';
     phaseColor = isLight ? '#047857' : '#10b981';
-    organName = "Cœur (11h-13h) • Intestin Grêle (13h-15h)";
-    organWindow = "12h - 14h";
-    organIcon = "🔥";
-    organBadgeBg = "rgba(16,185,129,0.15)";
-    organColor = "#10b981";
-    hormoneStatus = "Sensibilité Maximale à l'Insuline • Pic Sucs Gastriques";
-    metabolismTag = "Anabolisme Nutritionnel";
-    hormoneIcon = "🥗";
-    hormoneBadgeBg = "rgba(16,185,129,0.15)";
-    hormoneColor = "#10b981";
-    actionChips = [
-      { icon: '🥗', label: 'Repas Dense & Vivant' },
-      { icon: '🥑', label: 'Lipides Sains & Chlorophylle' }
-    ];
   } else if (h >= 14 && h < 16) {
-    shortCycle = 'ASSIMILATION';
-    fullCycle = 'ABSORPTION MICRONUTRITIONNELLE';
-    iconClass = 'ri-sun-fill';
-    phaseWindow = '14h - 16h';
-    descText = "14h - 16h • L'intestin grêle filtre et absorbe les micronutriments. Marche digestive recommandée.";
+    key = '14-16';
     phaseColor = isLight ? '#047857' : '#10b981';
-    organName = "Intestin Grêle (13h-15h) • Vessie (15h-17h)";
-    organWindow = "14h - 16h";
-    organIcon = "🧬";
-    organBadgeBg = "rgba(16,185,129,0.15)";
-    organColor = "#10b981";
-    hormoneStatus = "Captation Cellulaire du Glucose • Transport Actif";
-    metabolismTag = "Assimilation & Stockage";
-    hormoneIcon = "🚶";
-    hormoneBadgeBg = "rgba(56,189,248,0.15)";
-    hormoneColor = "#38bdf8";
-    actionChips = [
-      { icon: '🚶', label: 'Marche Post-Prandiale' },
-      { icon: '🫖', label: 'Tisane Digestive (Boldo/Camomille)' }
-    ];
   } else if (h >= 16 && h < 18) {
-    shortCycle = 'FILTRATION';
-    fullCycle = 'DRAINAGE URINAIRE & REINS';
-    iconClass = 'ri-sunset-fill';
-    phaseWindow = '16h - 18h';
-    descText = "16h - 18h • Filtration active de l'urée et des toxines par les reins. Idéal pour une tisane minéralisante.";
+    key = '16-18';
     phaseColor = isLight ? '#0f766e' : '#14b8a6';
-    organName = "Vessie (15h-17h) • Reins & Filtration (17h-19h)";
-    organWindow = "16h - 18h";
-    organIcon = "💧";
-    organBadgeBg = "rgba(20,184,166,0.15)";
-    organColor = "#14b8a6";
-    hormoneStatus = "Chute Graduelle du Cortisol • Thermorégulation";
-    metabolismTag = "Épuration Rénale";
-    hormoneIcon = "🫖";
-    hormoneBadgeBg = "rgba(20,184,166,0.15)";
-    hormoneColor = "#14b8a6";
-    actionChips = [
-      { icon: '🌿', label: 'Infusion Ortie / Abuta' },
-      { icon: '💧', label: 'Hydratation Rénale' }
-    ];
   } else if (h >= 18 && h < 20) {
-    shortCycle = 'APPROPRIATION';
-    fullCycle = 'CLÔTURE DU REPAS & TRANSITION';
-    iconClass = 'ri-sunset-fill';
-    phaseWindow = '18h - 20h';
-    descText = "18h - 20h • Fin de la fenêtre d'alimentation. Dîner léger avant 20h pour permettre la vidange gastrique.";
+    key = '18-20';
     phaseColor = isLight ? '#0f766e' : '#14b8a6';
-    organName = "Reins (17h-19h) • Péricarde & Circulation (19h-21h)";
-    organWindow = "18h - 20h";
-    organIcon = "🥣";
-    organBadgeBg = "rgba(20,184,166,0.15)";
-    organColor = "#14b8a6";
-    hormoneStatus = "Baisse de l'Insuline • Début du Repos Digestif";
-    metabolismTag = "Transition Nocturne";
-    hormoneIcon = "🍵";
-    hormoneBadgeBg = "rgba(56,189,248,0.15)";
-    hormoneColor = "#38bdf8";
-    actionChips = [
-      { icon: '🍲', label: 'Dîner Léger & Minéral' },
-      { icon: '🍵', label: 'Tisane Digestive' }
-    ];
   } else if (h >= 20 && h < 22) {
-    shortCycle = 'ASSIMILATION';
-    fullCycle = 'ASSIMILATION CELLULAIRE & DÉTENTE';
-    iconClass = 'ri-moon-fill';
-    phaseWindow = '20h - 22h';
-    descText = "20h - 22h • Montée de la mélatonine et activation du Complexe Moteur Migrant (CMM) pour nettoyer le tube digestif.";
+    key = '20-22';
     phaseColor = isLight ? '#4338ca' : '#818cf8';
-    organName = "Péricarde (19h-21h) • Système Endocrinien (21h-23h)";
-    organWindow = "20h - 22h";
-    organIcon = "🌙";
-    organBadgeBg = "rgba(129,140,248,0.15)";
-    organColor = "#818cf8";
-    hormoneStatus = "Sécrétion de Mélatonine • Chute Température Corporelle";
-    metabolismTag = "Repos Métabolique";
-    hormoneIcon = "🕯️";
-    hormoneBadgeBg = "rgba(129,140,248,0.15)";
-    hormoneColor = "#818cf8";
-    actionChips = [
-      { icon: '🕯️', label: 'Lumière Tamisée / Sans Écrans' },
-      { icon: '🫁', label: 'Cohérence Cardiaque 5.5s' }
-    ];
   } else if (h >= 22 || h < 0) {
-    shortCycle = 'SOMMEIL';
-    fullCycle = 'ÉQUILIBRE ENDOCRINIEN & SOMMEIL';
-    iconClass = 'ri-moon-fill';
-    phaseWindow = '22h - 00h';
-    descText = "22h - 00h • Sommeil réparateur. Le cerveau active le drainage glymphatique pour évacuer les déchets métaboliques.";
+    key = '22-0';
     phaseColor = isLight ? '#4338ca' : '#818cf8';
-    organName = "Système Endocrinien (21h-23h) • Vésicule (23h-01h)";
-    organWindow = "22h - 00h";
-    organIcon = "😴";
-    organBadgeBg = "rgba(129,140,248,0.15)";
-    organColor = "#818cf8";
-    hormoneStatus = "Hormone de Croissance (GH) • Chute Tension Artérielle";
-    metabolismTag = "Régénération Tissulaire";
-    hormoneIcon = "🛌";
-    hormoneBadgeBg = "rgba(168,85,247,0.15)";
-    hormoneColor = "#a855f7";
-    actionChips = [
-      { icon: '🛌', label: 'Sommeil Réparateur' },
-      { icon: '🧠', label: 'Nettoyage Glymphatique' }
-    ];
   } else if (h >= 0 && h < 2) {
-    shortCycle = 'AUTOPHAGIE';
-    fullCycle = 'DÉTOX VÉSICULAIRE & AUTOLYSE';
-    iconClass = 'ri-moon-clear-fill';
-    phaseWindow = '00h - 02h';
-    descText = "00h - 02h • Autophagie cellulaire active : recyclage des mitochondries usées et des protéines altérées.";
+    key = '0-2';
     phaseColor = isLight ? '#7e22ce' : '#a855f7';
-    organName = "Vésicule Biliaire (23h-01h) • Foie (01h-03h)";
-    organWindow = "00h - 02h";
-    organIcon = "🧬";
-    organBadgeBg = "rgba(168,85,247,0.15)";
-    organColor = "#a855f7";
-    hormoneStatus = "Pic d'Hormone de Croissance • Autophagie Phase 1";
-    metabolismTag = "Autophagie & Réparation ADN";
-    hormoneIcon = "🛡️";
-    hormoneBadgeBg = "rgba(168,85,247,0.15)";
-    hormoneColor = "#a855f7";
-    actionChips = [
-      { icon: '🛡️', label: 'Autophagie Cellulaire' },
-      { icon: '✨', label: 'Recyclage Mitochondries' }
-    ];
   } else {
-    shortCycle = 'RÉGÉNÉRATION';
-    fullCycle = 'PURIFICATION DU FOIE & SANG';
-    iconClass = 'ri-moon-clear-fill';
-    phaseWindow = '02h - 04h';
-    descText = "02h - 04h • Le foie accomplit son pic de bio-transformation enzymatique nocturne. Tout le sang est filtré et épuré.";
+    key = '2-4';
     phaseColor = isLight ? '#7e22ce' : '#a855f7';
-    organName = "Foie & Détox Profonde (01h-03h) • Poumons (03h-05h)";
-    organWindow = "02h - 04h";
-    organIcon = "🌿";
-    organBadgeBg = "rgba(168,85,247,0.15)";
-    organColor = "#a855f7";
-    hormoneStatus = "Filtration Hépato-Biliaire • Synthèse Antioxydante";
-    metabolismTag = "Dépuration Sanguine";
-    hormoneIcon = "🩸";
-    hormoneBadgeBg = "rgba(239,68,68,0.15)";
-    hormoneColor = "#ef4444";
-    actionChips = [
-      { icon: '🩸', label: 'Purification du Sang' },
-      { icon: '💤', label: 'Repos Réparateur Total' }
-    ];
   }
 
+  const pData = activeLangPhases[key] || activeLangPhases['12-14'];
+
   return {
-    shortCycle,
-    fullCycle,
-    iconClass,
-    descText,
+    shortCycle: pData.short,
+    fullCycle: pData.full,
+    iconClass: pData.icon,
+    descText: pData.desc,
     phaseColor,
-    phaseWindow,
-    organName,
-    organWindow,
-    organIcon,
-    organBadgeBg,
-    organColor,
-    hormoneStatus,
-    metabolismTag,
-    hormoneIcon,
-    hormoneBadgeBg,
-    hormoneColor,
-    actionChips
+    phaseWindow: pData.window,
+    organName: pData.organ,
+    organWindow: pData.window,
+    organIcon: pData.organIcon,
+    organBadgeBg: pData.organBg,
+    organColor: pData.organColor,
+    hormoneStatus: pData.hormone,
+    metabolismTag: pData.metabolism,
+    hormoneIcon: pData.hormoneIcon,
+    hormoneBadgeBg: pData.hormoneBg,
+    hormoneColor: pData.hormoneColor,
+    actionChips: pData.chips
   };
 }
 
@@ -12248,10 +12525,13 @@ function updateCircadianDisplay(h, m, isScrubbing = false) {
   }
 
   if (hintEl) {
+    const tFunc = window.vitalTrackI18n?.t || ((k) => k);
     if (isScrubbing) {
-      hintEl.innerHTML = `<i class="ri-refresh-line ri-spin" style="color:var(--accent)"></i> <strong style="color:var(--accent)">Exploration en cours : Relâchez pour revenir à l'heure actuelle</strong>`;
+      const scrubText = tFunc('circadian.scrubbingHint') || "Exploration en cours : Relâchez pour revenir à l'heure actuelle";
+      hintEl.innerHTML = `<i class="ri-refresh-line ri-spin" style="color:var(--accent)"></i> <strong style="color:var(--accent)">${scrubText}</strong>`;
     } else {
-      hintEl.innerHTML = `<i class="ri-drag-move-2-line"></i> <span>Faites tourner l'horloge pour explorer le cycle 24h</span>`;
+      const idleText = tFunc('circadian.idleHint') || "Faites tourner l'horloge pour explorer le cycle 24h";
+      hintEl.innerHTML = `<i class="ri-drag-move-2-line"></i> <span>${idleText}</span>`;
     }
   }
 }

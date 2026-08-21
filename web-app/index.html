@@ -307,7 +307,7 @@
               <h1 class="dash-page-title" data-i18n="dashboard.title">Tableau de bord</h1>
               <span class="live-sync-pill">
                 <span class="pulse-dot"></span>
-                <span>En direct</span>
+                <span data-i18n="dashboard.liveSync">En direct</span>
               </span>
             </div>
             <div class="dash-meta-row">
@@ -317,7 +317,7 @@
               </div>
               <div class="dash-circadian-tag" id="dashCircadianSyncTag">
                 <i class="ri-heart-pulse-line"></i>
-                <span>Cycle 24h Synchronisé</span>
+                <span data-i18n="dashboard.circadianSync">Cycle 24h Synchronisé</span>
               </div>
             </div>
           </div>
@@ -333,7 +333,7 @@
             <h2 id="greetName" class="dash-greet-name">Bonjour ! 👋</h2>
             <div class="dash-protocol-pill">
               <span class="pulse-dot"></span>
-              <span id="greetMode">Mode Vitaliste</span>
+              <span id="greetMode" data-i18n="dashboard.vitalistMode">Mode Vitaliste</span>
             </div>
           </div>
         </div>
@@ -348,10 +348,10 @@
         <!-- Circadian Rhythm & Chronobiology Widget -->
         <div class="dash-card glass" id="circadianCard" style="display:flex; flex-direction:column; padding: 24px;">
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom: 20px;">
-            <h3 style="font-size:1rem; display:flex; align-items:center; gap:8px; margin:0;"><i class="ri-time-line" style="color:var(--accent);"></i> Horloge Interne</h3>
+            <h3 style="font-size:1rem; display:flex; align-items:center; gap:8px; margin:0;"><i class="ri-time-line" style="color:var(--accent);"></i> <span data-i18n="dashboard.circadianTitle">Horloge Interne</span></h3>
             <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
               <button type="button" class="info-badge-btn" onclick="openCircadianScienceModal()" title="Comprendre les 3 cycles circadiens et la chronobiologie des organes">
-                <i class="ri-book-open-line"></i> Science
+                <i class="ri-book-open-line"></i> <span data-i18n="dashboard.scienceBtn">Science</span>
               </button>
               <span id="circadianTimePill" style="background:var(--surface-hover); padding:4px 10px; border-radius:50px; font-size:0.8rem; font-weight:600; color:var(--text-dim); white-space:nowrap;">12:00</span>
             </div>
@@ -368,7 +368,7 @@
             </div>
             <div class="clock-interactive-hint" id="clockDragHint">
               <i class="ri-drag-move-2-line"></i>
-              <span>Faites tourner l'horloge pour explorer le cycle 24h</span>
+              <span data-i18n="dashboard.clockDragHint">Faites tourner l'horloge pour explorer le cycle 24h</span>
             </div>
           </div>
 
@@ -382,7 +382,7 @@
               </div>
               <div class="pillar-body">
                 <div class="pillar-header">
-                  <span class="pillar-title">Organe en Pic d'Activité</span>
+                  <span class="pillar-title" data-i18n="dashboard.organPeakTitle">Organe en Pic d'Activité</span>
                   <span class="pillar-score-pill" id="circadianOrganWindow">07h - 09h</span>
                 </div>
                 <div id="circadianOrganName" style="font-size:0.82rem; font-weight:700; color:var(--text); line-height:1.3;">Estomac &amp; Chauffage Digestif</div>
@@ -396,7 +396,7 @@
               </div>
               <div class="pillar-body">
                 <div class="pillar-header">
-                  <span class="pillar-title">Statut Hormonal &amp; Métabolisme</span>
+                  <span class="pillar-title" data-i18n="dashboard.hormoneStatusTitle">Statut Hormonal &amp; Métabolisme</span>
                   <span class="pillar-score-pill" id="circadianMetabolismTag">Catabolisme</span>
                 </div>
                 <div id="circadianHormoneStatus" style="font-size:0.82rem; font-weight:600; color:var(--text); line-height:1.3;">Pic de Cortisol (Éveil) • Insuline basse (Détox)</div>
@@ -431,9 +431,9 @@
         <!-- Vitality Score Widget -->
         <div class="dash-card glass" id="vitalityCard" style="display:flex; flex-direction:column; padding: 24px;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <h3 style="font-size:1rem; display:flex; align-items:center; gap:8px; margin:0;"><i class="ri-heart-pulse-fill" style="color:var(--accent);"></i> Score Vitalité</h3>
+            <h3 style="font-size:1rem; display:flex; align-items:center; gap:8px; margin:0;"><i class="ri-heart-pulse-fill" style="color:var(--accent);"></i> <span data-i18n="dashboard.vitalityTitle">Score Vitalité</span></h3>
             <button type="button" class="info-badge-btn" onclick="openVitalityInfoModal()" title="Comprendre le calcul transparent du score">
-              <i class="ri-information-line"></i> Explication
+              <i class="ri-information-line"></i> <span data-i18n="dashboard.explanationBtn">Explication</span>
             </button>
           </div>
           
@@ -458,7 +458,7 @@
             
             <div id="vitalityLevelBadge" class="vitality-level-pill">
               <span class="pulse-dot"></span>
-              <span id="vitalityScoreComment">Aucune donnée enregistrée</span>
+              <span id="vitalityScoreComment" data-i18n="dashboard.waitingRecords">Aucune donnée enregistrée</span>
             </div>
           </div>
 
@@ -471,7 +471,7 @@
               </div>
               <div class="pillar-body">
                 <div class="pillar-header">
-                  <span class="pillar-title">Nutrition Vivante &amp; Électrique</span>
+                  <span class="pillar-title" data-i18n="dashboard.nutritionPillar">Nutrition Vivante &amp; Électrique</span>
                   <span class="pillar-score-pill" id="vPctNutrition">--</span>
                 </div>
                 <div class="pillar-bar">
@@ -487,7 +487,7 @@
               </div>
               <div class="pillar-body">
                 <div class="pillar-header">
-                  <span class="pillar-title">Jeûne &amp; Émonctoires</span>
+                  <span class="pillar-title" data-i18n="dashboard.fastingPillar">Jeûne &amp; Émonctoires</span>
                   <span class="pillar-score-pill" id="vPctFasting">--</span>
                 </div>
                 <div class="pillar-bar">
@@ -503,7 +503,7 @@
               </div>
               <div class="pillar-body">
                 <div class="pillar-header">
-                  <span class="pillar-title">Respiration &amp; Oxygénation</span>
+                  <span class="pillar-title" data-i18n="dashboard.breathingPillar">Respiration &amp; Oxygénation</span>
                   <span class="pillar-score-pill" id="vPctBreathing">--</span>
                 </div>
                 <div class="pillar-bar">
@@ -521,7 +521,7 @@
               </div>
               <div class="phase-card-title-area">
                 <div style="display:flex; justify-content:space-between; align-items:center; width:100%; flex-wrap:wrap; gap:6px;">
-                  <span class="phase-card-title" id="vitalityFocusTitle" style="color:#10b981;">FOCUS VITALISTE</span>
+                  <span class="phase-card-title" id="vitalityFocusTitle" data-i18n="dashboard.vitalistFocus">FOCUS VITALISTE</span>
                   <span class="phase-time-pill" id="vitalityFocusTag">Recommandation</span>
                 </div>
                 <div id="vitalityFocusInsight" class="phase-card-tagline">Maintenez une hydratation continue pour fluidifier la lymphe.</div>
@@ -540,9 +540,9 @@
 
       <!-- Actions -->
       <div class="dash-actions" style="display:flex; flex-wrap:wrap; gap:12px; margin: 24px 0;">
-        <button class="btn-primary" onclick="showPage('meals')" style="flex:1; min-width: 140px; padding: 12px 24px;"><i class="ri-add-line"></i> Ajouter un repas</button>
-        <button class="btn-outline glass" onclick="showPage('fasting')" style="flex:1; min-width: 140px; padding: 12px 24px; border:1px solid var(--border);"><i class="ri-drop-fill"></i> Démarrer un jeûne</button>
-        <button class="btn-outline glass" onclick="showPage('scan')" style="flex:1; min-width: 140px; padding: 12px 24px; border:1px solid var(--border);"><i class="ri-fullscreen-line"></i> Scanner un aliment</button>
+        <button class="btn-primary" onclick="showPage('meals')" style="flex:1; min-width: 140px; padding: 12px 24px;"><i class="ri-add-line"></i> <span data-i18n="dashboard.addMealBtn">Ajouter un repas</span></button>
+        <button class="btn-outline glass" onclick="showPage('fasting')" style="flex:1; min-width: 140px; padding: 12px 24px; border:1px solid var(--border);"><i class="ri-drop-fill"></i> <span data-i18n="dashboard.startFastBtn">Démarrer un jeûne</span></button>
+        <button class="btn-outline glass" onclick="showPage('scan')" style="flex:1; min-width: 140px; padding: 12px 24px; border:1px solid var(--border);"><i class="ri-fullscreen-line"></i> <span data-i18n="dashboard.scanFoodBtn">Scanner un aliment</span></button>
       </div>
 
       <!-- Quick Stats Row -->
@@ -550,26 +550,26 @@
         <div class="stat-card glass" onclick="showPage('meals')">
           <div class="stat-icon-wrap" style="background:rgba(16,185,129,0.1); color:var(--accent);"><i class="ri-restaurant-line"></i></div>
           <span class="stat-value" id="statMeals" style="font-size:1.8rem; font-weight:700; margin-top:12px;">0</span>
-          <span class="stat-label">Repas</span>
-          <span class="stat-sub">CETTE SEMAINE</span>
+          <span class="stat-label" data-i18n="dashboard.statMeals">Repas</span>
+          <span class="stat-sub" data-i18n="dashboard.statThisWeek">CETTE SEMAINE</span>
         </div>
         <div class="stat-card glass" onclick="showPage('fasting')">
           <div class="stat-icon-wrap" style="background:rgba(250,204,21,0.1); color:var(--warn);"><i class="ri-moon-fill"></i></div>
           <span class="stat-value" id="statFasts" style="font-size:1.8rem; font-weight:700; margin-top:12px;">0</span>
-          <span class="stat-label">Jeûnes</span>
-          <span class="stat-sub">CETTE SEMAINE</span>
+          <span class="stat-label" data-i18n="dashboard.statFasts">Jeûnes</span>
+          <span class="stat-sub" data-i18n="dashboard.statThisWeek">CETTE SEMAINE</span>
         </div>
         <div class="stat-card glass" onclick="showPage('breathing')">
           <div class="stat-icon-wrap" style="background:rgba(59,130,246,0.1); color:#3b82f6;"><i class="ri-windy-line"></i></div>
           <span class="stat-value" id="statBreaths" style="font-size:1.8rem; font-weight:700; margin-top:12px;">0</span>
-          <span class="stat-label">Séances</span>
-          <span class="stat-sub">CETTE SEMAINE</span>
+          <span class="stat-label" data-i18n="dashboard.statBreaths">Séances</span>
+          <span class="stat-sub" data-i18n="dashboard.statThisWeek">CETTE SEMAINE</span>
         </div>
         <div class="stat-card glass" onclick="showPage('favorites')">
           <div class="stat-icon-wrap" style="background:rgba(239,68,68,0.1); color:var(--danger);"><i class="ri-heart-fill"></i></div>
           <span class="stat-value" id="statFavs" style="font-size:1.8rem; font-weight:700; margin-top:12px;">0</span>
-          <span class="stat-label">Favoris</span>
-          <span class="stat-sub">AU TOTAL</span>
+          <span class="stat-label" data-i18n="dashboard.statFavs">Favoris</span>
+          <span class="stat-sub" data-i18n="dashboard.statTotal">AU TOTAL</span>
         </div>
       </div>
 
@@ -578,32 +578,32 @@
         <div class="dash-card glass" id="dashWeightCard">
           <div class="card-head" style="margin-bottom:12px;">
             <div>
-              <h3 style="margin:0;"><i class="ri-scales-3-line"></i> Évolution du Poids</h3>
-              <p style="font-size:0.82rem; color:var(--text-dim); margin:4px 0 0 0;">Analyse chronologique &amp; indicateurs de tendance</p>
+              <h3 style="margin:0;"><i class="ri-scales-3-line"></i> <span data-i18n="dashboard.weightTitle">Évolution du Poids</span></h3>
+              <p style="font-size:0.82rem; color:var(--text-dim); margin:4px 0 0 0;" data-i18n="dashboard.weightSubtitle">Analyse chronologique &amp; indicateurs de tendance</p>
             </div>
-            <button class="chip-btn" onclick="openWeightModal()"><i class="ri-add-line"></i> Pesée</button>
+            <button class="chip-btn" onclick="openWeightModal()"><i class="ri-add-line"></i> <span data-i18n="dashboard.weighInBtn">Pesée</span></button>
           </div>
 
           <!-- Weight KPI Summary Cards -->
           <div class="weight-kpi-grid" id="weightKpiGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:10px; margin-bottom:14px;">
             <div class="weight-kpi-card" style="padding:10px 14px; border-radius:12px; background:var(--surface-hover); border:1px solid var(--border);">
-              <div style="font-size:0.72rem; color:var(--text-dim); text-transform:uppercase; font-weight:600;">Poids Actuel</div>
+              <div style="font-size:0.72rem; color:var(--text-dim); text-transform:uppercase; font-weight:600;" data-i18n="dashboard.kpiCurrentWeight">Poids Actuel</div>
               <div style="display:flex; align-items:baseline; gap:6px; margin-top:3px;">
                 <span id="kpiCurrentWeight" style="font-size:1.35rem; font-weight:800; color:var(--text);">-- kg</span>
                 <span id="kpiDeltaBadge" class="trend-badge" style="font-size:0.72rem; font-weight:700; padding:2px 6px; border-radius:6px;"></span>
               </div>
             </div>
             <div class="weight-kpi-card" style="padding:10px 14px; border-radius:12px; background:var(--surface-hover); border:1px solid var(--border);">
-              <div style="font-size:0.72rem; color:var(--text-dim); text-transform:uppercase; font-weight:600;">Variation Totale</div>
+              <div style="font-size:0.72rem; color:var(--text-dim); text-transform:uppercase; font-weight:600;" data-i18n="dashboard.kpiTotalDelta">Variation Totale</div>
               <div id="kpiTotalDelta" style="font-size:1.35rem; font-weight:800; color:var(--text); margin-top:3px;">-- kg</div>
             </div>
             <div class="weight-kpi-card" style="padding:10px 14px; border-radius:12px; background:var(--surface-hover); border:1px solid var(--border);">
-              <div style="font-size:0.72rem; color:var(--text-dim); text-transform:uppercase; font-weight:600;">Moyenne 7 Jours</div>
+              <div style="font-size:0.72rem; color:var(--text-dim); text-transform:uppercase; font-weight:600;" data-i18n="dashboard.kpiAvg7d">Moyenne 7 Jours</div>
               <div id="kpiAvg7d" style="font-size:1.35rem; font-weight:800; color:var(--accent); margin-top:3px;">-- kg</div>
             </div>
             <div class="weight-kpi-card clickable" onclick="openTargetWeightModal()" style="padding:10px 14px; border-radius:12px; background:var(--surface-hover); border:1px solid var(--border);">
               <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-size:0.72rem; color:var(--text-dim); text-transform:uppercase; font-weight:600;">Poids Cible</span>
+                <span style="font-size:0.72rem; color:var(--text-dim); text-transform:uppercase; font-weight:600;" data-i18n="dashboard.kpiTargetWeight">Poids Cible</span>
                 <i class="ri-edit-line" style="font-size:0.8rem; color:#60a5fa;" title="Définir ou modifier l'objectif"></i>
               </div>
               <div id="kpiTargetWeight" style="margin-top:3px; min-height:32px; display:flex; align-items:center;">-- kg</div>
@@ -621,12 +621,12 @@
             <button type="button" class="period-btn" data-period="3m" onclick="setWeightPeriod('3m')">3M</button>
             <button type="button" class="period-btn" data-period="6m" onclick="setWeightPeriod('6m')">6M</button>
             <button type="button" class="period-btn" data-period="1y" onclick="setWeightPeriod('1y')">1A</button>
-            <button type="button" class="period-btn active" data-period="all" onclick="setWeightPeriod('all')">Tout</button>
+            <button type="button" class="period-btn active" data-period="all" onclick="setWeightPeriod('all')" data-i18n="dashboard.periodAll">Tout</button>
           </div>
 
           <div id="weightChartEmpty" class="empty-state-card">
             <i class="ri-scales-3-line"></i>
-            <p>Ajoutez votre première pesée pour voir l'évolution.</p>
+            <p data-i18n="dashboard.weightEmpty">Ajoutez votre première pesée pour voir l'évolution.</p>
           </div>
           <div id="weightChartContainer" style="min-height: 240px; height: 240px; width: 100%; position: relative; display: none;">
             <svg id="weightChartSvg" width="100%" height="100%" style="overflow: visible; cursor: crosshair;"></svg>
@@ -652,16 +652,16 @@
           </div>
           <div>
             <div style="font-weight:900; font-size:1rem; color:var(--text); display:flex; align-items:center; gap:8px;">
-              Bilan Vitaliste Clinique Approfondi (Deep Search)
-              <span class="badge badge-success" style="font-size:0.7rem; padding:2px 8px;">100% Inclus (0 €)</span>
+              <span data-i18n="dashboard.deepSearchBannerTitle">Bilan Vitaliste Clinique Approfondi (Deep Search)</span>
+              <span class="badge badge-success" style="font-size:0.7rem; padding:2px 8px;" data-i18n="dashboard.deepSearchBannerBadge">100% Inclus (0 €)</span>
             </div>
-            <div style="font-size:0.8rem; color:var(--text-dim); margin-top:2px;">
+            <div style="font-size:0.8rem; color:var(--text-dim); margin-top:2px;" data-i18n="dashboard.deepSearchBannerDesc">
               Analyse complète de vos 5 émonctoires, vérification médicamenteuse &amp; protocole 7 jours sur mesure.
             </div>
           </div>
         </div>
         <button type="button" class="btn-primary" style="padding:9px 18px; font-size:0.85rem; border-radius:14px; pointer-events:none; background:linear-gradient(135deg, #38bdf8, #0ea5e9); color:#fff; box-shadow:0 4px 14px rgba(14,165,233,0.35);">
-          Lancer l'Analyse <i class="ri-arrow-right-line"></i>
+          <span data-i18n="dashboard.deepSearchBannerBtn">Lancer l'Analyse</span> <i class="ri-arrow-right-line"></i>
         </button>
       </div>
 
@@ -673,23 +673,23 @@
           </div>
           <div>
             <div style="font-weight:800; font-size:0.95rem; color:var(--text); display:flex; align-items:center; gap:6px;">
-              Pharmacopée Culinaire &amp; Recettes Éprouvées
-              <span class="badge badge-success" style="font-size:0.7rem; padding:2px 8px;">Nouveau</span>
+              <span data-i18n="dashboard.recipesBannerTitle">Pharmacopée Culinaire &amp; Recettes Éprouvées</span>
+              <span class="badge badge-success" style="font-size:0.7rem; padding:2px 8px;" data-i18n="dashboard.recipesBannerBadge">Nouveau</span>
             </div>
-            <div style="font-size:0.78rem; color:var(--text-dim); margin-top:2px;">
+            <div style="font-size:0.78rem; color:var(--text-dim); margin-top:2px;" data-i18n="dashboard.recipesBannerDesc">
               Explorez les formules de Dr. Sebi, Arnold Ehret, Dr. Morse, Kallas &amp; Christopher avec filtre multi-ingrédients
             </div>
           </div>
         </div>
         <button type="button" class="btn-primary" style="padding:8px 16px; font-size:0.8rem; border-radius:14px; pointer-events:none;">
-          Découvrir <i class="ri-arrow-right-line"></i>
+          <span data-i18n="dashboard.recipesBannerBtn">Découvrir</span> <i class="ri-arrow-right-line"></i>
         </button>
       </div>
 
       <!-- Today's Meals -->
       <div class="dash-card glass">
-        <div class="card-head"><h3><i class="ri-restaurant-line"></i> Repas du jour</h3><button class="chip-btn" onclick="showPage('meals')">Voir tout</button></div>
-        <div id="dashMealList"><p class="empty-state-sm">Aucun repas enregistré aujourd'hui.</p></div>
+        <div class="card-head"><h3><i class="ri-restaurant-line"></i> <span data-i18n="dashboard.todayMealsTitle">Repas du jour</span></h3><button class="chip-btn" onclick="showPage('meals')" data-i18n="dashboard.viewAll">Voir tout</button></div>
+        <div id="dashMealList"><p class="empty-state-sm" data-i18n="dashboard.noMealsToday">Aucun repas enregistré aujourd'hui.</p></div>
       </div>
 
       <!-- Capsule de Savoir & Sagesse Vitaliste -->
@@ -704,13 +704,13 @@
           </div>
           <div class="wisdom-controls">
             <button type="button" class="wisdom-btn-action" id="wisdomShuffleBtn" onclick="window.shuffleWisdomCapsule()" title="Découvrir un autre conseil">
-              <i class="ri-shuffle-line"></i> <span>Autre conseil</span>
+              <i class="ri-shuffle-line"></i> <span data-i18n="dashboard.wisdomShuffle">Autre conseil</span>
             </button>
             <button type="button" class="wisdom-btn-action" id="wisdomGrimoireBtn" onclick="window.openWisdomGrimoireModal()" title="Explorer toute la bibliothèque de citations">
-              <i class="ri-book-open-line"></i> <span>Le Grimoire</span>
+              <i class="ri-book-open-line"></i> <span data-i18n="dashboard.wisdomGrimoire">Le Grimoire</span>
             </button>
             <button type="button" class="wisdom-btn-action" id="wisdomDeepSearchBtn" onclick="window.searchWisdomInDocs()" title="Lire l'extrait complet dans la bibliothèque">
-              <i class="ri-search-eye-line"></i> <span>Source</span>
+              <i class="ri-search-eye-line"></i> <span data-i18n="dashboard.wisdomSource">Source</span>
             </button>
           </div>
         </div>
@@ -722,7 +722,7 @@
         <div class="wisdom-tip-box" id="wisdomTipBox">
           <i class="ri-flashlight-line wisdom-tip-icon"></i>
           <div class="wisdom-tip-content" id="wisdomTipContent">
-            <strong>Geste Pratique :</strong> <span id="wisdomTipAction">Réduisez les féculents cuits et les produits laitiers pour diminuer la viscosité du sang et le mucus intestinal.</span>
+            <strong data-i18n="dashboard.wisdomTipLabel">Geste Pratique :</strong> <span id="wisdomTipAction">Réduisez les féculents cuits et les produits laitiers pour diminuer la viscosité du sang et le mucus intestinal.</span>
           </div>
         </div>
 
@@ -730,7 +730,7 @@
           <span class="wisdom-category-pill" id="wisdomCategoryPill">Régime Sans Mucus</span>
           <div style="display:flex; align-items:center; gap:8px;">
             <button type="button" class="wisdom-btn-action" id="wisdomFavoriteBtn" onclick="window.toggleWisdomFavorite()" title="Ajouter aux favoris">
-              <i class="ri-star-line" id="wisdomFavoriteIcon"></i> <span>Favori</span>
+              <i class="ri-star-line" id="wisdomFavoriteIcon"></i> <span data-i18n="dashboard.wisdomFavorite">Favori</span>
             </button>
           </div>
         </div>
