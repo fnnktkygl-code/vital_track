@@ -239,7 +239,10 @@ function renderReaderDOM() {
             ${chapters.map((c, i) => `
               <li class="br-chapter-item">
                 <button type="button" class="br-chapter-btn" data-active="${i === _readerState.chapterIndex}" onclick="setReaderChapter(${i})">
-                  <span class="br-chapter-tag">${esc(c.tag)}</span>
+                  <div class="br-chapter-meta-row">
+                    <span class="br-chapter-tag">${esc(c.tag)}</span>
+                    <span class="br-chapter-idx">#${i + 1}</span>
+                  </div>
                   <span class="br-chapter-title">${esc(c.title)}</span>
                 </button>
               </li>
