@@ -114,4 +114,23 @@ it('Les thèmes supportés et les bornes de taille de police sont valides', () =
   assert.ok(initialFont >= minFont && initialFont <= maxFont);
 });
 
+// 6. Mémoire de Lecture & Persistance
+it('La structure de persistance de lecture mémorise le chapitre, le scrollTop et le ratio', () => {
+  const mockProgress = {
+    bookId: 'ehret-mucusless-fr',
+    chapterIndex: 5,
+    scrollTop: 850,
+    scrollRatio: 0.42,
+    updatedAt: Date.now()
+  };
+  const serialized = JSON.stringify(mockProgress);
+  const parsed = JSON.parse(serialized);
+
+  assert.equal(parsed.bookId, 'ehret-mucusless-fr');
+  assert.equal(parsed.chapterIndex, 5);
+  assert.equal(parsed.scrollTop, 850);
+  assert.equal(parsed.scrollRatio, 0.42);
+  assert.ok(parsed.updatedAt > 0);
+});
+
 console.log(`\n🎉 SUITE BOOKREADER VALIDÉE : ${passedTests} / ${totalTests} assertions réussies à 100% !\n`);

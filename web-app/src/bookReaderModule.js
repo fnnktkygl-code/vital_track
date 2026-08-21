@@ -2,11 +2,14 @@
  * bookReaderModule.js
  * 
  * Module du Lecteur e-Book Immersif (BookReader) pour VitalTrack.
- * Gère l'affichage des 26 leçons du Prof. Arnold Ehret, le sommaire,
- * les thèmes (Papier, Sépia, Nuit), la taille de police et le glossaire interactif.
+ * Gère l'affichage intégral des 26 leçons du Prof. Arnold Ehret, le sommaire,
+ * les thèmes (Papier, Sépia, Nuit), la taille de police, le glossaire contextuel (popover flottant)
+ * et la PERSISTANCE EXACTE DU NIVEAU DE LECTURE (mémoire de page et de scroll).
  */
 
 import { ehretMucuslessFr, ALL_READABLE_BOOKS } from './data/books/ehretMucuslessFr.js';
+
+const PROGRESS_KEY_PREFIX = 'vt_book_progress_';
 
 let _readerState = {
   isOpen: false,
@@ -14,9 +17,10 @@ let _readerState = {
   chapterIndex: 0,
   theme: localStorage.getItem('vt_reader_theme') || "bone", // "bone" | "sepia" | "dusk"
   fontSize: parseInt(localStorage.getItem('vt_reader_fontsize') || "17", 10),
-  sidebarOpen: window.innerWidth > 768,
-  activeTerm: null
+  sidebarOpen: window.innerWidth > 768
 };
+
+let _scrollDebounceTimer = null;
 
 function esc(str) {
   if (!str) return '';
@@ -35,16 +39,17 @@ export function initBookReaderModule() {
   window.adjustReaderFontSize = adjustReaderFontSize;
   window.setReaderChapter = setReaderChapter;
   window.toggleReaderSidebar = toggleReaderSidebar;
-  window.showGlossaryTerm = showGlossaryTerm;
-  window.closeGlossaryCard = closeGlossaryCard;
+  window.handleGlossaryClick = handleGlossaryClick;
+  window.closeGlossaryPopover = closeGlossaryPopover;
 
   // Clavier : Navigation Précédent/Suivant et Échap
   document.addEventListener('keydown', (e) => {
     if (!_readerState.isOpen) return;
 
     if (e.key === 'Escape') {
-      if (_readerState.activeTerm) {
-        closeGlossaryCard();
+      const popover = document.getElementById('brGlossaryPopover');
+      if (popover && popover.classList.contains('open')) {
+        closeGlossaryPopover();
       } else {
         closeBookReader();
       }
@@ -59,25 +64,133 @@ export function initBookReaderModule() {
       }
     }
   });
+
+  // Clic extérieur pour fermer le popover de glossaire
+  document.addEventListener('click', (e) => {
+    if (!_readerState.isOpen) return;
+    const popover = document.getElementById('brGlossaryPopover');
+    if (popover && popover.classList.contains('open')) {
+      if (!popover.contains(e.target) && !e.target.classList.contains('br-glossary-term')) {
+        closeGlossaryPopover();
+      }
+    }
+  });
 }
 
 function getActiveBook() {
   return ALL_READABLE_BOOKS.find(b => b.id === _readerState.bookId) || ehretMucuslessFr;
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// GESTION DE LA PERSISTANCE & MÉMOIRE DE LECTURE (EXACT SCROLL & PAGE MEMORY)
+// ─────────────────────────────────────────────────────────────────────────────
+
+export function getSavedProgress(bookId) {
+  try {
+    const raw = localStorage.getItem(PROGRESS_KEY_PREFIX + bookId);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch (e) {
+    return null;
+  }
+}
+
+export function saveReadingProgress(bookId, chapterIndex, scrollTop, scrollRatio) {
+  try {
+    const data = {
+      bookId,
+      chapterIndex,
+      scrollTop: Math.round(scrollTop),
+      scrollRatio: Number(scrollRatio.toFixed(3)),
+      updatedAt: Date.now()
+    };
+    localStorage.setItem(PROGRESS_KEY_PREFIX + bookId, JSON.stringify(data));
+  } catch (e) {}
+}
+
+function setupReadingScrollListener() {
+  const pane = document.querySelector('.br-reading-pane');
+  if (!pane) return;
+
+  pane.addEventListener('scroll', () => {
+    if (_scrollDebounceTimer) clearTimeout(_scrollDebounceTimer);
+    _scrollDebounceTimer = setTimeout(() => {
+      if (!_readerState.isOpen) return;
+      const maxScroll = pane.scrollHeight - pane.clientHeight;
+      const ratio = maxScroll > 0 ? pane.scrollTop / maxScroll : 0;
+      saveReadingProgress(_readerState.bookId, _readerState.chapterIndex, pane.scrollTop, ratio);
+    }, 120);
+  }, { passive: true });
+}
+
+function restoreScrollPosition(targetScrollTop, showToast = false) {
+  const pane = document.querySelector('.br-reading-pane');
+  if (!pane) return;
+
+  // Double requestAnimationFrame pour garantir que le DOM est complètement calculé
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      pane.scrollTop = targetScrollTop || 0;
+      if (showToast && targetScrollTop > 80) {
+        showResumeToast();
+      }
+    });
+  });
+}
+
+function showResumeToast() {
+  const root = document.querySelector('.br-root');
+  if (!root) return;
+
+  let toast = document.getElementById('brResumeToast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'brResumeToast';
+    toast.className = 'br-resume-toast';
+    root.appendChild(toast);
+  }
+
+  const book = getActiveBook();
+  const currentChapter = book.chapters[_readerState.chapterIndex];
+  const chapterTag = currentChapter ? currentChapter.tag : `Leçon ${_readerState.chapterIndex + 1}`;
+
+  toast.innerHTML = `
+    <i class="ri-bookmark-3-fill"></i>
+    <span>Reprise de lecture exacte : <strong>${esc(chapterTag)}</strong></span>
+  `;
+  toast.classList.add('visible');
+
+  setTimeout(() => {
+    toast.classList.remove('visible');
+  }, 3000);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// OUVERTURE & FERMETURE DU LECTEUR
+// ─────────────────────────────────────────────────────────────────────────────
+
 export function openBookReader(bookId = "ehret-mucusless-fr", chapterIndex = null) {
   _readerState.isOpen = true;
   _readerState.bookId = bookId;
-  
+
+  const savedProgress = getSavedProgress(bookId);
+  let targetScrollTop = 0;
+  let isRestored = false;
+
   if (typeof chapterIndex === 'number' && chapterIndex >= 0) {
     _readerState.chapterIndex = chapterIndex;
+    if (savedProgress && savedProgress.chapterIndex === chapterIndex) {
+      targetScrollTop = savedProgress.scrollTop || 0;
+      isRestored = targetScrollTop > 0;
+    }
+  } else if (savedProgress && typeof savedProgress.chapterIndex === 'number') {
+    _readerState.chapterIndex = savedProgress.chapterIndex;
+    targetScrollTop = savedProgress.scrollTop || 0;
+    isRestored = true;
   } else {
-    // Restaurer la dernière position sauvegardée
-    const savedPos = localStorage.getItem(`vt_reader_pos_${bookId}`);
-    _readerState.chapterIndex = savedPos ? parseInt(savedPos, 10) : 0;
+    _readerState.chapterIndex = 0;
   }
 
-  _readerState.activeTerm = null;
   _readerState.sidebarOpen = window.innerWidth > 768;
 
   let modal = document.getElementById('bookReaderModalOverlay');
@@ -94,10 +207,23 @@ export function openBookReader(bookId = "ehret-mucusless-fr", chapterIndex = nul
   document.body.style.overflow = 'hidden';
   modal.classList.add('open');
   renderReaderDOM();
+
+  restoreScrollPosition(targetScrollTop, isRestored);
+  setupReadingScrollListener();
 }
 
 export function closeBookReader() {
   _readerState.isOpen = false;
+  closeGlossaryPopover();
+
+  // Sauvegarder la position exacte lors de la fermeture
+  const pane = document.querySelector('.br-reading-pane');
+  if (pane) {
+    const maxScroll = pane.scrollHeight - pane.clientHeight;
+    const ratio = maxScroll > 0 ? pane.scrollTop / maxScroll : 0;
+    saveReadingProgress(_readerState.bookId, _readerState.chapterIndex, pane.scrollTop, ratio);
+  }
+
   const modal = document.getElementById('bookReaderModalOverlay');
   if (modal) {
     modal.classList.remove('open');
@@ -108,14 +234,34 @@ export function closeBookReader() {
 export function setReaderTheme(theme) {
   _readerState.theme = theme;
   localStorage.setItem('vt_reader_theme', theme);
+  
+  const pane = document.querySelector('.br-reading-pane');
+  const currentScroll = pane ? pane.scrollTop : 0;
+
   renderReaderDOM();
+  restoreScrollPosition(currentScroll, false);
+  setupReadingScrollListener();
 }
 
 export function adjustReaderFontSize(delta) {
   const newSize = Math.min(22, Math.max(14, _readerState.fontSize + delta));
+  if (newSize === _readerState.fontSize) return;
+
+  const pane = document.querySelector('.br-reading-pane');
+  const maxScroll = pane ? (pane.scrollHeight - pane.clientHeight) : 0;
+  const ratio = (pane && maxScroll > 0) ? (pane.scrollTop / maxScroll) : 0;
+
   _readerState.fontSize = newSize;
   localStorage.setItem('vt_reader_fontsize', String(newSize));
+  
   renderReaderDOM();
+  
+  const newPane = document.querySelector('.br-reading-pane');
+  if (newPane) {
+    const newMax = newPane.scrollHeight - newPane.clientHeight;
+    restoreScrollPosition(ratio * newMax, false);
+    setupReadingScrollListener();
+  }
 }
 
 export function setReaderChapter(index) {
@@ -123,8 +269,8 @@ export function setReaderChapter(index) {
   if (!book || index < 0 || index >= book.chapters.length) return;
 
   _readerState.chapterIndex = index;
-  _readerState.activeTerm = null;
-  localStorage.setItem(`vt_reader_pos_${book.id}`, String(index));
+  closeGlossaryPopover();
+  saveReadingProgress(book.id, index, 0, 0);
 
   // Fermer la sidebar sur mobile après sélection
   if (window.innerWidth <= 768) {
@@ -132,32 +278,101 @@ export function setReaderChapter(index) {
   }
 
   renderReaderDOM();
-
-  // Scroll en haut du texte
-  const pane = document.querySelector('.br-reading-pane');
-  if (pane) pane.scrollTop = 0;
+  restoreScrollPosition(0, false);
+  setupReadingScrollListener();
 }
 
 export function toggleReaderSidebar() {
   _readerState.sidebarOpen = !_readerState.sidebarOpen;
+  
+  const pane = document.querySelector('.br-reading-pane');
+  const currentScroll = pane ? pane.scrollTop : 0;
+
   renderReaderDOM();
+  restoreScrollPosition(currentScroll, false);
+  setupReadingScrollListener();
 }
 
-export function showGlossaryTerm(term) {
-  _readerState.activeTerm = term;
-  renderReaderDOM();
+// ─────────────────────────────────────────────────────────────────────────────
+// GLOSSAIRE CONTEXTUEL FLOTTANT (SANS RE-RENDER NI SAUT D'ÉCRAN)
+// ─────────────────────────────────────────────────────────────────────────────
+
+export function handleGlossaryClick(event, term) {
+  event.stopPropagation();
+  event.preventDefault();
+
+  const book = getActiveBook();
+  const normalized = term.toLowerCase();
+  const def = book.glossary ? (book.glossary[normalized] || book.glossary[term]) : null;
+  if (!def) return;
+
+  showGlossaryPopover(event.currentTarget, term, def);
 }
 
-export function closeGlossaryCard() {
-  _readerState.activeTerm = null;
-  renderReaderDOM();
+export function showGlossaryPopover(triggerEl, term, definition) {
+  let popover = document.getElementById('brGlossaryPopover');
+  const root = document.querySelector('.br-root');
+  if (!root) return;
+
+  if (!popover) {
+    popover = document.createElement('div');
+    popover.id = 'brGlossaryPopover';
+    popover.className = 'br-glossary-popover';
+    root.appendChild(popover);
+  }
+
+  popover.innerHTML = `
+    <div class="br-popover-header">
+      <div class="br-popover-title">
+        <i class="ri-lightbulb-line"></i>
+        <span>Définition : ${esc(term)}</span>
+      </div>
+      <button type="button" class="br-popover-close" onclick="closeGlossaryPopover()" aria-label="Fermer">&times;</button>
+    </div>
+    <div class="br-popover-body">
+      ${esc(definition)}
+    </div>
+  `;
+
+  // Calcul du positionnement dynamique relatif à la liseuse
+  const rootRect = root.getBoundingClientRect();
+  const triggerRect = triggerEl.getBoundingClientRect();
+
+  const popoverWidth = Math.min(360, rootRect.width - 32);
+  let left = (triggerRect.left - rootRect.left) + (triggerRect.width / 2) - (popoverWidth / 2);
+
+  // Gardes-fous horizontaux
+  if (left < 16) left = 16;
+  if (left + popoverWidth > rootRect.width - 16) {
+    left = rootRect.width - popoverWidth - 16;
+  }
+
+  // Gardes-fous verticaux (au-dessous si possible, sinon au-dessus)
+  let top = (triggerRect.bottom - rootRect.top) + 10;
+  const estimatedHeight = 150;
+  if (top + estimatedHeight > rootRect.height - 60) {
+    top = (triggerRect.top - rootRect.top) - estimatedHeight - 10;
+    if (top < 55) top = 55;
+  }
+
+  popover.style.width = `${popoverWidth}px`;
+  popover.style.left = `${left}px`;
+  popover.style.top = `${top}px`;
+  popover.classList.add('open');
+}
+
+export function closeGlossaryPopover() {
+  const popover = document.getElementById('brGlossaryPopover');
+  if (popover) {
+    popover.classList.remove('open');
+  }
 }
 
 function parseParagraphWithGlossary(text) {
   if (!text) return '';
   // 1. Parser les termes du glossaire {{terme}}
   let formatted = text.replace(/\{\{(.+?)\}\}/g, (match, term) => {
-    return `<span class="br-glossary-term" onclick="showGlossaryTerm('${esc(term)}')">${esc(term)}</span>`;
+    return `<span class="br-glossary-term" onclick="handleGlossaryClick(event, '${esc(term)}')">${esc(term)}</span>`;
   });
 
   // 2. Parser le markdown basique (**gras**, *italique*, newlines)
@@ -169,6 +384,10 @@ function parseParagraphWithGlossary(text) {
   return formatted;
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// RENDU PRINCIPAL DU DOM DU LECTEUR
+// ─────────────────────────────────────────────────────────────────────────────
+
 function renderReaderDOM() {
   const modal = document.getElementById('bookReaderModalOverlay');
   if (!modal) return;
@@ -177,7 +396,6 @@ function renderReaderDOM() {
   const chapters = book.chapters || [];
   const currentChapter = chapters[_readerState.chapterIndex] || { tag: "", title: "", paragraphs: [] };
   const progressPct = Math.round(((_readerState.chapterIndex + 1) / chapters.length) * 100);
-  const glossaryDef = _readerState.activeTerm && book.glossary ? (book.glossary[_readerState.activeTerm.toLowerCase()] || book.glossary[_readerState.activeTerm]) : null;
 
   modal.innerHTML = `
     <div class="br-root" data-theme="${_readerState.theme}">
@@ -222,7 +440,7 @@ function renderReaderDOM() {
       <!-- 2. SHELL : SOMMAIRE + ZONE DE LECTURE -->
       <div class="br-shell">
         
-        <!-- SOMMAIRE LATÉRAL -->
+        <!-- SOMMAIRE LATÉRAL (320px AVEC HIERARCHIE VERTICALE) -->
         <aside class="br-sidebar ${_readerState.sidebarOpen ? '' : 'closed'}">
           <p class="br-book-eyebrow">${esc(book.author)}</p>
           <h2 class="br-book-title">${esc(book.title)}</h2>
@@ -250,25 +468,14 @@ function renderReaderDOM() {
           </ul>
         </aside>
 
-        <!-- ZONE DE LECTURE DU TEXTE -->
+        <!-- ZONE DE LECTURE DU TEXTE INTÉGRAL -->
         <main class="br-reading-pane" style="font-size:${_readerState.fontSize}px;">
           <article class="br-article">
             
             <div class="br-article-tag">${esc(currentChapter.tag)}</div>
             <h1 class="br-article-title">${esc(currentChapter.title)}</h1>
 
-            <!-- CARTE GLOSSAIRE SI TERME SÉLECTIONNÉ -->
-            ${glossaryDef ? `
-              <div class="br-glossary-card">
-                <div class="br-glossary-header">
-                  <span class="br-glossary-title">💡 Définition : ${esc(_readerState.activeTerm)}</span>
-                  <button type="button" class="br-glossary-close" onclick="closeGlossaryCard()">&times;</button>
-                </div>
-                <p class="br-glossary-desc">${esc(glossaryDef)}</p>
-              </div>
-            ` : ''}
-
-            <!-- PARAGRAPHES DE LA LEÇON -->
+            <!-- PARAGRAPHES INTÉGRAUX DE LA LEÇON -->
             ${currentChapter.paragraphs && currentChapter.paragraphs.length > 0 ? (
               currentChapter.paragraphs.map((p, pIdx) => `
                 <p class="br-paragraph ${pIdx === 0 ? 'first-paragraph' : ''}">
