@@ -49,13 +49,13 @@ module.exports = async function handler(req, res) {
       medications ? `interactions médicamenteuses contre-indications ${medications}` : 'sécurité phytothérapie'
     ].filter(Boolean).join(' ');
 
-    const knowledgeChunks = retrieveRelevantKnowledge(searchTerms, {
+    const knowledgeText = retrieveRelevantKnowledge(searchTerms, {
       maxChunks: 8,
       preferredLanguage: preferredLanguage || 'fr'
     });
 
-    const knowledgeContext = knowledgeChunks.length > 0
-      ? knowledgeChunks.map(c => `[SOURCE: ${c.sourceFile || 'Materia Medica'}]\n${c.text}`).join('\n\n---\n\n')
+    const knowledgeContext = typeof knowledgeText === 'string' && knowledgeText.trim().length > 0
+      ? knowledgeText
       : 'Sources vitalistes classiques de référence.';
 
     // ── 2. Construire le prompt clinique approfondi ──
