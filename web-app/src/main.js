@@ -1115,8 +1115,24 @@ async function initApp() {
     if (window.vitalTrackAuth) {
       updateAuthUI(window.vitalTrackAuth.getCurrentUser());
     }
-    renderDashboard();
-    renderMeals();
+    
+    // Mettre à jour la vue active courante sans forcer de redirection vers l'accueil
+    const activePageEl = document.querySelector('.page.active');
+    const activePageId = activePageEl ? activePageEl.id.replace('page-', '') : 'dashboard';
+    
+    if (activePageId === 'dashboard') {
+      renderDashboard();
+    } else if (activePageId === 'recipes') {
+      if (window.renderRecipesView) window.renderRecipesView();
+    } else if (activePageId === 'deep-search') {
+      if (window.renderDeepSearchView) window.renderDeepSearchView();
+    } else if (activePageId === 'resources') {
+      if (window.renderResources) window.renderResources();
+    } else if (activePageId === 'materia-medica') {
+      if (window.renderRaintreeExplorer) window.renderRaintreeExplorer();
+    } else if (activePageId === 'meals') {
+      renderMeals();
+    }
   });
 
   if (window.VitalMascot) {
@@ -1266,12 +1282,25 @@ function showPage(page, options = {}) {
   if (page === 'chat') initChatMascot();
 };
 
+// Intercepteur global de clic pour sécuriser la navigation SPA et éviter les sauts de hash '#'
+if (typeof document !== 'undefined') {
+  document.addEventListener('click', (e) => {
+    const navLink = e.target.closest('a[data-page], .bnav-item, .sidebar-link, .more-drawer-card, a[onclick*="showPage"]');
+    if (navLink) {
+      const href = navLink.getAttribute('href');
+      if (href === '#' || href === 'javascript:void(0)' || !href || href.startsWith('#')) {
+        e.preventDefault();
+      }
+    }
+  }, true);
+}
+
 // Écouteur global pour intercepter le bouton retour du navigateur / mobile swipe-back
 if (typeof window !== 'undefined') {
   window.addEventListener('popstate', (e) => {
     // 1. Fermer BookReader si ouvert
     const brModal = document.getElementById('bookReaderModalOverlay');
-    if (brModal && brModal.classList.contains('active')) {
+    if (brModal && (brModal.classList.contains('active') || brModal.style.display === 'flex' || brModal.style.display === 'block')) {
       if (window.closeBookReader) window.closeBookReader();
       return;
     }
@@ -1305,7 +1334,7 @@ if (typeof window !== 'undefined') {
     }
 
     // 6. Fermer toute autre modale overlay active
-    const activeModals = document.querySelectorAll('.modal-overlay:not([style*="display: none"]):not([style*="display:none"]), .modal.active');
+    const activeModals = document.querySelectorAll('.modal.active, .modal-overlay.active, .herb-modal-overlay.active');
     if (activeModals.length > 0) {
       activeModals.forEach(m => {
         m.style.display = 'none';
@@ -1322,7 +1351,10 @@ if (typeof window !== 'undefined') {
       if (hash && document.getElementById(`page-${hash}`)) {
         showPage(hash, { fromPopState: true });
       } else {
-        showPage('dashboard', { fromPopState: true });
+        const activeCurrent = document.querySelector('.page.active');
+        if (!activeCurrent) {
+          showPage('dashboard', { fromPopState: true });
+        }
       }
     }
   });

@@ -26,7 +26,7 @@
   <div class="app-container">
     <!-- ═══════ DESKTOP SIDEBAR ═══════ -->
     <aside class="sidebar-desktop">
-      <a href="#" class="sidebar-logo" onclick="showPage('dashboard')" style="display:flex; align-items:center; gap:10px;">
+      <a href="javascript:void(0)" class="sidebar-logo" onclick="showPage('dashboard'); event.preventDefault();" style="display:flex; align-items:center; gap:10px;">
         <div class="logo-icon" id="desktopLogoIcon" style="width:34px; height:34px; border-radius:50%; overflow:hidden; background:transparent; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
           <svg viewBox="0 0 100 100" width="34" height="34" style="width:34px; height:34px; border-radius:50%;">
             <defs>
@@ -62,41 +62,41 @@
       
       <div class="sidebar-section">
         <div class="sidebar-section-title">Principal</div>
-        <a href="#" class="sidebar-link active" data-page="dashboard" onclick="showPage('dashboard')"><i class="ri-dashboard-fill"></i> Tableau</a>
-        <a href="#" class="sidebar-link" data-page="recipes" onclick="showPage('recipes')"><i class="ri-restaurant-2-line"></i> Recettes</a>
-        <a href="#" class="sidebar-link" data-page="meals" onclick="showPage('meals')"><i class="ri-restaurant-fill"></i> Repas</a>
-        <a href="#" class="sidebar-link" data-page="fasting" onclick="showPage('fasting')"><i class="ri-fire-fill"></i> Jeûne</a>
-        <a href="#" class="sidebar-link" data-page="chat" onclick="showPage('chat')"><i class="ri-chat-smile-3-fill"></i> Chat</a>
+        <a href="javascript:void(0)" class="sidebar-link active" data-page="dashboard" onclick="showPage('dashboard'); event.preventDefault();"><i class="ri-dashboard-fill"></i> Tableau</a>
+        <a href="javascript:void(0)" class="sidebar-link" data-page="recipes" onclick="showPage('recipes'); event.preventDefault();"><i class="ri-restaurant-2-line"></i> Recettes</a>
+        <a href="javascript:void(0)" class="sidebar-link" data-page="meals" onclick="showPage('meals'); event.preventDefault();"><i class="ri-restaurant-fill"></i> Repas</a>
+        <a href="javascript:void(0)" class="sidebar-link" data-page="fasting" onclick="showPage('fasting'); event.preventDefault();"><i class="ri-fire-fill"></i> Jeûne</a>
+        <a href="javascript:void(0)" class="sidebar-link" data-page="chat" onclick="showPage('chat'); event.preventDefault();"><i class="ri-chat-smile-3-fill"></i> Chat</a>
       </div>
       
       <div class="sidebar-section">
         <div class="sidebar-section-title">Suivi & Plantes</div>
-        <a href="#" class="sidebar-link" data-page="deep-search" onclick="showPage('deep-search')"><i class="ri-microscope-line"></i> Bilan Deep Search</a>
-        <a href="#" class="sidebar-link" data-page="recipes" onclick="showPage('recipes')"><i class="ri-restaurant-2-line"></i> Recettes</a>
-        <a href="#" class="sidebar-link" data-page="search" onclick="showPage('search')"><i class="ri-search-line"></i> Aliments</a>
-        <a href="#" class="sidebar-link" data-page="materia-medica" onclick="showPage('materia-medica')"><i class="ri-plant-line"></i> Pharmacopée</a>
-        <a href="#" class="sidebar-link" data-page="scan" onclick="showPage('scan')"><i class="ri-camera-lens-line"></i> Scanner</a>
-        <a href="#" class="sidebar-link" data-page="calendar" onclick="showPage('calendar')"><i class="ri-calendar-check-line"></i> Calendrier</a>
+        <a href="javascript:void(0)" class="sidebar-link" data-page="deep-search" onclick="showPage('deep-search'); event.preventDefault();"><i class="ri-microscope-line"></i> Bilan Deep Search</a>
+        <a href="javascript:void(0)" class="sidebar-link" data-page="recipes" onclick="showPage('recipes'); event.preventDefault();"><i class="ri-restaurant-2-line"></i> Recettes</a>
+        <a href="javascript:void(0)" class="sidebar-link" data-page="search" onclick="showPage('search'); event.preventDefault();"><i class="ri-search-line"></i> Aliments</a>
+        <a href="javascript:void(0)" class="sidebar-link" data-page="materia-medica" onclick="showPage('materia-medica'); event.preventDefault();"><i class="ri-plant-line"></i> Pharmacopée</a>
+        <a href="javascript:void(0)" class="sidebar-link" data-page="scan" onclick="showPage('scan'); event.preventDefault();"><i class="ri-camera-lens-line"></i> Scanner</a>
+        <a href="javascript:void(0)" class="sidebar-link" data-page="calendar" onclick="showPage('calendar'); event.preventDefault();"><i class="ri-calendar-check-line"></i> Calendrier</a>
       </div>
       
       <div class="sidebar-section">
         <div class="sidebar-section-title">Bien-être</div>
-        <a href="#" class="sidebar-link" data-page="breathing" onclick="showPage('breathing')"><i class="ri-windy-line"></i> Respiration</a>
-        <a href="#" class="sidebar-link" data-page="resources" onclick="showPage('resources')"><i class="ri-play-circle-line"></i> Médias</a>
+        <a href="javascript:void(0)" class="sidebar-link" data-page="breathing" onclick="showPage('breathing'); event.preventDefault();"><i class="ri-windy-line"></i> Respiration</a>
+        <a href="javascript:void(0)" class="sidebar-link" data-page="resources" onclick="showPage('resources'); event.preventDefault();"><i class="ri-play-circle-line"></i> Médias</a>
       </div>
       
       <div class="sidebar-spacer"></div>
       
       <div class="sidebar-section" style="margin-bottom:0">
         <a href="/landing.html" class="sidebar-link" title="Site Vitrine & Vidéos"><i class="ri-global-line"></i> Site Vitrine</a>
-        <a href="#" class="sidebar-link" data-page="modes" onclick="showPage('modes')"><i class="ri-settings-3-line"></i> Paramètres</a>
+        <a href="javascript:void(0)" class="sidebar-link" data-page="modes" onclick="showPage('modes'); event.preventDefault();"><i class="ri-settings-3-line"></i> Paramètres</a>
       </div>
     </aside>
 
   <!-- ═══════ NAV (Mobile Top Bar) ═══════ -->
   <nav class="navbar" id="navbar">
     <div class="nav-inner">
-      <a href="#" class="logo" onclick="showPage('dashboard')" style="display:flex; align-items:center; gap:8px;">
+      <a href="javascript:void(0)" class="logo" onclick="showPage('dashboard'); event.preventDefault();" style="display:flex; align-items:center; gap:8px;">
         <span class="logo-icon" id="mobileLogoIcon" style="width:30px; height:30px; border-radius:50%; overflow:hidden; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;">
           <svg viewBox="0 0 100 100" width="30" height="30" style="width:30px; height:30px; border-radius:50%;">
             <defs>
@@ -137,18 +137,18 @@
     </div>
   </nav>
   <div class="mobile-nav" id="mobileNav">
-    <a href="#" onclick="showPage('dashboard'); toggleMobileNav()"><i class="ri-dashboard-line"></i> <span data-i18n="nav.dashboard">Tableau de bord</span></a>
-    <a href="#" onclick="showPage('chat'); toggleMobileNav()"><i class="ri-chat-smile-3-line"></i> <span data-i18n="nav.chat">Chat IA</span></a>
-    <a href="#" onclick="showPage('scan'); toggleMobileNav()"><i class="ri-camera-lens-fill"></i> <span data-i18n="nav.scanner">Scanner IA</span></a>
-    <a href="#" onclick="showPage('search'); toggleMobileNav()"><i class="ri-search-line"></i> <span data-i18n="search.pageTitle">Recherche aliments</span></a>
-    <a href="#" onclick="showPage('materia-medica'); toggleMobileNav()"><i class="ri-plant-line"></i> <span data-i18n="nav.materiaMedica">Pharmacopée Amazonienne</span></a>
-    <a href="#" onclick="showPage('meals'); toggleMobileNav()"><i class="ri-restaurant-line"></i> <span data-i18n="meals.addMeal">Mes repas</span></a>
-    <a href="#" onclick="showPage('calendar'); toggleMobileNav()"><i class="ri-calendar-check-line"></i> <span data-i18n="nav.calendar">Plan alimentaire</span></a>
-    <a href="#" onclick="showPage('fasting'); toggleMobileNav()"><i class="ri-fire-line"></i> <span data-i18n="nav.fasting">Jeûne</span></a>
-    <a href="#" onclick="showPage('breathing'); toggleMobileNav()"><i class="ri-windy-line"></i> <span data-i18n="nav.breathing">Respiration</span></a>
-    <a href="#" onclick="showPage('resources'); toggleMobileNav()"><i class="ri-play-circle-line"></i> <span data-i18n="nav.resources">Bibliothèque</span></a>
-    <a href="#" onclick="showPage('favorites'); toggleMobileNav()"><i class="ri-heart-line"></i> <span data-i18n="search.filterFavorites">Favoris</span></a>
-    <a href="#" onclick="showPage('modes'); toggleMobileNav()"><i class="ri-settings-3-line"></i> <span data-i18n="nav.settings">Protocoles & Profil</span></a>
+    <a href="javascript:void(0)" onclick="showPage('dashboard'); toggleMobileNav(); event.preventDefault();"><i class="ri-dashboard-line"></i> <span data-i18n="nav.dashboard">Tableau de bord</span></a>
+    <a href="javascript:void(0)" onclick="showPage('chat'); toggleMobileNav(); event.preventDefault();"><i class="ri-chat-smile-3-line"></i> <span data-i18n="nav.chat">Chat IA</span></a>
+    <a href="javascript:void(0)" onclick="showPage('scan'); toggleMobileNav(); event.preventDefault();"><i class="ri-camera-lens-fill"></i> <span data-i18n="nav.scanner">Scanner IA</span></a>
+    <a href="javascript:void(0)" onclick="showPage('search'); toggleMobileNav(); event.preventDefault();"><i class="ri-search-line"></i> <span data-i18n="search.pageTitle">Recherche aliments</span></a>
+    <a href="javascript:void(0)" onclick="showPage('materia-medica'); toggleMobileNav(); event.preventDefault();"><i class="ri-plant-line"></i> <span data-i18n="nav.materiaMedica">Pharmacopée Amazonienne</span></a>
+    <a href="javascript:void(0)" onclick="showPage('meals'); toggleMobileNav(); event.preventDefault();"><i class="ri-restaurant-line"></i> <span data-i18n="meals.addMeal">Mes repas</span></a>
+    <a href="javascript:void(0)" onclick="showPage('calendar'); toggleMobileNav(); event.preventDefault();"><i class="ri-calendar-check-line"></i> <span data-i18n="nav.calendar">Plan alimentaire</span></a>
+    <a href="javascript:void(0)" onclick="showPage('fasting'); toggleMobileNav(); event.preventDefault();"><i class="ri-fire-line"></i> <span data-i18n="nav.fasting">Jeûne</span></a>
+    <a href="javascript:void(0)" onclick="showPage('breathing'); toggleMobileNav(); event.preventDefault();"><i class="ri-windy-line"></i> <span data-i18n="nav.breathing">Respiration</span></a>
+    <a href="javascript:void(0)" onclick="showPage('resources'); toggleMobileNav(); event.preventDefault();"><i class="ri-play-circle-line"></i> <span data-i18n="nav.resources">Bibliothèque</span></a>
+    <a href="javascript:void(0)" onclick="showPage('favorites'); toggleMobileNav(); event.preventDefault();"><i class="ri-heart-line"></i> <span data-i18n="search.filterFavorites">Favoris</span></a>
+    <a href="javascript:void(0)" onclick="showPage('modes'); toggleMobileNav(); event.preventDefault();"><i class="ri-settings-3-line"></i> <span data-i18n="nav.settings">Protocoles & Profil</span></a>
   </div>
 
   <!-- ═══════ MORE FEATURES BOTTOM DRAWER (Mobile) ═══════ -->
@@ -261,12 +261,12 @@
 
   <!-- ═══════ BOTTOM NAV (Mobile) ═══════ -->
   <nav class="bottom-nav" id="bottomNav">
-    <a href="#" class="bnav-item active" data-page="dashboard" onclick="showPage('dashboard')"><i class="ri-dashboard-line"></i><span data-i18n="bnav.dashboard">Accueil</span></a>
-    <a href="#" class="bnav-item" data-page="scan" onclick="showPage('scan')"><i class="ri-camera-lens-fill"></i><span data-i18n="bnav.scan">Scan</span></a>
-    <a href="#" class="bnav-item" data-page="chat" onclick="showPage('chat')"><i class="ri-chat-smile-3-line"></i><span data-i18n="bnav.chat">Chat</span></a>
-    <a href="#" class="bnav-item" data-page="calendar" onclick="showPage('calendar')"><i class="ri-calendar-check-line"></i><span data-i18n="bnav.calendar">Plan</span></a>
-    <a href="#" class="bnav-item" data-page="fasting" onclick="showPage('fasting')"><i class="ri-fire-line"></i><span data-i18n="bnav.fasting">Jeûne</span></a>
-    <a href="#" class="bnav-item" id="bnavMoreBtn" onclick="window.toggleMoreDrawer(); event.preventDefault();"><i class="ri-apps-line"></i><span data-i18n="bnav.more">Plus</span></a>
+    <a href="javascript:void(0)" class="bnav-item active" data-page="dashboard" onclick="showPage('dashboard'); event.preventDefault();"><i class="ri-dashboard-line"></i><span data-i18n="bnav.dashboard">Accueil</span></a>
+    <a href="javascript:void(0)" class="bnav-item" data-page="scan" onclick="showPage('scan'); event.preventDefault();"><i class="ri-camera-lens-fill"></i><span data-i18n="bnav.scan">Scan</span></a>
+    <a href="javascript:void(0)" class="bnav-item" data-page="chat" onclick="showPage('chat'); event.preventDefault();"><i class="ri-chat-smile-3-line"></i><span data-i18n="bnav.chat">Chat</span></a>
+    <a href="javascript:void(0)" class="bnav-item" data-page="calendar" onclick="showPage('calendar'); event.preventDefault();"><i class="ri-calendar-check-line"></i><span data-i18n="bnav.calendar">Plan</span></a>
+    <a href="javascript:void(0)" class="bnav-item" data-page="fasting" onclick="showPage('fasting'); event.preventDefault();"><i class="ri-fire-line"></i><span data-i18n="bnav.fasting">Jeûne</span></a>
+    <a href="javascript:void(0)" class="bnav-item" id="bnavMoreBtn" onclick="window.toggleMoreDrawer(); event.preventDefault();"><i class="ri-apps-line"></i><span data-i18n="bnav.more">Plus</span></a>
   </nav>
 
   <!-- ═══════ MAIN CONTENT ═══════ -->
