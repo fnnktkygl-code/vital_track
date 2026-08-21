@@ -177,7 +177,7 @@ function renderReaderDOM() {
   const chapters = book.chapters || [];
   const currentChapter = chapters[_readerState.chapterIndex] || { tag: "", title: "", paragraphs: [] };
   const progressPct = Math.round(((_readerState.chapterIndex + 1) / chapters.length) * 100);
-  const glossaryDef = _readerState.activeTerm && book.glossary ? book.glossary[_readerState.activeTerm] : null;
+  const glossaryDef = _readerState.activeTerm && book.glossary ? (book.glossary[_readerState.activeTerm.toLowerCase()] || book.glossary[_readerState.activeTerm]) : null;
 
   modal.innerHTML = `
     <div class="br-root" data-theme="${_readerState.theme}">

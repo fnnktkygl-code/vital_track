@@ -34,8 +34,19 @@ it('Le livre possède un ID, un titre et un auteur valides', () => {
 });
 
 // 2. Vérification des Leçons
-it('Le livre contient 30 sections riches (Préface, Intro + 26 Leçons & Sous-Leçons IVa/XVIa)', () => {
-  assert.equal(ehretMucuslessFr.chapters.length, 30);
+it('Le livre contient 29 sections intégrales (Préface, Intro, Biographie + 26 Leçons complètes non abrégées)', () => {
+  assert.equal(ehretMucuslessFr.chapters.length, 29);
+});
+
+it('Le livre contient plus de 500 paragraphes et plus de 280 000 caractères intégraux', () => {
+  let totalChars = 0;
+  let totalParagraphs = 0;
+  ehretMucuslessFr.chapters.forEach(c => {
+    totalParagraphs += c.paragraphs.length;
+    c.paragraphs.forEach(p => totalChars += p.length);
+  });
+  assert.ok(totalParagraphs >= 500, `Attendu >= 500 paragraphes (trouvé ${totalParagraphs})`);
+  assert.ok(totalChars >= 280000, `Attendu >= 280 000 caractères (trouvé ${totalChars})`);
 });
 
 it('Chaque chapitre a un ID unique, un tag non vide, un titre et au moins un paragraphe', () => {
@@ -53,7 +64,7 @@ it('Chaque chapitre a un ID unique, un tag non vide, un titre et au moins un par
 
 // 3. Vérification des 26 Leçons Numérotées
 it('Toutes les leçons de I à XXVI sont présentes dans l\'ordre', () => {
-  const lessonTags = ehretMucuslessFr.chapters.slice(2).map(c => c.tag);
+  const lessonTags = ehretMucuslessFr.chapters.slice(3).map(c => c.tag);
   assert.equal(lessonTags[0], 'Leçon I');
   assert.equal(lessonTags[lessonTags.length - 1], 'Leçon XXVI');
   assert.ok(lessonTags.includes('Leçon V'));

@@ -64,10 +64,10 @@ try {
   assert.equal(currentTheme, 'sepia');
   console.log('  ✅ Thème Sépia appliqué');
 
-  // 6. Navigation vers la Leçon III (Le diagnostic)
+  // 6. Navigation vers la Leçon III (Pourquoi le Diagnostic Médical Traditionnel Échoue)
   await page.evaluate(() => {
-    // Leçon III est à l'index 4 (Préface=0, Intro=1, Leçon I=2, Leçon II=3, Leçon III=4)
-    window.setReaderChapter(4);
+    // Préface=0, Intro=1, Bio=2, Leçon I=3, Leçon II=4, Leçon III=5
+    window.setReaderChapter(5);
   });
   const chapterTitle = await page.evaluate(() => {
     return document.querySelector('.br-article-title')?.textContent;
