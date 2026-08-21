@@ -389,6 +389,51 @@ export function filterGlossaryCards(query) {
   });
 }
 
+function renderArticleBlock(text, pIdx) {
+  if (!text) return '';
+
+  let html = '';
+  let remaining = text;
+
+  // 1. Extraire le titre "### Titre" s'il est présent au début
+  if (remaining.startsWith('### ')) {
+    const lines = remaining.split('\n');
+    const titleLine = lines[0].replace(/^###\s+/, '');
+    html += `<h3 class="br-section-subtitle">${parseParagraphWithGlossary(titleLine)}</h3>`;
+    remaining = lines.slice(1).join('\n').trim();
+  }
+
+  if (!remaining) return html;
+
+  // 2. Si le reste contient un tableau Markdown
+  if (remaining.includes('|') && remaining.includes('---')) {
+    const lines = remaining.trim().split('\n').map(l => l.trim()).filter(l => l.startsWith('|'));
+    if (lines.length >= 2) {
+      html += '<div class="br-table-wrap"><table class="br-berg-table">';
+      lines.forEach((line, idx) => {
+        if (line.includes('---')) return; // ligne de séparation
+        const rawCells = line.split('|').slice(1, -1).map(c => c.trim());
+        if (idx === 0) {
+          html += '<thead><tr>' + rawCells.map(c => `<th>${parseParagraphWithGlossary(c)}</th>`).join('') + '</tr></thead><tbody>';
+        } else {
+          html += '<tr>' + rawCells.map((c, cIdx) => {
+            const cleanText = c.replace(/[\*\_]/g, '').trim();
+            const isPos = cleanText.startsWith('+');
+            const isNeg = cleanText.startsWith('-');
+            const valClass = isPos ? 'br-val-pos' : (isNeg ? 'br-val-neg' : '');
+            return `<td class="${valClass}">${parseParagraphWithGlossary(c)}</td>`;
+          }).join('') + '</tr>';
+        }
+      });
+      html += '</tbody></table></div>';
+      return html;
+    }
+  }
+
+  // 3. Paragraphe régulier
+  return html + `<p class="br-paragraph ${pIdx === 0 ? 'first-paragraph' : ''}">${parseParagraphWithGlossary(remaining)}</p>`;
+}
+
 function parseParagraphWithGlossary(text) {
   if (!text) return '';
   // 1. Parser les termes du glossaire {{terme}}
@@ -530,11 +575,7 @@ function renderReaderDOM() {
               </div>
             ` : (
               currentChapter.paragraphs && currentChapter.paragraphs.length > 0 ? (
-                currentChapter.paragraphs.map((p, pIdx) => `
-                  <p class="br-paragraph ${pIdx === 0 ? 'first-paragraph' : ''}">
-                    ${parseParagraphWithGlossary(p)}
-                  </p>
-                `).join('')
+                currentChapter.paragraphs.map((p, pIdx) => renderArticleBlock(p, pIdx)).join('')
               ) : `
                 <div style="padding:40px 20px; text-align:center; color:var(--br-ink-soft); font-style:italic;">
                   Cette section fait partie du sommaire étendu du livre. Le texte complet est disponible dans l'édition originale PDF.

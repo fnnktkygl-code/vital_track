@@ -24,6 +24,48 @@ function cleanMarkdown(text) {
     .replace(/\*(.+?)\*/g, '<em>$1</em>');
 }
 
+function renderPdfBlock(text, pIdx) {
+  if (!text) return '';
+
+  let html = '';
+  let remaining = text;
+
+  if (remaining.startsWith('### ')) {
+    const lines = remaining.split('\n');
+    const titleLine = lines[0].replace(/^###\s+/, '');
+    html += `<h3 class="pdf-section-subtitle">${cleanMarkdown(titleLine)}</h3>`;
+    remaining = lines.slice(1).join('\n').trim();
+  }
+
+  if (!remaining) return html;
+
+  if (remaining.includes('|') && remaining.includes('---')) {
+    const lines = remaining.trim().split('\n').map(l => l.trim()).filter(l => l.startsWith('|'));
+    if (lines.length >= 2) {
+      html += '<div class="pdf-table-wrap"><table class="pdf-berg-table">';
+      lines.forEach((line, idx) => {
+        if (line.includes('---')) return;
+        const rawCells = line.split('|').slice(1, -1).map(c => c.trim());
+        if (idx === 0) {
+          html += '<thead><tr>' + rawCells.map(c => `<th>${cleanMarkdown(c)}</th>`).join('') + '</tr></thead><tbody>';
+        } else {
+          html += '<tr>' + rawCells.map(c => {
+            const clean = c.replace(/[\*\_]/g, '').trim();
+            const isPos = clean.startsWith('+');
+            const isNeg = clean.startsWith('-');
+            const cls = isPos ? 'pdf-val-pos' : (isNeg ? 'pdf-val-neg' : '');
+            return `<td class="${cls}">${cleanMarkdown(c)}</td>`;
+          }).join('') + '</tr>';
+        }
+      });
+      html += '</tbody></table></div>';
+      return html;
+    }
+  }
+
+  return html + `<p class="pdf-paragraph ${pIdx === 0 ? 'has-dropcap' : ''}">${cleanMarkdown(remaining)}</p>`;
+}
+
 export function generateLuxuryHtml() {
   const chapters = ehretMucuslessFr.chapters;
   const glossary = ehretMucuslessFr.glossary;
@@ -58,6 +100,65 @@ export function generateLuxuryHtml() {
       font-size: 10.5pt;
       line-height: 1.65;
       text-rendering: optimizeLegibility;
+    }
+
+    .pdf-section-subtitle {
+      font-family: 'Fraunces', serif;
+      font-size: 13pt;
+      font-weight: 700;
+      color: #0f766e;
+      margin: 20pt 0 8pt;
+      padding-bottom: 4pt;
+      border-bottom: 1pt solid #cbd5e1;
+      page-break-after: avoid;
+    }
+
+    .pdf-table-wrap {
+      width: 100%;
+      margin: 10pt 0 16pt;
+      page-break-inside: avoid;
+    }
+
+    .pdf-berg-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: 'Outfit', sans-serif;
+      font-size: 9pt;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+    }
+
+    .pdf-berg-table th {
+      background: #f1f5f9;
+      border-bottom: 1.5pt solid #94a3b8;
+      padding: 6pt 10pt;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #0f172a;
+      text-align: left;
+    }
+
+    .pdf-berg-table td {
+      padding: 5pt 10pt;
+      border-bottom: 0.5pt solid #e2e8f0;
+      color: #1e293b;
+    }
+
+    .pdf-val-pos {
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 700;
+      color: #059669;
+      text-align: center;
+    }
+
+    .pdf-val-neg {
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 700;
+      color: #dc2626;
+      text-align: center;
     }
 
     /* ══════════════════════════════════════════════════════════════════
@@ -528,11 +629,7 @@ export function generateLuxuryHtml() {
         </div>
       ` : ''}
 
-      ${c.paragraphs.map((p, pIdx) => `
-        <p class="pdf-paragraph ${pIdx === 0 ? 'has-dropcap' : ''}">
-          ${cleanMarkdown(p)}
-        </p>
-      `).join('')}
+      ${c.paragraphs.map((p, pIdx) => renderPdfBlock(p, pIdx)).join('')}
     </div>
   `).join('')}
 
