@@ -11624,7 +11624,7 @@ function getCircadianPhaseData(h, m = 0) {
       { icon: '🌬️', label: 'Respiration Prānique' }
     ];
   } else if (h >= 6 && h < 8) {
-    shortCycle = 'ÉLIMINATION (Matin)';
+    shortCycle = 'ÉLIMINATION';
     fullCycle = 'ÉVACUATION DU CÔLON & RÉVEIL';
     iconClass = 'ri-sun-foggy-fill';
     phaseWindow = '06h - 08h';
@@ -11645,7 +11645,7 @@ function getCircadianPhaseData(h, m = 0) {
       { icon: '🚶', label: 'Mouvement & Étirements' }
     ];
   } else if (h >= 8 && h < 10) {
-    shortCycle = 'ÉLIMINATION DIGESTIVE';
+    shortCycle = 'PRÉPARATION';
     fullCycle = 'RÉVEIL ENZYMATIQUE & ESTOMAC';
     iconClass = 'ri-sun-foggy-fill';
     phaseWindow = '08h - 10h';
@@ -11666,7 +11666,7 @@ function getCircadianPhaseData(h, m = 0) {
       { icon: '🍵', label: 'Infusion Dépurative' }
     ];
   } else if (h >= 10 && h < 12) {
-    shortCycle = 'TRANSITION NUTRITIONNELLE';
+    shortCycle = 'TRANSITION';
     fullCycle = 'ACTIVATION PANCRÉATIQUE & VIGILANCE';
     iconClass = 'ri-sun-line';
     phaseWindow = '10h - 12h';
@@ -11687,7 +11687,7 @@ function getCircadianPhaseData(h, m = 0) {
       { icon: '🥗', label: 'Repas Vivant' }
     ];
   } else if (h >= 12 && h < 14) {
-    shortCycle = 'APPROPRIATION (Zénith)';
+    shortCycle = 'APPROPRIATION';
     fullCycle = 'APPROPRIATION & FEU DIGESTIF';
     iconClass = 'ri-sun-fill';
     phaseWindow = '12h - 14h';
@@ -11708,7 +11708,7 @@ function getCircadianPhaseData(h, m = 0) {
       { icon: '🥑', label: 'Lipides Sains & Chlorophylle' }
     ];
   } else if (h >= 14 && h < 16) {
-    shortCycle = 'ASSIMILATION DU GRÊLE';
+    shortCycle = 'ASSIMILATION';
     fullCycle = 'ABSORPTION MICRONUTRITIONNELLE';
     iconClass = 'ri-sun-fill';
     phaseWindow = '14h - 16h';
@@ -11729,7 +11729,7 @@ function getCircadianPhaseData(h, m = 0) {
       { icon: '🫖', label: 'Tisane Digestive (Boldo/Camomille)' }
     ];
   } else if (h >= 16 && h < 18) {
-    shortCycle = 'FILTRATION & ÉPURATION';
+    shortCycle = 'FILTRATION';
     fullCycle = 'DRAINAGE URINAIRE & REINS';
     iconClass = 'ri-sunset-fill';
     phaseWindow = '16h - 18h';
@@ -11750,7 +11750,7 @@ function getCircadianPhaseData(h, m = 0) {
       { icon: '💧', label: 'Hydratation Rénale' }
     ];
   } else if (h >= 18 && h < 20) {
-    shortCycle = 'APPROPRIATION (Soir)';
+    shortCycle = 'APPROPRIATION';
     fullCycle = 'CLÔTURE DU REPAS & TRANSITION';
     iconClass = 'ri-sunset-fill';
     phaseWindow = '18h - 20h';
@@ -11771,7 +11771,7 @@ function getCircadianPhaseData(h, m = 0) {
       { icon: '🍵', label: 'Tisane Digestive' }
     ];
   } else if (h >= 20 && h < 22) {
-    shortCycle = 'ASSIMILATION (Soir)';
+    shortCycle = 'ASSIMILATION';
     fullCycle = 'ASSIMILATION CELLULAIRE & DÉTENTE';
     iconClass = 'ri-moon-fill';
     phaseWindow = '20h - 22h';
@@ -11792,7 +11792,7 @@ function getCircadianPhaseData(h, m = 0) {
       { icon: '🫁', label: 'Cohérence Cardiaque 5.5s' }
     ];
   } else if (h >= 22 || h < 0) {
-    shortCycle = 'SOMMEIL & RÉPARATION';
+    shortCycle = 'SOMMEIL';
     fullCycle = 'ÉQUILIBRE ENDOCRINIEN & SOMMEIL';
     iconClass = 'ri-moon-fill';
     phaseWindow = '22h - 00h';
@@ -11813,7 +11813,7 @@ function getCircadianPhaseData(h, m = 0) {
       { icon: '🧠', label: 'Nettoyage Glymphatique' }
     ];
   } else if (h >= 0 && h < 2) {
-    shortCycle = 'RÉGÉNÉRATION & AUTOPHAGIE';
+    shortCycle = 'AUTOPHAGIE';
     fullCycle = 'DÉTOX VÉSICULAIRE & AUTOLYSE';
     iconClass = 'ri-moon-clear-fill';
     phaseWindow = '00h - 02h';
@@ -11834,7 +11834,7 @@ function getCircadianPhaseData(h, m = 0) {
       { icon: '✨', label: 'Recyclage Mitochondries' }
     ];
   } else {
-    shortCycle = 'RÉGÉNÉRATION HÉPATIQUE';
+    shortCycle = 'RÉGÉNÉRATION';
     fullCycle = 'PURIFICATION DU FOIE & SANG';
     iconClass = 'ri-moon-clear-fill';
     phaseWindow = '02h - 04h';
