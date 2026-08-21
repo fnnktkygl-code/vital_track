@@ -134,4 +134,28 @@ it('La structure de persistance de lecture mémorise le chapitre, le scrollTop e
   assert.ok(parsed.updatedAt > 0);
 });
 
+// 7. Vérification des 10 Tables de Ragnar Berg (Leçon XIV)
+it('La Leçon XIV contient les 10 tables exhaustives de Ragnar Berg avec valeurs chiffrées', () => {
+  const lesson14 = ehretMucuslessFr.chapters.find(c => c.id === 'lesson-14');
+  assert.ok(lesson14, 'La Leçon XIV doit exister');
+  const tableParagraphs = lesson14.paragraphs.filter(p => p.includes('| Aliment') && p.includes('---'));
+  assert.equal(tableParagraphs.length, 10, `Attendu 10 tables de Berg (trouvé ${tableParagraphs.length})`);
+  assert.ok(lesson14.paragraphs.join(' ').includes('+10.25')); // Huîtres
+  assert.ok(lesson14.paragraphs.join(' ').includes('-51.83')); // Jaunes d'œufs
+  assert.ok(lesson14.paragraphs.join(' ').includes('+39.40')); // Radis noir
+});
+
+// 8. Vérification des Éclairages Scientifiques & Mises en Garde (Section 30)
+it('Toutes les définitions du glossaire contiennent un recul scientifique et des mises en garde factuelles', () => {
+  const entries = Object.entries(ehretMucuslessFr.glossary);
+  assert.ok(entries.length >= 38);
+  entries.forEach(([term, item]) => {
+    assert.ok(item.def && item.def.length > 10, `Le terme '${term}' doit avoir une définition historique`);
+    assert.ok(item.note && item.note.length > 10, `Le terme '${term}' doit avoir une note d'éclairage scientifique`);
+  });
+
+  const warnings = entries.filter(([k, v]) => v.type === 'warning');
+  assert.ok(warnings.length >= 3, 'Au moins 3 termes clés doivent comporter une mise en garde explicite (cœur/moteur, protéines, médicaments)');
+});
+
 console.log(`\n🎉 SUITE BOOKREADER VALIDÉE : ${passedTests} / ${totalTests} assertions réussies à 100% !\n`);

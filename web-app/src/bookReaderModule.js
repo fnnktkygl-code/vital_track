@@ -316,7 +316,7 @@ export function handleGlossaryClick(event, term) {
   showGlossaryPopover(event.currentTarget, term, def);
 }
 
-export function showGlossaryPopover(triggerEl, term, definition) {
+export function showGlossaryPopover(triggerEl, term, definitionItem) {
   let popover = document.getElementById('brGlossaryPopover');
   const root = document.querySelector('.br-root');
   if (!root) return;
@@ -328,16 +328,43 @@ export function showGlossaryPopover(triggerEl, term, definition) {
     root.appendChild(popover);
   }
 
+  let defText = '';
+  let noteText = '';
+  let noteType = 'science';
+
+  if (typeof definitionItem === 'string') {
+    defText = definitionItem;
+  } else if (definitionItem && typeof definitionItem === 'object') {
+    defText = definitionItem.def || '';
+    noteText = definitionItem.note || '';
+    noteType = definitionItem.type || 'science';
+  }
+
+  const isWarning = noteType === 'warning';
+
   popover.innerHTML = `
     <div class="br-popover-header">
       <div class="br-popover-title">
-        <i class="ri-lightbulb-line"></i>
-        <span>Définition : ${esc(term)}</span>
+        <i class="ri-lightbulb-fill" style="color:var(--br-brass);"></i>
+        <span style="text-transform:capitalize;">${esc(term)}</span>
       </div>
       <button type="button" class="br-popover-close" onclick="closeGlossaryPopover()" aria-label="Fermer">&times;</button>
     </div>
     <div class="br-popover-body">
-      ${esc(definition)}
+      <div class="br-popover-def">
+        <span class="br-popover-subheading">Théorie d'Arnold Ehret (1922) :</span>
+        ${esc(defText)}
+      </div>
+
+      ${noteText ? `
+        <div class="br-popover-scientific-note ${isWarning ? 'is-warning' : 'is-science'}">
+          <div class="br-popover-note-title">
+            <i class="${isWarning ? 'ri-alert-fill' : 'ri-scales-3-line'}"></i>
+            <span>${isWarning ? 'Mise en Garde Médicale & Sécurité' : 'Éclairage Scientifique & Recul Factuel'}</span>
+          </div>
+          <p class="br-popover-note-text">${esc(noteText)}</p>
+        </div>
+      ` : ''}
     </div>
   `;
 
@@ -345,7 +372,7 @@ export function showGlossaryPopover(triggerEl, term, definition) {
   const rootRect = root.getBoundingClientRect();
   const triggerRect = triggerEl.getBoundingClientRect();
 
-  const popoverWidth = Math.min(360, rootRect.width - 32);
+  const popoverWidth = Math.min(380, rootRect.width - 32);
   let left = (triggerRect.left - rootRect.left) + (triggerRect.width / 2) - (popoverWidth / 2);
 
   // Gardes-fous horizontaux
@@ -356,7 +383,7 @@ export function showGlossaryPopover(triggerEl, term, definition) {
 
   // Gardes-fous verticaux (au-dessous si possible, sinon au-dessus)
   let top = (triggerRect.bottom - rootRect.top) + 10;
-  const estimatedHeight = 150;
+  const estimatedHeight = noteText ? 240 : 150;
   if (top + estimatedHeight > rootRect.height - 60) {
     top = (triggerRect.top - rootRect.top) - estimatedHeight - 10;
     if (top < 55) top = 55;
@@ -561,16 +588,42 @@ function renderReaderDOM() {
                   <input type="text" id="brGlossarySearchInput" class="br-glossary-search-input" placeholder="Rechercher parmi les ${glossaryEntries.length} définitions (ex: mucus, autolyse, balai, transition...)" oninput="filterGlossaryCards(this.value)" style="border:none; outline:none; background:transparent; font-family:var(--br-font-ui); font-size:13px; color:var(--br-ink); width:100%;" />
                 </div>
 
-                <div id="brGlossaryCardsList" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(min(320px, 100%), 1fr)); gap:14px; margin-top:16px;">
-                  ${glossaryEntries.map(([term, def]) => `
-                    <div class="br-glossary-index-card" data-term="${esc(term.toLowerCase())}" style="background:var(--br-surface); border:1px solid var(--br-line); border-left:4px solid var(--br-brass); border-radius:10px; padding:14px 16px; box-shadow:0 2px 8px rgba(0,0,0,0.04);">
-                      <div style="display:flex; align-items:center; gap:6px; margin-bottom:6px;">
-                        <i class="ri-lightbulb-fill" style="color:var(--br-brass); font-size:14px;"></i>
-                        <h4 style="margin:0; font-family:var(--br-font-display); font-size:1rem; font-weight:700; color:var(--br-brass); text-transform:capitalize;">${esc(term)}</h4>
+                <div id="brGlossaryCardsList" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(min(340px, 100%), 1fr)); gap:16px; margin-top:16px;">
+                  ${glossaryEntries.map(([term, item]) => {
+                    const defText = typeof item === 'string' ? item : (item.def || '');
+                    const noteText = typeof item === 'object' ? (item.note || '') : '';
+                    const isWarning = typeof item === 'object' && item.type === 'warning';
+                    return `
+                    <div class="br-glossary-index-card" data-term="${esc(term.toLowerCase())}">
+                      <div class="br-glossary-card-header">
+                        <div style="display:flex; align-items:center; gap:6px;">
+                          <i class="ri-lightbulb-fill" style="color:var(--br-brass); font-size:14px;"></i>
+                          <h4 class="br-glossary-card-title">${esc(term)}</h4>
+                        </div>
+                        ${isWarning ? `
+                          <span class="br-badge-warning-pill"><i class="ri-alert-fill"></i> Mise en Garde</span>
+                        ` : (noteText ? `
+                          <span class="br-badge-science-pill"><i class="ri-scales-3-line"></i> Recul Scientifique</span>
+                        ` : '')}
                       </div>
-                      <p style="margin:0; font-family:var(--br-font-ui); font-size:0.86rem; line-height:1.55; color:var(--br-ink);">${esc(def)}</p>
+
+                      <p class="br-glossary-card-def">
+                        <strong style="color:var(--br-brass); font-size:11px; text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:2px;">Théorie d'Arnold Ehret (1922) :</strong>
+                        ${esc(defText)}
+                      </p>
+
+                      ${noteText ? `
+                        <div class="br-glossary-card-note ${isWarning ? 'is-warning' : 'is-science'}">
+                          <div class="br-glossary-note-header">
+                            <i class="${isWarning ? 'ri-alert-fill' : 'ri-scales-3-line'}"></i>
+                            <span>${isWarning ? 'Mise en Garde Médicale & Sécurité' : 'Éclairage Scientifique & Factuel VitalTrack'}</span>
+                          </div>
+                          <p class="br-glossary-note-body">${esc(noteText)}</p>
+                        </div>
+                      ` : ''}
                     </div>
-                  `).join('')}
+                  `;
+                  }).join('')}
                 </div>
               </div>
             ` : (

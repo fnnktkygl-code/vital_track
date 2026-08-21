@@ -1,10 +1,10 @@
 /**
  * ehretMucuslessFr.js
  * 
- * ÉDITION INTÉGRALE & COMPLÈTE (NON ABRÉGÉE - 30 SECTIONS, 335 000 CARACTÈRES)
+ * ÉDITION INTÉGRALE & COMPLÈTE (NON ABRÉGÉE - 30 SECTIONS, 340 000 CARACTÈRES)
  * « Système de Guérison du Régime Sans Mucus » (1922) · Prof. Arnold Ehret
  * Traduction Française Intégrale Conforme au Texte Original · 26 Leçons & Traités Magistraux.
- * Inclut l'Intégralité des Tables d'Analyse Alimentaire de Ragnar Berg (Leçon XIV).
+ * Inclut les Tables de Ragnar Berg et le Dictionnaire Vitaliste avec Éclairages Scientifiques.
  * Enrichi avec 38 Définitions et 540+ Annotations Cliniques Interactives par VitalTrack Academy.
  */
 
@@ -15,48 +15,200 @@ export const ehretMucuslessFr = {
   author: "Prof. Arnold Ehret",
   year: "1922",
   translator: "VitalTrack Academy (Traduction & Architecture Interactive)",
-  editionNotice: "Édition numérique interactive enrichie par VitalTrack Academy d'après l'œuvre originale de 1922.",
+  editionNotice: "Édition numérique interactive enrichie par VitalTrack Academy d'après l'œuvre originale de 1922. Contient des éclairages scientifiques et des mises en garde physiologiques contemporaines.",
   pageCount: 118,
   pdfUrl: "/pdfs/arnold-ehret-systeme-de-guerison-du-regime-sans-mucus-fr.pdf",
   glossary: {
-  "mucus": "Substance visqueuse, gluante et pathologique formée par les résidus d'aliments non digérés et dénaturés (farines blanches, viandes, produits laitiers, féculents raffinés). Selon Ehret, le mucus obstrue les conduits circulatoires et constitue la base physique de toute maladie.",
-  "encombrement": "Accumulation progressive de matières fécales durcies, de glaires et de toxines dans le tube digestif et les tissus profonds. C'est l'Obstruction (O) dans la formule suprême de la vitalité.",
-  "obstruction": "Frein mécanique et friction interne s'opposant à la libre circulation du sang, de la lymphe et de la force nerveuse dans le corps humain.",
-  "vitalité": "La puissance mécanique et électrique du corps humain exprimée par l'équation V = P - O. Plus l'obstruction interne diminue, plus la puissance vitale intrinsèque circule sans entrave.",
-  "équation suprême": "V = P - O (Vitalité = Puissance - Obstruction). Une équation fondamentale démontrant que la force vitale dépend avant tout de l'élimination des frottements et obstructions internes, et non de la suralimentation.",
-  "régime sans mucus": "Alimentation composée exclusivement de fruits frais et séchés mûrs, de légumes verts et feuillus crus ou cuits à la vapeur douce, exempte de féculents collants, de graisses saturées et de protéines cadavériques.",
-  "régime de transition": "Étape indispensable et progressive permettant au corps d'éliminer les toxines accumulées sans déclencher une crise d'auto-intoxication brutale due à une libération trop massive de poisons dans le sang.",
-  "jeûne rationnel": "Cessation volontaire et méthodique de prise alimentaire solide, encadrée par une hydratation pure, des lavements doux et une rupture mécanique appropriée pour dissoudre les toxémies profondes.",
-  "salade balai": "Mélange spécifique de légumes crus râpés (chou blanc, carottes, céleri) et d'assaisonnement sans vinaigre, agissant comme un balai mécanique sur les villosités intestinales pour décoller les plaques de mucus.",
-  "autolyse": "Processus physiologique naturel par lequel l'organisme à jeûn digère et recycle ses propres tissus malades, dépôts morbides et excroissances anormales pour nourrir ses organes vitaux.",
-  "acide urique": "Résidu toxique azoté hautement acide issu du métabolisme des protéines animales et des légumineuses, provoquant des dépôts cristallins douloureux dans les articulations et les néphrons rénaux.",
-  "toxémie": "État d'empoisonnement généralisé du sang et de la lymphe par des acides, gaz de fermentation et déchets métaboliques mal évacués.",
-  "ragnar berg": "Chimiste et biochimiste suédois dont les tables quantifient avec précision le potentiel acidifiant ou alcalinisant des aliments selon leur teneur minérale.",
-  "miroir magique": "La langue du patient qui, dès les premières heures de jeûne court, se couvre d'un enduit blanc ou jaunâtre, reflétant avec exactitude l'état d'encrassement mucoïde des muqueuses gastriques et intestinales.",
-  "glaires": "Sécrétions épaisses et visqueuses produites par les muqueuses enflammées pour tenter d'enrober les acides corrosifs et matières indigestes.",
-  "moteur humain à pression d'air": "Concept fondamental d'Ehret démontrant que le corps est un moteur élastique fonctionnant par pression atmosphérique et respiration, où les poumons jouent le rôle de pompe motrice.",
-  "aliments producteurs de mucus": "Catégorie d'aliments néfastes comprenant les viandes, poissons, œufs, produits laitiers, céréales raffinées (pain, pâtes), féculents et sucres industriels, laissant des dépôts visqueux dans le tube digestif.",
-  "aliments sans mucus": "Aliments physiologiques pour l'homme : fruits mûrs frais et séchés, légumes à feuilles vertes, salades et légumes racines sans amidon, qui dissolvent et éliminent les déchets sans en créer de nouveaux.",
-  "rupture du jeûne": "Moment capital où la reprise alimentaire doit s'effectuer impérativement avec des fruits cuits laxatifs ou une salade crue sans huile, pour chasser les matières morbides liquéfiées dans le côlon.",
-  "constipation intestinale": "Accumulation pathologique de matières fécales déshydratées et encroûtées sur les parois du côlon depuis l'enfance, empoisonnant continuellement le flux sanguin.",
-  "crise d'élimination": "Réaction salutaire où le corps remet en circulation de grandes quantités de déchets stockés pour les expulser, se manifestant temporairement par des nausées, fatigue, maux de tête ou fièvre.",
-  "sang pur": "Sang alcalin, hautement oxygéné et libre de toxines, formé exclusivement à partir de fruits mûrs et de légumes verts, garant d'une clarté mentale et d'une endurance physique absolues.",
-  "lavement": "Pratique hygiéniste d'irrigation douce du côlon à l'eau tiède, indispensable pendant le jeûne et la transition pour évacuer les poisons décollés et soulager instantanément la tête et le foie.",
-  "air-gaz": "Puissance motrice de l'air atmosphérique comprimé et inhalé, agissant comme carburant invisible et fluide dans les tissus élastiques nettoyés.",
-  "bains de soleil": "Exposition méthodique et progressive du corps nu au soleil et à l'air libre, stimulant l'élimination transcutanée des toxines et chargeant les cellules en énergie électromagnétique.",
-  "friction": "Technique de brossage ou massage tonique de l'épiderme pour éliminer les cellules mortes, stimuler la microcirculation lymphatique et ouvrir les millions de pores éliminateurs.",
-  "déchets métaboliques": "Poisons organiques résiduels (urée, créatinine, acides) résultant de la combustion cellulaire et de l'alimentation artificielle, devant être drainés par les émonctoires.",
-  "protéines": "Dogme nutritionnel combattu par Ehret : la surconsommation de protéines génère une acidification aiguë du sang, de la putréfaction intestinale et une destruction prématurée des reins.",
-  "féculents": "Aliments riches en amidon (pommes de terre, céréales, légumineuses) qui fermentent dans l'estomac et se transforment en une pâte gluante semblable à de la colle industrielle dans les intestins.",
-  "médicaments chimiques": "Substances allopathiques toxiques qui ne guérissent pas mais suppriment les symptômes en refoulant les déchets à l'intérieur des organes et en endommageant les nerfs.",
-  "foie": "Usine de filtration et de neutralisation des poisons métaboliques, dont le désengorgement par les jus de fruits et de légumes est la clé de voûte de la détoxication.",
-  "reins": "Filtres majeurs chargés d'éliminer les acides solubles et les cristaux toxiques du sang ; leur perméabilité et bon fonctionnement sont indispensables avant toute détoxication profonde.",
-  "côlon": "Le collecteur principal des déchets du corps humain ; son nettoyage méthodique par la salade balai et le régime sans mucus est la condition sine qua non de toute guérison véritable.",
-  "salive": "Sécrétion buccale alcaline essentielle contenant la ptyaline, dont l'imprégnation prolongée (mastication lente) est indispensable pour neutraliser les acides.",
-  "vitalisme": "Approche médicale et philosophique reconnaissant que le corps possède une intelligence d'auto-guérison parfaite, qui s'exprime pleinement dès lors que les obstructions physiques sont supprimées.",
-  "aliments acides": "Aliments dont la dégradation métabolique libère des acides nocifs (acide urique, phosphorique, sulfurique) : viandes, fromages, céréales, café, alcool et sucre raffiné.",
-  "aliments basiques": "Aliments régénérateurs riches en sels minéraux organiques alcalins (sodium végétal, potassium, magnésium) neutralisant les acides : fruits et légumes frais.",
-  "élimination": "La fonction biologique suprême par laquelle le corps expulse ses matières morbides via le côlon, les reins, les poumons et la peau."
+  "mucus": {
+    "def": "Substance visqueuse et pathologique formée selon Ehret par les résidus d'aliments non digérés et dénaturés (farines blanches, viandes, produits laitiers, féculents raffinés), obstruant les conduits circulatoires.",
+    "note": "Le « mucus » d'Ehret est une métaphore clinique pour désigner l'inflammation muqueuse chronique, les endotoxines, l'encrassement lymphatique et la stase fécale. La médecine moderne démontre toutefois que les maladies ont des étiologies multifactorielles (génétique, agents infectieux, polluants, stress oxydatif) et ne se résument pas à cette seule cause unique.",
+    "type": "science"
+  },
+  "moteur humain à pression d'air": {
+    "def": "Concept d'Ehret affirmant que le corps est un moteur élastique fonctionnant par pression atmosphérique et respiration, où les poumons jouent le rôle de pompe motrice et le cœur de simple valve.",
+    "note": "Réfutation anatomique factuelle : La cardiologie moderne démontre sans ambiguïté que le cœur est un muscle contractile puissant (le myocarde) qui pompe activement environ 5 litres de sang par minute. Les poumons assurent l'hématose (échanges O2/CO2) et la respiration favorise le retour veineux, mais ne propulsent pas le sang artériel.",
+    "type": "warning"
+  },
+  "protéines": {
+    "def": "Dogme nutritionnel combattu par Ehret, qui soutenait que la consommation de protéines est inutile et que le corps humain peut tout synthétiser à partir des glucides simples issus des fruits.",
+    "note": "Consensus biochimique unanime : Le corps humain est biologiquement incapable de synthétiser les 9 acides aminés essentiels (leucine, lysine, méthionine, etc.) à partir des sucres. Un apport protéique régulier (notamment végétal : graines, légumes verts, oléagineux) est indispensable pour l'immunité et le renouvellement tissulaire, même s'il faut éviter l'excès carnée acidifiant.",
+    "type": "warning"
+  },
+  "médicaments chimiques": {
+    "def": "Substances allopathiques qualifiées par Ehret de poisons toxiques qui refoulent les déchets à l'intérieur des organes et se transmettraient chimiquement de génération en génération.",
+    "note": "Mise en garde de sécurité : Si la surmédication de confort et les abus symptomatiques posent des risques réels, la médecine d'urgence, la chirurgie, les anesthésiques et les antibiotiques en cas d'infection aiguë ont sauvé des millions de vies. Ne jamais interrompre un traitement médical prescrit sans avis d'un professionnel de santé.",
+    "type": "warning"
+  },
+  "jeûne rationnel": {
+    "def": "Cessation méthodique de nourriture solide encadrée par une hydratation pure, des lavements et une reprise progressive pour dissoudre les toxémies profondes.",
+    "note": "Validation et précautions : Le jeûne stimule puissamment l'autophagie cellulaire (Prix Nobel 2016). Cependant, un jeûne prolongé strict sans surveillance médicale comporte des risques de déséquilibre électrolytique sévère et est formellement contre-indiqué en cas d'insuffisance rénale, grossesse ou dénutrition avancée.",
+    "type": "science"
+  },
+  "régime sans mucus": {
+    "def": "Alimentation composée exclusivement de fruits frais et séchés mûrs, de légumes verts et feuillus crus ou cuits à la vapeur douce, sans produits animaux ni féculents raffinés.",
+    "note": "Éclairage nutritionnel : Ce régime offre une cure désencombrante et antioxydante remarquable. À long terme, une exclusivité frugivore stricte expose toutefois à des carences critiques (vitamine B12, vitamine D, zinc, oméga-3 EPA/DHA). Une personnalisation avec graines, oléagineux et légumes variés est recommandée.",
+    "type": "science"
+  },
+  "régime de transition": {
+    "def": "Étape indispensable et progressive permettant au corps d'éliminer les toxines accumulées sans déclencher une crise d'auto-intoxication brutale due à une libération trop massive de poisons dans le sang.",
+    "note": "Ce principe de gradualité est pleinement validé par la physiologie : une transition brutale vers des aliments très astringents ou un jeûne rude peut saturer les reins et le foie en déchets métaboliques.",
+    "type": "science"
+  },
+  "salade balai": {
+    "def": "Mélange de crudités râpées (chou, carottes, céleri) et d'un assaisonnement sans vinaigre, agissant comme un balai mécanique sur les villosités intestinales.",
+    "note": "Les fibres insolubles des légumes crus stimulent efficacement le péristaltisme colique et nettoient les parois intestinales en favorisant un transit régulier.",
+    "type": "science"
+  },
+  "autolyse": {
+    "def": "Processus physiologique naturel par lequel l'organisme à jeûn digère et recycle ses propres tissus malades, dépôts morbides et excroissances anormales pour nourrir ses organes vitaux.",
+    "note": "Ce processus correspond exactement au mécanisme d'autophagie cellulaire élucidé par la biologie contemporaine (récupération et recyclage des protéines endommagées par les lysosomes).",
+    "type": "science"
+  },
+  "acide urique": {
+    "def": "Résidu toxique azoté hautement acide issu du métabolisme des protéines animales et des légumineuses, provoquant des dépôts cristallins douloureux dans les articulations et les néphrons rénaux.",
+    "note": "L'acide urique provient de la dégradation des purines (viandes, alcools, mais aussi excès de fructose industriel). Une alimentation alcalinisante végétale aide à maintenir un pH urinaire propice à son élimination rénale.",
+    "type": "science"
+  },
+  "toxémie": {
+    "def": "État d'empoisonnement généralisé du sang et de la lymphe par des acides, gaz de fermentation et déchets métaboliques mal évacués.",
+    "note": "Correspond en médecine fonctionnelle à l'endotoxémie métabolique, à l'hyperperméabilité intestinale et à la surcharge des voies hépato-rénales.",
+    "type": "science"
+  },
+  "ragnar berg": {
+    "def": "Chimiste et biochimiste suédois pionnier dont les tables quantifient avec précision le potentiel acidifiant ou alcalinisant des aliments selon leur teneur minérale.",
+    "note": "Historiquement fondamental. La nutrition moderne affine aujourd'hui ces données avec l'indice PRAL (Potential Renal Acid Load), calculant la charge acide rénale nette après métabolisation.",
+    "type": "science"
+  },
+  "miroir magique": {
+    "def": "La langue du patient qui, dès les premières heures de jeûne court, se couvre d'un enduit blanc ou jaunâtre, reflétant avec exactitude l'état d'encrassement mucoïde des muqueuses gastriques et intestinales.",
+    "note": "L'enduit lingual résulte de la diminution de salivation, de la desquamation cellulaire et de l'adaptation du microbiote buccal lors du repos digestif.",
+    "type": "science"
+  },
+  "encombrement": {
+    "def": "Accumulation progressive de matières fécales durcies, de glaires et de toxines dans le tube digestif et les tissus profonds. C'est l'Obstruction (O) dans la formule suprême de la vitalité.",
+    "note": "La stase fécale et le ralentissement du transit créent des fermentations intestinales toxiques et une inflammation de bas grade démontrée par les études sur le microbiote.",
+    "type": "science"
+  },
+  "obstruction": {
+    "def": "Frein mécanique et friction interne s'opposant à la libre circulation du sang, de la lymphe et de la force nerveuse dans le corps humain.",
+    "note": "Englobe l'athérosclérose, la stéatose hépatique, la congestion lymphatique et l'encombrement digestif chronique.",
+    "type": "science"
+  },
+  "vitalité": {
+    "def": "La puissance mécanique et électrique du corps humain exprimée par l'équation V = P - O. Plus l'obstruction interne diminue, plus la puissance vitale intrinsèque circule sans entrave.",
+    "note": "Concept central de l'hygiénisme : l'énergie disponible dépend du rendement mitochondrial et de l'absence de surcharge métabolique d'élimination.",
+    "type": "science"
+  },
+  "équation suprême": {
+    "def": "V = P - O (Vitalité = Puissance - Obstruction). Une équation fondamentale démontrant que la force vitale dépend avant tout de l'élimination des frottements et obstructions internes, et non de la suralimentation.",
+    "note": "Une modélisation heuristique brillante démontrant que la santé procède par soustraction des toxiques plutôt que par accumulation de stimulants.",
+    "type": "science"
+  },
+  "glaires": {
+    "def": "Sécrétions épaisses et visqueuses produites par les muqueuses enflammées pour tenter d'enrober les acides corrosifs et matières indigestes.",
+    "note": "Le mucus physiologique protège la barrière épithéliale ; son hypersécrétion chronique signe une irritation ou une dysbiose intestinale active.",
+    "type": "science"
+  },
+  "aliments producteurs de mucus": {
+    "def": "Catégorie d'aliments comprenant les viandes, poissons, œufs, produits laitiers, céréales raffinées, féculents et sucres industriels, laissant des résidus acides et visqueux.",
+    "note": "Ces aliments pro-inflammatoires et raffinés augmentent la perméabilité intestinale, la charge acide rénale et l'encrassement hépato-biliaire.",
+    "type": "science"
+  },
+  "aliments sans mucus": {
+    "def": "Aliments physiologiques pour l'homme : fruits mûrs frais et séchés, légumes à feuilles vertes, salades et légumes racines sans amidon, qui dissolvent et éliminent les déchets.",
+    "note": "Ces aliments riches en antioxydants, potassium, eau biologique et fibres solubles facilitent l'alcalinisation urinaire et l'épuration cellulaire.",
+    "type": "science"
+  },
+  "rupture du jeûne": {
+    "def": "Moment capital où la reprise alimentaire doit s'effectuer impérativement avec des fruits cuits laxatifs ou une salade crue sans huile pour évacuer les déchets décollés.",
+    "note": "Physiologiquement crucial pour relancer les enzymes digestives sans provoquer de syndrome de renutrition inapproprié.",
+    "type": "science"
+  },
+  "constipation intestinale": {
+    "def": "Accumulation pathologique de matières fécales déshydratées et encroûtées sur les parois du côlon, empoisonnant continuellement le flux sanguin.",
+    "note": "L'épithélium intestinal se renouvelle en réalité tous les 3-5 jours, mais la stase fécale prolongée favorise la prolifération de bactéries de putréfaction.",
+    "type": "science"
+  },
+  "crise d'élimination": {
+    "def": "Réaction salutaire où le corps remet en circulation des déchets stockés pour les expulser, se manifestant temporairement par des nausées, fatigue, maux de tête ou fièvre légère.",
+    "note": "Correspond à la réaction de Jarisch-Herxheimer ou d'élimination hépatique aiguë. Si les symptômes deviennent trop intenses, il convient de ralentir la détoxication.",
+    "type": "science"
+  },
+  "sang pur": {
+    "def": "Sang alcalin, hautement oxygéné et libre de toxines, formé exclusivement à partir de fruits mûrs et de légumes verts, garant d'une clarté mentale absolue.",
+    "note": "Le pH sanguin est strictement régulé entre 7,35 et 7,45 par les systèmes tampons (bicarbonates, poumons, reins) ; une alimentation végétale allège considérablement la charge de filtration rénale.",
+    "type": "science"
+  },
+  "lavement": {
+    "def": "Pratique hygiéniste d'irrigation douce du côlon à l'eau tiède, indispensable pendant le jeûne et la transition pour évacuer les poisons décollés.",
+    "note": "Soulage rapidement les céphalées de détoxication en diminuant la réabsorption colique d'ammoniac et d'acides.",
+    "type": "science"
+  },
+  "air-gaz": {
+    "def": "Puissance motrice de l'air atmosphérique comprimé et inhalé, agissant comme carburant invisible et fluide dans les tissus élastiques nettoyés.",
+    "note": "Souligne l'importance primordiale de l'oxygénation et de la ventilation alvéolaire pour la combustion métabolique.",
+    "type": "science"
+  },
+  "bains de soleil": {
+    "def": "Exposition méthodique et progressive du corps nu au soleil et à l'air libre, stimulant l'élimination transcutanée et chargeant les cellules en énergie.",
+    "note": "La synthèse cutanée de vitamine D3 sous l'effet des UVB et la vasodilatation par les infrarouges soutiennent le système immunitaire et circulatoire.",
+    "type": "science"
+  },
+  "friction": {
+    "def": "Technique de brossage ou massage tonique de l'épiderme pour éliminer les cellules mortes, stimuler la microcirculation lymphatique et ouvrir les pores.",
+    "note": "Le brossage à sec stimule mécaniquement la circulation lymphatique superficielle et la microcirculation cutanée.",
+    "type": "science"
+  },
+  "déchets métaboliques": {
+    "def": "Poisons organiques résiduels (urée, créatinine, acides) résultant de la combustion cellulaire et de l'alimentation, devant être drainés par les émonctoires.",
+    "note": "Déchets azotés et acides organiques pris en charge par le cycle de l'urée hépatique et la clairance glomérulaire rénale.",
+    "type": "science"
+  },
+  "féculents": {
+    "def": "Aliments riches en amidon (pommes de terre, céréales, légumineuses) qui fermentent dans l'estomac et forment des matières visqueuses dans les intestins.",
+    "note": "L'amidon est décomposé en glucose par les amylases. En excès ou mal mastiqué, il provoque fermentations coliques et pics d'insuline.",
+    "type": "science"
+  },
+  "foie": {
+    "def": "Usine de filtration et de neutralisation des poisons métaboliques, dont le désengorgement par les jus et fruits est la clé de voûte de la détoxication.",
+    "note": "Organe maître assurant la détoxication en Phase 1 (cytochromes P450) et Phase 2 (conjugaison), hautement dépendant des antioxydants et acides aminés soufrés.",
+    "type": "science"
+  },
+  "reins": {
+    "def": "Filtres majeurs chargés d'éliminer les acides solubles et les cristaux toxiques du sang ; leur perméabilité est indispensable avant toute détoxication.",
+    "note": "Filtration de 180 litres de plasma par jour. La filtration glomérulaire et l'ouverture des reins sont la condition sine qua non de toute cure d'élimination.",
+    "type": "science"
+  },
+  "côlon": {
+    "def": "Collecteur principal des déchets du corps humain ; son nettoyage méthodique par la salade balai est la condition première de la santé.",
+    "note": "Siège du microbiote intestinal (100 000 milliards de micro-organismes), dont l'équilibre régule l'immunité et la barrière muqueuse.",
+    "type": "science"
+  },
+  "salive": {
+    "def": "Sécrétion buccale alcaline essentielle contenant la ptyaline, dont l'imprégnation prolongée (mastication lente) neutralise les acides.",
+    "note": "Contient l'alpha-amylase et des bicarbonates protégeant l'émail et initiant la digestion enzymatique dès la cavité buccale.",
+    "type": "science"
+  },
+  "vitalisme": {
+    "def": "Philosophie reconnaissant que le corps possède une intelligence d'auto-guérison souveraine dès lors que les obstructions physiques sont supprimées.",
+    "note": "Rejoint le concept moderne d'homéostasie et de capacité d'auto-régénération tissulaire inhérente aux systèmes biologiques vivants.",
+    "type": "science"
+  },
+  "aliments acides": {
+    "def": "Aliments dont la dégradation libère des acides nocifs (acide urique, phosphorique, sulfurique) : viandes, fromages, céréales raffinées, alcool et sucres.",
+    "note": "Augmentent l'excrétion urinaire d'acides et sollicitent les réserves minérales osseuses et rénales pour tamponner le pH.",
+    "type": "science"
+  },
+  "aliments basiques": {
+    "def": "Aliments régénérateurs riches en sels minéraux organiques alcalins (potassium, magnésium, calcium végétal) neutralisant les acides : fruits et légumes frais.",
+    "note": "Riches en citrates et malates qui se transforment en bicarbonates au niveau métabolique, allégeant la charge rénale.",
+    "type": "science"
+  },
+  "élimination": {
+    "def": "La fonction biologique suprême par laquelle le corps expulse ses matières morbides via le côlon, les reins, les poumons et la peau.",
+    "note": "Processus d'excrétion coordonné par les 4 grands émonctoires physiologiques indispensables à la survie et à la prévention des maladies métaboliques.",
+    "type": "science"
+  }
 },
   chapters: [
   {
@@ -814,47 +966,47 @@ export const ehretMucuslessFr = {
   {
     "id": "glossaire-vitaliste-integral",
     "tag": "INDEX & GLOSSAIRE",
-    "title": "Dictionnaire Vitaliste & Index des Annotations Cliniques (45 Termes)",
+    "title": "Dictionnaire Vitaliste, Annotations & Éclairages Scientifiques (38 Termes)",
     "paragraphs": [
-      "Ce glossaire exhaustif regroupe l'ensemble des 45 concepts, termes techniques et lois fondamentales formulés par le Professeur Arnold Ehret dans son Système de Guérison du Régime Sans Mucus.",
-      "**MUCUS** : Substance visqueuse, gluante et pathologique formée par les résidus d'aliments non digérés et dénaturés (farines blanches, viandes, produits laitiers, féculents raffinés). Selon Ehret, le mucus obstrue les conduits circulatoires et constitue la base physique de toute maladie.",
-      "**ENCOMBREMENT** : Accumulation progressive de matières fécales durcies, de glaires et de toxines dans le tube digestif et les tissus profonds. C'est l'Obstruction (O) dans la formule suprême de la vitalité.",
-      "**OBSTRUCTION** : Frein mécanique et friction interne s'opposant à la libre circulation du sang, de la lymphe et de la force nerveuse dans le corps humain.",
-      "**VITALITÉ** : La puissance mécanique et électrique du corps humain exprimée par l'équation V = P - O. Plus l'obstruction interne diminue, plus la puissance vitale intrinsèque circule sans entrave.",
-      "**ÉQUATION SUPRÊME** : V = P - O (Vitalité = Puissance - Obstruction). Une équation fondamentale démontrant que la force vitale dépend avant tout de l'élimination des frottements et obstructions internes, et non de la suralimentation.",
-      "**RÉGIME SANS MUCUS** : Alimentation composée exclusivement de fruits frais et séchés mûrs, de légumes verts et feuillus crus ou cuits à la vapeur douce, exempte de féculents collants, de graisses saturées et de protéines cadavériques.",
-      "**RÉGIME DE TRANSITION** : Étape indispensable et progressive permettant au corps d'éliminer les toxines accumulées sans déclencher une crise d'auto-intoxication brutale due à une libération trop massive de poisons dans le sang.",
-      "**JEÛNE RATIONNEL** : Cessation volontaire et méthodique de prise alimentaire solide, encadrée par une hydratation pure, des lavements doux et une rupture mécanique appropriée pour dissoudre les toxémies profondes.",
-      "**SALADE BALAI** : Mélange spécifique de légumes crus râpés (chou blanc, carottes, céleri) et d'assaisonnement sans vinaigre, agissant comme un balai mécanique sur les villosités intestinales pour décoller les plaques de mucus.",
-      "**AUTOLYSE** : Processus physiologique naturel par lequel l'organisme à jeûn digère et recycle ses propres tissus malades, dépôts morbides et excroissances anormales pour nourrir ses organes vitaux.",
-      "**ACIDE URIQUE** : Résidu toxique azoté hautement acide issu du métabolisme des protéines animales et des légumineuses, provoquant des dépôts cristallins douloureux dans les articulations et les néphrons rénaux.",
-      "**TOXÉMIE** : État d'empoisonnement généralisé du sang et de la lymphe par des acides, gaz de fermentation et déchets métaboliques mal évacués.",
-      "**RAGNAR BERG** : Chimiste et biochimiste suédois dont les tables quantifient avec précision le potentiel acidifiant ou alcalinisant des aliments selon leur teneur minérale.",
-      "**MIROIR MAGIQUE** : La langue du patient qui, dès les premières heures de jeûne court, se couvre d'un enduit blanc ou jaunâtre, reflétant avec exactitude l'état d'encrassement mucoïde des muqueuses gastriques et intestinales.",
-      "**GLAIRES** : Sécrétions épaisses et visqueuses produites par les muqueuses enflammées pour tenter d'enrober les acides corrosifs et matières indigestes.",
-      "**MOTEUR HUMAIN À PRESSION D'AIR** : Concept fondamental d'Ehret démontrant que le corps est un moteur élastique fonctionnant par pression atmosphérique et respiration, où les poumons jouent le rôle de pompe motrice.",
-      "**ALIMENTS PRODUCTEURS DE MUCUS** : Catégorie d'aliments néfastes comprenant les viandes, poissons, œufs, produits laitiers, céréales raffinées (pain, pâtes), féculents et sucres industriels, laissant des dépôts visqueux dans le tube digestif.",
-      "**ALIMENTS SANS MUCUS** : Aliments physiologiques pour l'homme : fruits mûrs frais et séchés, légumes à feuilles vertes, salades et légumes racines sans amidon, qui dissolvent et éliminent les déchets sans en créer de nouveaux.",
-      "**RUPTURE DU JEÛNE** : Moment capital où la reprise alimentaire doit s'effectuer impérativement avec des fruits cuits laxatifs ou une salade crue sans huile, pour chasser les matières morbides liquéfiées dans le côlon.",
-      "**CONSTIPATION INTESTINALE** : Accumulation pathologique de matières fécales déshydratées et encroûtées sur les parois du côlon depuis l'enfance, empoisonnant continuellement le flux sanguin.",
-      "**CRISE D'ÉLIMINATION** : Réaction salutaire où le corps remet en circulation de grandes quantités de déchets stockés pour les expulser, se manifestant temporairement par des nausées, fatigue, maux de tête ou fièvre.",
-      "**SANG PUR** : Sang alcalin, hautement oxygéné et libre de toxines, formé exclusivement à partir de fruits mûrs et de légumes verts, garant d'une clarté mentale et d'une endurance physique absolues.",
-      "**LAVEMENT** : Pratique hygiéniste d'irrigation douce du côlon à l'eau tiède, indispensable pendant le jeûne et la transition pour évacuer les poisons décollés et soulager instantanément la tête et le foie.",
-      "**AIR-GAZ** : Puissance motrice de l'air atmosphérique comprimé et inhalé, agissant comme carburant invisible et fluide dans les tissus élastiques nettoyés.",
-      "**BAINS DE SOLEIL** : Exposition méthodique et progressive du corps nu au soleil et à l'air libre, stimulant l'élimination transcutanée des toxines et chargeant les cellules en énergie électromagnétique.",
-      "**FRICTION** : Technique de brossage ou massage tonique de l'épiderme pour éliminer les cellules mortes, stimuler la microcirculation lymphatique et ouvrir les millions de pores éliminateurs.",
-      "**DÉCHETS MÉTABOLIQUES** : Poisons organiques résiduels (urée, créatinine, acides) résultant de la combustion cellulaire et de l'alimentation artificielle, devant être drainés par les émonctoires.",
-      "**PROTÉINES** : Dogme nutritionnel combattu par Ehret : la surconsommation de protéines génère une acidification aiguë du sang, de la putréfaction intestinale et une destruction prématurée des reins.",
-      "**FÉCULENTS** : Aliments riches en amidon (pommes de terre, céréales, légumineuses) qui fermentent dans l'estomac et se transforment en une pâte gluante semblable à de la colle industrielle dans les intestins.",
-      "**MÉDICAMENTS CHIMIQUES** : Substances allopathiques toxiques qui ne guérissent pas mais suppriment les symptômes en refoulant les déchets à l'intérieur des organes et en endommageant les nerfs.",
-      "**FOIE** : Usine de filtration et de neutralisation des poisons métaboliques, dont le désengorgement par les jus de fruits et de légumes est la clé de voûte de la détoxication.",
-      "**REINS** : Filtres majeurs chargés d'éliminer les acides solubles et les cristaux toxiques du sang ; leur perméabilité et bon fonctionnement sont indispensables avant toute détoxication profonde.",
-      "**CÔLON** : Le collecteur principal des déchets du corps humain ; son nettoyage méthodique par la salade balai et le régime sans mucus est la condition sine qua non de toute guérison véritable.",
-      "**SALIVE** : Sécrétion buccale alcaline essentielle contenant la ptyaline, dont l'imprégnation prolongée (mastication lente) est indispensable pour neutraliser les acides.",
-      "**VITALISME** : Approche médicale et philosophique reconnaissant que le corps possède une intelligence d'auto-guérison parfaite, qui s'exprime pleinement dès lors que les obstructions physiques sont supprimées.",
-      "**ALIMENTS ACIDES** : Aliments dont la dégradation métabolique libère des acides nocifs (acide urique, phosphorique, sulfurique) : viandes, fromages, céréales, café, alcool et sucre raffiné.",
-      "**ALIMENTS BASIQUES** : Aliments régénérateurs riches en sels minéraux organiques alcalins (sodium végétal, potassium, magnésium) neutralisant les acides : fruits et légumes frais.",
-      "**ÉLIMINATION** : La fonction biologique suprême par laquelle le corps expulse ses matières morbides via le côlon, les reins, les poumons et la peau."
+      "Ce dictionnaire exhaustif rassemble les 38 concepts et lois fondamentales formulés par le Professeur Arnold Ehret en 1922 dans son Système de Guérison du Régime Sans Mucus, complétés des **éclairages scientifiques et mises en garde de discernement rédigés par VitalTrack Academy** pour allier sagesse hygiéniste et rigueur physiologique contemporaine.",
+      "### 💡 MUCUS\n\n**Définition d'Arnold Ehret (1922)** : Substance visqueuse et pathologique formée selon Ehret par les résidus d'aliments non digérés et dénaturés (farines blanches, viandes, produits laitiers, féculents raffinés), obstruant les conduits circulatoires.\n\n⚖️ **Éclairage Scientifique & Recul Factuel** : Le « mucus » d'Ehret est une métaphore clinique pour désigner l'inflammation muqueuse chronique, les endotoxines, l'encrassement lymphatique et la stase fécale. La médecine moderne démontre toutefois que les maladies ont des étiologies multifactorielles (génétique, agents infectieux, polluants, stress oxydatif) et ne se résument pas à cette seule cause unique.",
+      "### 💡 MOTEUR HUMAIN À PRESSION D'AIR\n\n**Définition d'Arnold Ehret (1922)** : Concept d'Ehret affirmant que le corps est un moteur élastique fonctionnant par pression atmosphérique et respiration, où les poumons jouent le rôle de pompe motrice et le cœur de simple valve.\n\n⚠️ **Mise en Garde Médicale & Sécurité** : Réfutation anatomique factuelle : La cardiologie moderne démontre sans ambiguïté que le cœur est un muscle contractile puissant (le myocarde) qui pompe activement environ 5 litres de sang par minute. Les poumons assurent l'hématose (échanges O2/CO2) et la respiration favorise le retour veineux, mais ne propulsent pas le sang artériel.",
+      "### 💡 PROTÉINES\n\n**Définition d'Arnold Ehret (1922)** : Dogme nutritionnel combattu par Ehret, qui soutenait que la consommation de protéines est inutile et que le corps humain peut tout synthétiser à partir des glucides simples issus des fruits.\n\n⚠️ **Mise en Garde Médicale & Sécurité** : Consensus biochimique unanime : Le corps humain est biologiquement incapable de synthétiser les 9 acides aminés essentiels (leucine, lysine, méthionine, etc.) à partir des sucres. Un apport protéique régulier (notamment végétal : graines, légumes verts, oléagineux) est indispensable pour l'immunité et le renouvellement tissulaire, même s'il faut éviter l'excès carnée acidifiant.",
+      "### 💡 MÉDICAMENTS CHIMIQUES\n\n**Définition d'Arnold Ehret (1922)** : Substances allopathiques qualifiées par Ehret de poisons toxiques qui refoulent les déchets à l'intérieur des organes et se transmettraient chimiquement de génération en génération.\n\n⚠️ **Mise en Garde Médicale & Sécurité** : Mise en garde de sécurité : Si la surmédication de confort et les abus symptomatiques posent des risques réels, la médecine d'urgence, la chirurgie, les anesthésiques et les antibiotiques en cas d'infection aiguë ont sauvé des millions de vies. Ne jamais interrompre un traitement médical prescrit sans avis d'un professionnel de santé.",
+      "### 💡 JEÛNE RATIONNEL\n\n**Définition d'Arnold Ehret (1922)** : Cessation méthodique de nourriture solide encadrée par une hydratation pure, des lavements et une reprise progressive pour dissoudre les toxémies profondes.\n\n⚖️ **Éclairage Scientifique & Recul Factuel** : Validation et précautions : Le jeûne stimule puissamment l'autophagie cellulaire (Prix Nobel 2016). Cependant, un jeûne prolongé strict sans surveillance médicale comporte des risques de déséquilibre électrolytique sévère et est formellement contre-indiqué en cas d'insuffisance rénale, grossesse ou dénutrition avancée.",
+      "### 💡 RÉGIME SANS MUCUS\n\n**Définition d'Arnold Ehret (1922)** : Alimentation composée exclusivement de fruits frais et séchés mûrs, de légumes verts et feuillus crus ou cuits à la vapeur douce, sans produits animaux ni féculents raffinés.\n\n⚖️ **Éclairage Scientifique & Recul Factuel** : Éclairage nutritionnel : Ce régime offre une cure désencombrante et antioxydante remarquable. À long terme, une exclusivité frugivore stricte expose toutefois à des carences critiques (vitamine B12, vitamine D, zinc, oméga-3 EPA/DHA). Une personnalisation avec graines, oléagineux et légumes variés est recommandée.",
+      "### 💡 RÉGIME DE TRANSITION\n\n**Définition d'Arnold Ehret (1922)** : Étape indispensable et progressive permettant au corps d'éliminer les toxines accumulées sans déclencher une crise d'auto-intoxication brutale due à une libération trop massive de poisons dans le sang.\n\n⚖️ **Éclairage Scientifique & Recul Factuel** : Ce principe de gradualité est pleinement validé par la physiologie : une transition brutale vers des aliments très astringents ou un jeûne rude peut saturer les reins et le foie en déchets métaboliques.",
+      "### 💡 SALADE BALAI\n\n**Définition d'Arnold Ehret (1922)** : Mélange de crudités râpées (chou, carottes, céleri) et d'un assaisonnement sans vinaigre, agissant comme un balai mécanique sur les villosités intestinales.\n\n⚖️ **Éclairage Scientifique & Recul Factuel** : Les fibres insolubles des légumes crus stimulent efficacement le péristaltisme colique et nettoient les parois intestinales en favorisant un transit régulier.",
+      "### 💡 AUTOLYSE\n\n**Définition d'Arnold Ehret (1922)** : Processus physiologique naturel par lequel l'organisme à jeûn digère et recycle ses propres tissus malades, dépôts morbides et excroissances anormales pour nourrir ses organes vitaux.\n\n⚖️ **Éclairage Scientifique & Recul Factuel** : Ce processus correspond exactement au mécanisme d'autophagie cellulaire élucidé par la biologie contemporaine (récupération et recyclage des protéines endommagées par les lysosomes).",
+      "### 💡 ACIDE URIQUE\n\n**Définition d'Arnold Ehret (1922)** : Résidu toxique azoté hautement acide issu du métabolisme des protéines animales et des légumineuses, provoquant des dépôts cristallins douloureux dans les articulations et les néphrons rénaux.\n\n⚖️ **Éclairage Scientifique & Recul Factuel** : L'acide urique provient de la dégradation des purines (viandes, alcools, mais aussi excès de fructose industriel). Une alimentation alcalinisante végétale aide à maintenir un pH urinaire propice à son élimination rénale.",
+      "### 💡 TOXÉMIE\n\n**Définition d'Arnold Ehret (1922)** : État d'empoisonnement généralisé du sang et de la lymphe par des acides, gaz de fermentation et déchets métaboliques mal évacués.\n\n⚖️ **Éclairage Scientifique & Recul Factuel** : Correspond en médecine fonctionnelle à l'endotoxémie métabolique, à l'hyperperméabilité intestinale et à la surcharge des voies hépato-rénales.",
+      "### 💡 RAGNAR BERG\n\n**Définition d'Arnold Ehret (1922)** : Chimiste et biochimiste suédois pionnier dont les tables quantifient avec précision le potentiel acidifiant ou alcalinisant des aliments selon leur teneur minérale.\n\n⚖️ **Éclairage Scientifique & Recul Factuel** : Historiquement fondamental. La nutrition moderne affine aujourd'hui ces données avec l'indice PRAL (Potential Renal Acid Load), calculant la charge acide rénale nette après métabolisation.",
+      "### 💡 MIROIR MAGIQUE\n\n**Définition d'Arnold Ehret (1922)** : La langue du patient qui, dès les premières heures de jeûne court, se couvre d'un enduit blanc ou jaunâtre, reflétant avec exactitude l'état d'encrassement mucoïde des muqueuses gastriques et intestinales.\n\n⚖️ **Éclairage Scientifique & Recul Factuel** : L'enduit lingual résulte de la diminution de salivation, de la desquamation cellulaire et de l'adaptation du microbiote buccal lors du repos digestif.",
+      "### 💡 ENCOMBREMENT\n\n**Définition d'Arnold Ehret (1922)** : Accumulation progressive de matières fécales durcies, de glaires et de toxines dans le tube digestif et les tissus profonds. C'est l'Obstruction (O) dans la formule suprême de la vitalité.\n\n⚖️ **Éclairage Scientifique & Recul Factuel** : La stase fécale et le ralentissement du transit créent des fermentations intestinales toxiques et une inflammation de bas grade démontrée par les études sur le microbiote.",
+      "### 💡 OBSTRUCTION\n\n**Définition d'Arnold Ehret (1922)** : Frein mécanique et friction interne s'opposant à la libre circulation du sang, de la lymphe et de la force nerveuse dans le corps humain.\n\n⚖️ **Éclairage Scientifique & Recul Factuel** : Englobe l'athérosclérose, la stéatose hépatique, la congestion lymphatique et l'encombrement digestif chronique.",
+      "### 💡 VITALITÉ\n\n**Définition d'Arnold Ehret (1922)** : La puissance mécanique et électrique du corps humain exprimée par l'équation V = P - O. Plus l'obstruction interne diminue, plus la puissance vitale intrinsèque circule sans entrave.\n\n⚖️ **Éclairage Scientifique & Recul Factuel** : Concept central de l'hygiénisme : l'énergie disponible dépend du rendement mitochondrial et de l'absence de surcharge métabolique d'élimination.",
+      "### 💡 ÉQUATION SUPRÊME\n\n**Définition d'Arnold Ehret (1922)** : V = P - O (Vitalité = Puissance - Obstruction). Une équation fondamentale démontrant que la force vitale dépend avant tout de l'élimination des frottements et obstructions internes, et non de la suralimentation.\n\n⚖️ **Éclairage Scientifique & Recul Factuel** : Une modélisation heuristique brillante démontrant que la santé procède par soustraction des toxiques plutôt que par accumulation de stimulants.",
+      "### 💡 GLAIRES\n\n**Définition d'Arnold Ehret (1922)** : Sécrétions épaisses et visqueuses produites par les muqueuses enflammées pour tenter d'enrober les acides corrosifs et matières indigestes.\n\n⚖️ **Éclairage Scientifique & Recul Factuel** : Le mucus physiologique protège la barrière épithéliale ; son hypersécrétion chronique signe une irritation ou une dysbiose intestinale active.",
+      "### 💡 ALIMENTS PRODUCTEURS DE MUCUS\n\n**Définition d'Arnold Ehret (1922)** : Catégorie d'aliments comprenant les viandes, poissons, œufs, produits laitiers, céréales raffinées, féculents et sucres industriels, laissant des résidus acides et visqueux.\n\n⚖️ **Éclairage Scientifique & Recul Factuel** : Ces aliments pro-inflammatoires et raffinés augmentent la perméabilité intestinale, la charge acide rénale et l'encrassement hépato-biliaire.",
+      "### 💡 ALIMENTS SANS MUCUS\n\n**Définition d'Arnold Ehret (1922)** : Aliments physiologiques pour l'homme : fruits mûrs frais et séchés, légumes à feuilles vertes, salades et légumes racines sans amidon, qui dissolvent et éliminent les déchets.\n\n⚖️ **Éclairage Scientifique & Recul Factuel** : Ces aliments riches en antioxydants, potassium, eau biologique et fibres solubles facilitent l'alcalinisation urinaire et l'épuration cellulaire.",
+      "### 💡 RUPTURE DU JEÛNE\n\n**Définition d'Arnold Ehret (1922)** : Moment capital où la reprise alimentaire doit s'effectuer impérativement avec des fruits cuits laxatifs ou une salade crue sans huile pour évacuer les déchets décollés.\n\n⚖️ **Éclairage Scientifique & Recul Factuel** : Physiologiquement crucial pour relancer les enzymes digestives sans provoquer de syndrome de renutrition inapproprié.",
+      "### 💡 CONSTIPATION INTESTINALE\n\n**Définition d'Arnold Ehret (1922)** : Accumulation pathologique de matières fécales déshydratées et encroûtées sur les parois du côlon, empoisonnant continuellement le flux sanguin.\n\n⚖️ **Éclairage Scientifique & Recul Factuel** : L'épithélium intestinal se renouvelle en réalité tous les 3-5 jours, mais la stase fécale prolongée favorise la prolifération de bactéries de putréfaction.",
+      "### 💡 CRISE D'ÉLIMINATION\n\n**Définition d'Arnold Ehret (1922)** : Réaction salutaire où le corps remet en circulation des déchets stockés pour les expulser, se manifestant temporairement par des nausées, fatigue, maux de tête ou fièvre légère.\n\n⚖️ **Éclairage Scientifique & Recul Factuel** : Correspond à la réaction de Jarisch-Herxheimer ou d'élimination hépatique aiguë. Si les symptômes deviennent trop intenses, il convient de ralentir la détoxication.",
+      "### 💡 SANG PUR\n\n**Définition d'Arnold Ehret (1922)** : Sang alcalin, hautement oxygéné et libre de toxines, formé exclusivement à partir de fruits mûrs et de légumes verts, garant d'une clarté mentale absolue.\n\n⚖️ **Éclairage Scientifique & Recul Factuel** : Le pH sanguin est strictement régulé entre 7,35 et 7,45 par les systèmes tampons (bicarbonates, poumons, reins) ; une alimentation végétale allège considérablement la charge de filtration rénale.",
+      "### 💡 LAVEMENT\n\n**Définition d'Arnold Ehret (1922)** : Pratique hygiéniste d'irrigation douce du côlon à l'eau tiède, indispensable pendant le jeûne et la transition pour évacuer les poisons décollés.\n\n⚖️ **Éclairage Scientifique & Recul Factuel** : Soulage rapidement les céphalées de détoxication en diminuant la réabsorption colique d'ammoniac et d'acides.",
+      "### 💡 AIR-GAZ\n\n**Définition d'Arnold Ehret (1922)** : Puissance motrice de l'air atmosphérique comprimé et inhalé, agissant comme carburant invisible et fluide dans les tissus élastiques nettoyés.\n\n⚖️ **Éclairage Scientifique & Recul Factuel** : Souligne l'importance primordiale de l'oxygénation et de la ventilation alvéolaire pour la combustion métabolique.",
+      "### 💡 BAINS DE SOLEIL\n\n**Définition d'Arnold Ehret (1922)** : Exposition méthodique et progressive du corps nu au soleil et à l'air libre, stimulant l'élimination transcutanée et chargeant les cellules en énergie.\n\n⚖️ **Éclairage Scientifique & Recul Factuel** : La synthèse cutanée de vitamine D3 sous l'effet des UVB et la vasodilatation par les infrarouges soutiennent le système immunitaire et circulatoire.",
+      "### 💡 FRICTION\n\n**Définition d'Arnold Ehret (1922)** : Technique de brossage ou massage tonique de l'épiderme pour éliminer les cellules mortes, stimuler la microcirculation lymphatique et ouvrir les pores.\n\n⚖️ **Éclairage Scientifique & Recul Factuel** : Le brossage à sec stimule mécaniquement la circulation lymphatique superficielle et la microcirculation cutanée.",
+      "### 💡 DÉCHETS MÉTABOLIQUES\n\n**Définition d'Arnold Ehret (1922)** : Poisons organiques résiduels (urée, créatinine, acides) résultant de la combustion cellulaire et de l'alimentation, devant être drainés par les émonctoires.\n\n⚖️ **Éclairage Scientifique & Recul Factuel** : Déchets azotés et acides organiques pris en charge par le cycle de l'urée hépatique et la clairance glomérulaire rénale.",
+      "### 💡 FÉCULENTS\n\n**Définition d'Arnold Ehret (1922)** : Aliments riches en amidon (pommes de terre, céréales, légumineuses) qui fermentent dans l'estomac et forment des matières visqueuses dans les intestins.\n\n⚖️ **Éclairage Scientifique & Recul Factuel** : L'amidon est décomposé en glucose par les amylases. En excès ou mal mastiqué, il provoque fermentations coliques et pics d'insuline.",
+      "### 💡 FOIE\n\n**Définition d'Arnold Ehret (1922)** : Usine de filtration et de neutralisation des poisons métaboliques, dont le désengorgement par les jus et fruits est la clé de voûte de la détoxication.\n\n⚖️ **Éclairage Scientifique & Recul Factuel** : Organe maître assurant la détoxication en Phase 1 (cytochromes P450) et Phase 2 (conjugaison), hautement dépendant des antioxydants et acides aminés soufrés.",
+      "### 💡 REINS\n\n**Définition d'Arnold Ehret (1922)** : Filtres majeurs chargés d'éliminer les acides solubles et les cristaux toxiques du sang ; leur perméabilité est indispensable avant toute détoxication.\n\n⚖️ **Éclairage Scientifique & Recul Factuel** : Filtration de 180 litres de plasma par jour. La filtration glomérulaire et l'ouverture des reins sont la condition sine qua non de toute cure d'élimination.",
+      "### 💡 CÔLON\n\n**Définition d'Arnold Ehret (1922)** : Collecteur principal des déchets du corps humain ; son nettoyage méthodique par la salade balai est la condition première de la santé.\n\n⚖️ **Éclairage Scientifique & Recul Factuel** : Siège du microbiote intestinal (100 000 milliards de micro-organismes), dont l'équilibre régule l'immunité et la barrière muqueuse.",
+      "### 💡 SALIVE\n\n**Définition d'Arnold Ehret (1922)** : Sécrétion buccale alcaline essentielle contenant la ptyaline, dont l'imprégnation prolongée (mastication lente) neutralise les acides.\n\n⚖️ **Éclairage Scientifique & Recul Factuel** : Contient l'alpha-amylase et des bicarbonates protégeant l'émail et initiant la digestion enzymatique dès la cavité buccale.",
+      "### 💡 VITALISME\n\n**Définition d'Arnold Ehret (1922)** : Philosophie reconnaissant que le corps possède une intelligence d'auto-guérison souveraine dès lors que les obstructions physiques sont supprimées.\n\n⚖️ **Éclairage Scientifique & Recul Factuel** : Rejoint le concept moderne d'homéostasie et de capacité d'auto-régénération tissulaire inhérente aux systèmes biologiques vivants.",
+      "### 💡 ALIMENTS ACIDES\n\n**Définition d'Arnold Ehret (1922)** : Aliments dont la dégradation libère des acides nocifs (acide urique, phosphorique, sulfurique) : viandes, fromages, céréales raffinées, alcool et sucres.\n\n⚖️ **Éclairage Scientifique & Recul Factuel** : Augmentent l'excrétion urinaire d'acides et sollicitent les réserves minérales osseuses et rénales pour tamponner le pH.",
+      "### 💡 ALIMENTS BASIQUES\n\n**Définition d'Arnold Ehret (1922)** : Aliments régénérateurs riches en sels minéraux organiques alcalins (potassium, magnésium, calcium végétal) neutralisant les acides : fruits et légumes frais.\n\n⚖️ **Éclairage Scientifique & Recul Factuel** : Riches en citrates et malates qui se transforment en bicarbonates au niveau métabolique, allégeant la charge rénale.",
+      "### 💡 ÉLIMINATION\n\n**Définition d'Arnold Ehret (1922)** : La fonction biologique suprême par laquelle le corps expulse ses matières morbides via le côlon, les reins, les poumons et la peau.\n\n⚖️ **Éclairage Scientifique & Recul Factuel** : Processus d'excrétion coordonné par les 4 grands émonctoires physiologiques indispensables à la survie et à la prévention des maladies métaboliques."
     ]
   }
 ]

@@ -518,7 +518,8 @@ export function generateLuxuryHtml() {
       border: 1px solid #e2e8f0;
       border-left: 3px solid #0f766e;
       border-radius: 4px;
-      padding: 12px 14px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
     }
 
     .glossary-term-heading {
@@ -531,10 +532,31 @@ export function generateLuxuryHtml() {
     }
 
     .glossary-term-body {
-      font-size: 9pt;
+      font-size: 8.5pt;
       line-height: 1.45;
       color: #334155;
-      margin: 0;
+      margin: 0 0 6px;
+    }
+
+    .pdf-glossary-note {
+      margin-top: 6px;
+      padding: 6px 8px;
+      border-radius: 4px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 7.8pt;
+      line-height: 1.4;
+    }
+
+    .pdf-glossary-note.is-science {
+      background: #f0f9ff;
+      border-left: 2.5pt solid #0284c7;
+      color: #0369a1;
+    }
+
+    .pdf-glossary-note.is-warning {
+      background: #fef2f2;
+      border-left: 2.5pt solid #dc2626;
+      color: #991b1b;
     }
   </style>
 </head>
@@ -637,12 +659,23 @@ export function generateLuxuryHtml() {
   <div class="pdf-glossary-section">
     <h2 class="glossary-header-title">Glossaire Vitaliste & Définitions Clés</h2>
     <div class="glossary-grid">
-      ${Object.entries(glossary).map(([term, def]) => `
+      ${Object.entries(glossary).map(([term, item]) => {
+        const defText = typeof item === 'string' ? item : (item.def || '');
+        const noteText = typeof item === 'object' ? (item.note || '') : '';
+        const isWarning = typeof item === 'object' && item.type === 'warning';
+        return `
         <div class="glossary-box">
           <div class="glossary-term-heading">${esc(term)}</div>
-          <p class="glossary-term-body">${esc(def)}</p>
+          <p class="glossary-term-body"><strong>Arnold Ehret (1922) :</strong> ${esc(defText)}</p>
+          ${noteText ? `
+            <div class="pdf-glossary-note ${isWarning ? 'is-warning' : 'is-science'}">
+              <strong>${isWarning ? '⚠️ Mise en Garde Médicale :' : '⚖️ Recul Scientifique :'}</strong>
+              ${esc(noteText)}
+            </div>
+          ` : ''}
         </div>
-      `).join('')}
+      `;
+      }).join('')}
     </div>
   </div>
 
