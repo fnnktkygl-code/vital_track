@@ -34,8 +34,8 @@ it('Le livre possède un ID, un titre et un auteur valides', () => {
 });
 
 // 2. Vérification des Leçons
-it('Le livre contient 29 sections intégrales (Préface, Intro, Biographie + 26 Leçons complètes non abrégées)', () => {
-  assert.equal(ehretMucuslessFr.chapters.length, 29);
+it('Le livre contient 30 sections intégrales (Préface, Intro, Biographie + 26 Leçons + Dictionnaire Vitaliste)', () => {
+  assert.equal(ehretMucuslessFr.chapters.length, 30);
 });
 
 it('Le livre contient plus de 500 paragraphes et plus de 280 000 caractères intégraux', () => {
@@ -64,7 +64,7 @@ it('Chaque chapitre a un ID unique, un tag non vide, un titre et au moins un par
 
 // 3. Vérification des 26 Leçons Numérotées
 it('Toutes les leçons de I à XXVI sont présentes dans l\'ordre', () => {
-  const lessonTags = ehretMucuslessFr.chapters.slice(3).map(c => c.tag);
+  const lessonTags = ehretMucuslessFr.chapters.slice(3, 29).map(c => c.tag);
   assert.equal(lessonTags[0], 'Leçon I');
   assert.equal(lessonTags[lessonTags.length - 1], 'Leçon XXVI');
   assert.ok(lessonTags.includes('Leçon V'));
@@ -82,6 +82,7 @@ it('Le glossaire contient les termes clés indispensables et leurs définitions'
   assert.ok(ehretMucuslessFr.glossary['régime de transition']);
   assert.ok(ehretMucuslessFr.glossary['salade balai']);
   assert.ok(ehretMucuslessFr.glossary['autolyse']);
+  assert.ok(Object.keys(ehretMucuslessFr.glossary).length >= 35);
 });
 
 it('Tous les termes annotés {{terme}} dans les paragraphes existent dans le glossaire', () => {
@@ -91,7 +92,7 @@ it('Tous les termes annotés {{terme}} dans les paragraphes existent dans le glo
     ch.paragraphs.forEach(p => {
       let match;
       while ((match = termRegex.exec(p)) !== null) {
-        const term = match[1];
+        const term = match[1].toLowerCase();
         termCount++;
         assert.ok(
           ehretMucuslessFr.glossary[term] !== undefined,
@@ -100,7 +101,7 @@ it('Tous les termes annotés {{terme}} dans les paragraphes existent dans le glo
       }
     });
   });
-  assert.ok(termCount >= 5, `Au moins 5 annotations de glossaire doivent être présentes (trouvé ${termCount})`);
+  assert.ok(termCount >= 500, `Au moins 500 annotations de glossaire doivent être présentes (trouvé ${termCount})`);
 });
 
 // 5. Thèmes et Tailles de police

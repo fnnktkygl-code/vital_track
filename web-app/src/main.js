@@ -9542,16 +9542,17 @@ function renderResources() {
       id: "ehret-mucusless-fr",
       lang: "fr",
       title: "Système de Guérison du Régime Sans Mucus",
-      subtitle: "Édition Intégrale & Complète en Français (90 Pages) · Prof. Arnold Ehret",
+      subtitle: "Édition Intégrale Traduite & Structurée par VitalTrack · Prof. Arnold Ehret",
       url: "/pdfs/arnold-ehret-systeme-de-guerison-du-regime-sans-mucus-fr.pdf",
-      author: "Prof. Arnold Ehret",
-      source: "Édition Intégrale Française (90 Pages)",
-      size: "1.2 Mo",
+      author: "Prof. Arnold Ehret (1866–1922)",
+      source: "Création & Traduction VitalTrack (D'après l'Original de 1922)",
+      size: "1.4 Mo",
       badgeClass: "badge-success",
-      badgeText: "🇫🇷 Édition Intégrale Française (90 Pages)",
+      badgeText: "✨ Édition & Traduction Interactive VitalTrack",
+      extraBadge: "💡 38 Définitions · 536 Annotations",
       icon: "ri-book-open-fill",
       color: "#10b981",
-      description: "Traduction intégrale, exhaustive et non abritée en français moderne de l'intégralité du chef-d'œuvre d'Arnold Ehret (Les 26 Leçons complètes, Biographie, Formule V = P - O, Diagnostic, Transition, Jeûne Rationnel et Recettes, 303 000 caractères)."
+      description: "Traduction intégrale, exhaustive et annotée en français moderne d'après le texte historique de 1922 du Prof. Arnold Ehret. Architecture de lecture interactive, 536 annotations cliniques, dictionnaire vitaliste et mémoire de lecture exacte créés et structurés par VitalTrack Academy."
     },
     {
       id: "morse-detox-fr",
@@ -9645,6 +9646,21 @@ function renderResources() {
     },
 
     // 🇬🇧 AUTHENTIC ORIGINAL ENGLISH EDITIONS
+    {
+      id: "ehret-mucusless-en",
+      lang: "en",
+      title: "Mucusless Diet Healing System (Original 1922)",
+      subtitle: "Prof. Arnold Ehret — Scientific Method of Eating Your Way to Health",
+      url: "/pdfs/arnold-ehret-mucusless-diet-healing-system.pdf",
+      author: "Prof. Arnold Ehret",
+      source: "Édition Originale Historique Anglaise",
+      size: "1.0 Mo",
+      badgeClass: "badge-success",
+      badgeText: "🇬🇧 Authentic English Original (1922)",
+      icon: "ri-book-line",
+      color: "#10b981",
+      description: "The historical 1922 original English edition of Prof. Arnold Ehret's foundational masterwork on the Mucusless Diet, the V = P - O vitality equation, and rational fasting."
+    },
     {
       id: "buhner-antibiotics-en",
       lang: "en",
@@ -10083,7 +10099,29 @@ function renderResources() {
                     <i class="ri-quill-pen-line"></i> Auteur : <span style="color:var(--text);">${esc(b.author)}</span>
                   </div>
 
-                  <p style="font-size:0.85rem; color:var(--text-dim); line-height:1.55; margin:0 0 18px 0;">${esc(b.description)}</p>
+                  <p style="font-size:0.85rem; color:var(--text-dim); line-height:1.55; margin:0 0 14px 0;">${esc(b.description)}</p>
+
+                  ${b.id === 'ehret-mucusless-fr' ? `
+                    <div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.22); border-radius:10px; padding:10px 12px; margin-bottom:16px;">
+                      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; font-size:0.75rem; flex-wrap:wrap; gap:4px;">
+                        <span style="font-weight:700; color:var(--accent); display:flex; align-items:center; gap:5px;">
+                          <i class="ri-sparkling-fill"></i> Traduction & Structure VitalTrack
+                        </span>
+                        <span style="font-family:var(--font-mono); font-size:0.72rem; color:var(--text); font-weight:700;">
+                          30 Sections · 536 Annotations
+                        </span>
+                      </div>
+                      <p style="margin:0 0 6px 0; font-size:0.75rem; color:var(--text-dim); line-height:1.4;">
+                        Texte d'Arnold Ehret intégralement traduit en français moderne et architecturé pour la liseuse interactive par notre équipe.
+                      </p>
+                      <div style="display:flex; align-items:center; justify-content:space-between; font-size:0.73rem; border-top:1px dashed rgba(16,185,129,0.2); padding-top:6px; margin-top:4px;">
+                        <span style="color:var(--text-dim);">Source originale de 1922 :</span>
+                        <a href="/pdfs/arnold-ehret-mucusless-diet-healing-system.pdf" target="_blank" rel="noopener noreferrer" style="color:var(--accent); text-decoration:none; font-weight:700; display:inline-flex; align-items:center; gap:4px;">
+                          <i class="ri-file-pdf-line"></i> 🇬🇧 PDF Original Anglais
+                        </a>
+                      </div>
+                    </div>
+                  ` : ''}
                 </div>
 
                 <div style="display:flex; gap:10px; margin-top:auto;">
@@ -10096,7 +10134,7 @@ function renderResources() {
                       <i class="ri-file-pdf-line"></i> Consulter
                     </a>
                   `}
-                  <a href="${b.url}" download class="btn-secondary" style="flex:0.8; text-align:center; text-decoration:none; padding:10px 12px; display:inline-flex; align-items:center; justify-content:center; gap:6px; font-size:0.85rem; font-weight:600; border-radius:10px; background:var(--surface-hover); border:1px solid var(--border); color:var(--text);" title="Télécharger le fichier PDF original">
+                  <a href="${b.url}" download class="btn-secondary" style="flex:0.8; text-align:center; text-decoration:none; padding:10px 12px; display:inline-flex; align-items:center; justify-content:center; gap:6px; font-size:0.85rem; font-weight:600; border-radius:10px; background:var(--surface-hover); border:1px solid var(--border); color:var(--text);" title="Télécharger le fichier PDF">
                     <i class="ri-download-2-line"></i> PDF
                   </a>
                 </div>

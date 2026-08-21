@@ -41,6 +41,13 @@ export function initBookReaderModule() {
   window.toggleReaderSidebar = toggleReaderSidebar;
   window.handleGlossaryClick = handleGlossaryClick;
   window.closeGlossaryPopover = closeGlossaryPopover;
+  window.filterGlossaryCards = filterGlossaryCards;
+  window.openGlossarySection = () => {
+    const book = getActiveBook();
+    if (book && book.chapters) {
+      setReaderChapter(book.chapters.length - 1);
+    }
+  };
 
   // Clavier : Navigation Précédent/Suivant et Échap
   document.addEventListener('keydown', (e) => {
@@ -368,6 +375,20 @@ export function closeGlossaryPopover() {
   }
 }
 
+export function filterGlossaryCards(query) {
+  const cards = document.querySelectorAll('.br-glossary-index-card');
+  const q = (query || '').toLowerCase().trim();
+  cards.forEach(c => {
+    const term = c.getAttribute('data-term') || '';
+    const text = c.textContent.toLowerCase();
+    if (!q || term.includes(q) || text.includes(q)) {
+      c.style.display = 'block';
+    } else {
+      c.style.display = 'none';
+    }
+  });
+}
+
 function parseParagraphWithGlossary(text) {
   if (!text) return '';
   // 1. Parser les termes du glossaire {{terme}}
@@ -396,6 +417,7 @@ function renderReaderDOM() {
   const chapters = book.chapters || [];
   const currentChapter = chapters[_readerState.chapterIndex] || { tag: "", title: "", paragraphs: [] };
   const progressPct = Math.round(((_readerState.chapterIndex + 1) / chapters.length) * 100);
+  const glossaryEntries = Object.entries(book.glossary || {});
 
   modal.innerHTML = `
     <div class="br-root" data-theme="${_readerState.theme}">
@@ -426,6 +448,11 @@ function renderReaderDOM() {
             <button type="button" class="br-font-btn" onclick="adjustReaderFontSize(1)" title="Agrandir la police">A+</button>
           </div>
 
+          <!-- Bouton Raccourci Glossaire -->
+          <button type="button" class="btn-secondary" onclick="openGlossarySection()" style="font-size:11px; padding:4px 10px; border-radius:6px; display:inline-flex; align-items:center; gap:4px;" title="Consulter l'Index et le Glossaire">
+            <i class="ri-lightbulb-line"></i> <span class="hide-mobile">Vocabulaire (${glossaryEntries.length})</span>
+          </button>
+
           <!-- Télécharger PDF & Fermer -->
           <a href="${book.pdfUrl}" download class="btn-secondary" style="font-size:11px; padding:4px 10px; border-radius:6px; text-decoration:none; display:inline-flex; align-items:center; gap:4px;" title="Télécharger le PDF complet">
             <i class="ri-file-pdf-line"></i> <span class="hide-mobile">PDF</span>
@@ -444,7 +471,7 @@ function renderReaderDOM() {
         <aside class="br-sidebar ${_readerState.sidebarOpen ? '' : 'closed'}">
           <p class="br-book-eyebrow">${esc(book.author)}</p>
           <h2 class="br-book-title">${esc(book.title)}</h2>
-          <p class="br-book-meta">${esc(book.year)} · Édition Intégrale (26 Leçons)</p>
+          <p class="br-book-meta">${esc(book.year)} · Édition Intégrale Traduite (${chapters.length} Sections)</p>
 
           <div class="br-progress-line">
             <div class="br-progress-track">
@@ -452,6 +479,12 @@ function renderReaderDOM() {
             </div>
             <span class="br-progress-label">${_readerState.chapterIndex + 1} / ${chapters.length}</span>
           </div>
+
+          <!-- Raccourci vers le Glossaire dans le Sommaire -->
+          <button type="button" class="br-glossary-shortcut-btn" onclick="openGlossarySection()" style="width:100%; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; background:var(--br-moss-bg); border:1px solid var(--br-moss); color:var(--br-ink); padding:8px 12px; border-radius:8px; font-weight:700; font-size:12px; cursor:pointer;">
+            <span style="display:flex; align-items:center; gap:6px;"><i class="ri-lightbulb-fill" style="color:var(--br-moss);"></i> Dictionnaire Vitaliste</span>
+            <span class="badge" style="background:var(--br-moss); color:#fff; font-size:10px; padding:2px 6px; border-radius:4px;">${glossaryEntries.length} termes</span>
+          </button>
 
           <ul class="br-chapter-list">
             ${chapters.map((c, i) => `
@@ -475,18 +508,39 @@ function renderReaderDOM() {
             <div class="br-article-tag">${esc(currentChapter.tag)}</div>
             <h1 class="br-article-title">${esc(currentChapter.title)}</h1>
 
-            <!-- PARAGRAPHES INTÉGRAUX DE LA LEÇON -->
-            ${currentChapter.paragraphs && currentChapter.paragraphs.length > 0 ? (
-              currentChapter.paragraphs.map((p, pIdx) => `
-                <p class="br-paragraph ${pIdx === 0 ? 'first-paragraph' : ''}">
-                  ${parseParagraphWithGlossary(p)}
-                </p>
-              `).join('')
-            ) : `
-              <div style="padding:40px 20px; text-align:center; color:var(--br-ink-soft); font-style:italic;">
-                Cette section fait partie du sommaire étendu du livre. Le texte complet est disponible dans l'édition originale PDF.
+            <!-- VUE SPÉCIALE GLOSSAIRE INTERACTIF -->
+            ${currentChapter.id === 'glossaire-vitaliste-integral' ? `
+              <div class="br-glossary-index-container">
+                <div style="margin-bottom:20px; display:flex; align-items:center; gap:10px; background:var(--br-surface); border:1px solid var(--br-line-strong); padding:10px 14px; border-radius:10px;">
+                  <i class="ri-search-line" style="color:var(--br-brass); font-size:16px;"></i>
+                  <input type="text" id="brGlossarySearchInput" class="br-glossary-search-input" placeholder="Rechercher parmi les ${glossaryEntries.length} définitions (ex: mucus, autolyse, balai, transition...)" oninput="filterGlossaryCards(this.value)" style="border:none; outline:none; background:transparent; font-family:var(--br-font-ui); font-size:13px; color:var(--br-ink); width:100%;" />
+                </div>
+
+                <div id="brGlossaryCardsList" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(min(320px, 100%), 1fr)); gap:14px; margin-top:16px;">
+                  ${glossaryEntries.map(([term, def]) => `
+                    <div class="br-glossary-index-card" data-term="${esc(term.toLowerCase())}" style="background:var(--br-surface); border:1px solid var(--br-line); border-left:4px solid var(--br-brass); border-radius:10px; padding:14px 16px; box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+                      <div style="display:flex; align-items:center; gap:6px; margin-bottom:6px;">
+                        <i class="ri-lightbulb-fill" style="color:var(--br-brass); font-size:14px;"></i>
+                        <h4 style="margin:0; font-family:var(--br-font-display); font-size:1rem; font-weight:700; color:var(--br-brass); text-transform:capitalize;">${esc(term)}</h4>
+                      </div>
+                      <p style="margin:0; font-family:var(--br-font-ui); font-size:0.86rem; line-height:1.55; color:var(--br-ink);">${esc(def)}</p>
+                    </div>
+                  `).join('')}
+                </div>
               </div>
-            `}
+            ` : (
+              currentChapter.paragraphs && currentChapter.paragraphs.length > 0 ? (
+                currentChapter.paragraphs.map((p, pIdx) => `
+                  <p class="br-paragraph ${pIdx === 0 ? 'first-paragraph' : ''}">
+                    ${parseParagraphWithGlossary(p)}
+                  </p>
+                `).join('')
+              ) : `
+                <div style="padding:40px 20px; text-align:center; color:var(--br-ink-soft); font-style:italic;">
+                  Cette section fait partie du sommaire étendu du livre. Le texte complet est disponible dans l'édition originale PDF.
+                </div>
+              `
+            )}
 
           </article>
         </main>
