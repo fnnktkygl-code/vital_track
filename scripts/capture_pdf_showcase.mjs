@@ -9,7 +9,7 @@ async function capture() {
   });
 
   const page = await browser.newPage();
-  await page.setViewport({ width: 850, height: 1100 });
+  await page.setViewport({ width: 900, height: 1200 });
 
   const html = generateLuxuryHtml();
   await page.setContent(html, { waitUntil: 'networkidle0' });
@@ -20,20 +20,24 @@ async function capture() {
     await cover.screenshot({ path: '/Users/richard/.gemini/antigravity-ide/brain/1f0edc3f-a36f-4d31-bcf9-3c69abedfe85/pdf_cover_preview.png' });
   }
 
-  // 2. Leçon I with Dropcap
+  // 2. TOC
+  const toc = await page.$('.pdf-toc-page');
+  if (toc) {
+    await toc.screenshot({ path: '/Users/richard/.gemini/antigravity-ide/brain/1f0edc3f-a36f-4d31-bcf9-3c69abedfe85/pdf_toc_preview.png' });
+  }
+
+  // 3. Leçon I with Dropcap
   const chapters = await page.$$('.pdf-chapter');
   if (chapters.length > 3) {
-    // Index 3 is Leçon I
     await chapters[3].screenshot({ path: '/Users/richard/.gemini/antigravity-ide/brain/1f0edc3f-a36f-4d31-bcf9-3c69abedfe85/pdf_lesson_preview.png' });
   }
 
-  // 3. Leçon V with Formula
+  // 4. Leçon V with Formula
   if (chapters.length > 7) {
-    // Index 7 is Leçon V
     await chapters[7].screenshot({ path: '/Users/richard/.gemini/antigravity-ide/brain/1f0edc3f-a36f-4d31-bcf9-3c69abedfe85/pdf_formula_preview.png' });
   }
 
-  console.log('✅ Screenshots captured successfully!');
+  console.log('✅ Showcase screenshots saved successfully!');
   await browser.close();
 }
 

@@ -35,11 +35,11 @@ export function generateLuxuryHtml() {
   <title>${esc(ehretMucuslessFr.title)} — Prof. Arnold Ehret</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&family=IBM+Plex+Mono:wght@400;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..900;1,9..144,400..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400;1,8..60,600&family=IBM+Plex+Mono:wght@400;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     @page {
       size: A4;
-      margin: 22mm 18mm 22mm 18mm;
+      margin: 18mm 16mm 18mm 16mm;
     }
 
     * {
@@ -48,166 +48,156 @@ export function generateLuxuryHtml() {
       print-color-adjust: exact;
     }
 
-    body {
+    html, body {
       margin: 0;
       padding: 0;
+      width: 100%;
+      background: #ffffff !important;
+      color: #1e293b;
       font-family: 'Source Serif 4', Georgia, serif;
       font-size: 10.5pt;
-      line-height: 1.58;
-      color: #261f18;
-      background: #faf7f0;
+      line-height: 1.65;
       text-rendering: optimizeLegibility;
     }
 
     /* ══════════════════════════════════════════════════════════════════
-       1. PAGE DE COUVERTURE LUXE (Plein écran A4)
+       1. COUVERTURE ÉPURÉE, MODERNE & PLEINE LARGEUR (FOND BLANC PUR)
        ══════════════════════════════════════════════════════════════════ */
     .pdf-cover-page {
       page-break-before: avoid;
       page-break-after: always;
-      height: 100vh;
-      min-height: 270mm;
-      background: #0b0f17;
-      color: #f8fafc;
+      width: 100%;
+      min-height: 250mm;
+      background: #ffffff;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       align-items: center;
       text-align: center;
-      padding: 24mm 16mm;
-      position: relative;
-      border: 10px solid #16202e;
-      box-shadow: inset 0 0 0 2px #c27803;
+      padding: 30mm 0 10mm;
+      border-bottom: 2px solid #0f766e;
     }
 
-    .cover-ornament-top {
+    .cover-badge-top {
       font-family: 'IBM Plex Mono', monospace;
-      font-size: 8.5pt;
+      font-size: 8pt;
       font-weight: 700;
-      letter-spacing: 3px;
+      letter-spacing: 2.5px;
       text-transform: uppercase;
-      color: #e59b22;
-      border-bottom: 1px solid rgba(229, 155, 34, 0.4);
-      padding-bottom: 8px;
-      width: 80%;
+      color: #0f766e;
+      border: 1px solid #0f766e;
+      padding: 6px 16px;
+      border-radius: 4px;
+      margin-bottom: 24px;
     }
 
-    .cover-title-group {
+    .cover-main-content {
       margin: auto 0;
+      width: 100%;
       max-width: 90%;
     }
 
-    .cover-eyebrow {
+    .cover-author-eyebrow {
       font-family: 'Outfit', sans-serif;
-      font-size: 12pt;
+      font-size: 13pt;
       font-weight: 700;
-      letter-spacing: 4px;
+      letter-spacing: 3px;
       text-transform: uppercase;
-      color: #94a3b8;
+      color: #64748b;
       margin-bottom: 12px;
     }
 
-    .cover-main-title {
+    .cover-title {
       font-family: 'Fraunces', Georgia, serif;
-      font-size: 28pt;
+      font-size: 30pt;
       font-weight: 800;
-      line-height: 1.2;
-      color: #ffffff;
-      margin: 0 0 16px;
+      line-height: 1.18;
+      color: #0f172a;
+      margin: 0 0 18px;
       letter-spacing: -0.5px;
     }
 
     .cover-subtitle {
-      font-family: 'Source Serif 4', Georgia, serif;
-      font-size: 13pt;
+      font-family: 'Source Serif 4', serif;
+      font-size: 12pt;
       font-style: italic;
-      color: #cbd5e1;
-      line-height: 1.4;
-      margin: 0 0 24px;
+      color: #475569;
+      line-height: 1.5;
+      margin: 0 auto 30px;
+      max-width: 85%;
     }
 
-    .cover-formula-badge {
+    .cover-formula-box {
       display: inline-block;
-      background: rgba(229, 155, 34, 0.12);
-      border: 1.5px solid #e59b22;
-      padding: 10px 24px;
+      background: #f8fafc;
+      border: 1.5px solid #0f766e;
       border-radius: 8px;
-      margin-top: 10px;
+      padding: 12px 30px;
+      margin: 10px 0 20px;
     }
 
     .cover-formula-math {
       font-family: 'Fraunces', serif;
-      font-size: 20pt;
+      font-size: 22pt;
       font-weight: 800;
-      color: #fbbf24;
+      color: #0f766e;
       letter-spacing: 2px;
     }
 
-    .cover-formula-text {
+    .cover-formula-label {
       font-family: 'IBM Plex Mono', monospace;
       font-size: 8pt;
       font-weight: 700;
       letter-spacing: 1.5px;
       text-transform: uppercase;
-      color: #cbd5e1;
+      color: #64748b;
       margin-top: 4px;
     }
 
-    .cover-author-group {
+    .cover-footer {
       width: 100%;
-      border-top: 1px solid rgba(255, 255, 255, 0.12);
-      padding-top: 16px;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 20px;
+      margin-top: 20px;
     }
 
-    .cover-author-name {
-      font-family: 'Fraunces', Georgia, serif;
-      font-size: 17pt;
-      font-weight: 700;
-      color: #ffffff;
-      margin: 0 0 4px;
-    }
-
-    .cover-author-title {
+    .cover-footer-author {
       font-family: 'Outfit', sans-serif;
-      font-size: 9.5pt;
-      color: #94a3b8;
+      font-size: 11pt;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 4px;
+    }
+
+    .cover-footer-meta {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8pt;
+      color: #64748b;
       letter-spacing: 1px;
     }
 
-    .cover-publisher-seal {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 7.5pt;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: #e59b22;
-      margin-top: 12px;
-    }
-
     /* ══════════════════════════════════════════════════════════════════
-       2. PAGE DE TITRE & COLOPHON
+       2. NOTICE HISTORIQUE & COLOPHON
        ══════════════════════════════════════════════════════════════════ */
     .pdf-colophon-page {
       page-break-before: always;
       page-break-after: always;
-      padding: 20mm 0;
-      min-height: 240mm;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
+      padding: 15mm 0;
+      width: 100%;
     }
 
     .colophon-header {
-      text-align: center;
-      border-bottom: 2px solid #e5dccb;
-      padding-bottom: 24px;
+      border-bottom: 2px solid #0f766e;
+      padding-bottom: 16px;
+      margin-bottom: 24px;
     }
 
-    .colophon-book-title {
+    .colophon-title {
       font-family: 'Fraunces', serif;
-      font-size: 22pt;
+      font-size: 20pt;
       font-weight: 800;
-      color: #1f160e;
-      margin: 0 0 8px;
+      color: #0f172a;
+      margin: 0 0 6px;
     }
 
     .colophon-author {
@@ -215,135 +205,141 @@ export function generateLuxuryHtml() {
       font-size: 11pt;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 2px;
-      color: #b45309;
+      letter-spacing: 1.5px;
+      color: #0f766e;
     }
 
     .colophon-quote-box {
-      background: #f4ecd8;
-      border-left: 4px solid #b45309;
+      background: #f8fafc;
+      border-left: 4px solid #0f766e;
       padding: 16px 20px;
-      margin: 30px 0;
-      border-radius: 0 8px 8px 0;
+      margin: 24px 0;
+      border-radius: 0 6px 6px 0;
       font-style: italic;
-      font-size: 11pt;
+      font-size: 10.5pt;
       line-height: 1.6;
+      color: #334155;
     }
 
-    .colophon-meta-table {
+    .colophon-table {
       width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
       font-family: 'Outfit', sans-serif;
       font-size: 9pt;
-      border-collapse: collapse;
-      margin-top: 20px;
     }
 
-    .colophon-meta-table td {
-      padding: 6px 0;
-      border-bottom: 1px dotted #e5dccb;
+    .colophon-table td {
+      padding: 8px 0;
+      border-bottom: 1px solid #f1f5f9;
     }
 
-    .colophon-meta-label {
+    .colophon-table .col-label {
       font-weight: 700;
-      color: #7c684d;
-      width: 35%;
+      color: #475569;
+      width: 32%;
+    }
+
+    .colophon-table .col-val {
+      color: #0f172a;
     }
 
     /* ══════════════════════════════════════════════════════════════════
-       3. SOMMAIRE GÉNÉRAL (TABLE DES MATIÈRES)
+       3. SOMMAIRE GÉNÉRAL (TABLE DES MATIÈRES ROBUSTE)
        ══════════════════════════════════════════════════════════════════ */
     .pdf-toc-page {
       page-break-before: always;
       page-break-after: always;
       padding: 10mm 0;
+      width: 100%;
     }
 
-    .toc-title {
+    .toc-header-title {
       font-family: 'Fraunces', serif;
       font-size: 20pt;
       font-weight: 800;
-      color: #1f160e;
-      text-align: center;
-      margin-bottom: 24px;
-      border-bottom: 2px solid #b45309;
+      color: #0f172a;
+      margin: 0 0 20px;
+      border-bottom: 2px solid #0f766e;
       padding-bottom: 10px;
     }
 
-    .toc-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
+    .toc-table {
+      width: 100%;
+      border-collapse: collapse;
     }
 
-    .toc-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      font-size: 9.5pt;
-      border-bottom: 1px dotted rgba(180, 83, 9, 0.25);
-      padding-bottom: 3px;
+    .toc-table tr {
+      page-break-inside: avoid;
     }
 
-    .toc-item-tag {
+    .toc-table td {
+      padding: 7px 0;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: baseline;
+    }
+
+    .toc-tag {
       font-family: 'IBM Plex Mono', monospace;
-      font-weight: 700;
       font-size: 8.5pt;
-      color: #b45309;
-      width: 90px;
+      font-weight: 700;
+      color: #0f766e;
+      width: 105px;
       flex-shrink: 0;
     }
 
-    .toc-item-title {
-      flex: 1;
+    .toc-name {
       font-family: 'Outfit', sans-serif;
+      font-size: 9.5pt;
       font-weight: 600;
-      color: #2a241e;
+      color: #1e293b;
       padding-right: 12px;
     }
 
-    .toc-item-idx {
+    .toc-num {
       font-family: 'IBM Plex Mono', monospace;
       font-size: 8.5pt;
-      color: #7c684d;
-      flex-shrink: 0;
+      color: #94a3b8;
+      text-align: right;
+      width: 36px;
     }
 
     /* ══════════════════════════════════════════════════════════════════
-       4. CHAPITRES ET LEÇONS
+       4. CHAPITRES & LEÇONS DU LIVRE
        ══════════════════════════════════════════════════════════════════ */
     .pdf-chapter {
       page-break-before: always;
-      margin-top: 10mm;
-      padding-top: 10mm;
+      width: 100%;
+      margin: 0;
+      padding-top: 6mm;
     }
 
-    .chapter-header {
-      margin-bottom: 22px;
-      border-bottom: 1.5px solid #e5dccb;
-      padding-bottom: 14px;
-    }
-
-    .chapter-tag {
+    .chapter-top-tag {
       font-family: 'IBM Plex Mono', monospace;
-      font-size: 9pt;
+      font-size: 8.5pt;
       font-weight: 700;
       letter-spacing: 2px;
       text-transform: uppercase;
-      color: #b45309;
+      color: #0f766e;
       margin-bottom: 6px;
     }
 
-    .chapter-title {
-      font-family: 'Fraunces', serif;
-      font-size: 19pt;
+    .chapter-main-title {
+      font-family: 'Fraunces', Georgia, serif;
+      font-size: 18pt;
       font-weight: 800;
       line-height: 1.25;
-      color: #1a140e;
-      margin: 0;
+      color: #0f172a;
+      margin: 0 0 16px;
+      border-bottom: 1.5px solid #e2e8f0;
+      padding-bottom: 12px;
     }
 
     .pdf-paragraph {
       margin: 0 0 14px;
+      font-size: 10.5pt;
+      line-height: 1.65;
+      color: #1e293b;
       text-align: justify;
       text-justify: inter-word;
       hyphens: auto;
@@ -351,188 +347,184 @@ export function generateLuxuryHtml() {
       widows: 3;
     }
 
-    /* Lettrine Haute Couture (Drop Cap) */
+    /* Lettrine Haute Lisibilité (Drop Cap) */
     .pdf-paragraph.has-dropcap::first-letter {
       font-family: 'Fraunces', Georgia, serif;
-      font-size: 3.6rem;
+      font-size: 3.4rem;
       line-height: 0.82;
       float: left;
       margin-right: 10px;
       margin-bottom: -4px;
       margin-top: 2px;
       font-weight: 800;
-      color: #b45309;
+      color: #0f766e;
     }
 
-    /* Boîte de formule $V = P - O$ pour la leçon V */
-    .pdf-formula-callout {
+    /* Encadré Formule $V = P - O$ pour la leçon V */
+    .pdf-formula-card {
       page-break-inside: avoid;
-      background: #fbf5e6;
-      border: 2px solid #b45309;
-      border-radius: 8px;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-left: 4px solid #0f766e;
+      border-radius: 6px;
       padding: 16px 20px;
-      margin: 22px 0;
+      margin: 20px 0;
       text-align: center;
     }
 
-    .formula-title {
+    .formula-math-text {
       font-family: 'Fraunces', serif;
       font-size: 18pt;
       font-weight: 800;
-      color: #b45309;
+      color: #0f766e;
       margin-bottom: 4px;
     }
 
-    .formula-explanation {
+    .formula-desc-text {
       font-family: 'Outfit', sans-serif;
       font-size: 9.5pt;
-      color: #4a3e31;
+      color: #334155;
     }
 
     /* ══════════════════════════════════════════════════════════════════
-       5. GLOSSAIRE VITALISTE EN FIN D'OUVRAGE
+       5. GLOSSAIRE VITALISTE
        ══════════════════════════════════════════════════════════════════ */
-    .pdf-glossary-page {
+    .pdf-glossary-section {
       page-break-before: always;
-      padding: 10mm 0;
+      width: 100%;
+      padding-top: 6mm;
     }
 
-    .glossary-title {
+    .glossary-header-title {
       font-family: 'Fraunces', serif;
       font-size: 20pt;
       font-weight: 800;
-      color: #1f160e;
-      text-align: center;
-      margin-bottom: 24px;
-      border-bottom: 2px solid #10b981;
+      color: #0f172a;
+      margin: 0 0 20px;
+      border-bottom: 2px solid #0f766e;
       padding-bottom: 10px;
     }
 
     .glossary-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 16px;
+      gap: 14px;
     }
 
-    .glossary-card {
+    .glossary-box {
       page-break-inside: avoid;
-      background: #f4ecd8;
-      border: 1px solid #e3d7bd;
-      border-left: 3px solid #10b981;
-      border-radius: 6px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-left: 3px solid #0f766e;
+      border-radius: 4px;
       padding: 12px 14px;
     }
 
-    .glossary-term-name {
+    .glossary-term-heading {
       font-family: 'Outfit', sans-serif;
-      font-size: 10.5pt;
+      font-size: 10pt;
       font-weight: 700;
-      color: #047857;
+      color: #0f766e;
       margin-bottom: 4px;
       text-transform: capitalize;
     }
 
-    .glossary-term-def {
+    .glossary-term-body {
       font-size: 9pt;
       line-height: 1.45;
-      color: #382c1e;
+      color: #334155;
       margin: 0;
     }
   </style>
 </head>
 <body>
 
-  <!-- 1. COUVERTURE LUXE -->
+  <!-- 1. COUVERTURE ÉPURÉE MODERNE -->
   <div class="pdf-cover-page">
-    <div class="cover-ornament-top">
+    <div class="cover-badge-top">
       CHEF-D'ŒUVRE FONDATEUR · ÉDITION INTÉGRALE FRANÇAISE (1922)
     </div>
 
-    <div class="cover-title-group">
-      <div class="cover-eyebrow">Professeur Arnold Ehret</div>
-      <h1 class="cover-main-title">Système de Guérison du Régime Sans Mucus</h1>
+    <div class="cover-main-content">
+      <div class="cover-author-eyebrow">Professeur Arnold Ehret</div>
+      <h1 class="cover-title">Système de Guérison du Régime Sans Mucus</h1>
       <p class="cover-subtitle">
         Méthode scientifique et naturelle pour régénérer le corps, dissoudre l'obstruction interne et conquérir une vitalité surhumaine.
       </p>
 
-      <div class="cover-formula-badge">
+      <div class="cover-formula-box">
         <div class="cover-formula-math">V = P - O</div>
-        <div class="cover-formula-text">L'Équation Suprême de la Vitalité Humaine</div>
+        <div class="cover-formula-label">L'Équation Suprême de la Vitalité Humaine</div>
       </div>
     </div>
 
-    <div class="cover-author-group">
-      <div class="cover-author-name">Professeur Arnold Ehret</div>
-      <div class="cover-author-title">Pionnier Mondial du Vitalisme & de la Régénération Cellulaire (1866–1922)</div>
-      <div class="cover-publisher-seal">Édition Intégrale Conforme au Texte Original · VitalTrack Academy</div>
+    <div class="cover-footer">
+      <div class="cover-footer-author">Professeur Arnold Ehret (1866–1922)</div>
+      <div class="cover-footer-meta">Édition Complète & Intégrale · VitalTrack Academy</div>
     </div>
   </div>
 
-  <!-- 2. PAGE DE TITRE & NOTICE HISTORIQUE -->
+  <!-- 2. NOTICE HISTORIQUE & COLOPHON -->
   <div class="pdf-colophon-page">
     <div class="colophon-header">
-      <h1 class="colophon-book-title">${esc(ehretMucuslessFr.title)}</h1>
+      <h1 class="colophon-title">${esc(ehretMucuslessFr.title)}</h1>
       <div class="colophon-author">Par le Professeur Arnold Ehret</div>
     </div>
 
     <div class="colophon-quote-box">
       « La maladie est un effort de la Nature pour éliminer les déchets, les glaires et les toxines... Ce cours complet enseigne pour la première fois dans l'histoire humaine comment nettoyer méthodiquement le temple cellulaire sans violenter l'organisme. »
       <br><br>
-      <strong style="font-family:'Outfit',sans-serif; font-size:9pt; text-transform:uppercase; color:#b45309;">— Prof. Arnold Ehret (1922)</strong>
+      <strong style="font-family:'Outfit',sans-serif; font-size:9pt; text-transform:uppercase; color:#0f766e;">— Prof. Arnold Ehret (1922)</strong>
     </div>
 
-    <div>
-      <table class="colophon-meta-table">
-        <tr>
-          <td class="colophon-meta-label">Auteur :</td>
-          <td>Professeur Arnold Ehret (1866–1922)</td>
-        </tr>
-        <tr>
-          <td class="colophon-meta-label">Édition Originale :</td>
-          <td>Los Angeles, Californie, 1922</td>
-        </tr>
-        <tr>
-          <td class="colophon-meta-label">Traduction & Édition :</td>
-          <td>VitalTrack Academy (Traduction Intégrale Conforme au Texte Original)</td>
-        </tr>
-        <tr>
-          <td class="colophon-meta-label">Contenu :</td>
-          <td>26 Leçons Magistrales, Préface de Fred S. Hirsch & Biographie Complète</td>
-        </tr>
-        <tr>
-          <td class="colophon-meta-label">Total :</td>
-          <td>29 Sections Intégrales · 100% Non Abrégé</td>
-        </tr>
-      </table>
-    </div>
+    <table class="colophon-table">
+      <tr>
+        <td class="col-label">Auteur Original :</td>
+        <td class="col-val">Professeur Arnold Ehret (1866–1922)</td>
+      </tr>
+      <tr>
+        <td class="col-label">Publication Originale :</td>
+        <td class="col-val">Los Angeles, Californie, 1922</td>
+      </tr>
+      <tr>
+        <td class="col-label">Traduction & Édition :</td>
+        <td class="col-val">VitalTrack Academy (Traduction Intégrale Conforme au Texte Original)</td>
+      </tr>
+      <tr>
+        <td class="col-label">Structure de l'Ouvrage :</td>
+        <td class="col-val">Préface de Fred S. Hirsch, Biographie & 26 Leçons Magistrales</td>
+      </tr>
+      <tr>
+        <td class="col-label">Intégrité Textuelle :</td>
+        <td class="col-val">29 Sections Complètes · 100% Non Abrégé</td>
+      </tr>
+    </table>
   </div>
 
   <!-- 3. SOMMAIRE GÉNÉRAL -->
   <div class="pdf-toc-page">
-    <h2 class="toc-title">Sommaire Général</h2>
-    <div class="toc-grid">
+    <h2 class="toc-header-title">Sommaire Général</h2>
+    <table class="toc-table">
       ${chapters.map((c, i) => `
-        <div class="toc-item">
-          <span class="toc-item-tag">${esc(c.tag)}</span>
-          <span class="toc-item-title">${esc(c.title)}</span>
-          <span class="toc-item-idx">#${i + 1}</span>
-        </div>
+        <tr>
+          <td class="toc-tag">${esc(c.tag)}</td>
+          <td class="toc-name">${esc(c.title)}</td>
+          <td class="toc-num">#${i + 1}</td>
+        </tr>
       `).join('')}
-    </div>
+    </table>
   </div>
 
   <!-- 4. LES 29 CHAPITRES ET 26 LEÇONS COMPLÈTES -->
   ${chapters.map((c, idx) => `
     <div class="pdf-chapter">
-      <div class="chapter-header">
-        <div class="chapter-tag">${esc(c.tag)} · Section #${idx + 1}</div>
-        <h2 class="chapter-title">${esc(c.title)}</h2>
-      </div>
+      <div class="chapter-top-tag">${esc(c.tag)} · Section #${idx + 1}</div>
+      <h2 class="chapter-main-title">${esc(c.title)}</h2>
 
       ${c.tag === 'Leçon V' ? `
-        <div class="pdf-formula-callout">
-          <div class="formula-title">V = P - O</div>
-          <div class="formula-explanation"><strong>Vitalité = Puissance - Obstruction</strong><br>La force vitale n'augmente pas en ingérant plus de nourriture, mais en éliminant les frottements et l'encombrement interne.</div>
+        <div class="pdf-formula-card">
+          <div class="formula-math-text">V = P - O</div>
+          <div class="formula-desc-text"><strong>Vitalité = Puissance - Obstruction</strong><br>La force vitale n'augmente pas en ingérant plus de nourriture, mais en éliminant les frottements et l'encombrement interne.</div>
         </div>
       ` : ''}
 
@@ -544,14 +536,14 @@ export function generateLuxuryHtml() {
     </div>
   `).join('')}
 
-  <!-- 5. GLOSSAIRE VITALISTE EN FIN D'OUVRAGE -->
-  <div class="pdf-glossary-page">
-    <h2 class="glossary-title">Glossaire Vitaliste & Définitions Clés</h2>
+  <!-- 5. GLOSSAIRE VITALISTE -->
+  <div class="pdf-glossary-section">
+    <h2 class="glossary-header-title">Glossaire Vitaliste & Définitions Clés</h2>
     <div class="glossary-grid">
       ${Object.entries(glossary).map(([term, def]) => `
-        <div class="glossary-card">
-          <div class="glossary-term-name">${esc(term)}</div>
-          <p class="glossary-term-def">${esc(def)}</p>
+        <div class="glossary-box">
+          <div class="glossary-term-heading">${esc(term)}</div>
+          <p class="glossary-term-body">${esc(def)}</p>
         </div>
       `).join('')}
     </div>
@@ -562,7 +554,7 @@ export function generateLuxuryHtml() {
 }
 
 export async function generateLuxuryPdf() {
-  console.log('🎨 Génération du PDF Haute Couture pour Arnold Ehret (Édition Intégrale)...');
+  console.log('🎨 Génération du PDF Moderne Pure White pour Arnold Ehret...');
   const htmlContent = generateLuxuryHtml();
 
   const browser = await puppeteer.launch({
@@ -581,20 +573,20 @@ export async function generateLuxuryPdf() {
       format: 'A4',
       printBackground: true,
       margin: {
-        top: '22mm',
-        bottom: '22mm',
-        left: '18mm',
-        right: '18mm'
+        top: '18mm',
+        bottom: '18mm',
+        left: '16mm',
+        right: '16mm'
       },
       displayHeaderFooter: true,
       headerTemplate: `
-        <div style="font-family:'IBM Plex Mono', monospace; font-size:7.5pt; color:#8C7E6C; width:100%; display:flex; justify-content:space-between; padding:0 18mm; text-transform:uppercase; letter-spacing:0.5px;">
+        <div style="font-family:'IBM Plex Mono', monospace; font-size:7.5pt; color:#94a3b8; width:100%; display:flex; justify-content:space-between; padding:0 16mm; text-transform:uppercase; letter-spacing:0.5px;">
           <span>Prof. Arnold Ehret — Système de Guérison du Régime Sans Mucus</span>
-          <span>VitalTrack Édition</span>
+          <span>VitalTrack Academy</span>
         </div>
       `,
       footerTemplate: `
-        <div style="font-family:'IBM Plex Mono', monospace; font-size:7.5pt; color:#8C7E6C; width:100%; display:flex; justify-content:space-between; padding:0 18mm;">
+        <div style="font-family:'IBM Plex Mono', monospace; font-size:7.5pt; color:#94a3b8; width:100%; display:flex; justify-content:space-between; padding:0 16mm;">
           <span>Édition Intégrale Française (1922)</span>
           <span>Page <span class="pageNumber"></span> / <span class="totalPages"></span></span>
         </div>
