@@ -35,6 +35,7 @@ function esc(str) {
 export function initBookReaderModule() {
   window.openBookReader = openBookReader;
   window.closeBookReader = closeBookReader;
+  window.switchReaderBook = switchReaderBook;
   window.setReaderTheme = setReaderTheme;
   window.adjustReaderFontSize = adjustReaderFontSize;
   window.setReaderChapter = setReaderChapter;
@@ -238,6 +239,39 @@ export function closeBookReader() {
   document.body.style.overflow = '';
 }
 
+export function switchReaderBook(newBookId) {
+  if (newBookId === _readerState.bookId) return;
+
+  // 1. Sauvegarder la progression du livre précédent
+  const pane = document.querySelector('.br-reading-pane');
+  if (pane) {
+    const maxScroll = pane.scrollHeight - pane.clientHeight;
+    const ratio = maxScroll > 0 ? pane.scrollTop / maxScroll : 0;
+    saveReadingProgress(_readerState.bookId, _readerState.chapterIndex, pane.scrollTop, ratio);
+  }
+
+  // 2. Basculer vers le nouveau livre
+  _readerState.bookId = newBookId;
+  closeGlossaryPopover();
+
+  // 3. Restaurer la progression sauvegardée du nouveau livre
+  const savedProgress = getSavedProgress(newBookId);
+  let targetScrollTop = 0;
+  let isRestored = false;
+
+  if (savedProgress && typeof savedProgress.chapterIndex === 'number') {
+    _readerState.chapterIndex = savedProgress.chapterIndex;
+    targetScrollTop = savedProgress.scrollTop || 0;
+    isRestored = true;
+  } else {
+    _readerState.chapterIndex = 0;
+  }
+
+  renderReaderDOM();
+  restoreScrollPosition(targetScrollTop, isRestored);
+  setupReadingScrollListener();
+}
+
 export function setReaderTheme(theme) {
   _readerState.theme = theme;
   localStorage.setItem('vt_reader_theme', theme);
@@ -344,6 +378,8 @@ export function showGlossaryPopover(triggerEl, term, definitionItem) {
 
   const isWarning = noteType === 'warning';
 
+  const book = getActiveBook();
+
   popover.innerHTML = `
     <div class="br-popover-header">
       <div class="br-popover-title">
@@ -354,7 +390,7 @@ export function showGlossaryPopover(triggerEl, term, definitionItem) {
     </div>
     <div class="br-popover-body">
       <div class="br-popover-def">
-        <span class="br-popover-subheading">Théorie d'Arnold Ehret (1922) :</span>
+        <span class="br-popover-subheading">Théorie de ${esc(book.author)} (${esc(book.year)}) :</span>
         ${esc(defText)}
       </div>
 
@@ -511,9 +547,13 @@ function renderReaderDOM() {
           <button type="button" class="br-sidebar-toggle-btn" onclick="toggleReaderSidebar()" title="Afficher/Masquer le sommaire">
             <i class="${_readerState.sidebarOpen ? 'ri-menu-fold-line' : 'ri-menu-unfold-line'}"></i>
           </button>
-          <span style="font-family:var(--br-font-mono); font-size:11px; font-weight:700; color:var(--br-brass); text-transform:uppercase; letter-spacing:0.5px;">
-            ${esc(book.author)}
-          </span>
+          <select class="br-book-select" onchange="switchReaderBook(this.value)" aria-label="Sélectionner l'ouvrage">
+            ${ALL_READABLE_BOOKS.map(b => `
+              <option value="${esc(b.id)}" ${b.id === book.id ? 'selected' : ''}>
+                ${b.id.includes('ehret') ? '📘' : '🌿'} ${esc(b.author)} (${esc(b.year)})
+              </option>
+            `).join('')}
+          </select>
         </div>
 
         <div class="br-topbar-controls">
@@ -592,7 +632,7 @@ function renderReaderDOM() {
             <h1 class="br-article-title">${esc(currentChapter.title)}</h1>
 
             <!-- VUE SPÉCIALE GLOSSAIRE INTERACTIF -->
-            ${currentChapter.id === 'glossaire-vitaliste-integral' ? `
+            ${currentChapter.id.startsWith('glossaire') ? `
               <div class="br-glossary-index-container">
                 <div style="margin-bottom:20px; display:flex; align-items:center; gap:10px; background:var(--br-surface); border:1px solid var(--br-line-strong); padding:10px 14px; border-radius:10px;">
                   <i class="ri-search-line" style="color:var(--br-brass); font-size:16px;"></i>
@@ -620,7 +660,7 @@ function renderReaderDOM() {
                       </div>
 
                       <p class="br-glossary-card-def">
-                        <strong style="color:var(--br-brass); font-size:11px; text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:2px;">Théorie d'Arnold Ehret (1922) :</strong>
+                        <strong style="color:var(--br-brass); font-size:11px; text-transform:uppercase; letter-spacing:0.5px; display:block; margin-bottom:2px;">Théorie de ${esc(book.author)} (${esc(book.year)}) :</strong>
                         ${esc(defText)}
                       </p>
 

@@ -942,3 +942,26 @@
     gap: 6px;
   }
 }
+
+/* Sélecteur de Livre dans la Topbar */
+.br-book-select {
+  background: var(--br-surface);
+  color: var(--br-ink);
+  border: 1px solid var(--br-line-strong);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-family: var(--br-font-ui);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+.br-book-select:hover {
+  border-color: var(--br-brass);
+}
+.br-book-select:focus {
+  border-color: var(--br-brass);
+  box-shadow: 0 0 0 2px rgba(180, 83, 9, 0.2);
+}

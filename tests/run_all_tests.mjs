@@ -15,7 +15,8 @@ const suites = [
   { name: 'Suite 1: Intégrité des 76 Recettes & Filtrage Multi-Ingrédients', file: 'tests/test_recipes_logic.mjs' },
   { name: 'Suite 2: Moteur Deep Search, RAG 10M & Sécurité Phyto', file: 'tests/test_deep_search_logic.mjs' },
   { name: 'Suite 3: Responsivité Mobile, Ergonomie & Design System (Puppeteer)', file: 'tests/e2e/test_mobile_responsiveness_and_colors.mjs' },
-  { name: 'Suite 4: Lecteur e-Book BookReader & Édition Intégrale d\'Ehret', file: 'tests/test_book_reader_logic.mjs' }
+  { name: 'Suite 4: Lecteur e-Book BookReader & Édition Intégrale d\'Ehret', file: 'tests/test_book_reader_logic.mjs' },
+  { name: 'Suite 5: Lecteur e-Book BookReader & Édition Intégrale du Dr. Morse', file: 'tests/test_morse_reader_logic.mjs' }
 ];
 
 let allPassed = true;
