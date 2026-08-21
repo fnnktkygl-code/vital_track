@@ -326,13 +326,13 @@
         
         <!-- Circadian Rhythm & Chronobiology Widget -->
         <div class="dash-card glass" id="circadianCard" style="display:flex; flex-direction:column; padding: 24px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
-            <h3 style="font-size:1rem; display:flex; align-items:center; gap:8px; margin:0;"><i class="ri-time-line" style="color:var(--accent);"></i> Horloge Interne &amp; Chronobiologie</h3>
-            <div style="display:flex; align-items:center; gap:8px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom: 20px;">
+            <h3 style="font-size:1rem; display:flex; align-items:center; gap:8px; margin:0;"><i class="ri-time-line" style="color:var(--accent);"></i> Horloge Interne</h3>
+            <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
               <button type="button" class="info-badge-btn" onclick="openCircadianScienceModal()" title="Comprendre les 3 cycles circadiens et la chronobiologie des organes">
-                <i class="ri-book-read-line"></i> Science des Cycles
+                <i class="ri-book-open-line"></i> Science
               </button>
-              <span id="circadianTimePill" style="background:var(--surface-hover); padding:4px 10px; border-radius:50px; font-size:0.8rem; font-weight:600; color:var(--text-dim);">12:00</span>
+              <span id="circadianTimePill" style="background:var(--surface-hover); padding:4px 10px; border-radius:50px; font-size:0.8rem; font-weight:600; color:var(--text-dim); white-space:nowrap;">12:00</span>
             </div>
           </div>
           
@@ -2277,63 +2277,124 @@
 
   <!-- Circadian Science Modal -->
   <div class="modal-overlay" id="circadianScienceModal" onclick="closeCircadianScienceModal(event)">
-    <div class="modal-content glass" style="max-width: 600px; max-height: 85vh; overflow-y: auto;" onclick="event.stopPropagation()">
-      <button class="modal-close" onclick="closeCircadianScienceModal()"><i class="ri-close-line"></i></button>
-      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
-        <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(56, 189, 248, 0.15); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #38bdf8;">
+    <div class="modal-content glass" style="max-width: 640px; max-height: 88vh; overflow-y: auto; padding: 26px 24px;" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeCircadianScienceModal()" aria-label="Fermer"><i class="ri-close-line"></i></button>
+      
+      <!-- Modal Header -->
+      <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 20px;">
+        <div style="width: 48px; height: 48px; border-radius: 14px; background: linear-gradient(135deg, rgba(56,189,248,0.18), rgba(16,185,129,0.18)); border: 1px solid rgba(56,189,248,0.35); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: #38bdf8; flex-shrink: 0;">
           <i class="ri-time-line"></i>
         </div>
         <div>
-          <h3 style="margin: 0; font-size: 1.2rem; color: var(--text);">Chronobiologie &amp; Cycles Circadiens</h3>
-          <p style="margin: 0; font-size: 0.8rem; color: var(--text-dim);">Fondements physiologiques &amp; bio-rythmes naturels des 24 heures</p>
+          <h3 style="margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--text);">Science des Cycles Circadiens</h3>
+          <p style="margin: 3px 0 0 0; font-size: 0.82rem; color: var(--text-dim);">Chronobiologie cellulaire &amp; les 3 cycles vitaux des 24 heures</p>
         </div>
       </div>
 
-      <div style="background: var(--surface-hover); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 16px; font-size: 0.84rem; color: var(--text-dim); line-height: 1.5;">
-        <strong style="color: var(--text);">🔬 Découverte Scientifique Majeure :</strong>
-        Le fonctionnement cellulaire humain est régi par une horloge génétique interne synchronisée sur 24 heures (gènes <em>CLOCK</em>, <em>BMAL1</em>, <em>PER</em> et <em>CRY</em>), récompensée par le <strong>Prix Nobel de Physiologie ou Médecine 2017</strong> (Hall, Rosbash &amp; Young). En nutrition vitaliste (Dr. Arnold Ehret, Dr. Robert Morse), cette horloge se décompose en 3 cycles de 8 heures complémentaires.
-      </div>
+      <div class="chrono-modal-wrap">
+        
+        <!-- Hero Science Box -->
+        <div class="chrono-hero-nobel">
+          <div class="chrono-hero-title">
+            <span style="display: flex; align-items: center; gap: 6px;">
+              <span>🏆</span>
+              <span>Prix Nobel de Médecine 2017 &amp; Horloge Biologique</span>
+            </span>
+            <span class="chrono-hero-badge">Gènes CLOCK &amp; BMAL1</span>
+          </div>
+          <p class="chrono-hero-desc">
+            Le fonctionnement de chaque cellule humaine est synchronisé par une horloge génétique interne sur 24 heures (découverte de Jeffrey C. Hall, Michael Rosbash et Michael W. Young). En physiologie et nutrition vitaliste (Dr. Arnold Ehret, Dr. Robert Morse), le métabolisme s'organise en <strong>3 cycles de 8 heures</strong> parfaitement complémentaires.
+          </p>
+        </div>
 
-      <!-- Cycle 1 -->
-      <div class="v-info-section" style="margin-bottom: 16px; border-top: 1px solid var(--border); padding-top: 14px;">
-        <h4 style="color: #f59e0b; display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 0.95rem;">
-          <i class="ri-sun-foggy-fill"></i> 1. Cycle d'Élimination &amp; Détox (04h00 – 12h00)
-        </h4>
-        <p style="font-size: 0.84rem; color: var(--text-dim); line-height: 1.5;">
-          <strong>Physiologie :</strong> Le corps mobilise ses toxines acides vers les émonctoires. Pic d'activité du <em>Gros Intestin (05h-07h)</em> et de l'<em>Estomac (07h-09h)</em>. Le pic matinal de <strong>cortisol</strong> réveille l'organisme sans nécessiter de digestion lourde.
-        </p>
-        <p style="font-size: 0.82rem; color: var(--text); background: rgba(245, 158, 11, 0.08); border-left: 3px solid #f59e0b; padding: 6px 10px; border-radius: 4px; margin-top: 6px;">
-          💡 <strong>Règle d'or :</strong> Boire tiède (eau citronnée, sève, tisanes douces). Privilégier les fruits aqueux vivants ou prolonger le jeûne pour ne pas bloquer l'épuration lymphatique.
-        </p>
-      </div>
+        <!-- 3 Airy Cycle Cards -->
+        <div class="chrono-cycles-list">
+          
+          <!-- Card 1: Élimination -->
+          <div class="chrono-cycle-card elimination">
+            <div class="chrono-card-head">
+              <div class="chrono-card-title" style="color: #f59e0b;">
+                <span style="font-size: 1.2rem;">🌅</span>
+                <span>1. Cycle d'Élimination &amp; Détox</span>
+              </div>
+              <span class="chrono-card-time" style="color: #f59e0b; background: rgba(245,158,11,0.12);">04h00 – 12h00</span>
+            </div>
+            
+            <div class="chrono-organ-timeline">
+              <span class="chrono-organ-chip"><span>🫁</span><span>03h-05h : Poumons &amp; Lymphe</span></span>
+              <span class="chrono-organ-chip"><span>🫘</span><span>05h-07h : Gros Intestin (Évacuation)</span></span>
+              <span class="chrono-organ-chip"><span>🥣</span><span>07h-09h : Estomac (Préchauffage)</span></span>
+            </div>
 
-      <!-- Cycle 2 -->
-      <div class="v-info-section" style="margin-bottom: 16px; border-top: 1px solid var(--border); padding-top: 14px;">
-        <h4 style="color: #10b981; display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 0.95rem;">
-          <i class="ri-sun-fill"></i> 2. Cycle d'Appropriation &amp; Digestion (12h00 – 20h00)
-        </h4>
-        <p style="font-size: 0.84rem; color: var(--text-dim); line-height: 1.5;">
-          <strong>Physiologie :</strong> Le feu digestif, les enzymes hépato-pancréatiques et la <strong>sensibilité à l'insuline</strong> atteignent leur zénith. Pic d'absorption de l'<em>Intestin Grêle (13h-15h)</em> et filtration rénale des <em>Reins (17h-19h)</em>.
-        </p>
-        <p style="font-size: 0.82rem; color: var(--text); background: rgba(16, 185, 129, 0.08); border-left: 3px solid #10b981; padding: 6px 10px; border-radius: 4px; margin-top: 6px;">
-          💡 <strong>Règle d'or :</strong> C'est la fenêtre optimale pour consommer vos repas denses, riches en chlorophylle, acides aminés et minéraux vivants. Dîner léger avant 20h pour libérer l'estomac avant la nuit.
-        </p>
-      </div>
+            <p class="chrono-mechanism-text">
+              <strong>Mécanisme :</strong> Le corps mobilise ses déchets métaboliques vers les reins et la peau. Le pic matinal naturel de <strong>cortisol</strong> active l'éveil tandis que l'insuline reste basse pour favoriser l'épuration.
+            </p>
 
-      <!-- Cycle 3 -->
-      <div class="v-info-section" style="margin-bottom: 20px; border-top: 1px solid var(--border); padding-top: 14px;">
-        <h4 style="color: #a855f7; display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 0.95rem;">
-          <i class="ri-moon-clear-fill"></i> 3. Cycle d'Assimilation &amp; Régénération (20h00 – 04h00)
-        </h4>
-        <p style="font-size: 0.84rem; color: var(--text-dim); line-height: 1.5;">
-          <strong>Physiologie :</strong> Montée de la <strong>mélatonine</strong>, baisse de l'insuline et de la température corporelle. Activation du <em>Complexe Moteur Migrant (CMM)</em>, pic d'<strong>hormone de croissance</strong>, <strong>autophagie cellulaire</strong> (recyclage des déchets) et purification du <em>Foie (01h-03h)</em>.
-        </p>
-        <p style="font-size: 0.82rem; color: var(--text); background: rgba(168, 85, 247, 0.08); border-left: 3px solid #a855f7; padding: 6px 10px; border-radius: 4px; margin-top: 6px;">
-          💡 <strong>Règle d'or :</strong> Jeûne nocturne strict, obscurité complète et sommeil profond pour maximiser la régénération tissulaire et neuronale.
-        </p>
-      </div>
+            <div class="chrono-rule-box" style="background: rgba(245,158,11,0.12); color: var(--text); border-left: 3px solid #f59e0b;">
+              <span style="font-size: 1.1rem; flex-shrink: 0;">🍋</span>
+              <div><strong>Règle Vitaliste :</strong> Hydratation tiède citronnée, fruits aqueux vivants ou prolongation du jeûne pour ne pas stopper la vidange lymphatique.</div>
+            </div>
+          </div>
 
-      <button type="button" class="btn-primary full-w" onclick="closeCircadianScienceModal()"><i class="ri-check-line"></i> Compris</button>
+          <!-- Card 2: Appropriation -->
+          <div class="chrono-cycle-card appropriation">
+            <div class="chrono-card-head">
+              <div class="chrono-card-title" style="color: #10b981;">
+                <span style="font-size: 1.2rem;">☀️</span>
+                <span>2. Cycle d'Appropriation &amp; Digestion</span>
+              </div>
+              <span class="chrono-card-time" style="color: #10b981; background: rgba(16,185,129,0.12);">12h00 – 20h00</span>
+            </div>
+            
+            <div class="chrono-organ-timeline">
+              <span class="chrono-organ-chip"><span>❤️</span><span>11h-13h : Cœur &amp; Énergie</span></span>
+              <span class="chrono-organ-chip"><span>🧬</span><span>13h-15h : Intestin Grêle (Absorption)</span></span>
+              <span class="chrono-organ-chip"><span>💧</span><span>17h-19h : Reins (Filtration active)</span></span>
+            </div>
+
+            <p class="chrono-mechanism-text">
+              <strong>Mécanisme :</strong> Le feu digestif, les sucs gastriques et la <strong>sensibilité cellulaire à l'insuline</strong> atteignent leur zénith. L'intestin grêle déploie ses transporteurs pour capter vitamines et minéraux.
+            </p>
+
+            <div class="chrono-rule-box" style="background: rgba(16,185,129,0.12); color: var(--text); border-left: 3px solid #10b981;">
+              <span style="font-size: 1.1rem; flex-shrink: 0;">🥗</span>
+              <div><strong>Règle Vitaliste :</strong> Fenêtre optimale pour les repas denses, riches en chlorophylle et nutriments vivants. Clôturer le dîner avant 20h pour libérer l'estomac.</div>
+            </div>
+          </div>
+
+          <!-- Card 3: Assimilation & Régénération -->
+          <div class="chrono-cycle-card regeneration">
+            <div class="chrono-card-head">
+              <div class="chrono-card-title" style="color: #a855f7;">
+                <span style="font-size: 1.2rem;">🌙</span>
+                <span>3. Cycle d'Assimilation &amp; Régénération</span>
+              </div>
+              <span class="chrono-card-time" style="color: #a855f7; background: rgba(168,85,247,0.12);">20h00 – 04h00</span>
+            </div>
+            
+            <div class="chrono-organ-timeline">
+              <span class="chrono-organ-chip"><span>😴</span><span>21h-23h : Système Endocrinien</span></span>
+              <span class="chrono-organ-chip"><span>🧪</span><span>23h-01h : Vésicule Biliaire</span></span>
+              <span class="chrono-organ-chip"><span>🌿</span><span>01h-03h : Foie (Purification)</span></span>
+            </div>
+
+            <p class="chrono-mechanism-text">
+              <strong>Mécanisme :</strong> Montée de la <strong>mélatonine</strong>, activation du <em>Complexe Moteur Migrant (CMM)</em>, pic d'<strong>hormone de croissance</strong> et <strong>autophagie cellulaire</strong> (recyclage des protéines défectueuses).
+            </p>
+
+            <div class="chrono-rule-box" style="background: rgba(168,85,247,0.12); color: var(--text); border-left: 3px solid #a855f7;">
+              <span style="font-size: 1.1rem; flex-shrink: 0;">🛌</span>
+              <div><strong>Règle Vitaliste :</strong> Sommeil réparateur dans l'obscurité totale et jeûne nocturne strict pour maximiser la réparation tissulaire et le drainage glymphatique.</div>
+            </div>
+          </div>
+
+        </div>
+
+        <button type="button" class="btn-primary full-w" onclick="closeCircadianScienceModal()" style="margin-top: 8px; padding: 13px; font-weight: 700; font-size: 0.95rem; border-radius: 12px;">
+          <i class="ri-check-line"></i> J'ai compris le cycle
+        </button>
+
+      </div>
     </div>
   </div>
 

@@ -1353,7 +1353,22 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
 .v-bar { flex: 1; height: 6px; background: var(--border); border-radius: 4px; overflow: hidden; }
 .v-fill { height: 100%; border-radius: 4px; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
 .v-pct { width: 38px; text-align: right; color: var(--text); font-size: 0.8rem; font-weight: 600; }
-.info-badge-btn { background: var(--surface-hover); border: 1px solid var(--border); color: var(--text-dim); border-radius: 20px; padding: 4px 10px; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; transition: all 0.2s ease; }
+.info-badge-btn {
+  background: var(--surface-hover);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  border-radius: 20px;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  user-select: none;
+  transition: all 0.2s ease;
+}
 .info-badge-btn:hover { background: rgba(16, 185, 129, 0.12); color: var(--accent); border-color: var(--accent); }
 .meal-item.clickable { transition: all 0.2s ease; }
 .meal-item.clickable:hover { background: var(--surface-hover); transform: translateY(-1px); border-color: var(--border-strong); }
@@ -2465,6 +2480,175 @@ body.light-theme .voice-done-btn:hover {
 .data-value{font-weight:600}
 .data-bar{height:6px;background:var(--border);border-radius:3px;margin-top:6px}
 .data-bar-fill{height:100%;border-radius:3px;transition:width 0.5s ease}
+
+/* ═══════ CHRONOBIOLOGY SCIENCE MODAL LUXE UI ═══════ */
+.chrono-modal-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.chrono-hero-nobel {
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.08) 0%, rgba(99, 102, 241, 0.05) 100%);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 16px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chrono-hero-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.chrono-hero-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 20px;
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.chrono-hero-desc {
+  font-size: 0.83rem;
+  line-height: 1.6;
+  color: var(--text-dim);
+  margin: 0;
+}
+
+.chrono-cycles-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.chrono-cycle-card {
+  border-radius: 16px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.chrono-cycle-card.elimination {
+  background: linear-gradient(180deg, rgba(245, 158, 11, 0.09) 0%, rgba(245, 158, 11, 0.02) 100%);
+  border: 1px solid rgba(245, 158, 11, 0.28);
+}
+
+.chrono-cycle-card.appropriation {
+  background: linear-gradient(180deg, rgba(16, 185, 129, 0.09) 0%, rgba(16, 185, 129, 0.02) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.28);
+}
+
+.chrono-cycle-card.regeneration {
+  background: linear-gradient(180deg, rgba(168, 85, 247, 0.09) 0%, rgba(168, 85, 247, 0.02) 100%);
+  border: 1px solid rgba(168, 85, 247, 0.28);
+}
+
+.chrono-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chrono-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.chrono-card-time {
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: 1px solid currentColor;
+}
+
+.chrono-organ-timeline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 2px 0;
+}
+
+.chrono-organ-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.chrono-mechanism-text {
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: var(--text-dim);
+  margin: 0;
+}
+
+.chrono-rule-box {
+  padding: 9px 12px;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  font-weight: 500;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+[data-theme="light"] .chrono-hero-nobel {
+  background: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+}
+
+[data-theme="light"] .chrono-cycle-card.elimination {
+  background: #fffdf5 !important;
+  border-color: #fde68a !important;
+}
+
+[data-theme="light"] .chrono-cycle-card.appropriation {
+  background: #f7fee7 !important;
+  border-color: #bbf7d0 !important;
+}
+
+[data-theme="light"] .chrono-cycle-card.regeneration {
+  background: #faf5ff !important;
+  border-color: #e9d5ff !important;
+}
+
+[data-theme="light"] .chrono-organ-chip {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .chrono-mechanism-text {
+  color: #334155 !important;
+}
 
 @media (max-width: 600px) {
   .modal-overlay { 
