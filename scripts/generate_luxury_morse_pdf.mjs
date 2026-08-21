@@ -84,7 +84,7 @@ async function buildMorsePdf() {
           <h2 class="chapter-title">${chap.title}</h2>
         </div>
         <div class="chapter-content">
-          ${chap.id.startsWith('glossaire') ? `
+          ${chap.id.includes('glossaire') ? `
             <div class="glossary-grid">
               ${glossaryEntries.map(([term, item]) => `
                 <div class="glossary-pdf-card">
