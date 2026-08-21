@@ -4,9 +4,11 @@
  * Module interactif de Pharmacopée Culinaire & Recettes Éprouvées.
  * Permet la recherche multi-ingrédients, le filtrage par auteur et mode diététique,
  * le calcul dynamique de portions et la consultation des fiches cliniques.
+ * Totalement internationalisé via le moteur i18n (FR, EN, ES, FR-CA).
  */
 
 import { VITALIST_RECIPES, RECIPE_AUTHORS, RECIPE_TAGS, POPULAR_INGREDIENTS } from './data/recipesData.js';
+import { t } from './i18n.js';
 
 let _recipeSearchQuery = '';
 let _selectedAuthor = 'all';
@@ -117,11 +119,9 @@ function getFilteredRecipes() {
       const recipeIngredientsText = recipe.ingredients.map(i => i.name.toLowerCase()).join(' ');
       
       if (_ingredientMatchMode === 'ALL') {
-        // Tous les ingrédients sélectionnés doivent être présents
         const allPresent = selectedIngArray.every(ing => recipeIngredientsText.includes(ing));
         if (!allPresent) return false;
       } else {
-        // Au moins un ingrédient sélectionné doit être présent
         const anyPresent = selectedIngArray.some(ing => recipeIngredientsText.includes(ing));
         if (!anyPresent) return false;
       }
@@ -161,10 +161,10 @@ export function renderRecipesView() {
           <div class="header-icon-tile" style="background:linear-gradient(135deg, rgba(16,185,129,0.25), rgba(56,189,248,0.25)); font-size:1.8rem; width:52px; height:52px; border-radius:14px; display:flex; align-items:center; justify-content:center;">🍽️</div>
           <div>
             <h1 style="margin:0; font-size:1.45rem; font-weight:800; color:var(--text); letter-spacing:-0.3px;">
-              Pharmacopée Culinaire &amp; Recettes Éprouvées
+              ${t('recipes.pageTitle')}
             </h1>
             <p class="subtitle" style="margin:2px 0 0 0; font-size:0.85rem;">
-              Recettes thérapeutiques authentiques et sourcées des grands maîtres vitalistes (Dr. Sebi, Arnold Ehret, Dr. Morse, David Wolfe, Dr. Kallas, Dr. Christopher).
+              ${t('recipes.pageSubtitle')}
             </p>
           </div>
         </div>
@@ -181,11 +181,11 @@ export function renderRecipesView() {
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
         <div style="display:flex; align-items:center; gap:8px;">
           <span style="font-size:1.1rem;">🔍</span>
-          <span style="font-weight:700; font-size:0.95rem; color:var(--text);">Recherche par Mots-Clés &amp; Ingrédients</span>
+          <span style="font-weight:700; font-size:0.95rem; color:var(--text);">${t('common.search')} &amp; Ingrédients</span>
         </div>
         ${hasActiveFilters ? `
           <button type="button" class="btn-secondary" onclick="clearAllRecipeFilters()" style="padding:4px 12px; font-size:0.75rem; border-radius:14px; color:#ef4444; border-color:rgba(239,68,68,0.3); background:rgba(239,68,68,0.1); cursor:pointer;">
-            <i class="ri-close-circle-line"></i> Réinitialiser les filtres
+            <i class="ri-close-circle-line"></i> ${t('common.cancel')} filtres
           </button>
         ` : ''}
       </div>
@@ -195,7 +195,7 @@ export function renderRecipesView() {
         <input 
           type="text" 
           id="recipeSearchInput" 
-          placeholder="Rechercher une recette, un ingrédient ou une action (ex: sea moss, pourpier, balai intestinal, acide urique, teff)..." 
+          placeholder="${t('recipes.searchPlaceholder')}" 
           value="${esc(_recipeSearchQuery)}" 
           oninput="setRecipeSearchQuery(this.value)" 
           style="width:100%; padding:12px 14px 12px 42px; border-radius:12px; border:1px solid var(--border); background:var(--surface); color:var(--text); font-size:0.9rem;"
@@ -208,7 +208,7 @@ export function renderRecipesView() {
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
           <div style="display:flex; align-items:center; gap:6px; font-size:0.8rem; font-weight:700; color:var(--text-dim);">
             <i class="ri-leaf-line" style="color:var(--accent);"></i>
-            <span>Sélection Multi-Ingrédients (${_selectedIngredients.size} sélectionnés) :</span>
+            <span>Sélection Multi-Ingrédients (${_selectedIngredients.size}) :</span>
           </div>
           ${_selectedIngredients.size > 1 ? `
             <div style="display:inline-flex; background:var(--surface-hover); border:1px solid var(--border); border-radius:14px; padding:2px; font-size:0.72rem;">
@@ -266,16 +266,16 @@ export function renderRecipesView() {
       <!-- FILTRES PAR MODES ALIMENTAIRES & ACTIONS -->
       <div style="border-top:1px solid var(--border); padding-top:12px; margin-top:12px;">
         <div style="display:flex; gap:6px; overflow-x:auto; padding-bottom:4px;" class="hide-scrollbar">
-          ${RECIPE_TAGS.map(t => {
-            const isActive = _selectedTag === t.id;
+          ${RECIPE_TAGS.map(tg => {
+            const isActive = _selectedTag === tg.id;
             return `
               <button 
                 type="button" 
                 class="recipe-tag-pill ${isActive ? 'active' : ''}" 
-                onclick="setRecipeTagFilter('${esc(t.id)}')"
+                onclick="setRecipeTagFilter('${esc(tg.id)}')"
                 style="padding:4px 12px; font-size:0.75rem; font-weight:600; white-space:nowrap; border-radius:14px; border:1px solid ${isActive ? 'var(--accent)' : 'var(--border)'}; background:${isActive ? 'rgba(16,185,129,0.15)' : 'var(--surface-hover)'}; color:${isActive ? 'var(--accent)' : 'var(--text-dim)'}; cursor:pointer;"
               >
-                ${esc(t.label)}
+                ${esc(tg.label)}
               </button>
             `;
           }).join('')}
@@ -398,7 +398,7 @@ function renderRecipeCard(recipe) {
           </span>
         ` : `
           <span style="font-size:0.75rem; font-weight:700; color:var(--accent); display:flex; align-items:center; gap:3px;">
-            Consulter <i class="ri-arrow-right-s-line"></i>
+            ${t('resources.consultBtn')} <i class="ri-arrow-right-s-line"></i>
           </span>
         `}
       </div>
@@ -450,7 +450,7 @@ function renderModalContent() {
     <div class="modal-card glass" onclick="event.stopPropagation()" style="max-width:800px; width:95%; max-height:92vh; overflow-y:auto; border-radius:24px; padding:24px; position:relative; border:1px solid var(--border); box-shadow:0 25px 60px rgba(0,0,0,0.5);">
       
       <!-- BOUTON FERMER UNIFIÉ -->
-      <button type="button" class="modal-close-unified" onclick="closeRecipeModal()" aria-label="Fermer la recette" title="Fermer (Échap)">
+      <button type="button" class="modal-close-unified" onclick="closeRecipeModal()" aria-label="${t('common.close')}" title="${t('common.close')} (Échap)">
         <i class="ri-close-line"></i>
       </button>
 
@@ -475,7 +475,7 @@ function renderModalContent() {
       <!-- BADGES METRIQUES -->
       <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px; padding-bottom:14px; border-bottom:1px solid var(--border);">
         <span style="font-size:0.75rem; font-weight:700; padding:4px 10px; border-radius:10px; background:var(--surface-hover); border:1px solid var(--border); color:var(--text);">
-          ⏱️ Préparation : ${esc(r.prepTime)}
+          ⏱️ ${t('recipes.prepTime')} : ${esc(r.prepTime)}
         </span>
         <span style="font-size:0.75rem; font-weight:700; padding:4px 10px; border-radius:10px; background:var(--surface-hover); border:1px solid var(--border); color:var(--text);">
           🔥 Cuisson : ${esc(r.cookTime)}
@@ -491,13 +491,13 @@ function renderModalContent() {
       <!-- DESCRIPTION & ACTION VITALISTE CLINIQUE -->
       <div class="dash-card glass" style="padding:14px 16px; margin-bottom:20px; background:linear-gradient(135deg, rgba(16,185,129,0.08), rgba(56,189,248,0.08)); border:1px solid rgba(16,185,129,0.25);">
         <div style="display:flex; align-items:center; gap:6px; font-size:0.82rem; font-weight:800; color:var(--accent); margin-bottom:4px; text-transform:uppercase;">
-          <i class="ri-pulse-line"></i> Mécanisme Thérapeutique &amp; Action Épithéliale
+          <i class="ri-pulse-line"></i> ${t('recipes.vitalistAction')}
         </div>
         <p style="margin:0; font-size:0.85rem; color:var(--text); line-height:1.5;">
           ${esc(r.vitalistAction)}
         </p>
         <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:10px;">
-          <span style="font-size:0.72rem; color:var(--text-dim); font-weight:700;">Émonctoires Ciblés :</span>
+          <span style="font-size:0.72rem; color:var(--text-dim); font-weight:700;">${t('recipes.targetOrgans')} :</span>
           ${r.targetEmunctories.map(e => `
             <span style="font-size:0.72rem; padding:2px 8px; border-radius:8px; background:rgba(255,255,255,0.1); color:var(--text); font-weight:600;">
               🎯 ${esc(e)}
@@ -510,10 +510,10 @@ function renderModalContent() {
       <div style="margin-bottom:24px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
           <h3 style="margin:0; font-size:1.05rem; font-weight:800; color:var(--text); display:flex; align-items:center; gap:6px;">
-            <span>🥗</span> Ingrédients Requis
+            <span>🥗</span> ${t('recipes.ingredientsTitle')}
           </h3>
           <div style="display:flex; align-items:center; gap:6px; font-size:0.8rem; font-weight:700;">
-            <span style="color:var(--text-dim);">Portions :</span>
+            <span style="color:var(--text-dim);">${t('recipes.portions')} :</span>
             <div style="display:inline-flex; background:var(--surface-hover); border:1px solid var(--border); border-radius:12px; padding:2px;">
               ${[1, 2, 4, 6].map(p => `
                 <button 
@@ -521,7 +521,7 @@ function renderModalContent() {
                   style="padding:3px 10px; border-radius:10px; border:none; cursor:pointer; font-weight:800; font-size:0.78rem; background:${_currentModalServings === p ? 'var(--accent)' : 'transparent'}; color:${_currentModalServings === p ? '#fff' : 'var(--text)'};"
                   onclick="setRecipeModalServings(${p})"
                 >
-                  ${p} pers.
+                  ${p} ${p > 1 ? 'pers.' : 'pers.'}
                 </button>
               `).join('')}
             </div>
@@ -550,7 +550,7 @@ function renderModalContent() {
       <!-- ÉTAPES DE PRÉPARATION DÉTAILLÉES -->
       <div style="margin-bottom:24px;">
         <h3 style="margin:0 0 12px 0; font-size:1.05rem; font-weight:800; color:var(--text); display:flex; align-items:center; gap:6px;">
-          <span>👨‍🍳</span> Protocole de Préparation Étape par Étape
+          <span>👨‍🍳</span> ${t('recipes.instructionsTitle')}
         </h3>
         <div style="display:flex; flex-direction:column; gap:10px;">
           ${r.instructions.map((step, idx) => `
@@ -584,7 +584,7 @@ function renderModalContent() {
             </div>
           </div>
           <a href="${esc(r.videoUrl)}" target="_blank" rel="noopener noreferrer" class="btn-primary" style="background:linear-gradient(135deg, #ef4444, #dc2626); color:#ffffff; font-size:0.82rem; font-weight:700; padding:8px 18px; border-radius:12px; display:inline-flex; align-items:center; gap:6px; text-decoration:none; box-shadow:0 4px 12px rgba(239,68,68,0.3);">
-            <i class="ri-play-circle-fill" style="font-size:1rem;"></i> Voir la Vidéo <i class="ri-external-link-line" style="font-size:0.8rem;"></i>
+            <i class="ri-play-circle-fill" style="font-size:1rem;"></i> ${t('recipes.watchVideoBtn')} <i class="ri-external-link-line" style="font-size:0.8rem;"></i>
           </a>
         </div>
       ` : ''}
@@ -595,7 +595,7 @@ function renderModalContent() {
           <i class="ri-file-copy-line"></i> Copier la Recette
         </button>
         <button type="button" class="btn-primary" onclick="addRecipeToFavorites('${esc(r.id)}')" style="padding:10px 20px; border-radius:14px; font-weight:700; font-size:0.85rem; cursor:pointer;">
-          <i class="ri-heart-3-fill"></i> Sauvegarder aux Favoris
+          <i class="ri-heart-3-fill"></i> ${t('recipes.favoriteBtn')}
         </button>
       </div>
 

@@ -17,7 +17,8 @@ const suites = [
   { name: 'Suite 3: Responsivité Mobile, Ergonomie & Design System (Puppeteer)', file: 'tests/e2e/test_mobile_responsiveness_and_colors.mjs' },
   { name: 'Suite 4: Lecteur e-Book BookReader & Édition Intégrale d\'Ehret', file: 'tests/test_book_reader_logic.mjs' },
   { name: 'Suite 5: Lecteur e-Book BookReader & Édition Intégrale du Dr. Morse', file: 'tests/test_morse_reader_logic.mjs' },
-  { name: 'Suite 6: Navigation Multilingue (EN/FR/ES) & Stabilité SPA (Puppeteer)', file: 'tests/e2e/test_navigation_and_language.mjs' }
+  { name: 'Suite 6: Navigation Multilingue (EN/FR/ES/FR-CA) & Stabilité SPA (Puppeteer)', file: 'tests/e2e/test_navigation_and_language.mjs' },
+  { name: 'Suite 7: Intégrité Linguistique & Parité i18n Exhaustive (FR/EN/ES/FR-CA)', file: 'tests/test_i18n_completeness.mjs' }
 ];
 
 let allPassed = true;

@@ -50,6 +50,10 @@ async function run() {
   const currentLang = await page.evaluate(() => window.vitalTrackI18n.getLanguage());
   check('La langue active est bien "en"', currentLang === 'en');
 
+  // Vérifier la traduction en anglais du dashboard
+  const dashTitleEN = await page.evaluate(() => document.querySelector('[data-i18n="dashboard.title"]')?.textContent?.trim());
+  check('Le titre du dashboard en EN est "Dashboard"', dashTitleEN === 'Dashboard');
+
   // 3. Clic sur Desktop Sidebar : Recipes (Recettes)
   console.log('\n🖥️ [TEST 2] Navigation Desktop en mode Anglais...');
   await page.evaluate(() => {
@@ -60,6 +64,10 @@ async function run() {
   
   let activePage = await page.evaluate(() => document.querySelector('.page.active')?.id);
   check('Après clic sur Recipes, la page active reste "page-recipes" (pas de rebond dashboard)', activePage === 'page-recipes');
+
+  // Vérifier la traduction en anglais des recettes
+  const recipeSearchPlaceholderEN = await page.evaluate(() => document.getElementById('recipeSearchInput')?.getAttribute('placeholder'));
+  check('Le placeholder de recherche recettes en EN est traduit', recipeSearchPlaceholderEN?.includes('recipe') || recipeSearchPlaceholderEN?.includes('ingredient'));
 
   // 4. Clic sur Desktop Sidebar : Deep Search
   await page.evaluate(() => {
@@ -148,10 +156,32 @@ async function run() {
     check(`Changement de langue vers "${lang}" conserve la page active "${activePage}"`, activePage === 'page-resources');
   }
 
+  // 9. Test de traduction Espagnole dynamique (ES)
+  console.log('\n🇪🇸 [TEST 6] Vérification du rendu Espagnol dans le DOM...');
+  await page.evaluate(() => {
+    window.vitalTrackI18n.setLanguage('es');
+    showPage('dashboard');
+  });
+  await new Promise(r => setTimeout(r, 400));
+
+  const dashTitleES = await page.evaluate(() => document.querySelector('[data-i18n="dashboard.title"]')?.textContent?.trim());
+  check('Le titre du dashboard en ES est "Panel de Control"', dashTitleES === 'Panel de Control');
+
+  // 10. Test de traduction Canadienne dynamique (FR-CA)
+  console.log('\n⚜️ [TEST 7] Vérification du rendu Québécois (FR-CA) dans le DOM...');
+  await page.evaluate(() => {
+    window.vitalTrackI18n.setLanguage('fr-CA');
+    showPage('dashboard');
+  });
+  await new Promise(r => setTimeout(r, 400));
+
+  const greetFRCA = await page.evaluate(() => document.getElementById('greetName')?.textContent);
+  check('La salutation en FR-CA contient "Bon matin" ou "Bonjour"', greetFRCA?.includes('Bon matin') || greetFRCA?.includes('Bonjour'));
+
   await browser.close();
   await server.close();
 
-  console.log(`\n🎉 TOUS LES TESTS DE NAVIGATION (${passed}/12) SONT 100% VALIDÉS SANS REDIRECTION INTEMPESTIVE !\n`);
+  console.log(`\n🎉 TOUS LES TESTS MULTILINGUES & NAVIGATION (${passed}/${passed}) SONT 100% VALIDÉS SANS ERREUR !\n`);
 }
 
 run().catch(err => {

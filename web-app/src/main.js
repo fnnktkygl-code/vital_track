@@ -1673,8 +1673,10 @@ function renderDashboard() {
   // Date
   const dateEl = document.getElementById('dashboardDate');
   if (dateEl) {
+    const currentLang = window.vitalTrackI18n?.getLanguage?.() || 'fr';
+    const localeMap = { 'fr': 'fr-FR', 'en': 'en-US', 'es': 'es-ES', 'fr-CA': 'fr-CA' };
     const options = { weekday: 'long', day: 'numeric', month: 'long' };
-    const dateStr = new Date().toLocaleDateString('fr-FR', options);
+    const dateStr = new Date().toLocaleDateString(localeMap[currentLang] || 'fr-FR', options);
     dateEl.textContent = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
   }
 
@@ -1698,26 +1700,27 @@ function renderDashboard() {
   const levelBadge = document.getElementById('vitalityLevelBadge');
   const commentEl = document.getElementById('vitalityScoreComment');
   if (commentEl && levelBadge) {
+    const tFunc = window.vitalTrackI18n?.t || ((k) => k);
     if (todayMeals.length === 0 && !breakdown.hasFasting && !breakdown.hasBreathing) {
       levelBadge.style.background = isLight ? '#f1f5f9' : 'var(--surface-hover)';
       levelBadge.style.borderColor = isLight ? '#cbd5e1' : 'var(--border)';
       levelBadge.style.color = isLight ? '#475569' : 'var(--text-dim)';
-      commentEl.textContent = "En attente d'enregistrements aujourd'hui";
+      commentEl.textContent = tFunc('dashboard.waitingRecords');
     } else if (score >= 70) {
       levelBadge.style.background = isLight ? '#dcfce7' : 'rgba(16,185,129,0.14)';
       levelBadge.style.borderColor = isLight ? '#86efac' : 'rgba(16,185,129,0.3)';
       levelBadge.style.color = isLight ? '#047857' : '#10b981';
-      commentEl.textContent = `Vitalité rayonnante · Électrolytes optimaux (${score}/100)`;
+      commentEl.textContent = `${tFunc('dashboard.radiantVitality')} (${score}/100)`;
     } else if (score >= 40) {
       levelBadge.style.background = isLight ? '#fef3c7' : 'rgba(245,158,11,0.14)';
       levelBadge.style.borderColor = isLight ? '#fde68a' : 'rgba(245,158,11,0.3)';
       levelBadge.style.color = isLight ? '#92400e' : '#f59e0b';
-      commentEl.textContent = `Vitalité modérée · Marge d'optimisation (${score}/100)`;
+      commentEl.textContent = `${tFunc('dashboard.moderateVitality')} (${score}/100)`;
     } else {
       levelBadge.style.background = isLight ? '#fee2e2' : 'rgba(239,68,68,0.14)';
       levelBadge.style.borderColor = isLight ? '#fca5a5' : 'rgba(239,68,68,0.3)';
       levelBadge.style.color = isLight ? '#991b1b' : '#ef4444';
-      commentEl.textContent = `Terrain acidifié · Priorité élimination & repos (${score}/100)`;
+      commentEl.textContent = `${tFunc('dashboard.acidicTerrain')} (${score}/100)`;
     }
   }
 
