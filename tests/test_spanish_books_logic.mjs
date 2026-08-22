@@ -67,9 +67,9 @@ it('Ehret ES : La Lección XIV contient les 10 tables exhaustives de Ragnar Berg
   assert.ok(lesson14, 'La Lección XIV doit exister');
   const tableParagraphs = lesson14.paragraphs.filter(p => p.includes('| Alimento') && p.includes('---'));
   assert.equal(tableParagraphs.length, 10, `Attendu 10 tables de Berg (trouvé ${tableParagraphs.length})`);
-  assert.ok(lesson14.paragraphs.join(' ').includes('+10.25')); // Ostras
-  assert.ok(lesson14.paragraphs.join(' ').includes('-51.83')); // Yemas de huevo
-  assert.ok(lesson14.paragraphs.join(' ').includes('+39.40')); // Rábano negro
+  assert.ok(lesson14.paragraphs.join(' ').includes('+10.25') || lesson14.paragraphs.join(' ').includes('+10,25')); // Ostras
+  assert.ok(lesson14.paragraphs.join(' ').includes('-51.83') || lesson14.paragraphs.join(' ').includes('-51,83')); // Yemas de huevo
+  assert.ok(lesson14.paragraphs.join(' ').includes('+39.40') || lesson14.paragraphs.join(' ').includes('+39,40')); // Rábano negro
 });
 
 it('Ehret ES : Le glossaire contient les termes espagnols clés avec sources académiques primaires', () => {

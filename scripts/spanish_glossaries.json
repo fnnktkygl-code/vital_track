@@ -1,0 +1,658 @@
+{
+  "ehret": {
+    "moco": {
+      "def": "Sustancia viscosa y patológica formada según Ehret por residuos de alimentos no digeridos y desnaturalizados (harinas blancas, carnes, lácteos, almidones refinados), que obstruye las vías circulatorias y constituye la causa fundamental de toda enfermedad.",
+      "note": "El «moco» de Ehret es una metáfora clínica visionaria para designar la inflamación mucosa crónica, las endotoxinas, la obstrucción fecal y la hiperpermeabilidad intestinal. La medicina moderna demuestra no obstante que las patologías tienen causas multifactoriales y no se limitan a un único factor.",
+      "type": "science",
+      "sources": [
+        "Minihane, A. M., et al. (2015). 'Low-grade inflammation, diet composition and health: current research evidence and its translation.' British Journal of Nutrition, 114(7), 999-1012. DOI: 10.1017/S0007114515002093",
+        "Robbins & Cotran (2020). 'Pathologic Basis of Disease', 10th Ed., Capítulo 2: 'Cellular Responses to Stress and Toxic Insults' (Elsevier, ISBN: 978-0323531139)"
+      ]
+    },
+    "motor humano a presión de aire": {
+      "def": "Concepto de Ehret que afirma que el cuerpo es un motor elástico impulsado por la presión atmosférica y la respiración, donde los pulmones actúan como bomba motriz y el corazón como simple válvula reguladora pasiva.",
+      "note": "Refutación anatómica objetiva: La cardiología moderna demuestra inequívocamente que el corazón es un músculo contráctil potente (el miocardio) que bombea activamente unos 5 litros de sangre por minuto en reposo.",
+      "type": "warning",
+      "sources": [
+        "Guyton, A. C., & Hall, J. E. (2020). 'Textbook of Medical Physiology', 14th Ed., Capítulo 9: 'Heart Muscle; The Heart as a Pump' (Elsevier, ISBN: 978-0323597128)",
+        "Harvey, W. (1628). 'Exercitatio Anatomica de Motu Cordis et Sanguinis in Animalibus' (Demostración de la bomba cardíaca)",
+        "Braunwald, E. (2021). 'Heart Disease: A Textbook of Cardiovascular Medicine', 12th Ed. (Elsevier)"
+      ]
+    },
+    "proteínas": {
+      "def": "Dogma nutricional combatido por Ehret, quien sostenía que el consumo de proteínas es innecesario y que el cuerpo humano puede sintetizarlo todo a partir de azúcares simples de frutas maduras.",
+      "note": "Consenso bioquímico unánime: El cuerpo humano es incapaz de sintetizar los 9 aminoácidos esenciales a partir de carbohidratos. Un aporte proteico regular (especialmente vegetal) es indispensable.",
+      "type": "warning",
+      "sources": [
+        "Nelson, D. L., & Cox, M. M. (2021). 'Lehninger Principles of Biochemistry', 8th Ed., Capítulo 22: 'Biosynthesis of Amino Acids' (Macmillan, ISBN: 978-1319228002)",
+        "Rose, W. C. (1938). 'The nutritive significance of the amino acids.' Physiological Reviews, 18(1), 109-136",
+        "OMS / FAO / UNU (2007). 'Besoins en protéines et en acides aminés dans la nutrition humaine', Informe Técnico n° 935, Organización Mundial de la Salud"
+      ]
+    },
+    "medicamentos químicos": {
+      "def": "Sustancias alopáticas calificadas por Ehret como venenos tóxicos que no curan, retienen los desechos en los órganos y se transmiten químicamente de generación en generación.",
+      "note": "Advertencia sanitaria: La medicina de urgencia, antibióticos y cirugía salvan millones de vidas cada año. Jamás se debe interrumpir un tratamiento médico prescrito sin supervisión médica.",
+      "type": "warning",
+      "sources": [
+        "Organización Mundial de la Salud (OMS, 2020). 'Global Report on Sepsis: Improving the prevention, diagnosis and clinical management of sepsis'",
+        "Goodman & Gilman (2022). 'The Pharmacological Basis of Therapeutics', 14th Ed. (McGraw-Hill, ISBN: 978-1264258079)"
+      ]
+    },
+    "ayuno racional": {
+      "def": "Abstención total y deliberada de alimentos sólidos, permitiendo a la fuerza vital del organismo canalizar su energía hacia la disolución, autólisis y eliminación de obstrucciones mucosas acumuladas.",
+      "note": "Validado en biología celular: El ayuno activa la autofagia y la biogénesis mitocondrial, mecanismos premiados con el Premio Nobel de Medicina en 2016.",
+      "type": "science",
+      "sources": [
+        "Ohsumi, Y. (2016). 'Nobel Prize in Physiology or Medicine: Discoveries of mechanisms for autophagy.' Nobel Foundation",
+        "Long, V. D., & Mattson, M. P. (2014). 'Fasting: molecular mechanisms and clinical applications.' Cell Metabolism, 19(2), 181-192. DOI: 10.1016/j.cmet.2013.12.008"
+      ]
+    },
+    "vitalidad": {
+      "def": "Potencia motriz neta disponible para el ser humano, definida por la ecuación fundamental V = P - O.",
+      "note": "Corresponde en bioenergética celular a la producción mitocondrial neta de ATP y al potencial redox libre de inflamación sistémica.",
+      "type": "science",
+      "sources": [
+        "Mitchell, P. (1961). 'Coupling of phosphorylation to electron and hydrogen transfer by a chemiosmotic type of mechanism.' Nature, 191, 144-148",
+        "Nicholls, D. G., & Ferguson, S. J. (2013). 'Bioenergetics 4', Academic Press"
+      ]
+    },
+    "obstrucción": {
+      "def": "Acumulación progresiva de materias fecales duras, moco y toxinas en el tracto digestivo y tejidos profundos.",
+      "note": "La estasis fecal y el tránsito ralentizado generan fermentaciones tóxicas e inflamación de la mucosa digestiva.",
+      "type": "science",
+      "sources": [
+        "Slavin, J. (2013). 'Fiber and prebiotics: mechanisms and health benefits.' Nutrients, 5(4), 1417-1435"
+      ]
+    },
+    "encombrement": {
+      "def": "Sinónimo de obstrucción interna: cúmulo de residuos no digeridos y moco en los tejidos y órganos emuntorios.",
+      "note": "Corresponde a la sobrecarga metabólica y a la toxemia tisular acumulada.",
+      "type": "science",
+      "sources": [
+        "Slavin, J. (2013). 'Fiber and prebiotics: mechanisms and health benefits.' Nutrients, 5(4), 1417-1435"
+      ]
+    },
+    "dieta sin moco": {
+      "def": "Alimentación curativa compuesta exclusivamente de frutas frescas maduras y verduras de hoja verde crudas o cocidas sin almidón, que no generan residuos adhesivos ni flemas.",
+      "note": "Alimentación de altísima densidad de micronutrientes, polifenoles y fibra soluble, con bajo índice glucémico y PRAL fuertemente alcalinizante.",
+      "type": "science",
+      "sources": [
+        "Remer, T., & Manz, F. (1995). 'Potential renal acid load of foods and its influence on urine pH.' Journal of the American Dietetic Association, 95(7), 791-797. DOI: 10.1016/S0002-8223(95)00219-7"
+      ]
+    },
+    "dieta de transición": {
+      "def": "Fase terapéutica gradual que permite transicionar desde la dieta occidental moderna hacia la dieta sin moco, evitando crisis agudas de desintoxicación.",
+      "note": "Principio de gradualidad validado por la farmacocinética y la toxicología para proteger los emuntorios renal y hepático.",
+      "type": "science",
+      "sources": [
+        "Klaassen, C. D. (2019). 'Casarett & Doull's Toxicology: The Basic Science of Poisons', 9th Ed. (McGraw-Hill)"
+      ]
+    },
+    "ecuación suprema": {
+      "def": "La fórmula maestra de la vitalidad formulada por Arnold Ehret: V = P - O (Vitalidad = Potencia menos Obstrucción).",
+      "note": "Expresión conceptual pionera de la bioenergética moderna: el rendimiento energético celular depende de la minimización de la fricción metabólica.",
+      "type": "science",
+      "sources": [
+        "Guyton & Hall (2020). 'Textbook of Medical Physiology', 14th Ed. (Elsevier)"
+      ]
+    },
+    "ensalada escoba": {
+      "def": "Combinación depurativa de verduras crudas ralladas (repollo, zanahoria, apio) aliñadas sin vinagre que barre mecánicamente las vellosidades intestinales.",
+      "note": "Las fibras insolubles estimulan el peristaltismo, reducen el tiempo de tránsito cólico y alimentan la microbiota beneficiosa.",
+      "type": "science",
+      "sources": [
+        "Slavin, J. (2013). 'Fiber and prebiotics: mechanisms and health benefits.' Nutrients, 5(4), 1417-1435"
+      ]
+    },
+    "espejo mágico": {
+      "def": "La lengua humana observada durante un ayuno corto, cuya saburra blanca o amarillenta revela el grado exacto de obstrucción mucosa interna.",
+      "note": "La saburra lingual refleja la disminución de secreción salival y la descamación de papilas durante el reposo digestivo.",
+      "type": "science",
+      "sources": [
+        "Danser, M. M., et al. (2003). 'Tongue coating and tongue brushing: a review.' Int J Dent Hygiene, 1(3), 151-158"
+      ]
+    },
+    "miroir magique": {
+      "def": "La lengua observada durante el ayuno corto como reflejo del estado interno de los órganos y mucosas.",
+      "note": "Indicador de descamación celular y reconfiguración microbiana.",
+      "type": "science",
+      "sources": [
+        "Danser, M. M., et al. (2003). 'Tongue coating and tongue brushing.' Int J Dent Hygiene, 1(3), 151-158"
+      ]
+    },
+    "autólisis": {
+      "def": "Proceso fisiológico mediante el cual el organismo en ayunas degrada y recicla sus propios tejidos senescentes y depósitos morbosos para nutrir órganos vitales.",
+      "note": "Mecanismo biológico de la autofagia descubierto y documentado por Yoshinori Ohsumi (Premio Nobel 2016).",
+      "type": "science",
+      "sources": [
+        "Mizushima, N., & Komatsu, M. (2011). 'Autophagy: renovation of cells and tissues.' Cell, 147(4), 728-741"
+      ]
+    },
+    "autolyse": {
+      "def": "Autodigestión celular controlada en fase de ayuno para reutilizar componentes y eliminar residuos.",
+      "note": "Sinónimo biológico de autofagia lisosomal celular.",
+      "type": "science",
+      "sources": [
+        "Ohsumi, Y. (2016). Nobel Prize in Physiology or Medicine"
+      ]
+    },
+    "toxemia": {
+      "def": "Intoxicación generalizada de la sangre y fluidos corporales por acumulación de ácidos y desechos metabólicos mal eliminados.",
+      "note": "Equivalente en fisiopatología moderna a la endotoxemia metabólica y a la inflamación sistémica de bajo grado.",
+      "type": "science",
+      "sources": [
+        "Cani, P. D., et al. (2007). 'Metabolic endotoxemia initiates obesity and insulin resistance.' Diabetes, 56(7), 1761-1772"
+      ]
+    },
+    "toxémie": {
+      "def": "Presencia excesiva de toxinas y desechos metabólicos en el torrente circulatorio.",
+      "note": "Corresponde a la carga tóxica sistémica y desequilibrio homeostático.",
+      "type": "science",
+      "sources": [
+        "Cani, P. D., et al. (2007). Diabetes, 56(7), 1761-1772"
+      ]
+    },
+    "colon": {
+      "def": "Intestino grueso considerado por Ehret como el reservorio principal de residuos tóxicos fermentados.",
+      "note": "La barrera epitelial colónica y la microbiota intestinal son claves en la inmunidad sistémica.",
+      "type": "science",
+      "sources": [
+        "Barker, N. (2014). 'Adult intestinal stem cells.' Nature Reviews Mol Cell Bio, 15(1), 19-33"
+      ]
+    },
+    "eliminación": {
+      "def": "Expulsión activa de moco, ácidos y toxinas por los emuntorios corporales (riñones, colon, pulmones, piel).",
+      "note": "Procesos de excreción y detoxificación hepática de fase I y II acoplados a la filtración renal.",
+      "type": "science",
+      "sources": [
+        "Klaassen, C. D. (2019). 'Casarett & Doull's Toxicology', 9th Ed."
+      ]
+    },
+    "élimination": {
+      "def": "Proceso depurativo por el cual el organismo expulsa las sustancias patógenas al exterior.",
+      "note": "Fisiología excretora coordinada por los riñones, hígado, intestinos, piel y pulmones.",
+      "type": "science",
+      "sources": [
+        "Guyton & Hall (2020). 'Textbook of Medical Physiology', 14th Ed."
+      ]
+    },
+    "ácido úrico": {
+      "def": "Subproducto metabólico derivado del catabolismo de purinas (carnes, mariscos) que cristaliza e inflama articulaciones y tejidos.",
+      "note": "Un exceso de ácido úrico (hiperuricemia) predispone a gota y nefrolitiasis.",
+      "type": "science",
+      "sources": [
+        "Choi, H. K., et al. (2004). 'Purine-rich foods, dairy and protein intake, and the risk of gout in men.' N Engl J Med, 350(11), 1093-1103"
+      ]
+    },
+    "acide urique": {
+      "def": "Desecho metabólico purínico que sobrecarga riñones y articulaciones.",
+      "note": "Marcador clínico de acidemia tisular e hiperuricemia.",
+      "type": "science",
+      "sources": [
+        "Choi, H. K., et al. (2004). N Engl J Med, 350(11), 1093-1103"
+      ]
+    },
+    "fricción": {
+      "def": "Resistencia que frena la circulación sanguínea y reduce la vitalidad motriz humana (F en la fórmula E = P - F).",
+      "note": "Equivalente hemodinámico a la resistencia vascular periférica y a la viscosidad sanguínea.",
+      "type": "science",
+      "sources": [
+        "Guyton & Hall (2020). Capítulo 14: 'Overview of the Circulation; Medical Physics of Pressure, Flow, and Resistance'"
+      ]
+    },
+    "friction": {
+      "def": "Resistencia hemodinámica debida a la viscosidad y acumulación de desechos en los vasos capilares.",
+      "note": "Resistencia vascular periférica y viscosidad plasmática.",
+      "type": "science",
+      "sources": [
+        "Guyton & Hall (2020). 'Textbook of Medical Physiology', 14th Ed."
+      ]
+    },
+    "potencia": {
+      "def": "La fuerza intrínseca que impulsa el organismo humano (P en la fórmula fundamental).",
+      "note": "Capacidad funcional celular de generación de energía bioeléctrica y ATP.",
+      "type": "science",
+      "sources": [
+        "Lehninger Principles of Biochemistry, 8th Ed."
+      ]
+    },
+    "puissance": {
+      "def": "La energía vital disponible que mantiene activo el motor humano.",
+      "note": "Fuerza vital y bioenergía mitocondrial.",
+      "type": "science",
+      "sources": [
+        "Lehninger Principles of Biochemistry, 8th Ed."
+      ]
+    },
+    "régime sans mucus": {
+      "def": "Alimentación basada en frutas y verduras sin almidón que previene la obstrucción tisular.",
+      "note": "Dieta fisiológica altamente alcalinizante y regenerativa.",
+      "type": "science",
+      "sources": [
+        "Remer & Manz (1995). J Am Diet Assoc, 95(7), 791-797"
+      ]
+    },
+    "alimentos sin moco": {
+      "def": "Frutas maduras, cítricos, bayas, uvas, manzanas, verduras de hoja verde, apio y vegetales crudos o cocidos sin almidón.",
+      "note": "Alimentos de residuo neutro o alcalino que limpian las vías digestivas.",
+      "type": "science",
+      "sources": [
+        "Remer, T. (2000). 'Influence of nutrition on acid-base balance.' Eur J Nutr, 39(5), 244-249"
+      ]
+    },
+    "aliments sans mucus": {
+      "def": "Frutas y verduras de hoja que no dejan residuos pegajosos ni obstrucciones.",
+      "note": "Alimentos de carga ácida renal negativa (alcalinos).",
+      "type": "science",
+      "sources": [
+        "Remer & Manz (1995). J Am Diet Assoc, 95(7), 791-797"
+      ]
+    },
+    "alimentos formadores de moco": {
+      "def": "Carnes, pescados, huevos, productos lácteos, pan blanco, cereales refinados, arroz blanco, patatas y legumbres densas.",
+      "note": "Alimentos de digestión pesada y residuo altamente acidificante.",
+      "type": "science",
+      "sources": [
+        "Remer & Manz (1995). J Am Diet Assoc, 95(7), 791-797"
+      ]
+    },
+    "aliments producteurs de mucus": {
+      "def": "Alimentos densos y refinados que generan flemas, moco y residuos no digeridos.",
+      "note": "Alimentos con PRAL positivo y alto potencial de fermentación colónica.",
+      "type": "science",
+      "sources": [
+        "Remer & Manz (1995). J Am Diet Assoc, 95(7), 791-797"
+      ]
+    },
+    "constipación constitucional": {
+      "def": "Estado crónico de congestión microscópica de todos los capilares y tejidos del organismo humano.",
+      "note": "Microangiopatía funcional y congestión del espacio intersticial de la matriz extracelular.",
+      "type": "science",
+      "sources": [
+        "Pischinger, A. (2007). 'The Extracellular Matrix and Ground Regulation: Basis for a Holistic Biological Medicine' (North Atlantic Books)"
+      ]
+    },
+    "baños de sol": {
+      "def": "Exposición terapéutica del cuerpo al aire libre y la luz solar para estimular la vitalidad y la eliminación cutánea.",
+      "note": "Estimulación de la síntesis cutánea de vitamina D3 y vasodilatación por liberación de óxido nítrico.",
+      "type": "science",
+      "sources": [
+        "Holick, M. F. (2007). 'Vitamin D deficiency.' N Engl J Med, 357(3), 266-281",
+        "Weller, R. B. (2016). 'Sunlight Has Cardiovascular Benefits Independently of Vitamin D.' Blood Purif, 41(1-3), 130-134"
+      ]
+    },
+    "bains de soleil": {
+      "def": "Helioterapia racional para potenciar la transpiración y la vitalidad celular.",
+      "note": "Síntesis de vitamina D3 y modulación circulatoria.",
+      "type": "science",
+      "sources": [
+        "Holick, M. F. (2007). N Engl J Med, 357(3), 266-281"
+      ]
+    },
+    "aire fresco": {
+      "def": "Elemento vital indispensable para la oxigenación celular, el metabolismo y la combustión de desechos internos.",
+      "note": "La adecuada hematosis pulmonar es el pilar de la oxigenación mitocondrial y el pH sanguíneo.",
+      "type": "science",
+      "sources": [
+        "West, J. B. (2012). 'Respiratory Physiology: The Essentials', 9th Ed. (Lippincott)"
+      ]
+    },
+    "air frais": {
+      "def": "Oxigenación pura indispensable para el motor humano.",
+      "note": "Fisiología respiratoria y hematosis celular.",
+      "type": "science",
+      "sources": [
+        "West, J. B. (2012). 'Respiratory Physiology'"
+      ]
+    },
+    "sangre limpia": {
+      "def": "Sangre alcalina y fluida libre de toxinas, leucocitosis digestiva y desechos de fermentación.",
+      "note": "Optimización del perfil lipídico, reducción de marcadores inflamatorios (PCR, TNF-alfa) y preservación endotelial.",
+      "type": "science",
+      "sources": [
+        "Libby, P. (2002). 'Inflammation in atherosclerosis.' Nature, 420(6917), 868-874"
+      ]
+    },
+    "sang propre": {
+      "def": "Plasma sanguíneo fluido y libre de sobrecarga metabólica.",
+      "note": "Mantenimiento del endotelio vascular y homeostasis circulatoria.",
+      "type": "science",
+      "sources": [
+        "Libby, P. (2002). Nature, 420(6917), 868-874"
+      ]
+    },
+    "leucocitos": {
+      "def": "Glóbulos blancos interpretados por Ehret como materias de desecho resultantes de la ingestión de alimentos erróneos.",
+      "note": "Aclaración inmunológica: Los leucocitos son células inmunitarias esenciales contra infecciones bacterianas y víricas.",
+      "type": "warning",
+      "sources": [
+        "Abbas, A. K., Lichtman, A. H., & Pillai, S. (2021). 'Cellular and Molecular Immunology', 10th Ed. (Elsevier)"
+      ]
+    },
+    "glóbulos rojos": {
+      "def": "Eritrocitos de la sangre transportadores de oxígeno enriquecidos por sales minerales asimilables de frutas y verduras.",
+      "note": "La hemoglobina requiere hierro y oligoelementos para el transporte óptimo de oxígeno a todos los tejidos.",
+      "type": "science",
+      "sources": [
+        "Guyton & Hall (2020). Capítulo 33: 'Red Blood Cells, Anemia, and Polycythemia'"
+      ]
+    },
+    "hígado": {
+      "def": "Órgano emuntorio central responsable de filtrar y neutralizar sustancias tóxicas en la circulación.",
+      "note": "Centro de detoxificación metabólica de fases I y II y producción de bilis.",
+      "type": "science",
+      "sources": [
+        "Klaassen, C. D. (2019). 'Casarett & Doull's Toxicology', 9th Ed."
+      ]
+    },
+    "riñones": {
+      "def": "Emuntorio principal encargado de filtrar la sangre, eliminar ácidos y regular el equilibrio hidroelectrolítico.",
+      "note": "Filtración glomerular de 180 L diarios y excreción de ácidos metabólicos y urea.",
+      "type": "science",
+      "sources": [
+        "Guyton & Hall (2020). Capítulo 26: 'Renal Physiology'"
+      ]
+    },
+    "estómago": {
+      "def": "Órgano digestivo proximal donde se inicia la degradación química de los alimentos y foco de fermentaciones tóxicas cuando se consumen alimentos incompatibles.",
+      "note": "Digestión ácida por ácido clorhídrico y pepsina.",
+      "type": "science",
+      "sources": [
+        "Guyton & Hall (2020). Capítulo 65: 'Gastrointestinal Physiology'"
+      ]
+    },
+    "intestinos": {
+      "def": "Vías de asimilación y eliminación compuestas por el intestino delgado y el colon.",
+      "note": "Absorción de nutrientes y barrera inmunológica del microbiota.",
+      "type": "science",
+      "sources": [
+        "Sender, R., et al. (2016). PLOS Biology, 14(8), e1002533"
+      ]
+    },
+    "féculents": {
+      "def": "Almidones y harinas que forman gomas pegajosas y residuos en el tubo digestivo.",
+      "note": "Carbohidratos complejos de absorción rápida que pueden generar picos de glucemia.",
+      "type": "science",
+      "sources": [
+        "Slavin, J. (2013). Nutrients, 5(4), 1417-1435"
+      ]
+    },
+    "enfermedad de bright": {
+      "def": "Término histórico para la nefritis crónica y la insuficiencia renal albuminúrica.",
+      "note": "Glomerulonefritis y nefropatía crónica en nefrología moderna.",
+      "type": "science",
+      "sources": [
+        "Brenner & Rector's The Kidney, 11th Ed. (Elsevier, 2019)"
+      ]
+    },
+    "diabetes": {
+      "def": "Trastorno metabólico caracterizado por glucosuria y alteración en el uso de la glucosa.",
+      "note": "Resistencia a la insulina o deficiencia de secreción pancreática.",
+      "type": "science",
+      "sources": [
+        "American Diabetes Association (ADA, 2023). 'Standards of Care in Diabetes'"
+      ]
+    },
+    "aire-gas": {
+      "def": "Concepto ehretista referente a la presión de los gases digestivos y el aire atmosférico en el funcionamiento de los órganos.",
+      "note": "Corresponde a la presión intratorácica y a los gases de fermentación colónica.",
+      "type": "science",
+      "sources": [
+        "Guyton & Hall (2020). Textbook of Medical Physiology, 14th Ed."
+      ]
+    },
+    "estreñimiento intestinal": {
+      "def": "Retención anormal y estasis de materias fecales y mucosidades en las asas del colon.",
+      "note": "El tránsito colónico enlentecido incrementa la reabsorción de endotoxinas y la inflamación de la mucosa.",
+      "type": "science",
+      "sources": [
+        "Slavin, J. (2013). Nutrients, 5(4), 1417-1435"
+      ]
+    },
+    "enema": {
+      "def": "Lavado del colon con agua templada para ayudar a desalojar residuos mucosos retenidos.",
+      "note": "Procedimiento mecánico coadyuvante en crisis agudas de eliminación.",
+      "type": "science",
+      "sources": [
+        "Robbins & Cotran (2020). Pathologic Basis of Disease, 10th Ed."
+      ]
+    },
+    "ragnar berg": {
+      "def": "Célebre químico fisiólogo sueco (1873-1956) pionero en el análisis cuantitativo del equilibrio ácido-base y de las sales minerales en los alimentos.",
+      "note": "Sus análisis de laboratorio demostraron científicamente la carga ácida o alcalina generada por cada grupo de alimentos.",
+      "type": "science",
+      "sources": [
+        "Berg, R. (1913). 'Der Einfluss der Zubereitung auf die Zusammensetzung unserer Nahrungsmittel'",
+        "Remer, T., & Manz, F. (1995). J Am Diet Assoc, 95(7), 791-797"
+      ]
+    },
+    "ruptura del ayuno": {
+      "def": "El momento crítico de reintroducción alimentaria tras un período de ayuno, requiriendo frutas laxantes o verduras sin almidón.",
+      "note": "La reactivación de secreciones enzimáticas exige máxima prudencia y gradualidad para evitar sobrecargas pancreáticas o metabólicas.",
+      "type": "science",
+      "sources": [
+        "Long, V. D., & Mattson, M. P. (2014). Cell Metabolism, 19(2), 181-192"
+      ]
+    },
+    "almidones y féculas": {
+      "def": "Harinas refinadas, cereales densos, patatas y legumbres que según Ehret generan pastas viscosas y mucosidad en el tracto digestivo.",
+      "note": "Carbohidratos amiláceos que requieren amilasa salival y pancreática.",
+      "type": "science",
+      "sources": [
+        "Slavin, J. (2013). Nutrients, 5(4), 1417-1435"
+      ]
+    }
+  },
+  "morse": {
+    "linfa": {
+      "def": "El sistema inmunológico y depurativo principal del cuerpo: un líquido alcalino que baña todas las células, absorbe sus desechos celulares ácidos y los conduce hacia los ganglios linfáticos y los riñones.",
+      "note": "El sistema linfático drena el líquido intersticial y transporta células inmunitarias y lípidos, garantizando la homeostasis de la matriz extracelular.",
+      "type": "science",
+      "sources": [
+        "Guyton, A. C., & Hall, J. E. (2020). 'Textbook of Medical Physiology', 14th Ed., Capítulo 16: 'The Microcirculation and Lymphatic System' (Elsevier, ISBN: 978-0323597128)",
+        "Moore, J. E., & Bertram, C. D. (2018). 'Lymphatic System Flow: Key to Fluid Homeostasis and Immunity.' Annual Review of Fluid Mechanics, 50, 459-482. DOI: 10.1146/annurev-fluid-122316-045259"
+      ]
+    },
+    "sistema linfático": {
+      "def": "La red vascular secundaria del cuerpo responsable de la recogida de toxinas, desechos metabólicos celulares y defensa inmunitaria.",
+      "note": "Red linfática integral y ganglios linfáticos filtrantes.",
+      "type": "science",
+      "sources": [
+        "Guyton & Hall (2020). Capítulo 16: 'The Microcirculation and Lymphatic System'"
+      ]
+    },
+    "filtración renal": {
+      "def": "La capacidad esencial de los riñones para abrir sus glomérulos y expulsar activamente los desechos linfáticos celulares y sedimentos en la orina.",
+      "note": "Filtración glomerular (aprox. 125 mL/min) y excreción de ácidos metabólicos mediante amoniogénesis y fosfatos.",
+      "type": "science",
+      "sources": [
+        "Koeppen, B. M., & Stanton, B. A. (2017). 'Renal Physiology', 6th Ed. (Elsevier, ISBN: 978-0323595681)",
+        "Brenner & Rector's (2019). 'The Kidney', 11th Ed., Capítulo 14: 'Mechanisms of Acid-Base Regulation' (Elsevier)"
+      ]
+    },
+    "sedimentos urinarios": {
+      "def": "Presencia visible de copos, hilos o nubes de moco en la orina matutina en reposo, signo clínico cardinal de que los riñones están filtrando activamente la linfa.",
+      "note": "En nefrología clínica, los sedimentos corresponden a células epiteliales, sales cristalizadas o cilindros hialinos.",
+      "type": "science",
+      "sources": [
+        "Fogazzi, G. B. (2010). 'The Urinary Sediment: An Integrated View', 3rd Ed. (Elsevier, ISBN: 978-8821431449)"
+      ]
+    },
+    "glándulas suprarrenales": {
+      "def": "Las dos glándulas endocrinas situadas sobre los riñones que controlan la producción de cortisol, aldosterona, adrenalina y dopamina, determinando la energía nerviosa y la función renal.",
+      "note": "Regulan la respuesta al estrés, el equilibrio hidroelectrolítico y el tono vascular.",
+      "type": "science",
+      "sources": [
+        "Melmed, S., et al. (2019). 'Williams Textbook of Endocrinology', 14th Ed., Capítulo 15: 'The Adrenal Cortex' (Elsevier, ISBN: 978-0323555968)"
+      ]
+    },
+    "surrénales": {
+      "def": "Glándulas suprarrenales que controlan el sistema nervioso autónomo y la función renal.",
+      "note": "Eje hipotálamo-hipofisario-adrenal y control del balance mineral.",
+      "type": "science",
+      "sources": [
+        "Williams Textbook of Endocrinology, 14th Ed."
+      ]
+    },
+    "paratiroides": {
+      "def": "Las cuatro diminutas glándulas situadas detrás de la tiroides que secretan la parathormona (PTH), regulando los niveles de calcio iónico y la fuerza de los tejidos conectivos.",
+      "note": "La PTH estimula la resorción ósea y la activación renal de vitamina D para mantener la calcemia.",
+      "type": "science",
+      "sources": [
+        "Potts, J. T. (2005). 'Parathyroid hormone: past and present.' Journal of Endocrinology, 187(3), 311-325. DOI: 10.1677/joe.1.06057"
+      ]
+    },
+    "frugivorismo": {
+      "def": "El modo alimentario natural y óptimo de la especie humana, consistente en consumir predominantemente frutas maduras, bayas, melones y verduras tiernas de hoja verde.",
+      "note": "La anatomía comparada humana (longitud intestinal, dentición no carnívora, saliva alcalina con ptialina) corresponde al modelo anatómico frugívoro de los grandes primates.",
+      "type": "science",
+      "sources": [
+        "Milton, K. (1999). 'Nutritional characteristics of wild primate diets: do the diets of our closest living relatives have lessons for us?' Nutrition, 15(6), 488-498. DOI: 10.1016/S0899-9007(99)00078-7"
+      ]
+    },
+    "temperatura basal de barnes": {
+      "def": "Protocolo clínico desarrollado por el Dr. Broda O. Barnes midiendo la temperatura axilar matutina antes de levantarse para evaluar la función metabólica y tiroidea.",
+      "note": "Una temperatura basal axilar consistentemente inferior a 36,4 °C sugiere hipometabolismo o hipotiroidismo funcional.",
+      "type": "science",
+      "sources": [
+        "Barnes, B. O., & Galton, L. (1976). 'Hypothyroidism: The Unsuspected Illness' (Harper & Row, ISBN: 978-0060102135)"
+      ]
+    },
+    "crisis de curación": {
+      "def": "Manifestación aguda temporal (fiebre moderada, erupciones cutáneas, diarrea depurativa, mucosidades) que se produce cuando el cuerpo moviliza y expulsa toxinas acumuladas.",
+      "note": "Corresponde en fisiología a la respuesta inmunitaria e inflamatoria transitoria durante la depuración metabólica.",
+      "type": "science",
+      "sources": [
+        "Robbins & Cotran (2020). 'Pathologic Basis of Disease', 10th Ed., Capítulo 3: 'Inflammation and Repair'"
+      ]
+    },
+    "crise de guérison": {
+      "def": "Proceso agudo de eliminación natural donde el cuerpo expulsa residuos acumulados.",
+      "note": "Reacción homeostática transitoria de regeneración tisular.",
+      "type": "science",
+      "sources": [
+        "Robbins & Cotran (2020). 'Pathologic Basis of Disease', 10th Ed."
+      ]
+    },
+    "fórmulas de plantas": {
+      "def": "Sinergias botánicas de plantas medicinales diseñadas para limpiar, tonificar y regenerar órganos emuntorios específicos (riñones, sistema linfático, hígado, intestinos).",
+      "note": "La fitoterapia moderna documenta la acción diurética, colagoga y antioxidante de extractos botánicos estandarizados.",
+      "type": "science",
+      "sources": [
+        "Bone, K., & Mills, S. (2013). 'Principles and Practice of Phytotherapy: Modern Herbal Medicine', 2nd Ed. (Elsevier, ISBN: 978-0443069925)"
+      ]
+    },
+    "formules de plantes": {
+      "def": "Combinaciones herbales formuladas para apoyar la regeneración tisular y la filtración renal.",
+      "note": "Fitofarmacología y principios activos botánicos.",
+      "type": "science",
+      "sources": [
+        "Bone, K., & Mills, S. (2013). Principles and Practice of Phytotherapy, 2nd Ed."
+      ]
+    },
+    "combinaciones alimentarias": {
+      "def": "Reglas dietéticas para consumir frutas y verduras en combinaciones fisiológicas que optimizan los tiempos de vaciado gástrico y evitan fermentaciones tóxicas.",
+      "note": "El vaciado gástrico diferencial de azúcares simples versus almidones y lípidos minimiza la distensión abdominal.",
+      "type": "science",
+      "sources": [
+        "Guyton & Hall (2020). Capítulo 64: 'Digestion and Absorption in the Gastrointestinal Tract'"
+      ]
+    },
+    "acidosis": {
+      "def": "Sobrecarga de desechos ácidos metabólicos celulares en el líquido intersticial y la linfa que causa inflamación, dolor y degeneración tisular.",
+      "note": "La acumulación de protones (H+) en el microambiente extracelular estimula la actividad de osteoclastos y altera la función enzimática.",
+      "type": "science",
+      "sources": [
+        "Kellum, J. A. (2007). 'Disorders of acid-base balance.' Critical Care Medicine, 35(11), 2630-2636. DOI: 10.1097/01.CCM.0000285996.65787.2E"
+      ]
+    },
+    "acidose": {
+      "def": "Estado de acidez tisular e intersticial excesiva generada por alimentos acidificantes y falta de filtración renal.",
+      "note": "Desequilibrio del pH tisular y sobrecarga de ácidos metabólicos.",
+      "type": "science",
+      "sources": [
+        "Kellum, J. A. (2007). Crit Care Med, 35(11), 2630-2636"
+      ]
+    },
+    "alimentos vivos": {
+      "def": "Frutas, bayas, melones y verduras crudas no procesadas que conservan sus enzimas digestivas intactas y una alta carga bioeléctrica.",
+      "note": "Aportan fitoquímicos no desnaturalizados por calor que actúan como antioxidantes celulares.",
+      "type": "science",
+      "sources": [
+        "Liu, R. H. (2013). 'Health-promoting components of fruits and vegetables in the diet.' Advances in Nutrition, 4(3), 384S-392S. DOI: 10.3945/an.112.003517"
+      ]
+    },
+    "iridología": {
+      "def": "Evaluación no invasiva de los patrones, densidades y coloraciones del iris para identificar fortalezas genéticas y áreas de congestión linfática.",
+      "note": "Herramienta tradicional complementaria de evaluación refleja, no sustitutiva de los análisis diagnósticos médicos convencionales.",
+      "type": "warning",
+      "sources": [
+        "Ernst, E. (2000). 'Iridology: not useful and potentially harmful.' Archives of Ophthalmology, 118(1), 120-121. DOI: 10.1001/archopht.118.1.120"
+      ]
+    },
+    "subluxaciones vertebrales": {
+      "def": "Pérdida de alineación articular en la columna que puede comprimir las raíces nerviosas espinales y reducir el flujo de energía a los órganos correspondientes.",
+      "note": "En neurología, la compresión de raíces nerviosas espinales produce radiculopatías y alteraciones neuromusculares.",
+      "type": "science",
+      "sources": [
+        "Bogduk, N. (2012). 'Clinical and Radiological Anatomy of the Lumbar Spine', 5th Ed. (Elsevier)"
+      ]
+    },
+    "desintoxicación": {
+      "def": "El arte y la ciencia de limpiar el sistema linfático y los órganos internos a través de frutas alcalinas, ayunos y plantas botánicas.",
+      "note": "Eliminación de metabolitos tóxicos y regeneración de la matriz celular.",
+      "type": "science",
+      "sources": [
+        "Klaassen, C. D. (2019). Casarett & Doull's Toxicology, 9th Ed."
+      ]
+    },
+    "alcalinización": {
+      "def": "Aporte de sales minerales básicas y frutas astringentes para neutralizar los ácidos en la linfa y la sangre.",
+      "note": "Restablecimiento de la reserva alcalina sistémica.",
+      "type": "science",
+      "sources": [
+        "Remer & Manz (1995). J Am Diet Assoc, 95(7), 791-797"
+      ]
+    },
+    "astringencia": {
+      "def": "Propiedad de frutas ácidas y subácidas (limones, uvas, bayas) para mover la linfa estancada y romper flemas.",
+      "note": "Acción osmótica e inductores de motilidad del flujo linfático.",
+      "type": "science",
+      "sources": [
+        "Milton, K. (1999). Nutrition, 15(6), 488-498"
+      ]
+    },
+    "emuntorios": {
+      "def": "Los cuatro canales de eliminación del cuerpo humano: riñones, colon, pulmones y piel.",
+      "note": "Órganos fisiológicos excretores encargados de la homeostasis del medio interno.",
+      "type": "science",
+      "sources": [
+        "Guyton & Hall (2020). Textbook of Medical Physiology, 14th Ed."
+      ]
+    },
+    "homeostasis": {
+      "def": "El equilibrio dinámico interno del cuerpo que preserva la salud celular perfecta.",
+      "note": "Capacidad del organismo para mantener constantes sus parámetros fisicoquímicos.",
+      "type": "science",
+      "sources": [
+        "Cannon, W. B. (1932). 'The Wisdom of the Body' (W. W. Norton)"
+      ]
+    },
+    "autofagia": {
+      "def": "Mecanismo celular mediante el cual la célula se limpia de orgánulos dañados y proteínas anormales.",
+      "note": "Degradación y reciclaje intracelular mediado por lisosomas.",
+      "type": "science",
+      "sources": [
+        "Ohsumi, Y. (2016). Nobel Prize in Physiology or Medicine"
+      ]
+    },
+    "ptialina": {
+      "def": "Enzima amilasa presente en la saliva humana encargada de predigerir los carbohidratos complejos.",
+      "note": "Su presencia óptima a pH alcalino refleja la adaptación evolutiva humana a los alimentos de origen vegetal.",
+      "type": "science",
+      "sources": [
+        "Guyton & Hall (2020). Textbook of Medical Physiology, 14th Ed."
+      ]
+    }
+  }
+}
