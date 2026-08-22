@@ -534,6 +534,9 @@ function renderReaderDOM() {
   const modal = document.getElementById('bookReaderModalOverlay');
   if (!modal) return;
 
+  const existingSidebar = modal.querySelector('.br-sidebar');
+  const prevSidebarScrollTop = existingSidebar ? existingSidebar.scrollTop : null;
+
   const book = getActiveBook();
   const chapters = book.chapters || [];
   const currentChapter = chapters[_readerState.chapterIndex] || { tag: "", title: "", paragraphs: [] };
@@ -720,4 +723,16 @@ function renderReaderDOM() {
 
     </div>
   `;
+
+  // Restaurer le scroll du sommaire latéral pour éviter tout saut intempestif vers le haut
+  const newSidebar = modal.querySelector('.br-sidebar');
+  if (newSidebar) {
+    if (typeof prevSidebarScrollTop === 'number' && prevSidebarScrollTop > 0) {
+      newSidebar.scrollTop = prevSidebarScrollTop;
+    }
+    const activeBtn = newSidebar.querySelector('.br-chapter-btn[data-active="true"]');
+    if (activeBtn) {
+      activeBtn.scrollIntoView({ block: 'nearest', behavior: 'instant' });
+    }
+  }
 }
