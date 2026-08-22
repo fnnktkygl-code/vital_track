@@ -5,7 +5,8 @@
  */
 
 import { RAINTREE_HERBS, RAINTREE_PROTOCOLS } from './raintree-data.js';
-import { t, getLanguage, setLanguage, toggleLanguage, onLanguageChange } from './i18n.js';
+import * as i18nModule from './i18n.js';
+import { t, getLanguage, setLanguage, toggleLanguage, onLanguageChange, updateDOMTranslations } from './i18n.js';
 import { pigeonNudges } from './mascot-nudges.js';
 import { auth } from './auth.js';
 import { store, formatLocalDate, parseLocalDate, addDaysLocal, getUserStorageKey } from './storage.js';
@@ -24,7 +25,9 @@ window.formatLocalDate = formatLocalDate;
 window.parseLocalDate = parseLocalDate;
 window.addDaysLocal = addDaysLocal;
 window.getUserStorageKey = getUserStorageKey;
-window.vitalTrackI18n = { t, getLanguage, setLanguage, toggleLanguage, onLanguageChange };
+window.vitalTrackI18n = i18nModule;
+window.t = t;
+window.updateDOMTranslations = updateDOMTranslations;
 window.pigeonNudges = pigeonNudges;
 window.vitalTrackAuth = auth;
 window.VITALIST_WISDOM = VITALIST_WISDOM;
@@ -1073,6 +1076,9 @@ function renderUserProfileModal() {
 
 // ═══════ INIT ═══════
 async function initApp() {
+  // Always update DOM translations right away
+  updateDOMTranslations();
+
   // Init Google Auth & Listeners
   if (window.vitalTrackAuth) {
     window.vitalTrackAuth.initGSI();
@@ -1110,8 +1116,15 @@ async function initApp() {
   initFastingDurationControls();
   initVoiceButtonEvents();
 
+  // Run DOM translations after controls are initialized
+  updateDOMTranslations();
+
   // Re-render and update on language change
   onLanguageChange((newLang) => {
+    updateDOMTranslations();
+    loadProfile();
+    updateLiveAiPreview();
+
     const p = getUserProfile();
     if (document.getElementById('greetName')) {
       const greetWord = window.vitalTrackI18n?.getCircadianGreeting ? window.vitalTrackI18n.getCircadianGreeting(newLang) : (t('dashboard.greeting') || 'Bonjour');
@@ -1159,7 +1172,8 @@ async function initApp() {
     } else if (activePageId === 'favorites') {
       if (typeof renderFavorites === 'function') renderFavorites();
     } else if (activePageId === 'modes') {
-      if (typeof renderModesPage === 'function') renderModesPage();
+      loadProfile();
+      updateLiveAiPreview();
     }
   });
 
@@ -1308,6 +1322,11 @@ function showPage(page, options = {}) {
   if (page === 'favorites') renderFavorites();
   if (page === 'resources') renderResources();
   if (page === 'chat') initChatMascot();
+  if (page === 'modes') {
+    loadProfile();
+    updateLiveAiPreview();
+    updateDOMTranslations();
+  }
 };
 
 // Intercepteur global de clic pour sécuriser la navigation SPA et éviter les sauts de hash '#'
@@ -14517,6 +14536,8 @@ if (typeof window !== "undefined") window.toggleTheme = toggleTheme;
 if (typeof window !== "undefined") window.toggleEmonctoireChip = toggleEmonctoireChip;
 if (typeof window !== "undefined") window.toggleAiPreviewBox = toggleAiPreviewBox;
 if (typeof window !== "undefined") window.updateLiveAiPreview = updateLiveAiPreview;
+if (typeof window !== "undefined") window.loadProfile = loadProfile;
+if (typeof window !== "undefined") window.updateProtocolUI = updateProtocolUI;
 if (typeof window !== "undefined") window.saveProfile = saveProfile;
 if (typeof window !== "undefined") window.setProtocol = setProtocol;
 if (typeof window !== "undefined") window.switchSettingsTab = switchSettingsTab;

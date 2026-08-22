@@ -222,6 +222,23 @@ export function updateDOMTranslations() {
   if (langSelect && langSelect.value !== currentLang) {
     langSelect.value = currentLang;
   }
+
+  const profileLangSelect = document.getElementById('profileLanguage');
+  if (profileLangSelect && profileLangSelect.value !== currentLang) {
+    profileLangSelect.value = currentLang;
+  }
+
+  // 7. Custom vital select triggers & options
+  document.querySelectorAll('select.custom-vital-select, select.sort-select').forEach(sel => {
+    if (typeof sel._updateVitalSelect === 'function') {
+      sel._updateVitalSelect();
+    }
+  });
+
+  if (typeof window !== 'undefined') {
+    if (typeof window.updateLiveAiPreview === 'function') window.updateLiveAiPreview();
+    if (typeof window.updateProtocolUI === 'function') window.updateProtocolUI();
+  }
 }
 
 // ═══════ GLOBAL EXPOSURE FOR SPA & TEMPLATES ═══════
@@ -245,4 +262,15 @@ if (typeof window !== 'undefined') {
   window.t = t;
   window.setLanguage = setLanguage;
   window.getCircadianGreeting = getCircadianGreeting;
+}
+
+// Auto-run DOM translation on startup if document is already available
+if (typeof document !== 'undefined') {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      updateDOMTranslations();
+    });
+  } else {
+    updateDOMTranslations();
+  }
 }
