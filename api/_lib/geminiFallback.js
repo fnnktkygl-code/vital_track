@@ -1,36 +1,35 @@
 /**
  * Smart Dual-Tier Gemini Model & Account Cascade — VitalTrack FinOps
  * 
- * TIER 0 : Salutations & Chit-chat (Gemini 2.0 Flash Lite — Ultra-rapide & quasi-gratuit)
- * TIER 1 : Questions Vitalistes Standard (Gemini 2.5 Flash — Haute précision & fluidité)
- * TIER 2 : Analyses Complexes & Multimodal (Gemini 2.5 Flash / Pro — Raisonnement clinique approfondi)
+ * NIVEAU 1 COMPTE (Gratuit / 500 RPD) : Projet "Vital Track Free Tier for Test" (projects/437214576475)
+ * NIVEAU 2 COMPTE (Payant Tier 1) : Projet "Vital Track" (projects/890941317890)
  * 
- * NIVEAU 1 COMPTE : Clé Gratuite (500 requêtes / jour à 0,00 €)
- * NIVEAU 2 COMPTE : Clé Payante (Bascule instantanée et invisible en cas de quota atteint)
+ * MODÈLES ACTIFS PAR INTENTION (Zéro modèle expiré, zéro alias) :
+ * - Salutations & Chit-chat : gemini-3.5-flash-lite (secours : gemini-3.1-flash-lite, gemini-3.6-flash)
+ * - Questions Standard & Nutrition : gemini-3.6-flash (secours : gemini-3.7-flash, gemini-3.5-flash)
+ * - Analyses Complexes, Vision & Deep Search : gemini-3.7-flash (secours : gemini-3.6-flash, gemini-3.5-flash)
  */
 
 const CHITCHAT_CASCADE = [
   'gemini-3.5-flash-lite',
   'gemini-3.1-flash-lite',
-  'gemini-flash-lite-latest',
-  'gemini-2.5-flash-lite'
+  'gemini-3.6-flash'
 ];
 
 const STANDARD_CASCADE = [
   'gemini-3.6-flash',
-  'gemini-3.5-flash',
-  'gemini-flash-latest',
-  'gemini-2.5-flash'
+  'gemini-3.7-flash',
+  'gemini-3.5-flash'
 ];
 
 const COMPLEX_CASCADE = [
   'gemini-3.7-flash',
   'gemini-3.6-flash',
-  'gemini-pro-latest',
-  'gemini-2.5-pro'
+  'gemini-3.5-flash'
 ];
 
 const CASCADE_MODELS = [...STANDARD_CASCADE];
+const SIMPLE_CASCADE = [...STANDARD_CASCADE];
 
 const MODEL_ALIASES = {
   'auto': 'auto',
@@ -49,7 +48,7 @@ const MODEL_ALIASES = {
   'gemini-2.5-flash': 'gemini-2.5-flash',
   'gemini-2.5-flash-lite': 'gemini-2.5-flash-lite',
   'gemini-2.5-pro': 'gemini-2.5-pro',
-  // Backward compatible mappings for retired 1.5/2.0 IDs
+  // Backward compatible mappings
   'gemini-2.0-flash': 'gemini-3.6-flash',
   'gemini-2.0-flash-lite': 'gemini-3.5-flash-lite',
   'gemini-1.5-flash': 'gemini-3.5-flash',
@@ -58,13 +57,14 @@ const MODEL_ALIASES = {
 };
 
 function resolveModelName(name) {
-  if (!name || name === 'auto') return 'auto';
+  if (!name || typeof name !== 'string') return 'auto';
   const clean = name.trim();
+  if (!clean || clean === 'auto') return 'auto';
   if (MODEL_ALIASES[clean]) return MODEL_ALIASES[clean];
+  const lower = clean.toLowerCase();
+  if (MODEL_ALIASES[lower]) return MODEL_ALIASES[lower];
   return clean;
 }
-
-const SIMPLE_CASCADE = [...STANDARD_CASCADE];
 
 // In-memory model cooldown map: `${tierName}_${modelName}` -> timestamp
 const modelCooldownMap = new Map();
@@ -119,7 +119,6 @@ async function callGeminiApi({
   if (forceFreeTierOnly) {
     tiers = tiers.filter(t => t.tier === 'free_tier_500rpd' || t.tier === 'explicit');
     if (tiers.length === 0) {
-      // If only standard key is available, use it without paid fallback
       const primaryKey = (process.env.GEMINI_API_KEY_FREE || process.env.GEMINI_API_KEY || '').trim();
       if (primaryKey) tiers = [{ key: primaryKey, tier: 'free_tier_enforced' }];
     }
@@ -146,10 +145,10 @@ async function callGeminiApi({
     modelsToTry = [...STANDARD_CASCADE];
   }
 
-  if (requestedModel && requestedModel !== 'auto' && requestedModel.trim()) {
-    const resolved = resolveModelName(requestedModel.trim());
-    if (resolved !== 'auto') {
-      modelsToTry = [resolved, ...modelsToTry.filter(m => m !== resolved)];
+  if (requestedModel && requestedModel !== 'auto' && typeof requestedModel === 'string' && requestedModel.trim()) {
+    const directModel = resolveModelName(requestedModel);
+    if (directModel !== 'auto') {
+      modelsToTry = [directModel, ...modelsToTry.filter(m => m !== directModel)];
     }
   }
 
@@ -273,5 +272,7 @@ module.exports = {
   resolveModelName,
   CASCADE_MODELS,
   COMPLEX_CASCADE,
+  STANDARD_CASCADE,
+  CHITCHAT_CASCADE,
   SIMPLE_CASCADE,
 };

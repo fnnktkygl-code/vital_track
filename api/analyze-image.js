@@ -46,6 +46,8 @@ module.exports = async function handler(req, res) {
       }],
       systemInstruction: foodAnalysisPrompt,
       generationConfig: { temperature: 0.1, responseMimeType: 'application/json' },
+      intent: 'complex',
+      requestedModel: 'gemini-3.7-flash',
     });
 
     const rawText = typeof result === 'object' && result.text ? result.text : String(result || '');

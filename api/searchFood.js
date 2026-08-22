@@ -184,7 +184,9 @@ module.exports = async function handler(req, res) {
       apiKey,
       contents: [{ role: 'user', parts: [{ text: `Recherche et analyse vitaliste rigoureuse de l'aliment ou plat : "${cleanQuery}"` }] }],
       systemInstruction: dynamicPrompt,
-      generationConfig: { temperature: 0.1, maxOutputTokens: 2500, responseMimeType: "application/json" }
+      generationConfig: { temperature: 0.1, maxOutputTokens: 2500, responseMimeType: "application/json" },
+      intent: 'standard',
+      requestedModel: 'gemini-3.6-flash'
     });
 
     const rawText = typeof result === 'object' && result.text ? result.text : String(result || '');

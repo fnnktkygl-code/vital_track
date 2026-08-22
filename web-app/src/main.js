@@ -3060,42 +3060,41 @@ const MODEL_TAXONOMY = [
     name: 'Cascade Automatique',
     icon: 'ri-instance-line',
     iconColor: '#34d399',
-    tagline: 'Failover dynamique anti-surcharge',
+    tagline: 'Failover FinOps dynamique (0€ Free ➔ Tier 1 Paid)',
     models: [
-      { id: 'auto', name: 'Cascade Automatique', badge: 'Recommandé', tagline: 'Bascule fluide du meilleur modèle au modèle de secours en cas de quota' }
+      { id: 'auto', name: 'Cascade Automatique', badge: 'Recommandé', tagline: 'Bascule intelligente selon l\'intention (Chit-chat, Standard, Clinique) et failover sans coupure' }
     ]
   },
   {
     id: 'flash',
-    name: 'Gemini Flash (Rapide & Intelligent)',
+    name: 'Gemini 3.6 Flash (Coaching Standard)',
     icon: 'ri-flashlight-fill',
     iconColor: '#4ade80',
-    tagline: 'Vitesse maximale & réponse instantanée',
+    tagline: 'Vitesse maximale & fluidité conversationnelle',
     models: [
-      { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash', badge: 'Principal ⚡', tagline: 'Génération ultra-réactive avec raisonnement multimodal' },
-      { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash', badge: 'Haute Précision', tagline: 'Modèle stable et véloce pour le coaching quotidien' },
-      { id: 'gemini-1.5-flash', name: 'Gemini 1.5 Flash', badge: 'Éprouvé', tagline: 'Haute fiabilité et débit constant' }
+      { id: 'gemini-3.6-flash', name: 'Gemini 3.6 Flash', badge: 'Principal 🌱', tagline: 'Modèle optimal pour le coaching quotidien et l\'analyse nutritionnelle' },
+      { id: 'gemini-3.5-flash', name: 'Gemini 3.5 Flash', badge: 'Secours', tagline: 'Modèle de relais haute disponibilité' }
     ]
   },
   {
     id: 'lite',
-    name: 'Gemini Flash Lite (Haute Disponibilité)',
+    name: 'Gemini Flash Lite (Ultra-Rapide)',
     icon: 'ri-bolt-line',
     iconColor: '#a78bfa',
-    tagline: 'Léger, grand débit & zéro temps d\'attente',
+    tagline: 'Latence minimale & zéro gaspillage de tokens',
     models: [
-      { id: 'gemini-2.0-flash-lite', name: 'Gemini 2.0 Flash Lite', badge: 'Véloce 🚀', tagline: 'Exécution ultrarapide idéale pour les connexions mobiles' },
-      { id: 'gemini-1.5-flash-8b', name: 'Gemini 1.5 Flash 8B', badge: 'Économe', tagline: 'Modèle ultraléger haute tolérance aux quotas' }
+      { id: 'gemini-3.5-flash-lite', name: 'Gemini 3.5 Flash Lite', badge: 'Véloce ⚡', tagline: 'Exécution instantanée (< 250ms), idéal pour le small talk et salutations' },
+      { id: 'gemini-3.1-flash-lite', name: 'Gemini 3.1 Flash Lite', badge: 'Éco 🚀', tagline: 'Modèle ultraléger haute tolérance aux quotas' }
     ]
   },
   {
-    id: 'premium',
-    name: 'Gemini Pro (Raisonnement Avancé)',
+    id: 'complex',
+    name: 'Gemini 3.7 Flash (Raisonnement Clinique & Vision)',
     icon: 'ri-brain-line',
     iconColor: '#fbbf24',
-    tagline: 'Analyse approfondie & protocoles complexes',
+    tagline: 'Synthèse approfondie & vision HD',
     models: [
-      { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro', badge: 'Raisonnement', tagline: 'Synthèse approfondie des terrains biologiques et monographies Raintree' }
+      { id: 'gemini-3.7-flash', name: 'Gemini 3.7 Flash', badge: 'Clinique 🧠', tagline: 'Analyse approfondie des 5 émonctoires, vision de repas et monographies' }
     ]
   }
 ];

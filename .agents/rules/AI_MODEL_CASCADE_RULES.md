@@ -2,21 +2,44 @@
 
 ---
 
-## 1. Principes de Cascade & Tolérance aux Pannes
-Pour toute intégration d'IA (chat, analyse de données, scanner, recherche intelligente), le backend doit utiliser une **architecture en cascade adaptative** :
-1. **Tentative Prioritaire** sur le modèle de référence choisi (ex: `gemini-3.7-flash` ou `gemini-3.5-pro`).
-2. **Interception des Erreurs Quota (429) & Indisponibilité (503)** :
-   - Mise en quarantaine temporaire du modèle (cooldown 60s).
-   - Bascule automatique et transparente vers le modèle de secours suivant (ex: `gemini-3.6-flash`, `gemini-3.5-flash`, `gemma-4-31b-it`).
-3. **Fallback Déterministe Heuristique** :
-   - Si tous les modèles d'IA distants échouent (ex: coupure réseau externe ou quotas épuisés), une fonction heuristique locale garantit une réponse valide structurée.
+## 1. Principes de Cascade FinOps & Dual-Tier Google AI Studio
+VitalTrack fonctionne avec **2 comptes / clés Google AI Studio** :
+1. **Clé Gratuite (`GEMINI_API_KEY_FREE`)** : Projet `projects/437214576475` (500 requêtes/jour gratuites à 0,00 €).
+2. **Clé Payante (`GEMINI_API_KEY_PAID` / `GEMINI_API_KEY`)** : Projet `projects/890941317890` (Tier 1 Paid pour production).
+
+### Comportement d'Exécution :
+- Tout appel d'IA passe en priorité sur la clé gratuite si configurée.
+- En cas d'erreur 429 (quota journalier ou RPM) ou 503 sur la clé gratuite, bascule transparente et instantanée vers la clé payante.
+- Si l'utilisateur fournit `x-gemini-key`, exécuter directement avec sa clé explicite.
 
 ---
 
-## 2. Streaming SSE vs Requêtes Synchrones
+## 2. Matrice des Modèles Actifs (ZÉRO MODÈLE EXPIRÉ, ZÉRO ALIAS)
+Ne jamais utiliser d'anciens modèles expirés (1.5-pro, 1.5-flash, 2.0-flash) ni d'alias inutiles. Utiliser exclusivement les identifiants directs :
+
+- **`gemini-3.7-flash`** :
+  - Deep Search Bilan Clinique (`api/deep-search.js`)
+  - Analyse d'Images repas & iris (`api/analyze-image.js`)
+  - Ingestion documentaire (`api/ingest-pdf.js`, `api/ingest-url.js`)
+  - Requêtes de chat denses et complexes (> 300 caractères)
+  - Cascade de secours : `['gemini-3.7-flash', 'gemini-3.6-flash', 'gemini-3.5-flash']`
+
+- **`gemini-3.6-flash`** :
+  - Chat IA — Questions standard de santé & vitalisme (`api/chat.js`)
+  - Recherche et classification d'aliments (`api/searchFood.js`, `api/analyze-text.js`)
+  - Cascade de secours : `['gemini-3.6-flash', 'gemini-3.7-flash', 'gemini-3.5-flash']`
+
+- **`gemini-3.5-flash-lite`** :
+  - Chat IA — Salutations, politesse & small talk ("salut", "comment tu vas", "ça va")
+  - Transcription audio multimodale (`api/transcribe.js`)
+  - Cascade de secours : `['gemini-3.5-flash-lite', 'gemini-3.1-flash-lite', 'gemini-3.6-flash']`
+
+---
+
+## 3. Streaming SSE vs Requêtes Synchrones
 1. **Contournement des Timeouts Serverless** :
-   - Les environnements serverless (ex: Vercel Free) coupent les connexions après **10 secondes**.
-   - Tout appel d'IA conversationnelle ou d'analyse longue doit obligatoirement utiliser le protocole **Server-Sent Events (`text/event-stream`)**.
-   - Le premier octet (TTFB) doit être émis sous 1 seconde, maintenant ainsi la connexion ouverte pendant toute la génération.
-2. **Parsing Résilient Côté Client** :
-   - Le frontend doit supporter à la fois la lecture en flux de chunks SSE (`ReadableStreamDefaultReader`) et la reconstitution de blocs JSON structurés.
+   - Les environnements serverless coupent les connexions après 10 à 15 secondes.
+   - Les appels de chat utilisent le protocole Server-Sent Events (`text/event-stream`).
+   - Le premier chunk doit être émis sous 1 seconde.
+2. **Bypass RAG Intelligent pour Chit-Chat** :
+   - Les requêtes de salutation n'injectent pas le corpus de 10 Mo pour une latence < 250 ms.

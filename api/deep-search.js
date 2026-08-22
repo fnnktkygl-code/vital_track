@@ -168,12 +168,14 @@ Génère la structure JSON exacte suivante :
   ]
 }`;
 
-    // ── 3. Appel de l'API Gemini 100% Free Tier ──
+    // ── 3. Appel de l'API Gemini FinOps Cascade ──
     const geminiRes = await callGeminiApi({
       apiKey,
       prompt: userPrompt,
       systemInstruction: systemPrompt,
-      forceFreeTierOnly: true,
+      intent: 'complex',
+      requestedModel: 'gemini-3.7-flash',
+      forceFreeTierOnly: false,
       generationConfig: {
         temperature: 0.2,
         maxOutputTokens: 5000,
@@ -181,7 +183,7 @@ Génère la structure JSON exacte suivante :
       }
     });
 
-    const rawText = geminiRes?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const rawText = (typeof geminiRes === 'object' && geminiRes.text) ? geminiRes.text : (geminiRes?.candidates?.[0]?.content?.parts?.[0]?.text || String(geminiRes || ''));
     if (!rawText) {
       return res.status(500).json({ error: "L'analyse n'a pas pu être générée. Veuillez réessayer." });
     }

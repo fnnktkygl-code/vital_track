@@ -53,6 +53,8 @@ Transcribe the user's spoken voice message with absolute accuracy.
       }],
       systemInstruction: systemPrompt,
       generationConfig: { temperature: 0.1 },
+      intent: 'chitchat',
+      requestedModel: 'gemini-3.5-flash-lite',
     });
 
     const rawText = typeof result === 'object' && result.text ? result.text : String(result || '');

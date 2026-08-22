@@ -139,7 +139,7 @@ Restrictions & Allergies strictes: ${restrictions}${memoriesText}
       res.setHeader('Cache-Control', 'no-cache');
       res.setHeader('Connection', 'keep-alive');
       res.setHeader('Access-Control-Expose-Headers', 'X-Model-Used, X-Intent-Tier');
-      res.setHeader('X-Model-Used', result.model || 'gemini-2.5-flash');
+      res.setHeader('X-Model-Used', result.model || 'gemini-3.6-flash');
       res.setHeader('X-Intent-Tier', intent);
       res.flushHeaders();
 
