@@ -595,7 +595,12 @@ export default {
     "photoTagBelly": "Belly / Waist",
     "photoPrivacyBadge": "🔒 100% Local · Zero Cloud Transfer · GDPR Compliant",
     "compareStart": "Starting point",
-    "compareCurrent": "Current point"
+    "compareCurrent": "Current point",
+    "downloadCompareBtn": "Download comparison",
+    "filterAllPhotos": "All photos",
+    "filterThisYear": "This year",
+    "filterThisMonth": "This month",
+    "zoomHint": "Double-click to zoom"
   },
   "auth": {
     "signInWithGoogle": "Sign in with Google",

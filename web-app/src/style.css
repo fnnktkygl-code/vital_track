@@ -9449,6 +9449,8 @@ select.ds-select option {
   justify-content: center;
   background: #000;
   overflow: hidden;
+  position: relative;
+  cursor: zoom-in;
 }
 
 .weight-lightbox-img {
@@ -9456,12 +9458,35 @@ select.ds-select option {
   max-height: 70vh;
   object-fit: contain;
   display: block;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: center center;
+}
+
+.weight-lightbox-img.zoomed {
+  transform: scale(2.2);
+  cursor: zoom-out;
 }
 
 .weight-lightbox-footer {
   padding: 14px 20px;
   border-top: 1px solid var(--border);
   background: var(--surface-hover);
+}
+
+/* ═══════ SVG CHART PHOTO THUMBNAIL PINS ═══════ */
+.chart-point-group.has-photo {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.chart-point-group.has-photo:hover {
+  transform: scale(1.15);
+  transform-origin: center center;
+}
+
+.weight-privacy-blur .chart-photo-thumb,
+.weight-privacy-blur .chart-photo-circle {
+  filter: blur(8px) brightness(0.85) !important;
 }
 
 

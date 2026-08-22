@@ -312,7 +312,7 @@ class VitalTrackAuth {
   /**
    * Réinitialise toutes les données de santé de l'utilisateur en conservant le compte (Remise à zéro)
    */
-  resetHealthData() {
+  async resetHealthData() {
     if (!this.currentUser) return;
     const uid = this.currentUser.uid;
     const prefix = `${this.storageKeyPrefix}${uid}-`;
@@ -327,8 +327,13 @@ class VitalTrackAuth {
 
     keysToRemove.forEach(k => localStorage.removeItem(k));
 
+    // Purge IndexedDB photos (RGPD Art. 17)
+    if (typeof window !== 'undefined' && window.clearAllWeightPhotos) {
+      try { await window.clearAllWeightPhotos(); } catch (e) { console.warn('Error clearing photos on reset:', e); }
+    }
+
     if (window.showToast) {
-      window.showToast('🔄 Toutes vos données de santé et historiques ont été réinitialisés.', 'info');
+      window.showToast('🔄 Toutes vos données de santé, historiques et photos ont été réinitialisés.', 'info');
     }
 
     setTimeout(() => {
@@ -339,7 +344,7 @@ class VitalTrackAuth {
   /**
    * Supprime DÉFINITIVEMENT le compte et TOUTES les données associées (Droit à l'oubli - Art. 17 RGPD)
    */
-  deleteAccountAndAllData() {
+  async deleteAccountAndAllData() {
     if (!this.currentUser) return;
     const uid = this.currentUser.uid;
     const prefix = `${this.storageKeyPrefix}${uid}-`;
@@ -354,6 +359,11 @@ class VitalTrackAuth {
     }
 
     keysToRemove.forEach(k => localStorage.removeItem(k));
+
+    // Purge intégrale et irréversible des photos et snapshots IndexedDB
+    if (typeof window !== 'undefined' && window.clearAllWeightPhotos) {
+      try { await window.clearAllWeightPhotos(); } catch (e) { console.warn('Error clearing photos on delete:', e); }
+    }
 
     // Supprimer la session
     this._saveSession(null);

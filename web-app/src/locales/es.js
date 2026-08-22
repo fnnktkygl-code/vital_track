@@ -595,7 +595,12 @@ export default {
     "photoTagBelly": "Vientre / Abdomen",
     "photoPrivacyBadge": "🔒 100% Local · Cero transferencia a la Nube · Conforme RGPD",
     "compareStart": "Punto de partida",
-    "compareCurrent": "Punto actual"
+    "compareCurrent": "Punto actual",
+    "downloadCompareBtn": "Descargar comparación",
+    "filterAllPhotos": "Todas las fotos",
+    "filterThisYear": "Este año",
+    "filterThisMonth": "Este mes",
+    "zoomHint": "Doble clic para hacer zoom"
   },
   "auth": {
     "signInWithGoogle": "Iniciar sesión con Google",

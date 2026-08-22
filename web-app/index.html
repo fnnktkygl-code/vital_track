@@ -654,6 +654,11 @@
 
           <!-- ══════ VIEW 2: PHOTO EVOLUTION GALLERY ══════ -->
           <div id="weightGalleryView" class="weight-subview" style="display:none;">
+            <div class="weight-gallery-filters" id="weightGalleryFilters" style="display:flex; gap:6px; margin-bottom:12px; overflow-x:auto;">
+              <button type="button" class="period-btn active" data-filter="all" onclick="filterWeightGallery('all')"><span data-i18n="weight.filterAllPhotos">Toutes les photos</span></button>
+              <button type="button" class="period-btn" data-filter="year" onclick="filterWeightGallery('year')"><span data-i18n="weight.filterThisYear">Cette année</span></button>
+              <button type="button" class="period-btn" data-filter="month" onclick="filterWeightGallery('month')"><span data-i18n="weight.filterThisMonth">Ce mois-ci</span></button>
+            </div>
             <div id="weightGalleryEmptyState" class="empty-state-card" style="display:none;">
               <i class="ri-camera-lens-line"></i>
               <p data-i18n="dashboard.weightGalleryEmpty">Aucune photo corporelle enregistrée. Ajoutez-en une lors de votre prochaine pesée !</p>
@@ -706,6 +711,13 @@
                 </div>
               </div>
               <p style="font-size:0.78rem; color:var(--text-dim); text-align:center; margin-top:8px;" data-i18n="dashboard.weightCompareSubtitle">Glissez le curseur pour observer votre transformation physique</p>
+
+              <!-- Download Comparison Card CTA -->
+              <div style="display:flex; justify-content:center; margin-top:12px;">
+                <button type="button" class="btn-secondary" id="weightDownloadCompareBtn" onclick="downloadWeightComparisonCard()" style="font-size:0.82rem; padding:8px 16px; display:inline-flex; align-items:center; gap:8px;">
+                  <i class="ri-download-2-line"></i> <span data-i18n="weight.downloadCompareBtn">Télécharger le comparatif</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -2682,14 +2694,14 @@
             <div class="weight-photo-preview-details">
               <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
                 <span id="weightPhotoSizeLabel" style="font-size:0.75rem;font-weight:700;color:var(--accent);">~95 Ko · Nettoyé</span>
-                <span style="font-size:0.72rem;color:var(--text-dim);">Cadrage :</span>
+                <span style="font-size:0.72rem;color:var(--text-dim);">Cadrage (optionnel) :</span>
               </div>
               <!-- Framing tag selector -->
               <div class="weight-photo-tags" id="weightPhotoTagSelector">
-                <button type="button" class="photo-tag-btn active" data-tag="belly" onclick="setWeightPhotoTag('belly')"><span data-i18n="weight.photoTagBelly">Ventre</span></button>
                 <button type="button" class="photo-tag-btn" data-tag="front" onclick="setWeightPhotoTag('front')"><span data-i18n="weight.photoTagFront">Face</span></button>
                 <button type="button" class="photo-tag-btn" data-tag="side" onclick="setWeightPhotoTag('side')"><span data-i18n="weight.photoTagSide">Profil</span></button>
                 <button type="button" class="photo-tag-btn" data-tag="back" onclick="setWeightPhotoTag('back')"><span data-i18n="weight.photoTagBack">Dos</span></button>
+                <button type="button" class="photo-tag-btn" data-tag="belly" onclick="setWeightPhotoTag('belly')"><span data-i18n="weight.photoTagBelly">Ventre</span></button>
               </div>
             </div>
           </div>
@@ -3280,10 +3292,13 @@
     <div class="weight-lightbox-content glass" onclick="event.stopPropagation()">
       <button class="modal-close" onclick="closeWeightLightbox()"><i class="ri-close-line"></i></button>
       <div class="weight-lightbox-header">
-        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-          <span id="lightboxWeightVal" style="font-size:1.3rem; font-weight:800; color:var(--text);">-- kg</span>
-          <span id="lightboxDateVal" style="font-size:0.85rem; color:var(--text-dim);">--</span>
-          <span id="lightboxTagBadge" class="trend-badge" style="font-size:0.75rem; background:rgba(52,211,153,0.15); color:var(--accent);">Face</span>
+        <div style="display:flex; align-items:center; justify-content:space-between; width:100%; flex-wrap:wrap; gap:8px;">
+          <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+            <span id="lightboxWeightVal" style="font-size:1.3rem; font-weight:800; color:var(--text);">-- kg</span>
+            <span id="lightboxDateVal" style="font-size:0.85rem; color:var(--text-dim);">--</span>
+            <span id="lightboxTagBadge" class="trend-badge" style="font-size:0.75rem; background:rgba(52,211,153,0.15); color:var(--accent); display:none;"></span>
+          </div>
+          <span class="lightbox-zoom-hint" style="font-size:0.72rem; color:var(--text-dim); display:inline-flex; align-items:center; gap:4px;"><i class="ri-zoom-in-line"></i> <span data-i18n="weight.zoomHint">Double-cliquez pour zoomer</span></span>
         </div>
       </div>
       <div class="weight-lightbox-body">

@@ -192,6 +192,29 @@ export async function getAllWeightPhotos() {
   }
 }
 
+export async function clearAllWeightPhotos() {
+  try {
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('vt_wphoto_')) {
+        localStorage.removeItem(key);
+      }
+    }
+    const db = await getIDB();
+    if (!db) return true;
+    return new Promise((resolve) => {
+      const tx = db.transaction(IDB_STORE_PHOTOS, 'readwrite');
+      const store = tx.objectStore(IDB_STORE_PHOTOS);
+      const req = store.clear();
+      req.onsuccess = () => resolve(true);
+      req.onerror = () => resolve(false);
+    });
+  } catch (err) {
+    console.warn('[Storage] Error clearing all weight photos:', err);
+    return false;
+  }
+}
+
 // ═══════ 3. GESTION DES CLÉS ET ISOLEMENT UTILISATEUR ═══════
 export function getUserStorageKey(k) {
   const user = (typeof window !== 'undefined' && window.vitalTrackAuth) ? window.vitalTrackAuth.getCurrentUser() : null;
@@ -418,7 +441,8 @@ export const store = {
   savePhoto: saveWeightPhoto,
   getPhoto: getWeightPhoto,
   deletePhoto: deleteWeightPhoto,
-  getAllPhotos: getAllWeightPhotos
+  getAllPhotos: getAllWeightPhotos,
+  clearAllPhotos: clearAllWeightPhotos
 };
 
 // Initialisation globale
@@ -431,4 +455,5 @@ if (typeof window !== 'undefined') {
   window.getWeightPhoto = getWeightPhoto;
   window.deleteWeightPhoto = deleteWeightPhoto;
   window.getAllWeightPhotos = getAllWeightPhotos;
+  window.clearAllWeightPhotos = clearAllWeightPhotos;
 }

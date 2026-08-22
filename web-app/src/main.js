@@ -11048,9 +11048,10 @@ function sendQuickReply(btn, text) {
 // ═══════ WEIGHT TRACKING, PHOTOS & BODY EVOLUTION ENGINE ═══════
 window._editingWeightId = null;
 let pendingWeightPhotoDataUrl = null;
-let pendingWeightPhotoTag = 'belly';
+let pendingWeightPhotoTag = null; // 100% optional, no forced default
 let _weightPhotoRemoved = false;
 let currentWeightView = 'chart'; // 'chart' | 'gallery' | 'compare'
+let currentWeightGalleryFilter = 'all'; // 'all' | 'year' | 'month'
 
 // Client-side image compression & EXIF metadata stripping via HTML5 Canvas
 async function compressWeightImage(fileOrDataUrl, maxWidth = 1200, maxHeight = 1200, quality = 0.82) {
@@ -11108,7 +11109,6 @@ async function handleWeightPhotoSelect(event) {
     if (previewCard) previewCard.style.display = 'flex';
     if (dropzone) dropzone.style.display = 'none';
 
-    if (!pendingWeightPhotoTag) pendingWeightPhotoTag = 'belly';
     setWeightPhotoTag(pendingWeightPhotoTag);
   } catch (err) {
     console.error('Error processing weight photo:', err);
@@ -11121,20 +11121,26 @@ async function handleWeightPhotoSelect(event) {
 function removeWeightPhoto() {
   pendingWeightPhotoDataUrl = null;
   _weightPhotoRemoved = true;
+  pendingWeightPhotoTag = null;
   const previewCard = document.getElementById('weightPhotoPreviewCard');
   const dropzone = document.getElementById('weightPhotoDropzone');
   const previewImg = document.getElementById('weightPhotoPreviewImg');
   if (previewImg) previewImg.src = '';
   if (previewCard) previewCard.style.display = 'none';
   if (dropzone) dropzone.style.display = 'block';
+  setWeightPhotoTag(null);
 }
 
 function setWeightPhotoTag(tag) {
-  pendingWeightPhotoTag = tag;
+  if (pendingWeightPhotoTag === tag) {
+    pendingWeightPhotoTag = null; // Toggle off if clicked again
+  } else {
+    pendingWeightPhotoTag = tag;
+  }
   const selector = document.getElementById('weightPhotoTagSelector');
   if (selector) {
     selector.querySelectorAll('.photo-tag-btn').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.tag === tag);
+      btn.classList.toggle('active', btn.dataset.tag === pendingWeightPhotoTag);
     });
   }
 }
@@ -11145,7 +11151,7 @@ function openWeightModal() {
 
   window._editingWeightId = null;
   pendingWeightPhotoDataUrl = null;
-  pendingWeightPhotoTag = 'belly';
+  pendingWeightPhotoTag = null;
   _weightPhotoRemoved = false;
   removeWeightPhoto();
 
@@ -11183,6 +11189,7 @@ function closeWeightModal(e) {
   if (!e || e.target === document.getElementById('weightModal') || e.target.closest?.('.modal-close')) {
     window._editingWeightId = null;
     pendingWeightPhotoDataUrl = null;
+    pendingWeightPhotoTag = null;
     _weightPhotoRemoved = false;
     document.getElementById('weightModal')?.classList.remove('open');
   }
@@ -11191,7 +11198,7 @@ function closeWeightModal(e) {
 function cancelWeightEdit() {
   window._editingWeightId = null;
   pendingWeightPhotoDataUrl = null;
-  pendingWeightPhotoTag = 'belly';
+  pendingWeightPhotoTag = null;
   _weightPhotoRemoved = false;
   removeWeightPhoto();
 
@@ -11261,7 +11268,7 @@ async function editWeightEntry(entryId) {
     const photoData = await window.getWeightPhoto(entry.id);
     if (photoData) {
       pendingWeightPhotoDataUrl = photoData;
-      pendingWeightPhotoTag = entry.photoTag || 'belly';
+      pendingWeightPhotoTag = entry.photoTag || null;
       const previewImg = document.getElementById('weightPhotoPreviewImg');
       if (previewImg) previewImg.src = photoData;
       const previewCard = document.getElementById('weightPhotoPreviewCard');
@@ -11305,7 +11312,7 @@ function sanitizeWeightHistory(history) {
       weight: Math.round(w * 10) / 10,
       note: item.note || '',
       hasPhoto: !!item.hasPhoto,
-      photoTag: item.photoTag || 'belly'
+      photoTag: item.photoTag || undefined
     });
   });
   return Array.from(map.values()).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
@@ -11339,7 +11346,7 @@ async function saveWeightEntry() {
     history[existingIdx].note = note;
     if (pendingWeightPhotoDataUrl) {
       history[existingIdx].hasPhoto = true;
-      history[existingIdx].photoTag = pendingWeightPhotoTag || 'belly';
+      history[existingIdx].photoTag = pendingWeightPhotoTag || undefined;
       if (window.saveWeightPhoto) await window.saveWeightPhoto(entryId, pendingWeightPhotoDataUrl);
     } else if (_weightPhotoRemoved) {
       history[existingIdx].hasPhoto = false;
@@ -11355,7 +11362,7 @@ async function saveWeightEntry() {
       weight: w,
       note,
       hasPhoto: !!pendingWeightPhotoDataUrl,
-      photoTag: pendingWeightPhotoDataUrl ? (pendingWeightPhotoTag || 'belly') : undefined
+      photoTag: pendingWeightPhotoDataUrl ? (pendingWeightPhotoTag || undefined) : undefined
     };
     if (pendingWeightPhotoDataUrl && window.saveWeightPhoto) {
       await window.saveWeightPhoto(entryId, pendingWeightPhotoDataUrl);
@@ -11366,13 +11373,14 @@ async function saveWeightEntry() {
 
   window._editingWeightId = null;
   pendingWeightPhotoDataUrl = null;
+  pendingWeightPhotoTag = null;
   _weightPhotoRemoved = false;
   history = sanitizeWeightHistory(history);
   store.set('weight_history', history);
 
-  renderWeightChart();
-  renderWeightGallery();
-  renderWeightCompare();
+  await renderWeightChart();
+  await renderWeightGallery();
+  await renderWeightCompare();
   renderWeightHistoryInModal();
   updateWeightBadge();
   document.getElementById('weightModal')?.classList.remove('open');
@@ -11408,9 +11416,9 @@ async function deleteWeightEntry(idOrIdx) {
   history.splice(idx, 1);
   store.set('weight_history', history);
   showToast('Pesée supprimée.', 'info');
-  renderWeightChart();
-  renderWeightGallery();
-  renderWeightCompare();
+  await renderWeightChart();
+  await renderWeightGallery();
+  await renderWeightCompare();
   renderWeightHistoryInModal();
   updateWeightBadge();
 };
@@ -11838,14 +11846,22 @@ function switchWeightView(viewName) {
   else if (viewName === 'compare') renderWeightCompare();
 }
 
-// ═══════ PHOTO EVOLUTION GALLERY ═══════
+// ═══════ PHOTO EVOLUTION GALLERY (DECREASING DATE ORDER) ═══════
+function filterWeightGallery(filter) {
+  currentWeightGalleryFilter = filter;
+  document.querySelectorAll('#weightGalleryFilters .period-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.filter === filter);
+  });
+  renderWeightGallery();
+}
+
 async function renderWeightGallery() {
   const grid = document.getElementById('weightGalleryGrid');
   const empty = document.getElementById('weightGalleryEmptyState');
   if (!grid || !empty) return;
 
   const history = sanitizeWeightHistory(store.get('weight_history', []));
-  const photoEntries = history.filter(h => h.hasPhoto);
+  let photoEntries = history.filter(h => h.hasPhoto);
   updateWeightBadge(photoEntries.length);
 
   if (photoEntries.length === 0) {
@@ -11854,25 +11870,43 @@ async function renderWeightGallery() {
     return;
   }
 
+  // Strictly sort by date descending (most recent date in pole position)
+  photoEntries.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+  // Filter by selected period
+  const now = new Date();
+  if (currentWeightGalleryFilter === 'year') {
+    photoEntries = photoEntries.filter(e => new Date(e.date).getFullYear() === now.getFullYear());
+  } else if (currentWeightGalleryFilter === 'month') {
+    photoEntries = photoEntries.filter(e => {
+      const d = new Date(e.date);
+      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    });
+  }
+
+  if (photoEntries.length === 0) {
+    grid.innerHTML = '<p class="empty-state-sm" style="text-align:center;padding:24px;grid-column:1/-1;color:var(--text-dim);">Aucune photo pour cette période sélectionnée.</p>';
+    empty.style.display = 'none';
+    return;
+  }
+
   empty.style.display = 'none';
   const startWeight = history.length > 0 ? history[0].weight : null;
 
-  // Render cards in reverse chronological order
-  const reversed = [...photoEntries].reverse();
-  const cardsHtml = await Promise.all(reversed.map(async (entry) => {
+  const cardsHtml = await Promise.all(photoEntries.map(async (entry) => {
     const photoSrc = (window.getWeightPhoto ? await window.getWeightPhoto(entry.id) : null) || '';
     const d = new Date(entry.date);
     const dateFormatted = isNaN(d.getTime()) ? entry.date : d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
     const deltaFromStart = startWeight !== null ? Math.round((entry.weight - startWeight) * 10) / 10 : 0;
     const deltaBadge = deltaFromStart !== 0 ? (deltaFromStart < 0 ? `📉 ${deltaFromStart} kg` : `📈 +${deltaFromStart} kg`) : 'Départ';
     const tagLabels = { belly: 'Ventre', front: 'Face', side: 'Profil', back: 'Dos' };
-    const tagLabel = tagLabels[entry.photoTag] || 'Corps';
+    const tagLabel = entry.photoTag ? (tagLabels[entry.photoTag] || entry.photoTag) : null;
 
     return `
       <div class="weight-gallery-card" onclick="openWeightLightbox('${entry.id}')" style="cursor:pointer;">
         <div class="weight-gallery-img-wrap">
           <img src="${photoSrc || 'data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\'><rect fill=\'%231e293b\' width=\'100\' height=\'100\'/></svg>'}" alt="Photo pesée" class="weight-gallery-img" loading="lazy" />
-          <span class="weight-gallery-tag-pill">${tagLabel}</span>
+          ${tagLabel ? `<span class="weight-gallery-tag-pill">${tagLabel}</span>` : ''}
         </div>
         <div class="weight-gallery-info">
           <div class="weight-gallery-header-row">
@@ -11899,7 +11933,7 @@ function updateWeightBadge(count) {
   badge.textContent = String(count);
 }
 
-// ═══════ BEFORE / AFTER SPLIT COMPARATOR ═══════
+// ═══════ BEFORE / AFTER SPLIT COMPARATOR & CARD EXPORT ═══════
 async function renderWeightCompare() {
   const container = document.getElementById('weightCompareContainer');
   const emptyBanner = document.getElementById('weightCompareNeedTwoBanner');
@@ -11908,7 +11942,8 @@ async function renderWeightCompare() {
   if (!container || !emptyBanner || !selectBefore || !selectAfter) return;
 
   const history = sanitizeWeightHistory(store.get('weight_history', []));
-  const photoEntries = history.filter(h => h.hasPhoto);
+  // Sort chronologically ascending (oldest first to newest last)
+  const photoEntries = history.filter(h => h.hasPhoto).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   if (photoEntries.length < 2) {
     container.style.display = 'none';
@@ -11922,12 +11957,12 @@ async function renderWeightCompare() {
   const curBeforeId = selectBefore.value;
   const curAfterId = selectAfter.value;
 
+  const tagLabels = { belly: 'Ventre', front: 'Face', side: 'Profil', back: 'Dos' };
   const optionsHtml = photoEntries.map(entry => {
     const d = new Date(entry.date);
     const dateFormatted = isNaN(d.getTime()) ? entry.date : d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
-    const tagLabels = { belly: 'Ventre', front: 'Face', side: 'Profil', back: 'Dos' };
-    const tag = tagLabels[entry.photoTag] || 'Corps';
-    return `<option value="${entry.id}">${dateFormatted} — ${entry.weight} kg (${tag})</option>`;
+    const tag = entry.photoTag ? ` (${tagLabels[entry.photoTag] || entry.photoTag})` : '';
+    return `<option value="${entry.id}">${dateFormatted} — ${entry.weight} kg${tag}</option>`;
   }).join('');
 
   selectBefore.innerHTML = optionsHtml;
@@ -11993,6 +12028,117 @@ async function updateWeightComparison() {
     const aSrc = await window.getWeightPhoto(afterEntry.id);
     if (aSrc) imgAfter.src = aSrc;
   }
+}
+
+async function downloadWeightComparisonCard() {
+  const selectBefore = document.getElementById('weightCompareSelectBefore');
+  const selectAfter = document.getElementById('weightCompareSelectAfter');
+  if (!selectBefore || !selectAfter) return;
+
+  const beforeId = selectBefore.value;
+  const afterId = selectAfter.value;
+
+  const history = sanitizeWeightHistory(store.get('weight_history', []));
+  const beforeEntry = history.find(e => e.id === beforeId);
+  const afterEntry = history.find(e => e.id === afterId);
+  if (!beforeEntry || !afterEntry) return;
+
+  const bSrc = (window.getWeightPhoto ? await window.getWeightPhoto(beforeEntry.id) : null) || '';
+  const aSrc = (window.getWeightPhoto ? await window.getWeightPhoto(afterEntry.id) : null) || '';
+
+  if (!bSrc || !aSrc) {
+    showToast('Photos non disponibles pour générer la carte de comparaison.', 'error');
+    return;
+  }
+
+  const canvas = document.createElement('canvas');
+  canvas.width = 1200;
+  canvas.height = 800;
+  const ctx = canvas.getContext('2d');
+
+  // Background dark gradient
+  const grad = ctx.createLinearGradient(0, 0, 1200, 800);
+  grad.addColorStop(0, '#0a0f18');
+  grad.addColorStop(1, '#111827');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, 1200, 800);
+
+  // Header Title
+  ctx.fillStyle = '#34d399';
+  ctx.font = 'bold 28px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  ctx.fillText('⚡ VITALTRACK · SUIVI DE TRANSFORMATION', 50, 60);
+
+  const deltaKg = Math.round((afterEntry.weight - beforeEntry.weight) * 10) / 10;
+  const timeDiffMs = Math.abs(new Date(afterEntry.date).getTime() - new Date(beforeEntry.date).getTime());
+  const daysDiff = Math.max(0, Math.round(timeDiffMs / (1000 * 60 * 60 * 24)));
+  const deltaStr = `${deltaKg > 0 ? '+' : ''}${deltaKg} kg (${daysDiff} jours)`;
+  ctx.fillStyle = deltaKg <= 0 ? '#34d399' : '#f87171';
+  ctx.font = 'bold 24px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  ctx.fillText(deltaStr, 1200 - 50 - ctx.measureText(deltaStr).width, 60);
+
+  const loadImg = (src) => new Promise(res => {
+    const im = new Image();
+    im.onload = () => res(im);
+    im.onerror = () => res(null);
+    im.src = src;
+  });
+
+  const [imgB, imgA] = await Promise.all([loadImg(bSrc), loadImg(aSrc)]);
+
+  const cardW = 520;
+  const cardH = 580;
+  const cardY = 100;
+
+  // Helper rounded rect draw
+  function drawRoundedImg(img, x, y, w, h, radius, label, dateText, valText, color) {
+    if (!img) return;
+    ctx.save();
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(x, y, w, h, radius);
+    else ctx.rect(x, y, w, h);
+    ctx.clip();
+    
+    // Scale crop cover
+    const scale = Math.max(w / img.width, h / img.height);
+    const sw = img.width * scale;
+    const sh = img.height * scale;
+    const sx = x + (w - sw) / 2;
+    const sy = y + (h - sh) / 2;
+    ctx.drawImage(img, sx, sy, sw, sh);
+    ctx.restore();
+
+    // Dark tag banner
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(x + 20, y + h - 75, w - 40, 55, 12);
+    else ctx.rect(x + 20, y + h - 75, w - 40, 55);
+    ctx.fill();
+
+    ctx.fillStyle = color;
+    ctx.font = 'bold 20px -apple-system, sans-serif';
+    ctx.fillText(`${label} : ${valText} kg`, x + 35, y + h - 42);
+
+    ctx.fillStyle = '#94a3b8';
+    ctx.font = '14px -apple-system, sans-serif';
+    ctx.fillText(dateText, x + 35, y + h - 22);
+  }
+
+  const dateB = new Date(beforeEntry.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+  const dateA = new Date(afterEntry.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+
+  drawRoundedImg(imgB, 60, cardY, cardW, cardH, 20, 'AVANT', dateB, beforeEntry.weight, '#ffffff');
+  drawRoundedImg(imgA, 620, cardY, cardW, cardH, 20, 'APRÈS', dateA, afterEntry.weight, '#34d399');
+
+  // Footer
+  ctx.fillStyle = '#64748b';
+  ctx.font = '14px -apple-system, sans-serif';
+  ctx.fillText('Confidentiel & 100% Local · VitalTrack AI Companion · vitaltrackapp.vercel.app', 60, 750);
+
+  const link = document.createElement('a');
+  link.download = `vitaltrack-avant-apres-${new Date().toISOString().split('T')[0]}.png`;
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+  showToast('📸 Carte de transformation téléchargée !', 'success');
 }
 
 function initWeightSplitSlider() {
@@ -12078,7 +12224,12 @@ function initWeightPrivacyMode() {
   }
 }
 
-// ═══════ LIGHTBOX MODAL ═══════
+// ═══════ LIGHTBOX MODAL WITH ZOOM ═══════
+function toggleLightboxZoom() {
+  const img = document.getElementById('lightboxImg');
+  if (img) img.classList.toggle('zoomed');
+}
+
 async function openWeightLightbox(entryId) {
   const history = sanitizeWeightHistory(store.get('weight_history', []));
   const entry = history.find(e => e.id === entryId);
@@ -12094,14 +12245,26 @@ async function openWeightLightbox(entryId) {
 
   if (!lightbox || !img) return;
 
+  img.classList.remove('zoomed');
+  img.onclick = toggleLightboxZoom;
+  img.ondblclick = toggleLightboxZoom;
+
   const photoSrc = (window.getWeightPhoto ? await window.getWeightPhoto(entry.id) : null) || '';
   img.src = photoSrc;
 
   if (wVal) wVal.textContent = `${entry.weight} kg`;
   const d = new Date(entry.date);
   if (dVal) dVal.textContent = isNaN(d.getTime()) ? entry.date : d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-  const tagLabels = { belly: 'Ventre / Abdomen', front: 'Face', side: 'Profil', back: 'Dos' };
-  if (tagBadge) tagBadge.textContent = tagLabels[entry.photoTag] || 'Physiologie';
+  
+  const tagLabels = { belly: 'Ventre', front: 'Face', side: 'Profil', back: 'Dos' };
+  if (tagBadge) {
+    if (entry.photoTag) {
+      tagBadge.textContent = tagLabels[entry.photoTag] || entry.photoTag;
+      tagBadge.style.display = 'inline-block';
+    } else {
+      tagBadge.style.display = 'none';
+    }
+  }
 
   if (noteWrap && noteVal) {
     if (entry.note) {
@@ -12118,6 +12281,8 @@ async function openWeightLightbox(entryId) {
 function closeWeightLightbox(e) {
   if (!e || e.target === document.getElementById('weightPhotoLightbox') || e.target.closest?.('.modal-close')) {
     const lightbox = document.getElementById('weightPhotoLightbox');
+    const img = document.getElementById('lightboxImg');
+    if (img) img.classList.remove('zoomed');
     if (lightbox) lightbox.style.display = 'none';
   }
 }
@@ -12155,7 +12320,7 @@ function getSmoothSplinePath(points) {
   return d;
 }
 
-function renderWeightChart() {
+async function renderWeightChart() {
   const container = document.getElementById('weightChartContainer');
   const empty = document.getElementById('weightChartEmpty');
   const svg = document.getElementById('weightChartSvg');
@@ -12354,7 +12519,7 @@ function renderWeightChart() {
   const svgWidth = Math.max(320, container.clientWidth || 600);
   const svgHeight = 260;
 
-  const margin = { top: 32, right: 35, bottom: 48, left: 68 };
+  const margin = { top: 38, right: 35, bottom: 48, left: 68 };
   const chartW = svgWidth - margin.left - margin.right;
   const chartH = svgHeight - margin.top - margin.bottom;
 
@@ -12425,26 +12590,48 @@ function renderWeightChart() {
     `;
   }
 
-  // Points and Non-Overlapping X date labels
+  // Fetch photos for thumbnail markers in SVG
+  let patternsHtml = '';
   let pointsHtml = '';
   let xLabelsHtml = '';
   let lastRenderedX = -999;
 
-  coords.forEach((pt, i) => {
+  for (let i = 0; i < coords.length; i++) {
+    const pt = coords[i];
     const isFirst = (i === 0);
     const isLast = (i === coords.length - 1);
     const d = new Date(pt.entry.date);
     const dateFormatted = isNaN(d.getTime()) ? pt.entry.date : d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
     const hasPhoto = !!pt.entry.hasPhoto;
 
-    // Sophisticated point marker with camera glow if photo attached
-    pointsHtml += `
-      <g class="chart-point-group ${hasPhoto ? 'has-photo' : ''}" data-idx="${i}" ${hasPhoto ? `onclick="openWeightLightbox('${pt.entry.id}')" style="cursor:pointer;"` : ''}>
-        <circle cx="${pt.x}" cy="${pt.y}" r="${hasPhoto ? 9 : 7}" fill="${hasPhoto ? '#60a5fa' : 'var(--accent, #34d399)'}" opacity="${hasPhoto ? '0.35' : '0.18'}" />
-        <circle cx="${pt.x}" cy="${pt.y}" r="${hasPhoto ? 5.5 : 4}" fill="${hasPhoto ? '#60a5fa' : 'var(--accent, #34d399)'}" stroke="#0f172a" stroke-width="2" />
-        ${hasPhoto ? `<circle cx="${pt.x}" cy="${pt.y}" r="2" fill="#fff" />` : ''}
-      </g>
-    `;
+    if (hasPhoto) {
+      const pSrc = (window.getWeightPhoto ? await window.getWeightPhoto(pt.entry.id) : null) || '';
+      const pId = `thumb_${pt.entry.id.replace(/[^a-zA-Z0-9_-]/g, '_')}`;
+      if (pSrc) {
+        patternsHtml += `
+          <pattern id="${pId}" patternUnits="objectBoundingBox" width="1" height="1">
+            <image href="${pSrc}" width="28" height="28" preserveAspectRatio="xMidYMid slice" />
+          </pattern>
+        `;
+      }
+
+      // Miniature Photo Pin directly above the curve point
+      pointsHtml += `
+        <g class="chart-point-group has-photo" data-idx="${i}" onclick="openWeightLightbox('${pt.entry.id}')" title="Photo liée · Cliquer pour agrandir">
+          <line x1="${pt.x}" y1="${pt.y}" x2="${pt.x}" y2="${pt.y - 18}" stroke="#60a5fa" stroke-width="1.5" stroke-dasharray="2,2" opacity="0.7" />
+          <circle cx="${pt.x}" cy="${pt.y - 18}" r="13" fill="${pSrc ? `url(#${pId})` : '#1e293b'}" stroke="#60a5fa" stroke-width="2" class="chart-photo-thumb" />
+          <circle cx="${pt.x}" cy="${pt.y - 18}" r="13" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1" />
+          <circle cx="${pt.x}" cy="${pt.y}" r="4.5" fill="#60a5fa" stroke="#0f172a" stroke-width="2" />
+        </g>
+      `;
+    } else {
+      pointsHtml += `
+        <g class="chart-point-group" data-idx="${i}">
+          <circle cx="${pt.x}" cy="${pt.y}" r="7" fill="var(--accent, #34d399)" opacity="0.18" />
+          <circle cx="${pt.x}" cy="${pt.y}" r="4" fill="var(--accent, #34d399)" stroke="#0f172a" stroke-width="2" />
+        </g>
+      `;
+    }
 
     // Only render label if not colliding with last rendered label (min 50px clearance)
     const isFarEnough = (pt.x - lastRenderedX >= 50);
@@ -12465,7 +12652,7 @@ function renderWeightChart() {
       `;
       lastRenderedX = pt.x;
     }
-  });
+  }
 
   svg.setAttribute('viewBox', `0 0 ${svgWidth} ${svgHeight}`);
   svg.innerHTML = `
@@ -12477,6 +12664,7 @@ function renderWeightChart() {
       <filter id="glowLine" x="-20%" y="-20%" width="140%" height="140%">
         <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="rgba(52, 211, 153, 0.4)" />
       </filter>
+      ${patternsHtml}
     </defs>
     ${gridLinesHtml}
     ${yLabelsHtml}
@@ -12532,7 +12720,7 @@ function renderWeightChart() {
       const deltaText = prevEntry ? (nearest.entry.weight - prevEntry.weight).toFixed(1) : null;
       const deltaFormatted = deltaText !== null ? (parseFloat(deltaText) <= 0 ? `📉 ${deltaText} kg` : `📈 +${deltaText} kg`) : 'Première pesée';
       const tagLabels = { belly: 'Ventre', front: 'Face', side: 'Profil', back: 'Dos' };
-      const tagLabel = nearest.entry.hasPhoto ? (tagLabels[nearest.entry.photoTag] || 'Corps') : '';
+      const tagLabel = nearest.entry.hasPhoto && nearest.entry.photoTag ? (tagLabels[nearest.entry.photoTag] || nearest.entry.photoTag) : '';
 
       tooltip.innerHTML = `
         <div style="font-weight:800; font-size:0.92rem; color:var(--text); display:flex; align-items:baseline; gap:8px;">
@@ -12541,7 +12729,7 @@ function renderWeightChart() {
         </div>
         <div style="font-size:0.75rem; color:var(--text-dim); margin-top:3px;">${dateStr}</div>
         ${nearest.entry.note ? `<div style="font-size:0.74rem; color:#93c5fd; margin-top:4px; font-style:italic;">« ${esc(nearest.entry.note)} »</div>` : ''}
-        ${nearest.entry.hasPhoto ? `<div style="margin-top:6px; padding-top:6px; border-top:1px solid rgba(255,255,255,0.1); font-size:0.72rem; color:#60a5fa; display:flex; align-items:center; gap:4px; cursor:pointer;" onclick="openWeightLightbox('${nearest.entry.id}')"><i class="ri-camera-fill"></i> 📷 Photo liée (${tagLabel}) · Agrandir</div>` : ''}
+        ${nearest.entry.hasPhoto ? `<div style="margin-top:6px; padding-top:6px; border-top:1px solid rgba(255,255,255,0.1); font-size:0.72rem; color:#60a5fa; display:flex; align-items:center; gap:4px; cursor:pointer;" onclick="openWeightLightbox('${nearest.entry.id}')"><i class="ri-camera-fill"></i> 📷 Photo liée${tagLabel ? ` (${tagLabel})` : ''} · Agrandir</div>` : ''}
       `;
 
       const tooltipX = (nearest.x / svgWidth) * rect.width;
@@ -13684,14 +13872,17 @@ if (typeof window !== "undefined") window.handleWeightPhotoSelect = handleWeight
 if (typeof window !== "undefined") window.removeWeightPhoto = removeWeightPhoto;
 if (typeof window !== "undefined") window.setWeightPhotoTag = setWeightPhotoTag;
 if (typeof window !== "undefined") window.switchWeightView = switchWeightView;
+if (typeof window !== "undefined") window.filterWeightGallery = filterWeightGallery;
 if (typeof window !== "undefined") window.renderWeightGallery = renderWeightGallery;
 if (typeof window !== "undefined") window.renderWeightCompare = renderWeightCompare;
+if (typeof window !== "undefined") window.downloadWeightComparisonCard = downloadWeightComparisonCard;
 if (typeof window !== "undefined") window.updateWeightComparison = updateWeightComparison;
 if (typeof window !== "undefined") window.initWeightSplitSlider = initWeightSplitSlider;
 if (typeof window !== "undefined") window.toggleWeightPrivacyMode = toggleWeightPrivacyMode;
 if (typeof window !== "undefined") window.initWeightPrivacyMode = initWeightPrivacyMode;
 if (typeof window !== "undefined") window.openWeightLightbox = openWeightLightbox;
 if (typeof window !== "undefined") window.closeWeightLightbox = closeWeightLightbox;
+if (typeof window !== "undefined") window.toggleLightboxZoom = toggleLightboxZoom;
 if (typeof window !== "undefined") window.updateWeightBadge = updateWeightBadge;
 if (typeof window !== "undefined") window.openTargetWeightModal = openTargetWeightModal;
 if (typeof window !== "undefined") window.closeTargetWeightModal = closeTargetWeightModal;
