@@ -821,6 +821,10 @@ function renderUserProfileModal() {
   const content = document.getElementById('userProfileModalContent');
   if (!content) return;
 
+  const tFunc = (window.vitalTrackI18n && typeof window.vitalTrackI18n.t === 'function')
+    ? window.vitalTrackI18n.t
+    : (k, p, fb) => fb || k;
+
   const authUser = window.vitalTrackAuth ? window.vitalTrackAuth.getCurrentUser() : null;
   const profile = typeof getUserProfile === 'function' ? getUserProfile() : {};
   const meals = store.get('meals', []);
@@ -829,9 +833,9 @@ function renderUserProfileModal() {
   const viewedPlants = store.get('viewed_plants', []);
   const dailyWater = store.get('daily_water', 0);
 
-  const displayName = (authUser && authUser.name) || profile.name || 'Adepte Vitaliste';
-  const displayEmail = (authUser && authUser.email) || 'Espace Local Sécurisé';
-  const avatarUrl = (authUser && authUser.picture) || `https://api.dicebear.com/7.x/bottts/svg?seed=${displayName}`;
+  const displayName = (authUser && authUser.name) || profile.name || tFunc('userProfile.defaultDisplayName', {}, 'Adepte Vitaliste');
+  const displayEmail = (authUser && authUser.email) || tFunc('userProfile.secureLocalSpace', {}, 'Espace Local Sécurisé');
+  const avatarUrl = (authUser && authUser.picture) || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(displayName)}`;
 
   // KPI Calculations
   const totalFastHours = fastingHistory.reduce((acc, f) => acc + (f.actualHours || f.targetHours || 0), 0);
@@ -844,8 +848,8 @@ function renderUserProfileModal() {
     {
       id: 'mucusless_starter',
       icon: '🍇',
-      title: 'Pionnier Sans Mucus',
-      desc: 'Consigner son 1er repas vivant ou dissolvant de mucus (Ehret)',
+      title: tFunc('userProfile.badgeMucuslessTitle', {}, 'Pionnier Sans Mucus'),
+      desc: tFunc('userProfile.badgeMucuslessDesc', {}, 'Consigner son 1er repas vivant ou dissolvant de mucus (Ehret)'),
       unlocked: meals.length > 0,
       current: Math.min(1, meals.length),
       target: 1
@@ -853,8 +857,8 @@ function renderUserProfileModal() {
     {
       id: 'electric_cells',
       icon: '⚡',
-      title: 'Électrification Cellulaire',
-      desc: 'Enregistrer 5 repas alcalins à PRAL négatif (Dr. Sebi)',
+      title: tFunc('userProfile.badgeElectricTitle', {}, 'Électrification Cellulaire'),
+      desc: tFunc('userProfile.badgeElectricDesc', {}, 'Enregistrer 5 repas alcalins à PRAL négatif (Dr. Sebi)'),
       unlocked: livingMealsCount >= 5,
       current: Math.min(5, livingMealsCount),
       target: 5
@@ -862,8 +866,8 @@ function renderUserProfileModal() {
     {
       id: 'autophagy_flame',
       icon: '🔥',
-      title: 'Flamme de l\'Autophagie',
-      desc: 'Valider un 1er jeûne intermittent de 16h ou plus',
+      title: tFunc('userProfile.badgeAutophagyTitle', {}, "Flamme de l'Autophagie"),
+      desc: tFunc('userProfile.badgeAutophagyDesc', {}, 'Valider un 1er jeûne intermittent de 16h ou plus'),
       unlocked: fastingHistory.some(f => (f.actualHours || f.targetHours || 0) >= 16),
       current: fastingHistory.some(f => (f.actualHours || f.targetHours || 0) >= 16) ? 1 : 0,
       target: 1
@@ -871,8 +875,8 @@ function renderUserProfileModal() {
     {
       id: 'deep_fasting_master',
       icon: '👑',
-      title: 'Maître du Jeûne Profond',
-      desc: 'Accomplir un jeûne de régénération de 24h ou plus',
+      title: tFunc('userProfile.badgeDeepFastingTitle', {}, 'Maître du Jeûne Profond'),
+      desc: tFunc('userProfile.badgeDeepFastingDesc', {}, 'Accomplir un jeûne de régénération de 24h ou plus'),
       unlocked: fastingHistory.some(f => (f.actualHours || f.targetHours || 0) >= 24),
       current: fastingHistory.some(f => (f.actualHours || f.targetHours || 0) >= 24) ? 1 : 0,
       target: 1
@@ -880,8 +884,8 @@ function renderUserProfileModal() {
     {
       id: 'raintree_explorer',
       icon: '🌿',
-      title: 'Herboriste Amazonien',
-      desc: 'Étudier 5 monographies de la Pharmacopée Raintree',
+      title: tFunc('userProfile.badgeRaintreeTitle', {}, 'Herboriste Amazonien'),
+      desc: tFunc('userProfile.badgeRaintreeDesc', {}, 'Étudier 5 monographies de la Pharmacopée Raintree'),
       unlocked: viewedPlants.length >= 5,
       current: Math.min(5, viewedPlants.length),
       target: 5
@@ -889,8 +893,8 @@ function renderUserProfileModal() {
     {
       id: 'prana_master',
       icon: '🧘',
-      title: 'Maître du Prāna',
-      desc: 'Compléter 3 sessions de respiration consciente (Wim Hof / Cohérence)',
+      title: tFunc('userProfile.badgePranaTitle', {}, 'Maître du Prāna'),
+      desc: tFunc('userProfile.badgePranaDesc', {}, 'Compléter 3 sessions de respiration consciente (Wim Hof / Cohérence)'),
       unlocked: breathingHistory.length >= 3,
       current: Math.min(3, breathingHistory.length),
       target: 3
@@ -898,8 +902,8 @@ function renderUserProfileModal() {
     {
       id: 'acid_base_harmony',
       icon: '⚖️',
-      title: 'Harmonie Acido-Basique',
-      desc: 'Atteindre un Score de Vitalité Biologique supérieur à 80',
+      title: tFunc('userProfile.badgeAcidBaseTitle', {}, 'Harmonie Acido-Basique'),
+      desc: tFunc('userProfile.badgeAcidBaseDesc', {}, 'Atteindre un Score de Vitalité Biologique supérieur à 80'),
       unlocked: avgVitality >= 80,
       current: avgVitality,
       target: 80,
@@ -908,8 +912,8 @@ function renderUserProfileModal() {
     {
       id: 'living_water',
       icon: '💧',
-      title: 'Source Vivante H3O2',
-      desc: 'Atteindre l\'objectif quotidien de 2L d\'eau vivante structurée',
+      title: tFunc('userProfile.badgeLivingWaterTitle', {}, 'Source Vivante H3O2'),
+      desc: tFunc('userProfile.badgeLivingWaterDesc', {}, "Atteindre l'objectif quotidien de 2L d'eau vivante structurée"),
       unlocked: dailyWater >= 2000,
       current: Math.min(2000, dailyWater),
       target: 2000,
@@ -922,28 +926,28 @@ function renderUserProfileModal() {
   // Level computation
   const totalXp = (meals.length * 15) + (totalFastHours * 5) + (breathingHistory.length * 20) + (unlockedCount * 50);
   let userLevel = 1;
-  let levelTitle = 'Initié Vitaliste 🌱';
+  let levelTitle = tFunc('userProfile.levelInitiated', {}, 'Initié Vitaliste 🌱');
   let nextLevelXp = 150;
   let prevLevelXp = 0;
 
   if (totalXp >= 750) {
     userLevel = 5;
-    levelTitle = 'Sage de la Régénération 👑';
+    levelTitle = tFunc('userProfile.levelSage', {}, 'Sage de la Régénération 👑');
     nextLevelXp = 1500;
     prevLevelXp = 750;
   } else if (totalXp >= 400) {
     userLevel = 4;
-    levelTitle = 'Maître de l\'Autophagie 🔥';
+    levelTitle = tFunc('userProfile.levelMaster', {}, "Maître de l'Autophagie 🔥");
     nextLevelXp = 750;
     prevLevelXp = 400;
   } else if (totalXp >= 200) {
     userLevel = 3;
-    levelTitle = 'Alchimiste Électrique ⚡';
+    levelTitle = tFunc('userProfile.levelAlchemist', {}, 'Alchimiste Électrique ⚡');
     nextLevelXp = 400;
     prevLevelXp = 200;
   } else if (totalXp >= 75) {
     userLevel = 2;
-    levelTitle = 'Praticien Sans Mucus 🌿';
+    levelTitle = tFunc('userProfile.levelPractitioner', {}, 'Praticien Sans Mucus 🌿');
     nextLevelXp = 200;
     prevLevelXp = 75;
   }
@@ -954,24 +958,24 @@ function renderUserProfileModal() {
     <!-- Header Profil Card -->
     <div style="display:flex; align-items:center; gap:18px; padding-bottom:20px; border-bottom:1px solid var(--border); margin-bottom:20px; flex-wrap:wrap;">
       <div style="position:relative;">
-        <img src="${avatarUrl}" alt="${displayName}" style="width:72px; height:72px; border-radius:50%; object-fit:cover; border:2.5px solid var(--accent); box-shadow:0 0 16px var(--accent-glow);" />
+        <img src="${avatarUrl}" alt="${esc(displayName)}" style="width:72px; height:72px; border-radius:50%; object-fit:cover; border:2.5px solid var(--accent); box-shadow:0 0 16px var(--accent-glow);" />
         <div style="position:absolute; bottom:-4px; right:-4px; background:var(--bg); border:1px solid var(--accent); border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:800; color:var(--accent);">
           ${userLevel}
         </div>
       </div>
       <div style="flex:1; min-width:200px;">
         <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-          <h2 style="font-size:1.35rem; font-weight:800; color:var(--text); margin:0;">${displayName}</h2>
+          <h2 style="font-size:1.35rem; font-weight:800; color:var(--text); margin:0;">${esc(displayName)}</h2>
           <span style="background:var(--accent-glow); border:1px solid var(--accent); color:var(--accent); font-size:0.75rem; font-weight:700; padding:2px 8px; border-radius:20px;">
             ${levelTitle}
           </span>
         </div>
-        <p style="font-size:0.82rem; color:var(--text-dim); margin:4px 0 10px 0;">${displayEmail}</p>
+        <p style="font-size:0.82rem; color:var(--text-dim); margin:4px 0 10px 0;">${esc(displayEmail)}</p>
 
         <!-- XP & Level Progress Bar -->
         <div style="display:flex; align-items:center; justify-content:space-between; font-size:0.74rem; font-weight:700; color:var(--text-dim); margin-bottom:4px;">
-          <span>Niveau ${userLevel}</span>
-          <span style="color:var(--accent);">${totalXp} / ${nextLevelXp} XP</span>
+          <span>${tFunc('userProfile.level', {}, 'Niveau')} ${userLevel}</span>
+          <span style="color:var(--accent);">${totalXp} / ${nextLevelXp} ${tFunc('userProfile.xp', {}, 'XP')}</span>
         </div>
         <div style="width:100%; height:7px; background:var(--surface-2); border:1px solid var(--border); border-radius:10px; overflow:hidden;">
           <div style="width:${levelProgressPct}%; height:100%; background:linear-gradient(90deg, var(--accent), #60a5fa); border-radius:10px; transition:width 0.4s ease;"></div>
@@ -984,22 +988,22 @@ function renderUserProfileModal() {
       <div style="background:var(--surface); border:1px solid var(--border); box-shadow:var(--shadow-sm); padding:12px 14px; border-radius:14px; text-align:center;">
         <div style="font-size:1.2rem; margin-bottom:2px;">🔥</div>
         <div style="font-size:1.1rem; font-weight:800; color:var(--text);">${Math.round(totalFastHours)} h</div>
-        <div style="font-size:0.72rem; color:var(--text-dim); font-weight:600;">Autophagie Totale</div>
+        <div style="font-size:0.72rem; color:var(--text-dim); font-weight:600;">${tFunc('userProfile.totalAutophagy', {}, 'Autophagie Totale')}</div>
       </div>
       <div style="background:var(--surface); border:1px solid var(--border); box-shadow:var(--shadow-sm); padding:12px 14px; border-radius:14px; text-align:center;">
         <div style="font-size:1.2rem; margin-bottom:2px;">🥗</div>
         <div style="font-size:1.1rem; font-weight:800; color:var(--text);">${livingMealsCount}</div>
-        <div style="font-size:0.72rem; color:var(--text-dim); font-weight:600;">Repas Vivants</div>
+        <div style="font-size:0.72rem; color:var(--text-dim); font-weight:600;">${tFunc('userProfile.livingMeals', {}, 'Repas Vivants')}</div>
       </div>
       <div style="background:var(--surface); border:1px solid var(--border); box-shadow:var(--shadow-sm); padding:12px 14px; border-radius:14px; text-align:center;">
         <div style="font-size:1.2rem; margin-bottom:2px;">✨</div>
         <div style="font-size:1.1rem; font-weight:800; color:var(--accent);">${avgVitality}/100</div>
-        <div style="font-size:0.72rem; color:var(--text-dim); font-weight:600;">Score Vitalité</div>
+        <div style="font-size:0.72rem; color:var(--text-dim); font-weight:600;">${tFunc('userProfile.vitalityScore', {}, 'Score Vitalité')}</div>
       </div>
       <div style="background:var(--surface); border:1px solid var(--border); box-shadow:var(--shadow-sm); padding:12px 14px; border-radius:14px; text-align:center;">
         <div style="font-size:1.2rem; margin-bottom:2px;">🧘</div>
         <div style="font-size:1.1rem; font-weight:800; color:#60a5fa;">${breathingHistory.length}</div>
-        <div style="font-size:0.72rem; color:var(--text-dim); font-weight:600;">Respirations</div>
+        <div style="font-size:0.72rem; color:var(--text-dim); font-weight:600;">${tFunc('userProfile.breaths', {}, 'Respirations')}</div>
       </div>
     </div>
 
@@ -1007,10 +1011,10 @@ function renderUserProfileModal() {
     <div style="margin-bottom:24px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
         <h3 style="font-size:1.05rem; font-weight:800; color:var(--text); margin:0; display:flex; align-items:center; gap:8px;">
-          <i class="ri-medal-fill" style="color:var(--accent);"></i> Badges &amp; Quêtes Vitalistes
+          <i class="ri-medal-fill" style="color:var(--accent);"></i> ${tFunc('userProfile.badgesTitle', {}, 'Badges & Quêtes Vitalistes')}
         </h3>
         <span style="font-size:0.78rem; font-weight:700; color:var(--accent); background:var(--accent-glow); border:1px solid var(--accent); padding:3px 10px; border-radius:20px;">
-          ${unlockedCount} / ${badges.length} Débloqués
+          ${tFunc('userProfile.unlockedCount', { unlocked: unlockedCount, total: badges.length }, `${unlockedCount} / ${badges.length} Débloqués`)}
         </span>
       </div>
 
@@ -1022,12 +1026,12 @@ function renderUserProfileModal() {
             </div>
             <div style="flex:1;">
               <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:6px; margin-bottom:3px;">
-                <h4 style="font-size:0.88rem; font-weight:700; color:${b.unlocked ? 'var(--text)' : 'var(--text-dim)'}; margin:0;">${b.title}</h4>
+                <h4 style="font-size:0.88rem; font-weight:700; color:${b.unlocked ? 'var(--text)' : 'var(--text-dim)'}; margin:0;">${esc(b.title)}</h4>
                 <span style="font-size:0.68rem; font-weight:700; padding:2px 6px; border-radius:6px; background:${b.unlocked ? 'var(--accent)' : 'var(--badge-bg)'}; color:${b.unlocked ? '#000' : 'var(--text-dim)'};">
-                  ${b.unlocked ? '✨ DÉBLOQUÉ' : '🔒 EN COURS'}
+                  ${b.unlocked ? tFunc('userProfile.badgeUnlocked', {}, '✨ DÉBLOQUÉ') : tFunc('userProfile.badgeLocked', {}, '🔒 EN COURS')}
                 </span>
               </div>
-              <p style="font-size:0.75rem; color:var(--text-dim); margin:0 0 6px 0; line-height:1.35;">${b.desc}</p>
+              <p style="font-size:0.75rem; color:var(--text-dim); margin:0 0 6px 0; line-height:1.35;">${esc(b.desc)}</p>
               
               <!-- Progress Bar -->
               ${!b.unlocked ? `
@@ -1048,19 +1052,19 @@ function renderUserProfileModal() {
     <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; border-top:1px solid var(--border); padding-top:16px; flex-wrap:wrap;">
       <div style="display:flex; gap:8px;">
         <button type="button" class="btn-secondary" style="font-size:0.82rem; padding:8px 12px; border-radius:10px;" onclick="closeUserProfileModal(null); showPage('modes');">
-          <i class="ri-settings-3-line"></i> Paramètres &amp; RGPD
+          <i class="ri-settings-3-line"></i> ${tFunc('userProfile.settingsGdpr', {}, 'Paramètres & RGPD')}
         </button>
         <button type="button" class="btn-secondary" style="font-size:0.82rem; padding:8px 12px; border-radius:10px;" onclick="window.vitalTrackAuth?.exportAllUserData()">
-          <i class="ri-download-cloud-line"></i> Export RGPD
+          <i class="ri-download-cloud-line"></i> ${tFunc('userProfile.exportGdpr', {}, 'Export RGPD')}
         </button>
       </div>
       ${authUser ? `
         <button type="button" class="btn-danger" style="font-size:0.82rem; padding:8px 12px; border-radius:10px; background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.4); color:#ef4444;" onclick="closeUserProfileModal(null); window.vitalTrackAuth?.signOut();">
-          <i class="ri-logout-box-r-line"></i> Se déconnecter
+          <i class="ri-logout-box-r-line"></i> ${tFunc('auth.signOut', {}, 'Se déconnecter')}
         </button>
       ` : `
         <button type="button" class="btn-primary" style="font-size:0.82rem; padding:8px 14px; border-radius:10px;" onclick="closeUserProfileModal(null); window.vitalTrackAuth?.signInWithGoogle();">
-          <i class="ri-google-fill"></i> Connexion Google
+          <i class="ri-google-fill"></i> ${tFunc('auth.signInWithGoogle', {}, 'Se connecter avec Google')}
         </button>
       `}
     </div>
@@ -4887,6 +4891,10 @@ window.renderRaintreeExplorer = renderRaintreeExplorer;
 function renderProtocolsList() {
   const grid = document.getElementById('protocolsGrid');
   if (!grid) return;
+  const tFunc = (window.vitalTrackI18n && typeof window.vitalTrackI18n.t === 'function')
+    ? window.vitalTrackI18n.t
+    : (k, p, fb) => fb || k;
+
   grid.innerHTML = RAINTREE_PROTOCOLS.map(proto => {
     const badgeClass = `badge-${proto.badgeColor || 'emerald'}`;
     const herbPills = proto.herbs.map(hId => {
@@ -4903,10 +4911,10 @@ function renderProtocolsList() {
         <span class="protocol-badge ${badgeClass}">${esc(proto.badge)}</span>
       </div>
       <div style="font-size:0.78rem;color:var(--text-dim);">${esc(proto.subtitle)}</div>
-      <div class="protocol-directions"><strong>Posologie :</strong> ${esc(proto.directions)}</div>
-      <div class="protocol-targets"><i class="ri-check-double-line" style="color:var(--accent)"></i> <strong>Cibles :</strong> ${esc(proto.targets)}</div>
+      <div class="protocol-directions"><strong>${tFunc('materiaMedica.posologyLabel', {}, 'Posologie :')}</strong> ${esc(proto.directions)}</div>
+      <div class="protocol-targets"><i class="ri-check-double-line" style="color:var(--accent)"></i> <strong>${tFunc('materiaMedica.targetsLabel', {}, 'Cibles :')}</strong> ${esc(proto.targets)}</div>
       <div class="protocol-herbs-row">
-        <span style="font-size:0.72rem;color:var(--text-dim);align-self:center">Plantes :</span>
+        <span style="font-size:0.72rem;color:var(--text-dim);align-self:center">${tFunc('materiaMedica.herbsLabel', {}, 'Plantes :')}</span>
         ${herbPills}
       </div>
     </div>`;
@@ -4940,6 +4948,10 @@ const HERB_PATHOLOGY_THESAURUS = {
 };
 
 function filterAndRenderHerbs() {
+  const tFunc = (window.vitalTrackI18n && typeof window.vitalTrackI18n.t === 'function')
+    ? window.vitalTrackI18n.t
+    : (k, p, fb) => fb || k;
+
   const rawQuery = (_currentHerbQuery || '').trim().toLowerCase();
   const filter = _currentHerbFilter;
 
@@ -5044,7 +5056,7 @@ function filterAndRenderHerbs() {
   const grid = document.getElementById('materiaHerbsGrid');
   const countEl = document.getElementById('herbResultCount');
   if (countEl) {
-    countEl.textContent = `${results.length} plante${results.length > 1 ? 's' : ''} médicinale${results.length > 1 ? 's' : ''} répertoriée${results.length > 1 ? 's' : ''}`;
+    countEl.textContent = tFunc('materiaMedica.herbsCountListed', { count: results.length, plural: results.length > 1 ? 's' : '' }, `${results.length} plante${results.length > 1 ? 's' : ''} médicinale${results.length > 1 ? 's' : ''} répertoriée${results.length > 1 ? 's' : ''}`);
   }
 
   if (!grid) return;
@@ -5053,9 +5065,9 @@ function filterAndRenderHerbs() {
     grid.innerHTML = `
       <div style="grid-column: 1 / -1; padding: 40px 20px; text-align: center; background: var(--bg-card); border-radius: var(--radius); border: 1px dashed var(--border);">
         <div style="font-size: 2.5rem; margin-bottom: 12px;">🌿</div>
-        <h4 style="font-size: 1.1rem; color: var(--text); margin-bottom: 6px;">Aucune plante trouvée pour "${esc(_currentHerbQuery)}"</h4>
-        <p style="font-size: 0.85rem; color: var(--text-dim); margin-bottom: 16px;">Essayez un autre mot-clé (ex: <em>Crohn, calculs, candida, ulcère, foie, asthme, reins, fatigue</em>)</p>
-        <button class="btn-primary" onclick="clearHerbSearch()" style="margin: 0 auto;">Réinitialiser la recherche</button>
+        <h4 style="font-size: 1.1rem; color: var(--text); margin-bottom: 6px;">${tFunc('materiaMedica.noHerbsFound', { query: esc(_currentHerbQuery) }, `Aucune plante trouvée pour "${esc(_currentHerbQuery)}"`)}</h4>
+        <p style="font-size: 0.85rem; color: var(--text-dim); margin-bottom: 16px;">${tFunc('materiaMedica.tryOtherKeyword', {}, 'Essayez un autre mot-clé (ex: <em>Crohn, calculs, candida, ulcère, foie, asthme, reins, fatigue</em>)')}</p>
+        <button class="btn-primary" onclick="clearHerbSearch()" style="margin: 0 auto;">${tFunc('materiaMedica.resetSearch', {}, 'Réinitialiser la recherche')}</button>
       </div>
     `;
     return;
@@ -5071,11 +5083,11 @@ function filterAndRenderHerbs() {
     // Posologie courte pour aperçu
     let quickDose = '';
     if (herb.posology) {
-      if (herb.posology.decoction) quickDose = '🔥 Décoction';
-      else if (herb.posology.infusion) quickDose = '🫖 Infusion';
-      else if (herb.posology.internalDrops) quickDose = '🩸 Gouttes pures';
-      else if (herb.posology.capsules) quickDose = '💊 Gélules';
-      else if (herb.posology.powder) quickDose = '🥄 Poudre';
+      if (herb.posology.decoction) quickDose = tFunc('materiaMedica.doseDecoction', {}, '🔥 Décoction');
+      else if (herb.posology.infusion) quickDose = tFunc('materiaMedica.doseInfusion', {}, '🫖 Infusion');
+      else if (herb.posology.internalDrops) quickDose = tFunc('materiaMedica.doseDrops', {}, '🩸 Gouttes pures');
+      else if (herb.posology.capsules) quickDose = tFunc('materiaMedica.doseCapsules', {}, '💊 Gélules');
+      else if (herb.posology.powder) quickDose = tFunc('materiaMedica.dosePowder', {}, '🥄 Poudre');
     }
 
     return `
@@ -5096,23 +5108,23 @@ function filterAndRenderHerbs() {
 
           <div class="herb-card-benefit-preview">
             <i class="ri-heart-pulse-fill" style="color:var(--accent);margin-right:4px;"></i>
-            <strong>Cible :</strong> ${primaryIndications}
+            <strong>${tFunc('materiaMedica.targetLabel', {}, 'Cible :')}</strong> ${primaryIndications}
           </div>
 
           ${quickDose ? `
           <div class="herb-card-posology-chip">
-            <i class="ri-cup-line" style="color:var(--accent)"></i> <span>Prise usuelle : <strong>${quickDose}</strong></span>
+            <i class="ri-cup-line" style="color:var(--accent)"></i> <span>${tFunc('materiaMedica.usualDoseLabel', {}, 'Prise usuelle :')} <strong>${quickDose}</strong></span>
           </div>` : ''}
 
           <div style="display:flex; align-items:center; justify-content:space-between; margin-top:10px; padding-top:8px; border-top:1px solid var(--border); font-size:0.75rem;">
             <a href="${herb.sourceUrl || `https://www.rain-tree.com/${herb.id}.htm`}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" style="color:var(--accent); text-decoration:none; display:inline-flex; align-items:center; gap:4px; font-weight:600;">
-              <i class="ri-external-link-line"></i> Source Rain-Tree
+              <i class="ri-external-link-line"></i> ${tFunc('materiaMedica.sourceRaintree', {}, 'Source Rain-Tree')}
             </a>
             <span style="color:var(--text-dim);">${esc(herb.family)}</span>
           </div>
 
           <button class="herb-card-btn" onclick="event.stopPropagation(); openHerbModal('${herb.id}')" style="margin-top:8px;">
-            <i class="ri-eye-line"></i> Consulter la fiche & posologie
+            <i class="ri-eye-line"></i> ${tFunc('materiaMedica.consultSheetBtn', {}, 'Consulter la fiche & posologie')}
           </button>
         </div>
       </div>
@@ -5164,11 +5176,15 @@ function filterByTag(tag) {
 };
 
 function setHerbFilterByHerbs(herbIds) {
+  const tFunc = (window.vitalTrackI18n && typeof window.vitalTrackI18n.t === 'function')
+    ? window.vitalTrackI18n.t
+    : (k, p, fb) => fb || k;
+
   const grid = document.getElementById('materiaHerbsGrid');
   if (!grid) return;
   const filtered = RAINTREE_HERBS.filter(h => herbIds.includes(h.id));
   const countEl = document.getElementById('herbResultCount');
-  if (countEl) countEl.textContent = `${filtered.length} plantes du protocole`;
+  if (countEl) countEl.textContent = tFunc('materiaMedica.protocolHerbsCount', { count: filtered.length }, `${filtered.length} plantes du protocole`);
 
   grid.innerHTML = filtered.map(herb => {
     const badgeColorClass = `badge-${herb.tropismBadge?.color || 'emerald'}`;
@@ -5193,18 +5209,18 @@ function setHerbFilterByHerbs(herbIds) {
 
           <div class="herb-card-benefit-preview">
             <i class="ri-heart-pulse-fill" style="color:var(--accent);margin-right:4px;"></i>
-            <strong>Cible :</strong> ${primaryIndications}
+            <strong>${tFunc('materiaMedica.targetLabel', {}, 'Cible :')}</strong> ${primaryIndications}
           </div>
 
           <div style="display:flex; align-items:center; justify-content:space-between; margin-top:10px; padding-top:8px; border-top:1px solid var(--border); font-size:0.75rem;">
             <a href="${herb.sourceUrl || `https://www.rain-tree.com/${herb.id}.htm`}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" style="color:var(--accent); text-decoration:none; display:inline-flex; align-items:center; gap:4px; font-weight:600;">
-              <i class="ri-external-link-line"></i> Source Rain-Tree
+              <i class="ri-external-link-line"></i> ${tFunc('materiaMedica.sourceRaintree', {}, 'Source Rain-Tree')}
             </a>
             <span style="color:var(--text-dim);">${esc(herb.family)}</span>
           </div>
 
           <button class="herb-card-btn" onclick="event.stopPropagation(); openHerbModal('${herb.id}')" style="margin-top:8px;">
-            <i class="ri-eye-line"></i> Consulter la fiche & posologie
+            <i class="ri-eye-line"></i> ${tFunc('materiaMedica.consultSheetBtn', {}, 'Consulter la fiche & posologie')}
           </button>
         </div>
       </div>
@@ -5213,6 +5229,10 @@ function setHerbFilterByHerbs(herbIds) {
 };
 
 function toggleHerbMonograph() {
+  const tFunc = (window.vitalTrackI18n && typeof window.vitalTrackI18n.t === 'function')
+    ? window.vitalTrackI18n.t
+    : (k, p, fb) => fb || k;
+
   const drawer = document.getElementById('herbMonographDrawer');
   const btn = document.getElementById('herbMonographBtn');
   const icon = document.getElementById('herbMonographIcon');
@@ -5223,11 +5243,11 @@ function toggleHerbMonograph() {
   if (isOpen) {
     drawer.classList.remove('open');
     btn.classList.remove('open');
-    if (text) text.textContent = 'Dérouler la monographie scientifique & études Raintree (Dr. Leslie Taylor)';
+    if (text) text.textContent = tFunc('materiaMedica.monographToggleOpen', {}, 'Dérouler la monographie scientifique & études Raintree (Dr. Leslie Taylor)');
   } else {
     drawer.classList.add('open');
     btn.classList.add('open');
-    if (text) text.textContent = 'Replier la monographie scientifique';
+    if (text) text.textContent = tFunc('materiaMedica.monographToggleClose', {}, 'Replier la monographie scientifique');
   }
 };
 
@@ -5235,6 +5255,10 @@ function openHerbModal(herbId) {
   const herb = RAINTREE_HERBS.find(h => h.id === herbId);
   if (!herb) return;
   _currentSelectedHerb = herb;
+
+  const tFunc = (window.vitalTrackI18n && typeof window.vitalTrackI18n.t === 'function')
+    ? window.vitalTrackI18n.t
+    : (k, p, fb) => fb || k;
 
   const modal = document.getElementById('herbModal');
   const imgEl = document.getElementById('herbModalImg');
@@ -5271,15 +5295,15 @@ function openHerbModal(herbId) {
 
     let posologyHtml = '';
     if (herb.posology) {
-      if (herb.posology.decoction) posologyHtml += `<div class="herb-posology-item"><span class="herb-posology-type">🔥 Décoction :</span> ${esc(herb.posology.decoction)}</div>`;
-      if (herb.posology.infusion) posologyHtml += `<div class="herb-posology-item"><span class="herb-posology-type">🫖 Infusion :</span> ${esc(herb.posology.infusion)}</div>`;
-      if (herb.posology.tincture) posologyHtml += `<div class="herb-posology-item"><span class="herb-posology-type">💧 Teinture / Extrait hydroalcoolique :</span> ${esc(herb.posology.tincture)}</div>`;
-      if (herb.posology.internalDrops) posologyHtml += `<div class="herb-posology-item"><span class="herb-posology-type">🩸 Sève pure / Gouttes :</span> ${esc(herb.posology.internalDrops)}</div>`;
-      if (herb.posology.powder) posologyHtml += `<div class="herb-posology-item"><span class="herb-posology-type">🥄 Poudre lyophilisée :</span> ${esc(herb.posology.powder)}</div>`;
-      if (herb.posology.capsules) posologyHtml += `<div class="herb-posology-item"><span class="herb-posology-type">💊 Gélules :</span> ${esc(herb.posology.capsules)}</div>`;
-      if (herb.posology.oil) posologyHtml += `<div class="herb-posology-item"><span class="herb-posology-type">🫒 Huile végétale brute :</span> ${esc(herb.posology.oil)}</div>`;
+      if (herb.posology.decoction) posologyHtml += `<div class="herb-posology-item"><span class="herb-posology-type">${tFunc('materiaMedica.doseDecoction', {}, '🔥 Décoction :')}</span> ${esc(herb.posology.decoction)}</div>`;
+      if (herb.posology.infusion) posologyHtml += `<div class="herb-posology-item"><span class="herb-posology-type">${tFunc('materiaMedica.doseInfusion', {}, '🫖 Infusion :')}</span> ${esc(herb.posology.infusion)}</div>`;
+      if (herb.posology.tincture) posologyHtml += `<div class="herb-posology-item"><span class="herb-posology-type">${tFunc('materiaMedica.doseTincture', {}, '💧 Teinture / Extrait hydroalcoolique :')}</span> ${esc(herb.posology.tincture)}</div>`;
+      if (herb.posology.internalDrops) posologyHtml += `<div class="herb-posology-item"><span class="herb-posology-type">${tFunc('materiaMedica.doseDrops', {}, '🩸 Sève pure / Gouttes :')}</span> ${esc(herb.posology.internalDrops)}</div>`;
+      if (herb.posology.powder) posologyHtml += `<div class="herb-posology-item"><span class="herb-posology-type">${tFunc('materiaMedica.dosePowder', {}, '🥄 Poudre lyophilisée :')}</span> ${esc(herb.posology.powder)}</div>`;
+      if (herb.posology.capsules) posologyHtml += `<div class="herb-posology-item"><span class="herb-posology-type">${tFunc('materiaMedica.doseCapsules', {}, '💊 Gélules :')}</span> ${esc(herb.posology.capsules)}</div>`;
+      if (herb.posology.oil) posologyHtml += `<div class="herb-posology-item"><span class="herb-posology-type">${tFunc('materiaMedica.doseOil', {}, '🫒 Huile végétale brute :')}</span> ${esc(herb.posology.oil)}</div>`;
       if (herb.posology.standardDosage && !posologyHtml) {
-        posologyHtml = `<div class="herb-posology-item"><span class="herb-posology-type">📋 Posologie Raintree :</span> ${esc(herb.posology.standardDosage)}</div>`;
+        posologyHtml = `<div class="herb-posology-item"><span class="herb-posology-type">${tFunc('materiaMedica.doseStandard', {}, '📋 Posologie Raintree :')}</span> ${esc(herb.posology.standardDosage)}</div>`;
       }
     }
 
@@ -5300,35 +5324,35 @@ function openHerbModal(herbId) {
       <div style="margin-bottom:16px; padding:12px 14px; background:rgba(52,211,153,0.08); border:1px solid rgba(52,211,153,0.3); border-radius:10px; display:flex; flex-direction:column; gap:8px;">
         <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
           <span style="font-size:0.82rem; font-weight:700; color:var(--accent); display:flex; align-items:center; gap:6px;">
-            <i class="ri-shield-check-fill"></i> Source Primaire Vérifiée — Base Raintree
+            <i class="ri-shield-check-fill"></i> ${tFunc('materiaMedica.verifiedPrimarySourceBanner', {}, 'Source Primaire Vérifiée — Base Raintree')}
           </span>
           <a href="${sourceUrl}" target="_blank" rel="noopener noreferrer" style="font-size:0.78rem; font-weight:600; color:var(--accent); text-decoration:none; display:inline-flex; align-items:center; gap:6px; padding:5px 12px; background:rgba(52,211,153,0.12); border:1px solid rgba(52,211,153,0.3); border-radius:6px; transition:all 0.2s;">
-            <span>Consulter la fiche originale sur Rain-Tree.com</span> <i class="ri-external-link-line"></i>
+            <span>${tFunc('materiaMedica.consultOriginalSheet', {}, 'Consulter la fiche originale sur Rain-Tree.com')}</span> <i class="ri-external-link-line"></i>
           </a>
         </div>
         <div style="font-size:0.78rem; color:var(--text-dim); line-height:1.4;">
-          Monographie officielle rédigée par le <strong>Dr. Leslie Taylor, N.D.</strong> issue des recherches ethnobotaniques et des publications cliniques sur <em>${esc(herb.latinName)}</em> (${esc(herb.family)}).
+          ${tFunc('materiaMedica.drLeslieTaylorBio', {}, 'Monographie officielle rédigée par le Dr. Leslie Taylor, N.D. issue des recherches ethnobotaniques et des publications cliniques sur')} <em>${esc(herb.latinName)}</em> (${esc(herb.family)}).
         </div>
       </div>
 
       <!-- ZONE 1 : APERÇU IMMÉDIAT -->
       <div class="herb-preview-card" style="border-left:4px solid var(--accent)">
-        <div class="herb-preview-title"><i class="ri-shield-star-fill"></i> Bénéfices Majeurs & Cibles Cliniques</div>
+        <div class="herb-preview-title"><i class="ri-shield-star-fill"></i> ${tFunc('materiaMedica.majorBenefitsTitle', {}, 'Bénéfices Majeurs & Cibles Cliniques')}</div>
         <ul class="herb-benefit-list">
           ${indicationsList}
         </ul>
       </div>
 
       <div class="herb-preview-card" style="border-left:4px solid #38bdf8">
-        <div class="herb-preview-title" style="color:#38bdf8"><i class="ri-cup-fill"></i> Posologie Pratique & Mode d'Emploi</div>
+        <div class="herb-preview-title" style="color:#38bdf8"><i class="ri-cup-fill"></i> ${tFunc('materiaMedica.posologyTitle', {}, 'Posologie Pratique & Mode d\'Emploi')}</div>
         <div class="herb-posology-box">
-          ${posologyHtml || '<div class="herb-posology-item">Infusion ou décoction standard : 1 tasse 2 à 3 fois par jour.</div>'}
+          ${posologyHtml || `<div class="herb-posology-item">${tFunc('materiaMedica.defaultPosology', {}, 'Infusion ou décoction standard : 1 tasse 2 à 3 fois par jour.')}</div>`}
         </div>
       </div>
 
       ${herb.contraindications ? `
       <div class="herb-preview-card" style="border-left:4px solid #f87171;background:rgba(239,68,68,0.05)">
-        <div class="herb-preview-title" style="color:#f87171"><i class="ri-alarm-warning-fill"></i> Précautions & Contre-indications</div>
+        <div class="herb-preview-title" style="color:#f87171"><i class="ri-alarm-warning-fill"></i> ${tFunc('materiaMedica.precautionsTitle', {}, 'Précautions & Contre-indications')}</div>
         <div style="font-size:0.88rem;color:#fca5a5;line-height:1.5">
           ${esc(herb.contraindications)}
         </div>
@@ -5336,30 +5360,30 @@ function openHerbModal(herbId) {
 
       <!-- ZONE 2 : ACCORDÉON DÉROULANT (Monographie Scientifique Complète) -->
       <button class="herb-monograph-toggle" id="herbMonographBtn" onclick="toggleHerbMonograph()">
-        <span><i class="ri-microscope-fill" style="color:var(--accent);margin-right:8px"></i> <span id="herbMonographBtnText">Dérouler la monographie scientifique & études Raintree</span></span>
+        <span><i class="ri-microscope-fill" style="color:var(--accent);margin-right:8px"></i> <span id="herbMonographBtnText">${tFunc('materiaMedica.monographToggleOpen', {}, 'Dérouler la monographie scientifique & études Raintree (Dr. Leslie Taylor)')}</span></span>
         <i class="ri-arrow-down-s-line" id="herbMonographIcon"></i>
       </button>
 
       <div class="herb-monograph-drawer" id="herbMonographDrawer">
         <div class="herb-drawer-section">
-          <div class="herb-drawer-title"><i class="ri-information-fill"></i> Carte d'Identité & Origine Botanique</div>
+          <div class="herb-drawer-title"><i class="ri-information-fill"></i> ${tFunc('materiaMedica.botanicalIdentityTitle', {}, 'Carte d\'Identité & Origine Botanique')}</div>
           <div style="font-size:0.86rem;line-height:1.55;color:var(--text-dim)">
-            <div><strong>Noms usuels :</strong> ${esc(synonymsStr)}</div>
-            <div style="margin-top:4px"><strong>Origine :</strong> ${esc(herb.origin)}</div>
-            <div style="margin-top:4px"><strong>Partie utilisée :</strong> ${esc(herb.partsUsed)}</div>
-            <div style="margin-top:4px"><strong>Lien direct Raintree :</strong> <a href="${sourceUrl}" target="_blank" rel="noopener noreferrer" style="color:var(--accent);">${sourceUrl}</a></div>
+            <div><strong>${tFunc('materiaMedica.commonNames', {}, 'Noms usuels :')}</strong> ${esc(synonymsStr)}</div>
+            <div style="margin-top:4px"><strong>${tFunc('materiaMedica.origin', {}, 'Origine :')}</strong> ${esc(herb.origin)}</div>
+            <div style="margin-top:4px"><strong>${tFunc('materiaMedica.partUsed', {}, 'Partie utilisée :')}</strong> ${esc(herb.partsUsed)}</div>
+            <div style="margin-top:4px"><strong>${tFunc('materiaMedica.directLinkRaintree', {}, 'Lien direct Raintree :')}</strong> <a href="${sourceUrl}" target="_blank" rel="noopener noreferrer" style="color:var(--accent);">${sourceUrl}</a></div>
           </div>
         </div>
 
         <div class="herb-drawer-section">
-          <div class="herb-drawer-title"><i class="ri-flask-fill"></i> Principes Phytochimiques Actifs</div>
+          <div class="herb-drawer-title"><i class="ri-flask-fill"></i> ${tFunc('materiaMedica.activeCompoundsTitle', {}, 'Principes Phytochimiques Actifs')}</div>
           <ul style="list-style:none;padding-left:0;display:flex;flex-direction:column;gap:5px;font-size:0.86rem;color:var(--text)">
             ${compoundsList}
           </ul>
         </div>
 
         <div class="herb-drawer-section">
-          <div class="herb-drawer-title"><i class="ri-stethoscope-fill"></i> Mécanismes Physiologiques & Pharmacodynamie (Dr. Leslie Taylor)</div>
+          <div class="herb-drawer-title"><i class="ri-stethoscope-fill"></i> ${tFunc('materiaMedica.mechanismsTitle', {}, 'Mécanismes Physiologiques & Pharmacodynamie (Dr. Leslie Taylor)')}</div>
           <div style="line-height:1.6;font-size:0.88rem;color:var(--text)">
             ${formattedMechanisms}
           </div>
@@ -5367,7 +5391,7 @@ function openHerbModal(herbId) {
 
         ${herb.vitalistNote ? `
         <div class="herb-drawer-section" style="border-left:3px solid var(--accent);background:rgba(52,211,153,0.06)">
-          <div class="herb-drawer-title"><i class="ri-leaf-fill"></i> Vision Vitaliste & Détoxification Émonctorielle</div>
+          <div class="herb-drawer-title"><i class="ri-leaf-fill"></i> ${tFunc('materiaMedica.vitalistVisionTitle', {}, 'Vision Vitaliste & Détoxification Émonctorielle')}</div>
           <div style="font-size:0.88rem;color:var(--text);line-height:1.55">
             ${esc(herb.vitalistNote)}
           </div>
@@ -5375,7 +5399,7 @@ function openHerbModal(herbId) {
 
         ${herb.synergies && herb.synergies.length ? `
         <div class="herb-drawer-section">
-          <div class="herb-drawer-title"><i class="ri-compass-3-fill"></i> Synergies Botaniques Amazoniennes</div>
+          <div class="herb-drawer-title"><i class="ri-compass-3-fill"></i> ${tFunc('materiaMedica.synergiesTitle', {}, 'Synergies Botaniques Amazoniennes')}</div>
           <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">
             ${synergiesList}
           </div>
@@ -10457,14 +10481,14 @@ function renderResources() {
                 <div style="display:flex; gap:10px; margin-top:auto;">
                   ${['ehret-mucusless-fr', 'morse-detox-miracle-fr', 'ehret-mucusless-es', 'morse-detox-miracle-es'].includes(b.id) ? `
                     <button type="button" onclick="openBookReader('${b.id}')" class="btn-primary" style="flex:1.2; text-align:center; display:inline-flex; align-items:center; justify-content:center; gap:6px; font-size:0.85rem; font-weight:700; padding:10px 14px; border-radius:10px; box-shadow:0 4px 14px rgba(16,185,129,0.25); cursor:pointer;">
-                      <i class="ri-book-read-line"></i> ${b.lang === 'es' ? 'Leer Obra' : (b.lang === 'en' ? 'Read Book' : 'Lire l\'Ouvrage')}
+                      <i class="ri-book-read-line"></i> ${tFunc('resources.readBookBtn', {}, 'Lire l\'Ouvrage')}
                     </button>
                   ` : `
                     <a href="${b.url}" target="_blank" rel="noopener noreferrer" class="btn-primary" style="flex:1; text-align:center; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:6px; font-size:0.85rem; font-weight:700; padding:10px 14px; border-radius:10px; box-shadow:0 4px 14px rgba(16,185,129,0.25);">
-                      <i class="ri-file-pdf-line"></i> Consulter
+                      <i class="ri-file-pdf-line"></i> ${tFunc('resources.consultBtn', {}, 'Consulter')}
                     </a>
                   `}
-                  <a href="${b.url}" download class="btn-secondary" style="flex:0.8; text-align:center; text-decoration:none; padding:10px 12px; display:inline-flex; align-items:center; justify-content:center; gap:6px; font-size:0.85rem; font-weight:600; border-radius:10px; background:var(--surface-hover); border:1px solid var(--border); color:var(--text);" title="Télécharger le fichier PDF">
+                  <a href="${b.url}" download class="btn-secondary" style="flex:0.8; text-align:center; text-decoration:none; padding:10px 12px; display:inline-flex; align-items:center; justify-content:center; gap:6px; font-size:0.85rem; font-weight:600; border-radius:10px; background:var(--surface-hover); border:1px solid var(--border); color:var(--text);" title="${tFunc('resources.downloadPdfTooltip', {}, 'Télécharger le fichier PDF')}">
                     <i class="ri-download-2-line"></i> PDF
                   </a>
                 </div>
@@ -10481,11 +10505,11 @@ function renderResources() {
             <div style="display:flex; align-items:center; gap:10px;">
               <span style="font-size:1.4rem;">🎬</span>
               <div>
-                <h2 style="font-size:1.15rem; font-weight:800; margin:0; color:var(--text);">Documentaires & Médias Vidéo</h2>
-                <p style="font-size:0.8rem; color:var(--text-dim); margin:0;">Enquêtes, conférences et entretiens de référence directement prêts à visionner</p>
+                <h2 style="font-size:1.15rem; font-weight:800; margin:0; color:var(--text);">${tFunc('resources.documentariesTitle', {}, 'Documentaires & Médias Vidéo')}</h2>
+                <p style="font-size:0.8rem; color:var(--text-dim); margin:0;">${tFunc('resources.documentariesSubtitle', {}, 'Enquêtes, conférences et entretiens de référence directement prêts à visionner')}</p>
               </div>
             </div>
-            <span class="badge badge-warning" style="font-size:0.78rem;">${displayedVideos.length} vidéo${displayedVideos.length > 1 ? 's' : ''}</span>
+            <span class="badge badge-warning" style="font-size:0.78rem;">${tFunc('resources.videoCount', { count: displayedVideos.length, plural: displayedVideos.length > 1 ? 's' : '' }, `${displayedVideos.length} vidéo${displayedVideos.length > 1 ? 's' : ''}`)}</span>
           </div>
 
           <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(min(380px, 100%), 1fr)); gap:18px;">
@@ -10516,7 +10540,7 @@ function renderResources() {
                 <!-- Bouton Lancer Lecteur Grand Format -->
                 <div style="display:flex; gap:8px; margin-top:auto;">
                   <button type="button" class="btn-primary" style="flex:1; padding:10px 14px; font-size:0.88rem; font-weight:700; display:inline-flex; align-items:center; justify-content:center; gap:8px; background:linear-gradient(135deg,#10b981,#0284c7); border:none; border-radius:10px; cursor:pointer; box-shadow:0 4px 14px rgba(16,185,129,0.3);" onclick="playVideoAtTimestamp('${esc(r.localSrc || r.url || '')}', 0, '${esc(r.title)}', '${r.type === 'local-video' ? 'local' : 'youtube'}', '${r.youtubeId || ''}', 'Introduction', '${esc(r.source)}')">
-                    <i class="ri-play-circle-fill" style="font-size:1.1rem;"></i> Visionner en Grand Écran & Chapitres
+                    <i class="ri-play-circle-fill" style="font-size:1.1rem;"></i> ${tFunc('resources.watchFullscreenBtn', {}, 'Visionner en Grand Écran & Chapitres')}
                   </button>
                   ${r.watchUrl ? `
                     <a href="${r.watchUrl}" target="_blank" rel="noopener noreferrer" class="btn-secondary" style="padding:10px 12px; font-size:0.85rem; text-decoration:none; display:inline-flex; align-items:center; justify-content:center;" title="Ouvrir dans un nouvel onglet">
@@ -10534,9 +10558,9 @@ function renderResources() {
       <div class="dash-card glass" style="margin-top:20px; padding:16px 20px; background:linear-gradient(135deg,rgba(16,185,129,0.06),rgba(59,130,246,0.04)); border:1px dashed var(--border); display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
         <div style="font-size:2rem; color:var(--accent);">🛡️</div>
         <div style="flex:1; min-width:240px;">
-          <h4 style="margin:0 0 4px 0; font-size:0.95rem; font-weight:700; color:var(--text);">Pérennité & Souveraineté Locale Maximale</h4>
+          <h4 style="margin:0 0 4px 0; font-size:0.95rem; font-weight:700; color:var(--text);">${tFunc('resources.sovereigntyBannerTitle', {}, 'Pérennité & Souveraineté Locale Maximale')}</h4>
           <p style="margin:0; font-size:0.8rem; color:var(--text-dim); line-height:1.4;">
-            Tous les ouvrages en français et en anglais ainsi que les documentaires sont hébergés et servis localement. Aucun risque de lien brisé ou de censure externe.
+            ${tFunc('resources.sovereigntyBannerDesc', {}, 'Tous les ouvrages en français et en anglais ainsi que les documentaires sont hébergés et servis localement. Aucun risque de lien brisé ou de censure externe.')}
           </p>
         </div>
       </div>

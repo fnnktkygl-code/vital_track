@@ -208,7 +208,7 @@ export function renderRecipesView() {
         </div>
         <div style="display:flex; gap:8px; align-items:center;">
           <span class="badge badge-success" style="font-size:0.8rem; font-weight:700; padding:6px 14px; border-radius:20px;">
-            ✨ ${VITALIST_RECIPES.length} Recettes Fondatrices
+            ${t('recipes.foundingRecipesCount', { count: VITALIST_RECIPES.length }, `✨ ${VITALIST_RECIPES.length} Recettes Fondatrices`)}
           </span>
         </div>
       </div>
@@ -328,17 +328,17 @@ export function renderRecipesView() {
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; padding:0 4px; flex-wrap:wrap; gap:8px;">
       <div style="font-size:0.85rem; font-weight:700; color:var(--text-dim);">
         ${totalItems === 0 ? `
-          <span>0 recette</span>
+          <span>0 ${t('common.search')}</span>
         ` : `
           <span>
-            Affichage de <strong style="color:var(--text); font-weight:800;">${startIndex + 1}</strong> à <strong style="color:var(--text); font-weight:800;">${endIndex}</strong> sur <strong style="color:var(--accent); font-weight:800;">${totalItems}</strong> recette${totalItems > 1 ? 's' : ''}
-            ${totalPages > 1 ? `<span style="margin-left:6px; font-weight:600; opacity:0.8;">(Page ${_currentRecipePage}/${totalPages})</span>` : ''}
+            ${t('recipes.paginationShowing', { start: startIndex + 1, end: endIndex, total: totalItems }, `Affichage de ${startIndex + 1} à ${endIndex} sur ${totalItems} recettes`)}
+            ${totalPages > 1 ? `<span style="margin-left:6px; font-weight:600; opacity:0.8;">(${t('recipes.pageLabel', {}, 'Page')} ${_currentRecipePage}/${totalPages})</span>` : ''}
           </span>
         `}
       </div>
       ${_selectedIngredients.size > 0 ? `
         <span class="badge badge-purple" style="font-size:0.75rem;">
-          🎯 Filtré par ${_selectedIngredients.size} ingrédient${_selectedIngredients.size > 1 ? 's' : ''}
+          ${t('recipes.filteredByCount', { count: _selectedIngredients.size, plural: _selectedIngredients.size > 1 ? 's' : '' }, `🎯 Filtré par ${_selectedIngredients.size} ingrédient${_selectedIngredients.size > 1 ? 's' : ''}`)}
         </span>
       ` : ''}
     </div>
@@ -575,11 +575,11 @@ function renderRecipeCard(recipe) {
       <div style="border-top:1px solid var(--border); padding-top:10px; display:flex; justify-content:space-between; align-items:center; margin-top:auto;">
         <div style="display:flex; gap:10px; font-size:0.75rem; color:var(--text-dim); font-weight:600;">
           <span>⏱️ ${esc(recipe.prepTime)}</span>
-          <span>⚡ Vitalité ${recipe.vitalityScore}%</span>
+          <span>⚡ ${t('recipes.vitalityBadge', {}, 'Vitalité')} ${recipe.vitalityScore}%</span>
         </div>
         ${matchCount > 0 ? `
           <span style="font-size:0.7rem; font-weight:800; color:#10b981; background:rgba(16,185,129,0.15); padding:2px 8px; border-radius:10px;">
-            ✓ ${matchCount} ingrédient${matchCount > 1 ? 's' : ''}
+            ${t('recipes.matchIngredientCount', { count: matchCount, plural: matchCount > 1 ? 's' : '' }, `✓ ${matchCount} ingrédient${matchCount > 1 ? 's' : ''}`)}
           </span>
         ` : `
           <span style="font-size:0.75rem; font-weight:700; color:var(--accent); display:flex; align-items:center; gap:3px;">
@@ -663,13 +663,13 @@ function renderModalContent() {
           ⏱️ ${t('recipes.prepTime')} : ${esc(r.prepTime)}
         </span>
         <span style="font-size:0.75rem; font-weight:700; padding:4px 10px; border-radius:10px; background:var(--surface-hover); border:1px solid var(--border); color:var(--text);">
-          🔥 Cuisson : ${esc(r.cookTime)}
+          🔥 ${t('recipes.cookTime', {}, 'Cuisson')} : ${esc(r.cookTime)}
         </span>
         <span style="font-size:0.75rem; font-weight:700; padding:4px 10px; border-radius:10px; background:rgba(16,185,129,0.15); color:#10b981;">
           🌱 PRAL : ${r.pralScore} mEq
         </span>
         <span style="font-size:0.75rem; font-weight:700; padding:4px 10px; border-radius:10px; background:rgba(56,189,248,0.15); color:#38bdf8;">
-          ⚡ Vitalité : ${r.vitalityScore}%
+          ⚡ ${t('recipes.vitalityBadge', {}, 'Vitalité')} : ${r.vitalityScore}%
         </span>
       </div>
 
@@ -706,7 +706,7 @@ function renderModalContent() {
                   style="padding:3px 10px; border-radius:10px; border:none; cursor:pointer; font-weight:800; font-size:0.78rem; background:${_currentModalServings === p ? 'var(--accent)' : 'transparent'}; color:${_currentModalServings === p ? '#fff' : 'var(--text)'};"
                   onclick="setRecipeModalServings(${p})"
                 >
-                  ${p} ${p > 1 ? 'pers.' : 'pers.'}
+                  ${p} ${t('recipes.pers', {}, 'pers.')}
                 </button>
               `).join('')}
             </div>
@@ -760,11 +760,11 @@ function renderModalContent() {
             </div>
             <div>
               <div style="font-weight:800; font-size:0.9rem; color:var(--text); display:flex; align-items:center; gap:6px;">
-                Démonstration Vidéo Vérifiée
-                <span class="badge badge-danger" style="font-size:0.68rem; padding:1px 6px;">Tutoriel</span>
+                ${t('recipes.videoDemoTitle', {}, 'Démonstration Vidéo Vérifiée')}
+                <span class="badge badge-danger" style="font-size:0.68rem; padding:1px 6px;">${t('recipes.videoTutorialBadge', {}, 'Tutoriel')}</span>
               </div>
               <div style="font-size:0.76rem; color:var(--text-dim); margin-top:2px;">
-                Visionnez la préparation pas-à-pas de cette recette exacte sur YouTube.
+                ${t('recipes.videoDemoDesc', {}, 'Visionnez la préparation pas-à-pas de cette recette exacte sur YouTube.')}
               </div>
             </div>
           </div>
@@ -777,7 +777,7 @@ function renderModalContent() {
       <!-- BOUTONS D'ACTION RAPIDE -->
       <div style="display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap; border-top:1px solid var(--border); padding-top:16px;">
         <button type="button" class="btn-secondary" onclick="copyRecipeToClipboard('${esc(r.id)}')" style="padding:10px 18px; border-radius:14px; font-weight:700; font-size:0.85rem; cursor:pointer;">
-          <i class="ri-file-copy-line"></i> ${t('toasts.copiedToClipboard', {}, 'Copier')}
+          <i class="ri-file-copy-line"></i> ${t('chat.copy', {}, 'Copier')}
         </button>
         <button type="button" class="btn-primary" onclick="addRecipeToFavorites('${esc(r.id)}')" style="padding:10px 20px; border-radius:14px; font-weight:700; font-size:0.85rem; cursor:pointer;">
           <i class="ri-heart-3-fill"></i> ${t('recipes.favoriteBtn')}
