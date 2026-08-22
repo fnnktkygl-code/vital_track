@@ -124,4 +124,60 @@ const scaledFor8 = scaleIngredient(sampleRecipe.ingredients[0], 4, 8);
 assert(scaledFor2 === 25, `Calculateur de portions: 50g pour 4 pers -> 25g pour 2 pers (obtenu: ${scaledFor2}).`);
 assert(scaledFor8 === 100, `Calculateur de portions: 50g pour 4 pers -> 100g pour 8 pers (obtenu: ${scaledFor8}).`);
 
+// ── 5. Test du système de pagination des recettes ──
+function paginate(items, page = 1, perPage = 12) {
+  const total = items.length;
+  const totalPages = Math.max(1, Math.ceil(total / perPage));
+  const validPage = Math.max(1, Math.min(page, totalPages));
+  const start = (validPage - 1) * perPage;
+  const end = Math.min(start + perPage, total);
+  return {
+    currentPage: validPage,
+    totalPages,
+    totalItems: total,
+    startIndex: start,
+    endIndex: end,
+    items: items.slice(start, end)
+  };
+}
+
+const page1 = paginate(VITALIST_RECIPES, 1, 12);
+assert(page1.totalPages === 7, `76 recettes à 12 par page donnent 7 pages (obtenu: ${page1.totalPages}).`);
+assert(page1.items.length === 12, `Page 1 contient exactement 12 recettes.`);
+assert(page1.startIndex === 0 && page1.endIndex === 12, `Page 1 va de l'indice 0 à 12.`);
+
+const page7 = paginate(VITALIST_RECIPES, 7, 12);
+assert(page7.items.length === 4, `Dernière page (page 7) contient les 4 recettes restantes (obtenu: ${page7.items.length}).`);
+assert(page7.startIndex === 72 && page7.endIndex === 76, `Page 7 va de l'indice 72 à 76.`);
+
+// Test des bornes hors limites
+const pageOutOfBounds = paginate(VITALIST_RECIPES, 999, 12);
+assert(pageOutOfBounds.currentPage === 7, `Page 999 est automatiquement ramenée à la page maximale 7.`);
+const pageNegative = paginate(VITALIST_RECIPES, -5, 12);
+assert(pageNegative.currentPage === 1, `Page négative est automatiquement ramenée à la page 1.`);
+
+// Test de génération des ellipses de pagination
+function getPaginationPages(currentPage, totalPages) {
+  if (totalPages <= 7) {
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
+  }
+  if (currentPage <= 4) {
+    return [1, 2, 3, 4, 5, '...', totalPages];
+  }
+  if (currentPage >= totalPages - 3) {
+    return [1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+  }
+  return [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
+}
+
+const pPages1 = getPaginationPages(1, 7);
+assert(JSON.stringify(pPages1) === JSON.stringify([1, 2, 3, 4, 5, 6, 7]), `Pagination de 7 pages liste tous les numéros [1..7].`);
+
+const pPages10_1 = getPaginationPages(1, 10);
+assert(JSON.stringify(pPages10_1) === JSON.stringify([1, 2, 3, 4, 5, '...', 10]), `Pagination de 10 pages à page 1 affiche [1, 2, 3, 4, 5, '...', 10].`);
+
+const pPages10_5 = getPaginationPages(5, 10);
+assert(JSON.stringify(pPages10_5) === JSON.stringify([1, '...', 4, 5, 6, '...', 10]), `Pagination de 10 pages à page 5 affiche [1, '...', 4, 5, 6, '...', 10].`);
+
 console.log(`\n🎉 [RÉSULTAT SUITE 1] ${passedTests} / ${totalTests} tests validés avec succès !`);
+

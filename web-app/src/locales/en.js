@@ -220,7 +220,15 @@ export default {
     watchVideoBtn: 'Watch Video Tutorial (YouTube)',
     addToMealsBtn: 'Add to Food Log',
     favoriteBtn: 'Save to Favorites',
-    unfavoriteBtn: 'Remove from Favorites'
+    unfavoriteBtn: 'Remove from Favorites',
+    paginationShowing: 'Showing {start} to {end} of {total} recipes',
+    perPageLabel: 'Per page',
+    pageLabel: 'Page',
+    prevPage: 'Previous',
+    nextPage: 'Next',
+    firstPage: 'First',
+    lastPage: 'Last',
+    allOption: 'All'
   },
 
   fasting: {

@@ -220,7 +220,15 @@ export default {
     watchVideoBtn: 'Regarder la Démo Culinaire (YouTube)',
     addToMealsBtn: 'Ajouter au Journal des Repas',
     favoriteBtn: 'Ajouter aux Favoris',
-    unfavoriteBtn: 'Retirer des Favoris'
+    unfavoriteBtn: 'Retirer des Favoris',
+    paginationShowing: 'Affichage de {start} à {end} sur {total} recettes',
+    perPageLabel: 'Par page',
+    pageLabel: 'Page',
+    prevPage: 'Précédent',
+    nextPage: 'Suivant',
+    firstPage: 'Premier',
+    lastPage: 'Dernier',
+    allOption: 'Toutes'
   },
 
   fasting: {

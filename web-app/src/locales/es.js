@@ -220,7 +220,15 @@ export default {
     watchVideoBtn: 'Ver Video Demostrativo (YouTube)',
     addToMealsBtn: 'Añadir al Registro de Comidas',
     favoriteBtn: 'Guardar en Favoritos',
-    unfavoriteBtn: 'Eliminar de Favoritos'
+    unfavoriteBtn: 'Eliminar de Favoritos',
+    paginationShowing: 'Mostrando {start} a {end} de {total} recetas',
+    perPageLabel: 'Por página',
+    pageLabel: 'Página',
+    prevPage: 'Anterior',
+    nextPage: 'Siguiente',
+    firstPage: 'Primero',
+    lastPage: 'Último',
+    allOption: 'Todas'
   },
 
   fasting: {

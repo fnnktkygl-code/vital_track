@@ -9,6 +9,7 @@
 
 import { VITALIST_RECIPES, RECIPE_AUTHORS, RECIPE_TAGS, POPULAR_INGREDIENTS } from './data/recipesData.js';
 import { t } from './i18n.js';
+import './styles/recipesPagination.css';
 
 let _recipeSearchQuery = '';
 let _selectedAuthor = 'all';
@@ -17,6 +18,8 @@ let _selectedIngredients = new Set();
 let _ingredientMatchMode = 'ANY'; // 'ANY' (inclusif) ou 'ALL' (exclusif)
 let _activeModalRecipe = null;
 let _currentModalServings = 2;
+let _currentRecipePage = 1;
+let _recipesPerPage = 12;
 
 function esc(str) {
   if (!str) return '';
@@ -36,6 +39,8 @@ export function initRecipesModule() {
   window.toggleRecipeIngredientFilter = toggleRecipeIngredientFilter;
   window.setIngredientMatchMode = setIngredientMatchMode;
   window.clearAllRecipeFilters = clearAllRecipeFilters;
+  window.setRecipePage = setRecipePage;
+  window.setRecipesPerPage = setRecipesPerPage;
   window.openRecipeModal = openRecipeModal;
   window.closeRecipeModal = closeRecipeModal;
   window.setRecipeModalServings = setRecipeModalServings;
@@ -45,16 +50,19 @@ export function initRecipesModule() {
 
 export function setRecipeSearchQuery(query) {
   _recipeSearchQuery = query.trim();
+  _currentRecipePage = 1;
   renderRecipesView();
 }
 
 export function setRecipeAuthorFilter(author) {
   _selectedAuthor = author;
+  _currentRecipePage = 1;
   renderRecipesView();
 }
 
 export function setRecipeTagFilter(tag) {
   _selectedTag = tag;
+  _currentRecipePage = 1;
   renderRecipesView();
 }
 
@@ -64,11 +72,13 @@ export function toggleRecipeIngredientFilter(ing) {
   } else {
     _selectedIngredients.add(ing);
   }
+  _currentRecipePage = 1;
   renderRecipesView();
 }
 
 export function setIngredientMatchMode(mode) {
   _ingredientMatchMode = mode;
+  _currentRecipePage = 1;
   renderRecipesView();
 }
 
@@ -77,8 +87,27 @@ export function clearAllRecipeFilters() {
   _selectedAuthor = 'all';
   _selectedTag = 'all';
   _selectedIngredients.clear();
+  _currentRecipePage = 1;
   const searchInput = document.getElementById('recipeSearchInput');
   if (searchInput) searchInput.value = '';
+  renderRecipesView();
+}
+
+export function setRecipePage(page) {
+  const filtered = getFilteredRecipes();
+  const totalPages = Math.max(1, Math.ceil(filtered.length / _recipesPerPage));
+  _currentRecipePage = Math.max(1, Math.min(page, totalPages));
+  renderRecipesView();
+
+  const anchor = document.getElementById('recipesGridAnchor') || document.getElementById('recipesContainer');
+  if (anchor) {
+    anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+export function setRecipesPerPage(limit) {
+  _recipesPerPage = limit === 'all' ? 999999 : (parseInt(limit, 10) || 12);
+  _currentRecipePage = 1;
   renderRecipesView();
 }
 
@@ -152,6 +181,15 @@ export function renderRecipesView() {
 
   const filtered = getFilteredRecipes();
   const hasActiveFilters = _recipeSearchQuery || _selectedAuthor !== 'all' || _selectedTag !== 'all' || _selectedIngredients.size > 0;
+
+  const totalItems = filtered.length;
+  const totalPages = Math.max(1, Math.ceil(totalItems / _recipesPerPage));
+  if (_currentRecipePage > totalPages) _currentRecipePage = totalPages;
+  if (_currentRecipePage < 1) _currentRecipePage = 1;
+
+  const startIndex = (_currentRecipePage - 1) * _recipesPerPage;
+  const endIndex = Math.min(startIndex + _recipesPerPage, totalItems);
+  const paginatedRecipes = filtered.slice(startIndex, endIndex);
 
   let html = `
     <!-- HEADER HERO PHARMACOPEE CULINAIRE -->
@@ -283,11 +321,21 @@ export function renderRecipesView() {
       </div>
     </div>
 
-    <!-- COMPTEUR DE RÉSULTATS -->
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; padding:0 4px;">
-      <span style="font-size:0.85rem; font-weight:700; color:var(--text-dim);">
-        Affichage de <span style="color:var(--accent); font-weight:800;">${filtered.length}</span> recette${filtered.length > 1 ? 's' : ''}
-      </span>
+    <!-- ANCRE DE DEFILEMENT RECETTES -->
+    <div id="recipesGridAnchor" style="scroll-margin-top:90px;"></div>
+
+    <!-- COMPTEUR DE RÉSULTATS & PAGINATION HEADER -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; padding:0 4px; flex-wrap:wrap; gap:8px;">
+      <div style="font-size:0.85rem; font-weight:700; color:var(--text-dim);">
+        ${totalItems === 0 ? `
+          <span>0 recette</span>
+        ` : `
+          <span>
+            Affichage de <strong style="color:var(--text); font-weight:800;">${startIndex + 1}</strong> à <strong style="color:var(--text); font-weight:800;">${endIndex}</strong> sur <strong style="color:var(--accent); font-weight:800;">${totalItems}</strong> recette${totalItems > 1 ? 's' : ''}
+            ${totalPages > 1 ? `<span style="margin-left:6px; font-weight:600; opacity:0.8;">(Page ${_currentRecipePage}/${totalPages})</span>` : ''}
+          </span>
+        `}
+      </div>
       ${_selectedIngredients.size > 0 ? `
         <span class="badge badge-purple" style="font-size:0.75rem;">
           🎯 Filtré par ${_selectedIngredients.size} ingrédient${_selectedIngredients.size > 1 ? 's' : ''}
@@ -296,7 +344,7 @@ export function renderRecipesView() {
     </div>
 
     <!-- GRILLE DES RECETTES -->
-    ${filtered.length === 0 ? `
+    ${totalItems === 0 ? `
       <div class="dash-card glass" style="padding:40px 20px; text-align:center; margin-bottom:30px;">
         <div style="font-size:2.5rem; margin-bottom:10px;">🍲</div>
         <h3 style="margin:0 0 6px 0; font-size:1.15rem; color:var(--text);">Aucune recette ne correspond à votre sélection</h3>
@@ -308,13 +356,150 @@ export function renderRecipesView() {
         </button>
       </div>
     ` : `
-      <div class="recipes-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:18px; margin-bottom:40px;">
-        ${filtered.map(recipe => renderRecipeCard(recipe)).join('')}
+      <div class="recipes-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:18px; margin-bottom:20px;">
+        ${paginatedRecipes.map(recipe => renderRecipeCard(recipe)).join('')}
       </div>
+
+      <!-- COMPOSANT DE PAGINATION COMPLET -->
+      ${renderPaginationControls(_currentRecipePage, totalPages, totalItems, _recipesPerPage)}
     `}
   `;
 
   container.innerHTML = html;
+}
+
+/**
+ * Génère le composant de contrôle de pagination
+ */
+function renderPaginationControls(currentPage, totalPages, totalItems, recipesPerPage) {
+  if (totalItems <= 12 && recipesPerPage >= totalItems) return '';
+
+  const startIndex = (currentPage - 1) * recipesPerPage + 1;
+  const endIndex = Math.min(currentPage * recipesPerPage, totalItems);
+
+  const pageNumbers = [];
+  if (totalPages <= 7) {
+    for (let i = 1; i <= totalPages; i++) pageNumbers.push(i);
+  } else {
+    if (currentPage <= 4) {
+      pageNumbers.push(1, 2, 3, 4, 5, '...', totalPages);
+    } else if (currentPage >= totalPages - 3) {
+      pageNumbers.push(1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+    } else {
+      pageNumbers.push(1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages);
+    }
+  }
+
+  const showingTpl = t('recipes.paginationShowing');
+  const showingText = (showingTpl || 'Affichage de {start} à {end} sur {total} recettes')
+    .replace('{start}', startIndex)
+    .replace('{end}', endIndex)
+    .replace('{total}', totalItems);
+
+  return `
+    <div class="dash-card glass recipes-pagination-wrap">
+      <!-- STATS & INFO PAGE -->
+      <div class="recipes-pagination-stats">
+        <span>📖 ${showingText}</span>
+        <span style="opacity:0.4;">•</span>
+        <span>${t('recipes.pageLabel')} <strong>${currentPage}</strong> / ${totalPages}</span>
+      </div>
+
+      <!-- SÉLECTEUR RECETTES PAR PAGE -->
+      <div class="recipes-pagination-limit-wrap">
+        <span>${t('recipes.perPageLabel')} :</span>
+        <div style="display:inline-flex; gap:4px;">
+          ${[12, 24, 48].map(limit => `
+            <button 
+              type="button" 
+              class="recipes-per-page-pill ${recipesPerPage === limit ? 'active' : ''}"
+              onclick="setRecipesPerPage(${limit})"
+              title="${limit} ${t('recipes.perPageLabel')}"
+            >
+              ${limit}
+            </button>
+          `).join('')}
+          <button 
+            type="button" 
+            class="recipes-per-page-pill ${recipesPerPage >= 9999 ? 'active' : ''}"
+            onclick="setRecipesPerPage('all')"
+            title="${t('recipes.allOption')}"
+          >
+            ${t('recipes.allOption')}
+          </button>
+        </div>
+      </div>
+
+      <!-- BOUTONS DE NAVIGATION -->
+      ${totalPages > 1 ? `
+        <div class="recipes-pagination-controls" role="navigation" aria-label="Pagination">
+          <!-- BOUTON PREMIER -->
+          <button 
+            type="button" 
+            class="recipe-page-btn nav-btn" 
+            onclick="setRecipePage(1)"
+            ${currentPage === 1 ? 'disabled aria-disabled="true"' : ''}
+            title="${t('recipes.firstPage')}"
+          >
+            <i class="ri-skip-back-line"></i>
+          </button>
+
+          <!-- BOUTON PRÉCÉDENT -->
+          <button 
+            type="button" 
+            class="recipe-page-btn nav-btn" 
+            onclick="setRecipePage(${currentPage - 1})"
+            ${currentPage === 1 ? 'disabled aria-disabled="true"' : ''}
+            title="${t('recipes.prevPage')}"
+          >
+            <i class="ri-arrow-left-s-line"></i>
+            <span class="nav-text">${t('recipes.prevPage')}</span>
+          </button>
+
+          <!-- NUMÉROS DE PAGE -->
+          ${pageNumbers.map(p => {
+            if (p === '...') {
+              return `<span class="recipe-page-ellipsis">…</span>`;
+            }
+            const isActive = p === currentPage;
+            return `
+              <button 
+                type="button" 
+                class="recipe-page-btn ${isActive ? 'active' : ''}" 
+                onclick="setRecipePage(${p})"
+                ${isActive ? 'aria-current="page"' : ''}
+              >
+                ${p}
+              </button>
+            `;
+          }).join('')}
+
+          <!-- BOUTON SUIVANT -->
+          <button 
+            type="button" 
+            class="recipe-page-btn nav-btn" 
+            onclick="setRecipePage(${currentPage + 1})"
+            ${currentPage === totalPages ? 'disabled aria-disabled="true"' : ''}
+            title="${t('recipes.nextPage')}"
+          >
+            <span class="nav-text">${t('recipes.nextPage')}</span>
+            <i class="ri-arrow-right-s-line"></i>
+          </button>
+
+          <!-- BOUTON DERNIER -->
+          <button 
+            type="button" 
+            class="recipe-page-btn nav-btn" 
+            onclick="setRecipePage(${totalPages})"
+            ${currentPage === totalPages ? 'disabled aria-disabled="true"' : ''}
+            title="${t('recipes.lastPage')}"
+          >
+            <i class="ri-skip-forward-line"></i>
+          </button>
+        </div>
+      ` : ''}
+    </div>
+  `;
 }
 
 /**
