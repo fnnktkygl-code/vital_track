@@ -77,12 +77,12 @@ it('getChitChatSystemPrompt retourne un prompt concis et chaleureux pour chaque 
 // 3. Tests des alias de modèles
 it('resolveModelName résout correctement vers des modèles Google Gemini réels', () => {
   assert.equal(resolveModelName('auto'), 'auto');
-  assert.equal(resolveModelName('gemini-2.0-flash-lite'), 'gemini-2.0-flash-lite');
-  assert.equal(resolveModelName('lite'), 'gemini-2.0-flash-lite');
-  assert.equal(resolveModelName('flash'), 'gemini-2.5-flash');
+  assert.equal(resolveModelName('gemini-3.5-flash-lite'), 'gemini-3.5-flash-lite');
+  assert.equal(resolveModelName('lite'), 'gemini-3.5-flash-lite');
+  assert.equal(resolveModelName('flash'), 'gemini-3.6-flash');
+  assert.equal(resolveModelName('gemini-3.7-flash'), 'gemini-3.7-flash');
   assert.equal(resolveModelName('gemini-2.5-flash'), 'gemini-2.5-flash');
-  assert.equal(resolveModelName('gemini-2.0-flash'), 'gemini-2.0-flash');
-  assert.equal(resolveModelName('pro'), 'gemini-1.5-pro');
+  assert.equal(resolveModelName('pro'), 'gemini-3.7-flash');
 });
 
 console.log(`\n🎉 SUITE CASCADE & INTENTS VALIDÉE : ${passed} / ${total} tests réussis !\n`);

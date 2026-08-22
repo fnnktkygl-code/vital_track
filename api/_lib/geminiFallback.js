@@ -10,47 +10,51 @@
  */
 
 const CHITCHAT_CASCADE = [
-  'gemini-2.0-flash-lite',
-  'gemini-2.0-flash',
-  'gemini-1.5-flash-8b',
-  'gemini-1.5-flash'
+  'gemini-3.5-flash-lite',
+  'gemini-3.1-flash-lite',
+  'gemini-flash-lite-latest',
+  'gemini-2.5-flash-lite'
 ];
 
 const STANDARD_CASCADE = [
-  'gemini-2.5-flash',
-  'gemini-2.0-flash',
-  'gemini-1.5-flash',
-  'gemini-2.0-flash-lite'
+  'gemini-3.6-flash',
+  'gemini-3.5-flash',
+  'gemini-flash-latest',
+  'gemini-2.5-flash'
 ];
 
 const COMPLEX_CASCADE = [
-  'gemini-2.5-flash',
-  'gemini-1.5-pro',
-  'gemini-2.0-flash',
-  'gemini-1.5-flash'
+  'gemini-3.7-flash',
+  'gemini-3.6-flash',
+  'gemini-pro-latest',
+  'gemini-2.5-pro'
 ];
 
 const CASCADE_MODELS = [...STANDARD_CASCADE];
 
 const MODEL_ALIASES = {
   'auto': 'auto',
-  'flash': 'gemini-2.5-flash',
+  'flash': 'gemini-3.6-flash',
+  'lite': 'gemini-3.5-flash-lite',
+  'flash-lite': 'gemini-3.5-flash-lite',
+  'pro': 'gemini-3.7-flash',
+  'gemini-3.7-flash': 'gemini-3.7-flash',
+  'gemini-3.6-flash': 'gemini-3.6-flash',
+  'gemini-3.5-flash': 'gemini-3.5-flash',
+  'gemini-3.5-flash-lite': 'gemini-3.5-flash-lite',
+  'gemini-3.1-flash-lite': 'gemini-3.1-flash-lite',
+  'gemini-flash-latest': 'gemini-flash-latest',
+  'gemini-flash-lite-latest': 'gemini-flash-lite-latest',
+  'gemini-pro-latest': 'gemini-pro-latest',
   'gemini-2.5-flash': 'gemini-2.5-flash',
-  'gemini-2.0-flash': 'gemini-2.0-flash',
-  'gemini-2.0-flash-lite': 'gemini-2.0-flash-lite',
-  'gemini-1.5-flash': 'gemini-1.5-flash',
-  'gemini-1.5-flash-8b': 'gemini-1.5-flash-8b',
-  'gemini-1.5-pro': 'gemini-1.5-pro',
-  'gemini-2.5-pro': 'gemini-1.5-pro',
-  'pro': 'gemini-1.5-pro',
-  'lite': 'gemini-2.0-flash-lite',
-  'flash-lite': 'gemini-2.0-flash-lite',
-  'gemini-3.7-flash': 'gemini-2.5-flash',
-  'gemini-3.6-flash': 'gemini-2.5-flash',
-  'gemini-3.5-flash': 'gemini-2.0-flash',
-  'gemini-3.5-flash-lite': 'gemini-2.0-flash-lite',
-  'gemini-flash-lite-latest': 'gemini-2.0-flash-lite',
-  'gemini-3.1-flash-lite': 'gemini-2.0-flash-lite'
+  'gemini-2.5-flash-lite': 'gemini-2.5-flash-lite',
+  'gemini-2.5-pro': 'gemini-2.5-pro',
+  // Backward compatible mappings for retired 1.5/2.0 IDs
+  'gemini-2.0-flash': 'gemini-3.6-flash',
+  'gemini-2.0-flash-lite': 'gemini-3.5-flash-lite',
+  'gemini-1.5-flash': 'gemini-3.5-flash',
+  'gemini-1.5-flash-8b': 'gemini-3.5-flash-lite',
+  'gemini-1.5-pro': 'gemini-3.7-flash'
 };
 
 function resolveModelName(name) {
@@ -218,10 +222,10 @@ async function callGeminiApi({
             continue; // Failover to next model in cascade
           }
 
-          // 404 / 400 Unsupported model
+          // 404 / 400 Error from API
           if (response.status === 404 || response.status === 400) {
             modelCooldownMap.set(cooldownKey, Date.now() + 6 * 3600 * 1000);
-            lastErr = new Error(`Unsupported model [${modelName}]`);
+            lastErr = new Error(`API error HTTP ${response.status} on [${modelName}]: ${errMsg}`);
             continue;
           }
 
