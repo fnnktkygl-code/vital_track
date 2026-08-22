@@ -99,6 +99,10 @@ assert.ok(mainCode.includes('compressWeightImage'), 'main.js includes canvas ima
 assert.ok(mainCode.includes('renderWeightGallery'), 'main.js includes renderWeightGallery');
 assert.ok(mainCode.includes('filterWeightGallery'), 'main.js includes filterWeightGallery');
 assert.ok(mainCode.includes('renderWeightCompare'), 'main.js includes renderWeightCompare');
+assert.ok(mainCode.includes('setWeightCompareMode'), 'main.js includes setWeightCompareMode for split vs side-by-side');
+assert.ok(mainCode.includes('setWeightCompareTarget'), 'main.js includes setWeightCompareTarget for active photo selection');
+assert.ok(mainCode.includes('adjustWeightCompareZoom'), 'main.js includes adjustWeightCompareZoom for independent photo scaling');
+assert.ok(mainCode.includes('resetWeightCompareAlign'), 'main.js includes resetWeightCompareAlign');
 assert.ok(mainCode.includes('downloadWeightComparisonCard'), 'main.js includes downloadWeightComparisonCard');
 assert.ok(mainCode.includes('initWeightSplitSlider'), 'main.js includes initWeightSplitSlider');
 assert.ok(mainCode.includes('toggleWeightPrivacyMode'), 'main.js includes toggleWeightPrivacyMode');
@@ -106,7 +110,7 @@ assert.ok(mainCode.includes('toggleLightboxZoom'), 'main.js includes toggleLight
 assert.ok(mainCode.includes('openWeightLightbox'), 'main.js includes openWeightLightbox');
 assert.ok(mainCode.includes('chart-photo-thumb'), 'main.js renders circular SVG photo thumbnail pins');
 assert.ok(mainCode.includes('window.handleWeightPhotoSelect'), 'main.js registers photo upload handler on window');
-console.log('✅ 6. main.js includes and exports all necessary methods (gallery filters, SVG pins, comparator export, zoom).');
+console.log('✅ 6. main.js includes and exports all necessary methods (gallery filters, SVG pins, dual-mode comparator, independent zoom/pan).');
 
 // 7. Test index.html DOM structure
 const htmlCode = readFileSync(join(__dirname, '../web-app/index.html'), 'utf-8');
@@ -115,12 +119,19 @@ assert.ok(htmlCode.includes('id="weightViewTabs"'), 'index.html has weight view 
 assert.ok(htmlCode.includes('id="weightGalleryFilters"'), 'index.html has gallery filter bar');
 assert.ok(htmlCode.includes('id="weightGalleryView"'), 'index.html has gallery view container');
 assert.ok(htmlCode.includes('id="weightCompareView"'), 'index.html has comparator view container');
+assert.ok(htmlCode.includes('id="btnModeSplit"'), 'index.html has split mode button');
+assert.ok(htmlCode.includes('id="btnModeSide"'), 'index.html has side-by-side mode button');
+assert.ok(htmlCode.includes('id="chipTargetBefore"'), 'index.html has before target selector chip');
+assert.ok(htmlCode.includes('id="chipTargetAfter"'), 'index.html has after target selector chip');
+assert.ok(htmlCode.includes('id="weightCompareSideContainer"'), 'index.html has side-by-side comparison container');
 assert.ok(htmlCode.includes('id="weightDownloadCompareBtn"'), 'index.html has download comparison card CTA');
 assert.ok(htmlCode.includes('id="weightSplitSliderContainer"'), 'index.html has split slider container');
 assert.ok(htmlCode.includes('id="weightPhotoCameraInput"'), 'index.html has camera capture input');
 assert.ok(htmlCode.includes('id="weightPhotoInput"'), 'index.html has gallery file input');
 assert.ok(htmlCode.includes('id="weightPhotoLightbox"'), 'index.html has lightbox modal');
-console.log('✅ 7. index.html contains all necessary DOM nodes for tabs, photo inputs, comparator, card download and lightbox.');
+assert.ok(!htmlCode.includes('data-tag="belly"'), 'index.html MUST NOT contain data-tag="belly"');
+assert.ok(!htmlCode.includes('weight.photoTagBelly'), 'index.html MUST NOT contain photoTagBelly');
+console.log('✅ 7. index.html contains all necessary DOM nodes for tabs, dual-mode comparator, independent zoom, and zero belly tag.');
 
 console.log('\n🎉 ALL WEIGHT TRACKING & BODY EVOLUTION TESTS PASSED SUCCESSFULLY!');
 

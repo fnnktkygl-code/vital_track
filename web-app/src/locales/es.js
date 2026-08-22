@@ -592,15 +592,19 @@ export default {
     "photoTagFront": "Frente",
     "photoTagSide": "Perfil",
     "photoTagBack": "Espalda",
-    "photoTagBelly": "Vientre / Abdomen",
-    "photoPrivacyBadge": "🔒 100% Local · Cero transferencia a la Nube · Conforme RGPD",
+    "photoPrivacyBadge": "🔒 100% Local · Cero transferencia Cloud · Conforme RGPD",
     "compareStart": "Punto de partida",
     "compareCurrent": "Punto actual",
+    "compareModeSplit": "Deslizador",
+    "compareModeSide": "Lado a lado",
+    "compareActiveBefore": "Foto Antes",
+    "compareActiveAfter": "Foto Después",
+    "compareResetAlign": "Restablecer",
     "downloadCompareBtn": "Descargar comparación",
     "filterAllPhotos": "Todas las fotos",
     "filterThisYear": "Este año",
     "filterThisMonth": "Este mes",
-    "zoomHint": "Doble clic para hacer zoom"
+    "zoomHint": "Doble clic para ampliar"
   },
   "auth": {
     "signInWithGoogle": "Iniciar sesión con Google",

@@ -11933,7 +11933,86 @@ function updateWeightBadge(count) {
   badge.textContent = String(count);
 }
 
-// ═══════ BEFORE / AFTER SPLIT COMPARATOR & CARD EXPORT ═══════
+// ═══════ BEFORE / AFTER DUAL-MODE COMPARATOR & INDEPENDENT PHOTO ZOOM / PAN ═══════
+let compareState = {
+  activeTarget: 'before', // 'before' | 'after'
+  mode: 'split', // 'split' | 'side'
+  sliderPct: 50,
+  before: { scale: 1.0, x: 0, y: 0 },
+  after: { scale: 1.0, x: 0, y: 0 }
+};
+
+function setWeightCompareMode(mode) {
+  compareState.mode = mode;
+  const btnSplit = document.getElementById('btnModeSplit');
+  const btnSide = document.getElementById('btnModeSide');
+  const splitContainer = document.getElementById('weightSplitSliderContainer');
+  const sideContainer = document.getElementById('weightCompareSideContainer');
+  const helperText = document.getElementById('weightCompareHelperText');
+
+  if (btnSplit) btnSplit.classList.toggle('active', mode === 'split');
+  if (btnSide) btnSide.classList.toggle('active', mode === 'side');
+
+  if (splitContainer) splitContainer.style.display = (mode === 'split') ? 'block' : 'none';
+  if (sideContainer) sideContainer.style.display = (mode === 'side') ? 'grid' : 'none';
+
+  if (helperText) {
+    helperText.textContent = (mode === 'split') 
+      ? 'Glissez le curseur pour observer votre transformation · Touchez Avant ou Après pour ajuster'
+      : 'Visualisation côte à côte · Touchez une photo pour zoomer ou la déplacer';
+  }
+
+  applyWeightCompareTransforms();
+}
+
+function setWeightCompareTarget(target) {
+  compareState.activeTarget = target;
+  const chipBefore = document.getElementById('chipTargetBefore');
+  const chipAfter = document.getElementById('chipTargetAfter');
+  const sideBefore = document.getElementById('weightSideBeforeCard');
+  const sideAfter = document.getElementById('weightSideAfterCard');
+
+  if (chipBefore) chipBefore.classList.toggle('active', target === 'before');
+  if (chipAfter) chipAfter.classList.toggle('active', target === 'after');
+  if (sideBefore) sideBefore.classList.toggle('active', target === 'before');
+  if (sideAfter) sideAfter.classList.toggle('active', target === 'after');
+}
+
+function adjustWeightCompareZoom(delta) {
+  const target = compareState.activeTarget;
+  const cur = compareState[target].scale;
+  const next = Math.max(0.5, Math.min(3.0, Math.round((cur + delta) * 100) / 100));
+  compareState[target].scale = next;
+  applyWeightCompareTransforms();
+}
+
+function resetWeightCompareAlign() {
+  compareState.before = { scale: 1.0, x: 0, y: 0 };
+  compareState.after = { scale: 1.0, x: 0, y: 0 };
+  applyWeightCompareTransforms();
+  showToast('Alignement des photos réinitialisé.', 'info');
+}
+
+function applyWeightCompareTransforms() {
+  const beforeLevel = document.getElementById('beforeZoomLevel');
+  const afterLevel = document.getElementById('afterZoomLevel');
+  if (beforeLevel) beforeLevel.textContent = `(${Math.round(compareState.before.scale * 100)}%)`;
+  if (afterLevel) afterLevel.textContent = `(${Math.round(compareState.after.scale * 100)}%)`;
+
+  const imgSplitBefore = document.getElementById('weightSplitImgBefore');
+  const imgSplitAfter = document.getElementById('weightSplitImgAfter');
+  const imgSideBefore = document.getElementById('weightSideImgBefore');
+  const imgSideAfter = document.getElementById('weightSideImgAfter');
+
+  const tfBefore = `translate(${compareState.before.x}px, ${compareState.before.y}px) scale(${compareState.before.scale})`;
+  const tfAfter = `translate(${compareState.after.x}px, ${compareState.after.y}px) scale(${compareState.after.scale})`;
+
+  if (imgSplitBefore) imgSplitBefore.style.transform = tfBefore;
+  if (imgSplitAfter) imgSplitAfter.style.transform = tfAfter;
+  if (imgSideBefore) imgSideBefore.style.transform = tfBefore;
+  if (imgSideAfter) imgSideAfter.style.transform = tfAfter;
+}
+
 async function renderWeightCompare() {
   const container = document.getElementById('weightCompareContainer');
   const emptyBanner = document.getElementById('weightCompareNeedTwoBanner');
@@ -11957,7 +12036,7 @@ async function renderWeightCompare() {
   const curBeforeId = selectBefore.value;
   const curAfterId = selectAfter.value;
 
-  const tagLabels = { belly: 'Ventre', front: 'Face', side: 'Profil', back: 'Dos' };
+  const tagLabels = { front: 'Face', side: 'Profil', back: 'Dos' };
   const optionsHtml = photoEntries.map(entry => {
     const d = new Date(entry.date);
     const dateFormatted = isNaN(d.getTime()) ? entry.date : d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
@@ -11989,8 +12068,10 @@ async function updateWeightComparison() {
   const selectBefore = document.getElementById('weightCompareSelectBefore');
   const selectAfter = document.getElementById('weightCompareSelectAfter');
   const metricsEl = document.getElementById('weightCompareMetrics');
-  const imgBefore = document.getElementById('weightSplitImgBefore');
-  const imgAfter = document.getElementById('weightSplitImgAfter');
+  const imgSplitBefore = document.getElementById('weightSplitImgBefore');
+  const imgSplitAfter = document.getElementById('weightSplitImgAfter');
+  const imgSideBefore = document.getElementById('weightSideImgBefore');
+  const imgSideAfter = document.getElementById('weightSideImgAfter');
   if (!selectBefore || !selectAfter) return;
 
   const beforeId = selectBefore.value;
@@ -12019,15 +12100,21 @@ async function updateWeightComparison() {
     `;
   }
 
-  // Load photos into split slider
-  if (imgBefore && window.getWeightPhoto) {
+  // Load photos into split slider and side-by-side cards
+  if (window.getWeightPhoto) {
     const bSrc = await window.getWeightPhoto(beforeEntry.id);
-    if (bSrc) imgBefore.src = bSrc;
-  }
-  if (imgAfter && window.getWeightPhoto) {
+    if (bSrc) {
+      if (imgSplitBefore) imgSplitBefore.src = bSrc;
+      if (imgSideBefore) imgSideBefore.src = bSrc;
+    }
     const aSrc = await window.getWeightPhoto(afterEntry.id);
-    if (aSrc) imgAfter.src = aSrc;
+    if (aSrc) {
+      if (imgSplitAfter) imgSplitAfter.src = aSrc;
+      if (imgSideAfter) imgSideAfter.src = aSrc;
+    }
   }
+
+  applyWeightCompareTransforms();
 }
 
 async function downloadWeightComparisonCard() {
@@ -12147,7 +12234,12 @@ function initWeightSplitSlider() {
   const handle = document.getElementById('weightSplitHandle');
   if (!sliderContainer || !beforeWrap || !handle) return;
 
-  let isDragging = false;
+  let isDraggingHandle = false;
+  let isPanningPhoto = false;
+  let startX = 0, startY = 0;
+  let initialPhotoX = 0, initialPhotoY = 0;
+  let initialPinchDist = 0;
+  let initialPinchScale = 1.0;
 
   function setSliderPosition(clientX) {
     const rect = sliderContainer.getBoundingClientRect();
@@ -12155,42 +12247,151 @@ function initWeightSplitSlider() {
     if (x < 0) x = 0;
     if (x > rect.width) x = rect.width;
     const pct = Math.max(0, Math.min(100, (x / rect.width) * 100));
-    beforeWrap.style.width = `${pct}%`;
+    compareState.sliderPct = pct;
+    beforeWrap.style.clipPath = `polygon(0 0, ${pct}% 0, ${pct}% 100%, 0 100%)`;
     handle.style.left = `${pct}%`;
   }
 
-  function onPointerDown(e) {
-    isDragging = true;
-    setSliderPosition(e.clientX || (e.touches && e.touches[0].clientX));
-    window.addEventListener('pointermove', onPointerMove);
-    window.addEventListener('pointerup', onPointerUp);
-    window.addEventListener('touchmove', onTouchMove, { passive: false });
-    window.addEventListener('touchend', onPointerUp);
-  }
+  // Set initial 50% clip
+  beforeWrap.style.clipPath = `polygon(0 0, ${compareState.sliderPct}% 0, ${compareState.sliderPct}% 100%, 0 100%)`;
+  handle.style.left = `${compareState.sliderPct}%`;
 
-  function onPointerMove(e) {
-    if (!isDragging) return;
+  handle.onpointerdown = (e) => {
+    e.stopPropagation();
+    isDraggingHandle = true;
+    window.addEventListener('pointermove', onHandleMove);
+    window.addEventListener('pointerup', onHandleUp);
+  };
+
+  handle.ontouchstart = (e) => {
+    e.stopPropagation();
+    isDraggingHandle = true;
+    window.addEventListener('touchmove', onHandleTouchMove, { passive: false });
+    window.addEventListener('touchend', onHandleUp);
+  };
+
+  function onHandleMove(e) {
+    if (!isDraggingHandle) return;
     setSliderPosition(e.clientX);
   }
 
-  function onTouchMove(e) {
-    if (!isDragging) return;
+  function onHandleTouchMove(e) {
+    if (!isDraggingHandle) return;
     e.preventDefault();
     if (e.touches && e.touches[0]) {
       setSliderPosition(e.touches[0].clientX);
     }
   }
 
-  function onPointerUp() {
-    isDragging = false;
-    window.removeEventListener('pointermove', onPointerMove);
-    window.removeEventListener('pointerup', onPointerUp);
-    window.removeEventListener('touchmove', onTouchMove);
-    window.removeEventListener('touchend', onPointerUp);
+  function onHandleUp() {
+    isDraggingHandle = false;
+    window.removeEventListener('pointermove', onHandleMove);
+    window.removeEventListener('pointerup', onHandleUp);
+    window.removeEventListener('touchmove', onHandleTouchMove);
+    window.removeEventListener('touchend', onHandleUp);
   }
 
-  sliderContainer.onpointerdown = onPointerDown;
-  sliderContainer.ontouchstart = onPointerDown;
+  // Pointer interaction on container to select & pan/zoom target photo
+  function onContainerPointerDown(e) {
+    if (isDraggingHandle) return;
+    const rect = sliderContainer.getBoundingClientRect();
+    const clientX = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+    const clientY = e.clientY || (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
+    const clickX = clientX - rect.left;
+    const target = (clickX <= (rect.width * (compareState.sliderPct / 100))) ? 'before' : 'after';
+    setWeightCompareTarget(target);
+
+    isPanningPhoto = true;
+    startX = clientX;
+    startY = clientY;
+    initialPhotoX = compareState[target].x;
+    initialPhotoY = compareState[target].y;
+
+    if (e.touches && e.touches.length === 2) {
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      initialPinchDist = Math.hypot(dx, dy);
+      initialPinchScale = compareState[target].scale;
+    }
+
+    window.addEventListener('pointermove', onContainerPointerMove);
+    window.addEventListener('pointerup', onContainerPointerUp);
+    window.addEventListener('touchmove', onContainerTouchMove, { passive: false });
+    window.addEventListener('touchend', onContainerPointerUp);
+  }
+
+  function onContainerPointerMove(e) {
+    if (!isPanningPhoto) return;
+    const target = compareState.activeTarget;
+    const curX = e.clientX;
+    const curY = e.clientY;
+    const dx = curX - startX;
+    const dy = curY - startY;
+
+    compareState[target].x = initialPhotoX + dx;
+    compareState[target].y = initialPhotoY + dy;
+    applyWeightCompareTransforms();
+  }
+
+  function onContainerTouchMove(e) {
+    if (!isPanningPhoto) return;
+    e.preventDefault();
+    const target = compareState.activeTarget;
+
+    if (e.touches.length === 2 && initialPinchDist > 0) {
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      const dist = Math.hypot(dx, dy);
+      const ratio = dist / initialPinchDist;
+      compareState[target].scale = Math.max(0.5, Math.min(3.0, Math.round(initialPinchScale * ratio * 100) / 100));
+      applyWeightCompareTransforms();
+    } else if (e.touches.length === 1) {
+      const curX = e.touches[0].clientX;
+      const curY = e.touches[0].clientY;
+      const dx = curX - startX;
+      const dy = curY - startY;
+
+      compareState[target].x = initialPhotoX + dx;
+      compareState[target].y = initialPhotoY + dy;
+      applyWeightCompareTransforms();
+    }
+  }
+
+  function onContainerPointerUp() {
+    isPanningPhoto = false;
+    initialPinchDist = 0;
+    window.removeEventListener('pointermove', onContainerPointerMove);
+    window.removeEventListener('pointerup', onContainerPointerUp);
+    window.removeEventListener('touchmove', onContainerTouchMove);
+    window.removeEventListener('touchend', onContainerPointerUp);
+  }
+
+  sliderContainer.onpointerdown = onContainerPointerDown;
+  sliderContainer.ontouchstart = onContainerPointerDown;
+
+  // Side-by-Side gesture support
+  const sideBefore = document.getElementById('weightSideBeforeCard');
+  const sideAfter = document.getElementById('weightSideAfterCard');
+  if (sideBefore) {
+    sideBefore.onpointerdown = (e) => {
+      setWeightCompareTarget('before');
+      onContainerPointerDown(e);
+    };
+    sideBefore.ontouchstart = (e) => {
+      setWeightCompareTarget('before');
+      onContainerPointerDown(e);
+    };
+  }
+  if (sideAfter) {
+    sideAfter.onpointerdown = (e) => {
+      setWeightCompareTarget('after');
+      onContainerPointerDown(e);
+    };
+    sideAfter.ontouchstart = (e) => {
+      setWeightCompareTarget('after');
+      onContainerPointerDown(e);
+    };
+  }
 }
 
 // ═══════ PRIVACY BLUR MODE ═══════
@@ -13875,6 +14076,10 @@ if (typeof window !== "undefined") window.switchWeightView = switchWeightView;
 if (typeof window !== "undefined") window.filterWeightGallery = filterWeightGallery;
 if (typeof window !== "undefined") window.renderWeightGallery = renderWeightGallery;
 if (typeof window !== "undefined") window.renderWeightCompare = renderWeightCompare;
+if (typeof window !== "undefined") window.setWeightCompareMode = setWeightCompareMode;
+if (typeof window !== "undefined") window.setWeightCompareTarget = setWeightCompareTarget;
+if (typeof window !== "undefined") window.adjustWeightCompareZoom = adjustWeightCompareZoom;
+if (typeof window !== "undefined") window.resetWeightCompareAlign = resetWeightCompareAlign;
 if (typeof window !== "undefined") window.downloadWeightComparisonCard = downloadWeightComparisonCard;
 if (typeof window !== "undefined") window.updateWeightComparison = updateWeightComparison;
 if (typeof window !== "undefined") window.initWeightSplitSlider = initWeightSplitSlider;

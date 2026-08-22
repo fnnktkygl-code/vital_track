@@ -692,7 +692,34 @@
                 </div>
               </div>
 
-              <!-- Interactive Split Slider -->
+              <!-- Mode Toggle & Alignment / Zoom Toolbar -->
+              <div class="weight-compare-toolbar">
+                <div class="weight-compare-mode-toggle">
+                  <button type="button" class="weight-compare-mode-btn active" id="btnModeSplit" onclick="setWeightCompareMode('split')">
+                    <i class="ri-split-cells-horizontal"></i> <span data-i18n="weight.compareModeSplit">Glissière</span>
+                  </button>
+                  <button type="button" class="weight-compare-mode-btn" id="btnModeSide" onclick="setWeightCompareMode('side')">
+                    <i class="ri-layout-column-line"></i> <span data-i18n="weight.compareModeSide">Côte à côte</span>
+                  </button>
+                </div>
+
+                <div class="weight-target-selector-chips">
+                  <button type="button" class="weight-target-chip active before" id="chipTargetBefore" onclick="setWeightCompareTarget('before')">
+                    <span data-i18n="weight.compareActiveBefore">Photo Avant</span> <span id="beforeZoomLevel" style="opacity:0.8; font-size:0.7rem;">(100%)</span>
+                  </button>
+                  <button type="button" class="weight-target-chip after" id="chipTargetAfter" onclick="setWeightCompareTarget('after')">
+                    <span data-i18n="weight.compareActiveAfter">Photo Après</span> <span id="afterZoomLevel" style="opacity:0.8; font-size:0.7rem;">(100%)</span>
+                  </button>
+                </div>
+
+                <div class="weight-compare-zoom-controls">
+                  <button type="button" class="weight-zoom-btn" onclick="adjustWeightCompareZoom(-0.15)" title="Rétrécir la photo active"><i class="ri-subtract-line"></i></button>
+                  <button type="button" class="weight-zoom-btn" onclick="adjustWeightCompareZoom(0.15)" title="Agrandir la photo active"><i class="ri-add-line"></i></button>
+                  <button type="button" class="weight-zoom-btn" onclick="resetWeightCompareAlign()" title="Réinitialiser l'alignement" style="width:auto; padding:0 6px; font-size:0.72rem; gap:3px;"><i class="ri-refresh-line"></i> <span data-i18n="weight.compareResetAlign">Réinitialiser</span></button>
+                </div>
+              </div>
+
+              <!-- Interactive Split Slider Container -->
               <div class="weight-split-slider-container" id="weightSplitSliderContainer">
                 <div class="weight-split-img-wrap" id="weightSplitAfterWrap">
                   <img id="weightSplitImgAfter" src="" alt="Après" />
@@ -712,7 +739,20 @@
                   <div class="weight-split-handle-line"></div>
                 </div>
               </div>
-              <p style="font-size:0.78rem; color:var(--text-dim); text-align:center; margin-top:8px;" data-i18n="dashboard.weightCompareSubtitle">Glissez le curseur pour observer votre transformation physique</p>
+
+              <!-- Side by Side Container -->
+              <div class="weight-compare-side-container" id="weightCompareSideContainer" style="display:none;">
+                <div class="weight-side-card active" id="weightSideBeforeCard" onclick="setWeightCompareTarget('before')">
+                  <img id="weightSideImgBefore" src="" alt="Avant" />
+                  <span class="weight-split-badge badge-before">Avant</span>
+                </div>
+                <div class="weight-side-card" id="weightSideAfterCard" onclick="setWeightCompareTarget('after')">
+                  <img id="weightSideImgAfter" src="" alt="Après" />
+                  <span class="weight-split-badge badge-after">Après</span>
+                </div>
+              </div>
+
+              <p style="font-size:0.78rem; color:var(--text-dim); text-align:center; margin-top:8px;" id="weightCompareHelperText" data-i18n="dashboard.weightCompareSubtitle">Glissez le curseur pour observer votre transformation physique</p>
 
               <!-- Download Comparison Card CTA -->
               <div style="display:flex; justify-content:center; margin-top:12px;">
@@ -2684,7 +2724,7 @@
                 <i class="ri-image-add-line"></i> <span data-i18n="weight.photoGalleryBtn">Galerie / Fichiers</span>
               </button>
             </div>
-            <p style="font-size:0.72rem; color:var(--text-dim); margin:4px 0 0 0; text-align:center;">Ventre, face ou profil · 100% privé sur votre appareil</p>
+            <p style="font-size:0.72rem; color:var(--text-dim); margin:4px 0 0 0; text-align:center;">Face, profil ou corps entier · 100% privé sur votre appareil</p>
           </div>
 
           <!-- Preview Card (shown when photo attached) -->
@@ -2703,7 +2743,6 @@
                 <button type="button" class="photo-tag-btn" data-tag="front" onclick="setWeightPhotoTag('front')"><span data-i18n="weight.photoTagFront">Face</span></button>
                 <button type="button" class="photo-tag-btn" data-tag="side" onclick="setWeightPhotoTag('side')"><span data-i18n="weight.photoTagSide">Profil</span></button>
                 <button type="button" class="photo-tag-btn" data-tag="back" onclick="setWeightPhotoTag('back')"><span data-i18n="weight.photoTagBack">Dos</span></button>
-                <button type="button" class="photo-tag-btn" data-tag="belly" onclick="setWeightPhotoTag('belly')"><span data-i18n="weight.photoTagBelly">Ventre</span></button>
               </div>
             </div>
           </div>
