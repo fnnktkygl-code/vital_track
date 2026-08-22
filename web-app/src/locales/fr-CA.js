@@ -610,7 +610,14 @@ export default {
     "deletePhotoBtn": "Supprimer la photo",
     "confirmDeletePhoto": "Voulez-vous vraiment supprimer cette photo ? (La pesée restera enregistrée)",
     "photoReplacedSuccess": "Photo mise à jour avec succès !",
-    "photoDeletedSuccess": "Photo supprimée."
+    "photoDeletedSuccess": "Photo supprimée.",
+    "addPhotoBtn": "Ajouter une pesée",
+    "cropPhotoBtn": "Rogner / Ajuster",
+    "cropModalTitle": "Rogner & Ajuster la photo",
+    "deleteEntryBtn": "Supprimer cette pesée",
+    "confirmDeleteWeightEntry": "Voulez-vous vraiment supprimer cette pesée ?",
+    "photoCroppedSuccess": "Photo recadrée et optimisée !",
+    "weightDeletedSuccess": "Pesée supprimée."
   },
   "auth": {
     "signInWithGoogle": "Ouvrir une session avec Google",

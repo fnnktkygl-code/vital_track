@@ -11091,31 +11091,8 @@ async function compressWeightImage(fileOrDataUrl, maxWidth = 1200, maxHeight = 1
 async function handleWeightPhotoSelect(event) {
   const file = event.target.files && event.target.files[0];
   if (!file) return;
-
-  try {
-    const { dataUrl, width, height } = await compressWeightImage(file, 1200, 1200, 0.82);
-    pendingWeightPhotoDataUrl = dataUrl;
-    _weightPhotoRemoved = false;
-
-    const sizeKb = Math.round((dataUrl.length * 0.75) / 1024);
-    const sizeLabel = document.getElementById('weightPhotoSizeLabel');
-    if (sizeLabel) sizeLabel.textContent = `${width}x${height} · ~${sizeKb} Ko · Sans EXIF`;
-
-    const previewCard = document.getElementById('weightPhotoPreviewCard');
-    const dropzone = document.getElementById('weightPhotoDropzone');
-    const previewImg = document.getElementById('weightPhotoPreviewImg');
-
-    if (previewImg) previewImg.src = dataUrl;
-    if (previewCard) previewCard.style.display = 'flex';
-    if (dropzone) dropzone.style.display = 'none';
-
-    setWeightPhotoTag(pendingWeightPhotoTag);
-  } catch (err) {
-    console.error('Error processing weight photo:', err);
-    showToast('Erreur lors du traitement de la photo.', 'error');
-  } finally {
-    event.target.value = '';
-  }
+  openPhotoCropEditor(file, 'modal', window._editingWeightId);
+  if (event.target) event.target.value = '';
 }
 
 function removeWeightPhoto() {
@@ -11284,6 +11261,8 @@ async function editWeightEntry(entryId) {
   }
 
   renderWeightHistoryInModal();
+  const modal = document.getElementById('weightModal');
+  if (modal) modal.classList.add('open');
 };
 
 function stepWeight(delta) {
@@ -12336,7 +12315,6 @@ function initWeightSplitSlider() {
         const clickX = clientX - rect.left;
         effectiveTarget = (clickX <= (rect.width * (compareState.sliderPct / 100))) ? 'before' : 'after';
       }
-
       setWeightCompareTarget(effectiveTarget);
 
       isPanning = true;
@@ -12523,35 +12501,9 @@ function triggerLightboxPhotoReplace() {
 async function handleLightboxPhotoReplace(event) {
   const file = event?.target?.files?.[0];
   if (!file || !currentLightboxEntryId) return;
-
-  try {
-    showToast('Traitement et optimisation de la photo...', 'info');
-    const compressedDataUrl = await compressWeightImage(file, 1200, 1200, 0.82);
-
-    if (window.saveWeightPhoto) {
-      await window.saveWeightPhoto(currentLightboxEntryId, compressedDataUrl);
-    }
-
-    let history = sanitizeWeightHistory(store.get('weight_history', []));
-    const idx = history.findIndex(h => h.id === currentLightboxEntryId);
-    if (idx !== -1) {
-      history[idx].hasPhoto = true;
-      store.set('weight_history', history);
-    }
-
-    const img = document.getElementById('lightboxImg');
-    if (img) img.src = compressedDataUrl;
-
-    renderWeightGallery();
-    renderWeightChart();
-    renderWeightCompare();
-    showToast((typeof i18n !== 'undefined' && i18n.t) ? i18n.t('weight.photoReplacedSuccess') : 'Photo mise à jour avec succès !', 'success');
-  } catch (err) {
-    console.error('Failed to replace photo:', err);
-    showToast('Erreur lors du remplacement de la photo.', 'error');
-  } finally {
-    if (event?.target) event.target.value = '';
-  }
+  const targetId = currentLightboxEntryId;
+  openPhotoCropEditor(file, 'lightbox', targetId);
+  if (event?.target) event.target.value = '';
 }
 
 function editWeightFromLightbox() {
@@ -12594,6 +12546,494 @@ async function deleteLightboxPhoto() {
   if (currentLightboxEntryId) {
     await deleteWeightPhotoEntry(currentLightboxEntryId);
   }
+}
+
+// ═══════ IMAGE CROPPER & ROTATE ENGINE ═══════
+let cropState = {
+  active: false,
+  targetContext: 'modal', // 'modal' | 'lightbox' | 'pointAction'
+  targetEntryId: null,
+  rawImg: null,
+  rotation: 0, // 0, 90, 180, 270
+  flippedH: false,
+  aspect: 'free', // 'free' | '1:1' | '3:4' | '4:3'
+  cropBox: { x: 0.05, y: 0.05, w: 0.9, h: 0.9 },
+  isDragging: false,
+  dragMode: null,
+  startX: 0,
+  startY: 0,
+  initialCropBox: null
+};
+
+let cropEventsBound = false;
+
+function openPhotoCropEditor(fileOrDataUrl, targetContext = 'modal', targetEntryId = null) {
+  const modal = document.getElementById('weightPhotoCropModal');
+  const canvas = document.getElementById('cropCanvas');
+  if (!modal || !canvas) return;
+
+  cropState.active = true;
+  cropState.targetContext = targetContext;
+  cropState.targetEntryId = targetEntryId;
+  cropState.rotation = 0;
+  cropState.flippedH = false;
+  cropState.aspect = 'free';
+  cropState.cropBox = { x: 0.05, y: 0.05, w: 0.9, h: 0.9 };
+
+  document.querySelectorAll('#weightPhotoCropModal .period-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.id === 'cropAspectFree');
+  });
+
+  const loadImg = (src) => {
+    const im = new Image();
+    im.onload = () => {
+      cropState.rawImg = im;
+      initCropCanvasEvents();
+      renderCropCanvas();
+      modal.style.display = 'flex';
+    };
+    im.onerror = () => {
+      showToast('Impossible de charger l\'image pour le recadrage.', 'error');
+    };
+    im.src = src;
+  };
+
+  if (typeof fileOrDataUrl === 'string') {
+    loadImg(fileOrDataUrl);
+  } else if (fileOrDataUrl instanceof File || fileOrDataUrl instanceof Blob) {
+    const reader = new FileReader();
+    reader.onload = (e) => loadImg(e.target.result);
+    reader.readAsDataURL(fileOrDataUrl);
+  }
+}
+
+function openPhotoCropEditorForPendingPhoto() {
+  if (pendingWeightPhotoDataUrl) {
+    openPhotoCropEditor(pendingWeightPhotoDataUrl, 'modal', window._editingWeightId);
+  } else {
+    document.getElementById('weightPhotoInput')?.click();
+  }
+}
+
+function closePhotoCropEditor(e) {
+  if (!e || e.target === document.getElementById('weightPhotoCropModal') || e.target.closest?.('.modal-close-btn') || e.target.closest?.('.btn-outline')) {
+    const modal = document.getElementById('weightPhotoCropModal');
+    if (modal) modal.style.display = 'none';
+    cropState.active = false;
+    cropState.rawImg = null;
+  }
+}
+
+function setCropAspect(aspect) {
+  cropState.aspect = aspect;
+  document.getElementById('cropAspectFree')?.classList.toggle('active', aspect === 'free');
+  document.getElementById('cropAspectSquare')?.classList.toggle('active', aspect === '1:1');
+  document.getElementById('cropAspectPortrait')?.classList.toggle('active', aspect === '3:4');
+  document.getElementById('cropAspectLandscape')?.classList.toggle('active', aspect === '4:3');
+
+  if (aspect === '1:1') {
+    const minDim = Math.min(cropState.cropBox.w, cropState.cropBox.h);
+    cropState.cropBox.w = minDim;
+    cropState.cropBox.h = minDim;
+  } else if (aspect === '3:4') {
+    cropState.cropBox.h = Math.min(0.9, cropState.cropBox.w * (4 / 3));
+    cropState.cropBox.w = cropState.cropBox.h * (3 / 4);
+  } else if (aspect === '4:3') {
+    cropState.cropBox.w = Math.min(0.9, cropState.cropBox.h * (4 / 3));
+    cropState.cropBox.h = cropState.cropBox.w * (3 / 4);
+  }
+  renderCropCanvas();
+}
+
+function rotateCropImage(deltaDeg) {
+  cropState.rotation = (cropState.rotation + deltaDeg + 360) % 360;
+  renderCropCanvas();
+}
+
+function flipCropImage() {
+  cropState.flippedH = !cropState.flippedH;
+  renderCropCanvas();
+}
+
+function resetCropState() {
+  cropState.rotation = 0;
+  cropState.flippedH = false;
+  cropState.aspect = 'free';
+  cropState.cropBox = { x: 0.05, y: 0.05, w: 0.9, h: 0.9 };
+  setCropAspect('free');
+  renderCropCanvas();
+}
+
+function renderCropCanvas() {
+  const canvas = document.getElementById('cropCanvas');
+  const container = document.getElementById('cropCanvasContainer');
+  if (!canvas || !container || !cropState.rawImg) return;
+
+  const isSwapped = (cropState.rotation === 90 || cropState.rotation === 270);
+  const srcW = isSwapped ? cropState.rawImg.height : cropState.rawImg.width;
+  const srcH = isSwapped ? cropState.rawImg.width : cropState.rawImg.height;
+
+  const contW = container.clientWidth || 500;
+  const contH = container.clientHeight || 320;
+
+  const scale = Math.min((contW - 20) / srcW, (contH - 20) / srcH);
+  const dispW = Math.round(srcW * scale);
+  const dispH = Math.round(srcH * scale);
+
+  canvas.width = dispW;
+  canvas.height = dispH;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, dispW, dispH);
+
+  // Draw transformed image
+  ctx.save();
+  ctx.translate(dispW / 2, dispH / 2);
+  ctx.rotate((cropState.rotation * Math.PI) / 180);
+  if (cropState.flippedH) ctx.scale(-1, 1);
+
+  const drawW = isSwapped ? dispH : dispW;
+  const drawH = isSwapped ? dispW : dispH;
+  ctx.drawImage(cropState.rawImg, -drawW / 2, -drawH / 2, drawW, drawH);
+  ctx.restore();
+
+  // Draw shaded overlay
+  const bx = cropState.cropBox.x * dispW;
+  const by = cropState.cropBox.y * dispH;
+  const bw = cropState.cropBox.w * dispW;
+  const bh = cropState.cropBox.h * dispH;
+
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
+  ctx.fillRect(0, 0, dispW, by);
+  ctx.fillRect(0, by + bh, dispW, dispH - (by + bh));
+  ctx.fillRect(0, by, bx, bh);
+  ctx.fillRect(bx + bw, by, dispW - (bx + bw), bh);
+
+  // Box border
+  ctx.strokeStyle = '#34d399';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(bx, by, bw, bh);
+
+  // Rule of thirds
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(bx + bw / 3, by);
+  ctx.lineTo(bx + bw / 3, by + bh);
+  ctx.moveTo(bx + (2 * bw) / 3, by);
+  ctx.lineTo(bx + (2 * bw) / 3, by + bh);
+  ctx.moveTo(bx, by + bh / 3);
+  ctx.lineTo(bx + bw, by + bh / 3);
+  ctx.moveTo(bx, by + (2 * bh) / 3);
+  ctx.lineTo(bx + bw, by + (2 * bh) / 3);
+  ctx.stroke();
+
+  // Corner handles
+  const handleSize = 12;
+  ctx.fillStyle = '#34d399';
+  ctx.fillRect(bx - 2, by - 2, handleSize, 3);
+  ctx.fillRect(bx - 2, by - 2, 3, handleSize);
+  ctx.fillRect(bx + bw - handleSize + 2, by - 2, handleSize, 3);
+  ctx.fillRect(bx + bw - 1, by - 2, 3, handleSize);
+  ctx.fillRect(bx + bw - handleSize + 2, by + bh - 1, handleSize, 3);
+  ctx.fillRect(bx + bw - 1, by + bh - handleSize + 2, 3, handleSize);
+  ctx.fillRect(bx - 2, by + bh - 1, handleSize, 3);
+  ctx.fillRect(bx - 2, by + bh - handleSize + 2, 3, handleSize);
+}
+
+function initCropCanvasEvents() {
+  const canvas = document.getElementById('cropCanvas');
+  if (!canvas || cropEventsBound) return;
+  cropEventsBound = true;
+
+  function getCanvasPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const clientX = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+    const clientY = e.clientY || (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
+    return {
+      x: (clientX - rect.left) / rect.width,
+      y: (clientY - rect.top) / rect.height
+    };
+  }
+
+  function getHitHandle(pos) {
+    const b = cropState.cropBox;
+    const threshold = 0.08;
+    if (Math.hypot(pos.x - b.x, pos.y - b.y) < threshold) return 'nw';
+    if (Math.hypot(pos.x - (b.x + b.w), pos.y - b.y) < threshold) return 'ne';
+    if (Math.hypot(pos.x - (b.x + b.w), pos.y - (b.y + b.h)) < threshold) return 'se';
+    if (Math.hypot(pos.x - b.x, pos.y - (b.y + b.h)) < threshold) return 'sw';
+    if (pos.x >= b.x && pos.x <= b.x + b.w && pos.y >= b.y && pos.y <= b.y + b.h) return 'move';
+    return null;
+  }
+
+  function onPointerDown(e) {
+    const pos = getCanvasPos(e);
+    const handle = getHitHandle(pos);
+    if (!handle) return;
+
+    cropState.isDragging = true;
+    cropState.dragMode = handle;
+    cropState.startX = pos.x;
+    cropState.startY = pos.y;
+    cropState.initialCropBox = { ...cropState.cropBox };
+
+    window.addEventListener('pointermove', onPointerMove);
+    window.addEventListener('pointerup', onPointerUp);
+    window.addEventListener('touchmove', onTouchMove, { passive: false });
+    window.addEventListener('touchend', onPointerUp);
+  }
+
+  function onPointerMove(e) {
+    if (!cropState.isDragging) return;
+    const pos = getCanvasPos(e);
+    const dx = pos.x - cropState.startX;
+    const dy = pos.y - cropState.startY;
+    const init = cropState.initialCropBox;
+
+    if (cropState.dragMode === 'move') {
+      let nx = Math.max(0, Math.min(1 - init.w, init.x + dx));
+      let ny = Math.max(0, Math.min(1 - init.h, init.y + dy));
+      cropState.cropBox.x = nx;
+      cropState.cropBox.y = ny;
+    } else if (cropState.dragMode === 'se') {
+      let nw = Math.max(0.15, Math.min(1 - init.x, init.w + dx));
+      let nh = Math.max(0.15, Math.min(1 - init.y, init.h + dy));
+      if (cropState.aspect === '1:1') {
+        const minD = Math.min(nw, nh);
+        nw = minD; nh = minD;
+      }
+      cropState.cropBox.w = nw;
+      cropState.cropBox.h = nh;
+    } else if (cropState.dragMode === 'nw') {
+      let nx = Math.max(0, Math.min(init.x + init.w - 0.15, init.x + dx));
+      let ny = Math.max(0, Math.min(init.y + init.h - 0.15, init.y + dy));
+      let nw = (init.x + init.w) - nx;
+      let nh = (init.y + init.h) - ny;
+      cropState.cropBox.x = nx;
+      cropState.cropBox.y = ny;
+      cropState.cropBox.w = nw;
+      cropState.cropBox.h = nh;
+    }
+    renderCropCanvas();
+  }
+
+  function onTouchMove(e) {
+    if (!cropState.isDragging) return;
+    e.preventDefault();
+    onPointerMove(e);
+  }
+
+  function onPointerUp() {
+    cropState.isDragging = false;
+    cropState.dragMode = null;
+    window.removeEventListener('pointermove', onPointerMove);
+    window.removeEventListener('pointerup', onPointerUp);
+    window.removeEventListener('touchmove', onTouchMove);
+    window.removeEventListener('touchend', onPointerUp);
+  }
+
+  canvas.onpointerdown = onPointerDown;
+  canvas.ontouchstart = onPointerDown;
+}
+
+async function applyPhotoCrop() {
+  if (!cropState.rawImg) return;
+  try {
+    showToast('Optimisation de la photo...', 'info');
+
+    const isSwapped = (cropState.rotation === 90 || cropState.rotation === 270);
+    const srcW = isSwapped ? cropState.rawImg.height : cropState.rawImg.width;
+    const srcH = isSwapped ? cropState.rawImg.width : cropState.rawImg.height;
+
+    // 1. Intermediate transform
+    const transCanvas = document.createElement('canvas');
+    transCanvas.width = srcW;
+    transCanvas.height = srcH;
+    const tCtx = transCanvas.getContext('2d');
+
+    tCtx.translate(srcW / 2, srcH / 2);
+    tCtx.rotate((cropState.rotation * Math.PI) / 180);
+    if (cropState.flippedH) tCtx.scale(-1, 1);
+
+    const drawW = isSwapped ? srcH : srcW;
+    const drawH = isSwapped ? srcW : srcH;
+    tCtx.drawImage(cropState.rawImg, -drawW / 2, -drawH / 2, drawW, drawH);
+
+    // 2. Crop to bounding box
+    const cropX = Math.round(cropState.cropBox.x * srcW);
+    const cropY = Math.round(cropState.cropBox.y * srcH);
+    const cropW = Math.round(cropState.cropBox.w * srcW);
+    const cropH = Math.round(cropState.cropBox.h * srcH);
+
+    const outCanvas = document.createElement('canvas');
+    const maxDim = 1200;
+    const outScale = Math.min(1.0, maxDim / Math.max(cropW, cropH));
+    outCanvas.width = Math.round(cropW * outScale);
+    outCanvas.height = Math.round(cropH * outScale);
+
+    const oCtx = outCanvas.getContext('2d');
+    oCtx.drawImage(transCanvas, cropX, cropY, cropW, cropH, 0, 0, outCanvas.width, outCanvas.height);
+
+    let finalDataUrl = outCanvas.toDataURL('image/webp', 0.84);
+    if (!finalDataUrl || !finalDataUrl.startsWith('data:image/webp')) {
+      finalDataUrl = outCanvas.toDataURL('image/jpeg', 0.84);
+    }
+
+    // 3. Dispatch to context
+    if (cropState.targetContext === 'modal') {
+      pendingWeightPhotoDataUrl = finalDataUrl;
+      _weightPhotoRemoved = false;
+      const previewImg = document.getElementById('weightPhotoPreviewImg');
+      if (previewImg) previewImg.src = finalDataUrl;
+      const previewCard = document.getElementById('weightPhotoPreviewCard');
+      const dropzone = document.getElementById('weightPhotoDropzone');
+      if (previewCard) previewCard.style.display = 'flex';
+      if (dropzone) dropzone.style.display = 'none';
+
+      const sizeKb = Math.round((finalDataUrl.length * 0.75) / 1024);
+      const sizeLabel = document.getElementById('weightPhotoSizeLabel');
+      if (sizeLabel) sizeLabel.textContent = `${outCanvas.width}x${outCanvas.height} · ~${sizeKb} Ko · Recadré`;
+    } else if (cropState.targetContext === 'lightbox' && cropState.targetEntryId) {
+      if (window.saveWeightPhoto) {
+        await window.saveWeightPhoto(cropState.targetEntryId, finalDataUrl);
+      }
+      let history = sanitizeWeightHistory(store.get('weight_history', []));
+      const idx = history.findIndex(h => h.id === cropState.targetEntryId);
+      if (idx !== -1) {
+        history[idx].hasPhoto = true;
+        store.set('weight_history', history);
+      }
+      const lbImg = document.getElementById('lightboxImg');
+      if (lbImg) lbImg.src = finalDataUrl;
+      renderWeightGallery();
+      renderWeightChart();
+      renderWeightCompare();
+    } else if (cropState.targetContext === 'pointAction' && cropState.targetEntryId) {
+      if (window.saveWeightPhoto) {
+        await window.saveWeightPhoto(cropState.targetEntryId, finalDataUrl);
+      }
+      let history = sanitizeWeightHistory(store.get('weight_history', []));
+      const idx = history.findIndex(h => h.id === cropState.targetEntryId);
+      if (idx !== -1) {
+        history[idx].hasPhoto = true;
+        store.set('weight_history', history);
+      }
+      renderWeightGallery();
+      renderWeightChart();
+      renderWeightCompare();
+      closeWeightPointActionModal();
+    }
+
+    closePhotoCropEditor();
+    showToast((typeof i18n !== 'undefined' && i18n.t) ? i18n.t('weight.photoCroppedSuccess') : 'Photo recadrée et optimisée !', 'success');
+  } catch (err) {
+    console.error('Failed to apply crop:', err);
+    showToast('Erreur lors du recadrage de la photo.', 'error');
+  }
+}
+
+// ═══════ WEIGHT POINT QUICK ACTION MODAL (GRAPH SHORTCUT) ═══════
+let currentPointActionEntryId = null;
+
+async function openWeightPointActionModal(entryId) {
+  const history = sanitizeWeightHistory(store.get('weight_history', []));
+  const entry = history.find(h => h.id === entryId);
+  if (!entry) return;
+
+  currentPointActionEntryId = entryId;
+  const modal = document.getElementById('weightPointActionModal');
+  const wVal = document.getElementById('pointActionWeightVal');
+  const dVal = document.getElementById('pointActionDateVal');
+  const photoWrap = document.getElementById('pointActionPhotoWrap');
+  const photoImg = document.getElementById('pointActionPhotoImg');
+  const noteWrap = document.getElementById('pointActionNoteWrap');
+  const noteVal = document.getElementById('pointActionNoteVal');
+  const photoBtnLabel = document.getElementById('pointActionPhotoBtnLabel');
+
+  if (!modal) return;
+
+  if (wVal) wVal.textContent = `${entry.weight} kg`;
+  const d = new Date(entry.date);
+  if (dVal) dVal.textContent = isNaN(d.getTime()) ? entry.date : d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+  if (photoWrap && photoImg) {
+    if (entry.hasPhoto && window.getWeightPhoto) {
+      const pSrc = await window.getWeightPhoto(entry.id);
+      if (pSrc) {
+        photoImg.src = pSrc;
+        photoWrap.style.display = 'block';
+        if (photoBtnLabel) photoBtnLabel.textContent = 'Changer / Rogner la photo';
+      } else {
+        photoWrap.style.display = 'none';
+        if (photoBtnLabel) photoBtnLabel.textContent = 'Ajouter une photo';
+      }
+    } else {
+      photoWrap.style.display = 'none';
+      if (photoBtnLabel) photoBtnLabel.textContent = 'Ajouter une photo';
+    }
+  }
+
+  if (noteWrap && noteVal) {
+    if (entry.note) {
+      noteVal.textContent = `« ${entry.note} »`;
+      noteWrap.style.display = 'block';
+    } else {
+      noteWrap.style.display = 'none';
+    }
+  }
+
+  modal.style.display = 'flex';
+}
+
+function closeWeightPointActionModal(e) {
+  if (!e || e.target === document.getElementById('weightPointActionModal') || e.target.closest?.('.modal-close-btn')) {
+    const modal = document.getElementById('weightPointActionModal');
+    if (modal) modal.style.display = 'none';
+    currentPointActionEntryId = null;
+  }
+}
+
+function openPhotoFromPointAction() {
+  if (currentPointActionEntryId) {
+    const id = currentPointActionEntryId;
+    closeWeightPointActionModal();
+    openWeightLightbox(id);
+  }
+}
+
+function editWeightFromPointAction() {
+  if (currentPointActionEntryId) {
+    const id = currentPointActionEntryId;
+    closeWeightPointActionModal();
+    editWeightEntry(id);
+  }
+}
+
+function addOrChangePhotoFromPointAction() {
+  const input = document.getElementById('pointActionPhotoInput');
+  if (input) input.click();
+}
+
+async function handlePointActionPhotoSelect(event) {
+  const file = event?.target?.files?.[0];
+  if (!file || !currentPointActionEntryId) return;
+  const targetId = currentPointActionEntryId;
+  openPhotoCropEditor(file, 'pointAction', targetId);
+  if (event?.target) event.target.value = '';
+}
+
+async function deleteWeightFromPointAction() {
+  if (!currentPointActionEntryId) return;
+  const targetId = currentPointActionEntryId;
+  const msg = (typeof i18n !== 'undefined' && i18n.t) ? i18n.t('weight.confirmDeleteWeightEntry') : 'Voulez-vous vraiment supprimer cette pesée ?';
+  if (!confirm(msg)) return;
+
+  await deleteWeightEntry(targetId);
+  closeWeightPointActionModal();
+  renderWeightChart();
+  renderWeightGallery();
+  renderWeightCompare();
+  showToast((typeof i18n !== 'undefined' && i18n.t) ? i18n.t('weight.weightDeletedSuccess') : 'Pesée supprimée.', 'info');
 }
 
 // ═══════ MODERN WEIGHT ANALYTICS & INTERACTIVE CHART ═══════
@@ -12698,83 +13138,54 @@ async function renderWeightChart() {
     const last7dEntries = allSorted.filter(h => (now - new Date(h.date).getTime()) <= 7 * 86400000);
     if (avg7dEl) {
       if (last7dEntries.length > 0) {
-        const avg = last7dEntries.reduce((s, h) => s + h.weight, 0) / last7dEntries.length;
-        avg7dEl.textContent = `${avg.toFixed(1)} kg`;
+        const avg = (last7dEntries.reduce((sum, h) => sum + h.weight, 0) / last7dEntries.length).toFixed(1);
+        avg7dEl.textContent = `${avg} kg`;
       } else {
-        avg7dEl.textContent = `${latest.weight.toFixed(1)} kg`;
+        avg7dEl.textContent = `${latest.weight} kg`;
       }
     }
   } else {
-    if (curWeightEl) curWeightEl.textContent = '-- kg';
-    if (deltaBadgeEl) deltaBadgeEl.textContent = '';
+    if (curWeightEl) curWeightEl.textContent = curWeightVal ? `${curWeightVal} kg` : '-- kg';
+    if (deltaBadgeEl) {
+      deltaBadgeEl.textContent = '--';
+      deltaBadgeEl.style.background = 'rgba(255,255,255,0.08)';
+      deltaBadgeEl.style.color = 'var(--text-dim)';
+    }
     if (totalDeltaEl) totalDeltaEl.textContent = '-- kg';
     if (avg7dEl) avg7dEl.textContent = '-- kg';
   }
 
-  // 🎯 Calculate Target Weight Insight
-  const insight = calculateTargetWeightInsight(curWeightVal, targetWeightVal, startWeightVal);
-  const tFunc = window.vitalTrackI18n?.t || ((k) => k);
-
+  // Update Target Weight Display & Insight Card
   if (targetWeightEl) {
-    if (insight.status === 'unset') {
-      const setLabel = tFunc('weight.setTarget') || 'Définir cible';
-      targetWeightEl.innerHTML = `
-        <button type="button" onclick="event.stopPropagation(); openTargetWeightModal()" class="btn-set-target-cta">
-          <i class="ri-add-circle-fill"></i> <span>${setLabel}</span>
-        </button>
-      `;
-    } else {
-      const modTitle = tFunc('weight.modifyGoal') || "Modifier l'objectif";
-      targetWeightEl.innerHTML = `
-        <div style="display:flex; flex-direction:column; gap:2px; width:100%;">
-          <div style="display:flex; align-items:baseline; justify-content:space-between; width:100%;">
-            <span style="font-size:1.35rem; font-weight:800; color:#60a5fa;">${targetWeightVal.toFixed(1)} kg</span>
-            <button type="button" onclick="event.stopPropagation(); openTargetWeightModal()" class="target-edit-chip" title="${modTitle}"><i class="ri-pencil-line"></i></button>
-          </div>
-          <div style="display:flex; align-items:center; gap:6px; margin-top:2px;">
-            <span style="font-size:0.7rem; font-weight:700; color:${insight.badgeColor}; background:${insight.badgeBg}; padding:2px 6px; border-radius:6px;">
-              ${insight.badgeText}
-            </span>
-          </div>
-        </div>
-      `;
-    }
+    targetWeightEl.textContent = !isNaN(targetWeightVal) && targetWeightVal > 0 ? `${targetWeightVal} kg` : 'Non défini';
   }
 
-  // 💡 Dynamic Insight Banner
   if (bannerEl) {
-    if (insight.status === 'unset') {
-      const defBtn = tFunc('weight.defineBtn') || '+ Définir';
-      bannerEl.style.display = 'flex';
-      bannerEl.style.background = 'rgba(96,165,250,0.06)';
-      bannerEl.style.borderColor = 'rgba(96,165,250,0.2)';
+    const insight = calculateTargetWeightInsight(curWeightVal, targetWeightVal, startWeightVal);
+    if (!insight) {
       bannerEl.innerHTML = `
-        <div style="width:36px; height:36px; border-radius:50%; background:rgba(96,165,250,0.15); display:flex; align-items:center; justify-content:center; color:#60a5fa; font-size:1.2rem; flex-shrink:0;">
-          <i class="ri-focus-3-line"></i>
+        <div style="display:flex; align-items:center; justify-content:space-between; width:100%; flex-wrap:wrap; gap:8px;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <div style="width:34px; height:34px; border-radius:50%; background:rgba(96,165,250,0.15); display:flex; align-items:center; justify-content:center; color:#60a5fa; font-size:1.1rem;">
+              <i class="ri-focus-3-line"></i>
+            </div>
+            <div>
+              <div style="font-size:0.85rem; font-weight:700; color:var(--text);">Définir un objectif de poids cible</div>
+              <div style="font-size:0.75rem; color:var(--text-dim);">Visualisez votre progression et motivez votre parcours physiologique.</div>
+            </div>
+          </div>
+          <button type="button" class="btn-secondary" onclick="openTargetWeightModal()" style="font-size:0.75rem; padding:6px 12px; border-radius:10px;">
+            <i class="ri-add-line"></i> Définir l'objectif
+          </button>
         </div>
-        <div style="flex:1;">
-          <div style="font-size:0.85rem; font-weight:700; color:#60a5fa;">${insight.title}</div>
-          <div style="font-size:0.78rem; color:var(--text-dim); margin-top:2px; line-height:1.4;">${insight.message}</div>
-        </div>
-        <button type="button" onclick="openTargetWeightModal()" class="chip-btn" style="background:#60a5fa; color:#0f172a; font-weight:700; border:none; padding:6px 12px; font-size:0.78rem; flex-shrink:0; cursor:pointer;">
-          ${defBtn}
-        </button>
       `;
     } else {
-      bannerEl.style.display = 'flex';
-      const borderCol = insight.isGoalReached ? 'rgba(52,211,153,0.35)' : 'rgba(96,165,250,0.25)';
-      const bgCol = insight.isGoalReached ? 'rgba(52,211,153,0.08)' : 'rgba(96,165,250,0.06)';
-      bannerEl.style.background = bgCol;
-      bannerEl.style.borderColor = borderCol;
-
-      const progressTitle = tFunc('weight.progressTowardsGoal') || "Progression vers l'objectif";
-      const modLabel = tFunc('common.modify') || 'Modifier';
-
+      const modLabel = 'Modifier';
       const progressHtml = insight.progressPct !== null ? `
         <div style="margin-top:8px;">
-          <div style="display:flex; justify-content:space-between; font-size:0.72rem; font-weight:700; margin-bottom:4px;">
-            <span style="color:var(--text-dim);">${progressTitle}</span>
-            <span style="color:${insight.badgeColor};">${insight.progressPct}%</span>
+          <div style="display:flex; justify-content:space-between; font-size:0.72rem; color:var(--text-dim); margin-bottom:4px;">
+            <span>Progression globale</span>
+            <span style="font-weight:700; color:${insight.badgeColor};">${insight.progressPct}%</span>
           </div>
           <div style="height:6px; background:rgba(255,255,255,0.08); border-radius:10px; overflow:hidden;">
             <div style="height:100%; width:${insight.progressPct}%; background:linear-gradient(90deg, #3b82f6, ${insight.badgeColor}); border-radius:10px; transition:width 0.6s ease;"></div>
@@ -12858,50 +13269,41 @@ async function renderWeightChart() {
     <text x="${margin.left - 14}" y="${margin.top - 12}" fill="var(--accent, #34d399)" font-size="10" font-weight="800" letter-spacing="0.5px" text-anchor="end">POIDS (KG)</text>
   `;
   for (let v = yMin; v <= yMax + 0.001; v += step) {
-    const rounded = Math.round(v * 10) / 10;
-    const yPos = margin.top + chartH - ((rounded - yMin) / yRange) * chartH;
-    gridLinesHtml += `<line x1="${margin.left}" y1="${yPos}" x2="${margin.left + chartW}" y2="${yPos}" stroke="rgba(255,255,255,0.06)" stroke-dasharray="4,4" />`;
-    yLabelsHtml += `<text x="${margin.left - 14}" y="${yPos + 4}" fill="var(--text-dim, #94a3b8)" font-size="11" font-weight="600" font-family="'Outfit', 'Inter', -apple-system, sans-serif" text-anchor="end">${rounded}</text>`;
+    const yPos = margin.top + chartH - ((v - yMin) / yRange) * chartH;
+    gridLinesHtml += `<line x1="${margin.left}" y1="${yPos}" x2="${margin.left + chartW}" y2="${yPos}" stroke="rgba(255,255,255,0.06)" stroke-dasharray="2,2" stroke-width="1" />`;
+    yLabelsHtml += `<text x="${margin.left - 14}" y="${yPos + 3.5}" fill="var(--text-dim, #94a3b8)" font-size="10" font-weight="600" text-anchor="end">${v.toFixed(step < 1 ? 1 : 0)}</text>`;
   }
 
-  // Calculate coordinates with proportional time spacing
-  const minTime = new Date(sorted[0].date).getTime();
-  const maxTime = new Date(sorted[sorted.length - 1].date).getTime();
-  const timeSpan = Math.max(1, maxTime - minTime);
-
-  const coords = [];
-  sorted.forEach((entry, i) => {
-    const t = new Date(entry.date).getTime();
-    const xRatio = timeSpan === 0 ? 0.5 : (t - minTime) / timeSpan;
-    const x = margin.left + xRatio * chartW;
-    const y = margin.top + chartH - ((entry.weight - yMin) / yRange) * chartH;
-    coords.push({ x, y, entry, timestamp: t });
-  });
-
-  // Spline Path
-  const linePathD = getSmoothSplinePath(coords);
-  let areaPathD = '';
-  if (coords.length > 1) {
-    const first = coords[0];
-    const last = coords[coords.length - 1];
-    areaPathD = `${linePathD} L ${last.x} ${margin.top + chartH} L ${first.x} ${margin.top + chartH} Z`;
-  }
-
-  // Target Goal Line
+  // Target Weight Reference Line (dotted gold/blue)
   let targetLineHtml = '';
   if (!isNaN(targetW) && targetW >= yMin && targetW <= yMax) {
     const targetY = margin.top + chartH - ((targetW - yMin) / yRange) * chartH;
     targetLineHtml = `
-      <g>
-        <line x1="${margin.left}" y1="${targetY}" x2="${margin.left + chartW}" y2="${targetY}" stroke="#60a5fa" stroke-dasharray="6,4" stroke-width="1.5" opacity="0.75" />
-        <text x="${margin.left + chartW}" y="${targetY - 8}" fill="#60a5fa" font-size="10" font-weight="700" font-family="'Outfit', 'Inter', sans-serif" text-anchor="end">Cible ${targetW} kg</text>
+      <g class="target-weight-ref-line">
+        <line x1="${margin.left}" y1="${targetY}" x2="${margin.left + chartW}" y2="${targetY}" stroke="#60a5fa" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.85" />
+        <rect x="${margin.left + chartW - 75}" y="${targetY - 10}" width="75" height="20" rx="6" fill="#1e3a8a" opacity="0.9" />
+        <text x="${margin.left + chartW - 37}" y="${targetY + 3.5}" fill="#93c5fd" font-size="9.5" font-weight="700" text-anchor="middle">CIBLE ${targetW}kg</text>
       </g>
     `;
   }
 
-  // Fetch photos for thumbnail markers in SVG
-  let patternsHtml = '';
+  // Calculate coordinates for curve
+  const count = sorted.length;
+  const coords = sorted.map((h, i) => {
+    const x = count === 1 ? margin.left + chartW / 2 : margin.left + (i / (count - 1)) * chartW;
+    const y = margin.top + chartH - ((h.weight - yMin) / yRange) * chartH;
+    return { x, y, entry: h };
+  });
+
+  const linePathD = getSmoothSplinePath(coords);
+  const firstX = coords[0].x;
+  const lastX = coords[coords.length - 1].x;
+  const bottomY = margin.top + chartH;
+  const areaPathD = coords.length > 1 ? `${linePathD} L ${lastX} ${bottomY} L ${firstX} ${bottomY} Z` : '';
+
+  // Build Points and Miniature Photo Pin definitions
   let pointsHtml = '';
+  let patternsHtml = '';
   let xLabelsHtml = '';
   let lastRenderedX = -999;
 
@@ -12911,11 +13313,11 @@ async function renderWeightChart() {
     const isLast = (i === coords.length - 1);
     const d = new Date(pt.entry.date);
     const dateFormatted = isNaN(d.getTime()) ? pt.entry.date : d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
-    const hasPhoto = !!pt.entry.hasPhoto;
 
-    if (hasPhoto) {
+    if (pt.entry.hasPhoto) {
       const pSrc = (window.getWeightPhoto ? await window.getWeightPhoto(pt.entry.id) : null) || '';
-      const pId = `thumb_${pt.entry.id.replace(/[^a-zA-Z0-9_-]/g, '_')}`;
+      const pId = `photo_pat_${pt.entry.id.replace(/[^a-zA-Z0-9]/g, '_')}`;
+
       if (pSrc) {
         patternsHtml += `
           <pattern id="${pId}" patternUnits="objectBoundingBox" width="1" height="1">
@@ -12926,7 +13328,7 @@ async function renderWeightChart() {
 
       // Miniature Photo Pin directly above the curve point
       pointsHtml += `
-        <g class="chart-point-group has-photo" data-idx="${i}" onclick="openWeightLightbox('${pt.entry.id}')" title="Photo liée · Cliquer pour agrandir">
+        <g class="chart-point-group has-photo" data-idx="${i}" onclick="openWeightPointActionModal('${pt.entry.id}')" title="Toucher pour modifier ou voir la photo" style="cursor:pointer;">
           <line x1="${pt.x}" y1="${pt.y}" x2="${pt.x}" y2="${pt.y - 18}" stroke="#60a5fa" stroke-width="1.5" stroke-dasharray="2,2" opacity="0.7" />
           <circle cx="${pt.x}" cy="${pt.y - 18}" r="13" fill="${pSrc ? `url(#${pId})` : '#1e293b'}" stroke="#60a5fa" stroke-width="2" class="chart-photo-thumb" />
           <circle cx="${pt.x}" cy="${pt.y - 18}" r="13" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1" />
@@ -12935,14 +13337,14 @@ async function renderWeightChart() {
       `;
     } else {
       pointsHtml += `
-        <g class="chart-point-group" data-idx="${i}">
+        <g class="chart-point-group" data-idx="${i}" onclick="openWeightPointActionModal('${pt.entry.id}')" title="Toucher pour modifier / options" style="cursor:pointer;">
           <circle cx="${pt.x}" cy="${pt.y}" r="7" fill="var(--accent, #34d399)" opacity="0.18" />
           <circle cx="${pt.x}" cy="${pt.y}" r="4" fill="var(--accent, #34d399)" stroke="#0f172a" stroke-width="2" />
         </g>
       `;
     }
 
-    // Only render label if not colliding with last rendered label (min 50px clearance)
+    // Only render label if not colliding with last rendered label
     const isFarEnough = (pt.x - lastRenderedX >= 50);
     const isNotTooCloseToEnd = (margin.left + chartW - pt.x >= 35);
     if (isFirst || isLast || (isFarEnough && isNotTooCloseToEnd)) {
@@ -13028,8 +13430,8 @@ async function renderWeightChart() {
       const prevEntry = allSorted[allSorted.indexOf(nearest.entry) - 1];
       const deltaText = prevEntry ? (nearest.entry.weight - prevEntry.weight).toFixed(1) : null;
       const deltaFormatted = deltaText !== null ? (parseFloat(deltaText) <= 0 ? `📉 ${deltaText} kg` : `📈 +${deltaText} kg`) : 'Première pesée';
-      const tagLabels = { belly: 'Ventre', front: 'Face', side: 'Profil', back: 'Dos' };
-      const tagLabel = nearest.entry.hasPhoto && nearest.entry.photoTag ? (tagLabels[nearest.entry.photoTag] || nearest.entry.photoTag) : '';
+      const tagLabels = { front: 'Face', side: 'Profil', back: 'Dos' };
+      const tagLabel = (nearest.entry.hasPhoto && nearest.entry.photoTag && nearest.entry.photoTag !== 'belly') ? (tagLabels[nearest.entry.photoTag] || nearest.entry.photoTag) : '';
 
       tooltip.innerHTML = `
         <div style="font-weight:800; font-size:0.92rem; color:var(--text); display:flex; align-items:baseline; gap:8px;">
@@ -13038,7 +13440,9 @@ async function renderWeightChart() {
         </div>
         <div style="font-size:0.75rem; color:var(--text-dim); margin-top:3px;">${dateStr}</div>
         ${nearest.entry.note ? `<div style="font-size:0.74rem; color:#93c5fd; margin-top:4px; font-style:italic;">« ${esc(nearest.entry.note)} »</div>` : ''}
-        ${nearest.entry.hasPhoto ? `<div style="margin-top:6px; padding-top:6px; border-top:1px solid rgba(255,255,255,0.1); font-size:0.72rem; color:#60a5fa; display:flex; align-items:center; gap:4px; cursor:pointer;" onclick="openWeightLightbox('${nearest.entry.id}')"><i class="ri-camera-fill"></i> 📷 Photo liée${tagLabel ? ` (${tagLabel})` : ''} · Agrandir</div>` : ''}
+        <div style="margin-top:6px; padding-top:6px; border-top:1px solid rgba(255,255,255,0.1); font-size:0.72rem; color:var(--accent); display:flex; align-items:center; gap:4px; cursor:pointer;" onclick="openWeightPointActionModal('${nearest.entry.id}')">
+          <i class="ri-cursor-line"></i> ${nearest.entry.hasPhoto ? `📷 Photo liée${tagLabel ? ` (${tagLabel})` : ''} · ` : ''}Modifier / Options
+        </div>
       `;
 
       const tooltipX = (nearest.x / svgWidth) * rect.width;
@@ -13061,6 +13465,26 @@ async function renderWeightChart() {
     overlay.addEventListener('pointerleave', handlePointerLeave);
     overlay.addEventListener('touchmove', handlePointerMove, { passive: true });
     overlay.addEventListener('touchend', handlePointerLeave);
+
+    // Tap / Click on chart opens the Point Action Sheet
+    overlay.addEventListener('click', (e) => {
+      const rect = svg.getBoundingClientRect();
+      const scaleX = svgWidth / rect.width;
+      const clientX = (e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : 0)) - rect.left;
+      const svgX = clientX * scaleX;
+      let nearest = coords[0];
+      let minDist = Infinity;
+      coords.forEach(pt => {
+        const dist = Math.abs(pt.x - svgX);
+        if (dist < minDist) {
+          minDist = dist;
+          nearest = pt;
+        }
+      });
+      if (nearest && nearest.entry) {
+        openWeightPointActionModal(nearest.entry.id);
+      }
+    });
   }
 };
 
@@ -14202,6 +14626,21 @@ if (typeof window !== "undefined") window.editWeightFromLightbox = editWeightFro
 if (typeof window !== "undefined") window.editWeightFromGallery = editWeightFromGallery;
 if (typeof window !== "undefined") window.deleteWeightPhotoEntry = deleteWeightPhotoEntry;
 if (typeof window !== "undefined") window.deleteLightboxPhoto = deleteLightboxPhoto;
+if (typeof window !== "undefined") window.openPhotoCropEditor = openPhotoCropEditor;
+if (typeof window !== "undefined") window.openPhotoCropEditorForPendingPhoto = openPhotoCropEditorForPendingPhoto;
+if (typeof window !== "undefined") window.closePhotoCropEditor = closePhotoCropEditor;
+if (typeof window !== "undefined") window.setCropAspect = setCropAspect;
+if (typeof window !== "undefined") window.rotateCropImage = rotateCropImage;
+if (typeof window !== "undefined") window.flipCropImage = flipCropImage;
+if (typeof window !== "undefined") window.resetCropState = resetCropState;
+if (typeof window !== "undefined") window.applyPhotoCrop = applyPhotoCrop;
+if (typeof window !== "undefined") window.openWeightPointActionModal = openWeightPointActionModal;
+if (typeof window !== "undefined") window.closeWeightPointActionModal = closeWeightPointActionModal;
+if (typeof window !== "undefined") window.openPhotoFromPointAction = openPhotoFromPointAction;
+if (typeof window !== "undefined") window.editWeightFromPointAction = editWeightFromPointAction;
+if (typeof window !== "undefined") window.addOrChangePhotoFromPointAction = addOrChangePhotoFromPointAction;
+if (typeof window !== "undefined") window.handlePointActionPhotoSelect = handlePointActionPhotoSelect;
+if (typeof window !== "undefined") window.deleteWeightFromPointAction = deleteWeightFromPointAction;
 if (typeof window !== "undefined") window.updateWeightBadge = updateWeightBadge;
 if (typeof window !== "undefined") window.openTargetWeightModal = openTargetWeightModal;
 if (typeof window !== "undefined") window.closeTargetWeightModal = closeTargetWeightModal;

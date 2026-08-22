@@ -610,7 +610,14 @@ export default {
     "deletePhotoBtn": "Eliminar foto",
     "confirmDeletePhoto": "¿Seguro que deseas eliminar esta foto? (El registro de peso permanecerá guardado)",
     "photoReplacedSuccess": "¡Foto actualizada con éxito!",
-    "photoDeletedSuccess": "Foto eliminada."
+    "photoDeletedSuccess": "Foto eliminada.",
+    "addPhotoBtn": "Añadir registro de peso",
+    "cropPhotoBtn": "Recortar / Ajustar",
+    "cropModalTitle": "Recortar y ajustar foto",
+    "deleteEntryBtn": "Eliminar este registro",
+    "confirmDeleteWeightEntry": "¿Seguro que deseas eliminar este registro de peso?",
+    "photoCroppedSuccess": "¡Foto recortada y optimizada!",
+    "weightDeletedSuccess": "Registro de peso eliminado."
   },
   "auth": {
     "signInWithGoogle": "Iniciar sesión con Google",

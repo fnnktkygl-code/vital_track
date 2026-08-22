@@ -120,7 +120,14 @@ assert.ok(mainCode.includes('deleteWeightPhotoEntry'), 'main.js includes deleteW
 assert.ok(mainCode.includes('deleteLightboxPhoto'), 'main.js includes deleteLightboxPhoto');
 assert.ok(mainCode.includes('chart-photo-thumb'), 'main.js renders circular SVG photo thumbnail pins');
 assert.ok(mainCode.includes('window.handleWeightPhotoSelect'), 'main.js registers photo upload handler on window');
-console.log('✅ 6. main.js includes and exports all methods (gallery filters, actions, lightbox replace/edit/delete, dual-mode comparator).');
+assert.ok(mainCode.includes('openPhotoCropEditor'), 'main.js has openPhotoCropEditor');
+assert.ok(mainCode.includes('rotateCropImage'), 'main.js has rotateCropImage');
+assert.ok(mainCode.includes('flipCropImage'), 'main.js has flipCropImage');
+assert.ok(mainCode.includes('applyPhotoCrop'), 'main.js has applyPhotoCrop');
+assert.ok(mainCode.includes('openWeightPointActionModal'), 'main.js has openWeightPointActionModal');
+assert.ok(mainCode.includes('deleteWeightFromPointAction'), 'main.js has deleteWeightFromPointAction');
+assert.ok(mainCode.includes("modal.classList.add('open')"), 'editWeightEntry ensures weightModal is opened');
+console.log('✅ 6. main.js includes and exports all methods (gallery filters, actions, lightbox replace/edit/delete, cropper engine, point action sheet, dual-mode comparator).');
 
 // 7. Test index.html DOM structure
 const htmlCode = readFileSync(join(__dirname, '../web-app/index.html'), 'utf-8');
@@ -140,9 +147,13 @@ assert.ok(htmlCode.includes('id="weightPhotoCameraInput"'), 'index.html has came
 assert.ok(htmlCode.includes('id="weightPhotoInput"'), 'index.html has gallery file input');
 assert.ok(htmlCode.includes('id="weightPhotoLightbox"'), 'index.html has lightbox modal');
 assert.ok(htmlCode.includes('id="lightboxReplaceInput"'), 'index.html has hidden lightbox photo replacement input');
+assert.ok(htmlCode.includes('id="weightPhotoCropModal"'), 'index.html has crop and rotation modal');
+assert.ok(htmlCode.includes('id="cropCanvas"'), 'index.html has crop canvas');
+assert.ok(htmlCode.includes('id="weightPointActionModal"'), 'index.html has weight point action modal');
+assert.ok(htmlCode.includes('id="pointActionPhotoInput"'), 'index.html has point action photo input');
 assert.ok(!htmlCode.includes('data-tag="belly"'), 'index.html MUST NOT contain data-tag="belly"');
 assert.ok(!htmlCode.includes('weight.photoTagBelly'), 'index.html MUST NOT contain photoTagBelly');
-console.log('✅ 7. index.html contains all necessary DOM nodes for tabs, replace input, dual-mode comparator, independent zoom, and zero belly tag.');
+console.log('✅ 7. index.html contains all necessary DOM nodes for tabs, replace input, cropper modal, point action modal, dual-mode comparator, independent zoom, and zero belly tag.');
 
 console.log('\n🎉 ALL WEIGHT TRACKING & BODY EVOLUTION TESTS PASSED SUCCESSFULLY!');
 

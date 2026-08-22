@@ -610,7 +610,14 @@ export default {
     "deletePhotoBtn": "Delete photo",
     "confirmDeletePhoto": "Are you sure you want to delete this photo? (Weight entry will remain saved)",
     "photoReplacedSuccess": "Photo updated successfully!",
-    "photoDeletedSuccess": "Photo deleted."
+    "photoDeletedSuccess": "Photo deleted.",
+    "addPhotoBtn": "Add weight entry",
+    "cropPhotoBtn": "Crop / Adjust",
+    "cropModalTitle": "Crop & Adjust photo",
+    "deleteEntryBtn": "Delete this entry",
+    "confirmDeleteWeightEntry": "Are you sure you want to delete this weight entry?",
+    "photoCroppedSuccess": "Photo cropped and optimized!",
+    "weightDeletedSuccess": "Weight entry deleted."
   },
   "auth": {
     "signInWithGoogle": "Sign in with Google",
