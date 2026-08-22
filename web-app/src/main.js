@@ -1119,6 +1119,7 @@ async function initApp() {
     }
     
     // Refresh proactive components with new language
+    updateProtocolUI();
     updateCircadianWidget();
     updateProactiveMascot();
     renderWeightChart();
@@ -1662,8 +1663,16 @@ function setProtocol(mode) {
   }
 };
 function updateProtocolUI() {
-  const labels = { vitalist: 'Mode Vitaliste', sebi: 'Mode Dr. Sebi', ehret: 'Mode Ehret', morse: 'Mode Dr. Morse' };
-  if (document.getElementById('greetMode')) document.getElementById('greetMode').textContent = labels[currentProtocol] || 'Mode Vitaliste';
+  const tFunc = window.vitalTrackI18n?.t || ((k) => k);
+  const labels = {
+    vitalist: tFunc('dashboard.vitalistMode') || 'Mode Vitaliste',
+    sebi: tFunc('dashboard.sebiMode') || 'Mode Dr. Sebi',
+    ehret: tFunc('dashboard.ehretMode') || 'Mode Arnold Ehret',
+    morse: tFunc('dashboard.morseMode') || 'Mode Dr. Morse'
+  };
+  if (document.getElementById('greetMode')) {
+    document.getElementById('greetMode').textContent = labels[currentProtocol] || labels.vitalist;
+  }
   document.querySelectorAll('.protocol-card, .protocol-card-v2').forEach(c => c.classList.toggle('active', c.dataset.mode === currentProtocol));
 }
 
@@ -9246,11 +9255,12 @@ function renderMascotSpeechBubble(text, mood = 'talking') {
     loving: { label: tFunc('mascot.moodDetox') || 'Détox', icon: 'ri-drop-fill' },
     sleepy: { label: tFunc('mascot.moodRegen') || 'Régénération', icon: 'ri-moon-fill' },
     talking: { label: tFunc('mascot.moodTip') || 'Conseil', icon: 'ri-sparkling-fill' },
-    walk: { label: tFunc('mascot.walk') || 'Lymphe & Marche', icon: 'ri-walk-fill' },
-    laugh: { label: tFunc('mascot.laugh') || 'Vitalité', icon: 'ri-emotion-happy-fill' },
-    celebrate: { label: tFunc('mascot.celebrate') || 'Victoire', icon: 'ri-magic-fill' },
-    coo: { label: tFunc('mascot.audioBtn') || 'Roucoulement', icon: 'ri-chat-voice-fill' },
-    think: { label: tFunc('mascot.think') || 'Connaissance', icon: 'ri-brain-line' }
+    walk: { label: tFunc('mascot.moodWalk') || 'Lymphe & Marche', icon: 'ri-walk-fill' },
+    laugh: { label: tFunc('mascot.moodVitality') || 'Vitalité', icon: 'ri-emotion-happy-fill' },
+    celebrate: { label: tFunc('mascot.moodVictory') || 'Victoire', icon: 'ri-magic-fill' },
+    coo: { label: tFunc('mascot.moodAudio') || 'Roucoulement', icon: 'ri-chat-voice-fill' },
+    think: { label: tFunc('mascot.moodWisdom') || 'Connaissance', icon: 'ri-brain-line' },
+    idle: { label: tFunc('mascot.moodVitality') || 'Vitalité', icon: 'ri-sparkling-fill' }
   };
   const b = moodBadges[mood] || { label: tFunc('mascot.moodTip') || 'Conseil', icon: 'ri-sparkling-fill' };
 
@@ -14166,13 +14176,13 @@ window.initCircadianClockInteractivity = initCircadianClockInteractivity;
 // ═══════════════════════════════════════════════════════════════════════════════
 let _inAppMascotRenderer = null;
 const _mascotQuotes = {
-  idle: "Prêt à explorer la vitalité naturelle et drainer les acides !",
-  walk: "En route pour stimuler la lymphe et activer la motilité péristaltique ! 🚶",
-  laugh: "Hahaha ! La joie et la respiration profonde alcalinisent le terrain ! 😄",
-  coo: "Roucouuu ! Écoute le chant de tes cellules régénérées. 🐦",
-  think: "J'analyse les flavonoïdes, le PRAL et la charge en mucus... 🧐",
-  celebrate: "Félicitations pour tes victoires vitalistes ! 🎉",
-  sleep: "Réparation cellulaire et autolyse des déchets... Bonne nuit ! 😴"
+  idle: "Prêt à explorer la vitalité naturelle et drainer les acides cellulaires !",
+  walk: "En marche pour stimuler la lymphe et activer le péristaltisme ! 🚶",
+  laugh: "Hahaha ! La joie et le rire alcalinisent profondément l'organisme ! 😄",
+  coo: "Rucuuu ! Écoutez le chant de vos cellules qui se régénèrent. 🐦",
+  think: "Analyse des flavonoïdes, de l'équilibre PRAL et de la charge mucoïde... 🧐",
+  celebrate: "Félicitations pour vos victoires vitalistes ! 🎉",
+  sleep: "Réparation cellulaire et autolyse des déchets en cours... Bonne nuit ! 😴"
 };
 
 function openMascotStudioModal() {
@@ -14208,8 +14218,10 @@ function setInAppMascotAction(action) {
     window.pigeonAudio.playRealCoo();
   }
   const bubble = document.getElementById('inAppMascotBubble');
-  if (bubble && _mascotQuotes[action]) {
-    bubble.textContent = `🐦 ${_mascotQuotes[action]}`;
+  if (bubble) {
+    const tFunc = window.vitalTrackI18n?.t || ((k) => k);
+    const quote = tFunc(`mascot.${action}`) || _mascotQuotes[action] || '';
+    bubble.textContent = `🐦 ${quote}`;
   }
 };
 
@@ -14239,8 +14251,10 @@ function triggerMascotInPlaceReaction(action) {
   }
   
   const speechEl = document.getElementById('mascotSpeechBubble');
-  if (speechEl && _mascotQuotes[act]) {
-    renderMascotSpeechBubble(_mascotQuotes[act], act);
+  if (speechEl) {
+    const tFunc = window.vitalTrackI18n?.t || ((k) => k);
+    const quote = tFunc(`mascot.${act}`) || _mascotQuotes[act] || '';
+    renderMascotSpeechBubble(quote, act);
     speechEl.style.transform = 'scale(1.02)';
     speechEl.style.transition = 'transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)';
     setTimeout(() => {
