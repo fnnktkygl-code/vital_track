@@ -1906,13 +1906,13 @@
           <div class="page-header-wrap">
             <div class="header-icon-tile">⚙️</div>
             <div>
-              <h2 style="margin:0 0 4px 0; font-size:1.35rem; font-weight:800; color:var(--text);">
+              <h2 style="margin:0 0 4px 0; font-size:1.35rem; font-weight:800; color:var(--text);" data-i18n="settings.pageTitle">
                 Protocoles &amp; Paramètres
               </h2>
-              <p class="subtitle" style="margin:0; font-size:0.88rem;">Calibrez vos approches vitalistes, vos émonctoires et la mémoire contextuelle de votre Coach IA.</p>
+              <p class="subtitle" style="margin:0; font-size:0.88rem;" data-i18n="settings.pageSubtitle">Calibrez vos approches vitalistes, vos émonctoires et la mémoire contextuelle de votre Coach IA.</p>
             </div>
           </div>
-          <button class="settings-save-btn" onclick="saveProfile()">
+          <button class="settings-save-btn" onclick="saveProfile()" data-i18n="settings.saveBtn">
             <i class="ri-save-3-fill"></i> Sauvegarder
           </button>
         </div>
@@ -1920,22 +1920,22 @@
 
       <!-- Segmented Navigation Tabs -->
       <div class="settings-tab-bar">
-        <button type="button" class="settings-tab-btn active" onclick="switchSettingsTab('all', this)">
+        <button type="button" class="settings-tab-btn active" onclick="switchSettingsTab('all', this)" data-i18n="settings.tabAll">
           <i class="ri-dashboard-line"></i> Vue Globale
         </button>
-        <button type="button" class="settings-tab-btn" onclick="switchSettingsTab('protocol', this)">
+        <button type="button" class="settings-tab-btn" onclick="switchSettingsTab('protocol', this)" data-i18n="settings.tabProtocols">
           <i class="ri-compass-3-line"></i> 1. Protocoles
         </button>
-        <button type="button" class="settings-tab-btn" onclick="switchSettingsTab('profile', this)">
+        <button type="button" class="settings-tab-btn" onclick="switchSettingsTab('profile', this)" data-i18n="settings.tabProfile">
           <i class="ri-user-heart-line"></i> 2. Profil &amp; Objectifs
         </button>
-        <button type="button" class="settings-tab-btn" onclick="switchSettingsTab('terrain', this)">
+        <button type="button" class="settings-tab-btn" onclick="switchSettingsTab('terrain', this)" data-i18n="settings.tabTerrain">
           <i class="ri-capsule-line"></i> 3. Corps &amp; Émonctoires
         </button>
-        <button type="button" class="settings-tab-btn" onclick="switchSettingsTab('ai-context', this)">
+        <button type="button" class="settings-tab-btn" onclick="switchSettingsTab('ai-context', this)" data-i18n="settings.tabAiContext">
           <i class="ri-brain-line"></i> 4. Contexte &amp; Directives IA
         </button>
-        <button type="button" class="settings-tab-btn" onclick="switchSettingsTab('security', this)">
+        <button type="button" class="settings-tab-btn" onclick="switchSettingsTab('security', this)" data-i18n="settings.tabSecurity">
           <i class="ri-shield-keyhole-line"></i> 5. Clés &amp; Sécurité
         </button>
       </div>
@@ -1947,52 +1947,52 @@
             <div class="settings-section-title-wrap">
               <div class="settings-section-icon"><i class="ri-compass-discover-line"></i></div>
               <div>
-                <h3 class="settings-section-title">Philosophies &amp; Protocoles Fondateurs</h3>
-                <p class="settings-section-desc">Sélectionnez la doctrine hygiéniste qui guide vos recommandations de menus, cures et jeûnes.</p>
+                <h3 class="settings-section-title" data-i18n="settings.protocolsHeaderTitle">Philosophies &amp; Protocoles Fondateurs</h3>
+                <p class="settings-section-desc" data-i18n="settings.protocolsHeaderDesc">Sélectionnez la doctrine hygiéniste qui guide vos recommandations de menus, cures et jeûnes.</p>
               </div>
             </div>
-            <span class="badge-emerald" style="padding:4px 12px; border-radius:20px; font-size:0.76rem; font-weight:700;"><i class="ri-shield-check-line"></i> 4 Écoles Actives</span>
+            <span class="badge-emerald" style="padding:4px 12px; border-radius:20px; font-size:0.76rem; font-weight:700;" data-i18n="settings.activeSchoolsBadge"><i class="ri-shield-check-line"></i> 4 Écoles Actives</span>
           </div>
 
           <div class="protocol-grid-v2">
             <div class="protocol-card-v2 active" data-mode="vitalist" onclick="setProtocol('vitalist')">
               <div class="protocol-card-top">
                 <span class="protocol-card-icon">🌿</span>
-                <span class="protocol-active-badge"><i class="ri-check-line"></i> Actif</span>
+                <span class="protocol-active-badge" data-i18n="settings.activeBadge"><i class="ri-check-line"></i> Actif</span>
               </div>
               <div>
-                <h4 class="protocol-card-title">Vitaliste Intégral</h4>
-                <p class="protocol-card-desc">Dr. Sebi + Arnold Ehret + Dr. Morse unifiés en synergie holistique maximale.</p>
+                <h4 class="protocol-card-title" data-i18n="settings.protoVitalistTitle">Vitaliste Intégral</h4>
+                <p class="protocol-card-desc" data-i18n="settings.protoVitalistDesc">Dr. Sebi + Arnold Ehret + Dr. Morse unifiés en synergie holistique maximale.</p>
               </div>
             </div>
             <div class="protocol-card-v2" data-mode="sebi" onclick="setProtocol('sebi')">
               <div class="protocol-card-top">
                 <span class="protocol-card-icon">🌱</span>
-                <span class="protocol-active-badge"><i class="ri-check-line"></i> Actif</span>
+                <span class="protocol-active-badge" data-i18n="settings.activeBadge"><i class="ri-check-line"></i> Actif</span>
               </div>
               <div>
-                <h4 class="protocol-card-title">Dr. Sebi</h4>
-                <p class="protocol-card-desc">Bio-Mineral Balance, alcalinité cellulaire et plantes électriques curatives.</p>
+                <h4 class="protocol-card-title" data-i18n="settings.protoSebiTitle">Dr. Sebi</h4>
+                <p class="protocol-card-desc" data-i18n="settings.protoSebiDesc">Bio-Mineral Balance, alcalinité cellulaire et plantes électriques curatives.</p>
               </div>
             </div>
             <div class="protocol-card-v2" data-mode="ehret" onclick="setProtocol('ehret')">
               <div class="protocol-card-top">
                 <span class="protocol-card-icon">🌾</span>
-                <span class="protocol-active-badge"><i class="ri-check-line"></i> Actif</span>
+                <span class="protocol-active-badge" data-i18n="settings.activeBadge"><i class="ri-check-line"></i> Actif</span>
               </div>
               <div>
-                <h4 class="protocol-card-title">Arnold Ehret</h4>
-                <p class="protocol-card-desc">Système de guérison par régime sans mucus, transition douce et non-agressive.</p>
+                <h4 class="protocol-card-title" data-i18n="settings.protoEhretTitle">Arnold Ehret</h4>
+                <p class="protocol-card-desc" data-i18n="settings.protoEhretDesc">Système de guérison par régime sans mucus, transition douce et non-agressive.</p>
               </div>
             </div>
             <div class="protocol-card-v2" data-mode="morse" onclick="setProtocol('morse')">
               <div class="protocol-card-top">
                 <span class="protocol-card-icon">🍇</span>
-                <span class="protocol-active-badge"><i class="ri-check-line"></i> Actif</span>
+                <span class="protocol-active-badge" data-i18n="settings.activeBadge"><i class="ri-check-line"></i> Actif</span>
               </div>
               <div>
-                <h4 class="protocol-card-title">Dr. Morse</h4>
-                <p class="protocol-card-desc">Détox lymphatique profonde, filtration rénale, monodiètes de fruits &amp; herboristerie.</p>
+                <h4 class="protocol-card-title" data-i18n="settings.protoMorseTitle">Dr. Morse</h4>
+                <p class="protocol-card-desc" data-i18n="settings.protoMorseDesc">Détox lymphatique profonde, filtration rénale, monodiètes de fruits &amp; herboristerie.</p>
               </div>
             </div>
           </div>
@@ -2006,8 +2006,8 @@
             <div class="settings-section-title-wrap">
               <div class="settings-section-icon"><i class="ri-user-smile-line"></i></div>
               <div>
-                <h3 class="settings-section-title">Bio-Profil &amp; Objectif Vitaliste</h3>
-                <p class="settings-section-desc">Informations essentielles pour calibrer les dosages et les paliers de sécurité de votre corps.</p>
+                <h3 class="settings-section-title" data-i18n="settings.bioProfileTitle">Bio-Profil &amp; Objectif Vitaliste</h3>
+                <p class="settings-section-desc" data-i18n="settings.bioProfileDesc">Informations essentielles pour calibrer les dosages et les paliers de sécurité de votre corps.</p>
               </div>
             </div>
           </div>
@@ -2015,46 +2015,46 @@
           <div class="form-grid-2">
             <div class="form-group">
               <label class="form-label" for="profileName">
-                <span class="form-label-left"><i class="ri-user-3-line"></i> Nom ou Prénom</span>
-                <span class="form-label-badge">Visible par l'IA</span>
+                <span class="form-label-left"><i class="ri-user-3-line"></i> <span data-i18n="settings.nameLabel">Nom ou Prénom</span></span>
+                <span class="form-label-badge" data-i18n="settings.nameVisibleBadge">Visible par l'IA</span>
               </label>
-              <input type="text" id="profileName" placeholder="Ex: Lucas, Sarah..." class="form-input-v2" oninput="updateLiveAiPreview()">
-              <span class="form-hint">Comment votre coach IA doit s'adresser à vous.</span>
+              <input type="text" id="profileName" data-i18n-placeholder="settings.namePlaceholder" placeholder="Ex: Lucas, Sarah..." class="form-input-v2" oninput="updateLiveAiPreview()">
+              <span class="form-hint" data-i18n="settings.nameHint">Comment votre coach IA doit s'adresser à vous.</span>
             </div>
 
             <div class="form-group">
               <label class="form-label" for="profileGoal">
-                <span class="form-label-left"><i class="ri-flag-2-line"></i> Objectif Majeur</span>
-                <span class="form-label-badge">Priorité IA</span>
+                <span class="form-label-left"><i class="ri-flag-2-line"></i> <span data-i18n="settings.goalLabel">Objectif Majeur</span></span>
+                <span class="form-label-badge" data-i18n="settings.goalBadge">Priorité IA</span>
               </label>
               <select id="profileGoal" class="form-input-v2 custom-vital-select" onchange="updateLiveAiPreview()">
-                <option value="detox">🧹 Détox &amp; Nettoyage lymphatique</option>
-                <option value="weight">⚖️ Perte de poids &amp; Affinement corporel</option>
-                <option value="energy">⚡ Énergie &amp; Vitalité maximale</option>
-                <option value="transition">🌱 Transition vers le régime sans mucus</option>
-                <option value="healing">💚 Régénération tissulaire &amp; Auto-guérison</option>
-                <option value="spiritual">🕊️ Clarté mentale &amp; Jeûne spirituel</option>
+                <option value="detox" data-i18n="settings.goalDetox">🧹 Détox &amp; Nettoyage lymphatique</option>
+                <option value="weight" data-i18n="settings.goalWeight">⚖️ Perte de poids &amp; Affinement corporel</option>
+                <option value="energy" data-i18n="settings.goalEnergy">⚡ Énergie &amp; Vitalité maximale</option>
+                <option value="transition" data-i18n="settings.goalTransition">🌱 Transition vers le régime sans mucus</option>
+                <option value="healing" data-i18n="settings.goalHealing">💚 Régénération tissulaire &amp; Auto-guérison</option>
+                <option value="spiritual" data-i18n="settings.goalSpiritual">🕊️ Clarté mentale &amp; Jeûne spirituel</option>
               </select>
-              <span class="form-hint">Oriente l'intention principale de chaque menu et tisane.</span>
+              <span class="form-hint" data-i18n="settings.goalHint">Oriente l'intention principale de chaque menu et tisane.</span>
             </div>
 
             <div class="form-group">
               <label class="form-label" for="profileTransitionLevel">
-                <span class="form-label-left"><i class="ri-stairs-line"></i> Niveau de Transition Actuel</span>
-                <span class="form-label-badge" style="color:#f59e0b;background:rgba(245,158,11,0.1);">Sécurité Ehret</span>
+                <span class="form-label-left"><i class="ri-stairs-line"></i> <span data-i18n="settings.transitionLabel">Niveau de Transition Actuel</span></span>
+                <span class="form-label-badge" style="color:#f59e0b;background:rgba(245,158,11,0.1);" data-i18n="settings.transitionBadge">Sécurité Ehret</span>
               </label>
               <select id="profileTransitionLevel" class="form-input-v2 custom-vital-select" onchange="updateLiveAiPreview()">
-                <option value="beginner">🌱 Débutant (Alimentation mixte / transition douce vers le végétal)</option>
-                <option value="intermediate" selected>🌿 Intermédiaire (Alimentation végétale, sans mucus, jeûnes réguliers)</option>
-                <option value="advanced">🍇 Avancé (Frugivore, jeûneur expérimenté, herboristerie active)</option>
+                <option value="beginner" data-i18n="settings.transitionBeginner">🌱 Débutant (Alimentation mixte / transition douce vers le végétal)</option>
+                <option value="intermediate" selected data-i18n="settings.transitionIntermediate">🌿 Intermédiaire (Alimentation végétale, sans mucus, jeûnes réguliers)</option>
+                <option value="advanced" data-i18n="settings.transitionAdvanced">🍇 Avancé (Frugivore, jeûneur expérimenté, herboristerie active)</option>
               </select>
-              <span class="form-hint">Empêche les crises d'élimination toxique trop brutales.</span>
+              <span class="form-hint" data-i18n="settings.transitionHint">Empêche les crises d'élimination toxique trop brutales.</span>
             </div>
 
             <div class="form-group">
               <label class="form-label" for="profileLanguage">
-                <span class="form-label-left"><i class="ri-global-line"></i> Langue de l'App &amp; du Coach</span>
-                <span class="form-label-badge">i18n</span>
+                <span class="form-label-left"><i class="ri-global-line"></i> <span data-i18n="settings.languageLabel">Langue de l'App &amp; du Coach</span></span>
+                <span class="form-label-badge" data-i18n="settings.languageBadge">i18n</span>
               </label>
               <select id="profileLanguage" class="form-input-v2 custom-vital-select" onchange="window.vitalTrackI18n?.setLanguage(this.value); updateLiveAiPreview();">
                 <option value="fr">🇫🇷 Français (Standard / International)</option>
@@ -2062,13 +2062,13 @@
                 <option value="en">🇬🇧 English (US / Global)</option>
                 <option value="es">🇪🇸 Español (España / América Latina)</option>
               </select>
-              <span class="form-hint">Langue utilisée pour les recettes, le chat et les audios.</span>
+              <span class="form-hint" data-i18n="settings.languageHint">Langue utilisée pour les recettes, le chat et les audios.</span>
             </div>
 
             <div class="form-group">
               <label class="form-label" for="profileVoice">
-                <span class="form-label-left"><i class="ri-voiceprint-line"></i> Voix de Lecture Neural Studio</span>
-                <span class="form-label-badge" style="color:#34d399; background:rgba(52,211,153,0.1);">14 Voix HD</span>
+                <span class="form-label-left"><i class="ri-voiceprint-line"></i> <span data-i18n="settings.voiceLabel">Voix de Lecture Neural Studio</span></span>
+                <span class="form-label-badge" style="color:#34d399; background:rgba(52,211,153,0.1);" data-i18n="settings.voiceBadge">14 Voix HD</span>
               </label>
               <div style="display:flex; gap:8px;">
                 <select id="profileVoice" class="form-input-v2 custom-vital-select" style="flex:1;" onchange="setCustomVoice(this.value)">
@@ -2096,10 +2096,10 @@
                   </optgroup>
                 </select>
                 <button type="button" class="btn-secondary" onclick="previewCurrentVoice()" style="padding:10px 14px; border-radius:12px; font-weight:700; white-space:nowrap; display:inline-flex; align-items:center; gap:6px; background:rgba(52,211,153,0.12); border:1px solid rgba(52,211,153,0.35); color:#34d399;" data-tooltip="Écouter un extrait de cette voix">
-                  <i class="ri-play-circle-line" style="font-size:1.1rem;"></i> <span>Tester</span>
+                  <i class="ri-play-circle-line" style="font-size:1.1rem;"></i> <span data-i18n="settings.voiceTestBtn">Tester</span>
                 </button>
               </div>
-              <span class="form-hint">Voix utilisée pour l'écoute des réponses du chat et des fiches aliments.</span>
+              <span class="form-hint" data-i18n="settings.voiceHint">Voix utilisée pour l'écoute des réponses du chat et des fiches aliments.</span>
             </div>
           </div>
         </div>
@@ -2112,8 +2112,8 @@
             <div class="settings-section-title-wrap">
               <div class="settings-section-icon"><i class="ri-body-scan-line"></i></div>
               <div>
-                <h3 class="settings-section-title">Morphologie, Métabolisme &amp; Émonctoires</h3>
-                <p class="settings-section-desc">Mesures corporelles et organes cibles à drainer en priorité.</p>
+                <h3 class="settings-section-title" data-i18n="settings.morphologyTitle">Morphologie, Métabolisme &amp; Émonctoires</h3>
+                <p class="settings-section-desc" data-i18n="settings.morphologyDesc">Mesures corporelles et organes cibles à drainer en priorité.</p>
               </div>
             </div>
           </div>
@@ -2122,25 +2122,25 @@
           <div class="form-grid-4" style="margin-bottom:20px;">
             <div class="form-group">
               <label class="form-label" for="profileHeight">
-                <span class="form-label-left"><i class="ri-ruler-line"></i> Taille (cm)</span>
+                <span class="form-label-left"><i class="ri-ruler-line"></i> <span data-i18n="settings.heightLabel">Taille (cm)</span></span>
               </label>
               <input type="number" id="profileHeight" placeholder="175" class="form-input-v2" oninput="updateLiveAiPreview()">
             </div>
             <div class="form-group">
               <label class="form-label" for="profileCurrentWeight">
-                <span class="form-label-left"><i class="ri-scales-3-line"></i> Poids Actuel (kg)</span>
+                <span class="form-label-left"><i class="ri-scales-3-line"></i> <span data-i18n="settings.currentWeightLabel">Poids Actuel (kg)</span></span>
               </label>
               <input type="number" step="0.1" id="profileCurrentWeight" placeholder="70.0" class="form-input-v2" oninput="updateLiveAiPreview()">
             </div>
             <div class="form-group">
               <label class="form-label" for="profileTargetWeight">
-                <span class="form-label-left"><i class="ri-focus-3-line"></i> Poids Cible (kg)</span>
+                <span class="form-label-left"><i class="ri-focus-3-line"></i> <span data-i18n="settings.targetWeightLabel">Poids Cible (kg)</span></span>
               </label>
               <input type="number" step="0.1" id="profileTargetWeight" placeholder="65.0" class="form-input-v2" oninput="updateLiveAiPreview()">
             </div>
             <div class="form-group">
               <label class="form-label" for="profileAge">
-                <span class="form-label-left"><i class="ri-cake-2-line"></i> Âge (ans)</span>
+                <span class="form-label-left"><i class="ri-cake-2-line"></i> <span data-i18n="settings.ageLabel">Âge (ans)</span></span>
               </label>
               <input type="number" id="profileAge" placeholder="32" class="form-input-v2" oninput="updateLiveAiPreview()">
             </div>
@@ -2148,53 +2148,53 @@
 
           <div class="form-group" style="margin-bottom:24px;">
             <label class="form-label" for="profileActivity">
-              <span class="form-label-left"><i class="ri-run-line"></i> Niveau d'Activité Physique</span>
+              <span class="form-label-left"><i class="ri-run-line"></i> <span data-i18n="settings.activityLabel">Niveau d'Activité Physique</span></span>
             </label>
             <select id="profileActivity" class="form-input-v2 custom-vital-select" onchange="updateLiveAiPreview()">
-              <option value="sedentary">🛋️ Sédentaire (Bureau, peu de déplacements)</option>
-              <option value="moderate" selected>🚶 Modéré (Marche quotidienne, yoga, étirements)</option>
-              <option value="active">🏃 Actif (Sport 3-4x/semaine, travail debout)</option>
-              <option value="athlete">⚡ Athlète (Entraînement quotidien / Métier physique)</option>
+              <option value="sedentary" data-i18n="settings.actSedentary">🛋️ Sédentaire (Bureau, peu de déplacements)</option>
+              <option value="moderate" selected data-i18n="settings.actModerate">🚶 Modéré (Marche quotidienne, yoga, étirements)</option>
+              <option value="active" data-i18n="settings.actActive">🏃 Actif (Sport 3-4x/semaine, travail debout)</option>
+              <option value="athlete" data-i18n="settings.actAthlete">⚡ Athlète (Entraînement quotidien / Métier physique)</option>
             </select>
           </div>
 
           <!-- Émonctoires & Terrains Selection -->
           <div style="margin-bottom:24px;">
             <label class="form-label" style="margin-bottom:10px;">
-              <span class="form-label-left"><i class="ri-capsule-fill"></i> Émonctoires &amp; Terrains Prioritaires à Soutenir</span>
-              <span class="form-label-badge" style="color:#34d399;background:rgba(52,211,153,0.1);">Filtration Raintree</span>
+              <span class="form-label-left"><i class="ri-capsule-fill"></i> <span data-i18n="settings.emonctoiresTitle">Émonctoires &amp; Terrains Prioritaires à Soutenir</span></span>
+              <span class="form-label-badge" style="color:#34d399;background:rgba(52,211,153,0.1);" data-i18n="settings.emonctoiresBadge">Filtration Raintree</span>
             </label>
-            <p class="form-hint" style="margin:-4px 0 12px 0;">Sélectionnez les organes cibles pour orienter les tisanes et plantes médicinales amazoniennes proposées par l'IA :</p>
+            <p class="form-hint" style="margin:-4px 0 12px 0;" data-i18n="settings.emonctoiresHint">Sélectionnez les organes cibles pour orienter les tisanes et plantes médicinales amazoniennes proposées par l'IA :</p>
             
             <div class="organ-card-grid" id="emonctoireChipsContainer">
               <div class="organ-card-btn emonctoire-chip active" data-organ="reins" onclick="toggleEmonctoireChip(this)">
                 <span class="organ-icon">💧</span>
-                <span>Reins &amp; Filtration</span>
+                <span data-i18n="settings.organKidneys">Reins &amp; Filtration</span>
                 <i class="ri-checkbox-circle-fill organ-check"></i>
               </div>
               <div class="organ-card-btn emonctoire-chip active" data-organ="lymphe" onclick="toggleEmonctoireChip(this)">
                 <span class="organ-icon">🌊</span>
-                <span>Système Lymphatique</span>
+                <span data-i18n="settings.organLymph">Système Lymphatique</span>
                 <i class="ri-checkbox-circle-fill organ-check"></i>
               </div>
               <div class="organ-card-btn emonctoire-chip" data-organ="foie" onclick="toggleEmonctoireChip(this)">
                 <span class="organ-icon">🌿</span>
-                <span>Foie &amp; Vésicule</span>
+                <span data-i18n="settings.organLiver">Foie &amp; Vésicule</span>
                 <i class="ri-checkbox-circle-fill organ-check"></i>
               </div>
               <div class="organ-card-btn emonctoire-chip" data-organ="colon" onclick="toggleEmonctoireChip(this)">
                 <span class="organ-icon">🧹</span>
-                <span>Côlon &amp; Intestins</span>
+                <span data-i18n="settings.organColon">Côlon &amp; Intestins</span>
                 <i class="ri-checkbox-circle-fill organ-check"></i>
               </div>
               <div class="organ-card-btn emonctoire-chip" data-organ="poumons" onclick="toggleEmonctoireChip(this)">
                 <span class="organ-icon">🌬️</span>
-                <span>Poumons &amp; Voies Resp.</span>
+                <span data-i18n="settings.organLungs">Poumons &amp; Voies Resp.</span>
                 <i class="ri-checkbox-circle-fill organ-check"></i>
               </div>
               <div class="organ-card-btn emonctoire-chip" data-organ="peau" onclick="toggleEmonctoireChip(this)">
                 <span class="organ-icon">☀️</span>
-                <span>Peau &amp; Transpiration</span>
+                <span data-i18n="settings.organSkin">Peau &amp; Transpiration</span>
                 <i class="ri-checkbox-circle-fill organ-check"></i>
               </div>
             </div>
@@ -2203,31 +2203,31 @@
           <!-- Mascotte Compagnon -->
           <div>
             <label class="form-label" style="margin-bottom:10px;">
-              <span class="form-label-left"><i class="ri-magic-line"></i> Compagnon Mascotte Vitale (Pigeon Biset)</span>
+              <span class="form-label-left"><i class="ri-magic-line"></i> <span data-i18n="settings.mascotSectionTitle">Compagnon Mascotte Vitale (Pigeon Biset)</span></span>
             </label>
             <div class="mascot-tile-grid">
               <label class="mascot-tile-card active">
                 <input type="radio" name="mascotPref" value="active" checked onchange="window.pigeonNudges && window.pigeonNudges.setPreference('active')" style="display:none;">
                 <div class="mascot-tile-icon">🌟</div>
                 <div>
-                  <div class="mascot-tile-title" style="color:#34d399;">Compagnon Actif</div>
-                  <div class="mascot-tile-desc">Conseils circadiens, nudges après repas, rappels de jeûne doux.</div>
+                  <div class="mascot-tile-title" style="color:#34d399;" data-i18n="settings.mascotActiveTitle">Compagnon Actif</div>
+                  <div class="mascot-tile-desc" data-i18n="settings.mascotActiveDesc">Conseils circadiens, nudges après repas, rappels de jeûne doux.</div>
                 </div>
               </label>
               <label class="mascot-tile-card">
                 <input type="radio" name="mascotPref" value="zen" onchange="window.pigeonNudges && window.pigeonNudges.setPreference('zen')" style="display:none;">
                 <div class="mascot-tile-icon">🌿</div>
                 <div>
-                  <div class="mascot-tile-title" style="color:#60a5fa;">Compagnon Zen</div>
-                  <div class="mascot-tile-desc">Présence discrète, aucun pop-up spontané, réactif au clic.</div>
+                  <div class="mascot-tile-title" style="color:#60a5fa;" data-i18n="settings.mascotZenTitle">Compagnon Zen</div>
+                  <div class="mascot-tile-desc" data-i18n="settings.mascotZenDesc">Présence discrète, aucun pop-up spontané, réactif au clic.</div>
                 </div>
               </label>
               <label class="mascot-tile-card">
                 <input type="radio" name="mascotPref" value="quiet" onchange="window.pigeonNudges && window.pigeonNudges.setPreference('quiet')" style="display:none;">
                 <div class="mascot-tile-icon">🔇</div>
                 <div>
-                  <div class="mascot-tile-title" style="color:#94a3b8;">Mode Silencieux</div>
-                  <div class="mascot-tile-desc">Désactive l'ensemble des nudges flottants sur l'écran.</div>
+                  <div class="mascot-tile-title" style="color:#94a3b8;" data-i18n="settings.mascotQuietTitle">Mode Silencieux</div>
+                  <div class="mascot-tile-desc" data-i18n="settings.mascotQuietDesc">Désactive l'ensemble des nudges flottants sur l'écran.</div>
                 </div>
               </label>
             </div>
@@ -2242,8 +2242,8 @@
             <div class="settings-section-title-wrap">
               <div class="settings-section-icon"><i class="ri-brain-2-line"></i></div>
               <div>
-                <h3 class="settings-section-title">Climat, Allergies &amp; Directives Coach IA</h3>
-                <p class="settings-section-desc">Règles de sécurité absolues et consignes libres mémorisées par l'intelligence artificielle.</p>
+                <h3 class="settings-section-title" data-i18n="settings.aiContextTitle">Climat, Allergies &amp; Directives Coach IA</h3>
+                <p class="settings-section-desc" data-i18n="settings.aiContextDesc">Règles de sécurité absolues et consignes libres mémorisées par l'intelligence artificielle.</p>
               </div>
             </div>
           </div>
@@ -2251,46 +2251,46 @@
           <div class="form-grid-3" style="margin-bottom:18px;">
             <div class="form-group">
               <label class="form-label" for="profileCountry">
-                <span class="form-label-left"><i class="ri-map-pin-2-line"></i> Pays</span>
+                <span class="form-label-left"><i class="ri-map-pin-2-line"></i> <span data-i18n="settings.countryLabel">Pays</span></span>
               </label>
-              <input type="text" id="profileCountry" placeholder="France 🇫🇷, Québec ⚜️..." class="form-input-v2" oninput="updateLiveAiPreview()">
+              <input type="text" id="profileCountry" data-i18n-placeholder="settings.countryPlaceholder" placeholder="France 🇫🇷, Québec ⚜️..." class="form-input-v2" oninput="updateLiveAiPreview()">
             </div>
             <div class="form-group">
               <label class="form-label" for="profileCity">
-                <span class="form-label-left"><i class="ri-building-line"></i> Ville</span>
+                <span class="form-label-left"><i class="ri-building-line"></i> <span data-i18n="settings.cityLabel">Ville</span></span>
               </label>
-              <input type="text" id="profileCity" placeholder="Paris, Montréal..." class="form-input-v2" oninput="updateLiveAiPreview()">
+              <input type="text" id="profileCity" data-i18n-placeholder="settings.cityPlaceholder" placeholder="Paris, Montréal..." class="form-input-v2" oninput="updateLiveAiPreview()">
             </div>
             <div class="form-group">
               <label class="form-label" for="profileBioregion">
-                <span class="form-label-left"><i class="ri-sun-cloudy-line"></i> Biorégion / Climat</span>
+                <span class="form-label-left"><i class="ri-sun-cloudy-line"></i> <span data-i18n="settings.bioregionLabel">Biorégion / Climat</span></span>
               </label>
               <select id="profileBioregion" class="form-input-v2 custom-vital-select" onchange="updateLiveAiPreview()">
-                <option value="boreal" selected>🌲 Boréale / Nordique (Canada, Scandinavie)</option>
-                <option value="temperate">🍂 Tempérée Océanique / Continentale (France, Europe)</option>
-                <option value="mediterranean">☀️ Méditerranéenne / Subtropicale (Sud Europe, USA)</option>
-                <option value="tropical">🌴 Tropicale / Équatoriale (Antilles, Afrique, Asie)</option>
-                <option value="arid">🌵 Aride / Désertique (Maghreb, Moyen-Orient)</option>
+                <option value="boreal" selected data-i18n="settings.bioBoreal">🌲 Boréale / Nordique (Canada, Scandinavie)</option>
+                <option value="temperate" data-i18n="settings.bioTemperate">🍂 Tempérée Océanique / Continentale (France, Europe)</option>
+                <option value="mediterranean" data-i18n="settings.bioMed">☀️ Méditerranéenne / Subtropicale (Sud Europe, USA)</option>
+                <option value="tropical" data-i18n="settings.bioTropical">🌴 Tropicale / Équatoriale (Antilles, Afrique, Asie)</option>
+                <option value="arid" data-i18n="settings.bioArid">🌵 Aride / Désertique (Maghreb, Moyen-Orient)</option>
               </select>
             </div>
           </div>
 
           <div class="form-group" style="margin-bottom:18px;">
             <label class="form-label" for="profileRestrictions">
-              <span class="form-label-left"><i class="ri-shield-cross-line" style="color:#ef4444;"></i> Restrictions &amp; Allergies Strictes</span>
-              <span class="form-label-badge" style="color:#ef4444;background:rgba(239,68,68,0.1);">Exclusion Totale</span>
+              <span class="form-label-left"><i class="ri-shield-cross-line" style="color:#ef4444;"></i> <span data-i18n="settings.restrictionsLabel">Restrictions &amp; Allergies Strictes</span></span>
+              <span class="form-label-badge" style="color:#ef4444;background:rgba(239,68,68,0.1);" data-i18n="settings.restrictionsBadge">Exclusion Totale</span>
             </label>
-            <input type="text" id="profileRestrictions" placeholder="Ex: sans noix, sans gluten, intolérance aux solanacées, sans arachides..." class="form-input-v2" oninput="updateLiveAiPreview()">
-            <span class="form-hint">L'IA ne vous proposera JAMAIS un aliment ou une plante contenant ces éléments.</span>
+            <input type="text" id="profileRestrictions" data-i18n-placeholder="settings.restrictionsPlaceholder" placeholder="Ex: sans noix, sans gluten, intolérance aux solanacées, sans arachides..." class="form-input-v2" oninput="updateLiveAiPreview()">
+            <span class="form-hint" data-i18n="settings.restrictionsHint">L'IA ne vous proposera JAMAIS un aliment ou une plante contenant ces éléments.</span>
           </div>
 
           <div class="form-group" style="margin-bottom:20px;">
             <label class="form-label" for="profileMemories">
-              <span class="form-label-left"><i class="ri-chat-voice-line"></i> Directives &amp; Consignes Libres pour le Coach IA</span>
-              <span class="form-label-badge">Mémoire Sémantique</span>
+              <span class="form-label-left"><i class="ri-chat-voice-line"></i> <span data-i18n="settings.memoriesLabel">Directives &amp; Consignes Libres pour le Coach IA</span></span>
+              <span class="form-label-badge" data-i18n="settings.memoriesBadge">Mémoire Sémantique</span>
             </label>
-            <textarea id="profileMemories" placeholder="Ex: Ne mange rien avant 13h, préfère les infusions tièdes en hiver, sensibilité digestive aux agrumes acides le matin, travail de nuit le mardi..." class="form-input-v2" style="min-height:90px; resize:vertical; line-height:1.5;" oninput="updateLiveAiPreview()"></textarea>
-            <span class="form-hint">Vos préférences et habitudes quotidiennes personnalisées.</span>
+            <textarea id="profileMemories" data-i18n-placeholder="settings.memoriesPlaceholder" placeholder="Ex: Ne mange rien avant 13h, préfère les infusions tièdes en hiver, sensibilité digestive aux agrumes acides le matin, travail de nuit le mardi..." class="form-input-v2" style="min-height:90px; resize:vertical; line-height:1.5;" oninput="updateLiveAiPreview()"></textarea>
+            <span class="form-hint" data-i18n="settings.memoriesHint">Vos préférences et habitudes quotidiennes personnalisées.</span>
           </div>
 
           <!-- Live AI Context Inspector -->
@@ -2298,13 +2298,13 @@
             <div style="display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="toggleAiPreviewBox()">
               <div style="display:flex; align-items:center; gap:8px;">
                 <i class="ri-terminal-box-line" style="color:#34d399; font-size:1.1rem;"></i>
-                <h4 style="font-size:0.88rem; font-weight:700; color:#cbd5e1; margin:0;">
+                <h4 style="font-size:0.88rem; font-weight:700; color:#cbd5e1; margin:0;" data-i18n="settings.transparencyConsoleTitle">
                   Console de Transparence : Bio-Contexte IA injecté en direct
                 </h4>
               </div>
               <span id="aiPreviewChevron" style="font-size:1.1rem; color:var(--text-dim); transition:transform 0.2s;"><i class="ri-arrow-down-s-line"></i></span>
             </div>
-            <p style="font-size:0.76rem; color:var(--text-dim); margin:6px 0 10px 0;">Voici le prompt contextuel complet injecté en arrière-plan à chaque requête IA pour garantir un coaching sur-mesure.</p>
+            <p style="font-size:0.76rem; color:var(--text-dim); margin:6px 0 10px 0;" data-i18n="settings.transparencyConsoleDesc">Voici le prompt contextuel complet injecté en arrière-plan à chaque requête IA pour garantir un coaching sur-mesure.</p>
             <div id="aiPreviewBox" class="ai-preview-box" style="font-family:monospace; font-size:0.78rem; line-height:1.5; color:#34d399; background:rgba(0,0,0,0.4); padding:12px; border-radius:8px; border:1px solid rgba(52,211,153,0.2);"></div>
           </div>
         </div>
@@ -2318,22 +2318,22 @@
             <div class="settings-section-title-wrap">
               <div class="settings-section-icon" style="background:rgba(52,211,153,0.15); color:#34d399;"><i class="ri-key-2-fill"></i></div>
               <div>
-                <h3 class="settings-section-title">Clé Personnelle Google Gemini (Optionnelle)</h3>
-                <p class="settings-section-desc">Permet d'utiliser votre propre quota Google AI Studio illimité pour le Coach, le Scanner et la Voix.</p>
+                <h3 class="settings-section-title" data-i18n="settings.geminiKeyTitle">Clé Personnelle Google Gemini (Optionnelle)</h3>
+                <p class="settings-section-desc" data-i18n="settings.geminiKeyDesc">Permet d'utiliser votre propre quota Google AI Studio illimité pour le Coach, le Scanner et la Voix.</p>
               </div>
             </div>
-            <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="badge badge-success" style="text-decoration:none; padding:6px 12px; font-size:0.78rem; font-weight:700;">
+            <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="badge badge-success" style="text-decoration:none; padding:6px 12px; font-size:0.78rem; font-weight:700;" data-i18n="settings.getFreeKeyBtn">
               <i class="ri-external-link-line"></i> Obtenir Clé Gratuite
             </a>
           </div>
 
           <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
             <input type="password" id="customGeminiKeyInput" placeholder="AIzaSy..." class="form-input-v2" style="flex:1; min-width:260px;" oninput="saveCustomGeminiKey(this.value)">
-            <button type="button" class="btn-primary" onclick="saveCustomGeminiKey(document.getElementById('customGeminiKeyInput').value)" style="padding:10px 20px; border-radius:12px; font-size:0.9rem; font-weight:700;">
+            <button type="button" class="btn-primary" onclick="saveCustomGeminiKey(document.getElementById('customGeminiKeyInput').value)" style="padding:10px 20px; border-radius:12px; font-size:0.9rem; font-weight:700;" data-i18n="settings.validateKeyBtn">
               <i class="ri-save-line"></i> Valider
             </button>
           </div>
-          <span class="form-hint" style="display:flex; align-items:center; gap:6px;">
+          <span class="form-hint" style="display:flex; align-items:center; gap:6px;" data-i18n="settings.geminiKeyStorageHint">
             <i class="ri-lock-line" style="color:#34d399;"></i>
             Votre clé est stockée uniquement en local dans votre navigateur et n'est jamais transmise à un serveur tiers.
           </span>
@@ -2373,7 +2373,7 @@
           </div>
 
           <div style="display:flex; flex-wrap:wrap; gap:12px;">
-            <button class="btn-secondary" onclick="window.vitalTrackAuth?.signOut()" style="display:inline-flex; align-items:center; gap:8px; padding:10px 16px; font-weight:600; border-radius:10px; cursor:pointer; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.35); color:#ef4444;">
+            <button class="btn-secondary" onclick="window.vitalTrackAuth?.signOut()" style="display:inline-flex; align-items:center; gap:8px; padding:10px 16px; font-weight:600; border-radius:10px; cursor:pointer; background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.35); color:#ef4444;" data-i18n="settings.logoutBtn">
               <i class="ri-logout-box-r-line" style="font-size:1.1rem;"></i>
               <span>🚪 Se déconnecter</span>
             </button>
@@ -2397,21 +2397,21 @@
       <div class="settings-sticky-footer">
         <div class="settings-sticky-info">
           <i class="ri-checkbox-circle-fill" style="color:#34d399; font-size:1.3rem;"></i>
-          <span>Paramètres synchronisés en temps réel avec le Coach IA &amp; les recettes.</span>
+          <span data-i18n="settings.stickySyncText">Paramètres synchronisés en temps réel avec le Coach IA &amp; les recettes.</span>
         </div>
-        <button class="settings-save-btn" onclick="saveProfile()">
+        <button class="settings-save-btn" onclick="saveProfile()" data-i18n="settings.saveBioProfileBtn">
           <i class="ri-save-3-fill"></i> Sauvegarder mon Bio-Profil
         </button>
       </div>
 
       <!-- Shortcuts -->
       <div class="dash-card glass">
-        <h3><i class="ri-links-line"></i> Accès rapide</h3>
+        <h3 data-i18n="settings.quickAccessTitle"><i class="ri-links-line"></i> Accès rapide</h3>
         <div class="shortcut-grid">
-          <a href="#" onclick="showPage('favorites')" class="shortcut-item"><i class="ri-heart-line"></i> Favoris</a>
-          <a href="#" onclick="showPage('chat')" class="shortcut-item"><i class="ri-chat-smile-3-line"></i> Chat IA</a>
-          <a href="https://fnnktkygl-code.github.io/vital_track/privacy.html" target="_blank" class="shortcut-item"><i class="ri-shield-line"></i> Confidentialité</a>
-          <a href="https://github.com/fnnktkygl-code/vital_track" target="_blank" class="shortcut-item"><i class="ri-github-line"></i> GitHub</a>
+          <a href="#" onclick="showPage('favorites')" class="shortcut-item" data-i18n="settings.quickFavorites"><i class="ri-heart-line"></i> Favoris</a>
+          <a href="#" onclick="showPage('chat')" class="shortcut-item" data-i18n="settings.quickChat"><i class="ri-chat-smile-3-line"></i> Chat IA</a>
+          <a href="https://fnnktkygl-code.github.io/vital_track/privacy.html" target="_blank" class="shortcut-item" data-i18n="settings.quickPrivacy"><i class="ri-shield-line"></i> Confidentialité</a>
+          <a href="https://github.com/fnnktkygl-code/vital_track" target="_blank" class="shortcut-item" data-i18n="settings.quickGithub"><i class="ri-github-line"></i> GitHub</a>
         </div>
       </div>
     </div>

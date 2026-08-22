@@ -1556,42 +1556,55 @@ function updateLiveAiPreview() {
   const preview = document.getElementById('aiPreviewBox');
   if (!preview) return;
 
-  const name = document.getElementById('profileName')?.value?.trim() || 'Inconnu';
+  const tFunc = (k, p, f) => window.vitalTrackI18n?.t ? window.vitalTrackI18n.t(k, p, f) : (f || k);
+
+  const name = document.getElementById('profileName')?.value?.trim() || tFunc('settings.aiPromptUnknown', {}, 'Inconnu');
   const goalEl = document.getElementById('profileGoal');
-  const goal = goalEl ? goalEl.options?.[goalEl.selectedIndex]?.text : 'Détox & Vitalité';
+  const goal = goalEl ? goalEl.options?.[goalEl.selectedIndex]?.text : tFunc('settings.goalDetox', {}, 'Détox & Vitalité');
   const transEl = document.getElementById('profileTransitionLevel');
-  const transLevel = transEl ? transEl.options?.[transEl.selectedIndex]?.text : 'Intermédiaire';
-  const city = document.getElementById('profileCity')?.value?.trim() || 'Montréal';
-  const country = document.getElementById('profileCountry')?.value?.trim() || 'Québec ⚜️';
+  const transLevel = transEl ? transEl.options?.[transEl.selectedIndex]?.text : tFunc('settings.transitionIntermediate', {}, 'Intermédiaire');
+  const city = document.getElementById('profileCity')?.value?.trim() || 'Paris';
+  const country = document.getElementById('profileCountry')?.value?.trim() || 'France 🇫🇷';
   const bioregionEl = document.getElementById('profileBioregion');
-  const bioregion = bioregionEl ? bioregionEl.options?.[bioregionEl.selectedIndex]?.text : 'Boréale';
+  const bioregion = bioregionEl ? bioregionEl.options?.[bioregionEl.selectedIndex]?.text : tFunc('settings.bioTemperate', {}, 'Tempérée');
 
   const activeChips = Array.from(document.querySelectorAll('#emonctoireChipsContainer .emonctoire-chip.active') || []);
-  const organs = activeChips.map(c => c.textContent?.trim() || '').filter(Boolean).join(', ') || 'Système global (Reins & Lymphe)';
+  const organs = activeChips.map(c => c.textContent?.trim() || '').filter(Boolean).join(', ') || 'Reins & Lymphe';
 
   const height = document.getElementById('profileHeight')?.value?.trim();
   const curW = document.getElementById('profileCurrentWeight')?.value?.trim();
   const tarW = document.getElementById('profileTargetWeight')?.value?.trim();
   const age = document.getElementById('profileAge')?.value?.trim();
-  const actEl = document.getElementById('profileActivity');
-  const activity = actEl ? actEl.options?.[actEl.selectedIndex]?.text : 'Modéré';
 
   let morpho = [];
-  if (height) morpho.push(`Taille: ${height}cm`);
-  if (curW) morpho.push(`Poids: ${curW}kg`);
-  if (tarW) morpho.push(`Cible: ${tarW}kg`);
-  if (age) morpho.push(`Âge: ${age}ans`);
+  if (height) morpho.push(`${tFunc('settings.aiPromptHeight', {}, 'Taille')}: ${height}cm`);
+  if (curW) morpho.push(`${tFunc('settings.aiPromptWeight', {}, 'Poids')}: ${curW}kg`);
+  if (tarW) morpho.push(`${tFunc('settings.aiPromptTarget', {}, 'Cible')}: ${tarW}kg`);
+  if (age) morpho.push(`${tFunc('settings.aiPromptAge', {}, 'Âge')}: ${age}`);
 
-  const restrictions = document.getElementById('profileRestrictions')?.value?.trim() || 'Aucune restriction déclarée';
+  const restrictions = document.getElementById('profileRestrictions')?.value?.trim() || tFunc('settings.aiPromptNoRestrictions', {}, 'Aucune restriction déclarée');
   const rawMems = document.getElementById('profileMemories')?.value?.trim() || '';
 
-  const generatedPrompt = `[CONTEXTE UTILISATEUR & DIRECTIVES IA]
-Identité: ${name} | Localisation: ${city}, ${country} (Biorégion: ${bioregion})
-Objectif: ${goal} | Protocole: ${(currentProtocol || 'vitalist').toUpperCase()}
-Niveau de Transition: ${transLevel}
-Émonctoires Prioritaires: ${organs}${morpho.length > 0 ? `\nMorphologie & Métabolisme: ${morpho.join(' | ')}` : ''}
-Restrictions Strictes: ${restrictions}${rawMems ? `\nHabitudes Mémorisées:\n- ${rawMems.split('\n').join('\n- ')}` : ''}
-[DIRECTIVE COACHING] : Adapter systématiquement l'agressivité des détox, le protocole de jeûne et les plantes médicinales Raintree aux émonctoires prioritaires et au niveau de transition.`;
+  const header = tFunc('settings.aiPromptHeader', {}, '[CONTEXTE UTILISATEUR & DIRECTIVES IA]');
+  const idLabel = tFunc('settings.aiPromptIdentity', {}, 'Identité');
+  const locLabel = tFunc('settings.aiPromptLocation', {}, 'Localisation');
+  const bioLabel = tFunc('settings.aiPromptBioregion', {}, 'Biorégion');
+  const goalLabel = tFunc('settings.aiPromptGoal', {}, 'Objectif');
+  const protoLabel = tFunc('settings.aiPromptProtocol', {}, 'Protocole');
+  const transLabel = tFunc('settings.aiPromptTransition', {}, 'Niveau de Transition');
+  const emoncLabel = tFunc('settings.aiPromptEmunctories', {}, 'Émonctoires Prioritaires');
+  const morphoLabel = tFunc('settings.aiPromptMorphology', {}, 'Morphologie & Métabolisme');
+  const restrLabel = tFunc('settings.aiPromptRestrictions', {}, 'Restrictions Strictes');
+  const memsLabel = tFunc('settings.aiPromptMemories', {}, 'Habitudes Mémorisées');
+  const dirLabel = tFunc('settings.aiPromptCoachingDirective', {}, "[DIRECTIVE COACHING] : Adapter systématiquement l'agressivité des détox, le protocole de jeûne et les plantes médicinales Raintree aux émonctoires prioritaires et au niveau de transition.");
+
+  const generatedPrompt = `${header}
+${idLabel}: ${name} | ${locLabel}: ${city}, ${country} (${bioLabel}: ${bioregion})
+${goalLabel}: ${goal} | ${protoLabel}: ${(currentProtocol || 'vitalist').toUpperCase()}
+${transLabel}: ${transLevel}
+${emoncLabel}: ${organs}${morpho.length > 0 ? `\n${morphoLabel}: ${morpho.join(' | ')}` : ''}
+${restrLabel}: ${restrictions}${rawMems ? `\n${memsLabel}:\n- ${rawMems.split('\n').join('\n- ')}` : ''}
+${dirLabel}`;
 
   preview.textContent = generatedPrompt;
 };
