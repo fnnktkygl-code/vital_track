@@ -85,21 +85,32 @@
 }
 
 /* ---------- Top Bar & Header ---------- */
+/* ---------- Top Bar & Header ---------- */
 .br-topbar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--br-surface);
+  border-bottom: 1px solid var(--br-line);
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.br-topbar-row-main {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 18px;
-  background: var(--br-surface);
-  border-bottom: 1px solid var(--br-line);
-  gap: 12px;
-  flex-shrink: 0;
+  gap: 8px;
+  width: 100%;
 }
 
 .br-topbar-left {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
 }
 
 .br-sidebar-toggle-btn {
@@ -114,17 +125,98 @@
   justify-content: center;
   cursor: pointer;
   font-size: 1.1rem;
+  flex-shrink: 0;
   transition: all 0.2s ease;
 }
 .br-sidebar-toggle-btn:hover {
   background: var(--br-line);
 }
 
-.br-topbar-controls {
+.br-book-select {
+  background: var(--br-surface);
+  color: var(--br-ink);
+  border: 1px solid var(--br-line-strong);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-family: var(--br-font-ui);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  flex: 1;
+  min-width: 0;
+  max-width: 100%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.br-book-select:hover {
+  border-color: var(--br-brass);
+}
+.br-book-select:focus {
+  border-color: var(--br-brass);
+  box-shadow: 0 0 0 2px rgba(180, 83, 9, 0.2);
+}
+
+.br-topbar-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.br-action-btn {
+  background: var(--br-bone);
+  border: 1px solid var(--br-line);
+  color: var(--br-ink);
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--br-font-ui);
+  padding: 6px 10px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  height: 34px;
+}
+.br-action-btn:hover {
+  background: var(--br-surface);
+  border-color: var(--br-brass);
+}
+
+.br-topbar-close-btn {
+  background: var(--br-bone);
+  border: 1px solid var(--br-line);
+  color: var(--br-ink);
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+.br-topbar-close-btn:hover {
+  background: #ef4444;
+  color: #fff;
+  border-color: #ef4444;
+}
+
+/* Secondary Controls Row (Themes & Font Size) */
+.br-topbar-row-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
 }
 
 /* Theme Pills */
@@ -135,6 +227,8 @@
   border-radius: 8px;
   padding: 2px;
   gap: 2px;
+  flex: 1;
+  max-width: 240px;
 }
 
 .br-theme-btn {
@@ -144,10 +238,13 @@
   font-size: 11px;
   font-weight: 700;
   color: var(--br-ink-soft);
-  padding: 4px 10px;
+  padding: 5px 8px;
   border-radius: 6px;
   cursor: pointer;
+  flex: 1;
+  text-align: center;
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .br-theme-btn[data-active="true"] {
@@ -165,6 +262,7 @@
   border-radius: 8px;
   padding: 2px;
   gap: 4px;
+  flex-shrink: 0;
 }
 
 .br-font-btn {
@@ -175,7 +273,7 @@
   font-weight: 700;
   color: var(--br-ink);
   width: 28px;
-  height: 24px;
+  height: 26px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -191,26 +289,59 @@
   font-size: 11px;
   color: var(--br-ink-soft);
   padding: 0 4px;
+  min-width: 32px;
+  text-align: center;
 }
 
-.br-close-btn {
-  background: transparent;
-  border: 1px solid var(--br-line);
-  color: var(--br-ink);
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 1.2rem;
-  transition: all 0.2s ease;
+/* Responsive Desktop (>= 860px) */
+@media (min-width: 860px) {
+  .br-topbar {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 18px;
+  }
+
+  .br-topbar-row-main {
+    width: auto;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .br-topbar-row-controls {
+    width: auto;
+    justify-content: flex-end;
+    gap: 12px;
+  }
+
+  .br-book-select {
+    max-width: 340px;
+  }
 }
-.br-close-btn:hover {
-  background: #ef4444;
-  color: #fff;
-  border-color: #ef4444;
+
+/* Mobile optimizations (< 600px) */
+@media (max-width: 600px) {
+  .br-topbar {
+    padding: 8px 10px;
+    gap: 6px;
+  }
+  .br-action-label {
+    display: none;
+  }
+  .br-action-btn {
+    padding: 6px;
+    width: 34px;
+    height: 34px;
+    justify-content: center;
+  }
+  .br-action-btn i {
+    font-size: 1.1rem;
+    margin: 0;
+  }
+  .br-theme-group {
+    max-width: unset;
+  }
 }
 
 /* ---------- Shell & Main Container ---------- */
@@ -881,26 +1012,29 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 24px;
+  padding: 10px 16px;
   background: var(--br-surface);
   border-top: 1px solid var(--br-line);
   flex-shrink: 0;
+  gap: 8px;
 }
 
 .br-nav-btn {
   background: transparent;
   border: 1px solid var(--br-line);
   color: var(--br-ink);
-  padding: 8px 16px;
+  padding: 8px 14px;
   border-radius: 10px;
   font-family: var(--br-font-ui);
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 700;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .br-nav-btn:hover:not(:disabled) {
@@ -918,6 +1052,10 @@
   font-size: 0.82rem;
   font-weight: 700;
   color: var(--br-ink-soft);
+  white-space: nowrap;
+  padding: 0 4px;
+  text-align: center;
+  flex-shrink: 0;
 }
 
 /* ---------- Responsive Mobile Adjustments ---------- */
@@ -927,6 +1065,15 @@
     max-height: 100vh;
     border-radius: 0;
     border: none;
+  }
+
+  .br-bottombar {
+    padding: 8px 12px;
+  }
+
+  .br-nav-btn {
+    padding: 7px 10px;
+    font-size: 0.78rem;
   }
 
   .br-modal-overlay {
@@ -959,35 +1106,4 @@
   .br-article-title {
     font-size: 1.4rem;
   }
-
-  .br-topbar {
-    padding: 8px 12px;
-  }
-
-  .br-topbar-controls {
-    gap: 6px;
-  }
-}
-
-/* Sélecteur de Livre dans la Topbar */
-.br-book-select {
-  background: var(--br-surface);
-  color: var(--br-ink);
-  border: 1px solid var(--br-line-strong);
-  border-radius: 8px;
-  padding: 6px 12px;
-  font-family: var(--br-font-ui);
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  outline: none;
-  transition: all 0.2s ease;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-}
-.br-book-select:hover {
-  border-color: var(--br-brass);
-}
-.br-book-select:focus {
-  border-color: var(--br-brass);
-  box-shadow: 0 0 0 2px rgba(180, 83, 9, 0.2);
 }

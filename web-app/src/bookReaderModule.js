@@ -574,20 +574,41 @@ function renderReaderDOM() {
       
       <!-- 1. TOP BAR : CONTRÔLES & THÈMES -->
       <header class="br-topbar">
-        <div class="br-topbar-left">
-          <button type="button" class="br-sidebar-toggle-btn" onclick="toggleReaderSidebar()" title="${t('reader.tableOfContents')}">
-            <i class="${_readerState.sidebarOpen ? 'ri-menu-fold-line' : 'ri-menu-unfold-line'}"></i>
-          </button>
-          <select class="br-book-select" onchange="switchReaderBook(this.value)" aria-label="Sélectionner l'ouvrage">
-            ${ALL_READABLE_BOOKS.map(b => `
-              <option value="${esc(b.id)}" ${b.id === book.id ? 'selected' : ''}>
-                ${b.id.includes('ehret') ? '📘' : '🌿'} ${esc(b.author)} (${esc(b.year)}) [${b.id.endsWith('-es') ? '🇪🇸 ES' : '🇫🇷 FR'}]
-              </option>
-            `).join('')}
-          </select>
+        <!-- Ligne Principale : Ouvrage & Actions Rapides -->
+        <div class="br-topbar-row-main">
+          <div class="br-topbar-left">
+            <button type="button" class="br-sidebar-toggle-btn" onclick="toggleReaderSidebar()" title="${t('reader.tableOfContents')}">
+              <i class="${_readerState.sidebarOpen ? 'ri-menu-fold-line' : 'ri-menu-unfold-line'}"></i>
+            </button>
+            <select class="br-book-select" onchange="switchReaderBook(this.value)" aria-label="Sélectionner l'ouvrage">
+              ${ALL_READABLE_BOOKS.map(b => `
+                <option value="${esc(b.id)}" ${b.id === book.id ? 'selected' : ''}>
+                  ${b.id.includes('ehret') ? '📘' : '🌿'} ${esc(b.author)} (${esc(b.year)}) [${b.id.endsWith('-es') ? '🇪🇸 ES' : '🇫🇷 FR'}]
+                </option>
+              `).join('')}
+            </select>
+          </div>
+
+          <div class="br-topbar-actions">
+            <!-- Bouton Raccourci Glossaire -->
+            <button type="button" class="br-action-btn" onclick="openGlossarySection()" title="${t('reader.glossaryTab')}">
+              <i class="ri-lightbulb-line"></i> <span class="br-action-label">${t('reader.glossaryTab')} (${glossaryEntries.length})</span>
+            </button>
+
+            <!-- Télécharger PDF -->
+            <a href="${book.pdfUrl}" download class="br-action-btn" title="${t('reader.downloadPdf')}">
+              <i class="ri-file-pdf-line"></i> <span class="br-action-label">PDF</span>
+            </a>
+
+            <!-- Bouton Fermer -->
+            <button type="button" class="br-topbar-close-btn" onclick="closeBookReader()" aria-label="${t('reader.closeReader')}" title="${t('reader.closeReader')} (Échap)">
+              <i class="ri-close-line"></i>
+            </button>
+          </div>
         </div>
 
-        <div class="br-topbar-controls">
+        <!-- Ligne Secondaire : Thèmes & Taille de Police -->
+        <div class="br-topbar-row-controls">
           <!-- Sélecteur de Thèmes -->
           <div class="br-theme-group">
             <button type="button" class="br-theme-btn" data-active="${_readerState.theme === 'bone'}" onclick="setReaderTheme('bone')">${t('reader.themePaper')}</button>
@@ -601,20 +622,6 @@ function renderReaderDOM() {
             <span class="br-font-label">${_readerState.fontSize}px</span>
             <button type="button" class="br-font-btn" onclick="adjustReaderFontSize(1)" title="${t('reader.fontIncrease')}">A+</button>
           </div>
-
-          <!-- Bouton Raccourci Glossaire -->
-          <button type="button" class="btn-secondary" onclick="openGlossarySection()" style="font-size:11px; padding:4px 10px; border-radius:6px; display:inline-flex; align-items:center; gap:4px;" title="${t('reader.glossaryTab')}">
-            <i class="ri-lightbulb-line"></i> <span class="hide-mobile">${t('reader.glossaryTab')} (${glossaryEntries.length})</span>
-          </button>
-
-          <!-- Télécharger PDF & Fermer -->
-          <a href="${book.pdfUrl}" download class="btn-secondary" style="font-size:11px; padding:4px 10px; border-radius:6px; text-decoration:none; display:inline-flex; align-items:center; gap:4px;" title="${t('reader.downloadPdf')}">
-            <i class="ri-file-pdf-line"></i> <span class="hide-mobile">PDF</span>
-          </a>
-
-          <button type="button" class="modal-close-unified br-topbar-close-btn" onclick="closeBookReader()" aria-label="${t('reader.closeReader')}" title="${t('reader.closeReader')} (Échap)" style="position:static!important; width:32px!important; height:32px!important; font-size:18px!important;">
-            <i class="ri-close-line"></i>
-          </button>
         </div>
       </header>
 
