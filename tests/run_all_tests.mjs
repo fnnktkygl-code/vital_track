@@ -20,7 +20,8 @@ const suites = [
   { name: 'Suite 6: Navigation Multilingue (EN/FR/ES/FR-CA) & Stabilité SPA (Puppeteer)', file: 'tests/e2e/test_navigation_and_language.mjs' },
   { name: 'Suite 7: Intégrité Linguistique & Parité i18n Exhaustive (FR/EN/ES/FR-CA)', file: 'tests/test_i18n_completeness.mjs' },
   { name: 'Suite 8: Grimoire des Préceptes & Capsule de Sagesse Multilingue (366 items)', file: 'tests/test_wisdom_grimoire_i18n.mjs' },
-  { name: 'Suite 9: Éditions Intégrales en Espagnol des Livres d\'Ehret & Dr. Morse', file: 'tests/test_spanish_books_logic.mjs' }
+  { name: 'Suite 9: Éditions Intégrales en Espagnol des Livres d\'Ehret & Dr. Morse', file: 'tests/test_spanish_books_logic.mjs' },
+  { name: 'Suite 10: Détection d\'Intention Chat & Cascades Multi-Modèles FinOps', file: 'tests/test_chat_intent_and_cascade.mjs' }
 ];
 
 let allPassed = true;

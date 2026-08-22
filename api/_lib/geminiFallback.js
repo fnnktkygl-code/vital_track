@@ -1,46 +1,66 @@
 /**
  * Smart Dual-Tier Gemini Model & Account Cascade — VitalTrack FinOps
  * 
- * NIVEAU 1 : Clé Gratuite (500 requêtes / jour à 0,00 € avec Search Grounding)
- * NIVEAU 2 : Clé Payante (Bascule instantanée et invisible en cas de quota atteint)
+ * TIER 0 : Salutations & Chit-chat (Gemini 2.0 Flash Lite — Ultra-rapide & quasi-gratuit)
+ * TIER 1 : Questions Vitalistes Standard (Gemini 2.5 Flash — Haute précision & fluidité)
+ * TIER 2 : Analyses Complexes & Multimodal (Gemini 2.5 Flash / Pro — Raisonnement clinique approfondi)
+ * 
+ * NIVEAU 1 COMPTE : Clé Gratuite (500 requêtes / jour à 0,00 €)
+ * NIVEAU 2 COMPTE : Clé Payante (Bascule instantanée et invisible en cas de quota atteint)
  */
 
-const CASCADE_MODELS = [
-  'gemini-3.7-flash',
-  'gemini-3.6-flash',
-  'gemini-3.5-flash',
-  'gemini-3.5-flash-lite',
-  'gemini-flash-lite-latest',
-  'gemini-3.1-flash-lite'
+const CHITCHAT_CASCADE = [
+  'gemini-2.0-flash-lite',
+  'gemini-2.0-flash',
+  'gemini-1.5-flash-8b',
+  'gemini-1.5-flash'
 ];
 
+const STANDARD_CASCADE = [
+  'gemini-2.5-flash',
+  'gemini-2.0-flash',
+  'gemini-1.5-flash',
+  'gemini-2.0-flash-lite'
+];
+
+const COMPLEX_CASCADE = [
+  'gemini-2.5-flash',
+  'gemini-1.5-pro',
+  'gemini-2.0-flash',
+  'gemini-1.5-flash'
+];
+
+const CASCADE_MODELS = [...STANDARD_CASCADE];
+
 const MODEL_ALIASES = {
-  'auto': 'gemini-3.7-flash',
-  'flash': 'gemini-3.7-flash',
-  'gemini-3.7-flash': 'gemini-3.7-flash',
-  'gemini-3.6-flash': 'gemini-3.6-flash',
-  'gemini-3.5-flash': 'gemini-3.5-flash',
-  'gemini-3.5-flash-lite': 'gemini-3.5-flash-lite',
-  'gemini-flash-lite-latest': 'gemini-flash-lite-latest',
-  'gemini-3.1-flash-lite': 'gemini-3.1-flash-lite',
-  'gemini-2.5-flash': 'gemini-3.7-flash',
-  'gemini-2.0-flash': 'gemini-3.6-flash',
-  'gemini-1.5-flash': 'gemini-3.5-flash',
-  'gemini-1.5-pro': 'gemini-3.7-flash',
-  'pro': 'gemini-3.7-flash',
-  'lite': 'gemini-3.5-flash-lite',
-  'flash-lite': 'gemini-3.5-flash-lite'
+  'auto': 'auto',
+  'flash': 'gemini-2.5-flash',
+  'gemini-2.5-flash': 'gemini-2.5-flash',
+  'gemini-2.0-flash': 'gemini-2.0-flash',
+  'gemini-2.0-flash-lite': 'gemini-2.0-flash-lite',
+  'gemini-1.5-flash': 'gemini-1.5-flash',
+  'gemini-1.5-flash-8b': 'gemini-1.5-flash-8b',
+  'gemini-1.5-pro': 'gemini-1.5-pro',
+  'gemini-2.5-pro': 'gemini-1.5-pro',
+  'pro': 'gemini-1.5-pro',
+  'lite': 'gemini-2.0-flash-lite',
+  'flash-lite': 'gemini-2.0-flash-lite',
+  'gemini-3.7-flash': 'gemini-2.5-flash',
+  'gemini-3.6-flash': 'gemini-2.5-flash',
+  'gemini-3.5-flash': 'gemini-2.0-flash',
+  'gemini-3.5-flash-lite': 'gemini-2.0-flash-lite',
+  'gemini-flash-lite-latest': 'gemini-2.0-flash-lite',
+  'gemini-3.1-flash-lite': 'gemini-2.0-flash-lite'
 };
 
 function resolveModelName(name) {
-  if (!name || name === 'auto') return 'gemini-3.7-flash';
+  if (!name || name === 'auto') return 'auto';
   const clean = name.trim();
   if (MODEL_ALIASES[clean]) return MODEL_ALIASES[clean];
   return clean;
 }
 
-const COMPLEX_CASCADE = [...CASCADE_MODELS];
-const SIMPLE_CASCADE = [...CASCADE_MODELS];
+const SIMPLE_CASCADE = [...STANDARD_CASCADE];
 
 // In-memory model cooldown map: `${tierName}_${modelName}` -> timestamp
 const modelCooldownMap = new Map();
@@ -89,6 +109,7 @@ async function callGeminiApi({
   stream = false,
   requestedModel = null,
   forceFreeTierOnly = false,
+  intent = null,
 }) {
   let tiers = getTierKeys(apiKey);
   if (forceFreeTierOnly) {
@@ -103,19 +124,29 @@ async function callGeminiApi({
     throw new Error('Aucune clé GEMINI_API_KEY configurée sur le serveur');
   }
 
-  let isComplex = false;
-  if (contents && Array.isArray(contents)) {
+  let isComplex = intent === 'complex';
+  if (!isComplex && contents && Array.isArray(contents)) {
     if (contents.length > 8) isComplex = true;
     const lastUserText = contents[contents.length - 1]?.parts?.[0]?.text || '';
     if (lastUserText.length > 300) isComplex = true;
-  } else if (prompt && prompt.length > 300) {
+  } else if (!isComplex && prompt && prompt.length > 300) {
     isComplex = true;
   }
 
-  let modelsToTry = isComplex ? [...COMPLEX_CASCADE] : [...SIMPLE_CASCADE];
+  let modelsToTry;
+  if (intent === 'chitchat') {
+    modelsToTry = [...CHITCHAT_CASCADE];
+  } else if (isComplex) {
+    modelsToTry = [...COMPLEX_CASCADE];
+  } else {
+    modelsToTry = [...STANDARD_CASCADE];
+  }
+
   if (requestedModel && requestedModel !== 'auto' && requestedModel.trim()) {
     const resolved = resolveModelName(requestedModel.trim());
-    modelsToTry = [resolved, ...modelsToTry.filter(m => m !== resolved)];
+    if (resolved !== 'auto') {
+      modelsToTry = [resolved, ...modelsToTry.filter(m => m !== resolved)];
+    }
   }
 
   let lastErr = null;

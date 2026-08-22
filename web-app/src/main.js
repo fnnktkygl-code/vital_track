@@ -8991,13 +8991,13 @@ function askAIAboutScannedDish(dishName) {
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 function esc(t) { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
 function formatModelName(rawName) {
-  if (!rawName || rawName === 'Inconnu' || rawName === 'auto') return 'Gemini 3.7 Flash';
+  if (!rawName || rawName === 'Inconnu' || rawName === 'auto') return 'Gemini 2.5 Flash';
   const clean = rawName.replace(/^models\//, '');
-  if (clean.includes('3.7-flash') || clean.includes('3.6-flash') || clean.includes('3-flash')) return 'Gemini 3.7 Flash';
-  if (clean.includes('2.5-flash')) return 'Gemini 2.5 Flash';
-  if (clean.includes('2.5-pro') || clean.includes('3.1-pro') || clean.includes('pro')) return 'Gemini Pro AI';
+  if (clean.includes('flash-lite') || clean.includes('2.0-flash-lite') || clean.includes('1.5-flash-8b')) return 'Gemini 2.0 Flash Lite ⚡';
+  if (clean.includes('2.5-flash') || clean.includes('3.7-flash') || clean.includes('3.6-flash')) return 'Gemini 2.5 Flash 🌱';
+  if (clean.includes('2.0-flash')) return 'Gemini 2.0 Flash ⚡';
   if (clean.includes('1.5-flash')) return 'Gemini 1.5 Flash';
-  if (clean.includes('1.5-pro')) return 'Gemini 1.5 Pro';
+  if (clean.includes('2.5-pro') || clean.includes('1.5-pro') || clean.includes('pro')) return 'Gemini Pro (Clinique) 🧠';
   if (clean.includes('gemma')) return 'Gemma 2';
   return clean;
 }

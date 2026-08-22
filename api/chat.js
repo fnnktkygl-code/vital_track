@@ -7,8 +7,9 @@
  */
 const { callGeminiApi } = require('./_lib/geminiFallback');
 const { authGuard } = require('./_lib/auth');
-const { getChatSystemPrompt } = require('./_lib/prompts');
+const { getChatSystemPrompt, getChitChatSystemPrompt } = require('./_lib/prompts');
 const { retrieveRelevantKnowledge } = require('./_lib/knowledgeRetriever');
+const { classifyQueryIntent } = require('./_lib/queryClassifier');
 
 module.exports = async function handler(req, res) {
   // CORS
@@ -33,6 +34,10 @@ module.exports = async function handler(req, res) {
       return res.status(400).json({ error: 'query is required' });
     }
 
+    // ── Classify Query Intent (Smart Tier Routing) ──
+    const intent = classifyQueryIntent({ query, history, fileParts });
+    const userLang = profile?.language || req.body?.language || 'fr';
+
     // ── Build multi-turn contents array (Gemini native format) ──
     // Each entry: { role: "user"|"model", parts: [{ text }] }
     const contents = [];
@@ -55,38 +60,47 @@ module.exports = async function handler(req, res) {
     }
     contents.push({ role: 'user', parts: currentParts });
 
-    // ── Call Gemini with proper multi-turn ──
-    let profileContext = '';
-    if (profile && typeof profile === 'object' && Object.keys(profile).length > 0) {
-      const country = profile.country || 'Canada 🍁';
-      const city = profile.city || 'Montréal';
-      const bioregion = profile.bioregion || 'Boréale / Tempérée froide';
-      const season = profile.season || 'Hiver';
-      const restrictions = profile.restrictions || 'Aucune restriction déclarée';
-      const transitionLevel = profile.transitionLevel || 'Intermédiaire (Alimentation végétale / transition sans mucus)';
-      const targetOrgans = Array.isArray(profile.targetOrgans) && profile.targetOrgans.length > 0
-        ? profile.targetOrgans.join(', ')
-        : (profile.targetOrgans || 'Système global (Reins & Lymphe)');
-      
-      let morphologyText = '';
-      if (profile.height || profile.currentWeight || profile.targetWeight || profile.age || profile.activityLevel) {
-        const parts = [];
-        if (profile.height) parts.push(`Taille: ${profile.height} cm`);
-        if (profile.currentWeight) parts.push(`Poids actuel: ${profile.currentWeight} kg`);
-        if (profile.targetWeight) parts.push(`Poids cible: ${profile.targetWeight} kg`);
-        if (profile.age) parts.push(`Âge: ${profile.age} ans`);
-        if (profile.activityLevel) parts.push(`Activité: ${profile.activityLevel}`);
-        morphologyText = `\nMorphologie & Métabolisme: ${parts.join(' | ')}`;
-      }
+    // ── Build System Instruction based on Intent Tier ──
+    let fullSystemInstruction = '';
+    let genConfig = { temperature: 0.3, maxOutputTokens: 8192 };
 
-      let memoriesText = '';
-      if (Array.isArray(profile.memories) && profile.memories.length > 0) {
-        memoriesText = `\nHabitudes & Préférences mémorisées :\n${profile.memories.map(m => `- ${m}`).join('\n')}`;
-      } else if (typeof profile.memories === 'string' && profile.memories.trim()) {
-        memoriesText = `\nHabitudes & Préférences mémorisées : ${profile.memories.trim()}`;
-      }
+    if (intent === 'chitchat') {
+      // Tier 0: Chit-chat / Greetings -> Lightweight Prompt, 0 RAG tokens, fast response
+      fullSystemInstruction = getChitChatSystemPrompt(userLang);
+      genConfig = { temperature: 0.7, maxOutputTokens: 256 };
+    } else {
+      // Tier 1 & 2: Health / Clinical Query -> Full Coaching Prompt + Profile + Targeted RAG
+      let profileContext = '';
+      if (profile && typeof profile === 'object' && Object.keys(profile).length > 0) {
+        const country = profile.country || 'Canada 🍁';
+        const city = profile.city || 'Montréal';
+        const bioregion = profile.bioregion || 'Boréale / Tempérée froide';
+        const season = profile.season || 'Hiver';
+        const restrictions = profile.restrictions || 'Aucune restriction déclarée';
+        const transitionLevel = profile.transitionLevel || 'Intermédiaire (Alimentation végétale / transition sans mucus)';
+        const targetOrgans = Array.isArray(profile.targetOrgans) && profile.targetOrgans.length > 0
+          ? profile.targetOrgans.join(', ')
+          : (profile.targetOrgans || 'Système global (Reins & Lymphe)');
+        
+        let morphologyText = '';
+        if (profile.height || profile.currentWeight || profile.targetWeight || profile.age || profile.activityLevel) {
+          const parts = [];
+          if (profile.height) parts.push(`Taille: ${profile.height} cm`);
+          if (profile.currentWeight) parts.push(`Poids actuel: ${profile.currentWeight} kg`);
+          if (profile.targetWeight) parts.push(`Poids cible: ${profile.targetWeight} kg`);
+          if (profile.age) parts.push(`Âge: ${profile.age} ans`);
+          if (profile.activityLevel) parts.push(`Activité: ${profile.activityLevel}`);
+          morphologyText = `\nMorphologie & Métabolisme: ${parts.join(' | ')}`;
+        }
 
-      profileContext = `\n\n[CONTEXTE & BIO-PROFIL DE L'UTILISATEUR]
+        let memoriesText = '';
+        if (Array.isArray(profile.memories) && profile.memories.length > 0) {
+          memoriesText = `\nHabitudes & Préférences mémorisées :\n${profile.memories.map(m => `- ${m}`).join('\n')}`;
+        } else if (typeof profile.memories === 'string' && profile.memories.trim()) {
+          memoriesText = `\nHabitudes & Préférences mémorisées : ${profile.memories.trim()}`;
+        }
+
+        profileContext = `\n\n[CONTEXTE & BIO-PROFIL DE L'UTILISATEUR]
 Nom: ${profile.name || 'Inconnu'}
 Localisation: ${city}, ${country} (Biorégion: ${bioregion}, Saison: ${season})
 Objectif Majeur: ${profile.goal || 'Détox & Vitalité'}
@@ -95,16 +109,18 @@ Niveau de Transition: ${transitionLevel}
 Émonctoires & Terrains prioritaires à soutenir: ${targetOrgans}${morphologyText}
 Restrictions & Allergies strictes: ${restrictions}${memoriesText}
 [DIRECTIVE COACHING PROFILE] : Adapte TOUJOURS tes conseils botaniques (plantes Raintree, tisanes, aliments), l'intensité des détox et les protocoles de jeûne en fonction directe du niveau de transition et des émonctoires prioritaires déclarés par l'utilisateur.`;
-    }
+      }
 
-    const isContinuing = Array.isArray(history) && history.length > 0;
-    const conversationRule = isContinuing 
-      ? `\n\n[RÈGLE STRICTE] Ceci est la suite d'une conversation en cours. NE DIS PAS BONJOUR. Reprends directement le fil de la discussion.` 
-      : `\n\n[RÈGLE STRICTE] C'est le début d'une nouvelle conversation. Tu peux saluer l'utilisateur si c'est pertinent.`;
-    const userLang = profile?.language || req.body?.language || 'fr';
-    const targetedKnowledge = retrieveRelevantKnowledge(query, 4, userLang);
-    const dynamicSystemPrompt = getChatSystemPrompt(userLang);
-    const fullSystemInstruction = `${dynamicSystemPrompt}${profileContext}${conversationRule}${targetedKnowledge ? `\n\n[RAG_KNOWLEDGE_BASE]\nExtraits pertinents de nos livres de référence pour t'aider à répondre :\n${targetedKnowledge}` : ''}`;
+      const isContinuing = Array.isArray(history) && history.length > 0;
+      const conversationRule = isContinuing 
+        ? `\n\n[RÈGLE STRICTE] Ceci est la suite d'une conversation en cours. NE DIS PAS BONJOUR. Reprends directement le fil de la discussion.` 
+        : `\n\n[RÈGLE STRICTE] C'est le début d'une nouvelle conversation. Tu peux saluer l'utilisateur si c'est pertinent.`;
+      
+      const chunkCount = intent === 'complex' ? 5 : 3;
+      const targetedKnowledge = retrieveRelevantKnowledge(query, chunkCount, userLang);
+      const dynamicSystemPrompt = getChatSystemPrompt(userLang);
+      fullSystemInstruction = `${dynamicSystemPrompt}${profileContext}${conversationRule}${targetedKnowledge ? `\n\n[RAG_KNOWLEDGE_BASE]\nExtraits pertinents de nos livres de référence pour t'aider à répondre :\n${targetedKnowledge}` : ''}`;
+    }
 
     const isStream = req.query.stream === 'true';
 
@@ -112,20 +128,19 @@ Restrictions & Allergies strictes: ${restrictions}${memoriesText}
       apiKey,
       contents,
       systemInstruction: fullSystemInstruction,
-      generationConfig: { 
-        temperature: 0.3,
-        maxOutputTokens: 8192
-      },
+      generationConfig: genConfig,
       stream: isStream,
       requestedModel: model || null,
+      intent,
     });
 
     if (isStream) {
       res.setHeader('Content-Type', 'text/event-stream');
       res.setHeader('Cache-Control', 'no-cache');
       res.setHeader('Connection', 'keep-alive');
-      res.setHeader('Access-Control-Expose-Headers', 'X-Model-Used');
-      res.setHeader('X-Model-Used', result.model || 'gemini-3.7-flash');
+      res.setHeader('Access-Control-Expose-Headers', 'X-Model-Used, X-Intent-Tier');
+      res.setHeader('X-Model-Used', result.model || 'gemini-2.5-flash');
+      res.setHeader('X-Intent-Tier', intent);
       res.flushHeaders();
 
       const reader = result.body.getReader();
@@ -141,7 +156,8 @@ Restrictions & Allergies strictes: ${restrictions}${memoriesText}
 
     res.status(200).json({ 
       text: result.text, 
-      model: result.model 
+      model: result.model,
+      intent 
     });
   } catch (error) {
     console.error('[/api/chat] Error:', error.message);
