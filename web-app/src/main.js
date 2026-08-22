@@ -11296,6 +11296,24 @@ function stepWeight(delta) {
   valInput.value = curr.toFixed(1);
 };
 
+// One-time automatic migration to purge any residual 'belly' tags in stored history
+try {
+  const rawStored = store.get('weight_history', []);
+  if (Array.isArray(rawStored) && rawStored.some(e => e && e.photoTag === 'belly')) {
+    const cleaned = rawStored.map(e => {
+      if (e && e.photoTag === 'belly') {
+        const copy = { ...e };
+        delete copy.photoTag;
+        return copy;
+      }
+      return e;
+    });
+    store.set('weight_history', cleaned);
+  }
+} catch (err) {
+  console.warn('Weight history tag migration check:', err);
+}
+
 function sanitizeWeightHistory(history) {
   if (!Array.isArray(history) || history.length === 0) return [];
   const map = new Map();
@@ -11306,13 +11324,17 @@ function sanitizeWeightHistory(history) {
     const dateObj = new Date(item.date);
     if (isNaN(dateObj.getTime())) return;
     const dateStr = dateObj.toISOString().split('T')[0];
+
+    // Guarantee: 'belly' tag is 100% stripped from existing and new entries
+    const cleanTag = (item.photoTag && item.photoTag !== 'belly') ? item.photoTag : undefined;
+
     map.set(dateStr, {
       id: item.id || ('w_' + dateStr.replace(/-/g, '')),
       date: `${dateStr}T12:00:00.000Z`,
       weight: Math.round(w * 10) / 10,
       note: item.note || '',
       hasPhoto: !!item.hasPhoto,
-      photoTag: item.photoTag || undefined
+      photoTag: cleanTag
     });
   });
   return Array.from(map.values()).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
@@ -11899,11 +11921,15 @@ async function renderWeightGallery() {
     const dateFormatted = isNaN(d.getTime()) ? entry.date : d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
     const deltaFromStart = startWeight !== null ? Math.round((entry.weight - startWeight) * 10) / 10 : 0;
     const deltaBadge = deltaFromStart !== 0 ? (deltaFromStart < 0 ? `📉 ${deltaFromStart} kg` : `📈 +${deltaFromStart} kg`) : 'Départ';
-    const tagLabels = { belly: 'Ventre', front: 'Face', side: 'Profil', back: 'Dos' };
-    const tagLabel = entry.photoTag ? (tagLabels[entry.photoTag] || entry.photoTag) : null;
+    const tagLabels = { front: 'Face', side: 'Profil', back: 'Dos' };
+    const tagLabel = (entry.photoTag && entry.photoTag !== 'belly') ? (tagLabels[entry.photoTag] || entry.photoTag) : null;
 
     return `
-      <div class="weight-gallery-card" onclick="openWeightLightbox('${entry.id}')" style="cursor:pointer;">
+      <div class="weight-gallery-card" onclick="openWeightLightbox('${entry.id}')" style="cursor:pointer; position:relative;">
+        <div class="weight-gallery-card-actions">
+          <button type="button" class="weight-gallery-card-action edit" onclick="event.stopPropagation(); editWeightFromGallery('${entry.id}')" title="Modifier la pesée"><i class="ri-edit-line"></i></button>
+          <button type="button" class="weight-gallery-card-action delete" onclick="event.stopPropagation(); deleteWeightPhotoEntry('${entry.id}')" title="Supprimer la photo"><i class="ri-delete-bin-line"></i></button>
+        </div>
         <div class="weight-gallery-img-wrap">
           <img src="${photoSrc || 'data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\'><rect fill=\'%231e293b\' width=\'100\' height=\'100\'/></svg>'}" alt="Photo pesée" class="weight-gallery-img" loading="lazy" />
           ${tagLabel ? `<span class="weight-gallery-tag-pill">${tagLabel}</span>` : ''}
@@ -12232,17 +12258,15 @@ function initWeightSplitSlider() {
   const sliderContainer = document.getElementById('weightSplitSliderContainer');
   const beforeWrap = document.getElementById('weightSplitBeforeWrap');
   const handle = document.getElementById('weightSplitHandle');
+  const sideBeforeCard = document.getElementById('weightSideBeforeCard');
+  const sideAfterCard = document.getElementById('weightSideAfterCard');
   if (!sliderContainer || !beforeWrap || !handle) return;
 
   let isDraggingHandle = false;
-  let isPanningPhoto = false;
-  let startX = 0, startY = 0;
-  let initialPhotoX = 0, initialPhotoY = 0;
-  let initialPinchDist = 0;
-  let initialPinchScale = 1.0;
 
   function setSliderPosition(clientX) {
     const rect = sliderContainer.getBoundingClientRect();
+    if (rect.width <= 0) return;
     let x = clientX - rect.left;
     if (x < 0) x = 0;
     if (x > rect.width) x = rect.width;
@@ -12256,6 +12280,7 @@ function initWeightSplitSlider() {
   beforeWrap.style.clipPath = `polygon(0 0, ${compareState.sliderPct}% 0, ${compareState.sliderPct}% 100%, 0 100%)`;
   handle.style.left = `${compareState.sliderPct}%`;
 
+  // Handle Dragging Events
   handle.onpointerdown = (e) => {
     e.stopPropagation();
     isDraggingHandle = true;
@@ -12291,107 +12316,104 @@ function initWeightSplitSlider() {
     window.removeEventListener('touchend', onHandleUp);
   }
 
-  // Pointer interaction on container to select & pan/zoom target photo
-  function onContainerPointerDown(e) {
-    if (isDraggingHandle) return;
-    const rect = sliderContainer.getBoundingClientRect();
-    const clientX = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
-    const clientY = e.clientY || (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
-    const clickX = clientX - rect.left;
-    const target = (clickX <= (rect.width * (compareState.sliderPct / 100))) ? 'before' : 'after';
-    setWeightCompareTarget(target);
+  // Helper for Pan & Pinch-to-zoom on a specific target ('before' or 'after')
+  function attachCardPanGesture(element, targetName, isSplitMode = false) {
+    if (!element) return;
 
-    isPanningPhoto = true;
-    startX = clientX;
-    startY = clientY;
-    initialPhotoX = compareState[target].x;
-    initialPhotoY = compareState[target].y;
+    let isPanning = false;
+    let startX = 0, startY = 0;
+    let initX = 0, initY = 0;
+    let initPinchDist = 0;
+    let initPinchScale = 1.0;
 
-    if (e.touches && e.touches.length === 2) {
-      const dx = e.touches[0].clientX - e.touches[1].clientX;
-      const dy = e.touches[0].clientY - e.touches[1].clientY;
-      initialPinchDist = Math.hypot(dx, dy);
-      initialPinchScale = compareState[target].scale;
+    function onPanStart(e) {
+      if (isDraggingHandle) return;
+
+      let effectiveTarget = targetName;
+      if (isSplitMode) {
+        const rect = sliderContainer.getBoundingClientRect();
+        const clientX = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+        const clickX = clientX - rect.left;
+        effectiveTarget = (clickX <= (rect.width * (compareState.sliderPct / 100))) ? 'before' : 'after';
+      }
+
+      setWeightCompareTarget(effectiveTarget);
+
+      isPanning = true;
+      startX = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+      startY = e.clientY || (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
+      initX = compareState[effectiveTarget].x;
+      initY = compareState[effectiveTarget].y;
+
+      if (e.touches && e.touches.length === 2) {
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        initPinchDist = Math.hypot(dx, dy);
+        initPinchScale = compareState[effectiveTarget].scale;
+      }
+
+      window.addEventListener('pointermove', onPanMove);
+      window.addEventListener('pointerup', onPanEnd);
+      window.addEventListener('touchmove', onPanTouchMove, { passive: false });
+      window.addEventListener('touchend', onPanEnd);
     }
 
-    window.addEventListener('pointermove', onContainerPointerMove);
-    window.addEventListener('pointerup', onContainerPointerUp);
-    window.addEventListener('touchmove', onContainerTouchMove, { passive: false });
-    window.addEventListener('touchend', onContainerPointerUp);
-  }
-
-  function onContainerPointerMove(e) {
-    if (!isPanningPhoto) return;
-    const target = compareState.activeTarget;
-    const curX = e.clientX;
-    const curY = e.clientY;
-    const dx = curX - startX;
-    const dy = curY - startY;
-
-    compareState[target].x = initialPhotoX + dx;
-    compareState[target].y = initialPhotoY + dy;
-    applyWeightCompareTransforms();
-  }
-
-  function onContainerTouchMove(e) {
-    if (!isPanningPhoto) return;
-    e.preventDefault();
-    const target = compareState.activeTarget;
-
-    if (e.touches.length === 2 && initialPinchDist > 0) {
-      const dx = e.touches[0].clientX - e.touches[1].clientX;
-      const dy = e.touches[0].clientY - e.touches[1].clientY;
-      const dist = Math.hypot(dx, dy);
-      const ratio = dist / initialPinchDist;
-      compareState[target].scale = Math.max(0.5, Math.min(3.0, Math.round(initialPinchScale * ratio * 100) / 100));
-      applyWeightCompareTransforms();
-    } else if (e.touches.length === 1) {
-      const curX = e.touches[0].clientX;
-      const curY = e.touches[0].clientY;
+    function onPanMove(e) {
+      if (!isPanning) return;
+      const target = compareState.activeTarget;
+      const curX = e.clientX;
+      const curY = e.clientY;
       const dx = curX - startX;
       const dy = curY - startY;
 
-      compareState[target].x = initialPhotoX + dx;
-      compareState[target].y = initialPhotoY + dy;
+      compareState[target].x = initX + dx;
+      compareState[target].y = initY + dy;
       applyWeightCompareTransforms();
     }
+
+    function onPanTouchMove(e) {
+      if (!isPanning) return;
+      e.preventDefault();
+      const target = compareState.activeTarget;
+
+      if (e.touches.length === 2 && initPinchDist > 0) {
+        const dx = e.touches[0].clientX - e.touches[1].clientX;
+        const dy = e.touches[0].clientY - e.touches[1].clientY;
+        const dist = Math.hypot(dx, dy);
+        const ratio = dist / initPinchDist;
+        compareState[target].scale = Math.max(0.5, Math.min(3.0, Math.round(initPinchScale * ratio * 100) / 100));
+        applyWeightCompareTransforms();
+      } else if (e.touches.length === 1) {
+        const curX = e.touches[0].clientX;
+        const curY = e.touches[0].clientY;
+        const dx = curX - startX;
+        const dy = curY - startY;
+
+        compareState[target].x = initX + dx;
+        compareState[target].y = initY + dy;
+        applyWeightCompareTransforms();
+      }
+    }
+
+    function onPanEnd() {
+      isPanning = false;
+      initPinchDist = 0;
+      window.removeEventListener('pointermove', onPanMove);
+      window.removeEventListener('pointerup', onPanEnd);
+      window.removeEventListener('touchmove', onPanTouchMove);
+      window.removeEventListener('touchend', onPanEnd);
+    }
+
+    element.onpointerdown = onPanStart;
+    element.ontouchstart = onPanStart;
   }
 
-  function onContainerPointerUp() {
-    isPanningPhoto = false;
-    initialPinchDist = 0;
-    window.removeEventListener('pointermove', onContainerPointerMove);
-    window.removeEventListener('pointerup', onContainerPointerUp);
-    window.removeEventListener('touchmove', onContainerTouchMove);
-    window.removeEventListener('touchend', onContainerPointerUp);
-  }
+  // Attach gestures to Split Container
+  attachCardPanGesture(sliderContainer, 'before', true);
 
-  sliderContainer.onpointerdown = onContainerPointerDown;
-  sliderContainer.ontouchstart = onContainerPointerDown;
-
-  // Side-by-Side gesture support
-  const sideBefore = document.getElementById('weightSideBeforeCard');
-  const sideAfter = document.getElementById('weightSideAfterCard');
-  if (sideBefore) {
-    sideBefore.onpointerdown = (e) => {
-      setWeightCompareTarget('before');
-      onContainerPointerDown(e);
-    };
-    sideBefore.ontouchstart = (e) => {
-      setWeightCompareTarget('before');
-      onContainerPointerDown(e);
-    };
-  }
-  if (sideAfter) {
-    sideAfter.onpointerdown = (e) => {
-      setWeightCompareTarget('after');
-      onContainerPointerDown(e);
-    };
-    sideAfter.ontouchstart = (e) => {
-      setWeightCompareTarget('after');
-      onContainerPointerDown(e);
-    };
-  }
+  // Attach gestures independently to Side-by-Side cards
+  attachCardPanGesture(sideBeforeCard, 'before', false);
+  attachCardPanGesture(sideAfterCard, 'after', false);
 }
 
 // ═══════ PRIVACY BLUR MODE ═══════
@@ -12425,7 +12447,9 @@ function initWeightPrivacyMode() {
   }
 }
 
-// ═══════ LIGHTBOX MODAL WITH ZOOM ═══════
+// ═══════ LIGHTBOX MODAL WITH ZOOM & ACTIONS (REPLACE, EDIT, DELETE) ═══════
+let currentLightboxEntryId = null;
+
 function toggleLightboxZoom() {
   const img = document.getElementById('lightboxImg');
   if (img) img.classList.toggle('zoomed');
@@ -12435,6 +12459,8 @@ async function openWeightLightbox(entryId) {
   const history = sanitizeWeightHistory(store.get('weight_history', []));
   const entry = history.find(e => e.id === entryId);
   if (!entry) return;
+
+  currentLightboxEntryId = entryId;
 
   const lightbox = document.getElementById('weightPhotoLightbox');
   const img = document.getElementById('lightboxImg');
@@ -12457,9 +12483,9 @@ async function openWeightLightbox(entryId) {
   const d = new Date(entry.date);
   if (dVal) dVal.textContent = isNaN(d.getTime()) ? entry.date : d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
   
-  const tagLabels = { belly: 'Ventre', front: 'Face', side: 'Profil', back: 'Dos' };
+  const tagLabels = { front: 'Face', side: 'Profil', back: 'Dos' };
   if (tagBadge) {
-    if (entry.photoTag) {
+    if (entry.photoTag && entry.photoTag !== 'belly') {
       tagBadge.textContent = tagLabels[entry.photoTag] || entry.photoTag;
       tagBadge.style.display = 'inline-block';
     } else {
@@ -12485,6 +12511,88 @@ function closeWeightLightbox(e) {
     const img = document.getElementById('lightboxImg');
     if (img) img.classList.remove('zoomed');
     if (lightbox) lightbox.style.display = 'none';
+    currentLightboxEntryId = null;
+  }
+}
+
+function triggerLightboxPhotoReplace() {
+  const input = document.getElementById('lightboxReplaceInput');
+  if (input) input.click();
+}
+
+async function handleLightboxPhotoReplace(event) {
+  const file = event?.target?.files?.[0];
+  if (!file || !currentLightboxEntryId) return;
+
+  try {
+    showToast('Traitement et optimisation de la photo...', 'info');
+    const compressedDataUrl = await compressWeightImage(file, 1200, 1200, 0.82);
+
+    if (window.saveWeightPhoto) {
+      await window.saveWeightPhoto(currentLightboxEntryId, compressedDataUrl);
+    }
+
+    let history = sanitizeWeightHistory(store.get('weight_history', []));
+    const idx = history.findIndex(h => h.id === currentLightboxEntryId);
+    if (idx !== -1) {
+      history[idx].hasPhoto = true;
+      store.set('weight_history', history);
+    }
+
+    const img = document.getElementById('lightboxImg');
+    if (img) img.src = compressedDataUrl;
+
+    renderWeightGallery();
+    renderWeightChart();
+    renderWeightCompare();
+    showToast((typeof i18n !== 'undefined' && i18n.t) ? i18n.t('weight.photoReplacedSuccess') : 'Photo mise à jour avec succès !', 'success');
+  } catch (err) {
+    console.error('Failed to replace photo:', err);
+    showToast('Erreur lors du remplacement de la photo.', 'error');
+  } finally {
+    if (event?.target) event.target.value = '';
+  }
+}
+
+function editWeightFromLightbox() {
+  if (!currentLightboxEntryId) return;
+  const id = currentLightboxEntryId;
+  closeWeightLightbox();
+  editWeightEntry(id);
+}
+
+function editWeightFromGallery(entryId) {
+  if (!entryId) return;
+  editWeightEntry(entryId);
+}
+
+async function deleteWeightPhotoEntry(entryId) {
+  if (!entryId) return;
+  const msg = (typeof i18n !== 'undefined' && i18n.t) ? i18n.t('weight.confirmDeletePhoto') : 'Voulez-vous vraiment supprimer cette photo ? (La pesée restera enregistrée)';
+  if (!confirm(msg)) return;
+
+  if (window.deleteWeightPhoto) {
+    await window.deleteWeightPhoto(entryId);
+  }
+
+  let history = sanitizeWeightHistory(store.get('weight_history', []));
+  const idx = history.findIndex(h => h.id === entryId);
+  if (idx !== -1) {
+    history[idx].hasPhoto = false;
+    delete history[idx].photoTag;
+    store.set('weight_history', history);
+  }
+
+  closeWeightLightbox();
+  renderWeightGallery();
+  renderWeightChart();
+  renderWeightCompare();
+  showToast((typeof i18n !== 'undefined' && i18n.t) ? i18n.t('weight.photoDeletedSuccess') : 'Photo supprimée.', 'info');
+}
+
+async function deleteLightboxPhoto() {
+  if (currentLightboxEntryId) {
+    await deleteWeightPhotoEntry(currentLightboxEntryId);
   }
 }
 
@@ -14088,6 +14196,12 @@ if (typeof window !== "undefined") window.initWeightPrivacyMode = initWeightPriv
 if (typeof window !== "undefined") window.openWeightLightbox = openWeightLightbox;
 if (typeof window !== "undefined") window.closeWeightLightbox = closeWeightLightbox;
 if (typeof window !== "undefined") window.toggleLightboxZoom = toggleLightboxZoom;
+if (typeof window !== "undefined") window.triggerLightboxPhotoReplace = triggerLightboxPhotoReplace;
+if (typeof window !== "undefined") window.handleLightboxPhotoReplace = handleLightboxPhotoReplace;
+if (typeof window !== "undefined") window.editWeightFromLightbox = editWeightFromLightbox;
+if (typeof window !== "undefined") window.editWeightFromGallery = editWeightFromGallery;
+if (typeof window !== "undefined") window.deleteWeightPhotoEntry = deleteWeightPhotoEntry;
+if (typeof window !== "undefined") window.deleteLightboxPhoto = deleteLightboxPhoto;
 if (typeof window !== "undefined") window.updateWeightBadge = updateWeightBadge;
 if (typeof window !== "undefined") window.openTargetWeightModal = openTargetWeightModal;
 if (typeof window !== "undefined") window.closeTargetWeightModal = closeTargetWeightModal;

@@ -8,7 +8,7 @@ const __dirname = dirname(__filename);
 
 console.log('🧪 Starting Weight Tracking & Photo Body Evolution Logic Tests...\n');
 
-// 1. Test sanitizeWeightHistory with optional photoTag (no forced "belly")
+// 1. Test sanitizeWeightHistory with optional photoTag (auto-purging residual "belly" tag)
 function sanitizeWeightHistory(history) {
   if (!Array.isArray(history) || history.length === 0) return [];
   const map = new Map();
@@ -19,13 +19,17 @@ function sanitizeWeightHistory(history) {
     const dateObj = new Date(item.date);
     if (isNaN(dateObj.getTime())) return;
     const dateStr = dateObj.toISOString().split('T')[0];
+
+    // Guarantee: 'belly' tag is 100% stripped from existing and new entries
+    const cleanTag = (item.photoTag && item.photoTag !== 'belly') ? item.photoTag : undefined;
+
     map.set(dateStr, {
       id: item.id || ('w_' + dateStr.replace(/-/g, '')),
       date: `${dateStr}T12:00:00.000Z`,
       weight: Math.round(w * 10) / 10,
       note: item.note || '',
       hasPhoto: !!item.hasPhoto,
-      photoTag: item.photoTag || undefined
+      photoTag: cleanTag
     });
   });
   return Array.from(map.values()).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
@@ -33,11 +37,11 @@ function sanitizeWeightHistory(history) {
 
 // Test basic sanitization and deduplication
 const rawData = [
-  { id: 'w1', date: '2026-08-01T08:00:00.000Z', weight: 75.4, note: 'Depart', hasPhoto: true }, // No tag
+  { id: 'w1', date: '2026-08-01T08:00:00.000Z', weight: 75.4, note: 'Depart', hasPhoto: true, photoTag: 'belly' }, // Residual belly tag must be purged
   { id: 'w1_dup', date: '2026-08-01T18:00:00.000Z', weight: 75.2, note: 'Soir', hasPhoto: true, photoTag: 'front' },
   { id: 'w2', date: '2026-08-10T08:00:00.000Z', weight: 73.8, note: 'Apres jeune', hasPhoto: false },
   { id: 'w3', date: '2026-08-20T08:00:00.000Z', weight: 72.1, note: 'Fin detox', hasPhoto: true, photoTag: 'side' },
-  { id: 'w_old', date: '2017-05-15T08:00:00.000Z', weight: 88.0, note: 'Archive 2017', hasPhoto: true }, // Historical photo added later
+  { id: 'w_old', date: '2017-05-15T08:00:00.000Z', weight: 88.0, note: 'Archive 2017', hasPhoto: true, photoTag: 'belly' }, // Old belly tag purged
   { id: 'w_invalid', date: 'invalid-date', weight: 70 },
   { id: 'w_negative', date: '2026-08-21T08:00:00.000Z', weight: -5 }
 ];
@@ -45,13 +49,13 @@ const rawData = [
 const sanitized = sanitizeWeightHistory(rawData);
 assert.equal(sanitized.length, 4, 'Should filter out invalid entries and deduplicate same-day entries');
 assert.equal(sanitized[0].date, '2017-05-15T12:00:00.000Z', '2017 entry sorted first chronologically');
-assert.equal(sanitized[0].photoTag, undefined, 'photoTag is undefined when none provided (no forced tag)');
+assert.equal(sanitized[0].photoTag, undefined, 'Residual belly tag is purged to undefined');
 assert.equal(sanitized[1].date, '2026-08-01T12:00:00.000Z', 'Standardized ISO time');
 assert.equal(sanitized[1].hasPhoto, true, 'hasPhoto should be preserved');
-assert.equal(sanitized[1].photoTag, 'front', 'Last same-day entry properties win');
+assert.equal(sanitized[1].photoTag, 'front', 'Valid photoTag preserved');
 assert.equal(sanitized[2].hasPhoto, false, 'hasPhoto correctly set to false when missing');
 assert.equal(sanitized[3].photoTag, 'side', 'photoTag preserved');
-console.log('✅ 1. sanitizeWeightHistory correctly handles deduplication, optional tags and chronological order.');
+console.log('✅ 1. sanitizeWeightHistory correctly handles deduplication, belly tag purging, and chronological order.');
 
 // 2. Test Gallery strict date-descending sort (most recent date in pole position)
 const photoEntries = sanitized.filter(h => h.hasPhoto);
@@ -108,9 +112,15 @@ assert.ok(mainCode.includes('initWeightSplitSlider'), 'main.js includes initWeig
 assert.ok(mainCode.includes('toggleWeightPrivacyMode'), 'main.js includes toggleWeightPrivacyMode');
 assert.ok(mainCode.includes('toggleLightboxZoom'), 'main.js includes toggleLightboxZoom');
 assert.ok(mainCode.includes('openWeightLightbox'), 'main.js includes openWeightLightbox');
+assert.ok(mainCode.includes('triggerLightboxPhotoReplace'), 'main.js includes triggerLightboxPhotoReplace');
+assert.ok(mainCode.includes('handleLightboxPhotoReplace'), 'main.js includes handleLightboxPhotoReplace');
+assert.ok(mainCode.includes('editWeightFromLightbox'), 'main.js includes editWeightFromLightbox');
+assert.ok(mainCode.includes('editWeightFromGallery'), 'main.js includes editWeightFromGallery');
+assert.ok(mainCode.includes('deleteWeightPhotoEntry'), 'main.js includes deleteWeightPhotoEntry');
+assert.ok(mainCode.includes('deleteLightboxPhoto'), 'main.js includes deleteLightboxPhoto');
 assert.ok(mainCode.includes('chart-photo-thumb'), 'main.js renders circular SVG photo thumbnail pins');
 assert.ok(mainCode.includes('window.handleWeightPhotoSelect'), 'main.js registers photo upload handler on window');
-console.log('✅ 6. main.js includes and exports all necessary methods (gallery filters, SVG pins, dual-mode comparator, independent zoom/pan).');
+console.log('✅ 6. main.js includes and exports all methods (gallery filters, actions, lightbox replace/edit/delete, dual-mode comparator).');
 
 // 7. Test index.html DOM structure
 const htmlCode = readFileSync(join(__dirname, '../web-app/index.html'), 'utf-8');
@@ -129,9 +139,10 @@ assert.ok(htmlCode.includes('id="weightSplitSliderContainer"'), 'index.html has 
 assert.ok(htmlCode.includes('id="weightPhotoCameraInput"'), 'index.html has camera capture input');
 assert.ok(htmlCode.includes('id="weightPhotoInput"'), 'index.html has gallery file input');
 assert.ok(htmlCode.includes('id="weightPhotoLightbox"'), 'index.html has lightbox modal');
+assert.ok(htmlCode.includes('id="lightboxReplaceInput"'), 'index.html has hidden lightbox photo replacement input');
 assert.ok(!htmlCode.includes('data-tag="belly"'), 'index.html MUST NOT contain data-tag="belly"');
 assert.ok(!htmlCode.includes('weight.photoTagBelly'), 'index.html MUST NOT contain photoTagBelly');
-console.log('✅ 7. index.html contains all necessary DOM nodes for tabs, dual-mode comparator, independent zoom, and zero belly tag.');
+console.log('✅ 7. index.html contains all necessary DOM nodes for tabs, replace input, dual-mode comparator, independent zoom, and zero belly tag.');
 
 console.log('\n🎉 ALL WEIGHT TRACKING & BODY EVOLUTION TESTS PASSED SUCCESSFULLY!');
 

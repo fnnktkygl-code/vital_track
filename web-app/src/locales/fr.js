@@ -604,7 +604,13 @@ export default {
     "filterAllPhotos": "Toutes les photos",
     "filterThisYear": "Cette année",
     "filterThisMonth": "Ce mois-ci",
-    "zoomHint": "Double-cliquez pour zoomer"
+    "zoomHint": "Double-cliquez pour zoomer",
+    "replacePhotoBtn": "Remplacer la photo",
+    "editEntryBtn": "Modifier la pesée",
+    "deletePhotoBtn": "Supprimer la photo",
+    "confirmDeletePhoto": "Voulez-vous vraiment supprimer cette photo ? (La pesée restera enregistrée)",
+    "photoReplacedSuccess": "Photo mise à jour avec succès !",
+    "photoDeletedSuccess": "Photo supprimée."
   },
   "auth": {
     "signInWithGoogle": "Se connecter avec Google",

@@ -9217,6 +9217,42 @@ select.ds-select option {
   border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
+.weight-gallery-card-actions {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 6px;
+  z-index: 10;
+}
+
+.weight-gallery-card-action {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.weight-gallery-card-action:hover {
+  transform: scale(1.1);
+  background: rgba(15, 23, 42, 1);
+  color: var(--accent, #34d399);
+}
+
+.weight-gallery-card-action.delete:hover {
+  color: #f87171;
+  border-color: #f87171;
+}
+
 .weight-gallery-info {
   padding: 10px 12px;
   display: flex;

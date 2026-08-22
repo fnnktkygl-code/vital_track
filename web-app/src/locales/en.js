@@ -604,7 +604,13 @@ export default {
     "filterAllPhotos": "All photos",
     "filterThisYear": "This year",
     "filterThisMonth": "This month",
-    "zoomHint": "Double-click to zoom"
+    "zoomHint": "Double-click to zoom",
+    "replacePhotoBtn": "Replace photo",
+    "editEntryBtn": "Edit entry",
+    "deletePhotoBtn": "Delete photo",
+    "confirmDeletePhoto": "Are you sure you want to delete this photo? (Weight entry will remain saved)",
+    "photoReplacedSuccess": "Photo updated successfully!",
+    "photoDeletedSuccess": "Photo deleted."
   },
   "auth": {
     "signInWithGoogle": "Sign in with Google",

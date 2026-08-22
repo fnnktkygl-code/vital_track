@@ -3345,8 +3345,27 @@
       <div class="weight-lightbox-body">
         <img id="lightboxImg" src="" alt="Photo pesée HD" class="weight-lightbox-img" />
       </div>
-      <div class="weight-lightbox-footer" id="lightboxNoteWrap">
-        <p id="lightboxNoteVal" style="font-size:0.85rem; color:var(--text-dim); margin:0;"></p>
+      <!-- Hidden input for photo replacement -->
+      <input type="file" id="lightboxReplaceInput" accept="image/*" style="display:none" onchange="handleLightboxPhotoReplace(event)">
+
+      <div class="weight-lightbox-footer" style="display:flex; flex-direction:column; gap:10px;">
+        <div id="lightboxNoteWrap" style="display:none;">
+          <p id="lightboxNoteVal" style="font-size:0.85rem; color:var(--text-dim); margin:0;"></p>
+        </div>
+        <!-- Lightbox Action Bar -->
+        <div class="weight-lightbox-actions" style="display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; border-top:1px solid rgba(255,255,255,0.1); padding-top:10px;">
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button type="button" class="btn-secondary" onclick="triggerLightboxPhotoReplace()" style="font-size:0.8rem; padding:6px 12px; display:inline-flex; align-items:center; gap:6px;">
+              <i class="ri-image-edit-line"></i> <span data-i18n="weight.replacePhotoBtn">Remplacer la photo</span>
+            </button>
+            <button type="button" class="btn-secondary" onclick="editWeightFromLightbox()" style="font-size:0.8rem; padding:6px 12px; display:inline-flex; align-items:center; gap:6px;">
+              <i class="ri-edit-line"></i> <span data-i18n="weight.editEntryBtn">Modifier la pesée</span>
+            </button>
+          </div>
+          <button type="button" class="btn-outline" onclick="deleteLightboxPhoto()" style="font-size:0.8rem; padding:6px 12px; color:#f87171; border-color:rgba(248,113,113,0.35); display:inline-flex; align-items:center; gap:6px;">
+            <i class="ri-delete-bin-line"></i> <span data-i18n="weight.deletePhotoBtn">Supprimer la photo</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
