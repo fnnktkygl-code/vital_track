@@ -12,7 +12,7 @@ import { store, formatLocalDate, parseLocalDate, addDaysLocal, getUserStorageKey
 import { MEDIA_SEARCH_DATABASE, searchMediaKnowledge, getExpandedSearchTokens } from './data/mediaSearchIndex.js';
 import { VIDEO_DUBBING_DATABASE, getDubbingDataForVideo } from './data/videoDubbingData.js';
 import { dubbingEngine } from './utils/dubbingEngine.js';
-import { VITALIST_WISDOM, getRandomWisdom, getCircadianContextWisdom, getDailyWisdom } from './data/vitalistWisdom.js';
+import { VITALIST_WISDOM, getRandomWisdom, getCircadianContextWisdom, getDailyWisdom, getLocalizedWisdomItem } from './data/vitalistWisdom.js';
 import { initRecipesModule } from './recipesModule.js';
 import { initDeepSearchModule } from './deepSearchModule.js';
 import './styles/bookReader.css';
@@ -1121,6 +1121,9 @@ async function initApp() {
     updateProactiveMascot();
     renderWeightChart();
     if (typeof renderWisdomCapsule === 'function') renderWisdomCapsule();
+    if (typeof filterWisdomGrimoire === 'function' && document.getElementById('wisdomGrimoireModal')?.style.display === 'flex') {
+      filterWisdomGrimoire();
+    }
     
     // Mettre à jour la vue active courante sans forcer de redirection vers l'accueil
     const activePageEl = document.querySelector('.page.active');
@@ -8272,10 +8275,19 @@ window.renderBreathingHistory = renderBreathingHistory;
 let _currentWisdom = null;
 let _wisdomFavorites = JSON.parse(localStorage.getItem('vital_wisdom_favorites') || '[]');
 
+function getActiveWisdomLang() {
+  return (window.vitalTrackI18n && typeof window.vitalTrackI18n.getLanguage === 'function') 
+    ? window.vitalTrackI18n.getLanguage() 
+    : 'fr';
+}
+
 function renderWisdomCapsule(wisdomItem = null) {
-  const item = wisdomItem || getDailyWisdom();
-  if (!item) return;
-  _currentWisdom = item;
+  const lang = getActiveWisdomLang();
+  const rawItem = wisdomItem || _currentWisdom || getDailyWisdom(new Date(), lang);
+  if (!rawItem) return;
+  
+  const item = getLocalizedWisdomItem(rawItem, lang) || rawItem;
+  _currentWisdom = rawItem;
 
   const avatar = document.getElementById('wisdomAuthorAvatar');
   const name = document.getElementById('wisdomAuthorName');
@@ -8321,7 +8333,8 @@ function shuffleWisdomCapsule() {
     quoteBox.style.transform = 'scale(0.98)';
   }
   setTimeout(() => {
-    const next = getRandomWisdom();
+    const lang = getActiveWisdomLang();
+    const next = getRandomWisdom(null, null, null, lang);
     renderWisdomCapsule(next);
     if (quoteBox) {
       quoteBox.style.opacity = '1';
@@ -8383,6 +8396,15 @@ function filterWisdomGrimoire() {
   const grid = document.getElementById('wisdomGrimoireGrid');
   if (!grid) return;
 
+  const lang = getActiveWisdomLang();
+  const tFunc = (window.vitalTrackI18n && typeof window.vitalTrackI18n.t === 'function') 
+    ? window.vitalTrackI18n.t 
+    : (k, p, fb) => fb || k;
+
+  const appLabel = tFunc('dashboard.wisdomPracticalGesture', {}, (lang === 'en' ? 'Practical Action' : (lang === 'es' ? 'Gesto Práctico' : 'Application')));
+  const noResLabel = tFunc('dashboard.grimoireNoResults', {}, (lang === 'en' ? 'No wisdom precept matches your filters.' : (lang === 'es' ? 'Ningún precepto coincide con sus filtros.' : 'Aucun précepte ne correspond à vos filtres.')));
+  const cardTooltip = tFunc('dashboard.wisdomCardTooltip', {}, (lang === 'en' ? 'Display on dashboard' : (lang === 'es' ? 'Mostrar en el panel de control' : 'Afficher sur le tableau de bord')));
+
   const searchInput = document.getElementById('wisdomGrimoireSearch');
   const authorSelect = document.getElementById('wisdomAuthorFilter');
   const catSelect = document.getElementById('wisdomCategoryFilter');
@@ -8402,47 +8424,56 @@ function filterWisdomGrimoire() {
     items = items.filter(w => w.category === cat);
   }
   if (q) {
-    items = items.filter(w =>
-      w.quote.toLowerCase().includes(q) ||
-      w.actionableTip.toLowerCase().includes(q) ||
-      w.author.toLowerCase().includes(q) ||
-      w.work.toLowerCase().includes(q) ||
-      w.categoryLabel.toLowerCase().includes(q)
-    );
+    items = items.filter(w => {
+      const loc = getLocalizedWisdomItem(w, lang) || w;
+      return (
+        loc.quote.toLowerCase().includes(q) ||
+        loc.actionableTip.toLowerCase().includes(q) ||
+        loc.author.toLowerCase().includes(q) ||
+        loc.work.toLowerCase().includes(q) ||
+        loc.categoryLabel.toLowerCase().includes(q) ||
+        w.quote.toLowerCase().includes(q) ||
+        w.actionableTip.toLowerCase().includes(q) ||
+        w.work.toLowerCase().includes(q)
+      );
+    });
   }
 
   if (items.length === 0) {
-    grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:30px; color:var(--text-dim);">Aucun précepte ne correspond à vos filtres.</div>';
+    grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:30px; color:var(--text-dim);">${noResLabel}</div>`;
     return;
   }
 
-  grid.innerHTML = items.map(item => `
-    <div class="wisdom-grimoire-card" onclick="window.selectWisdomFromGrimoire('${item.id}')" style="cursor:pointer;" title="Afficher sur le tableau de bord">
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <div style="display:flex; align-items:center; gap:8px;">
-          <span style="font-size:1.2rem;">${item.authorAvatar}</span>
-          <div>
-            <div style="font-weight:700; font-size:0.86rem; color:var(--text);">${item.author}</div>
-            <div style="font-size:0.72rem; color:var(--text-dim);">${item.work}</div>
+  grid.innerHTML = items.map(rawItem => {
+    const item = getLocalizedWisdomItem(rawItem, lang) || rawItem;
+    return `
+      <div class="wisdom-grimoire-card" onclick="window.selectWisdomFromGrimoire('${item.id}')" style="cursor:pointer;" title="${cardTooltip}">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:1.2rem;">${item.authorAvatar}</span>
+            <div>
+              <div style="font-weight:700; font-size:0.86rem; color:var(--text);">${item.author}</div>
+              <div style="font-size:0.72rem; color:var(--text-dim);">${item.work}</div>
+            </div>
           </div>
+          <span class="wisdom-category-pill" style="color:${item.authorColor}; border-color:${item.authorColor}44;">${item.categoryLabel}</span>
         </div>
-        <span class="wisdom-category-pill" style="color:${item.authorColor}; border-color:${item.authorColor}44;">${item.categoryLabel}</span>
+        <p style="font-size:0.86rem; font-style:italic; line-height:1.45; color:var(--text); margin:0;">
+          « ${item.quote} »
+        </p>
+        <div style="font-size:0.78rem; background:rgba(16,185,129,0.06); border-radius:8px; padding:8px 10px; border-left:3px solid ${item.authorColor};">
+          <strong>${appLabel} :</strong> ${item.actionableTip}
+        </div>
       </div>
-      <p style="font-size:0.86rem; font-style:italic; line-height:1.45; color:var(--text); margin:0;">
-        « ${item.quote} »
-      </p>
-      <div style="font-size:0.78rem; background:rgba(16,185,129,0.06); border-radius:8px; padding:8px 10px; border-left:3px solid ${item.authorColor};">
-        <strong>Application :</strong> ${item.actionableTip}
-      </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 }
 window.filterWisdomGrimoire = filterWisdomGrimoire;
 
 function selectWisdomFromGrimoire(id) {
-  const item = VITALIST_WISDOM.find(w => w.id === id);
-  if (item) {
-    renderWisdomCapsule(item);
+  const rawItem = VITALIST_WISDOM.find(w => w.id === id);
+  if (rawItem) {
+    renderWisdomCapsule(rawItem);
     const modal = document.getElementById('wisdomGrimoireModal');
     if (modal) modal.style.display = 'none';
   }
