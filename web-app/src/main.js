@@ -2115,14 +2115,27 @@ function newConversation() {
   activeConvId = null;
   saveConversations();
   renderActiveConversation();
-  if (window.innerWidth <= 900) window.toggleSidebar(false);
+  if (typeof window.toggleSidebar === 'function') {
+    window.toggleSidebar(false);
+  }
+  const input = document.getElementById('chatInput');
+  if (input) {
+    input.focus();
+    input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
 };
 
 function switchConversation(id) {
   activeConvId = id;
   saveConversations();
   renderActiveConversation();
-  if (window.innerWidth <= 900) window.toggleSidebar(false);
+  if (typeof window.toggleSidebar === 'function') {
+    window.toggleSidebar(false);
+  }
+  const input = document.getElementById('chatInput');
+  if (input) {
+    input.focus();
+  }
 };
 
 let _pendingDeleteConvId = null;
@@ -2221,6 +2234,7 @@ function renderSidebar(filterQuery = '') {
   const list = document.getElementById('sidebarList');
   if (!list) return;
 
+  const tFunc = window.vitalTrackI18n?.t || ((k) => k);
   const q = filterQuery.toLowerCase().trim();
   const filtered = q ? conversations.filter(c => (c.title || '').toLowerCase().includes(q)) : conversations;
 
@@ -2228,25 +2242,29 @@ function renderSidebar(filterQuery = '') {
     list.innerHTML = `
       <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:30px 16px; text-align:center; color:var(--text-dim);">
         <i class="ri-chat-smile-2-line" style="font-size:2rem; color:rgba(52,211,153,0.4); margin-bottom:8px;"></i>
-        <span style="font-size:0.86rem; font-weight:600; color:#cbd5e1;">Aucune discussion</span>
-        <span style="font-size:0.75rem; margin-top:4px; line-height:1.4;">Démarrez une nouvelle conversation avec le Coach Vitaliste.</span>
+        <span style="font-size:0.86rem; font-weight:600; color:#cbd5e1;">${esc(tFunc('chat.noConversations') || 'Aucune discussion')}</span>
+        <span style="font-size:0.75rem; margin-top:4px; line-height:1.4;">${esc(tFunc('chat.startNewPrompt') || 'Démarrez une nouvelle conversation avec le Coach Vitaliste.')}</span>
       </div>
     `;
     return;
   }
 
+  const activeLang = window.vitalTrackI18n?.getLanguage ? window.vitalTrackI18n.getLanguage() : 'fr';
+  const localeMap = { en: 'en-US', es: 'es-ES', 'fr-CA': 'fr-CA', fr: 'fr-FR' };
+  const dateLocale = localeMap[activeLang] || 'fr-FR';
+
   list.innerHTML = filtered.sort((a, b) => (b.updated || 0) - (a.updated || 0)).map(c => {
     const escapedTitle = esc(c.title).replace(/'/g, "\\'");
     const msgCount = Array.isArray(c.messages) ? c.messages.length : 0;
-    const dateStr = c.updated ? new Date(c.updated).toLocaleDateString('fr-FR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+    const dateStr = c.updated ? new Date(c.updated).toLocaleDateString(dateLocale, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
     return `
     <div class="conv-item ${c.id === activeConvId ? 'active' : ''}" onclick="switchConversation('${c.id}')">
       <i class="ri-chat-3-line conv-icon" style="color:var(--text-dim); font-size:1.1rem; flex-shrink:0;"></i>
       <div class="conv-item-info">
-        <div class="conv-item-title">${esc(c.title || 'Discussion')}</div>
+        <div class="conv-item-title">${esc(c.title || tFunc('chat.newChat') || 'Discussion')}</div>
         <div class="conv-item-date">${dateStr} · ${msgCount} msgs</div>
       </div>
-      <button class="conv-item-delete" onclick="confirmDeleteConversation('${c.id}', event, '${escapedTitle}')" data-tooltip="Supprimer la discussion" aria-label="Supprimer la discussion">
+      <button class="conv-item-delete" onclick="confirmDeleteConversation('${c.id}', event, '${escapedTitle}')" data-tooltip="${esc(tFunc('deleteConvModal.title') || 'Supprimer la discussion')}" aria-label="Supprimer la discussion">
         <i class="ri-delete-bin-line"></i>
       </button>
     </div>
@@ -2259,21 +2277,22 @@ function renderActiveConversation() {
   const title = document.getElementById('chatTitle');
   const input = document.getElementById('chatInput');
   const welcome = document.getElementById('chatWelcome');
+  const tFunc = window.vitalTrackI18n?.t || ((k) => k);
 
   if (!activeConvId) {
-    title.textContent = 'Nouveau chat';
-    container.innerHTML = '';
-    if (welcome) container.appendChild(welcome);
-    welcome.style.display = 'flex';
-    input.focus();
+    if (title) title.textContent = tFunc('chat.newChat') || 'Nouveau chat';
+    if (container) container.innerHTML = '';
+    if (welcome && container) container.appendChild(welcome);
+    if (welcome) welcome.style.display = 'flex';
+    if (input) input.focus();
     return;
   }
 
   const conv = conversations.find(c => c.id === activeConvId);
   if (!conv) return;
 
-  title.textContent = conv.title;
-  container.innerHTML = '';
+  if (title) title.textContent = conv.title;
+  if (container) container.innerHTML = '';
 
   conv.messages.forEach((m, idx) => {
     addMessage(m.text, m.role === 'user', m.model, m.image, idx, m.role === 'error', m.failedQuery, m.contextData || m.contextQuote);
@@ -3329,26 +3348,27 @@ function addMessage(text, isUser, modelUsed = null, imageUri = null, msgIndex = 
     // Modern Message Action Toolbar (Safe Index-Based Calling)
     const toolbar = document.createElement('div');
     toolbar.className = 'message-toolbar';
+    const tFunc = window.vitalTrackI18n?.t || ((k) => k);
 
     if (isUser) {
       toolbar.innerHTML = `
-        <button type="button" class="msg-action-btn" onclick="copyChatMessageByIndex(${actualIndex}, this)" title="Copier la question">
-          <i class="ri-file-copy-line"></i> Copier
+        <button type="button" class="msg-action-btn" onclick="copyChatMessageByIndex(${actualIndex}, this)" title="${esc(tFunc('chat.copyTooltip') || 'Copier la question')}">
+          <i class="ri-file-copy-line"></i> ${esc(tFunc('chat.copy') || 'Copier')}
         </button>
-        <button type="button" class="msg-action-btn" onclick="editChatMessage(${actualIndex})" title="Modifier et renvoyer la question">
-          <i class="ri-edit-line"></i> Modifier
+        <button type="button" class="msg-action-btn" onclick="editChatMessage(${actualIndex})" title="${esc(tFunc('chat.editTooltip') || 'Modifier et renvoyer la question')}">
+          <i class="ri-edit-line"></i> ${esc(tFunc('chat.edit') || 'Modifier')}
         </button>
       `;
     } else {
       toolbar.innerHTML = `
-        <button type="button" class="msg-action-btn" onclick="copyChatMessageByIndex(${actualIndex}, this)" title="Copier la réponse">
-          <i class="ri-file-copy-line"></i> Copier
+        <button type="button" class="msg-action-btn" onclick="copyChatMessageByIndex(${actualIndex}, this)" title="${esc(tFunc('chat.copyTooltip') || 'Copier la réponse')}">
+          <i class="ri-file-copy-line"></i> ${esc(tFunc('chat.copy') || 'Copier')}
         </button>
-        <button type="button" class="msg-action-btn" onclick="retryChatMessage(${actualIndex})" title="Régénérer cette réponse">
-          <i class="ri-refresh-line"></i> Régénérer
+        <button type="button" class="msg-action-btn" onclick="retryChatMessage(${actualIndex})" title="${esc(tFunc('chat.regenerateTooltip') || 'Régénérer cette réponse')}">
+          <i class="ri-refresh-line"></i> ${esc(tFunc('chat.regenerate') || 'Régénérer')}
         </button>
-        <button type="button" class="msg-action-btn" onclick="speakChatMessageByIndex(${actualIndex}, this)" title="Écouter la réponse">
-          <i class="ri-volume-up-line"></i> Écouter
+        <button type="button" class="msg-action-btn" onclick="speakChatMessageByIndex(${actualIndex}, this)" title="${esc(tFunc('chat.listenTooltip') || 'Écouter la réponse')}">
+          <i class="ri-volume-up-line"></i> ${esc(tFunc('chat.listen') || 'Écouter')}
         </button>
       `;
     }
@@ -3662,18 +3682,20 @@ function closeVoiceSelectorModal(e) {
 window.closeVoiceSelectorModal = closeVoiceSelectorModal;
 
 function stopVoiceSamplePlayback() {
+  const tFunc = window.vitalTrackI18n?.t || ((k) => k);
   if (_currentSampleAudio) {
     _currentSampleAudio.pause();
     _currentSampleAudio = null;
   }
   if (_currentSampleBtn) {
-    _currentSampleBtn.innerHTML = '<i class="ri-play-circle-line"></i> Écouter';
+    _currentSampleBtn.innerHTML = `<i class="ri-play-circle-line"></i> ${esc(tFunc('voiceModal.listen') || 'Écouter')}`;
     _currentSampleBtn.classList.remove('playing');
     _currentSampleBtn = null;
   }
 }
 
 async function testVoiceSample(voiceId, btn) {
+  const tFunc = window.vitalTrackI18n?.t || ((k) => k);
   if (_currentSampleBtn === btn) {
     stopVoiceSamplePlayback();
     return;
@@ -3686,7 +3708,7 @@ async function testVoiceSample(voiceId, btn) {
   
   _currentSampleBtn = btn;
   if (btn) {
-    btn.innerHTML = '<i class="ri-loader-4-line ri-spin"></i> Chargement...';
+    btn.innerHTML = `<i class="ri-loader-4-line ri-spin"></i> ${esc(tFunc('voiceModal.loading') || 'Chargement...')}`;
     btn.classList.add('playing');
   }
   
@@ -3708,7 +3730,7 @@ async function testVoiceSample(voiceId, btn) {
     _currentSampleAudio = audio;
     
     audio.onplay = () => {
-      if (btn) btn.innerHTML = '<i class="ri-stop-circle-line" style="color:#ef4444;"></i> Arrêter';
+      if (btn) btn.innerHTML = `<i class="ri-stop-circle-line" style="color:#ef4444;"></i> ${esc(tFunc('voiceModal.stop') || 'Arrêter')}`;
     };
     
     audio.onended = () => {
@@ -3742,6 +3764,7 @@ function renderVoiceModalList() {
   if (!container) return;
   
   const activeId = getActiveVoiceId();
+  const tFunc = window.vitalTrackI18n?.t || ((k) => k);
   
   const regions = {};
   ALL_NEURAL_VOICES.forEach(v => {
@@ -3761,6 +3784,7 @@ function renderVoiceModalList() {
     
     voices.forEach(v => {
       const isSelected = v.id === activeId;
+      const genderLabel = v.gender === 'female' ? (tFunc('voiceModal.female') || 'Femme') : (tFunc('voiceModal.male') || 'Homme');
       html += `
         <div class="voice-card ${isSelected ? 'selected' : ''}" style="display:flex; flex-direction:column; justify-content:space-between; background:${isSelected ? 'var(--accent-glow)' : 'var(--surface-2)'}; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--border)'}; border-radius:14px; padding:14px; transition:all 0.2s ease;">
           <div>
@@ -3770,7 +3794,7 @@ function renderVoiceModalList() {
                 <span style="font-weight:700; font-size:0.95rem; color:var(--text);">${esc(v.name)}</span>
               </div>
               <span style="font-size:0.7rem; font-weight:700; background:${isSelected ? 'var(--accent)' : 'var(--badge-bg)'}; color:${isSelected ? '#000' : 'var(--text-dim)'}; padding:2px 8px; border-radius:10px;">
-                ${v.badge || (v.gender === 'female' ? 'Femme' : 'Homme')}
+                ${v.badge || genderLabel}
               </span>
             </div>
             <p style="font-size:0.8rem; color:var(--text-dim); line-height:1.4; margin:0 0 12px 0;">
@@ -3779,10 +3803,10 @@ function renderVoiceModalList() {
           </div>
           <div style="display:flex; gap:8px; align-items:center;">
             <button type="button" class="btn-voice-sample" onclick="testVoiceSample('${v.id}', this)" style="flex:1; padding:8px 12px; border-radius:10px; background:var(--surface); border:1px solid var(--border); color:var(--text); font-size:0.8rem; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:all 0.2s ease;">
-              <i class="ri-play-circle-line"></i> Écouter
+              <i class="ri-play-circle-line"></i> ${esc(tFunc('voiceModal.listen') || 'Écouter')}
             </button>
             <button type="button" class="btn-voice-select" onclick="setCustomVoice('${v.id}'); renderVoiceModalList();" style="flex:1.2; padding:8px 14px; border-radius:10px; background:${isSelected ? 'var(--accent)' : 'var(--accent-glow)'}; border:1px solid var(--accent); color:${isSelected ? '#000' : 'var(--accent)'}; font-size:0.8rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:all 0.2s ease;">
-              <i class="${isSelected ? 'ri-check-line' : 'ri-check-double-line'}"></i> ${isSelected ? 'Active ✓' : 'Choisir'}
+              <i class="${isSelected ? 'ri-check-line' : 'ri-check-double-line'}"></i> ${isSelected ? (tFunc('voiceModal.active') || 'Active ✓') : (tFunc('voiceModal.select') || 'Choisir')}
             </button>
           </div>
         </div>
@@ -3800,6 +3824,7 @@ function renderVoiceModalList() {
 window.renderVoiceModalList = renderVoiceModalList;
 
 function stopAudioPlayback() {
+  const tFunc = window.vitalTrackI18n?.t || ((k) => k);
   if (_currentAudioInstance) {
     _currentAudioInstance.pause();
     _currentAudioInstance = null;
@@ -3808,7 +3833,7 @@ function stopAudioPlayback() {
     window.speechSynthesis.cancel();
   }
   if (_currentSpeakingBtn) {
-    _currentSpeakingBtn.innerHTML = '<i class="ri-volume-up-line"></i> Écouter';
+    _currentSpeakingBtn.innerHTML = `<i class="ri-volume-up-line"></i> ${esc(tFunc('chat.listen') || 'Écouter')}`;
     _currentSpeakingBtn.classList.remove('speaking');
     _currentSpeakingBtn = null;
   }
@@ -3817,6 +3842,7 @@ window.stopAudioPlayback = stopAudioPlayback;
 window.stopSpeechSynthesis = stopAudioPlayback;
 
 async function speakChatMessageByIndex(idx, btn) {
+  const tFunc = window.vitalTrackI18n?.t || ((k) => k);
   if (_currentSpeakingBtn === btn) {
     stopAudioPlayback();
     return;
@@ -3837,7 +3863,7 @@ async function speakChatMessageByIndex(idx, btn) {
 
   _currentSpeakingBtn = btn;
   if (btn) {
-    btn.innerHTML = '<i class="ri-loader-4-line ri-spin"></i> Voix Studio...';
+    btn.innerHTML = `<i class="ri-loader-4-line ri-spin"></i> ${esc(tFunc('voiceModal.loading') || 'Chargement...')}`;
     btn.classList.add('speaking');
   }
 
@@ -3867,7 +3893,7 @@ async function speakChatMessageByIndex(idx, btn) {
 
     audio.onplay = () => {
       if (btn) {
-        btn.innerHTML = '<i class="ri-stop-circle-line" style="color:#ef4444;"></i> Arrêter';
+        btn.innerHTML = `<i class="ri-stop-circle-line" style="color:#ef4444;"></i> ${esc(tFunc('chat.stopListen') || 'Arrêter')}`;
       }
     };
 
@@ -9029,44 +9055,45 @@ function renderMarkdown(text) {
       const obj = JSON.parse(json);
       let renderedCards = '';
 
+      const tFunc = window.vitalTrackI18n?.t || ((k) => k);
+
       // 1. Action Meal Card (Direct meal logging from chat)
       if (obj.actionMeal) {
         const meal = obj.actionMeal;
         const encodedMeal = btoa(unescape(encodeURIComponent(JSON.stringify(meal))));
         const rawItems = Array.isArray(meal.items) ? meal.items : (Array.isArray(meal.ingredients) ? meal.ingredients : typeof (meal.items || meal.ingredients) === 'string' ? (meal.items || meal.ingredients).split(/,\s*|\s*·\s*/).filter(Boolean) : [meal.name]);
-        const categoryLabels = { breakfast: 'Petit-déjeuner', lunch: 'Déjeuner', dinner: 'Dîner', snack: 'Collation' };
-        const catLabel = categoryLabels[meal.category] || 'Repas Vitaliste';
+        const catLabel = meal.category || 'Repas Vitaliste';
         const itemsPills = rawItems.map(it => `<span style="display:inline-block; padding:3px 9px; background:rgba(255,255,255,0.06); border:1px solid var(--border); border-radius:12px; font-size:0.8rem; margin:2px 4px 2px 0;">🥗 ${esc(typeof it === 'string' ? it : it.name)}</span>`).join('');
         const safeMealName = (meal.name || 'ce repas').replace(/'/g, "\\'");
 
         renderedCards += `<div class="ai-plan-card glass" style="margin:12px 0;padding:16px;border-radius:14px;border-left:4px solid var(--accent);background:rgba(55,211,153,0.06)">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-            <span style="font-weight:700;font-size:1.05rem;color:var(--text)">${meal.emoji || '🍲'} ${esc(meal.name || 'Repas Proposé')}</span>
+            <span style="font-weight:700;font-size:1.05rem;color:var(--text)">${meal.emoji || '🍲'} ${esc(meal.name || tFunc('chat.proposedMeal') || 'Repas Proposé')}</span>
             <span class="food-badge badge-electric" style="font-size:0.75rem">${esc(catLabel)}</span>
           </div>
           <div style="font-size:0.88rem;color:var(--text);margin-bottom:8px">
-            <div style="font-weight:600; margin-bottom:4px; color:var(--text-dim); font-size:0.8rem;">Ingrédients :</div>
+            <div style="font-weight:600; margin-bottom:4px; color:var(--text-dim); font-size:0.8rem;">${esc(tFunc('chat.ingredientsLabel') || 'Ingrédients :')}</div>
             <div style="display:flex; flex-wrap:wrap; gap:2px;">${itemsPills}</div>
           </div>
           ${meal.note ? `<div style="font-size:0.82rem;color:var(--text-dim);margin-bottom:12px;font-style:italic">🌿 ${esc(meal.note)}</div>` : ''}
           <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;">
             <button class="btn btn-primary" onclick="handleAddActionMeal('${encodedMeal}')" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:10px;font-size:0.88rem;">
-              <i class="ri-restaurant-line"></i> Enregistrer ce repas aux logs du jour
+              <i class="ri-restaurant-line"></i> ${esc(tFunc('chat.logMealAction') || 'Enregistrer ce repas aux logs du jour')}
             </button>
             <button type="button" class="btn-secondary" onclick="openMealCustomizer('${safeMealName}')" style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:10px;font-size:0.84rem;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--text);cursor:pointer;">
-              <i class="ri-shuffle-line"></i> 🔄 Personnaliser / Remplacer
+              <i class="ri-shuffle-line"></i> 🔄 ${esc(tFunc('chat.customizeAction') || 'Personnaliser / Remplacer')}
             </button>
           </div>
           <div style="margin-top:10px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.06); display:flex; flex-wrap:wrap; gap:4px; align-items:center;">
-            <span style="font-size:0.72rem; color:var(--text-dim); margin-right:4px;">Ajustements rapides :</span>
+            <span style="font-size:0.72rem; color:var(--text-dim); margin-right:4px;">${esc(tFunc('chat.quickAdjustments') || 'Ajustements rapides :')}</span>
             <button type="button" class="quick-reply-chip" onclick="askMealVariant('${safeMealName}', 'fridge')" style="font-size:0.74rem; padding:3px 10px; border-radius:12px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); color:var(--text-dim); cursor:pointer;">
-              🥑 Avec mon frigo
+              🥑 ${esc(tFunc('chat.withFridge') || 'Avec mon frigo')}
             </button>
             <button type="button" class="quick-reply-chip" onclick="askMealVariant('${safeMealName}', 'raw')" style="font-size:0.74rem; padding:3px 10px; border-radius:12px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); color:var(--text-dim); cursor:pointer;">
-              🌿 Version 100% crue
+              🌿 ${esc(tFunc('chat.rawVersion') || 'Version 100% crue')}
             </button>
             <button type="button" class="quick-reply-chip" onclick="askMealVariant('${safeMealName}', 'transition')" style="font-size:0.74rem; padding:3px 10px; border-radius:12px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); color:var(--text-dim); cursor:pointer;">
-              🐟 Aliment de transition
+              🥣 ${esc(tFunc('chat.transitionFood') || 'Aliment de transition')}
             </button>
           </div>
         </div>`;
@@ -9078,11 +9105,11 @@ function renderMarkdown(text) {
         const encodedProg = btoa(unescape(encodeURIComponent(JSON.stringify(p))));
         const sessionsCount = p.configs?.length || 1;
         renderedCards += `<div class="ai-plan-card glass" style="margin:12px 0;padding:16px;border-radius:12px;border-left:4px solid #f59e0b;background:rgba(245,158,11,0.06)">
-          <div style="font-weight:700;margin-bottom:6px;font-size:1.05rem;color:#f59e0b">🔥 ${esc(p.name || 'Programme de Jeûne')}</div>
+          <div style="font-weight:700;margin-bottom:6px;font-size:1.05rem;color:#f59e0b">🔥 ${esc(p.name || tFunc('chat.fastingProgram') || 'Programme de Jeûne')}</div>
           <div style="font-size:0.9rem;margin-bottom:4px;color:var(--text)"><strong>Objectif :</strong> ${esc(p.targetObjective || 'Détox & Vitalité')}</div>
-          <div style="font-size:0.82rem;color:var(--text-dim);margin-bottom:12px">⏱️ ${sessionsCount} session(s) configurée(s)</div>
+          <div style="font-size:0.82rem;color:var(--text-dim);margin-bottom:12px">⏱️ ${sessionsCount} session(s)</div>
           <button class="btn btn-primary" onclick="handleApplyFastingProgram('${encodedProg}')" style="background:#f59e0b;color:#000;display:inline-flex;align-items:center;gap:6px;border:none">
-            <i class="ri-fire-line"></i> Programmer ce jeûne
+            <i class="ri-fire-line"></i> ${esc(tFunc('chat.scheduleFasting') || 'Programmer ce jeûne')}
           </button>
         </div>`;
       }
@@ -9098,16 +9125,13 @@ function renderMarkdown(text) {
         const restrText = req.restrictions ? `<div style="font-size:0.8rem;color:#f2637a;margin-top:4px">⚠️ Restrictions : ${esc(req.restrictions)}</div>` : '';
 
         renderedCards += `<div class="ai-plan-card glass" style="margin:12px 0;padding:16px;border-radius:12px;border-left:4px solid var(--accent);background:rgba(55,211,153,0.06)">
-          <div style="font-weight:700;margin-bottom:8px;color:var(--text)">📅 Plan Alimentaire Proposé</div>
+          <div style="font-weight:700;margin-bottom:8px;color:var(--text)">📅 ${esc(tFunc('chat.dietPlanProposed') || 'Plan Alimentaire Proposé')}</div>
           <div style="font-size:0.9rem;color:var(--text);margin-bottom:4px">
             <strong>${protoName}</strong> (${days} jours)${objText}
           </div>
           ${restrText}
-          <div style="font-size:0.8rem;color:var(--text-dim);margin-top:6px;margin-bottom:12px">
-            ⚡ Plan déterministe basé sur notre base d'aliments approuvés.
-          </div>
-          <button class="btn btn-primary" onclick="handleApplyDietPlanRequest('${encodedReq}')">
-            <i class="ri-calendar-check-line"></i> Appliquer au calendrier
+          <button class="btn btn-primary" onclick="handleApplyDietPlanRequest('${encodedReq}')" style="margin-top:8px;">
+            <i class="ri-calendar-check-line"></i> ${esc(tFunc('chat.applyToCalendar') || 'Appliquer au calendrier')}
           </button>
         </div>`;
       }
