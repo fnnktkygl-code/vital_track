@@ -581,7 +581,23 @@
               <h3 style="margin:0;"><i class="ri-scales-3-line"></i> <span data-i18n="dashboard.weightTitle">Évolution du Poids</span></h3>
               <p style="font-size:0.82rem; color:var(--text-dim); margin:4px 0 0 0;" data-i18n="dashboard.weightSubtitle">Analyse chronologique &amp; indicateurs de tendance</p>
             </div>
-            <button class="chip-btn" onclick="openWeightModal()"><i class="ri-add-line"></i> <span data-i18n="dashboard.weighInBtn">Pesée</span></button>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <button class="chip-btn" id="weightPrivacyToggleBtn" onclick="toggleWeightPrivacyMode()" title="Masquage discret des photos corporelles" style="padding:6px 10px; font-size:0.82rem;"><i class="ri-eye-line" id="weightPrivacyIcon"></i> <span id="weightPrivacyLabel" data-i18n="dashboard.weightPrivacyToggle">Mode Discret</span></button>
+              <button class="chip-btn" onclick="openWeightModal()"><i class="ri-add-line"></i> <span data-i18n="dashboard.weighInBtn">Pesée</span></button>
+            </div>
+          </div>
+
+          <!-- Weight View Mode Tabs -->
+          <div class="weight-view-tabs" id="weightViewTabs" style="display:flex; gap:6px; margin-bottom:14px; border-bottom:1px solid var(--border); padding-bottom:8px; overflow-x:auto;">
+            <button type="button" class="weight-view-tab-btn active" id="tabWeightChartBtn" onclick="switchWeightView('chart')">
+              <i class="ri-line-chart-line"></i> <span data-i18n="dashboard.weightTabChart">Courbe &amp; Tendance</span>
+            </button>
+            <button type="button" class="weight-view-tab-btn" id="tabWeightGalleryBtn" onclick="switchWeightView('gallery')">
+              <i class="ri-gallery-line"></i> <span data-i18n="dashboard.weightTabGallery">Galerie Photos</span> <span id="weightGalleryBadge" class="count-pill">0</span>
+            </button>
+            <button type="button" class="weight-view-tab-btn" id="tabWeightCompareBtn" onclick="switchWeightView('compare')">
+              <i class="ri-split-cells-vertical"></i> <span data-i18n="dashboard.weightTabCompare">Avant / Après</span>
+            </button>
           </div>
 
           <!-- Weight KPI Summary Cards -->
@@ -614,23 +630,83 @@
           <div id="weightGoalDynamicBanner" style="display:none; align-items:center; gap:12px; padding:12px 16px; border-radius:14px; border:1px solid var(--border); margin-bottom:14px; transition:all 0.3s ease;">
           </div>
 
-          <!-- Time Range Selector -->
-          <div class="weight-period-bar" id="weightPeriodBar" style="display:flex; gap:6px; margin-bottom:12px; overflow-x:auto;">
-            <button type="button" class="period-btn" data-period="7d" onclick="setWeightPeriod('7d')">1S</button>
-            <button type="button" class="period-btn" data-period="1m" onclick="setWeightPeriod('1m')">1M</button>
-            <button type="button" class="period-btn" data-period="3m" onclick="setWeightPeriod('3m')">3M</button>
-            <button type="button" class="period-btn" data-period="6m" onclick="setWeightPeriod('6m')">6M</button>
-            <button type="button" class="period-btn" data-period="1y" onclick="setWeightPeriod('1y')">1A</button>
-            <button type="button" class="period-btn active" data-period="all" onclick="setWeightPeriod('all')" data-i18n="dashboard.periodAll">Tout</button>
+          <!-- ══════ VIEW 1: CHART & TREND ══════ -->
+          <div id="weightChartView" class="weight-subview">
+            <!-- Time Range Selector -->
+            <div class="weight-period-bar" id="weightPeriodBar" style="display:flex; gap:6px; margin-bottom:12px; overflow-x:auto;">
+              <button type="button" class="period-btn" data-period="7d" onclick="setWeightPeriod('7d')">1S</button>
+              <button type="button" class="period-btn" data-period="1m" onclick="setWeightPeriod('1m')">1M</button>
+              <button type="button" class="period-btn" data-period="3m" onclick="setWeightPeriod('3m')">3M</button>
+              <button type="button" class="period-btn" data-period="6m" onclick="setWeightPeriod('6m')">6M</button>
+              <button type="button" class="period-btn" data-period="1y" onclick="setWeightPeriod('1y')">1A</button>
+              <button type="button" class="period-btn active" data-period="all" onclick="setWeightPeriod('all')" data-i18n="dashboard.periodAll">Tout</button>
+            </div>
+
+            <div id="weightChartEmpty" class="empty-state-card">
+              <i class="ri-scales-3-line"></i>
+              <p data-i18n="dashboard.weightEmpty">Ajoutez votre première pesée pour voir l'évolution.</p>
+            </div>
+            <div id="weightChartContainer" style="min-height: 240px; height: 240px; width: 100%; position: relative; display: none;">
+              <svg id="weightChartSvg" width="100%" height="100%" style="overflow: visible; cursor: crosshair;"></svg>
+              <div id="weightChartTooltip" class="weight-tooltip" style="display:none; position:absolute; pointer-events:none; z-index:20; background:var(--surface-2); backdrop-filter:blur(12px); border:1px solid rgba(52,211,153,0.4); border-radius:10px; padding:10px 14px; box-shadow:var(--card-shadow); font-size:0.8rem; color:var(--text);"></div>
+            </div>
           </div>
 
-          <div id="weightChartEmpty" class="empty-state-card">
-            <i class="ri-scales-3-line"></i>
-            <p data-i18n="dashboard.weightEmpty">Ajoutez votre première pesée pour voir l'évolution.</p>
+          <!-- ══════ VIEW 2: PHOTO EVOLUTION GALLERY ══════ -->
+          <div id="weightGalleryView" class="weight-subview" style="display:none;">
+            <div id="weightGalleryEmptyState" class="empty-state-card" style="display:none;">
+              <i class="ri-camera-lens-line"></i>
+              <p data-i18n="dashboard.weightGalleryEmpty">Aucune photo corporelle enregistrée. Ajoutez-en une lors de votre prochaine pesée !</p>
+              <button type="button" class="btn-primary" onclick="openWeightModal()" style="margin-top:10px; font-size:0.85rem;"><i class="ri-add-line"></i> Ajouter une pesée avec photo</button>
+            </div>
+            <div id="weightGalleryGrid" class="weight-gallery-grid"></div>
           </div>
-          <div id="weightChartContainer" style="min-height: 240px; height: 240px; width: 100%; position: relative; display: none;">
-            <svg id="weightChartSvg" width="100%" height="100%" style="overflow: visible; cursor: crosshair;"></svg>
-            <div id="weightChartTooltip" class="weight-tooltip" style="display:none; position:absolute; pointer-events:none; z-index:20; background:var(--surface-2); backdrop-filter:blur(12px); border:1px solid rgba(52,211,153,0.4); border-radius:10px; padding:10px 14px; box-shadow:var(--card-shadow); font-size:0.8rem; color:var(--text);"></div>
+
+          <!-- ══════ VIEW 3: BEFORE / AFTER SPLIT COMPARATOR ══════ -->
+          <div id="weightCompareView" class="weight-subview" style="display:none;">
+            <div id="weightCompareNeedTwoBanner" class="empty-state-card" style="display:none;">
+              <i class="ri-split-cells-vertical"></i>
+              <p data-i18n="dashboard.weightCompareNeedTwo">Au moins 2 pesées avec photos sont nécessaires pour la comparaison.</p>
+              <button type="button" class="btn-primary" onclick="openWeightModal()" style="margin-top:10px; font-size:0.85rem;"><i class="ri-add-line"></i> Ajouter une pesée avec photo</button>
+            </div>
+            <div id="weightCompareContainer" style="display:none;">
+              <!-- Selectors for Before & After dates -->
+              <div class="weight-compare-selectors">
+                <div class="weight-compare-select-card">
+                  <label><i class="ri-history-line"></i> <span data-i18n="weight.compareStart">Point de départ</span> (Avant)</label>
+                  <select id="weightCompareSelectBefore" class="form-input" onchange="updateWeightComparison()"></select>
+                </div>
+                <div class="weight-compare-metric-summary" id="weightCompareMetrics">
+                  <!-- Injected dynamically: Delta kg & Days count -->
+                </div>
+                <div class="weight-compare-select-card">
+                  <label><i class="ri-time-line"></i> <span data-i18n="weight.compareCurrent">Point actuel</span> (Après)</label>
+                  <select id="weightCompareSelectAfter" class="form-input" onchange="updateWeightComparison()"></select>
+                </div>
+              </div>
+
+              <!-- Interactive Split Slider -->
+              <div class="weight-split-slider-container" id="weightSplitSliderContainer">
+                <div class="weight-split-img-wrap" id="weightSplitAfterWrap">
+                  <img id="weightSplitImgAfter" src="" alt="Après" />
+                  <span class="weight-split-badge badge-after">Après</span>
+                </div>
+                <div class="weight-split-img-wrap split-overlay" id="weightSplitBeforeWrap">
+                  <img id="weightSplitImgBefore" src="" alt="Avant" />
+                  <span class="weight-split-badge badge-before">Avant</span>
+                </div>
+                <!-- Interactive draggable handle -->
+                <div class="weight-split-handle" id="weightSplitHandle">
+                  <div class="weight-split-handle-line"></div>
+                  <div class="weight-split-handle-button">
+                    <i class="ri-arrow-left-s-line"></i>
+                    <i class="ri-arrow-right-s-line"></i>
+                  </div>
+                  <div class="weight-split-handle-line"></div>
+                </div>
+              </div>
+              <p style="font-size:0.78rem; color:var(--text-dim); text-align:center; margin-top:8px;" data-i18n="dashboard.weightCompareSubtitle">Glissez le curseur pour observer votre transformation physique</p>
+            </div>
           </div>
         </div>
 
@@ -2574,6 +2650,51 @@
           <input type="text" id="weightNoteInput" class="form-input" placeholder="Ex: à jeun au réveil, fin de jeûne...">
         </div>
 
+        <!-- Optional Body Evolution Photo Section -->
+        <div class="weight-photo-section">
+          <label style="font-size:0.85rem;color:var(--text-dim);display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+            <span style="display:inline-flex;align-items:center;gap:6px;"><i class="ri-camera-lens-line" style="color:var(--accent)"></i> <span data-i18n="weight.photoSectionTitle">Photo d'évolution corporelle (optionnelle)</span></span>
+            <span class="weight-privacy-badge" style="font-size:0.7rem;color:var(--accent);background:rgba(52,211,153,0.12);padding:2px 8px;border-radius:100px;">🔒 Local RGPD</span>
+          </label>
+          
+          <input type="file" id="weightPhotoInput" accept="image/*" style="display:none" onchange="handleWeightPhotoSelect(event)">
+          <input type="file" id="weightPhotoCameraInput" accept="image/*" capture="environment" style="display:none" onchange="handleWeightPhotoSelect(event)">
+          
+          <!-- Dropzone / Buttons -->
+          <div id="weightPhotoDropzone" class="weight-photo-dropzone">
+            <div class="weight-photo-dropzone-inner" style="display:flex; gap:8px;">
+              <button type="button" class="btn-secondary" onclick="document.getElementById('weightPhotoCameraInput').click()" style="flex:1; padding:8px; font-size:0.8rem; display:flex; align-items:center; justify-content:center; gap:6px;">
+                <i class="ri-camera-fill"></i> <span data-i18n="weight.photoCameraBtn">Appareil photo</span>
+              </button>
+              <button type="button" class="btn-secondary" onclick="document.getElementById('weightPhotoInput').click()" style="flex:1; padding:8px; font-size:0.8rem; display:flex; align-items:center; justify-content:center; gap:6px;">
+                <i class="ri-image-add-line"></i> <span data-i18n="weight.photoGalleryBtn">Galerie / Fichiers</span>
+              </button>
+            </div>
+            <p style="font-size:0.72rem; color:var(--text-dim); margin:4px 0 0 0; text-align:center;">Ventre, face ou profil · 100% privé sur votre appareil</p>
+          </div>
+
+          <!-- Preview Card (shown when photo attached) -->
+          <div id="weightPhotoPreviewCard" class="weight-photo-preview-card" style="display:none;">
+            <div class="weight-photo-preview-img-wrap">
+              <img id="weightPhotoPreviewImg" src="" alt="Aperçu photo pesée" class="weight-photo-preview-img" />
+              <button type="button" class="weight-photo-remove-btn" onclick="removeWeightPhoto()" title="Supprimer la photo"><i class="ri-close-line"></i></button>
+            </div>
+            <div class="weight-photo-preview-details">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                <span id="weightPhotoSizeLabel" style="font-size:0.75rem;font-weight:700;color:var(--accent);">~95 Ko · Nettoyé</span>
+                <span style="font-size:0.72rem;color:var(--text-dim);">Cadrage :</span>
+              </div>
+              <!-- Framing tag selector -->
+              <div class="weight-photo-tags" id="weightPhotoTagSelector">
+                <button type="button" class="photo-tag-btn active" data-tag="belly" onclick="setWeightPhotoTag('belly')"><span data-i18n="weight.photoTagBelly">Ventre</span></button>
+                <button type="button" class="photo-tag-btn" data-tag="front" onclick="setWeightPhotoTag('front')"><span data-i18n="weight.photoTagFront">Face</span></button>
+                <button type="button" class="photo-tag-btn" data-tag="side" onclick="setWeightPhotoTag('side')"><span data-i18n="weight.photoTagSide">Profil</span></button>
+                <button type="button" class="photo-tag-btn" data-tag="back" onclick="setWeightPhotoTag('back')"><span data-i18n="weight.photoTagBack">Dos</span></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <button id="weightSubmitBtn" class="btn-primary full-w" onclick="saveWeightEntry()"><i class="ri-save-line"></i> <span id="weightSubmitText">Valider la pesée</span></button>
         <button id="weightCancelEditBtn" type="button" class="btn-secondary full-w" onclick="cancelWeightEdit()" style="display:none; margin-top:8px;"><i class="ri-close-line"></i> Annuler la modification</button>
       </div>
@@ -3151,6 +3272,26 @@
           </button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- ═══════ WEIGHT PHOTO LIGHTBOX MODAL ═══════ -->
+  <div id="weightPhotoLightbox" class="modal-overlay" onclick="closeWeightLightbox(event)" style="display:none; z-index:999999;">
+    <div class="weight-lightbox-content glass" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeWeightLightbox()"><i class="ri-close-line"></i></button>
+      <div class="weight-lightbox-header">
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <span id="lightboxWeightVal" style="font-size:1.3rem; font-weight:800; color:var(--text);">-- kg</span>
+          <span id="lightboxDateVal" style="font-size:0.85rem; color:var(--text-dim);">--</span>
+          <span id="lightboxTagBadge" class="trend-badge" style="font-size:0.75rem; background:rgba(52,211,153,0.15); color:var(--accent);">Face</span>
+        </div>
+      </div>
+      <div class="weight-lightbox-body">
+        <img id="lightboxImg" src="" alt="Photo pesée HD" class="weight-lightbox-img" />
+      </div>
+      <div class="weight-lightbox-footer" id="lightboxNoteWrap">
+        <p id="lightboxNoteVal" style="font-size:0.85rem; color:var(--text-dim); margin:0;"></p>
+      </div>
     </div>
   </div>
 

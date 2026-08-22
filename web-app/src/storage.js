@@ -35,20 +35,24 @@ export function addDaysLocal(date, days) {
   return d;
 }
 
-// ═══════ 2. BACKUP DE SECOURS INDEXEDDB AUTOMATIQUE ═══════
+// ═══════ 2. BACKUP DE SECOURS & STOCKAGE PHOTO INDEXEDDB ═══════
 const IDB_NAME = 'vitaltrack_store_db';
-const IDB_STORE = 'app_snapshots';
+const IDB_STORE_SNAPSHOTS = 'app_snapshots';
+const IDB_STORE_PHOTOS = 'weight_photos';
 let _idbInstance = null;
 
-function getIDB() {
+export function getIDB() {
   if (_idbInstance) return Promise.resolve(_idbInstance);
   return new Promise((resolve) => {
     try {
-      const req = indexedDB.open(IDB_NAME, 1);
+      const req = indexedDB.open(IDB_NAME, 2);
       req.onupgradeneeded = (e) => {
         const db = e.target.result;
-        if (!db.objectStoreNames.contains(IDB_STORE)) {
-          db.createObjectStore(IDB_STORE);
+        if (!db.objectStoreNames.contains(IDB_STORE_SNAPSHOTS)) {
+          db.createObjectStore(IDB_STORE_SNAPSHOTS);
+        }
+        if (!db.objectStoreNames.contains(IDB_STORE_PHOTOS)) {
+          db.createObjectStore(IDB_STORE_PHOTOS);
         }
       };
       req.onsuccess = (e) => {
@@ -66,8 +70,8 @@ async function idbSaveSnapshot(key, val) {
   try {
     const db = await getIDB();
     if (!db) return;
-    const tx = db.transaction(IDB_STORE, 'readwrite');
-    const store = tx.objectStore(IDB_STORE);
+    const tx = db.transaction(IDB_STORE_SNAPSHOTS, 'readwrite');
+    const store = tx.objectStore(IDB_STORE_SNAPSHOTS);
     store.put(val, key);
   } catch (err) {
     console.warn('[Storage:IDB] Snapshot error:', err);
@@ -79,14 +83,112 @@ async function idbLoadSnapshot(key) {
     const db = await getIDB();
     if (!db) return null;
     return new Promise((resolve) => {
-      const tx = db.transaction(IDB_STORE, 'readonly');
-      const store = tx.objectStore(IDB_STORE);
+      const tx = db.transaction(IDB_STORE_SNAPSHOTS, 'readonly');
+      const store = tx.objectStore(IDB_STORE_SNAPSHOTS);
       const req = store.get(key);
       req.onsuccess = () => resolve(req.result || null);
       req.onerror = () => resolve(null);
     });
   } catch {
     return null;
+  }
+}
+
+// ═══════ 2.B GESTION PRIVÉE & SÉCURISÉE DES PHOTOS CORPORELLES (INDEXEDDB) ═══════
+export async function saveWeightPhoto(id, photoDataUrl) {
+  if (!id || !photoDataUrl) return false;
+  try {
+    const db = await getIDB();
+    if (!db) {
+      try {
+        localStorage.setItem(`vt_wphoto_${id}`, photoDataUrl);
+        return true;
+      } catch (e) {
+        console.warn('[Storage] Fallback localStorage quota exceeded for photo:', e);
+        return false;
+      }
+    }
+    return new Promise((resolve) => {
+      const tx = db.transaction(IDB_STORE_PHOTOS, 'readwrite');
+      const store = tx.objectStore(IDB_STORE_PHOTOS);
+      const req = store.put(photoDataUrl, id);
+      req.onsuccess = () => resolve(true);
+      req.onerror = (err) => {
+        console.warn('[Storage:IDB] Save photo error:', err);
+        resolve(false);
+      };
+    });
+  } catch (err) {
+    console.warn('[Storage] Error saving weight photo:', err);
+    return false;
+  }
+}
+
+export async function getWeightPhoto(id) {
+  if (!id) return null;
+  try {
+    const db = await getIDB();
+    if (!db) {
+      return localStorage.getItem(`vt_wphoto_${id}`) || null;
+    }
+    return new Promise((resolve) => {
+      const tx = db.transaction(IDB_STORE_PHOTOS, 'readonly');
+      const store = tx.objectStore(IDB_STORE_PHOTOS);
+      const req = store.get(id);
+      req.onsuccess = () => {
+        const res = req.result || localStorage.getItem(`vt_wphoto_${id}`) || null;
+        resolve(res);
+      };
+      req.onerror = () => resolve(localStorage.getItem(`vt_wphoto_${id}`) || null);
+    });
+  } catch (err) {
+    console.warn('[Storage] Error reading weight photo:', err);
+    return localStorage.getItem(`vt_wphoto_${id}`) || null;
+  }
+}
+
+export async function deleteWeightPhoto(id) {
+  if (!id) return false;
+  try {
+    localStorage.removeItem(`vt_wphoto_${id}`);
+    const db = await getIDB();
+    if (!db) return true;
+    return new Promise((resolve) => {
+      const tx = db.transaction(IDB_STORE_PHOTOS, 'readwrite');
+      const store = tx.objectStore(IDB_STORE_PHOTOS);
+      const req = store.delete(id);
+      req.onsuccess = () => resolve(true);
+      req.onerror = () => resolve(false);
+    });
+  } catch (err) {
+    console.warn('[Storage] Error deleting weight photo:', err);
+    return false;
+  }
+}
+
+export async function getAllWeightPhotos() {
+  try {
+    const db = await getIDB();
+    if (!db) return {};
+    return new Promise((resolve) => {
+      const tx = db.transaction(IDB_STORE_PHOTOS, 'readonly');
+      const store = tx.objectStore(IDB_STORE_PHOTOS);
+      const req = store.openCursor();
+      const results = {};
+      req.onsuccess = (e) => {
+        const cursor = e.target.result;
+        if (cursor) {
+          results[cursor.key] = cursor.value;
+          cursor.continue();
+        } else {
+          resolve(results);
+        }
+      };
+      req.onerror = () => resolve({});
+    });
+  } catch (err) {
+    console.warn('[Storage] Error getting all weight photos:', err);
+    return {};
   }
 }
 
@@ -312,7 +414,11 @@ export const store = {
     } catch {
       return false;
     }
-  }
+  },
+  savePhoto: saveWeightPhoto,
+  getPhoto: getWeightPhoto,
+  deletePhoto: deleteWeightPhoto,
+  getAllPhotos: getAllWeightPhotos
 };
 
 // Initialisation globale
@@ -321,4 +427,8 @@ if (typeof window !== 'undefined') {
   window.formatLocalDate = formatLocalDate;
   window.parseLocalDate = parseLocalDate;
   window.addDaysLocal = addDaysLocal;
+  window.saveWeightPhoto = saveWeightPhoto;
+  window.getWeightPhoto = getWeightPhoto;
+  window.deleteWeightPhoto = deleteWeightPhoto;
+  window.getAllWeightPhotos = getAllWeightPhotos;
 }
