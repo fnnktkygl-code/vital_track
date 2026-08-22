@@ -434,7 +434,8 @@ export default {
     "dosePowder": "🥄 Freeze-dried Powder:",
     "doseCapsules": "💊 Capsules:",
     "doseOil": "🫒 Raw Vegetable Oil:",
-    "doseStandard": "📋 Raintree Dosage:"
+    "doseStandard": "📋 Raintree Dosage:",
+    "familyPrefix": "Family: {family}"
   },
   "fasting": {
     "pageTitle": "Fasting & Cellular Physiology",

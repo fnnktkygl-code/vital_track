@@ -434,7 +434,8 @@ export default {
     "dosePowder": "🥄 Polvo liofilizado:",
     "doseCapsules": "💊 Cápsulas:",
     "doseOil": "🫒 Aceite vegetal crudo:",
-    "doseStandard": "📋 Posología Raintree:"
+    "doseStandard": "📋 Posología Raintree:",
+    "familyPrefix": "Familia: {family}"
   },
   "fasting": {
     "pageTitle": "Ayuno y Fisiología Celular",

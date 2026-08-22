@@ -434,7 +434,8 @@ export default {
     "dosePowder": "🥄 Poudre lyophilisée :",
     "doseCapsules": "💊 Gélules :",
     "doseOil": "🫒 Huile végétale brute :",
-    "doseStandard": "📋 Posologie Raintree :"
+    "doseStandard": "📋 Posologie Raintree :",
+    "familyPrefix": "Famille des {family}"
   },
   "fasting": {
     "pageTitle": "Jeûne & Physiologie Cellulaire",

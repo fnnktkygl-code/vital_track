@@ -5,6 +5,7 @@
  */
 
 import { RAINTREE_HERBS, RAINTREE_PROTOCOLS } from './raintree-data.js';
+import { getLocalizedHerb, getLocalizedProtocol } from './data/materiaMedicaI18n.js';
 import * as i18nModule from './i18n.js';
 import { t, getLanguage, setLanguage, toggleLanguage, onLanguageChange, updateDOMTranslations } from './i18n.js';
 import { pigeonNudges } from './mascot-nudges.js';
@@ -4926,12 +4927,17 @@ function renderProtocolsList() {
   const tFunc = (window.vitalTrackI18n && typeof window.vitalTrackI18n.t === 'function')
     ? window.vitalTrackI18n.t
     : (k, p, fb) => fb || k;
+  const lang = (window.vitalTrackI18n && typeof window.vitalTrackI18n.getLanguage === 'function')
+    ? window.vitalTrackI18n.getLanguage()
+    : 'fr';
 
-  grid.innerHTML = RAINTREE_PROTOCOLS.map(proto => {
+  grid.innerHTML = RAINTREE_PROTOCOLS.map(rawProto => {
+    const proto = getLocalizedProtocol(rawProto, lang);
     const badgeClass = `badge-${proto.badgeColor || 'emerald'}`;
     const herbPills = proto.herbs.map(hId => {
-      const h = RAINTREE_HERBS.find(x => x.id === hId);
-      if (!h) return '';
+      const rawH = RAINTREE_HERBS.find(x => x.id === hId);
+      if (!rawH) return '';
+      const h = getLocalizedHerb(rawH, lang);
       return `<span class="protocol-herb-pill" onclick="event.stopPropagation(); openHerbModal('${h.id}')">
         ${h.emoji} ${esc(h.name)}
       </span>`;
@@ -4983,6 +4989,9 @@ function filterAndRenderHerbs() {
   const tFunc = (window.vitalTrackI18n && typeof window.vitalTrackI18n.t === 'function')
     ? window.vitalTrackI18n.t
     : (k, p, fb) => fb || k;
+  const lang = (window.vitalTrackI18n && typeof window.vitalTrackI18n.getLanguage === 'function')
+    ? window.vitalTrackI18n.getLanguage()
+    : 'fr';
 
   const rawQuery = (_currentHerbQuery || '').trim().toLowerCase();
   const filter = _currentHerbFilter;
@@ -5105,7 +5114,8 @@ function filterAndRenderHerbs() {
     return;
   }
 
-  grid.innerHTML = results.map(herb => {
+  grid.innerHTML = results.map(rawHerb => {
+    const herb = getLocalizedHerb(rawHerb, lang);
     const badgeColorClass = `badge-${herb.tropismBadge?.color || 'emerald'}`;
     const plantImg = herb.image || `/plants/${herb.id === 'boldo-amazonie' ? 'boldo' : herb.id}.jpg`;
 
@@ -5211,6 +5221,9 @@ function setHerbFilterByHerbs(herbIds) {
   const tFunc = (window.vitalTrackI18n && typeof window.vitalTrackI18n.t === 'function')
     ? window.vitalTrackI18n.t
     : (k, p, fb) => fb || k;
+  const lang = (window.vitalTrackI18n && typeof window.vitalTrackI18n.getLanguage === 'function')
+    ? window.vitalTrackI18n.getLanguage()
+    : 'fr';
 
   const grid = document.getElementById('materiaHerbsGrid');
   if (!grid) return;
@@ -5218,7 +5231,8 @@ function setHerbFilterByHerbs(herbIds) {
   const countEl = document.getElementById('herbResultCount');
   if (countEl) countEl.textContent = tFunc('materiaMedica.protocolHerbsCount', { count: filtered.length }, `${filtered.length} plantes du protocole`);
 
-  grid.innerHTML = filtered.map(herb => {
+  grid.innerHTML = filtered.map(rawHerb => {
+    const herb = getLocalizedHerb(rawHerb, lang);
     const badgeColorClass = `badge-${herb.tropismBadge?.color || 'emerald'}`;
     const plantImg = herb.image || `/plants/${herb.id === 'boldo-amazonie' ? 'boldo' : herb.id}.jpg`;
     const primaryIndications = (herb.indications || []).slice(0, 2).map(ind => esc(ind)).join(' • ');
@@ -5284,9 +5298,14 @@ function toggleHerbMonograph() {
 };
 
 function openHerbModal(herbId) {
-  const herb = RAINTREE_HERBS.find(h => h.id === herbId);
-  if (!herb) return;
-  _currentSelectedHerb = herb;
+  const rawHerb = RAINTREE_HERBS.find(h => h.id === herbId);
+  if (!rawHerb) return;
+  _currentSelectedHerb = rawHerb;
+
+  const lang = (window.vitalTrackI18n && typeof window.vitalTrackI18n.getLanguage === 'function')
+    ? window.vitalTrackI18n.getLanguage()
+    : 'fr';
+  const herb = getLocalizedHerb(rawHerb, lang);
 
   const tFunc = (window.vitalTrackI18n && typeof window.vitalTrackI18n.t === 'function')
     ? window.vitalTrackI18n.t
@@ -5307,7 +5326,7 @@ function openHerbModal(herbId) {
     imgEl.onerror = () => { imgEl.src = '/plants/boldo.jpg'; };
   }
   if (nameEl) nameEl.textContent = herb.name;
-  if (latinEl) latinEl.textContent = `${herb.latinName} — Famille des ${herb.family}`;
+  if (latinEl) latinEl.textContent = `${herb.latinName}${herb.familyLabel ? ` — ${herb.familyLabel}` : ''}`;
 
   if (tropismBadge && herb.tropismBadge) {
     tropismBadge.className = `herb-card-tropism-chip badge-${herb.tropismBadge.color || 'emerald'}`;
@@ -5363,7 +5382,7 @@ function openHerbModal(herbId) {
           </a>
         </div>
         <div style="font-size:0.78rem; color:var(--text-dim); line-height:1.4;">
-          ${tFunc('materiaMedica.drLeslieTaylorBio', {}, 'Monographie officielle rédigée par le Dr. Leslie Taylor, N.D. issue des recherches ethnobotaniques et des publications cliniques sur')} <em>${esc(herb.latinName)}</em> (${esc(herb.family)}).
+          ${tFunc('materiaMedica.drLeslieTaylorBio', {}, 'Monographie officielle rédigée par le Dr. Leslie Taylor, N.D. issue des recherches ethnobotaniques et des publications cliniques sur')} <em>${esc(herb.latinName)}</em>${herb.family ? ` (${esc(herb.family)})` : ''}.
         </div>
       </div>
 
