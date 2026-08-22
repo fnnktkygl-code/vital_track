@@ -69,13 +69,17 @@ window.renderStrip = function() {
   if (!dayStrip) return;
   var today = new Date();
   const byDate = getMealsByDate();
+  const lang = (window.vitalTrackI18n && window.vitalTrackI18n.getLanguage) ? window.vitalTrackI18n.getLanguage() : 'fr';
+  const localeMap = { fr: 'fr-FR', 'fr-CA': 'fr-CA', en: 'en-US', es: 'es-ES' };
+  const localeCode = localeMap[lang] || 'fr-FR';
   
   dayStrip.innerHTML = "";
   for(var i=0; i<14; i++){
     var d = addDays(today, i);
     var key = i.toString();
     var isToday = i === 0;
-    var wd = isToday ? "AUJ" : d.toLocaleDateString("fr-FR",{weekday:"short"}).replace(".","").toUpperCase();
+    var todayWord = lang === 'en' ? 'TODAY' : (lang === 'es' ? 'HOY' : 'AUJ');
+    var wd = isToday ? todayWord : d.toLocaleDateString(localeCode,{weekday:"short"}).replace(".","").toUpperCase();
 
     var chip = document.createElement("div");
     chip.className = "day-chip" + (key === window.currentDateKey ? " selected" : "") + (isToday ? " is-today" : "");
@@ -89,11 +93,11 @@ window.renderStrip = function() {
     var statusHtml = "";
     if (totalMeals > 0) {
       if (isAllDone) {
-        statusHtml = "<span class='day-badge-done' title='Tous les repas validés !'><i class='ri-check-line'></i> " + doneMeals + "/" + totalMeals + "</span>";
+        statusHtml = "<span class='day-badge-done' title='Validé'><i class='ri-check-line'></i> " + doneMeals + "/" + totalMeals + "</span>";
       } else if (doneMeals > 0) {
-        statusHtml = "<span class='day-badge-prog' title='" + doneMeals + " sur " + totalMeals + " validés'>" + doneMeals + "/" + totalMeals + "</span>";
+        statusHtml = "<span class='day-badge-prog' title='" + doneMeals + "/" + totalMeals + "'>" + doneMeals + "/" + totalMeals + "</span>";
       } else {
-        statusHtml = "<span class='day-badge-todo' title='" + totalMeals + " repas à consommer'>0/" + totalMeals + "</span>";
+        statusHtml = "<span class='day-badge-todo' title='0/" + totalMeals + "'>0/" + totalMeals + "</span>";
       }
     } else {
       statusHtml = "<span class='day-badge-empty'>—</span>";
@@ -124,18 +128,22 @@ window.renderDay = function() {
   var offset = parseInt(window.currentDateKey, 10);
   var d = addDays(today, offset);
   var jourIndex = offset + 1;
-  var dateLabel = d.toLocaleDateString("fr-FR",{weekday:"long", day:"numeric", month:"long"});
+  const lang = (window.vitalTrackI18n && window.vitalTrackI18n.getLanguage) ? window.vitalTrackI18n.getLanguage() : 'fr';
+  const localeMap = { fr: 'fr-FR', 'fr-CA': 'fr-CA', en: 'en-US', es: 'es-ES' };
+  const localeCode = localeMap[lang] || 'fr-FR';
+  var dateLabel = d.toLocaleDateString(localeCode, {weekday:"long", day:"numeric", month:"long"});
   dateLabel = dateLabel.charAt(0).toUpperCase() + dateLabel.slice(1);
+  const tFunc = (window.vitalTrackI18n && window.vitalTrackI18n.t) ? window.vitalTrackI18n.t : function(k, p, fb) { return fb || k; };
 
   if(!data || data.meals.length === 0){
     dayCard.innerHTML =
       "<div class='empty-state'>" +
       "<div class='empty-icon-wrap'><i class='ri-calendar-event-line'></i></div>" +
       "<div><b style='color:var(--text-hi); font-size:1.15rem;'>" + dateLabel + "</b></div>" +
-      "<div style='margin-top:8px;color:var(--text-low);font-size:0.92rem;max-width:420px;margin-left:auto;margin-right:auto;line-height:1.5;'>Aucun repas n'est encore programmé pour cette journée. Générez un plan avec l'IA ou ajoutez vos propres repas.</div>" +
+      "<div style='margin-top:8px;color:var(--text-low);font-size:0.92rem;max-width:420px;margin-left:auto;margin-right:auto;line-height:1.5;'>" + (lang === 'en' ? 'No meals scheduled yet for this day.' : lang === 'es' ? 'No hay comidas programadas para hoy.' : 'Aucun repas n\'est encore programmé pour cette journée.') + "</div>" +
       "<div style='margin-top:18px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;'>" +
-      "  <button class='btn btn-primary' onclick='window.promptAIPlan ? window.promptAIPlan() : window.openAddMealModal()' style='padding:10px 18px;font-size:0.9rem;border-radius:12px;'><i class='ri-magic-line'></i> Créer un plan IA</button>" +
-      "  <button class='btn btn-secondary' onclick='window.openAddMealModal()' style='padding:10px 18px;font-size:0.9rem;border-radius:12px;'><i class='ri-add-line'></i> Ajouter un repas</button>" +
+      "  <button class='btn btn-primary' onclick='window.promptAIPlan ? window.promptAIPlan() : window.openAddMealModal()' style='padding:10px 18px;font-size:0.9rem;border-radius:12px;'><i class='ri-magic-line'></i> " + tFunc('calendar.regenerateWeekBtn') + "</button>" +
+      "  <button class='btn btn-secondary' onclick='window.openAddMealModal()' style='padding:10px 18px;font-size:0.9rem;border-radius:12px;'><i class='ri-add-line'></i> " + tFunc('dashboard.addMealBtn') + "</button>" +
       "</div>" +
       "</div>";
     updateProgramRing();
@@ -149,17 +157,17 @@ window.renderDay = function() {
   var allDone = total > 0 && done === total;
 
   var toneConfigs = {
-    matin: { bg: "rgba(245, 158, 11, 0.15)", fg: "#d97706", label: "Matin", icon: "🌅" },
-    midi: { bg: "rgba(16, 185, 129, 0.15)", fg: "#059669", label: "Midi", icon: "🥗" },
-    collation: { bg: "rgba(217, 119, 6, 0.15)", fg: "#b45309", label: "En-cas", icon: "🌰" },
-    soir: { bg: "rgba(139, 92, 246, 0.15)", fg: "#7c3aed", label: "Soir", icon: "🌙" }
+    matin: { bg: "rgba(245, 158, 11, 0.15)", fg: "#d97706", label: lang === 'en' ? 'Morning' : lang === 'es' ? 'Mañana' : 'Matin', icon: "🌅" },
+    midi: { bg: "rgba(16, 185, 129, 0.15)", fg: "#059669", label: lang === 'en' ? 'Noon' : lang === 'es' ? 'Mediodía' : 'Midi', icon: "🥗" },
+    collation: { bg: "rgba(217, 119, 6, 0.15)", fg: "#b45309", label: lang === 'en' ? 'Snack' : lang === 'es' ? 'Merienda' : 'En-cas', icon: "🌰" },
+    soir: { bg: "rgba(139, 92, 246, 0.15)", fg: "#7c3aed", label: lang === 'en' ? 'Evening' : lang === 'es' ? 'Noche' : 'Soir', icon: "🌙" }
   };
 
   var motivationMsg = allDone
-    ? "🎉 Félicitations ! Tous tes repas sont validés pour cette journée."
+    ? (lang === 'en' ? "🎉 Congratulations! All meals completed for today." : lang === 'es' ? "🎉 ¡Felicitaciones! Todas las comidas han sido validadas." : "🎉 Félicitations ! Tous tes repas sont validés pour cette journée.")
     : (done > 0
-      ? "🌿 Plus que <strong>" + (total - done) + " repas</strong> à valider pour compléter ta journée."
-      : "💪 Coche chaque repas consommé pour suivre ton avancée en direct.");
+      ? (lang === 'en' ? "🌿 <strong>" + (total - done) + " meal(s)</strong> left to validate." : lang === 'es' ? "🌿 Quedan <strong>" + (total - done) + " comida(s)</strong> por validar." : "🌿 Plus que <strong>" + (total - done) + " repas</strong> à valider pour compléter ta journée.")
+      : (lang === 'en' ? "💪 Check off each meal as you consume it." : lang === 'es' ? "💪 Marque cada comida consumida para seguir su progreso." : "💪 Coche chaque repas consommé pour suivre ton avancée en direct."));
 
   var html = "";
   

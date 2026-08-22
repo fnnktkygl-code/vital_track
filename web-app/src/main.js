@@ -1138,6 +1138,17 @@ async function initApp() {
       if (window.renderRaintreeExplorer) window.renderRaintreeExplorer();
     } else if (activePageId === 'meals') {
       renderMeals();
+    } else if (activePageId === 'calendar') {
+      if (window.renderStrip) window.renderStrip();
+      if (window.renderDay) window.renderDay();
+    } else if (activePageId === 'fasting') {
+      if (typeof renderFasting === 'function') renderFasting();
+    } else if (activePageId === 'search') {
+      if (typeof renderFoods === 'function') renderFoods();
+    } else if (activePageId === 'favorites') {
+      if (typeof renderFavorites === 'function') renderFavorites();
+    } else if (activePageId === 'modes') {
+      if (typeof renderModesPage === 'function') renderModesPage();
     }
   });
 

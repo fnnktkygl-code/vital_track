@@ -130,7 +130,7 @@
       </a>
       <div class="nav-right-actions">
         <div id="googleAuthBtnContainer" class="google-auth-container"></div>
-        <button class="lang-toggle-btn compact" id="globalLangToggleBtn" onclick="window.vitalTrackI18n?.toggleLanguage()" title="Changer de langue">🇫🇷 <span style="font-weight:700;">FR</span></button>
+        <button class="lang-toggle-btn compact" id="globalLangToggleBtn" onclick="window.vitalTrackI18n?.toggleLanguage()" title="Changer de langue" data-i18n-title="header.langToggleTitle">🇫🇷 <span style="font-weight:700;">FR</span></button>
         <button class="theme-toggle compact" id="globalThemeToggleBtn" onclick="toggleTheme()" data-tooltip="Mode sombre/clair"><i class="ri-moon-line theme-icon" id="themeIconMobile"></i></button>
         <button class="hamburger" onclick="toggleMobileNav()" aria-label="Menu"><i class="ri-menu-3-line"></i></button>
       </div>
@@ -159,19 +159,19 @@
       <div style="display:flex; align-items:center; gap:8px;">
         <span style="font-size:1.2rem;">✨</span>
         <div>
-          <h3 style="margin:0; font-size:1.05rem; font-weight:700; color:var(--text);">Plus de Fonctionnalités</h3>
-          <p style="margin:2px 0 0 0; font-size:0.76rem; color:var(--text-dim);">Toutes les ressources &amp; outils de l'écosystème</p>
+          <h3 style="margin:0; font-size:1.05rem; font-weight:700; color:var(--text);" data-i18n="drawer.title">Plus de Fonctionnalités</h3>
+          <p style="margin:2px 0 0 0; font-size:0.76rem; color:var(--text-dim);" data-i18n="drawer.subtitle">Toutes les ressources &amp; outils de l'écosystème</p>
         </div>
       </div>
-      <button class="more-drawer-close" onclick="window.toggleMoreDrawer(false)" aria-label="Fermer"><i class="ri-close-line"></i></button>
+      <button class="more-drawer-close" onclick="window.toggleMoreDrawer(false)" aria-label="Fermer" data-i18n-aria="drawer.closeAria"><i class="ri-close-line"></i></button>
     </div>
 
     <div class="more-drawer-grid">
       <a href="#" class="more-drawer-card" onclick="showPage('deep-search'); window.toggleMoreDrawer(false); event.preventDefault();">
         <div class="more-card-icon" style="background:linear-gradient(135deg, rgba(56,189,248,0.2), rgba(16,185,129,0.2)); color:#38bdf8;"><i class="ri-microscope-fill"></i></div>
         <div class="more-card-body">
-          <strong>Bilan Deep Search (0 €)</strong>
-          <span>Diagnostic holistique &amp; 5 émonctoires</span>
+          <strong data-i18n="drawer.deepSearch">Bilan Deep Search (0 €)</strong>
+          <span data-i18n="drawer.deepSearchSub">Diagnostic holistique &amp; 5 émonctoires</span>
         </div>
         <i class="ri-arrow-right-s-line more-card-arrow"></i>
       </a>
@@ -179,8 +179,8 @@
       <a href="#" class="more-drawer-card" onclick="showPage('recipes'); window.toggleMoreDrawer(false); event.preventDefault();">
         <div class="more-card-icon" style="background:linear-gradient(135deg, rgba(16,185,129,0.2), rgba(56,189,248,0.2)); color:#10b981;"><i class="ri-restaurant-2-line"></i></div>
         <div class="more-card-body">
-          <strong>Recettes &amp; Pharmacopée</strong>
-          <span>Sebi, Ehret, Morse, Kallas &amp; Christopher</span>
+          <strong data-i18n="drawer.recipes">Recettes &amp; Pharmacopée</strong>
+          <span data-i18n="drawer.recipesSub">Sebi, Ehret, Morse, Kallas &amp; Christopher</span>
         </div>
         <i class="ri-arrow-right-s-line more-card-arrow"></i>
       </a>
@@ -188,8 +188,8 @@
       <a href="#" class="more-drawer-card" onclick="showPage('resources'); window.toggleMoreDrawer(false); event.preventDefault();">
         <div class="more-card-icon" style="background:rgba(59,130,246,0.15); color:#60a5fa;"><i class="ri-play-circle-line"></i></div>
         <div class="more-card-body">
-          <strong>Médias &amp; Vidéos</strong>
-          <span>Wim Hof, masterclass &amp; PDF</span>
+          <strong data-i18n="drawer.resources">Médias &amp; Vidéos</strong>
+          <span data-i18n="drawer.resourcesSub">Wim Hof, masterclass &amp; PDF</span>
         </div>
         <i class="ri-arrow-right-s-line more-card-arrow"></i>
       </a>
@@ -197,8 +197,8 @@
       <a href="#" class="more-drawer-card" onclick="showPage('materia-medica'); window.toggleMoreDrawer(false); event.preventDefault();">
         <div class="more-card-icon" style="background:rgba(16,185,129,0.15); color:#34d399;"><i class="ri-plant-line"></i></div>
         <div class="more-card-body">
-          <strong>Pharmacopée Raintree</strong>
-          <span>Monographies &amp; remèdes amazoniens</span>
+          <strong data-i18n="drawer.materia">Pharmacopée Raintree</strong>
+          <span data-i18n="drawer.materiaSub">Monographies &amp; remèdes amazoniens</span>
         </div>
         <i class="ri-arrow-right-s-line more-card-arrow"></i>
       </a>
@@ -206,8 +206,8 @@
       <a href="#" class="more-drawer-card" onclick="showPage('breathing'); window.toggleMoreDrawer(false); event.preventDefault();">
         <div class="more-card-icon" style="background:rgba(139,92,246,0.15); color:#a78bfa;"><i class="ri-windy-line"></i></div>
         <div class="more-card-body">
-          <strong>Respiration Wim Hof</strong>
-          <span>Orbe interactif &amp; minuteur guidé</span>
+          <strong data-i18n="drawer.breathing">Respiration Wim Hof</strong>
+          <span data-i18n="drawer.breathingSub">Orbe interactif &amp; minuteur guidé</span>
         </div>
         <i class="ri-arrow-right-s-line more-card-arrow"></i>
       </a>
@@ -215,8 +215,8 @@
       <a href="#" class="more-drawer-card" onclick="showPage('search'); window.toggleMoreDrawer(false); event.preventDefault();">
         <div class="more-card-icon" style="background:rgba(245,158,11,0.15); color:#fbbf24;"><i class="ri-search-line"></i></div>
         <div class="more-card-body">
-          <strong>Recherche Aliments &amp; PRAL</strong>
-          <span>Dr. Sebi, Ehret, Morse &amp; analyse</span>
+          <strong data-i18n="drawer.search">Recherche Aliments &amp; PRAL</strong>
+          <span data-i18n="drawer.searchSub">Dr. Sebi, Ehret, Morse &amp; analyse</span>
         </div>
         <i class="ri-arrow-right-s-line more-card-arrow"></i>
       </a>
@@ -224,8 +224,8 @@
       <a href="#" class="more-drawer-card" onclick="showPage('meals'); window.toggleMoreDrawer(false); event.preventDefault();">
         <div class="more-card-icon" style="background:rgba(236,72,153,0.15); color:#f472b6;"><i class="ri-restaurant-fill"></i></div>
         <div class="more-card-body">
-          <strong>Journal des Repas</strong>
-          <span>Suivi acido-basique journalier</span>
+          <strong data-i18n="drawer.meals">Journal des Repas</strong>
+          <span data-i18n="drawer.mealsSub">Suivi acido-basique journalier</span>
         </div>
         <i class="ri-arrow-right-s-line more-card-arrow"></i>
       </a>
@@ -233,8 +233,8 @@
       <a href="#" class="more-drawer-card" onclick="showPage('favorites'); window.toggleMoreDrawer(false); event.preventDefault();">
         <div class="more-card-icon" style="background:rgba(239,68,68,0.15); color:#f87171;"><i class="ri-heart-line"></i></div>
         <div class="more-card-body">
-          <strong>Mes Favoris</strong>
-          <span>Aliments &amp; remèdes sauvegardés</span>
+          <strong data-i18n="drawer.favorites">Mes Favoris</strong>
+          <span data-i18n="drawer.favoritesSub">Aliments &amp; remèdes sauvegardés</span>
         </div>
         <i class="ri-arrow-right-s-line more-card-arrow"></i>
       </a>
@@ -242,8 +242,8 @@
       <a href="#" class="more-drawer-card" onclick="showPage('modes'); window.toggleMoreDrawer(false); event.preventDefault();">
         <div class="more-card-icon" style="background:rgba(100,116,139,0.2); color:#cbd5e1;"><i class="ri-settings-3-line"></i></div>
         <div class="more-card-body">
-          <strong>Protocoles &amp; Paramètres</strong>
-          <span>Bio-Profil, RGPD &amp; sécurité</span>
+          <strong data-i18n="drawer.settings">Protocoles &amp; Paramètres</strong>
+          <span data-i18n="drawer.settingsSub">Bio-Profil, RGPD &amp; sécurité</span>
         </div>
         <i class="ri-arrow-right-s-line more-card-arrow"></i>
       </a>
@@ -251,8 +251,8 @@
       <a href="#" class="more-drawer-card" onclick="window.openMascotStudioModal(); window.toggleMoreDrawer(false); event.preventDefault();">
         <div class="more-card-icon" style="background:rgba(52,211,153,0.15); color:#34d399;"><i class="ri-magic-line"></i></div>
         <div class="more-card-body">
-          <strong>Studio Mascotte Vital</strong>
-          <span>Personnalisation &amp; humeurs</span>
+          <strong data-i18n="drawer.studio">Studio Mascotte Vital</strong>
+          <span data-i18n="drawer.studioSub">Personnalisation &amp; humeurs</span>
         </div>
         <i class="ri-arrow-right-s-line more-card-arrow"></i>
       </a>
@@ -276,7 +276,7 @@
       <div class="topbar-left">
         <div class="topbar-status-pill">
           <span class="status-pulse-dot"></span>
-          <span class="status-title">VitalTrack Coach Pro</span>
+          <span class="status-title" data-i18n="header.coachProBadge">VitalTrack Coach Pro</span>
         </div>
       </div>
       <div class="topbar-right">
@@ -284,13 +284,13 @@
         <button class="lang-toggle-btn" id="desktopLangToggleBtn" onclick="window.vitalTrackI18n?.toggleLanguage()" title="Changer de langue">
           🇫🇷 <span style="font-weight:700;">FR</span>
         </button>
-        <button class="icon-btn theme-toggle glass" onclick="toggleTheme()" title="Mode sombre/clair">
+        <button class="icon-btn theme-toggle glass" onclick="toggleTheme()" title="Mode sombre/clair" data-i18n-title="header.themeToggleTitle">
           <i class="ri-moon-line theme-icon" id="desktopThemeIcon"></i>
         </button>
-        <a href="/landing.html" class="icon-btn glass" title="Site Vitrine & Vidéos Démo" style="display:inline-flex; align-items:center; justify-content:center; text-decoration:none; color:var(--text); font-size:1.15rem;">
+        <a href="/landing.html" class="icon-btn glass" title="Site Vitrine & Vidéos Démo" data-i18n-title="header.landingTitle" style="display:inline-flex; align-items:center; justify-content:center; text-decoration:none; color:var(--text); font-size:1.15rem;">
           <i class="ri-global-line"></i>
         </a>
-        <button class="icon-btn glass" onclick="showPage('modes')" title="Paramètres & RGPD">
+        <button class="icon-btn glass" onclick="showPage('modes')" title="Paramètres & RGPD" data-i18n-title="header.settingsTitle">
           <i class="ri-settings-3-line"></i>
         </button>
       </div>

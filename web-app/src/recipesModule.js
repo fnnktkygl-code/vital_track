@@ -219,11 +219,11 @@ export function renderRecipesView() {
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
         <div style="display:flex; align-items:center; gap:8px;">
           <span style="font-size:1.1rem;">🔍</span>
-          <span style="font-weight:700; font-size:0.95rem; color:var(--text);">${t('common.search')} &amp; Ingrédients</span>
+          <span style="font-weight:700; font-size:0.95rem; color:var(--text);">${t('common.search')} &amp; ${t('recipes.ingredientsTitle')}</span>
         </div>
         ${hasActiveFilters ? `
           <button type="button" class="btn-secondary" onclick="clearAllRecipeFilters()" style="padding:4px 12px; font-size:0.75rem; border-radius:14px; color:#ef4444; border-color:rgba(239,68,68,0.3); background:rgba(239,68,68,0.1); cursor:pointer;">
-            <i class="ri-close-circle-line"></i> ${t('common.cancel')} filtres
+            <i class="ri-close-circle-line"></i> ${t('common.cancel')}
           </button>
         ` : ''}
       </div>
@@ -246,15 +246,15 @@ export function renderRecipesView() {
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
           <div style="display:flex; align-items:center; gap:6px; font-size:0.8rem; font-weight:700; color:var(--text-dim);">
             <i class="ri-leaf-line" style="color:var(--accent);"></i>
-            <span>Sélection Multi-Ingrédients (${_selectedIngredients.size}) :</span>
+            <span>${t('recipes.ingredientsTitle')} (${_selectedIngredients.size}) :</span>
           </div>
           ${_selectedIngredients.size > 1 ? `
             <div style="display:inline-flex; background:var(--surface-hover); border:1px solid var(--border); border-radius:14px; padding:2px; font-size:0.72rem;">
               <button type="button" style="padding:2px 8px; border-radius:12px; border:none; cursor:pointer; font-weight:700; background:${_ingredientMatchMode === 'ANY' ? 'var(--accent)' : 'transparent'}; color:${_ingredientMatchMode === 'ANY' ? '#fff' : 'var(--text-dim)'};" onclick="setIngredientMatchMode('ANY')">
-                Au moins un (OU)
+                OR
               </button>
               <button type="button" style="padding:2px 8px; border-radius:12px; border:none; cursor:pointer; font-weight:700; background:${_ingredientMatchMode === 'ALL' ? 'var(--accent)' : 'transparent'}; color:${_ingredientMatchMode === 'ALL' ? '#fff' : 'var(--text-dim)'};" onclick="setIngredientMatchMode('ALL')">
-                Tous ensemble (ET)
+                AND
               </button>
             </div>
           ` : ''}
@@ -281,7 +281,7 @@ export function renderRecipesView() {
       <!-- FILTRES PAR AUTEURS -->
       <div style="border-top:1px solid var(--border); padding-top:14px; margin-top:14px;">
         <div style="font-size:0.8rem; font-weight:700; color:var(--text-dim); margin-bottom:8px;">
-          📚 Filtrer par Auteur &amp; Tradition Thérapeutique :
+          📚 ${t('recipes.filterByAuthor')} :
         </div>
         <div style="display:flex; gap:6px; overflow-x:auto; padding-bottom:4px;" class="hide-scrollbar">
           ${RECIPE_AUTHORS.map(a => {
@@ -347,12 +347,12 @@ export function renderRecipesView() {
     ${totalItems === 0 ? `
       <div class="dash-card glass" style="padding:40px 20px; text-align:center; margin-bottom:30px;">
         <div style="font-size:2.5rem; margin-bottom:10px;">🍲</div>
-        <h3 style="margin:0 0 6px 0; font-size:1.15rem; color:var(--text);">Aucune recette ne correspond à votre sélection</h3>
+        <h3 style="margin:0 0 6px 0; font-size:1.15rem; color:var(--text);">${t('recipes.noRecipesFound')}</h3>
         <p style="font-size:0.85rem; color:var(--text-dim); max-width:400px; margin:0 auto 16px auto;">
-          Essayez d'élargir vos ingrédients ou de réinitialiser vos filtres d'auteurs et de catégories.
+          ${t('recipes.noRecipesSubtitle')}
         </p>
         <button type="button" class="btn-primary" onclick="clearAllRecipeFilters()" style="padding:8px 20px; font-size:0.85rem; border-radius:18px; margin:0 auto;">
-          <i class="ri-refresh-line"></i> Afficher toutes les recettes
+          <i class="ri-refresh-line"></i> ${t('recipes.allOption')}
         </button>
       </div>
     ` : `
@@ -777,7 +777,7 @@ function renderModalContent() {
       <!-- BOUTONS D'ACTION RAPIDE -->
       <div style="display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap; border-top:1px solid var(--border); padding-top:16px;">
         <button type="button" class="btn-secondary" onclick="copyRecipeToClipboard('${esc(r.id)}')" style="padding:10px 18px; border-radius:14px; font-weight:700; font-size:0.85rem; cursor:pointer;">
-          <i class="ri-file-copy-line"></i> Copier la Recette
+          <i class="ri-file-copy-line"></i> ${t('toasts.copiedToClipboard', {}, 'Copier')}
         </button>
         <button type="button" class="btn-primary" onclick="addRecipeToFavorites('${esc(r.id)}')" style="padding:10px 20px; border-radius:14px; font-weight:700; font-size:0.85rem; cursor:pointer;">
           <i class="ri-heart-3-fill"></i> ${t('recipes.favoriteBtn')}
@@ -802,22 +802,22 @@ export function copyRecipeToClipboard(recipeId) {
   if (!recipe) return;
 
   const text = `🍽️ ${recipe.title} (${recipe.subtitle})\n` +
-    `👨‍⚕️ Auteur : ${recipe.author} — Source : ${recipe.bookReference}\n` +
-    `⏱️ Préparation : ${recipe.prepTime} | Cuisson : ${recipe.cookTime} | PRAL : ${recipe.pralScore}\n\n` +
-    `🥗 Ingrédients (${recipe.servings} pers.) :\n` +
+    `👨‍⚕️ ${t('recipes.filterByAuthor', {}, 'Auteur')} : ${recipe.author} — Source : ${recipe.bookReference}\n` +
+    `⏱️ ${t('recipes.prepTime', {}, 'Préparation')} : ${recipe.prepTime} | ${recipe.cookTime} | PRAL : ${recipe.pralScore}\n\n` +
+    `🥗 ${t('recipes.ingredientsTitle', {}, 'Ingrédients')} (${recipe.servings} pers.) :\n` +
     recipe.ingredients.map(i => `- ${i.quantity} ${i.unit} ${i.name} (${i.note || ''})`).join('\n') +
-    `\n\n👨‍🍳 Instructions :\n` +
+    `\n\n👨‍🍳 ${t('recipes.instructionsTitle', {}, 'Instructions')} :\n` +
     recipe.instructions.map((step, idx) => `${idx + 1}. ${step}`).join('\n') +
-    `\n\n🌿 Action Vitaliste : ${recipe.vitalistAction}`;
+    `\n\n🌿 ${t('recipes.vitalistAction', {}, 'Action Vitaliste')} : ${recipe.vitalistAction}`;
 
   navigator.clipboard.writeText(text).then(() => {
     if (window.showToast) {
-      window.showToast("✓ Recette copiée dans le presse-papier !");
+      window.showToast(t('toasts.copiedToClipboard', {}, '✓ Copié dans le presse-papier !'), 'success');
     } else {
-      alert("Recette copiée dans le presse-papier !");
+      alert(t('toasts.copiedToClipboard', {}, '✓ Copié !'));
     }
   }).catch(() => {
-    alert("Texte prêt à être copié.");
+    alert("Copied.");
   });
 }
 
@@ -826,8 +826,8 @@ export function addRecipeToFavorites(recipeId) {
   if (!recipe) return;
 
   if (window.showToast) {
-    window.showToast(`✓ "${recipe.title}" ajoutée à vos favoris !`);
+    window.showToast(`❤️ ${recipe.title} — ${t('recipes.favoriteBtn', {}, 'Favoris')}`, 'success');
   } else {
-    alert(`"${recipe.title}" ajoutée à vos favoris !`);
+    alert(`${recipe.title} — ${t('recipes.favoriteBtn', {}, 'Favoris')}`);
   }
 }
