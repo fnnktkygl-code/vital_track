@@ -882,12 +882,12 @@
       <aside class="chat-sidebar hidden" id="chatSidebar">
         <div class="sidebar-top">
           <div style="display:flex; align-items:center; gap:8px; width:100%;">
-            <button class="btn-new-chat" onclick="newConversation()" style="flex:1;"><i class="ri-add-line"></i> Nouveau chat</button>
+            <button type="button" class="btn-new-chat" id="sidebarNewChatBtn" onclick="newConversation()" style="flex:1;" data-tooltip="Nouveau chat" data-i18n="chat.newChat"><i class="ri-add-line"></i> Nouveau chat</button>
             <button type="button" class="sidebar-close-btn" onclick="toggleSidebar(false)" data-tooltip="Fermer l'historique" aria-label="Fermer"><i class="ri-close-line"></i></button>
           </div>
           <div class="sidebar-search-wrap">
             <i class="ri-search-line"></i>
-            <input type="text" class="sidebar-search" id="sidebarSearch" placeholder="Rechercher une discussion..." oninput="filterConversations(this.value)">
+            <input type="text" class="sidebar-search" id="sidebarSearch" placeholder="Rechercher une discussion..." oninput="filterConversations(this.value)" data-i18n-placeholder="chat.searchPlaceholder">
           </div>
         </div>
         <div class="sidebar-list" id="sidebarList"></div>
@@ -951,10 +951,10 @@
             <span class="voice-status-text" id="chatVoiceStatus">🎙️ Écoute active... Parlez à votre rythme</span>
           </div>
           <div class="voice-indicator-actions">
-            <button type="button" class="voice-cancel-btn" onclick="cancelVoiceInput(event)" title="Annuler la saisie vocale">
+            <button type="button" class="voice-cancel-btn" onclick="cancelVoiceInput(event)" title="Annuler la saisie vocale" data-i18n="chat.voiceCancel">
               <i class="ri-close-line"></i> Annuler
             </button>
-            <button type="button" class="voice-done-btn" onclick="toggleVoiceInput(false, event)" title="Terminer et insérer le texte">
+            <button type="button" class="voice-done-btn" onclick="stopVoiceRecording(event)" title="Terminer et transcrire" data-i18n="chat.voiceDone">
               <i class="ri-check-line"></i> Terminer
             </button>
           </div>
@@ -977,7 +977,7 @@
           <button type="button" class="chat-action-btn" id="chatImageBtn" onclick="document.getElementById('chatImageInput').click()" title="Joindre une photo d'aliment / repas / étiquette">
             <i class="ri-image-add-line"></i>
           </button>
-          <button type="button" class="chat-action-btn" id="chatVoiceBtn" onclick="toggleVoiceInput(undefined, event)" title="Saisie vocale">
+          <button type="button" class="chat-action-btn" id="chatVoiceBtn" onclick="toggleVoiceInput(undefined, event)" title="Saisie vocale (Cliquer ou maintenir)" data-i18n-title="chat.voiceTooltip">
             <i class="ri-mic-line"></i>
           </button>
           <input type="text" id="chatInput" placeholder="Pose une question, explore un sujet santé, un repas, un protocole..." data-i18n-placeholder="chat.inputPlaceholder" autocomplete="off">

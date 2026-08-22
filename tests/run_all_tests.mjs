@@ -23,7 +23,8 @@ const unitSuites = [
   { name: 'Suite 6: Intégrité Linguistique & Parité i18n Exhaustive (FR/EN/ES/FR-CA)', file: 'tests/test_i18n_completeness.mjs' },
   { name: 'Suite 7: Mascotte Speech Bubble, Badges & Synchronisation Protocole i18n', file: 'tests/test_mascot_i18n_and_badges.mjs' },
   { name: 'Suite 8: Suivi du Poids, Comparateur Avant/Après & Purge RGPD Photos', file: 'tests/test_weight_photos_logic.mjs' },
-  { name: 'Suite 9: Détection d\'Intention Chat & Cascades Multi-Modèles FinOps', file: 'tests/test_chat_intent_and_cascade.mjs' }
+  { name: 'Suite 9: Détection d\'Intention Chat & Cascades Multi-Modèles FinOps', file: 'tests/test_chat_intent_and_cascade.mjs' },
+  { name: 'Suite 10: Barre Latérale de Chat & Système Vocal Gemini-Style', file: 'tests/test_chat_sidebar_and_voice.mjs' }
 ];
 
 const e2eSuites = [

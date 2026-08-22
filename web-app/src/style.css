@@ -1722,6 +1722,7 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
 
 .btn-new-chat {
   padding: 10px 16px;
+  height: 42px;
   border-radius: 12px;
   border: 1px solid var(--accent);
   background: var(--accent-glow);
@@ -1729,18 +1730,37 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
   cursor: pointer;
   font-family: var(--font);
   font-weight: 700;
-  font-size: 0.88rem;
+  font-size: 0.92rem;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 0 4px 12px var(--accent-glow);
+  user-select: none;
 }
 .btn-new-chat:hover {
   background: var(--accent);
   color: #ffffff;
   transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(52, 211, 153, 0.35);
+}
+.btn-new-chat:active {
+  transform: scale(0.98);
+}
+
+#chatVoiceBtn.recording {
+  background: rgba(239, 68, 68, 0.15) !important;
+  border-color: rgba(239, 68, 68, 0.5) !important;
+  color: #ef4444 !important;
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.45) !important;
+  animation: voiceMicPulse 1.2s ease-in-out infinite !important;
+}
+
+@keyframes voiceMicPulse {
+  0% { transform: scale(1); box-shadow: 0 0 8px rgba(239, 68, 68, 0.4); }
+  50% { transform: scale(1.08); box-shadow: 0 0 20px rgba(239, 68, 68, 0.7); }
+  100% { transform: scale(1); box-shadow: 0 0 8px rgba(239, 68, 68, 0.4); }
 }
 
 .sidebar-search-wrap {
@@ -7422,12 +7442,14 @@ mark.search-highlight {
     bottom: 0;
     z-index: 2000 !important;
     border-radius: 0;
-    width: 300px;
-    max-width: 85vw;
+    width: 310px;
+    max-width: 88vw;
     min-width: 0;
     background: var(--surface-2) !important;
     border-right: 1px solid var(--border-strong);
     box-shadow: 14px 0 50px rgba(0, 0, 0, 0.85);
+    padding-top: max(12px, env(safe-area-inset-top));
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
     transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     transform: translateX(0);
   }

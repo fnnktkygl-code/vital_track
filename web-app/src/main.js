@@ -1104,6 +1104,7 @@ async function initApp() {
   initAllVitalDatePickers();
   initAllVitalSelects();
   initFastingDurationControls();
+  initVoiceButtonEvents();
 
   // Re-render and update on language change
   onLanguageChange((newLang) => {
@@ -2279,48 +2280,135 @@ function renderActiveConversation() {
   });
 }
 
-// ═══════ VOICE INPUT (ZERO-QUOTA REAL-TIME LIVE STREAMING & WEB SPEECH) ═══════
-let _speechRecognition = null;
+// ═══════ VOICE AUDIO FEEDBACK (WEB AUDIO SYNTHESIS & CHIMES) ═══════
+const VoiceAudio = {
+  ctx: null,
+  init() {
+    if (!this.ctx) {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (AudioCtx) this.ctx = new AudioCtx();
+    }
+    if (this.ctx && this.ctx.state === 'suspended') {
+      this.ctx.resume().catch(() => {});
+    }
+  },
+  playStartChime() {
+    try {
+      this.init();
+      if (!this.ctx) return;
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      // Ascending pleasant crystal tone (440Hz -> 880Hz)
+      osc.frequency.setValueAtTime(440, now);
+      osc.frequency.exponentialRampToValueAtTime(880, now + 0.12);
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.linearRampToValueAtTime(0.18, now + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.20);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.20);
+      if (navigator.vibrate) navigator.vibrate(20);
+    } catch (e) {
+      console.warn('[VoiceAudio] playStartChime:', e);
+    }
+  },
+  playStopChime() {
+    try {
+      this.init();
+      if (!this.ctx) return;
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      // Descending pleasant confirmation tone (880Hz -> 587.33Hz)
+      osc.frequency.setValueAtTime(880, now);
+      osc.frequency.exponentialRampToValueAtTime(587.33, now + 0.14);
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.linearRampToValueAtTime(0.16, now + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.22);
+      if (navigator.vibrate) navigator.vibrate([15, 25, 15]);
+    } catch (e) {
+      console.warn('[VoiceAudio] playStopChime:', e);
+    }
+  },
+  playCancelChime() {
+    try {
+      this.init();
+      if (!this.ctx) return;
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(340, now);
+      osc.frequency.exponentialRampToValueAtTime(220, now + 0.12);
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.linearRampToValueAtTime(0.14, now + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.18);
+    } catch (e) { }
+  }
+};
+window.VoiceAudio = VoiceAudio;
+
+// ═══════ VOICE INPUT (GEMINI-STYLE CONTINUOUS AUDIO RECORDING & TRANSCRIBE) ═══════
 let _mediaRecorder = null;
 let _audioStream = null;
 let _audioChunks = [];
-let _isListening = false;
+let _isVoiceRecording = false;
+let _isVoiceProcessing = false;
 let _sessionBaseText = '';
-let _voiceRestartTimer = null;
 let _voiceSecondsTimer = null;
 let _voiceSeconds = 0;
-let _userExplicitStop = false;
-let _webSpeechCapturedText = false;
+let _voiceHoldTimeout = null;
+let _isVoiceHolding = false;
 
-function _updateVoiceUI(listening, isFallbackProcessing) {
+function _updateVoiceUI(recording, processing) {
+  _isVoiceRecording = !!recording;
+  _isVoiceProcessing = !!processing;
+
   const voiceBtn = document.getElementById('chatVoiceBtn');
   const indicator = document.getElementById('chatVoiceIndicator');
   const statusText = document.getElementById('chatVoiceStatus');
+  const tFunc = window.vitalTrackI18n?.t || ((k) => k);
 
   if (voiceBtn) {
-    if (listening) {
+    if (recording) {
       voiceBtn.classList.add('recording');
-      voiceBtn.innerHTML = '<i class="ri-mic-fill" style="color:#ef4444; animation:pulse 1s infinite;"></i>';
-      voiceBtn.title = "Arrêter et valider";
+      voiceBtn.innerHTML = '<i class="ri-mic-fill" style="color:#ef4444; animation:pulse 0.9s infinite;"></i>';
+      voiceBtn.title = tFunc('chat.voiceDone') || 'Terminer et transcrire';
+    } else if (processing) {
+      voiceBtn.classList.remove('recording');
+      voiceBtn.innerHTML = '<i class="ri-loader-4-line" style="color:var(--accent); animation:spin 1s linear infinite;"></i>';
+      voiceBtn.title = tFunc('chat.transcribingStatus') || 'Transcription en cours...';
     } else {
       voiceBtn.classList.remove('recording');
       voiceBtn.innerHTML = '<i class="ri-mic-line"></i>';
-      voiceBtn.title = "Saisie vocale en direct";
+      voiceBtn.title = tFunc('chat.voiceTooltip') || 'Saisie vocale';
     }
   }
 
   if (indicator) {
-    indicator.style.display = (listening || isFallbackProcessing) ? 'flex' : 'none';
+    indicator.style.display = (recording || processing) ? 'flex' : 'none';
   }
 
-  if (listening) {
+  if (recording) {
     _voiceSeconds = 0;
     if (_voiceSecondsTimer) clearInterval(_voiceSecondsTimer);
     const updateTimerLabel = () => {
       const mins = Math.floor(_voiceSeconds / 60);
       const secs = String(_voiceSeconds % 60).padStart(2, '0');
-      if (statusText && _isListening) {
-        statusText.textContent = `🎙️ Écoute en direct (${mins}:${secs}) · Parlez à votre rythme`;
+      if (statusText && _isVoiceRecording) {
+        statusText.textContent = `🎙️ ${mins}:${secs} · ${tFunc('chat.recordingStatus') || 'Enregistrement en cours... Parlez à votre rythme'}`;
       }
     };
     updateTimerLabel();
@@ -2333,42 +2421,81 @@ function _updateVoiceUI(listening, isFallbackProcessing) {
       clearInterval(_voiceSecondsTimer);
       _voiceSecondsTimer = null;
     }
-    if (isFallbackProcessing && statusText) {
-      statusText.textContent = '⏳ Transcription en cours...';
+    if (processing && statusText) {
+      statusText.textContent = tFunc('chat.transcribingStatus') || '⏳ Transcription IA en cours...';
     }
   }
 }
 
-async function _startMediaRecorder() {
+async function startVoiceRecording() {
+  if (_isVoiceRecording || _isVoiceProcessing) return;
+
+  const input = document.getElementById('chatInput');
+  _sessionBaseText = input && input.value ? input.value.trim() : '';
   _audioChunks = [];
+
   try {
-    if (navigator.mediaDevices && typeof navigator.mediaDevices.getUserMedia === 'function') {
-      _audioStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mimeTypes = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg', ''];
-      let selectedMime = '';
-      for (const m of mimeTypes) {
-        if (!m || (typeof MediaRecorder.isTypeSupported === 'function' && MediaRecorder.isTypeSupported(m))) {
-          selectedMime = m;
-          break;
-        }
-      }
-      _mediaRecorder = selectedMime ? new MediaRecorder(_audioStream, { mimeType: selectedMime }) : new MediaRecorder(_audioStream);
-      _mediaRecorder.ondataavailable = (e) => {
-        if (e.data && e.data.size > 0) {
-          _audioChunks.push(e.data);
-        }
-      };
-      _mediaRecorder.start(250);
+    if (!navigator.mediaDevices || typeof navigator.mediaDevices.getUserMedia !== 'function') {
+      if (window.showToast) window.showToast('Microphone non supporté sur ce navigateur.', 'error');
+      return;
     }
-  } catch (e) {
-    console.warn('[Voice] MediaRecorder capture not available or refused:', e.message);
-    _mediaRecorder = null;
-    _audioStream = null;
+
+    _audioStream = await navigator.mediaDevices.getUserMedia({
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true
+      }
+    });
+
+    const mimeTypes = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg', ''];
+    let selectedMime = '';
+    for (const m of mimeTypes) {
+      if (!m || (typeof MediaRecorder.isTypeSupported === 'function' && MediaRecorder.isTypeSupported(m))) {
+        selectedMime = m;
+        break;
+      }
+    }
+
+    _mediaRecorder = selectedMime
+      ? new MediaRecorder(_audioStream, { mimeType: selectedMime })
+      : new MediaRecorder(_audioStream);
+
+    _mediaRecorder.ondataavailable = (e) => {
+      if (e.data && e.data.size > 0) {
+        _audioChunks.push(e.data);
+      }
+    };
+
+    _mediaRecorder.start(250);
+    VoiceAudio.playStartChime();
+    _updateVoiceUI(true, false);
+
+    if (input) {
+      input.placeholder = "🎙️ Parlez librement, appuyez à nouveau pour valider...";
+    }
+  } catch (err) {
+    console.warn('[Voice] getUserMedia error:', err);
+    _cleanupAudioStream();
+    _updateVoiceUI(false, false);
+    if (window.showToast) {
+      window.showToast("⚠️ Accès micro refusé. Veuillez autoriser le microphone.", "error");
+    }
   }
 }
 
-function _stopMediaRecorder() {
-  return new Promise((resolve) => {
+async function stopVoiceRecording(e) {
+  if (e && typeof e.preventDefault === 'function') {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  if (!_isVoiceRecording && !_mediaRecorder) return;
+
+  VoiceAudio.playStopChime();
+  _updateVoiceUI(false, true);
+
+  const audioBlob = await new Promise((resolve) => {
     if (_mediaRecorder && _mediaRecorder.state !== 'inactive') {
       _mediaRecorder.onstop = () => {
         const mime = _mediaRecorder.mimeType || 'audio/webm';
@@ -2387,25 +2514,22 @@ function _stopMediaRecorder() {
       resolve(null);
     }
   });
-}
 
-function _cleanupAudioStream() {
-  if (_audioStream) {
-    try {
-      _audioStream.getTracks().forEach(track => track.stop());
-    } catch (e) { }
-    _audioStream = null;
+  const input = document.getElementById('chatInput');
+  const tFunc = window.vitalTrackI18n?.t || ((k) => k);
+
+  if (input) {
+    input.placeholder = tFunc('chat.inputPlaceholder') || "Posez une question, explorez un sujet santé...";
   }
-  _mediaRecorder = null;
-}
 
-async function _transcribeWithFallbackApi(audioBlob) {
   if (!audioBlob || audioBlob.size < 1200) {
+    console.log('[Voice] Audio too short or empty, ignoring.');
     _updateVoiceUI(false, false);
     return;
   }
+
+  // Transcribe via Google Gemini Multimodal Audio (/api/transcribe)
   try {
-    _updateVoiceUI(false, true);
     const reader = new FileReader();
     reader.readAsDataURL(audioBlob);
     reader.onloadend = async () => {
@@ -2416,30 +2540,41 @@ async function _transcribeWithFallbackApi(audioBlob) {
           return;
         }
 
-        const lang = window.vitalTrackI18n?.getLanguage ? window.vitalTrackI18n.getLanguage() : 'fr';
+        const activeLang = window.vitalTrackI18n?.getLanguage ? window.vitalTrackI18n.getLanguage() : 'fr';
         const resp = await fetch('/api/transcribe', {
           method: 'POST',
           headers: getApiHeaders(),
           body: JSON.stringify({
             audioData: base64Data,
             mimeType: audioBlob.type || 'audio/webm',
-            language: lang
+            language: activeLang
           })
         });
 
         if (resp.ok) {
           const resJson = await resp.json();
           if (resJson && resJson.text && resJson.text.trim()) {
-            const input = document.getElementById('chatInput');
+            const transcribedText = resJson.text.trim();
             if (input) {
               const prefix = _sessionBaseText ? _sessionBaseText.trim() + ' ' : '';
-              input.value = (prefix + resJson.text.trim()).replace(/\s+/g, ' ').trim();
+              input.value = (prefix + transcribedText).replace(/\s+/g, ' ').trim();
               input.focus();
+              if (typeof input.setSelectionRange === 'function') {
+                input.setSelectionRange(input.value.length, input.value.length);
+              }
             }
+          } else {
+            console.warn('[Voice] Empty transcription response');
+          }
+        } else {
+          const errData = await resp.json().catch(() => ({}));
+          console.warn('[Voice] Transcription error:', errData);
+          if (window.showToast) {
+            window.showToast("⚠️ La transcription n'a pas pu aboutir. Réessayez.", "warning");
           }
         }
       } catch (err) {
-        console.warn('[Voice] Fallback transcription error:', err);
+        console.warn('[Voice] Transcribe request failed:', err);
       } finally {
         _updateVoiceUI(false, false);
       }
@@ -2450,49 +2585,37 @@ async function _transcribeWithFallbackApi(audioBlob) {
   }
 }
 
-// ═══════ SPEECH MERGER & DEDUPLICATION HELPER ═══════
-function _mergeTranscripts(accumulated, currentChunk) {
-  if (!accumulated) return (currentChunk || '').trim();
-  if (!currentChunk) return (accumulated || '').trim();
-  
-  const acc = accumulated.trim();
-  const curr = currentChunk.trim();
-  
-  // 1. If curr already contains or starts with acc (Chrome buffer replay)
-  if (curr.toLowerCase().startsWith(acc.toLowerCase())) {
-    return curr;
-  }
-  
-  // 2. If acc already ends with curr
-  if (acc.toLowerCase().endsWith(curr.toLowerCase())) {
-    return acc;
+function cancelVoiceInput(e) {
+  if (e && typeof e.preventDefault === 'function') {
+    e.preventDefault();
+    e.stopPropagation();
   }
 
-  // 3. Find overlap between end of acc and start of curr
-  const accWords = acc.split(/\s+/);
-  const currWords = curr.split(/\s+/);
-  
-  let maxOverlap = 0;
-  const maxCheck = Math.min(accWords.length, currWords.length, 12);
-  
-  for (let len = 1; len <= maxCheck; len++) {
-    const accEnd = accWords.slice(-len).join(' ').toLowerCase();
-    const currStart = currWords.slice(0, len).join(' ').toLowerCase();
-    if (accEnd === currStart) {
-      maxOverlap = len;
-    }
+  VoiceAudio.playCancelChime();
+  _cleanupAudioStream();
+
+  const input = document.getElementById('chatInput');
+  const tFunc = window.vitalTrackI18n?.t || ((k) => k);
+
+  if (input) {
+    input.value = _sessionBaseText;
+    input.placeholder = tFunc('chat.inputPlaceholder') || "Posez une question, explorez un sujet santé...";
+    input.focus();
   }
-  
-  if (maxOverlap > 0) {
-    const nonOverlappingCurr = currWords.slice(maxOverlap).join(' ');
-    return (acc + ' ' + nonOverlappingCurr).trim();
-  }
-  
-  return (acc + ' ' + curr).trim();
+
+  _updateVoiceUI(false, false);
 }
-window._mergeTranscripts = _mergeTranscripts;
 
-let _accumulatedFinalText = '';
+function _cleanupAudioStream() {
+  if (_audioStream) {
+    try {
+      _audioStream.getTracks().forEach(track => track.stop());
+    } catch (e) { }
+    _audioStream = null;
+  }
+  _mediaRecorder = null;
+  _audioChunks = [];
+}
 
 function toggleVoiceInput(forceState, e) {
   if (e && typeof e.preventDefault === 'function') {
@@ -2500,199 +2623,59 @@ function toggleVoiceInput(forceState, e) {
     e.stopPropagation();
   }
 
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  const input = document.getElementById('chatInput');
+  const shouldStart = forceState !== undefined ? forceState : !_isVoiceRecording;
 
-  const shouldStart = forceState !== undefined ? forceState : !_isListening;
+  if (shouldStart) {
+    startVoiceRecording();
+  } else {
+    stopVoiceRecording();
+  }
+}
 
-  if (!shouldStart) {
-    // 🛑 Arrêt demandé par l'utilisateur
-    _userExplicitStop = true;
-    _isListening = false;
+// Initialisation des événements Hold-To-Talk sur le bouton microphone
+function initVoiceButtonEvents() {
+  const btn = document.getElementById('chatVoiceBtn');
+  if (!btn || btn._voiceEventsBound) return;
+  btn._voiceEventsBound = true;
 
-    if (_voiceRestartTimer) {
-      clearTimeout(_voiceRestartTimer);
-      _voiceRestartTimer = null;
-    }
+  let pointerDownTime = 0;
 
-    if (_speechRecognition) {
-      try {
-        _speechRecognition.onresult = null;
-        _speechRecognition.onend = null;
-        _speechRecognition.onerror = null;
-        _speechRecognition.stop();
-      } catch (err) { }
-      _speechRecognition = null;
-    }
-
-    _updateVoiceUI(false, false);
-    if (input) input.focus();
-
-    // Si WebSpeech était actif, le texte est DÉJÀ écrit en direct dans le champ (0 latence, 0 quota !)
-    if (_webSpeechCapturedText || SpeechRecognition) {
-      _stopMediaRecorder();
-      return;
-    }
-
-    // Fallback pour navigateurs sans WebSpeech (ex: Firefox)
-    _stopMediaRecorder().then(audioBlob => {
-      if (audioBlob) {
-        _transcribeWithFallbackApi(audioBlob);
+  btn.addEventListener('pointerdown', (e) => {
+    if (e.button !== 0) return; // Only primary button
+    pointerDownTime = Date.now();
+    _isVoiceHolding = false;
+    _voiceHoldTimeout = setTimeout(() => {
+      _isVoiceHolding = true;
+      if (!_isVoiceRecording) {
+        startVoiceRecording();
       }
-    });
-    return;
-  }
+    }, 400);
+  });
 
-  // 🎙️ Démarrage d'une nouvelle session vocale en direct
-  _userExplicitStop = false;
-  _isListening = true;
-  _webSpeechCapturedText = false;
-  _sessionBaseText = input && input.value ? input.value.trim() : '';
-  _accumulatedFinalText = '';
-
-  _updateVoiceUI(true, false);
-
-  if (!SpeechRecognition) {
-    // Navigateur sans WebSpeech (ex: Firefox) : enregistrement audio de secours
-    _startMediaRecorder();
-    return;
-  }
-
-  function startRecognitionSession() {
-    if (_userExplicitStop) return;
-
-    if (_speechRecognition) {
-      try {
-        _speechRecognition.onresult = null;
-        _speechRecognition.onend = null;
-        _speechRecognition.onerror = null;
-        _speechRecognition.abort();
-      } catch (err) { }
-      _speechRecognition = null;
+  const handlePointerUp = (e) => {
+    if (_voiceHoldTimeout) {
+      clearTimeout(_voiceHoldTimeout);
+      _voiceHoldTimeout = null;
     }
-
-    try {
-      _speechRecognition = new SpeechRecognition();
-      window._speechRecognition = _speechRecognition;
-
-      const activeLang = window.vitalTrackI18n?.getLanguage ? window.vitalTrackI18n.getLanguage() : 'fr';
-      const langMap = {
-        'fr': 'fr-FR',
-        'fr-CA': 'fr-CA',
-        'en': 'en-US',
-        'es': 'es-ES'
-      };
-      _speechRecognition.lang = langMap[activeLang] || 'fr-FR';
-      _speechRecognition.continuous = true;
-      _speechRecognition.interimResults = true;
-      _speechRecognition.maxAlternatives = 1;
-
-      let sessionFinal = '';
-
-      _speechRecognition.onstart = () => {
-        if (input) input.focus();
-      };
-
-      _speechRecognition.onresult = (event) => {
-        let currentFinal = '';
-        let currentInterim = '';
-
-        for (let i = 0; i < event.results.length; ++i) {
-          const piece = (event.results[i] && event.results[i][0] && event.results[i][0].transcript) ? event.results[i][0].transcript : '';
-          if (event.results[i].isFinal) {
-            currentFinal += (currentFinal ? ' ' : '') + piece.trim();
-          } else {
-            currentInterim += (currentInterim ? ' ' : '') + piece.trim();
-          }
-        }
-
-        sessionFinal = currentFinal;
-
-        const sessionSpoken = [currentFinal, currentInterim].filter(Boolean).join(' ').trim();
-        if (sessionSpoken) {
-          _webSpeechCapturedText = true;
-        }
-
-        const totalSpoken = _mergeTranscripts(_accumulatedFinalText, sessionSpoken);
-
-        const fullText = _sessionBaseText
-          ? (_sessionBaseText + ' ' + totalSpoken).trim()
-          : totalSpoken;
-
-        if (input) {
-          input.value = fullText;
-        }
-      };
-
-      _speechRecognition.onerror = (event) => {
-        console.warn('[Voice] WebSpeech notice:', event.error);
-        if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
-          if (window.showToast) {
-            window.showToast("⚠️ Accès micro refusé. Autorisez le microphone pour parler.", "error");
-          }
-          toggleVoiceInput(false);
-          return;
-        }
-      };
-
-      _speechRecognition.onend = () => {
-        if (_isListening && !_userExplicitStop) {
-          if (sessionFinal) {
-            _accumulatedFinalText = _mergeTranscripts(_accumulatedFinalText, sessionFinal);
-          }
-          _voiceRestartTimer = setTimeout(() => {
-            if (_isListening && !_userExplicitStop) {
-              startRecognitionSession();
-            }
-          }, 100);
-        }
-      };
-
-      _speechRecognition.start();
-    } catch (err) {
-      console.warn('[Voice] WebSpeech fallback initialization:', err);
-      _startMediaRecorder();
+    if (_isVoiceHolding) {
+      _isVoiceHolding = false;
+      if (_isVoiceRecording) {
+        stopVoiceRecording(e);
+      }
     }
-  }
+  };
 
-  startRecognitionSession();
+  btn.addEventListener('pointerup', handlePointerUp);
+  btn.addEventListener('pointerleave', handlePointerUp);
+  btn.addEventListener('pointercancel', handlePointerUp);
 }
 
-function cancelVoiceInput(e) {
-  if (e && typeof e.preventDefault === 'function') {
-    e.preventDefault();
-    e.stopPropagation();
-  }
-
-  _userExplicitStop = true;
-  _isListening = false;
-  _webSpeechCapturedText = false;
-
-  if (_voiceRestartTimer) {
-    clearTimeout(_voiceRestartTimer);
-    _voiceRestartTimer = null;
-  }
-
-  if (_speechRecognition) {
-    try {
-      _speechRecognition.onresult = null;
-      _speechRecognition.onend = null;
-      _speechRecognition.onerror = null;
-      _speechRecognition.abort();
-    } catch (err) { }
-    _speechRecognition = null;
-  }
-
-  _stopMediaRecorder();
-
-  const input = document.getElementById('chatInput');
-  if (input) {
-    input.value = _sessionBaseText;
-    input.focus();
-  }
-
-  _updateVoiceUI(false, false);
-}
+window.VoiceAudio = VoiceAudio;
+window.startVoiceRecording = startVoiceRecording;
+window.stopVoiceRecording = stopVoiceRecording;
+window.cancelVoiceInput = cancelVoiceInput;
+window.toggleVoiceInput = toggleVoiceInput;
+window.initVoiceButtonEvents = initVoiceButtonEvents;
 
 // ═══════ IMAGE UPLOAD & PREVIEW ═══════
 let pendingChatImage = null; // { mimeType, data, dataUri }
