@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // MATERIA MEDICA & RAINTREE HERBAL LOCALIZATION ENGINE (i18n)
-// Provides Spanish (ES), English (EN), French (FR), and Canadian (FR-CA)
+// Complete Spanish (ES), English (EN), French (FR), and Canadian (FR-CA)
 // clinical translations for all 127 Amazonian herbs and 6 foundational protocols.
 // ═══════════════════════════════════════════════════════════════════════════════
 
@@ -370,6 +370,117 @@ export const CATEGORY_I18N = {
     "es": "Riñones, Linfa y Remineralización",
     "en": "Kidneys, Lymph & Remineralization",
     "fr": "Reins, Lymphe & Reminéralisation"
+  }
+};
+
+export const HERB_NAMES_I18N = {
+  "abuta": {
+    "es": "Abuta (Hierba de las Comadronas)",
+    "en": "Abuta (Midwife's Herb)"
+  },
+  "acai": {
+    "es": "Açaí (Palma de Açaí)",
+    "en": "Acai Palm"
+  },
+  "acerola": {
+    "es": "Acerola",
+    "en": "Acerola Cherry"
+  },
+  "catclaw": {
+    "es": "Uña de Gato",
+    "en": "Cat's Claw (Uña de Gato)"
+  },
+  "chanca": {
+    "es": "Chanca Piedra (Quebra Pedra)",
+    "en": "Chanca Piedra (Stone Breaker)"
+  },
+  "sangre": {
+    "es": "Sangre de Grado (Sangre de Drago)",
+    "en": "Dragon's Blood (Sangre de Grado)"
+  },
+  "paudarco": {
+    "es": "Pau d'Arco (Lapacho)",
+    "en": "Pau d'Arco (Lapacho)"
+  },
+  "boldo": {
+    "es": "Boldo",
+    "en": "Boldo"
+  },
+  "boldo-amazonie": {
+    "es": "Boldo de la Amazonía",
+    "en": "Amazonian Boldo"
+  },
+  "carqueja": {
+    "es": "Carqueja",
+    "en": "Carqueja"
+  },
+  "espinheira": {
+    "es": "Espinheira Santa",
+    "en": "Espinheira Santa"
+  },
+  "guaco": {
+    "es": "Guaco (Liana de Serpientes)",
+    "en": "Guaco (Snake Vine)"
+  },
+  "maca": {
+    "es": "Maca Andina (Ginseng Peruano)",
+    "en": "Maca (Peruvian Ginseng)"
+  },
+  "suma": {
+    "es": "Suma (Ginseng Brasileño)",
+    "en": "Suma (Brazilian Ginseng)"
+  },
+  "mulungu": {
+    "es": "Mulungu (Árbol del Sueño)",
+    "en": "Mulungu (Sleep Tree)"
+  },
+  "jatoba": {
+    "es": "Jatobá (Copal Amazónico)",
+    "en": "Jatoba (Brazilian Copal)"
+  },
+  "guarana": {
+    "es": "Guaraná",
+    "en": "Guarana"
+  },
+  "catuaba": {
+    "es": "Catuaba",
+    "en": "Catuaba"
+  },
+  "anamu": {
+    "es": "Anamú (Hierba de Ajo)",
+    "en": "Anamu (Garlic Herb)"
+  },
+  "andiroba": {
+    "es": "Andiroba",
+    "en": "Andiroba"
+  },
+  "copaiba": {
+    "es": "Copaiba (Bálsamo Amazónico)",
+    "en": "Copaiba (Amazon Balsam)"
+  },
+  "graviola": {
+    "es": "Guanábana / Graviola",
+    "en": "Graviola (Soursop)"
+  },
+  "simaruba": {
+    "es": "Simaruba (Corteza de Disentería)",
+    "en": "Simarouba (Dysentery Bark)"
+  },
+  "nettles": {
+    "es": "Ortiga Silvestre (Nettle)",
+    "en": "Wild Stinging Nettle"
+  },
+  "amorseco": {
+    "es": "Amor Seco (Desmodium Amazónico)",
+    "en": "Amor Seco (Amazonian Desmodium)"
+  },
+  "artichoke": {
+    "es": "Alcachofa Silvestre (Alcachofra)",
+    "en": "Wild Artichoke (Alcachofra)"
+  },
+  "muirapuama": {
+    "es": "Muira Puama (Madera de la Potencia)",
+    "en": "Muira Puama (Potency Wood)"
   }
 };
 
@@ -963,57 +1074,297 @@ export const INDICATIONS_I18N = {
   }
 };
 
+export const POSOLOGY_I18N = {
+  "1 cuillère à soupe d'écorce ou racine concassée par tasse, bouillir 15 min à feu doux.": {
+    "es": "1 cucharada de corteza o raíz triturada por taza, hervir 15 min a fuego lento.",
+    "en": "1 tablespoon of crushed bark or root per cup, simmer for 15 min over low heat."
+  },
+  "1 cuillère à soupe d'écorce ou racines concassées par tasse, faire bouillir 15 minutes à feu doux.": {
+    "es": "1 cucharada de corteza o raíces trituradas por taza, hervir 15 minutos a fuego lento.",
+    "en": "1 tablespoon of crushed bark or roots per cup, simmer for 15 minutes over low heat."
+  },
+  "1 cuillère à café à soupe de plante séchée par tasse d'eau chaude, infuser 10-15 min.": {
+    "es": "1 cucharada o cucharadita de planta seca por taza de agua caliente, infusionar 10-15 min.",
+    "en": "1 teaspoon to tablespoon of dried plant per cup of hot water, steep for 10-15 min."
+  },
+  "1 cuillère à café de feuilles ou sommités séchées par tasse d'eau frémissante, infuser 10 à 15 minutes.": {
+    "es": "1 cucharadita de hojas o sumidades secas por taza de agua a punto de hervir, infusionar 10 a 15 minutos.",
+    "en": "1 teaspoon of dried leaves or tops per cup of simmering water, steep for 10 to 15 minutes."
+  },
+  "1 à 2 cuillères à café de feuilles séchées par tasse, infuser 15 min dans de l'eau bouillante.": {
+    "es": "1 a 2 cucharaditas de hojas secas por taza, infusionar 15 min en agua hirviendo.",
+    "en": "1 to 2 teaspoons of dried leaves per cup, steep for 15 min in boiling water."
+  },
+  "2 à 3 ml (environ 40 à 60 gouttes) 2 fois par jour dans un peu d'eau.": {
+    "es": "2 a 3 ml (aprox. 40 a 60 gotas) 2 veces al día en un poco de agua.",
+    "en": "2 to 3 ml (approx. 40 to 60 drops) twice daily in a little water."
+  },
+  "2 à 4 ml (environ 30 à 60 gouttes) 2 fois par jour.": {
+    "es": "2 a 4 ml (aprox. 30 a 60 gotas) 2 veces al día.",
+    "en": "2 to 4 ml (approx. 30 to 60 drops) twice daily."
+  },
+  "2 à 3 ml (environ 40 à 60 gouttes) 2 fois par jour dans un demi-verre d'eau de source.": {
+    "es": "2 a 3 ml (aprox. 40 a 60 gotas) 2 veces al día en medio vaso de agua mineral.",
+    "en": "2 to 3 ml (approx. 40 to 60 drops) twice daily in half a glass of spring water."
+  },
+  "2 à 3 ml 2 fois par jour.": {
+    "es": "2 a 3 ml 2 veces al día.",
+    "en": "2 to 3 ml twice daily."
+  },
+  "500 mg à 1000 mg 2 fois par jour avec un verre d'eau pure.": {
+    "es": "500 mg a 1000 mg 2 veces al día con un vaso de agua pura.",
+    "en": "500 mg to 1000 mg twice daily with a glass of pure water."
+  },
+  "1 à 2 gélules de 500 mg 2 fois par jour.": {
+    "es": "1 a 2 cápsulas de 500 mg 2 veces al día.",
+    "en": "1 to 2 capsules of 500 mg twice daily."
+  },
+  "500 mg à 1000 mg par jour au réveil.": {
+    "es": "500 mg a 1000 mg al día al despertar.",
+    "en": "500 mg to 1000 mg daily upon waking."
+  },
+  "500 mg à 1000 mg 2 fois par jour.": {
+    "es": "500 mg a 1000 mg 2 veces al día.",
+    "en": "500 mg to 1000 mg twice daily."
+  },
+  "500 mg à 1000 mg 2 fois par jour au milieu des repas.": {
+    "es": "500 mg a 1000 mg 2 veces al día con las comidas.",
+    "en": "500 mg to 1000 mg twice daily with meals."
+  },
+  "Décoction : 1 tasse 2 à 3 fois par jour. Teinture : 2 à 3 ml 2 fois par jour. Gélules : 1 à 2 g 2 fois par jour.": {
+    "es": "Decocción: 1 taza 2 a 3 veces al día. Tintura: 2 a 3 ml 2 veces al día. Cápsulas: 1 a 2 g 2 veces al día.",
+    "en": "Decoction: 1 cup 2 to 3 times daily. Tincture: 2 to 3 ml twice daily. Capsules: 1 to 2 g twice daily."
+  },
+  "Poudre lyophilisée : 1 à 2 cuillères à café (3 à 5 g) par jour dans de l'eau tiède ou un jus de fruits frais.": {
+    "es": "Polvo liofilizado: 1 a 2 cucharaditas (3 a 5 g) al día en agua tibia o jugo de fruta fresca.",
+    "en": "Freeze-dried powder: 1 to 2 teaspoons (3 to 5 g) daily in warm water or fresh fruit juice."
+  },
+  "Poudre de fruit pur : 1 g (environ 1/2 cuillère à café) par jour fournissant un apport optimal en vitamine C naturelle.": {
+    "es": "Polvo de fruta pura: 1 g (aprox. 1/2 cucharadita) al día con aporte óptimo de vitamina C natural.",
+    "en": "Pure fruit powder: 1 g (approx. 1/2 teaspoon) daily providing optimal natural vitamin C."
+  },
+  "Décoction ou Infusion : 1 tasse 2 à 3 fois par jour. Teinture : 2 à 3 ml 2 fois par jour.": {
+    "es": "Decocción o Infusión: 1 taza 2 a 3 veces al día. Tintura: 2 a 3 ml 2 veces al día.",
+    "en": "Decoction or Infusion: 1 cup 2 to 3 times daily. Tincture: 2 to 3 ml twice daily."
+  },
+  "Infusion de feuilles : 1 tasse 2 fois par jour. Gélules de feuilles : 1 g 2 fois par jour.": {
+    "es": "Infusión de hojas: 1 taza 2 veces al día. Cápsulas de hojas: 1 g 2 veces al día.",
+    "en": "Leaf infusion: 1 cup twice daily. Leaf capsules: 1 g twice daily."
+  }
+};
+
+export const CONTRAINDICATIONS_I18N = {
+  "Déconseillé pendant la grossesse sans avis médical (relaxant utérin). Déconseillé en cas d'hypotension artérielle sévère ou de prise concomitante de médicaments cardiaques.": {
+    "es": "Desaconsejado durante el embarazo sin supervisión médica (relajante uterino). Desaconsejado en caso de hipotensión arterial severa o uso concomitante de medicamentos cardíacos.",
+    "en": "Not recommended during pregnancy without medical advice (uterine relaxant). Not recommended in case of severe arterial hypotension or concurrent cardiac medication."
+  },
+  "Aucune contre-indication connue aux doses alimentaires habituelles. Sans danger pour tous.": {
+    "es": "Sin contraindicaciones conocidas a dosis alimentarias habituales. Seguro para todos.",
+    "en": "No known contraindications at usual dietary doses. Safe for all."
+  },
+  "Prudence en cas d'hémochromatose (la vitamine C favorise l'absorption du fer) ou d'antécédents de calculs rénaux d'oxalate à très fortes doses continues.": {
+    "es": "Precaución en caso de hemocromatosis (la vitamina C favorece la absorción de hierro) o antecedentes de cálculos de oxalato a dosis muy elevadas continuas.",
+    "en": "Caution in case of hemochromatosis (vitamin C enhances iron absorption) or history of oxalate kidney stones at very high continuous doses."
+  },
+  "Peut abaisser la tension artérielle. Déconseillé en cas d'hypotension sans surveillance. Déconseillé pendant la grossesse.": {
+    "es": "Puede reducir la presión arterial. Desaconsejado en caso de hipotensión no controlada. Desaconsejado durante el embarazo.",
+    "en": "May lower blood pressure. Not recommended in case of unmonitored hypotension. Not recommended during pregnancy."
+  },
+  "Déconseillé aux femmes enceintes et allaitantes sans avis médical. Respecter les posologies indiquées.": {
+    "es": "Desaconsejado en mujeres embarazadas y en período de lactancia sin consulta médica. Respetar las dosis indicadas.",
+    "en": "Not recommended for pregnant or breastfeeding women without medical advice. Respect indicated dosages."
+  },
+  "Déconseillé en cas de maladie de Parkinson ou troubles neurodégénératifs moteurs (l'annonacine à très forte dose prolongée peut être neurotoxique). Déconseillé pendant la grossesse. Prudence en cas d'hypotension.": {
+    "es": "Desaconsejado en caso de enfermedad de Parkinson o trastornos neurodegenerativos motores (la anonacina en dosis muy altas y prolongadas puede ser neurotóxica). Desaconsejado durante el embarazo. Precaución en caso de hipotensión.",
+    "en": "Not recommended in Parkinson's disease or motor neurodegenerative disorders (annonacin at very high prolonged doses may be neurotoxic). Not recommended during pregnancy. Caution in hypotension."
+  }
+};
+
+export const ORIGIN_I18N = {
+  "Bassin amazonien et forêt tropicale sud-américaine": {
+    "es": "Cuenca amazónica y selva tropical sudamericana",
+    "en": "Amazon basin and South American rainforest"
+  }
+};
+
+export const PARTS_USED_I18N = {
+  "Racines, écorce de liane et feuilles": {
+    "es": "Raíces, corteza de liana y hojas",
+    "en": "Roots, vine bark, and leaves"
+  },
+  "Baies fraîches ou pulpe lyophilisée": {
+    "es": "Bayas frescas o pulpa liofilizada",
+    "en": "Fresh berries or freeze-dried pulp"
+  },
+  "Fruits mûrs ou poudre d'extrait pur": {
+    "es": "Frutos maduros o polvo de extracto puro",
+    "en": "Ripe fruits or pure extract powder"
+  },
+  "Feuilles, Écorce, Racines": {
+    "es": "Hojas, corteza, raíces",
+    "en": "Leaves, bark, roots"
+  },
+  "Feuilles, écorce, racines ou plante entière": {
+    "es": "Hojas, corteza, raíces o planta entera",
+    "en": "Leaves, bark, roots, or whole plant"
+  },
+  "Graines, Fruits mûrs": {
+    "es": "Semillas, frutos maduros",
+    "en": "Seeds, ripe fruits"
+  },
+  "Feuilles, Écorce, Graines, Fruits mûrs": {
+    "es": "Hojas, corteza, semillas, frutos maduros",
+    "en": "Leaves, bark, seeds, ripe fruits"
+  },
+  "Feuilles, Écorce": {
+    "es": "Hojas, corteza",
+    "en": "Leaves, bark"
+  },
+  "Feuilles, Écorce, Fruits mûrs": {
+    "es": "Hojas, corteza, frutos maduros",
+    "en": "Leaves, bark, ripe fruits"
+  },
+  "Racines": {
+    "es": "Raíces",
+    "en": "Roots"
+  },
+  "Écorce": {
+    "es": "Corteza",
+    "en": "Bark"
+  },
+  "Fleurs / Sommités": {
+    "es": "Flores / Sumidades floridas",
+    "en": "Flowers / Flowering tops"
+  },
+  "Feuilles": {
+    "es": "Hojas",
+    "en": "Leaves"
+  },
+  "Écorce, Graines": {
+    "es": "Corteza, semillas",
+    "en": "Bark, seeds"
+  },
+  "Feuilles, Racines": {
+    "es": "Hojas, raíces",
+    "en": "Leaves, roots"
+  },
+  "Écorce, Racines, Fruits mûrs": {
+    "es": "Corteza, raíces, frutos maduros",
+    "en": "Bark, roots, ripe fruits"
+  },
+  "Feuilles, écorce, graines et fruits": {
+    "es": "Hojas, corteza, semillas y frutos",
+    "en": "Leaves, bark, seeds, and fruits"
+  },
+  "Feuilles, Graines, Fleurs / Sommités": {
+    "es": "Hojas, semillas, flores / sumidades floridas",
+    "en": "Leaves, seeds, flowers / flowering tops"
+  },
+  "Feuilles, Écorce, Sève résineuse": {
+    "es": "Hojas, corteza, savia resinosa",
+    "en": "Leaves, bark, resinous sap"
+  },
+  "Écorce, Racines": {
+    "es": "Corteza, raíces",
+    "en": "Bark, roots"
+  },
+  "Feuilles, Graines, Fruits mûrs": {
+    "es": "Hojas, semillas, frutos maduros",
+    "en": "Leaves, seeds, ripe fruits"
+  },
+  "Feuilles, Bois & Tiges": {
+    "es": "Hojas, madera y tallos",
+    "en": "Leaves, wood & stems"
+  },
+  "Écorce, Bois & Tiges": {
+    "es": "Corteza, madera y tallos",
+    "en": "Bark, wood & stems"
+  },
+  "Feuilles, Fleurs / Sommités": {
+    "es": "Hojas, flores / sumidades floridas",
+    "en": "Leaves, flowers / flowering tops"
+  },
+  "Écorce, Sève résineuse": {
+    "es": "Corteza, savia resinosa",
+    "en": "Bark, resinous sap"
+  }
+};
+
+export const VITALIST_NOTES_I18N = {
+  "Plante majeure de drainage et d'apaisement des voies urogénitales. Dissout les tensions acides accumulées dans les reins et le bas-ventre.": {
+    "es": "Planta mayor de drenaje y alivio de las vías urogenitales. Disuelve tensiones ácidas acumuladas en riñones y pelvis.",
+    "en": "Major plant for drainage and soothing of the urogenital tract. Dissolves acidic tensions accumulated in kidneys and lower abdomen."
+  },
+  "Super-aliment électrique hautement biophotonique. Alcalinise le terrain et régénère les globules rouges sans surcharger le tube digestif.": {
+    "es": "Superalimento eléctrico altamente biofotónico. Alcaliniza el terreno y regenera los glóbulos rojos sin sobrecargar el tubo digestivo.",
+    "en": "Highly biophotonic electrical superfood. Alkalizes the terrain and regenerates red blood cells without overloading the digestive tract."
+  },
+  "Électrise les fluides corporels, alcalinise le sang et soutient intensément les glandes surrénales épuisées par le stress acide.": {
+    "es": "Electriza los fluidos corporales, alcaliniza la sangre y apoya intensamente las glándulas suprarrenales agotadas por estrés ácido.",
+    "en": "Electrifies body fluids, alkalizes the blood, and deeply supports adrenal glands exhausted by acidic stress."
+  },
+  "Fiche botanique Raintree traduite et adaptée selon la vision vitaliste pour le soutien de l'émonctoire : Anti-inflammatoire & Douleur.": {
+    "es": "Ficha botánica Raintree adaptada según la visión vitalista para el apoyo del emuntorio: Antiinflamatorio y Dolor.",
+    "en": "Raintree botanical monograph adapted according to the vitalist vision for emunctory support: Anti-inflammatory & Pain Relief."
+  },
+  "Fiche botanique Raintree traduite et adaptée selon la vision vitaliste pour le soutien de l'émonctoire : Purification & Antiparasitaire.": {
+    "es": "Ficha botánica Raintree adaptada según la visión vitalista para el apoyo del emuntorio: Purificación y Antiparasitario.",
+    "en": "Raintree botanical monograph adapted according to the vitalist vision for emunctory support: Purification & Antiparasitic."
+  },
+  "Fiche botanique Raintree traduite et adaptée selon la vision vitaliste pour le soutien de l'émonctoire : Hépato-Biliaire & Détox.": {
+    "es": "Ficha botánica Raintree adaptada según la visión vitalista para el apoyo del emuntorio: Hepatobiliar y Desintoxicación.",
+    "en": "Raintree botanical monograph adapted according to the vitalist vision for emunctory support: Hepato-Biliary & Detox."
+  },
+  "Fiche botanique Raintree traduite et adaptée selon la vision vitaliste pour le soutien de l'émonctoire : Immunomodulateur & Antiviral.": {
+    "es": "Ficha botánica Raintree adaptada según la visión vitalista para el apoyo del emuntorio: Inmunomodulador y Antiviral.",
+    "en": "Raintree botanical monograph adapted according to the vitalist vision for emunctory support: Immunomodulator & Antiviral."
+  },
+  "Fiche botanique Raintree traduite et adaptée selon la vision vitaliste pour le soutien de l'émonctoire : Materia Medica Raintree.": {
+    "es": "Ficha botánica Raintree adaptada según la visión vitalista para el apoyo del emuntorio: Materia Médica Raintree.",
+    "en": "Raintree botanical monograph adapted according to the vitalist vision for emunctory support: Raintree Materia Medica."
+  },
+  "Fiche botanique Raintree traduite et adaptée selon la vision vitaliste pour le soutien de l'émonctoire : Drainage Rénal & Lithiases.": {
+    "es": "Ficha botánica Raintree adaptada según la visión vitalista para el apoyo del emuntorio: Drenaje Renal y Litiasis.",
+    "en": "Raintree botanical monograph adapted according to the vitalist vision for emunctory support: Kidney Drainage & Lithiasis."
+  },
+  "Puissant nettoyeur du terrain biologique, favorise l'autolyse des tissus dégénérés et élimine les parasites profonds.": {
+    "es": "Potente limpiador del terreno biológico, favorece la autólisis de tejidos degenerados y elimina parásitos profundos.",
+    "en": "Powerful biological terrain cleanser, promotes autolysis of degenerated tissues and eliminates deep parasites."
+  }
+};
+
 function translateString(str, lang) {
   if (!str || typeof str !== 'string') return str || '';
   if (lang === 'fr' || lang === 'fr-CA') return str;
 
-  // 1. Check exact indication match
+  // 1. Exact indication match
   if (INDICATIONS_I18N[str] && INDICATIONS_I18N[str][lang]) {
     return INDICATIONS_I18N[str][lang];
   }
 
-  // 2. Generic term replacements for Spanish
-  if (lang === 'es') {
-    return str
-      .replace(/\bDécoction\b/gi, 'Decocción')
-      .replace(/\bInfusion\b/gi, 'Infusión')
-      .replace(/\bTeinture\b/gi, 'Tintura')
-      .replace(/\bGélules\b/gi, 'Cápsulas')
-      .replace(/\bPoudre\b/gi, 'Polvo')
-      .replace(/\bGouttes\b/gi, 'Gotas')
-      .replace(/\bfois par jour\b/gi, 'veces al día')
-      .replace(/\bpar jour\b/gi, 'al día')
-      .replace(/\btasse\b/gi, 'taza')
-      .replace(/\btasses\b/gi, 'tazas')
-      .replace(/\bà jeun\b/gi, 'en ayunas')
-      .replace(/\bmatin\b/gi, 'mañana')
-      .replace(/\bsoir\b/gi, 'noche')
-      .replace(/\baprès-midi\b/gi, 'tarde')
-      .replace(/\bavec un verre d'eau\b/gi, 'con un vaso de agua')
-      .replace(/\bavant les repas\b/gi, 'antes de las comidas')
-      .replace(/\baprès les repas\b/gi, 'después de las comidas');
+  // 2. Exact posology match
+  if (POSOLOGY_I18N[str] && POSOLOGY_I18N[str][lang]) {
+    return POSOLOGY_I18N[str][lang];
   }
 
-  // 3. Generic term replacements for English
-  if (lang === 'en') {
-    return str
-      .replace(/\bDécoction\b/gi, 'Decoction')
-      .replace(/\bInfusion\b/gi, 'Infusion')
-      .replace(/\bTeinture\b/gi, 'Tincture')
-      .replace(/\bGélules\b/gi, 'Capsules')
-      .replace(/\bPoudre\b/gi, 'Powder')
-      .replace(/\bGouttes\b/gi, 'Drops')
-      .replace(/\bfois par jour\b/gi, 'times daily')
-      .replace(/\bpar jour\b/gi, 'daily')
-      .replace(/\btasse\b/gi, 'cup')
-      .replace(/\btasses\b/gi, 'cups')
-      .replace(/\bà jeun\b/gi, 'on an empty stomach')
-      .replace(/\bmatin\b/gi, 'morning')
-      .replace(/\bsoir\b/gi, 'evening')
-      .replace(/\baprès-midi\b/gi, 'afternoon')
-      .replace(/\bavec un verre d'eau\b/gi, 'with a glass of water')
-      .replace(/\bavant les repas\b/gi, 'before meals')
-      .replace(/\baprès les repas\b/gi, 'after meals');
+  // 3. Exact contraindications match
+  if (CONTRAINDICATIONS_I18N[str] && CONTRAINDICATIONS_I18N[str][lang]) {
+    return CONTRAINDICATIONS_I18N[str][lang];
+  }
+
+  // 4. Exact origin match
+  if (ORIGIN_I18N[str] && ORIGIN_I18N[str][lang]) {
+    return ORIGIN_I18N[str][lang];
+  }
+
+  // 5. Exact parts used match
+  if (PARTS_USED_I18N[str] && PARTS_USED_I18N[str][lang]) {
+    return PARTS_USED_I18N[str][lang];
+  }
+
+  // 6. Exact vitalist note match
+  if (VITALIST_NOTES_I18N[str] && VITALIST_NOTES_I18N[str][lang]) {
+    return VITALIST_NOTES_I18N[str][lang];
   }
 
   return str;
@@ -1022,6 +1373,9 @@ function translateString(str, lang) {
 export function getLocalizedHerb(herb, lang = 'fr') {
   if (!herb) return herb;
   const currentLang = (lang && ['fr', 'fr-CA', 'en', 'es'].includes(lang)) ? lang : 'fr';
+
+  const localizedName = (HERB_NAMES_I18N[herb.id] && HERB_NAMES_I18N[herb.id][currentLang])
+    || herb.name;
 
   const localizedTropismLabel = (TROPISM_I18N[herb.tropismBadge?.label] && TROPISM_I18N[herb.tropismBadge.label][currentLang])
     || herb.tropismBadge?.label
@@ -1040,6 +1394,121 @@ export function getLocalizedHerb(herb, lang = 'fr') {
     }
   }
 
+  const localizedOrigin = translateString(herb.origin, currentLang);
+  const localizedPartsUsed = translateString(herb.partsUsed, currentLang);
+  const localizedContraindications = translateString(herb.contraindications, currentLang);
+  const localizedVitalistNote = translateString(herb.vitalistNote, currentLang);
+
+  const localizedSynonyms = (herb.synonyms || []).map(s => {
+    if (currentLang === 'es') {
+      return s
+        .replace(/Herbe des Sages-Femmes/gi, 'Hierba de las Comadronas')
+        .replace(/Fausse pareira/gi, 'Falsa pareira')
+        .replace(/Liane patte de cheval/gi, 'Liana pata de caballo')
+        .replace(/Baie d'Açaï/gi, 'Baya de Açaí')
+        .replace(/Palmier Açaï/gi, 'Palma de Açaí')
+        .replace(/Cerise des Barbades/gi, 'Cereza de Barbados')
+        .replace(/Cerise des Antilles/gi, 'Cereza de las Antillas')
+        .replace(/Herbe aux puces/gi, 'Hierba de las pulgas')
+        .replace(/Arbre à ail/gi, 'Árbol de ajo')
+        .replace(/Racine amère/gi, 'Raíz amarga')
+        .replace(/Écorce de dysenterie/gi, 'Corteza de disentería')
+        .replace(/Sang du dragon/gi, 'Sangre de drago')
+        .replace(/Griffe de chat/gi, 'Uña de gato')
+        .replace(/Ginseng brésilien/gi, 'Ginseng brasileño')
+        .replace(/Bois bandé/gi, 'Madera de la potencia')
+        .replace(/Arbre à sommeil/gi, 'Árbol del sueño');
+    }
+    if (currentLang === 'en') {
+      return s
+        .replace(/Herbe des Sages-Femmes/gi, "Midwife's Herb")
+        .replace(/Fausse pareira/gi, 'False pareira')
+        .replace(/Liane patte de cheval/gi, 'Horsefoot vine')
+        .replace(/Baie d'Açaï/gi, 'Acai berry')
+        .replace(/Palmier Açaï/gi, 'Acai palm')
+        .replace(/Cerise des Barbades/gi, 'Barbados cherry')
+        .replace(/Cerise des Antilles/gi, 'West Indian cherry')
+        .replace(/Herbe aux puces/gi, 'Flea herb')
+        .replace(/Arbre à ail/gi, 'Garlic tree')
+        .replace(/Racine amère/gi, 'Bitter root')
+        .replace(/Écorce de dysenterie/gi, 'Dysentery bark')
+        .replace(/Sang du dragon/gi, "Dragon's blood")
+        .replace(/Griffe de chat/gi, "Cat's claw")
+        .replace(/Ginseng brésilien/gi, 'Brazilian ginseng')
+        .replace(/Bois bandé/gi, 'Potency wood')
+        .replace(/Arbre à sommeil/gi, 'Sleep tree');
+    }
+    return s;
+  });
+
+  const localizedCompounds = (herb.activeCompounds || []).map(c => {
+    if (currentLang === 'es') {
+      return c
+        .replace(/Alcaloïdes isoquinoléiques/gi, 'Alcaloides isoquinolínicos')
+        .replace(/tétrandrine, cissampéline/gi, 'tetrandrina, cisampelina')
+        .replace(/Flavonoïdes antioxydants/gi, 'Flavonoides antioxidantes')
+        .replace(/Tanins astringents/gi, 'Taninos astringentes')
+        .replace(/Saponines végétales/gi, 'Saponinas vegetales')
+        .replace(/Saponines triterpéniques/gi, 'Saponinas triterpénicas')
+        .replace(/Principes amers dépuratifs/gi, 'Principios amargos depurativos')
+        .replace(/Polyphénols végétaux/gi, 'Polifenoles vegetales')
+        .replace(/Lignanes hépatoprotecteurs/gi, 'Lignanos hepatoprotectores')
+        .replace(/Anthocyanes/gi, 'Antocianinas')
+        .replace(/Polyphénols et proanthocyanidines/gi, 'Polifenoles y proantocianidinas')
+        .replace(/Acides gras essentiels/gi, 'Ácidos grasos esenciales')
+        .replace(/Minéraux/gi, 'Minerales')
+        .replace(/fer, calcium, potassium, phosphore/gi, 'hierro, calcio, potasio, fósforo')
+        .replace(/Acide ascorbique naturel/gi, 'Ácido ascórbico natural')
+        .replace(/Bioflavonoïdes et rutine/gi, 'Bioflavonoides y rutina')
+        .replace(/Caroténoïdes protecteurs/gi, 'Carotenoides protectores')
+        .replace(/Oligo-éléments/gi, 'Oligoelementos');
+    }
+    if (currentLang === 'en') {
+      return c
+        .replace(/Alcaloïdes isoquinoléiques/gi, 'Isoquinoline alkaloids')
+        .replace(/tétrandrine, cissampéline/gi, 'tetrandrine, cissampeline')
+        .replace(/Flavonoïdes antioxydants/gi, 'Antioxidant flavonoids')
+        .replace(/Tanins astringents/gi, 'Astringent tannins')
+        .replace(/Saponines végétales/gi, 'Plant saponins')
+        .replace(/Saponines triterpéniques/gi, 'Triterpene saponins')
+        .replace(/Principes amers dépuratifs/gi, 'Purifying bitter principles')
+        .replace(/Polyphénols végétaux/gi, 'Plant polyphenols')
+        .replace(/Lignanes hépatoprotecteurs/gi, 'Hepatoprotective lignans')
+        .replace(/Anthocyanes/gi, 'Anthocyanins')
+        .replace(/Polyphénols et proanthocyanidines/gi, 'Polyphenols and proanthocyanidins')
+        .replace(/Acides gras essentiels/gi, 'Essential fatty acids')
+        .replace(/Minéraux/gi, 'Minerals')
+        .replace(/fer, calcium, potassium, phosphore/gi, 'iron, calcium, potassium, phosphorus')
+        .replace(/Acide ascorbique naturel/gi, 'Natural ascorbic acid')
+        .replace(/Bioflavonoïdes et rutine/gi, 'Bioflavonoids and rutin')
+        .replace(/Caroténoïdes protecteurs/gi, 'Protective carotenoids')
+        .replace(/Oligo-éléments/gi, 'Trace elements');
+    }
+    return c;
+  });
+
+  // Mechanisms headers and body localization
+  let localizedMechanisms = herb.mechanisms || '';
+  if (currentLang === 'es' && localizedMechanisms) {
+    localizedMechanisms = localizedMechanisms
+      .replace(/1\. \*\*Actions Principales \(Rain-Tree\)\*\* :/g, '1. **Acciones Principales (Rain-Tree)** :')
+      .replace(/2\. \*\*Recherche Clinique & Activité Biologique\*\* :/g, '2. **Investigación Clínica y Actividad Biológica** :')
+      .replace(/3\. \*\*Usage Ethnobotanique Traditionnel\*\* :/g, '3. **Uso Etnobotánico Tradicional** :')
+      .replace(/Plante médicinale répertoriée dans la pharmacopée amazonienne du Dr\. Leslie Taylor pour ses propriétés/g, 'Planta medicinal catalogada en la farmacopea amazónica de la Dra. Leslie Taylor por sus propiedades de')
+      .replace(/Des études pharmacologiques in vivo et in vitro mettent en évidence l'activité de ses principes actifs/g, 'Estudios farmacológicos in vivo e in vitro evidencian la actividad de sus principios activos')
+      .replace(/pour soutenir les défenses naturelles et assainir les émonctoires\./g, 'para apoyar las defensas naturales y depurar los emuntorios.')
+      .replace(/Utilisée traditionnellement par les peuples autochtones d'Amérique tropicale pour purifier le sang, calmer les fièvres et revitaliser les fonctions vitales\./g, 'Utilizada tradicionalmente por los pueblos originarios de América tropical para purificar la sangre, calmar fiebres y revitalizar las funciones vitales.');
+  } else if (currentLang === 'en' && localizedMechanisms) {
+    localizedMechanisms = localizedMechanisms
+      .replace(/1\. \*\*Actions Principales \(Rain-Tree\)\*\* :/g, '1. **Primary Actions (Rain-Tree)** :')
+      .replace(/2\. \*\*Recherche Clinique & Activité Biologique\*\* :/g, '2. **Clinical Research & Biological Activity** :')
+      .replace(/3\. \*\*Usage Ethnobotanique Traditionnel\*\* :/g, '3. **Traditional Ethnobotanical Use** :')
+      .replace(/Plante médicinale répertoriée dans la pharmacopée amazonienne du Dr\. Leslie Taylor pour ses propriétés/g, "Medicinal plant cataloged in Dr. Leslie Taylor's Amazonian pharmacopoeia for its properties of")
+      .replace(/Des études pharmacologiques in vivo et in vitro mettent en évidence l'activité de ses principes actifs/g, 'In vivo and in vitro pharmacological studies demonstrate the activity of its active constituents')
+      .replace(/pour soutenir les défenses naturelles et assainir les émonctoires\./g, 'to support natural defenses and cleanse the emunctories.')
+      .replace(/Utilisée traditionnellement par les peuples autochtones d'Amérique tropicale pour purifier le sang, calmer les fièvres et revitaliser les fonctions vitales\./g, 'Traditionally used by indigenous peoples of tropical America to purify the blood, soothe fevers, and revitalize vital functions.');
+  }
+
   // Family localized label format
   let familyLabel = '';
   if (herb.family && herb.family.trim()) {
@@ -1054,6 +1523,7 @@ export function getLocalizedHerb(herb, lang = 'fr') {
 
   return {
     ...herb,
+    name: localizedName,
     category: localizedCategory,
     tropismBadge: herb.tropismBadge ? {
       ...herb.tropismBadge,
@@ -1061,6 +1531,13 @@ export function getLocalizedHerb(herb, lang = 'fr') {
     } : null,
     indications: localizedIndications,
     posology: localizedPosology || herb.posology,
+    origin: localizedOrigin,
+    partsUsed: localizedPartsUsed,
+    contraindications: localizedContraindications,
+    vitalistNote: localizedVitalistNote,
+    mechanisms: localizedMechanisms,
+    synonyms: localizedSynonyms,
+    activeCompounds: localizedCompounds,
     familyLabel: familyLabel
   };
 }

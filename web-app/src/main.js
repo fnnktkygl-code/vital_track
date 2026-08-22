@@ -1176,6 +1176,11 @@ async function initApp() {
       loadProfile();
       updateLiveAiPreview();
     }
+
+    // Si la modale d'herbe est ouverte, la rafraîchir immédiatement dans la nouvelle langue
+    if (document.getElementById('herbModal')?.style.display === 'flex' && _currentSelectedHerb) {
+      openHerbModal(_currentSelectedHerb.id);
+    }
   });
 
   if (window.VitalMascot) {
