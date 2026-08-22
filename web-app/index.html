@@ -771,7 +771,7 @@
 
       <!-- Active Fasting Card -->
       <div class="dash-card glass" id="dashFastingCard" style="display:none">
-        <h3><i class="ri-fire-line"></i> Jeûne en cours</h3>
+        <h3><i class="ri-fire-line"></i> <span data-i18n="dashboard.fastingInProgress">Jeûne en cours</span></h3>
         <div class="dash-fast-info">
           <span class="dash-fast-timer" id="dashFastTimer">00:00:00</span>
           <span class="dash-fast-type" id="dashFastType"></span>
@@ -921,14 +921,14 @@
         <div class="chat-messages" id="chatMessages">
           <div class="chat-welcome" id="chatWelcome">
             <div class="welcome-mascot" id="welcomeMascotPortrait"></div>
-            <h2>Roucouuu ! 🌿</h2>
-            <p>Je suis Vital, ton coach vitaliste IA. Pose-moi une question sur la nutrition, le jeûne, la respiration ou la santé naturelle.</p>
+            <h2 data-i18n="chat.welcomeTitle">Roucouuu ! 🌿</h2>
+            <p data-i18n="chat.welcomeSubtitle">Je suis Vital, ton coach vitaliste IA. Pose-moi une question sur la nutrition, le jeûne, la respiration ou la santé naturelle.</p>
             <div class="welcome-chips">
-              <button class="welcome-chip" onclick="quickChat('Fais-moi un programme de jeûne de 7 jours')">🔥 Programme de jeûne</button>
-              <button class="welcome-chip" onclick="quickChat('Qu\'est-ce que je peux cuisiner avec les restes de mon frigo ?')">🧑‍🍳 Cuisiner mes restes</button>
-              <button class="welcome-chip" onclick="quickChat('Quelles sont les meilleures herbes médicinales pour drainer la lymphe et les reins ?')">🌿 Herbes médicinales</button>
-              <button class="welcome-chip" onclick="quickChat('Comment fonctionne la méthode Wim Hof ?')">❄️ Wim Hof</button>
-              <button class="welcome-chip" onclick="quickChat('Le jeûne du Ramadan : bienfaits et conseils')">🌙 Jeûne Ramadan</button>
+              <button class="welcome-chip" onclick="quickChat(window.vitalTrackI18n?.t('chat.promptFasting7d') || 'Fais-moi un programme de jeûne de 7 jours')" data-i18n="chat.chipFasting7d">🔥 Programme de jeûne</button>
+              <button class="welcome-chip" onclick="quickChat(window.vitalTrackI18n?.t('chat.promptFridge') || 'Qu\'est-ce que je peux cuisiner avec les restes de mon frigo ?')" data-i18n="chat.chipFridge">🧑‍🍳 Cuisiner mes restes</button>
+              <button class="welcome-chip" onclick="quickChat(window.vitalTrackI18n?.t('chat.promptHerbs') || 'Quelles sont les meilleures herbes médicinales pour drainer la lymphe et les reins ?')" data-i18n="chat.chipHerbs">🌿 Herbes médicinales</button>
+              <button class="welcome-chip" onclick="quickChat(window.vitalTrackI18n?.t('chat.promptWimHof') || 'Comment fonctionne la méthode Wim Hof ?')" data-i18n="chat.chipWimHof">❄️ Wim Hof</button>
+              <button class="welcome-chip" onclick="quickChat(window.vitalTrackI18n?.t('chat.promptRamadan') || 'Le jeûne du Ramadan : bienfaits et conseils')" data-i18n="chat.chipRamadan">🌙 Jeûne Ramadan</button>
             </div>
           </div>
         </div>
@@ -995,8 +995,8 @@
         <div class="page-header-wrap">
           <div class="header-icon-tile">🔍</div>
           <div>
-            <h2>Moteur de Recherche VitalTrack</h2>
-            <p class="subtitle">Aliments bio-électriques, pharmacopée, ouvrages intégraux & vidéos horodatées</p>
+            <h2 data-i18n="search.pageTitle">Moteur de Recherche VitalTrack</h2>
+            <p class="subtitle" data-i18n="search.pageSubtitle">Aliments bio-électriques, pharmacopée, ouvrages intégraux & vidéos horodatées</p>
           </div>
         </div>
       </div>
@@ -1004,26 +1004,26 @@
       <!-- Quick Switch Tabs : Aliments vs Pharmacopée vs Vidéos & PDF -->
       <div class="search-mode-switcher">
         <button type="button" class="search-mode-btn active" onclick="showPage('search')">
-          <i class="ri-restaurant-line"></i> Aliments (1 500+)
+          <i class="ri-restaurant-line"></i> <span data-i18n="search.tabFoods">Aliments (1 500+)</span>
         </button>
         <button type="button" class="search-mode-btn" onclick="showPage('materia-medica')">
-          <i class="ri-plant-line"></i> Pharmacopée
+          <i class="ri-plant-line"></i> <span data-i18n="search.tabMateria">Pharmacopée</span>
         </button>
         <button type="button" class="search-mode-btn" onclick="showPage('resources')">
-          <i class="ri-film-line"></i> Livres & Vidéos Horodatées
+          <i class="ri-film-line"></i> <span data-i18n="search.tabResources">Livres & Vidéos</span>
         </button>
       </div>
 
       <!-- Switch to Materia Medica / Pharmacopoeia Banner -->
       <div class="materia-switch-banner" onclick="showPage('materia-medica')">
-        <span>🌿 <strong>Pharmacopée Amazonienne & Plantes Raintree</strong> — Recherche par pathologie (Crohn, calculs, candida, ulcères...)</span>
-        <button class="materia-switch-btn"><i class="ri-arrow-right-line"></i> Explorer</button>
+        <span data-i18n="search.materiaBanner">🌿 <strong>Pharmacopée Amazonienne & Plantes Raintree</strong> — Recherche par pathologie (Crohn, calculs, candida, ulcères...)</span>
+        <button class="materia-switch-btn"><i class="ri-arrow-right-line"></i> <span data-i18n="search.exploreBtn">Explorer</span></button>
       </div>
 
       <!-- Search bar with clear button and direct AI action -->
       <div class="search-bar-wrap search-bar-enhanced">
         <i class="ri-search-line search-icon-left"></i>
-        <input type="text" id="searchInput" placeholder="Chercher un aliment ou plat (ex: mangue, kale, pâté chinois)..." autocomplete="off" spellcheck="false">
+        <input type="text" id="searchInput" data-i18n-placeholder="search.inputPlaceholder" placeholder="Chercher un aliment ou plat (ex: mangue, kale, pâté chinois)..." autocomplete="off" spellcheck="false">
         <div class="search-input-actions">
           <button class="search-clear-btn" id="searchClearBtn" onclick="clearSearch()" style="display:none" aria-label="Effacer la recherche">
             <i class="ri-close-circle-fill"></i>
@@ -1036,12 +1036,12 @@
 
       <!-- Filters -->
       <div class="search-filters">
-        <button class="filter-chip active" data-filter="all" onclick="setSearchFilter('all')">Tous</button>
-        <button class="filter-chip" data-filter="electric" onclick="setSearchFilter('electric')">⚡ Électriques</button>
-        <button class="filter-chip" data-filter="hybrid" onclick="setSearchFilter('hybrid')">🔀 Hybrides</button>
-        <button class="filter-chip" data-filter="alkaline" onclick="setSearchFilter('alkaline')">🌿 Alcalinisants & Dissolvants</button>
-        <button class="filter-chip" data-filter="mucus" onclick="setSearchFilter('mucus')">⛔ Mucogènes</button>
-        <button class="filter-chip" data-filter="favorites" onclick="setSearchFilter('favorites')">❤️ Favoris</button>
+        <button class="filter-chip active" data-filter="all" onclick="setSearchFilter('all')" data-i18n="search.filterAll">Tous</button>
+        <button class="filter-chip" data-filter="electric" onclick="setSearchFilter('electric')" data-i18n="search.filterElectric">⚡ Électriques</button>
+        <button class="filter-chip" data-filter="hybrid" onclick="setSearchFilter('hybrid')" data-i18n="search.filterHybrid">🔀 Hybrides</button>
+        <button class="filter-chip" data-filter="alkaline" onclick="setSearchFilter('alkaline')" data-i18n="search.filterAlkaline">🌿 Alcalinisants</button>
+        <button class="filter-chip" data-filter="mucus" onclick="setSearchFilter('mucus')" data-i18n="search.filterMucus">⛔ Mucogènes</button>
+        <button class="filter-chip" data-filter="favorites" onclick="setSearchFilter('favorites')" data-i18n="search.filterFavorites">❤️ Favoris</button>
       </div>
 
       <!-- Results stats bar + sort (visible only when results exist) -->
@@ -1050,12 +1050,12 @@
         <div class="search-sort">
           <label class="sort-label"><i class="ri-sort-asc"></i></label>
           <select id="searchSortSelect" onchange="applySortAndRender()" class="sort-select">
-            <option value="relevance">Pertinence</option>
-            <option value="pral-asc">PRAL ↑ alcalin</option>
-            <option value="pral-desc">PRAL ↓ acide</option>
-            <option value="nova-asc">NOVA ↑ naturel</option>
-            <option value="freshness-desc">Fraîcheur ↓</option>
-            <option value="az">A → Z</option>
+            <option value="relevance" data-i18n="search.sortRelevance">Pertinence</option>
+            <option value="pral-asc" data-i18n="search.sortPralAsc">PRAL ↑ alcalin</option>
+            <option value="pral-desc" data-i18n="search.sortPralDesc">PRAL ↓ acide</option>
+            <option value="nova-asc" data-i18n="search.sortNovaAsc">NOVA ↑ naturel</option>
+            <option value="freshness-desc" data-i18n="search.sortFreshness">Fraîcheur ↓</option>
+            <option value="az" data-i18n="search.sortAz">A → Z</option>
           </select>
         </div>
       </div>
@@ -1065,15 +1065,15 @@
         <!-- Recent searches (rendered by JS) -->
         <div id="searchRecentWrap" style="display:none">
           <div class="search-section-label">
-            <span><i class="ri-history-line"></i> Recherches récentes</span>
-            <button onclick="clearRecentSearches()" class="search-section-clear">Effacer</button>
+            <span><i class="ri-history-line"></i> <span data-i18n="search.recentSearches">Recherches récentes</span></span>
+            <button onclick="clearRecentSearches()" class="search-section-clear" data-i18n="search.clearRecent">Effacer</button>
           </div>
           <div id="searchRecentChips" class="search-recent-chips"></div>
         </div>
 
         <!-- Category browse -->
         <div class="search-section-label" id="categoryBrowseLabel">
-          <span><i class="ri-apps-2-line"></i> Explorer par catégorie</span>
+          <span><i class="ri-apps-2-line"></i> <span data-i18n="search.browseCategory">Explorer par catégorie</span></span>
         </div>
         <div class="category-browse-grid" id="categoryBrowseGrid">
           <!-- Rendered by JS after DB loads -->
@@ -1199,27 +1199,27 @@
         <div class="page-header-wrap">
           <div class="header-icon-tile">🍽️</div>
           <div>
-            <h2>Mes repas</h2>
-            <p class="subtitle">Suivez votre alimentation quotidienne</p>
+            <h2 data-i18n="meals.pageTitle">Mes repas</h2>
+            <p class="subtitle" data-i18n="meals.pageSubtitle">Suivez votre alimentation quotidienne</p>
           </div>
         </div>
       </div>
-      <button class="btn-primary full-w" onclick="showAddMealModal()"><i class="ri-add-line"></i> Ajouter un repas</button>
+      <button class="btn-primary full-w" onclick="showAddMealModal()"><i class="ri-add-line"></i> <span data-i18n="meals.addMeal">Ajouter un repas</span></button>
       <div class="meal-axis-row" id="mealAxisRow" style="display:none">
         <div class="axis-card glass">
           <div class="axis-dot" style="background:#4ade80"></div>
-          <div><span class="axis-label">PRAL moyen</span><span class="axis-value" id="mealPral">0</span></div>
+          <div><span class="axis-label" data-i18n="meals.avgPral">PRAL moyen</span><span class="axis-value" id="mealPral">0</span></div>
         </div>
         <div class="axis-card glass">
           <div class="axis-dot" style="background:#22d3ee"></div>
-          <div><span class="axis-label">Score NOVA</span><span class="axis-value" id="mealNova">0</span></div>
+          <div><span class="axis-label" data-i18n="meals.novaScore">Score NOVA</span><span class="axis-value" id="mealNova">0</span></div>
         </div>
         <div class="axis-card glass">
           <div class="axis-dot" style="background:#a78bfa"></div>
-          <div><span class="axis-label">Vitalité</span><span class="axis-value" id="mealVitality">0%</span></div>
+          <div><span class="axis-label" data-i18n="meals.vitality">Vitalité</span><span class="axis-value" id="mealVitality">0%</span></div>
         </div>
       </div>
-      <div id="mealsList"><p class="empty-state">Aucun repas enregistré. Ajoutez votre premier repas !</p></div>
+      <div id="mealsList"><p class="empty-state" data-i18n="meals.emptyState">Aucun repas enregistré. Ajoutez votre premier repas !</p></div>
     </div>
   </main>
 
@@ -1230,8 +1230,8 @@
         <div class="page-title">
           <div class="emoji-badge">📅</div>
           <div>
-            <h1 style="font-size:22px; font-weight:800; letter-spacing:-.3px; margin:0; color:var(--text)">Calendrier</h1>
-            <div class="sub">Suivi de ton programme guidé</div>
+            <h1 style="font-size:22px; font-weight:800; letter-spacing:-.3px; margin:0; color:var(--text)" data-i18n="calendar.pageTitle">Calendrier</h1>
+            <div class="sub" data-i18n="calendar.pageSubtitle">Suivi de ton programme guidé</div>
           </div>
         </div>
         <div class="topbar-actions">
@@ -1250,15 +1250,15 @@
             </svg>
             <div class="prog-ring-center">
               <div class="prog-ring-pct" id="progPct">0%</div>
-              <div class="prog-ring-lbl">repas</div>
+              <div class="prog-ring-lbl" data-i18n="calendar.mealsLbl">repas</div>
             </div>
           </div>
           <div class="program-info">
-            <div class="program-title" id="progTitle">📅 Aucun programme actif</div>
+            <div class="program-title" id="progTitle" data-i18n="calendar.noActiveProgram">📅 Aucun programme actif</div>
             <div class="info-chips">
-              <div class="info-chip"><i class="ri-leaf-line"></i> Vitaliste</div>
+              <div class="info-chip" data-i18n="calendar.vitalistPill"><i class="ri-leaf-line"></i> Vitaliste</div>
               <div class="info-chip strong" id="progRepasChip">🍽 0/0 repas</div>
-              <div class="info-chip strong" id="progJourChip">Aucun plan actif</div>
+              <div class="info-chip strong" id="progJourChip" data-i18n="calendar.noActivePlan">Aucun plan actif</div>
             </div>
           </div>
           <button class="btn-stop disabled" id="btnStopCalendar" onclick="window.clearCalendar()" disabled style="opacity:0.35; pointer-events:none; cursor:not-allowed;" data-tooltip="Aucun programme à arrêter">
@@ -1323,12 +1323,12 @@
         <div class="page-header-wrap">
           <div class="header-icon-tile">❤️</div>
           <div>
-            <h2 style="margin:0 0 4px 0;">Mes Favoris &amp; Plats</h2>
-            <p class="subtitle" style="margin:0;">Aliments, tisanes et recettes personnalisées prêtes à l'emploi</p>
+            <h2 style="margin:0 0 4px 0;" data-i18n="favorites.pageTitle">Mes Favoris &amp; Plats</h2>
+            <p class="subtitle" style="margin:0;" data-i18n="favorites.pageSubtitle">Aliments, tisanes et recettes personnalisées prêtes à l'emploi</p>
           </div>
         </div>
         <button class="btn-primary" onclick="window.openCreateDishModal()" style="display:inline-flex; align-items:center; gap:8px; padding:10px 18px; font-weight:700; border-radius:12px;">
-          <i class="ri-add-circle-line"></i> + Créer un plat personnalisé
+          <i class="ri-add-circle-line"></i> <span data-i18n="favorites.createCustomDish">+ Créer un plat personnalisé</span>
         </button>
       </div>
 
@@ -1341,7 +1341,7 @@
       </div>
 
       <div id="favsList" class="favs-grid">
-        <p class="empty-state">Aucun favori enregistré. Ajoutez des aliments ou créez vos propres plats !</p>
+        <p class="empty-state" data-i18n="favorites.emptyState">Aucun favori enregistré. Ajoutez des aliments ou créez vos propres plats !</p>
       </div>
     </div>
   </main>
@@ -1354,12 +1354,12 @@
         <div class="scan-header-title-wrap">
           <div class="scan-header-icon"><i class="ri-camera-lens-fill"></i></div>
           <div>
-            <h2>Scanner IA & Diagnostic Vitaliste</h2>
-            <p class="subtitle" style="margin-top:2px">Analyse instantanée de votre assiette : statut Sebi/Ehret, indice PRAL et impact émonctoriel</p>
+            <h2 data-i18n="scanner.pageTitle">Scanner IA & Diagnostic Vitaliste</h2>
+            <p class="subtitle" style="margin-top:2px" data-i18n="scanner.pageSubtitle">Analyse instantanée de votre assiette : statut Sebi/Ehret, indice PRAL et impact émonctoriel</p>
           </div>
         </div>
         <div class="scan-badge-live">
-          <span class="scan-live-dot"></span> Vision Multimodale IA
+          <span class="scan-live-dot"></span> <span data-i18n="scanner.visionBadge">Vision Multimodale IA</span>
         </div>
       </div>
       
@@ -1371,7 +1371,7 @@
             <div class="scan-laser-line" id="scanLaserLine"></div>
           </div>
           <button type="button" class="scan-change-photo-btn" onclick="document.getElementById('scanUpload').click()">
-            <i class="ri-camera-switch-line"></i> Choisir une autre photo
+            <i class="ri-camera-switch-line"></i> <span data-i18n="scanner.chooseOtherPhoto">Choisir une autre photo</span>
           </button>
         </div>
         
@@ -1379,18 +1379,18 @@
           <div class="scan-dropzone-icon">
             <i class="ri-image-add-line"></i>
           </div>
-          <h3 class="scan-dropzone-title">Prenez une photo ou importez votre assiette</h3>
-          <p class="scan-dropzone-sub">Détecte chaque ingrédient, évalue la formation de mucus intestinal (colle), calcule le PRAL rénal et propose des alternatives vivantes.</p>
+          <h3 class="scan-dropzone-title" data-i18n="scanner.dropzoneTitle">Prenez une photo ou importez votre assiette</h3>
+          <p class="scan-dropzone-sub" data-i18n="scanner.dropzoneSub">Détecte chaque ingrédient, évalue la formation de mucus intestinal (colle), calcule le PRAL rénal et propose des alternatives vivantes.</p>
           
           <label for="scanUpload" class="btn-primary scan-upload-cta">
-            <i class="ri-camera-lens-fill"></i> Analyser une photo / Scanner
+            <i class="ri-camera-lens-fill"></i> <span data-i18n="scanner.uploadCta">Analyser une photo / Scanner</span>
           </label>
           <input type="file" id="scanUpload" accept="image/*" style="display:none" onchange="handleScanUpload(event)">
           
           <div class="scan-quick-tips">
-            <span><i class="ri-check-double-line"></i> Plats cuisinés & Tapas</span>
-            <span><i class="ri-check-double-line"></i> Végétaux & Fruits bruts</span>
-            <span><i class="ri-check-double-line"></i> Produits & Étiquettes</span>
+            <span data-i18n="scanner.tipCooked"><i class="ri-check-double-line"></i> Plats cuisinés & Tapas</span>
+            <span data-i18n="scanner.tipRaw"><i class="ri-check-double-line"></i> Végétaux & Fruits bruts</span>
+            <span data-i18n="scanner.tipProducts"><i class="ri-check-double-line"></i> Produits & Étiquettes</span>
           </div>
         </div>
       </div>
@@ -1402,10 +1402,10 @@
           <canvas id="scanMascotCanvas" width="110" height="130" style="width:110px; height:130px; filter:drop-shadow(0 4px 16px rgba(52,211,153,0.35));"></canvas>
         </div>
         <div style="display:inline-flex; align-items:center; gap:6px; background:rgba(52,211,153,0.12); border:1px solid rgba(52,211,153,0.3); color:#34d399; font-size:0.8rem; font-weight:700; padding:5px 14px; border-radius:20px; margin-bottom:12px;">
-          <i class="ri-search-eye-line"></i> Vital le Détective Nutritionnel ausculte votre plat
+          <i class="ri-search-eye-line"></i> <span data-i18n="scanner.detectiveMascot">Vital le Détective Nutritionnel ausculte votre plat</span>
         </div>
-        <h3 class="scan-loading-title" style="margin-bottom:6px;">Analyse biochimique &amp; vitaliste en cours...</h3>
-        <p class="scan-loading-sub" id="scanLoadingStatus" style="font-size:0.86rem; color:var(--text-dim); max-width:460px; margin:0 auto 18px auto;">Identification des composés, calcul du PRAL rénal et évaluation de la charge colloïdale...</p>
+        <h3 class="scan-loading-title" style="margin-bottom:6px;" data-i18n="scanner.loadingTitle">Analyse biochimique &amp; vitaliste en cours...</h3>
+        <p class="scan-loading-sub" id="scanLoadingStatus" style="font-size:0.86rem; color:var(--text-dim); max-width:460px; margin:0 auto 18px auto;" data-i18n="scanner.loadingSub">Identification des composés, calcul du PRAL rénal et évaluation de la charge colloïdale...</p>
         <div class="scan-loading-progress-bar" style="max-width:360px; margin:0 auto;">
           <div class="scan-loading-progress-fill"></div>
         </div>
@@ -1516,7 +1516,7 @@
         <!-- Live Metabolic Phases Tracker -->
         <div class="fasting-stages-wrapper" id="fastingStagesWrapper">
           <div class="stages-header">
-            <span class="stages-title"><i class="ri-pulse-line" style="color:var(--accent)"></i> Paliers Physiologiques &amp; Métaboliques</span>
+            <span class="stages-title" data-i18n="fasting.stagesTitle"><i class="ri-pulse-line" style="color:var(--accent)"></i> Paliers Physiologiques &amp; Métaboliques</span>
             <span class="stages-current-badge" id="currentStageBadge"><i class="ri-loader-4-line"></i> Phase 1 : Assimilation</span>
           </div>
           <div class="stages-progress-bar">
@@ -1525,33 +1525,33 @@
           <div class="stages-timeline-grid" id="stagesTimelineGrid">
             <div class="stage-step-card active" id="stageCard1">
               <div class="stage-step-top"><span class="stage-step-hours">0h - 4h</span><span class="stage-step-icon">🥗</span></div>
-              <div class="stage-step-name">Digestion</div>
-              <div class="stage-step-desc">Assimilation des nutriments &amp; glycémie</div>
+              <div class="stage-step-name" data-i18n="fasting.stage1Name">Digestion</div>
+              <div class="stage-step-desc" data-i18n="fasting.stage1Desc">Assimilation des nutriments &amp; glycémie</div>
             </div>
             <div class="stage-step-card" id="stageCard2">
               <div class="stage-step-top"><span class="stage-step-hours">4h - 8h</span><span class="stage-step-icon">📉</span></div>
-              <div class="stage-step-name">Chute Insuline</div>
-              <div class="stage-step-desc">Stabilisation &amp; repos pancréatique</div>
+              <div class="stage-step-name" data-i18n="fasting.stage2Name">Chute Insuline</div>
+              <div class="stage-step-desc" data-i18n="fasting.stage2Desc">Stabilisation &amp; repos pancréatique</div>
             </div>
             <div class="stage-step-card" id="stageCard3">
               <div class="stage-step-top"><span class="stage-step-hours">8h - 12h</span><span class="stage-step-icon">⚡</span></div>
-              <div class="stage-step-name">Bascule Cétose</div>
-              <div class="stage-step-desc">Déplétion glycogène hépatique</div>
+              <div class="stage-step-name" data-i18n="fasting.stage3Name">Bascule Cétose</div>
+              <div class="stage-step-desc" data-i18n="fasting.stage3Desc">Déplétion glycogène hépatique</div>
             </div>
             <div class="stage-step-card" id="stageCard4">
               <div class="stage-step-top"><span class="stage-step-hours">12h - 16h</span><span class="stage-step-icon">🔥</span></div>
-              <div class="stage-step-name">Brûlage Graisses</div>
-              <div class="stage-step-desc">Production de corps cétoniques</div>
+              <div class="stage-step-name" data-i18n="fasting.stage4Name">Brûlage Graisses</div>
+              <div class="stage-step-desc" data-i18n="fasting.stage4Desc">Production de corps cétoniques</div>
             </div>
             <div class="stage-step-card" id="stageCard5">
               <div class="stage-step-top"><span class="stage-step-hours">16h - 24h</span><span class="stage-step-icon">🧬</span></div>
-              <div class="stage-step-name">Autophagie</div>
-              <div class="stage-step-desc">Nettoyage &amp; recyclage cellulaire</div>
+              <div class="stage-step-name" data-i18n="fasting.stage5Name">Autophagie</div>
+              <div class="stage-step-desc" data-i18n="fasting.stage5Desc">Nettoyage &amp; recyclage cellulaire</div>
             </div>
             <div class="stage-step-card" id="stageCard6">
               <div class="stage-step-top"><span class="stage-step-hours">24h - 48h+</span><span class="stage-step-icon">🌟</span></div>
-              <div class="stage-step-name">Régénération</div>
-              <div class="stage-step-desc">Drainage lymphatique &amp; cellules souches</div>
+              <div class="stage-step-name" data-i18n="fasting.stage6Name">Régénération</div>
+              <div class="stage-step-desc" data-i18n="fasting.stage6Desc">Drainage lymphatique &amp; cellules souches</div>
             </div>
           </div>
         </div>
@@ -1597,14 +1597,14 @@
           </div>
           <div>
             <div class="jn-section-title" data-i18n="fasting.historyTitle">Historique &amp; Statistiques</div>
-            <div class="jn-section-sub">Journal de bord, paliers atteints &amp; régularité</div>
+            <div class="jn-section-sub" data-i18n="fasting.historySub">Journal de bord, paliers atteints &amp; régularité</div>
           </div>
         </div>
 
         <div class="jn-stats-grid">
           <div class="jn-stat-card"><div class="jn-stat-num" id="analyticTotal">0</div><div class="jn-stat-label" data-i18n="fasting.totalSessions">Total sessions</div></div>
           <div class="jn-stat-card"><div class="jn-stat-num" id="analyticHours">0h</div><div class="jn-stat-label" data-i18n="fasting.cumulatedHours">Heures cumulées</div></div>
-          <div class="jn-stat-card"><div class="jn-stat-num" style="color:var(--accent);" id="analyticAutophagy">0</div><div class="jn-stat-label">Autophagies (16h+)</div></div>
+          <div class="jn-stat-card"><div class="jn-stat-num" style="color:var(--accent);" id="analyticAutophagy">0</div><div class="jn-stat-label" data-i18n="fasting.autophagySessions">Autophagies (16h+)</div></div>
           <div class="jn-stat-card"><div class="jn-stat-num" style="color:#60a5fa;" id="analyticLongest">0h</div><div class="jn-stat-label" data-i18n="fasting.longestFast">Plus long jeûne</div></div>
         </div>
 
@@ -1624,8 +1624,8 @@
         <div class="page-header-wrap" style="margin-bottom:10px;">
           <div class="header-icon-tile">🌬️</div>
           <div>
-            <h2>Respiration &amp; Méthode Wim Hof</h2>
-            <p class="subtitle">Alcalinisation sanguine · Contrôle du système nerveux · Réduction de l'inflammation</p>
+            <h2 data-i18n="breathing.pageTitle">Respiration &amp; Méthode Wim Hof</h2>
+            <p class="subtitle" data-i18n="breathing.pageSubtitle">Alcalinisation sanguine · Contrôle du système nerveux · Réduction de l'inflammation</p>
           </div>
         </div>
         
@@ -1633,20 +1633,20 @@
         <div class="breathing-safety-alert" style="margin-top:14px; background:rgba(239, 68, 68, 0.12); border:1px solid rgba(239, 68, 68, 0.35); border-radius:12px; padding:10px 14px; font-size:0.82rem; color:var(--text); display:flex; align-items:center; gap:10px; text-align:left;">
           <i class="ri-alert-fill" style="font-size:1.3rem; color:#ef4444; flex-shrink:0;"></i>
           <div>
-            <strong style="color:#ef4444;">Règle de sécurité impérative :</strong> Pratiquez toujours <strong>assis ou allongé</strong> dans un lieu sécurisé. <strong>JAMAIS</strong> dans l'eau (bain, piscine), sous la douche ou au volant.
+            <strong style="color:#ef4444;" data-i18n="breathing.safetyRuleTitle">Règle de sécurité impérative :</strong> <span data-i18n="breathing.safetyRuleText">Pratiquez toujours <strong>assis ou allongé</strong> dans un lieu sécurisé. <strong>JAMAIS</strong> dans l'eau (bain, piscine), sous la douche ou au volant.</span>
           </div>
         </div>
 
         <!-- Section Switcher Tabs -->
         <div class="breathing-nav-tabs" style="display:flex; gap:8px; justify-content:center; margin-top:18px; flex-wrap:wrap;">
           <button type="button" class="tab active" id="tabBtnBreathingTimer" onclick="switchBreathingTab('timer')" style="border-radius:25px; padding:8px 18px; font-size:0.9rem; font-weight:600;">
-            <i class="ri-timer-flash-line"></i> Session Guidée (Timer)
+            <i class="ri-timer-flash-line"></i> <span data-i18n="breathing.tabTimer">Session Guidée (Timer)</span>
           </button>
           <button type="button" class="tab" id="tabBtnBreathingVideos" onclick="switchBreathingTab('videos')" style="border-radius:25px; padding:8px 18px; font-size:0.9rem; font-weight:600;">
-            <i class="ri-movie-line"></i> Vidéos & Masterclass Wim Hof
+            <i class="ri-movie-line"></i> <span data-i18n="breathing.tabVideos">Vidéos & Masterclass Wim Hof</span>
           </button>
           <button type="button" class="tab" id="tabBtnBreathingGuide" onclick="switchBreathingTab('guide')" style="border-radius:25px; padding:8px 18px; font-size:0.9rem; font-weight:600;">
-            <i class="ri-book-open-line"></i> Protocole & Physiologie
+            <i class="ri-book-open-line"></i> <span data-i18n="breathing.tabGuide">Protocole & Physiologie</span>
           </button>
         </div>
       </div>
@@ -2435,8 +2435,8 @@
       <button class="modal-close" onclick="closeVitalityInfoModal()"><i class="ri-close-line"></i></button>
       <div style="text-align: center; margin-bottom: 20px;">
         <div style="font-size: 2.5rem; margin-bottom: 6px;">✨</div>
-        <h2 style="font-size: 1.3rem; font-weight: 700; color: var(--text);">Calcul Transparent du Score Vitalité</h2>
-        <p style="font-size: 0.85rem; color: var(--text-dim); margin-top: 4px;">Rigueur scientifique & vitaliste · Zéro donnée fictive</p>
+        <h2 style="font-size: 1.3rem; font-weight: 700; color: var(--text);" data-i18n="modals.vitalityScoreTitle">Calcul Transparent du Score Vitalité</h2>
+        <p style="font-size: 0.85rem; color: var(--text-dim); margin-top: 4px;" data-i18n="modals.vitalityScoreSubtitle">Rigueur scientifique & vitaliste · Zéro donnée fictive</p>
       </div>
 
       <div class="v-info-section" style="margin-bottom: 16px;">
@@ -2502,8 +2502,8 @@
           <i class="ri-time-line"></i>
         </div>
         <div>
-          <h3 style="margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--text);">Science des Cycles Circadiens</h3>
-          <p style="margin: 3px 0 0 0; font-size: 0.82rem; color: var(--text-dim);">Chronobiologie cellulaire &amp; les 3 cycles vitaux des 24 heures</p>
+          <h3 style="margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--text);" data-i18n="modals.circadianScienceTitle">Science des Cycles Circadiens</h3>
+          <p style="margin: 3px 0 0 0; font-size: 0.82rem; color: var(--text-dim);" data-i18n="modals.circadianScienceSubtitle">Chronobiologie cellulaire &amp; les 3 cycles vitaux des 24 heures</p>
         </div>
       </div>
 
@@ -2619,14 +2619,14 @@
       <button class="modal-close" onclick="closeFoodModal()"><i class="ri-close-line"></i></button>
       <div class="modal-food-header" id="modalFoodHeader"></div>
       <div class="modal-tabs" id="modalTabsBar">
-        <button class="tab active" data-tab="scientific" onclick="setModalTab('scientific')">🔬 Scientifique</button>
-        <button class="tab" data-tab="vitality" onclick="setModalTab('vitality')">💚 Vitalité</button>
-        <button class="tab" data-tab="specific" onclick="setModalTab('specific')">🌿 Spécifique</button>
+        <button class="tab active" data-tab="scientific" onclick="setModalTab('scientific')" data-i18n="modals.foodModalScientific">🔬 Scientifique</button>
+        <button class="tab" data-tab="vitality" onclick="setModalTab('vitality')" data-i18n="modals.foodModalVitality">💚 Vitalité</button>
+        <button class="tab" data-tab="specific" onclick="setModalTab('specific')" data-i18n="modals.foodModalSpecific">🌿 Spécifique</button>
       </div>
       <div class="modal-tab-content" id="modalTabContent"></div>
       <div class="modal-actions" id="modalActionsContainer">
-        <button class="btn-primary" id="modalAddMeal" onclick="addFoodToMeal()"><i class="ri-add-line"></i> Ajouter au repas</button>
-        <button class="btn-outline" id="modalFavBtn" onclick="toggleFavorite()"><i class="ri-heart-line"></i> Favori</button>
+        <button class="btn-primary" id="modalAddMeal" onclick="addFoodToMeal()"><i class="ri-add-line"></i> <span data-i18n="modals.addFoodToMeal">Ajouter au repas</span></button>
+        <button class="btn-outline" id="modalFavBtn" onclick="toggleFavorite()"><i class="ri-heart-line"></i> <span data-i18n="modals.favoriteBtn">Favori</span></button>
       </div>
     </div>
   </div>
@@ -2635,14 +2635,14 @@
   <div class="modal-overlay" id="addMealModal" onclick="closeAddMealModal(event)">
     <div class="modal-content glass modal-sm" onclick="event.stopPropagation()">
       <button class="modal-close" onclick="closeAddMealModal()"><i class="ri-close-line"></i></button>
-      <h3>🍽️ Ajouter un repas</h3>
+      <h3 data-i18n="modals.addMealModalTitle">🍽️ Ajouter un repas</h3>
       
       <!-- AI Dish Analyzer Box -->
       <div class="ai-dish-box">
-        <div class="ai-dish-box-title"><i class="ri-magic-line"></i> Analyser un plat par IA</div>
+        <div class="ai-dish-box-title"><i class="ri-magic-line"></i> <span data-i18n="modals.aiDishBoxTitle">Analyser un plat par IA</span></div>
         <div class="ai-dish-input-row">
-          <input type="text" id="aiDishInput" placeholder="Ex: Salade concombres, avocat et jus de citron..." class="form-input" onkeydown="if(event.key==='Enter') analyzeDishWithAI()">
-          <button class="btn-primary" id="btnAnalyzeDish" onclick="analyzeDishWithAI()"><i class="ri-sparkling-fill"></i> Analyser</button>
+          <input type="text" id="aiDishInput" data-i18n-placeholder="modals.aiDishPlaceholder" placeholder="Ex: Salade concombres, avocat et jus de citron..." class="form-input" onkeydown="if(event.key==='Enter') analyzeDishWithAI()">
+          <button class="btn-primary" id="btnAnalyzeDish" onclick="analyzeDishWithAI()"><i class="ri-sparkling-fill"></i> <span data-i18n="modals.aiDishAnalyzeBtn">Analyser</span></button>
         </div>
       </div>
 
@@ -2651,7 +2651,7 @@
       </div>
       <div id="mealSearchResults" class="meal-search-results"></div>
       <div id="mealSelectedItems" class="selected-items"></div>
-      <button class="btn-primary full-w" onclick="confirmAddMeal()"><i class="ri-check-line"></i> Valider le repas</button>
+      <button class="btn-primary full-w" onclick="confirmAddMeal()"><i class="ri-check-line"></i> <span data-i18n="modals.validateMealBtn">Valider le repas</span></button>
     </div>
   </div>
 
@@ -2659,9 +2659,9 @@
   <div class="modal-overlay" id="editMealModal" onclick="closeEditMealModal(event)" style="display:none">
     <div class="modal-content glass modal-sm" onclick="event.stopPropagation()">
       <button class="modal-close" onclick="closeEditMealModal()"><i class="ri-close-line"></i></button>
-      <h3 id="editMealTitle">🍽️ Éditer le repas</h3>
+      <h3 id="editMealTitle" data-i18n="modals.editMealModalTitle">🍽️ Éditer le repas</h3>
       
-      <div style="margin-top:16px;margin-bottom:12px;font-size:0.85rem;color:var(--text-dim)">Aliments prévus :</div>
+      <div style="margin-top:16px;margin-bottom:12px;font-size:0.85rem;color:var(--text-dim)" data-i18n="modals.plannedFoodsLabel">Aliments prévus :</div>
       <div id="editMealItems" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px"></div>
       
       <div class="add-meal-search" style="margin-bottom:8px">
@@ -2670,13 +2670,13 @@
       <div id="editMealSearchResults" class="meal-search-results" style="max-height:120px;margin-bottom:16px"></div>
       
       <div style="margin-bottom:16px">
-        <label style="font-size:0.85rem;color:var(--text-dim);display:block;margin-bottom:6px">Note / Avis personnel :</label>
+        <label style="font-size:0.85rem;color:var(--text-dim);display:block;margin-bottom:6px" data-i18n="modals.personalNoteLabel">Note / Avis personnel :</label>
         <textarea id="editMealNote" class="form-input" rows="2" placeholder="Ex: Remplacé par une mangue car pas de papaye..."></textarea>
       </div>
 
       <div style="display:flex;gap:8px">
-        <button class="btn-outline" onclick="toggleEditMealDone()" id="editMealDoneBtn" style="flex:1"><i class="ri-check-line"></i> Marquer Terminé</button>
-        <button class="btn-primary" onclick="saveEditMeal()" style="flex:1"><i class="ri-save-line"></i> Sauvegarder</button>
+        <button class="btn-outline" onclick="toggleEditMealDone()" id="editMealDoneBtn" style="flex:1"><i class="ri-check-line"></i> <span data-i18n="modals.markDoneBtn">Marquer Terminé</span></button>
+        <button class="btn-primary" onclick="saveEditMeal()" style="flex:1"><i class="ri-save-line"></i> <span data-i18n="modals.saveBtn">Sauvegarder</span></button>
       </div>
     </div>
   </div>
@@ -2828,9 +2828,9 @@
         <div style="display:flex; justify-content:space-between; align-items:center;">
           <div>
             <h3 style="margin:0; font-size:1.25rem; font-weight:800; color:var(--text); display:flex; align-items:center; gap:8px;">
-              <span>🎉</span> <span id="fastDebriefTitle">Bilan &amp; Clôture de Jeûne</span>
+              <span>🎉</span> <span id="fastDebriefTitle" data-i18n="modals.fastDebriefTitle">Bilan &amp; Clôture de Jeûne</span>
             </h3>
-            <p style="margin:4px 0 0 0; font-size:0.82rem; color:var(--text-dim);">Paliers biologiques atteints, protocole de reprise &amp; journal de ressenti</p>
+            <p style="margin:4px 0 0 0; font-size:0.82rem; color:var(--text-dim);" data-i18n="modals.fastDebriefSubtitle">Paliers biologiques atteints, protocole de reprise &amp; journal de ressenti</p>
           </div>
           <button class="modal-close" onclick="closeFastEndModal()" style="position:static;"><i class="ri-close-line"></i></button>
         </div>
@@ -2840,11 +2840,11 @@
         <!-- Session KPIs -->
         <div class="fast-debrief-kpis">
           <div class="fast-kpi-pill">
-            <div class="fast-kpi-label">Durée Effectuée</div>
+            <div class="fast-kpi-label" data-i18n="modals.elapsedDuration">Durée Effectuée</div>
             <div class="fast-kpi-val" id="fastDebriefElapsed">16.0h</div>
           </div>
           <div class="fast-kpi-pill">
-            <div class="fast-kpi-label">Objectif Initial</div>
+            <div class="fast-kpi-label" data-i18n="modals.initialGoal">Objectif Initial</div>
             <div class="fast-kpi-val" id="fastDebriefGoal" style="color:var(--text);">16h</div>
           </div>
           <div class="fast-kpi-pill">
@@ -2881,7 +2881,7 @@
 
           <!-- Energy rating -->
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
-            <span style="font-size:0.8rem; color:var(--text-dim);">Niveau d'énergie vitale :</span>
+            <span style="font-size:0.8rem; color:var(--text-dim);" data-i18n="modals.energyLevelLabel">Niveau d'énergie vitale :</span>
             <div class="feeling-rating-row" id="fastRatingEnergy">
               <button type="button" class="star-rating-btn" data-val="1" onclick="setFastRating('energy', 1)">⚡ 1</button>
               <button type="button" class="star-rating-btn" data-val="2" onclick="setFastRating('energy', 2)">⚡ 2</button>
@@ -2893,7 +2893,7 @@
 
           <!-- Mental clarity rating -->
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
-            <span style="font-size:0.8rem; color:var(--text-dim);">Clarté mentale &amp; focus :</span>
+            <span style="font-size:0.8rem; color:var(--text-dim);" data-i18n="modals.mentalClarityLabel">Clarté mentale &amp; focus :</span>
             <div class="feeling-rating-row" id="fastRatingClarity">
               <button type="button" class="star-rating-btn" data-val="1" onclick="setFastRating('clarity', 1)">🧠 1</button>
               <button type="button" class="star-rating-btn" data-val="2" onclick="setFastRating('clarity', 2)">🧠 2</button>
@@ -2905,7 +2905,7 @@
 
           <!-- Elimination signs checklist -->
           <div>
-            <span style="font-size:0.8rem; color:var(--text-dim); display:block; margin-bottom:6px;">Signes d'élimination observés (Miroir Magique) :</span>
+            <span style="font-size:0.8rem; color:var(--text-dim); display:block; margin-bottom:6px;" data-i18n="modals.eliminationSignsLabel">Signes d'élimination observés (Miroir Magique) :</span>
             <div class="elim-tags-grid" id="fastElimTags">
               <span class="elim-tag-chip" data-tag="tongue" onclick="toggleElimTag(this)">👅 Langue chargée (mucus)</span>
               <span class="elim-tag-chip" data-tag="lightness" onclick="toggleElimTag(this)">🕊️ Sensation de légèreté</span>
@@ -2923,9 +2923,9 @@
         </div>
 
         <div style="display:flex; gap:10px; margin-top:6px;">
-          <button type="button" class="btn-secondary" style="flex:1;" onclick="closeFastEndModal()">Annuler &amp; Poursuivre</button>
+          <button type="button" class="btn-secondary" style="flex:1;" onclick="closeFastEndModal()" data-i18n="modals.cancelAndContinueBtn">Annuler &amp; Poursuivre</button>
           <button type="button" class="btn-primary" style="flex:2; font-weight:700;" onclick="confirmSaveFastDebrief()">
-            <i class="ri-check-double-line"></i> Enregistrer la session
+            <i class="ri-check-double-line"></i> <span data-i18n="modals.saveSessionBtn">Enregistrer la session</span>
           </button>
         </div>
       </div>
@@ -3039,8 +3039,8 @@
         <img src="/icon-192.png" alt="VitalTrack" width="40" height="40" style="border-radius:10px; box-shadow: 0 4px 12px rgba(52,211,153,0.3);">
       </div>
       <div class="pwa-banner-text">
-        <strong>Installer l'App VitalTrack</strong>
-        <p id="pwaBannerDesc">Installez l'application sur votre écran d'accueil pour un accès instantané hors-ligne.</p>
+        <strong data-i18n="modals.pwaModalTitle">Installer l'App VitalTrack</strong>
+        <p id="pwaBannerDesc" data-i18n="modals.pwaModalDesc">Installez l'application sur votre écran d'accueil pour un accès instantané hors-ligne.</p>
       </div>
       <div class="pwa-banner-actions">
         <button type="button" class="btn-pwa-install" id="pwaInstallBtn" onclick="triggerPwaInstall()">
@@ -3059,15 +3059,15 @@
       <div style="width:64px; height:64px; margin:0 auto 16px; background:rgba(52,211,153,0.12); border:1px solid var(--accent); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:2rem; color:var(--accent);">
         <i class="ri-sparkling-fill"></i>
       </div>
-      <h3 style="font-size:1.35rem; font-weight:800; margin-bottom:8px; color:var(--text);">Connexion Requise</h3>
-      <p style="color:var(--text-dim); font-size:0.9rem; line-height:1.5; margin-bottom:20px;">
+      <h3 style="font-size:1.35rem; font-weight:800; margin-bottom:8px; color:var(--text);" data-i18n="modals.authGateTitle">Connexion Requise</h3>
+      <p style="color:var(--text-dim); font-size:0.9rem; line-height:1.5; margin-bottom:20px;" data-i18n="modals.authGateDesc">
         Vous avez utilisé vos <strong>3 requêtes IA gratuites</strong> d'essai. Pour continuer à échanger en illimité avec le Coach Vitaliste et accéder à l'ensemble des modèles IA, connectez-vous avec votre compte Google.
       </p>
 
       <div style="background:var(--surface-hover); border:1px solid var(--border); border-radius:14px; padding:12px; margin-bottom:20px; text-align:left; font-size:0.8rem; color:var(--text-dim);">
-        <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;"><i class="ri-check-line" style="color:var(--accent);"></i> Échanges illimités avec les modèles IA</div>
-        <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;"><i class="ri-check-line" style="color:var(--accent);"></i> Sauvegarde automatique de vos conversations</div>
-        <div style="display:flex; align-items:center; gap:8px;"><i class="ri-check-line" style="color:var(--accent);"></i> 100% Sécurisé & respectueux de votre vie privée</div>
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;"><i class="ri-check-line" style="color:var(--accent);"></i> <span data-i18n="modals.authGateBenefit1">Échanges illimités avec les modèles IA</span></div>
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;"><i class="ri-check-line" style="color:var(--accent);"></i> <span data-i18n="modals.authGateBenefit2">Sauvegarde automatique de vos conversations</span></div>
+        <div style="display:flex; align-items:center; gap:8px;"><i class="ri-check-line" style="color:var(--accent);"></i> <span data-i18n="modals.authGateBenefit3">100% Sécurisé & respectueux de votre vie privée</span></div>
       </div>
 
       <button type="button" class="btn-google-login" onclick="window.handleDirectGoogleLogin()" style="width:100%; display:flex; align-items:center; justify-content:center; gap:10px; padding:14px; background:#fff; color:#1f2937; border:none; border-radius:14px; font-weight:700; font-size:0.95rem; cursor:pointer; box-shadow:0 4px 16px rgba(0,0,0,0.3); transition:all 0.2s ease; margin-bottom:10px;">

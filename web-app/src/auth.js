@@ -133,7 +133,7 @@ class VitalTrackAuth {
       return user;
     } catch (e) {
       console.error('[Auth] Error decoding Google token:', e);
-      if (window.showToast) window.showToast('Erreur de connexion Google', 'error');
+      if (window.showToast) window.showToast(t('auth.loginError', null, 'Erreur de connexion Google'), 'error');
     }
   }
 
@@ -205,7 +205,7 @@ class VitalTrackAuth {
 
     this._saveSession(user);
     if (window.showToast) {
-      window.showToast(`✨ Bienvenue ${user.name} ! Connexion Google réussie.`, 'success');
+      window.showToast(`✨ ${t('auth.loginSuccess', { name: user.name }, `Bienvenue ${user.name} ! Connexion Google réussie.`)}`, 'success');
     }
     return user;
   }
@@ -216,7 +216,7 @@ class VitalTrackAuth {
   signOut() {
     this._saveSession(null);
     if (window.showToast) {
-      window.showToast('🚪 Vous êtes maintenant déconnecté.', 'info');
+      window.showToast(`🚪 ${t('auth.loggedOut', null, 'Vous êtes maintenant déconnecté.')}`, 'info');
     }
     // Rechargement immédiat propre pour actualiser la vue et masquer les données privées
     setTimeout(() => {
@@ -248,7 +248,7 @@ class VitalTrackAuth {
    */
   exportAllUserData() {
     if (!this.currentUser) {
-      if (window.showToast) window.showToast('Veuillez vous connecter pour exporter vos données.', 'error');
+      if (window.showToast) window.showToast(t('auth.loginRequiredToExport', null, 'Veuillez vous connecter pour exporter vos données.'), 'error');
       return;
     }
 
@@ -305,7 +305,7 @@ class VitalTrackAuth {
     URL.revokeObjectURL(url);
 
     if (window.showToast) {
-      window.showToast('📦 Données RGPD exportées avec succès !', 'success');
+      window.showToast(`📦 ${t('rgpd.exportSuccessToast', null, 'Données RGPD exportées avec succès !')}`, 'success');
     }
   }
 
@@ -333,7 +333,7 @@ class VitalTrackAuth {
     }
 
     if (window.showToast) {
-      window.showToast('🔄 Toutes vos données de santé, historiques et photos ont été réinitialisés.', 'info');
+      window.showToast(`🔄 ${t('rgpd.resetSuccessToast', null, 'Toutes vos données de santé, historiques et photos ont été réinitialisés.')}`, 'info');
     }
 
     setTimeout(() => {
@@ -369,7 +369,7 @@ class VitalTrackAuth {
     this._saveSession(null);
 
     if (window.showToast) {
-      window.showToast('🗑️ Votre compte et l\'intégralité de vos données ont été définitivement effacés (Droit à l\'oubli respecté).', 'info', 5000);
+      window.showToast(`🗑️ ${t('rgpd.deleteSuccessToast', null, 'Votre compte et l\'intégralité de vos données ont été définitivement effacés.')}`, 'info', 5000);
     }
 
     setTimeout(() => {

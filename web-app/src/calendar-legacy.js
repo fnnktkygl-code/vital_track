@@ -1,5 +1,6 @@
 // calendar-legacy.js
 import { store, formatLocalDate, parseLocalDate, addDaysLocal } from './storage.js';
+import { t } from './i18n.js';
 
 window.PROGRAM_START = new Date(); 
 window.TOTAL_JOURS = 30;
@@ -296,7 +297,7 @@ window.toggleMeal = function(mealId) {
     window.renderDay();
     window.renderStrip();
     if (window.showToast && meal.done) {
-      window.showToast(`✅ Repas "${meal.title || meal.slot}" validé !`, 'success');
+      window.showToast(`✅ ${t('calendar.mealValidated', { title: meal.title || meal.slot }, `Repas "${meal.title || meal.slot}" validé !`)}`, 'success');
     }
   }
 };
@@ -321,7 +322,7 @@ window.validateAllDay = function() {
   window.renderDay();
   window.renderStrip();
   if (window.showToast) {
-    window.showToast(`🎉 Tous les repas de la journée ont été validés !`, 'success');
+    window.showToast(`🎉 ${t('calendar.allMealsValidated', null, 'Tous les repas de la journée ont été validés !')}`, 'success');
   }
 };
 
@@ -343,7 +344,7 @@ window.resetDay = function() {
   window.renderDay();
   window.renderStrip();
   if (window.showToast) {
-    window.showToast('↺ Validations réinitialisées pour ce jour.', 'info');
+    window.showToast(`↺ ${t('calendar.validationsReset', null, 'Validations réinitialisées pour ce jour.')}`, 'info');
   }
 };
 
@@ -415,13 +416,13 @@ window.updateProgramRing = function() {
 
 window.clearCalendar = async function() {
   const ok = await (window.showVitalConfirm ? window.showVitalConfirm({
-    title: 'Arrêter le programme',
-    message: 'Voulez-vous vraiment arrêter votre programme et effacer l\'ensemble du calendrier ?',
+    title: t('calendar.stopProgramTitle', null, 'Arrêter le programme'),
+    message: t('calendar.stopProgramMsg', null, 'Voulez-vous vraiment arrêter votre programme et effacer l\'ensemble du calendrier ?'),
     icon: 'ri-alert-line',
-    confirmText: 'Arrêter et effacer',
-    cancelText: 'Annuler',
+    confirmText: t('calendar.stopAndClear', null, 'Arrêter et effacer'),
+    cancelText: t('common.cancel', null, 'Annuler'),
     isDanger: true
-  }) : Promise.resolve(confirm("Voulez-vous vraiment arrêter votre programme et effacer le calendrier ?")));
+  }) : Promise.resolve(confirm(t('calendar.stopProgramMsg', null, 'Voulez-vous vraiment arrêter votre programme et effacer le calendrier ?'))));
 
   if (ok) {
     window.store.set('calendar_meals', []);
@@ -430,7 +431,7 @@ window.clearCalendar = async function() {
     window.renderStrip();
     window.renderDay();
     window.updateProgramRing();
-    if (window.showToast) window.showToast('Programme arrêté et calendrier réinitialisé.', 'info');
+    if (window.showToast) window.showToast(t('calendar.programStopped', null, 'Programme arrêté et calendrier réinitialisé.'), 'info');
   }
 };
 
@@ -669,8 +670,8 @@ window.saveManualMeal = function() {
   const desc = document.getElementById('calMealDesc');
   const activeSlot = document.querySelector('#calMealSlots .chip-btn.active');
   
-  if (!dateInput || !dateInput.value) { if (window.showToast) window.showToast('Choisis une date.', 'error'); return; }
-  if (!desc || !desc.value.trim()) { if (window.showToast) window.showToast('Décris ton repas.', 'error'); return; }
+  if (!dateInput || !dateInput.value) { if (window.showToast) window.showToast(t('calendar.pickDateError', null, 'Veuillez choisir une date.'), 'error'); return; }
+  if (!desc || !desc.value.trim()) { if (window.showToast) window.showToast(t('calendar.describeMealError', null, 'Veuillez décrire votre repas.'), 'error'); return; }
   
   const slot = activeSlot ? activeSlot.dataset.slot : 'Déjeuner';
   const tone = activeSlot ? activeSlot.dataset.tone : 'midi';
@@ -857,7 +858,7 @@ window.applySubstitution = function() {
 
   const newFoodName = input.value.trim();
   if (!newFoodName) {
-    if (window.showToast) window.showToast("⚠️ Veuillez choisir ou saisir un aliment.", "error");
+    if (window.showToast) window.showToast(t('calendar.selectFoodError', null, '⚠️ Veuillez choisir ou saisir un aliment.'), 'error');
     return;
   }
 
@@ -885,7 +886,7 @@ window.applySubstitution = function() {
   window.renderDay();
   window.updateProgramRing();
   if (window.showToast) {
-    window.showToast(`✅ "${ctx.originalFood}" remplacé par "${newFoodName}" !`, 'success');
+    window.showToast(`✅ ${t('calendar.foodReplaced', { orig: ctx.originalFood, rep: newFoodName }, `"${ctx.originalFood}" remplacé par "${newFoodName}" !`)}`, 'success');
   }
 };
 
@@ -898,7 +899,7 @@ window.analyzeAiSubstitution = async function() {
 
   const targetFood = input.value.trim() || ctx.originalFood;
   if (!targetFood) {
-    if (window.showToast) window.showToast("Veuillez saisir un aliment à évaluer.", "info");
+    if (window.showToast) window.showToast(t('calendar.enterFoodToEvaluate', null, 'Veuillez saisir un aliment à évaluer.'), 'info');
     return;
   }
 
@@ -991,7 +992,7 @@ window.applyAiAnalyzedSubstitution = function(foodName, emoji) {
   window.renderDay();
   window.updateProgramRing();
   if (window.showToast) {
-    window.showToast(`✅ "${ctx.originalFood}" remplacé par "${foodName}" !`, 'success');
+    window.showToast(`✅ ${t('calendar.foodReplaced', { orig: ctx.originalFood, rep: foodName }, `"${ctx.originalFood}" remplacé par "${foodName}" !`)}`, 'success');
   }
 };
 
@@ -1231,7 +1232,7 @@ window.applyAiMealProposal = function() {
   window.renderDay();
   window.updateProgramRing();
   if (window.showToast) {
-    window.showToast(`✅ Repas mis à jour avec le plat sur-mesure !`, 'success');
+    window.showToast(`✅ ${t('calendar.customDishUpdated', null, 'Repas mis à jour avec le plat sur-mesure !')}`, 'success');
   }
 };
 
