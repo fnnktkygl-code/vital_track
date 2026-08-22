@@ -582,6 +582,58 @@ for (let sec of SECTION_DEFS) {
 sectionPositions.sort((a, b) => a.pos - b.pos);
 console.log(`Sections repérées dans le texte : ${sectionPositions.length} / ${SECTION_DEFS.length}`);
 
+// Dictionnaire des tableaux exhaustifs et structurés en Markdown
+const SECTION_TABLES = {
+  "chapitre-1-comprendre-notre-espece": [
+    "### TABLEAU COMPARATIF D'ANATOMIE ET PHYSIOLOGIE DES VERTÉBRÉS",
+    "| Caractéristique Anatomique | Carnivores Purs (Félins, Loup) | Omnivores (Ours, Porc, Chiens) | Herbivores (Vache, Cheval, Mouton) | Humain Frugivore (Homo Sapiens, Primates) |\n| :--- | :--- | :--- | :--- | :--- |\n| **Membres & Mains** | Griffes acérées pour déchirer la chair | Griffes, sabots ou coussinets | Sabots plats pour pâturer | Mains préhensiles à doigts agiles pour cueillir les fruits |\n| **Dents & Mâchoire** | Canines pointues, molaires tranchantes, mâchoire verticale | Canines/défenses et molaires plates | 24 molaires plates broyeuses, 8 incisives coupantes | Dents égales, incisives coupantes, molaires plates broyeuses |\n| **Salive & Déglutition** | Acide, pas de {{ptyaline}} (avale sans mâcher) | Peu active, digestion enzymatique faible | Fortement alcaline, imprégnation lente | Fortement alcaline, riche en {{ptyaline}} (amylase salivaire) |\n| **Estomac** | Petit, sphérique, acidité gastrique très forte (HCl pH 1-2) | Acidité gastrique modérée | Oblong, complexe (3-4 poches), acidité faible | Oblong avec duodénum, acidité modérée (pH 4-5 au repos) |\n| **Intestin Grêle** | Court (3x longueur du tronc), parois lisses | Moyen (10x longueur du tronc) | Très long (20-30x longueur du tronc) | Long et plissé (10-12x longueur du tronc) pour absorption |\n| **Côlon & Évacuation** | Court, lisse, évacuation rapide des chairs putrescibles | Modérément long, absorption minimale | Long, sacculaire et annelé | Long, sacculaire (bosselures) pour absorber l'eau vitale |\n| **Foie & Métabolisme** | Foie massif (50% plus grand), bile très abondante | Foie volumineux, élimination de l'acide urique | Foie semblable à l'homme | Foie moyen, incapable d'éliminer de grandes quantités d'acide urique |\n| **Reins & Urine** | Urine très acide, élimination massive d'urée/acides | Urine acide | Urine alcaline | Urine alcaline/neutre (devient acide en cas de toxémie) |\n| **Peau & Transpiration** | Glandes sudoripares uniquement sur coussinets (halète) | Glandes sudoripares minimales | Millions de pores sudoripares | Millions de pores sudoripares pour l'élimination transcutanée |"
+  ],
+  "module-2-5-systeme-cardiovasculaire-et-sang": [
+    "### TABLEAU DES FLUIDES DES ESPÈCES ALCALINES ET EFFETS DE L'ACIDOSE",
+    "| Fluide Corporel | Nature Physiologique Normale | Effets Dévastateurs de l'Acidose Tissulaire |\n| :--- | :--- | :--- |\n| **Salive** | Alcaline | Aphtes, gingivites, herpès buccal, déminéralisation dentaire |\n| **Urine** | Alcaline / Neutre | Infections urinaires, cystites récidivantes, calculs rénaux, cancer des reins ou de la vessie |\n| **Sucs Gastriques** | Acides (HCl concentré) | Ulcères gastriques, gastrites chroniques, reflux gastro-œsophagien, cancer de l'estomac |\n| **Sucs Intestinaux** | Alcalins | Ulcères, entérites, colites ulcéreuses, polypes intestinaux, cancer des intestins |\n| **Sang Artériel** | Alcalin (pH 7,35 - 7,45) | {{Acidose}} métabolique systémique, choc, coma, mort |"
+  ],
+  "module-2-8-systeme-glandulaire-endocrinien": [
+    "### TABLEAU DES GLANDES ENDOCRINES, HORMONES ET FONCTIONS PHYSIOLOGIQUES",
+    "| Glande Endocrine | Hormones Clés Produites | Fonctions Physiologiques Majeures | Signes d'Hypo-activité / Acidose Tissulaire |\n| :--- | :--- | :--- | :--- |\n| **Hypophyse (Glande Maîtresse)** | TSH, ACTH, FSH, LH, GH (hormone de croissance) | Contrôle central et coordination de toutes les glandes endocrines | Retard de croissance, déséquilibres endocriniens poly-glandulaires |\n| **Thyroïde** | Thyroxine (T4), Triiodothyronine (T3), Calcitonine | Régulation du métabolisme basal cellulaire, température, énergie | Frilosité, fatigue chronique, prise de poids inexpliquée, peau sèche |\n| **Parathyroïdes** | Parathormone (PTH) | Régulation et fixation biologique du calcium et du magnésium | Spasmes musculaires, ongles striés/cassants, ostéoporose, varices, hernies |\n| **Thymus** | Thymosines, peptides thymiques | Maturation des lymphocytes T, première ligne de l'immunité | Vulnérabilité aux infections récidivantes, immunodépression |\n| **Surrénales (Cortex & Médulla)** | Cortisol, Aldostérone, DHEA, Adrénaline, Dopamine | Anti-inflammatoire naturel suprême, tension artérielle, utilisation sucres | Hypotension (< 11,8), fatigue chronique, anxiété, inflammation systémique |\n| **Pancréas (Îlots de Langerhans)** | Insuline, Glucagon, Somatostatine | Régulation fine de la glycémie et transport intracellulaire du glucose | Diabète de type I ou II, hypoglycémies réactives, fermentations |\n| **Gonades (Ovaires / Testicules)** | Œstrogènes, Progestérone, Testostérone | Reproduction, vitalité sexuelle, maintien du tonus tissulaire | Kystes ovariens, endométriose, troubles prostatiques, infertilité |"
+  ],
+  "module-3-5-vitamines-coenzymes": [
+    "### TABLEAU COMPARATIF DES VITAMINES NATURELLES ET SOURCES VIVANTES",
+    "| Vitamine / Coenzyme | Rôle Physiologique Fondamental | Meilleures Sources Végétales Vivantes | Symptômes Majeurs de Carence |\n| :--- | :--- | :--- | :--- |\n| **Vitamine A (Bêta-carotène)** | Vision, intégrité épithéliale, régénération des muqueuses | Carottes, mangues, papayes, abricots, épinards, melon | Cécité crépusculaire, sécheresse oculaire et cutanée, polypes |\n| **Complexe B (B1 à B12)** | Métabolisme énergétique, influx nerveux, globules rouges | Graines germées, bananes, figues, avocat, baies sauvages | Névrites, asthénie profonde, irritabilité, anémie métabolique |\n| **Vitamine C (Complexe vivant)** | Antioxydant majeur, synthèse du collagène, élimination | Agrumes mûrs, baies sauvages, poivrons doux, cerises acérola | Fragilité capillaire, gingivite, scorbut, baisse immunitaire innée |\n| **Vitamine D (D3 naturelle)** | Fixation du calcium, régulation immunitaire, humeur | Exposition solaire intelligente et progressive (UVB) | Déminéralisation osseuse, faiblesse musculaire, déprime saisonnière |\n| **Vitamine E (Tocophérols)** | Protection des membranes cellulaires contre l'oxydation | Avocats, graines de tournesol germées, amandes crues | Dégénérescence musculaire, vieillissement cellulaire accéléré |\n| **Vitamine K (Phylloquinone)** | Coagulation sanguine normale et calcification osseuse | Feuilles vertes, persil, épinards, laitue romaine, brocoli | Hémorragies, ecchymoses faciles, retard de cicatrisation |"
+  ],
+  "module-3-6-elements-essentiels-mineraux": [
+    "### TABLEAU DES MINÉRAUX MAJEURS ET OLIGO-ÉLÉMENTS BIODISPONIBLES",
+    "| Minéral / Élément Essentiel | Rôle Biologique Vital | Sources Végétales Vivantes Privilégiées | Impact sur l'Équilibre Acido-Basique |\n| :--- | :--- | :--- | :--- |\n| **Potassium (K)** | Principal cation intracellulaire, conduction nerveuse, cœur | Bananes, dattes, raisins, melons, eau de coco fraîche | Puissamment alcalinisant (neutralise les acides) |\n| **Calcium (Ca)** | Structure osseuse, conduction neuromusculaire, hémostase | Feuilles vertes, figues sèches, graines de sésame, oranges | Tampon alcalinisant majeur de l'organisme |\n| **Magnésium (Mg)** | Cofacteur de 300+ enzymes, synthèse de l'ATP, détente | Cacao cru, légumes à feuilles vertes (chlorophylle) | Régulateur neuromusculaire alcalinisant |\n| **Sodium Organique (Na)** | Solubilisation du calcium, fluide lymphatique, sucs digestifs | Branches de céleri, blettes, concombres, tomates de plein champ | Maintient le calcium en solution colloïdale |\n| **Silice Organique (Si)** | Élasticité des artères, collagène, cheveux, ongles, os | Prêle des champs, ortie dioïque, peau de concombre, poivrons | Régénérateur du tissu conjonctif |\n| **Fer Organique (Fe)** | Transport de l'oxygène, hémoglobine, enzymes respiratoires | Raisins noirs, mûres sauvages, figues, spiruline, épinards | Oxygénateur cellulaire alcalinisant |\n| **Iode Végétal (I)** | Synthèse des hormones thyroïdiennes (T3, T4), métabolisme | Algues marines (dulse, kelp, nori), sel gemme naturel | Stimulateur glandulaire et métabolique |"
+  ],
+  "module-3-8-ph-des-aliments": [
+    "### TABLEAU DE L'ÉCHELLE DU PH ET DE L'IMPACT ÉLECTROMAGNÉTIQUE",
+    "| Degré de pH | Effet Métabolique Cellulaire | Aliments Typiques | Résonance en Angströms (Å) |\n| :--- | :--- | :--- | :--- |\n| **9,0 - 10,0 (Super-Alcalin)** | Dissolution massive de la lymphe, élimination rénale | Citron mûr, raisin noir à pépins, pastèque | 9 000 - 10 000 Å (Hautement Énergisant) |\n| **7,5 - 8,5 (Alcalin Moyen)** | Régénération cellulaire, apport d'électrolytes vivants | Mangues, papayes, bananes mûres, oranges douces | 8 000 - 8 500 Å (Vitalisant) |\n| **7,0 (Neutre / Doux)** | Nettoyage doux du côlon, maintien homéostatique | Concombres, courgettes, salades vertes, graines germées | 6 500 - 7 500 Å (Soutien Vital) |\n| **5,5 - 6,5 (Faiblement Acide)** | Ralentit le transit de détox, digestion dense | Noix trempées, graines de courge, céréales complètes cuites | 3 000 - 5 000 Å (Ralentisseur) |\n| **2,5 - 5,0 (Fortement Acide)** | Brûle les muqueuses, forme du mucus, épuise les reins | Viandes, fromages, farines blanches, sodas, alcools | 0 - 2 000 Å (Dévitalisant / Toxique) |"
+  ],
+  "module-7-2-grande-table-des-aliments-acides-alcalins": [
+    "### LA GRANDE TABLE ACIDO-BASIQUE COMPLÈTE DU DR. MORSE",
+    "| Catégorie & Niveau Métabolique | Aliments Représentatifs | Effet sur le Sang et la Lymphe | Recommandation en Cure de Vitalité |\n| :--- | :--- | :--- | :--- |\n| **Hautement Alcalinisants & Astringents (Détox Supérieure)** | Citron, Raisin noir à pépins, Pastèque, Melon, Mûres, Myrtilles, Framboises, Pamplemousse, Pommes acidulées | Dissolution massive de la lymphe stagnante, ouverture rénale | **Priorité Absolue en Cure Active** |\n| **Alcalinisants Majeurs (Régénération & Énergie)** | Mangue, Papaye, Banane bien mûre, Figues fraîches, Dattes fraîches, Oranges douces, Pêches, Céleri, Concombre | Apport de fructose pur, électrolytes vivants, régénération | Base quotidienne de vitalité |\n| **Alcalinisants Doux (Nettoyage & Reminéralisation)** | Salades vertes (romaine, roquette), Épinards crus, Courgettes crues, Graines germées, Légumes vapeur doux | Élimine les résidus fécaux, nettoie le côlon, reminéralise | Repas du soir ou phase de transition |\n| **Neutres à Faiblement Acidifiants (Transition)** | Noix crues trempées, Graines de courge, Quinoa, Riz sauvage, Patate douce cuite à la vapeur, Châtaignes | Ralentit le flux de détoxination sans encrasser massivement | Utiliser uniquement en transition |\n| **Hautement Acidifiants & Toxiques (À Proscrire)** | Viandes rouges et blanches, Poissons, Fromages, Lait animal, Farines blanches, Sucres raffinés, Alcool, Café | Génère acide urique, acide phosphorique, mucus épais et calculs | **À Proscrire Totalement** |"
+  ],
+  "module-7-3-combinaisons-alimentaires": [
+    "### TABLEAU DES RÈGLES D'OR DES COMBINAISONS ALIMENTAIRES PHYSIOLOGIQUES",
+    "| Famille d'Aliments | Combinaisons Harmonieuses | Combinaisons Incompatibles Toxiques | Explication Enzymatique et Métabolique |\n| :--- | :--- | :--- | :--- |\n| **Melons et Pastèques** | **À consommer strictement SEULS** | Tout autre aliment (fruits, légumes, graines) | Digestion en 15-20 min ; bloqués par d'autres aliments, ils fermentent en alcool toxique |\n| **Fruits Acides (Citrons, Pamplemousses)** | Fruits sub-acides, salades vertes douces | Féculents, céréales, pommes de terre, bananes | L'acide détruit l'amylase salivaire (ptyaline), bloquant la digestion des amidons |\n| **Fruits Doux (Bananes, Dattes, Figues)** | Fruits sub-acides, graines germées, feuilles vertes | Fruits acides, féculents lourds, protéines concentrées | Évite les fermentations digestives et les ballonnements gazeux |\n| **Légumes Feuilles & Salades** | Compatibles avec presque tous les aliments vivants | Aucune incompatibilité majeure | Riches en eau cellulaire structurée et fibres balais sans amidon |\n| **Protéines Concentrées & Féculents** | Légumes verts cuits vapeur sans amidon | Protéines concentrées + Féculents concentrés | L'acide gastrique (pepsine) et l'alcalin neutralisent mutuellement leur efficacité |"
+  ],
+  "module-8-3-formules-de-plantes-puissantes": [
+    "### TABLEAU DES FORMULES BOTANIQUES MAGISTRALES PAR ÉMONCTOIRE ET SYSTÈME",
+    "| Système Organique | Plantes Souveraines Dépuratives & Toniques | Nom Botanique de Référence | Objectif Thérapeutique & Posologie Clinique |\n| :--- | :--- | :--- | :--- |\n| **Reins & Vessie** | Baie de Genièvre, Persil racine, Uva Ursi, Bardane, Barbe de maïs | *Juniperus communis*, *Petroselinum crispum*, *Arctostaphylos uva-ursi* | Forcer les reins à filtrer les acides cellulaires et ouvrir les voies urinaires |\n| **Système Lymphatique** | Gaillet Gratteron, Racine de Phytolaque, Stillingie, Trèfle rouge, Chaparral | *Galium aparine*, *Phytolacca americana*, *Stillingia sylvatica* | Briser les stases ganglionnaires, dissoudre les kystes et fluidifier la lymphe |\n| **Glandes Surrénales** | Ginseng Sibérien, Schisandra, Astragale, Rhodiola, Réglisse racine | *Eleutherococcus senticosus*, *Schisandra chinensis*, *Glycyrrhiza glabra* | Reconstruire la production de cortisol naturel, d'aldostérone et d'énergie |\n| **Gros Intestin (Côlon)** | Cascara Sagrada, Rhubarbe de Turquie, Guimauve, Orme fauve, Charbon | *Rhamnus purshiana*, *Rheum palmatum*, *Althaea officinalis* | Décoller la plaque mucoïde, régénérer les parois muqueuses et le péristaltisme |\n| **Foie & Vésicule** | Chardon-Marie, Racine de Pissenlit, Artichaut, Chélidoine, Boldo | *Silybum marianum*, *Taraxacum officinale*, *Cynara scolymus* | Nettoyer les conduits biliaires, régénérer les hépatocytes et dissoudre les calculs |\n| **Cerveau & Système Nerveux** | Gotu Kola, Ginkgo Biloba, Scutellaire, Millepertuis, Romarin | *Centella asiatica*, *Ginkgo biloba*, *Scutellaria lateriflora* | Relancer la mémoire, stimuler la microcirculation cérébrale et réparer la myéline |\n| **Système Endocrinien Global** | Baie de Gattilier, Saw Palmetto, Éleuthérocoque, Kelp | *Vitex agnus-castus*, *Serenoa repens*, *Laminaria digitata* | Harmoniser l'axe hypophyse-thyroïde-surrénales et équilibrer les hormones |"
+  ],
+  "annexe-a-temperature-basale-de-barnes": [
+    "### TABLEAU D'ÉVALUATION CLINIQUE DU PROTOCOLE DE TEMPERATURE BASALE DE BARNES",
+    "| Mesure Axillaire au Réveil (10 min) | Interprétation Fonctionnelle Globale | Organe ou Glande Ciblée | Recommandation Hygiéniste Morse |\n| :--- | :--- | :--- | :--- |\n| **Température < 36,4 °C** | **Hypothyroïdie fonctionnelle confirmée** | Thyroïde & Cortex Surrénalien | Protocole 100% fruits vivants, kelp naturel, formule thyroïde/surrénales |\n| **Température 36,4 °C à 36,6 °C** | Activité métabolique ralentie, début d'acidose | Glandes endocrines ralenties | Alimentation régénératrice crue, stimulation émonctorielle |\n| **Température 36,6 °C à 36,8 °C** | **Fonction endocrinienne optimale et saine** | Équilibre homéostatique parfait | Maintien de l'hygiène de vie vivante et des cures saisonnières |\n| **Température > 37,0 °C** | Hyperactivité glandulaire ou crise d'élimination | Inflammation aiguë ou infection | Hydratation abondante aux jus de fruits doux, repos complet |"
+  ],
+  "annexe-d-analyses-de-sang-decodees": [
+    "### TABLEAU DES ANALYSES BIOLOGIQUES SANGUINES DÉCODÉES EN PHYSIOLOGIE NATURELLE",
+    "| Paramètre Biologique | Normes Allopathiques Standard | Plage Optimale de Vitalité Morse | Interprétation Hygiéniste et Signification de l'Acidose |\n| :--- | :--- | :--- | :--- |\n| **Cholestérol Total** | 1,50 - 2,00 g/L | 1,40 - 1,80 g/L | Produit par le foie comme anti-acide protecteur en cas d'acidose lymphatique persistante |\n| **Triglycérides** | 0,50 - 1,50 g/L | 0,60 - 1,00 g/L | Reflète l'engorgement hépatique et la fermentation d'amidons ou de sucres industriels |\n| **Créatinine Sanguine** | 7 - 12 mg/L | 6 - 9 mg/L | Témoigne de la clairance rénale glomérulaire ; un taux élevé signale un blocage des reins |\n| **Acide Urique** | 30 - 70 mg/L | 25 - 45 mg/L | Déchet direct des purines carnées ; provoque goutte, calculs et arthrite inflammatoire |\n| **Glycémie à Jeun** | 0,70 - 1,10 g/L | 0,75 - 0,95 g/L | Contrôlée par le pancréas et les surrénales ; les fluctuations reflètent la faiblesse surrénalienne |\n| **Leucocytes (Globules Blancs)** | 4 000 - 10 000 /mm³ | 4 500 - 6 500 /mm³ | Une élévation traduit une toxémie aiguë ; une leucopénie traduit une fatigue de la moelle osseuse |"
+  ],
+  "annexe-h-prefixes-et-suffixes-medicaux": [
+    "### TABLEAU DES PRÉFIXES ET SUFFIXES MÉDICAUX DÉCODÉS EN LANGAGE SIMPLE",
+    "| Préfixe ou Suffixe Médical | Origine & Signification Étymologique | Exemples Médicaux Courants | Traduction en Langage Vitaliste Clair |\n| :--- | :--- | :--- | :--- |\n| **-ite (-itis)** | Inflammation, rougeur, chaleur, douleur | Gastrite, Colite, Néphrite, Arthrite, Bronchite | Réaction défensive des tissus brûlés par la stagnation des acides cellulaires |\n| **-ose (-osis)** | État pathologique chronique, dégénérescence | Acidose, Arthrose, Néphrose, Sclérose, Mucoviscidose | Dégradation progressive et durcissement des tissus sous toxémie ancienne |\n| **-ome (-oma)** | Tumeur, gonflement, masse tissulaire | Carcinome, Adénome, Lipome, Fibrome, Sarcome | Kyste ou poche créée par l'organisme pour encapsuler des déchets corrosifs |\n| **Hyper-** | Au-dessus, excès, suractivité anormale | Hypertension, Hyperglycémie, Hyperplasie | Réaction d'urgence du corps tentant de forcer un barrage ou une obstruction |\n| **Hypo-** | En-dessous, déficit, insuffisance | Hypotension, Hypothyroïdie, Hypoglycémie | Épuisement cellulaire ou glandulaire par manque de carburant vivant |\n| **Hépa- / Hépato-** | Relatif au foie | Hépatite, Hépatomégalie, Hépatotoxique | Congestion ou nettoyage de l'usine biliaire et neutralisatrice de poisons |\n| **Néphro- / Réno-** | Relatif aux reins | Néphropathie, Néphrite, Néphron | Atteinte ou faiblesse des émonctoires maîtres chargés d'expulser la lymphe |"
+  ]
+};
+
 // Découper le texte en chapitres / modules
 const chaptersData = [];
 for (let i = 0; i < sectionPositions.length; i++) {
@@ -592,12 +644,20 @@ for (let i = 0; i < sectionPositions.length; i++) {
   
   // Nettoyage des titres initiaux redondants dans le texte
   const lines = sectionRawText.split('\n').map(l => l.trim()).filter(Boolean);
-  
+
+  // Nettoyage des résidus bruts OCR de tableaux non formatés
+  const filteredLines = lines.filter(line => {
+    if (/^(FluideNatureEffets|SaliveAlcaline|Sucs gastriquesAcides|Sucs intestinauxAlcalins|SangAlcalinMort|Fluides alcalins|UrineAlcaline)/i.test(line)) return false;
+    if (/(des reins ou de la vessie|cancer de l'estomac|cancer des intestins)/i.test(line) && current.id === "module-2-5-systeme-cardiovasculaire-et-sang") return false;
+    if (current.id === "chapitre-1-comprendre-notre-espece" && /^(CARNIVORES|OMNIVORES|HERBIVORES|FRUGIVORES)$/.test(line)) return false;
+    return true;
+  });
+
   // Découper en paragraphes cohérents (regrouper les lignes de texte continu)
   const paragraphs = [];
   let currentParagraph = '';
   
-  for (let line of lines) {
+  for (let line of filteredLines) {
     // Si c'est un sous-titre en majuscules ou débutant par un tiret / puce
     if (/^[A-ZÉÈÊËÀÂÎÏÔÙÛÇ\s–—\-]{4,}$/.test(line) && line.length < 60) {
       if (currentParagraph) {
@@ -625,6 +685,11 @@ for (let i = 0; i < sectionPositions.length; i++) {
     paragraphs.push(currentParagraph.trim());
   }
 
+  // Injecter les tableaux Markdown spécifiques à cette section
+  if (SECTION_TABLES[current.id]) {
+    paragraphs.push(...SECTION_TABLES[current.id]);
+  }
+
   // Filtrer les paragraphes trop courts ou résiduels
   const cleanParagraphs = paragraphs.filter(p => p.length >= 2);
 
@@ -636,7 +701,7 @@ for (let i = 0; i < sectionPositions.length; i++) {
   });
 }
 
-console.log(`✅ ${chaptersData.length} chapitres et modules complets structurés avec succès.`);
+console.log(`✅ ${chaptersData.length} chapitres et modules complets structurés avec succès avec tableaux Markdown intégrés.`);
 
 // Écrire le fichier complet
 const fullCode = `/**
