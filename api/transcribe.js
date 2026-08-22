@@ -29,25 +29,28 @@ module.exports = async function handler(req, res) {
     }
 
     const mime = mimeType || 'audio/webm';
-    const langInstruction = language === 'en'
-      ? 'Transcribe in English.'
-      : language === 'es'
-        ? 'Transcribe in Spanish.'
-        : 'Transcris en Français.';
+    const langMap = {
+      'en': 'Transcribe accurately in English.',
+      'es': 'Transcribe con absoluta fidelidad en Español.',
+      'fr-CA': 'Transcris fidèlement et intégralement en Français (Canada / Québec).',
+      'fr': 'Transcris fidèlement et intégralement en Français.'
+    };
+    const langInstruction = langMap[language] || langMap.fr;
 
-    const systemPrompt = `You are an expert audio transcriber for VitalTrack, a vitalist health and nutrition app.
+    const systemPrompt = `You are a high-fidelity speech-to-text audio transcription engine for VitalTrack.
 ${langInstruction}
-Transcribe the user's spoken voice message with absolute accuracy.
-- Preserve all medical, botanical, nutritional and vitalist vocabulary (e.g. Dr. Sebi, Arnold Ehret, Robert Morse, détox, mucus, émonctoires, reins, lymphe, autophagie, jeûne, papaye, etc.).
-- Never repeat sentences or invent words.
-- Output ONLY the exact transcribed text as plain text without any markdown, quotes, explanations, or metadata.`;
+CRITICAL INSTRUCTIONS:
+- Transcribe EVERYTHING the user said from the first syllable to the very last word with 100% completeness.
+- Do NOT truncate or omit the ending words or trailing phrases.
+- Accurately preserve all health, medical, vitalist, botanical, and dietary vocabulary (e.g. Dr. Sebi, Arnold Ehret, Robert Morse, détox, mucus, émonctoires, reins, lymphe, jeûne, papaye, algues, électrolytes, etc.).
+- Output ONLY the raw transcribed text. Never add conversational commentary, timestamps, or quotes.`;
 
     const result = await callGeminiApi({
       apiKey,
       contents: [{
         role: 'user',
         parts: [
-          { text: 'Transcribe this voice message accurately.' },
+          { text: 'Transcribe this complete voice audio recording without omitting any words.' },
           { inlineData: { mimeType: mime, data: audioData } },
         ],
       }],

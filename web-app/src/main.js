@@ -2495,6 +2495,20 @@ async function stopVoiceRecording(e) {
   VoiceAudio.playStopChime();
   _updateVoiceUI(false, true);
 
+  // 1. Force flush remaining buffered audio chunks before stopping
+  if (_mediaRecorder && _mediaRecorder.state === 'recording') {
+    try {
+      if (typeof _mediaRecorder.requestData === 'function') {
+        _mediaRecorder.requestData();
+      }
+    } catch (err) {
+      console.warn('[Voice] requestData flush error:', err);
+    }
+  }
+
+  // 2. Short 200ms hardware capture buffer flush
+  await new Promise(r => setTimeout(r, 200));
+
   const audioBlob = await new Promise((resolve) => {
     if (_mediaRecorder && _mediaRecorder.state !== 'inactive') {
       _mediaRecorder.onstop = () => {
@@ -2504,6 +2518,9 @@ async function stopVoiceRecording(e) {
         resolve(blob);
       };
       try {
+        if (typeof _mediaRecorder.requestData === 'function') {
+          _mediaRecorder.requestData();
+        }
         _mediaRecorder.stop();
       } catch (err) {
         _cleanupAudioStream();
@@ -2522,7 +2539,7 @@ async function stopVoiceRecording(e) {
     input.placeholder = tFunc('chat.inputPlaceholder') || "Posez une question, explorez un sujet santé...";
   }
 
-  if (!audioBlob || audioBlob.size < 1200) {
+  if (!audioBlob || audioBlob.size < 300) {
     console.log('[Voice] Audio too short or empty, ignoring.');
     _updateVoiceUI(false, false);
     return;
@@ -2558,11 +2575,15 @@ async function stopVoiceRecording(e) {
             if (input) {
               const prefix = _sessionBaseText ? _sessionBaseText.trim() + ' ' : '';
               input.value = (prefix + transcribedText).replace(/\s+/g, ' ').trim();
+              input.dispatchEvent(new Event('input', { bubbles: true }));
+              input.dispatchEvent(new Event('change', { bubbles: true }));
               input.focus();
               if (typeof input.setSelectionRange === 'function') {
                 input.setSelectionRange(input.value.length, input.value.length);
               }
             }
+            // Ensure send button is active and ready
+            resetChatSendBtn();
           } else {
             console.warn('[Voice] Empty transcription response');
           }
@@ -2577,11 +2598,13 @@ async function stopVoiceRecording(e) {
         console.warn('[Voice] Transcribe request failed:', err);
       } finally {
         _updateVoiceUI(false, false);
+        resetChatSendBtn();
       }
     };
   } catch (err) {
     console.warn('[Voice] FileReader error:', err);
     _updateVoiceUI(false, false);
+    resetChatSendBtn();
   }
 }
 
@@ -2827,8 +2850,8 @@ async function sendChat(e) {
 
   if (!userRawQuery && !attachedImage && !activeCtx) return;
 
-  if (_isListening) {
-    window.toggleVoiceInput(false);
+  if (_isVoiceRecording) {
+    cancelVoiceInput();
   }
 
   let messageText = userRawQuery;
