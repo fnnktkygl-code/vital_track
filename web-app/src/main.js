@@ -9829,6 +9829,40 @@ function renderResources() {
       description: "Le guide complet de référence sur la nutrition vitaliste, le jeûne intermittent, les combinaisons alimentaires et les protocoles de détoxification."
     },
 
+    // 🇪🇸 SPANISH TRANSLATIONS & EDITIONS
+    {
+      id: "ehret-mucusless-es",
+      lang: "es",
+      title: "Sistema de Curación por Dieta Sin Moco",
+      subtitle: "Edición Integral Traducida y Estructurada por VitalTrack · Prof. Arnold Ehret",
+      url: "/pdfs/arnold-ehret-systeme-de-guerison-du-regime-sans-mucus-fr.pdf",
+      author: "Prof. Arnold Ehret (1866–1922)",
+      source: "Edición & Traducción VitalTrack (Obra Original de 1922)",
+      size: "1.4 Mo",
+      badgeClass: "badge-success",
+      badgeText: "✨ Edición y Traducción Interactiva VitalTrack",
+      extraBadge: "💡 38 Definiciones · 536 Anotaciones",
+      icon: "ri-book-open-fill",
+      color: "#10b981",
+      description: "Traducción integral, exhaustiva y anotada en español moderno a partir del texto histórico de 1922 del Prof. Arnold Ehret. Arquitectura de lectura interactiva, tablas de Ragnar Berg, fórmulas vitalistas y diccionario con fuentes académicas."
+    },
+    {
+      id: "morse-detox-miracle-es",
+      lang: "es",
+      title: "El Milagro de la Desintoxicación : Guía de Regeneración Celular",
+      subtitle: "Dr. Robert Morse, N.D. — The Detox Miracle Sourcebook en Español",
+      url: "/Miracle%20de%20la%20De%CC%81toxination%20-%20Robert%20Morse.pdf",
+      author: "Dr. Robert Morse, N.D.",
+      source: "Edición & Traducción VitalTrack (Edición Americana)",
+      size: "1.3 Mo",
+      badgeClass: "badge-purple",
+      badgeText: "✨ Edición y Traducción Interactiva VitalTrack",
+      extraBadge: "💡 31 Definiciones · 7 Tablas Clínicas",
+      icon: "ri-leaf-line",
+      color: "#8b5cf6",
+      description: "Traducción integral y exhaustiva de la obra fundamental del Dr. Robert Morse, N.D. en español : gran sistema linfático (80% linfa), filtración renal, poder regenerador de las frutas, tablas de anatomía comparada y farmacopea botánica."
+    },
+
     // 🇬🇧 AUTHENTIC ORIGINAL ENGLISH EDITIONS
     {
       id: "ehret-mucusless-en",
@@ -10175,6 +10209,9 @@ function renderResources() {
   } else if (_resourcesCatalogTab === 'en') {
     filteredBooks = allBooks.filter(b => b.lang === 'en');
     displayedVideos = videos.filter(v => v.lang === 'en');
+  } else if (_resourcesCatalogTab === 'es') {
+    filteredBooks = allBooks.filter(b => b.lang === 'es');
+    displayedVideos = videos.filter(v => v.lang === 'es' || v.lang === 'en');
   } else if (_resourcesCatalogTab === 'videos') {
     filteredBooks = [];
     displayedVideos = videos;
@@ -10191,7 +10228,7 @@ function renderResources() {
             <h2 style="font-size:1.15rem; font-weight:800; margin:0; color:var(--text); display:flex; align-items:center; gap:8px;">
               <span>🔍</span> Recherche Transversale Bilingue & Horodatée
             </h2>
-            <p style="font-size:0.8rem; color:var(--text-dim); margin:2px 0 0 0;">Recherchez un mot-clé ou concept dans les 12 ouvrages intégraux (FR & EN) et vidéos</p>
+            <p style="font-size:0.8rem; color:var(--text-dim); margin:2px 0 0 0;">Recherchez un mot-clé ou concept dans les 14 ouvrages intégraux (FR, EN & ES) et vidéos</p>
           </div>
           <span id="mediaResultCountBadge" class="badge badge-success" style="display:none; font-size:0.75rem;"></span>
         </div>
@@ -10235,6 +10272,9 @@ function renderResources() {
         <button type="button" class="btn-tab ${_resourcesCatalogTab === 'en' ? 'active' : ''}" onclick="setResourcesCatalogTab('en')">
           🇬🇧 In English (${allBooks.filter(b => b.lang === 'en').length + videos.filter(v => v.lang === 'en').length})
         </button>
+        <button type="button" class="btn-tab ${_resourcesCatalogTab === 'es' ? 'active' : ''}" onclick="setResourcesCatalogTab('es')">
+          🇪🇸 En Español (${allBooks.filter(b => b.lang === 'es').length})
+        </button>
         <button type="button" class="btn-tab ${_resourcesCatalogTab === 'videos' ? 'active' : ''}" onclick="setResourcesCatalogTab('videos')">
           🎬 Vidéos (${videos.length})
         </button>
@@ -10248,7 +10288,7 @@ function renderResources() {
               <span style="font-size:1.4rem;">📚</span>
               <div>
                 <h2 style="font-size:1.15rem; font-weight:800; margin:0; color:var(--text);">
-                  ${_resourcesCatalogTab === 'fr' ? 'Ouvrages Fondateurs en Français (Traduction Intégrale)' : _resourcesCatalogTab === 'en' ? 'Authentic English Original Editions' : 'Ouvrages & Guides PDF Fondateurs (Bilingue FR / EN)'}
+                  ${_resourcesCatalogTab === 'fr' ? 'Ouvrages Fondateurs en Français (Traduction Intégrale)' : _resourcesCatalogTab === 'en' ? 'Authentic English Original Editions' : _resourcesCatalogTab === 'es' ? 'Obras Fundamentales en Español (Traducción Integral)' : 'Ouvrages & Guides PDF Fondateurs (Multilingue FR / EN / ES)'}
                 </h2>
                 <p style="font-size:0.8rem; color:var(--text-dim); margin:0;">Tous les textes intégraux téléchargeables et consultables directement en local</p>
               </div>
@@ -10262,7 +10302,7 @@ function renderResources() {
                 <div>
                   <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; gap:8px;">
                     ${b.badgeText ? `
-                      <span style="font-size:0.75rem; font-weight:700; color:${b.lang === 'fr' ? 'var(--accent)' : 'var(--accent-2)'}; background:${b.lang === 'fr' ? 'var(--accent-glow)' : 'rgba(37,99,235,0.1)'}; padding:4px 10px; border-radius:20px; border:1px solid ${b.lang === 'fr' ? 'var(--accent)' : 'var(--accent-2)'}; display:inline-flex; align-items:center; gap:5px;">
+                      <span style="font-size:0.75rem; font-weight:700; color:${b.lang === 'fr' ? 'var(--accent)' : (b.lang === 'es' ? '#10b981' : 'var(--accent-2)')}; background:${b.lang === 'fr' ? 'var(--accent-glow)' : (b.lang === 'es' ? 'rgba(16,185,129,0.1)' : 'rgba(37,99,235,0.1)')}; padding:4px 10px; border-radius:20px; border:1px solid ${b.lang === 'fr' ? 'var(--accent)' : (b.lang === 'es' ? '#10b981' : 'var(--accent-2)')}; display:inline-flex; align-items:center; gap:5px;">
                         ${esc(b.badgeText)}
                       </span>
                     ` : '<span></span>'}
@@ -10307,6 +10347,28 @@ function renderResources() {
                     </div>
                   ` : ''}
 
+                  ${b.id === 'ehret-mucusless-es' ? `
+                    <div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.22); border-radius:10px; padding:10px 12px; margin-bottom:16px;">
+                      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; font-size:0.75rem; flex-wrap:wrap; gap:4px;">
+                        <span style="font-weight:700; color:var(--accent); display:flex; align-items:center; gap:5px;">
+                          <i class="ri-sparkling-fill"></i> Traducción y Estructura VitalTrack
+                        </span>
+                        <span style="font-family:var(--font-mono); font-size:0.72rem; color:var(--text); font-weight:700;">
+                          30 Secciones · 536 Anotaciones
+                        </span>
+                      </div>
+                      <p style="margin:0 0 6px 0; font-size:0.75rem; color:var(--text-dim); line-height:1.4;">
+                        Texto del Prof. Arnold Ehret íntegramente traducido al español moderno con tablas de Ragnar Berg y fórmulas vitalistas.
+                      </p>
+                      <div style="display:flex; align-items:center; justify-content:space-between; font-size:0.73rem; border-top:1px dashed rgba(16,185,129,0.2); padding-top:6px; margin-top:4px;">
+                        <span style="color:var(--text-dim);">Fuente original de 1922 :</span>
+                        <a href="/pdfs/arnold-ehret-mucusless-diet-healing-system.pdf" target="_blank" rel="noopener noreferrer" style="color:var(--accent); text-decoration:none; font-weight:700; display:inline-flex; align-items:center; gap:4px;">
+                          <i class="ri-file-pdf-line"></i> 🇬🇧 PDF Original en Inglés
+                        </a>
+                      </div>
+                    </div>
+                  ` : ''}
+
                   ${b.id === 'morse-detox-miracle-fr' ? `
                     <div style="background:rgba(139,92,246,0.06); border:1px solid rgba(139,92,246,0.25); border-radius:10px; padding:10px 12px; margin-bottom:16px;">
                       <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; font-size:0.75rem; flex-wrap:wrap; gap:4px;">
@@ -10328,12 +10390,34 @@ function renderResources() {
                       </div>
                     </div>
                   ` : ''}
+
+                  ${b.id === 'morse-detox-miracle-es' ? `
+                    <div style="background:rgba(139,92,246,0.06); border:1px solid rgba(139,92,246,0.25); border-radius:10px; padding:10px 12px; margin-bottom:16px;">
+                      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; font-size:0.75rem; flex-wrap:wrap; gap:4px;">
+                        <span style="font-weight:700; color:#8b5cf6; display:flex; align-items:center; gap:5px;">
+                          <i class="ri-sparkling-fill"></i> Traducción y Estructura VitalTrack
+                        </span>
+                        <span style="font-family:var(--font-mono); font-size:0.72rem; color:var(--text); font-weight:700;">
+                          14 Secciones · 31 Definiciones · 7 Tablas
+                        </span>
+                      </div>
+                      <p style="margin:0 0 6px 0; font-size:0.75rem; color:var(--text-dim); line-height:1.4;">
+                        Obra del Dr. Robert Morse traducida íntegramente al español con anatomía comparada, fórmulas de plantas y pruebas de Barnes.
+                      </p>
+                      <div style="display:flex; align-items:center; justify-content:space-between; font-size:0.73rem; border-top:1px dashed rgba(139,92,246,0.25); padding-top:6px; margin-top:4px;">
+                        <span style="color:var(--text-dim);">Fuente original americana :</span>
+                        <a href="/pdfs/robert-morse-the-detox-miracle-sourcebook-ebook.pdf" target="_blank" rel="noopener noreferrer" style="color:#8b5cf6; text-decoration:none; font-weight:700; display:inline-flex; align-items:center; gap:4px;">
+                          <i class="ri-file-pdf-line"></i> 🇬🇧 The Detox Miracle Sourcebook
+                        </a>
+                      </div>
+                    </div>
+                  ` : ''}
                 </div>
 
                 <div style="display:flex; gap:10px; margin-top:auto;">
-                  ${['ehret-mucusless-fr', 'morse-detox-miracle-fr'].includes(b.id) ? `
+                  ${['ehret-mucusless-fr', 'morse-detox-miracle-fr', 'ehret-mucusless-es', 'morse-detox-miracle-es'].includes(b.id) ? `
                     <button type="button" onclick="openBookReader('${b.id}')" class="btn-primary" style="flex:1.2; text-align:center; display:inline-flex; align-items:center; justify-content:center; gap:6px; font-size:0.85rem; font-weight:700; padding:10px 14px; border-radius:10px; box-shadow:0 4px 14px rgba(16,185,129,0.25); cursor:pointer;">
-                      <i class="ri-book-read-line"></i> Lire l'Ouvrage
+                      <i class="ri-book-read-line"></i> ${b.lang === 'es' ? 'Leer Obra' : (b.lang === 'en' ? 'Read Book' : 'Lire l\'Ouvrage')}
                     </button>
                   ` : `
                     <a href="${b.url}" target="_blank" rel="noopener noreferrer" class="btn-primary" style="flex:1; text-align:center; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:6px; font-size:0.85rem; font-weight:700; padding:10px 14px; border-radius:10px; box-shadow:0 4px 14px rgba(16,185,129,0.25);">

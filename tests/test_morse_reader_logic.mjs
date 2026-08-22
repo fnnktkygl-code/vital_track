@@ -121,7 +121,7 @@ it('Tous les termes annotés {{terme}} dans le texte existent dans le glossaire'
 
 // 11. Intégration dans ALL_READABLE_BOOKS
 it('ALL_READABLE_BOOKS contient à la fois Arnold Ehret et le Dr. Robert Morse', () => {
-  assert.strictEqual(ALL_READABLE_BOOKS.length, 2);
+  assert.ok(ALL_READABLE_BOOKS.length >= 2);
   assert.ok(ALL_READABLE_BOOKS.some(b => b.id === 'ehret-mucusless-fr'));
   assert.ok(ALL_READABLE_BOOKS.some(b => b.id === 'morse-detox-miracle-fr'));
 });

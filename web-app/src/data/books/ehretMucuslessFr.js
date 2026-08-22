@@ -1143,8 +1143,14 @@ export const ehretMucuslessFr = {
 };
 
 import { morseDetoxMiracleFr } from './morseDetoxMiracleFr.js';
+import { ehretMucuslessEs } from './ehretMucuslessEs.js';
+import { morseDetoxMiracleEs } from './morseDetoxMiracleEs.js';
+
+export { ehretMucuslessEs, morseDetoxMiracleEs };
 
 export const ALL_READABLE_BOOKS = [
   ehretMucuslessFr,
-  morseDetoxMiracleFr
+  morseDetoxMiracleFr,
+  ehretMucuslessEs,
+  morseDetoxMiracleEs
 ];

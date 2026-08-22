@@ -177,10 +177,22 @@ function showResumeToast() {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // OUVERTURE & FERMETURE DU LECTEUR
-// ─────────────────────────────────────────────────────────────────────────────
-
-export function openBookReader(bookId = "ehret-mucusless-fr", chapterIndex = null) {
+export function openBookReader(bookId = null, chapterIndex = null) {
   _readerState.isOpen = true;
+  
+  const currentLang = (window.vitalTrackI18n && typeof window.vitalTrackI18n.getLanguage === 'function') 
+    ? window.vitalTrackI18n.getLanguage() 
+    : 'fr';
+
+  // Smart resolution if default or generic ID is requested
+  if (!bookId) {
+    bookId = currentLang === 'es' ? "ehret-mucusless-es" : "ehret-mucusless-fr";
+  } else if (bookId === 'ehret-mucusless-fr' && currentLang === 'es') {
+    bookId = 'ehret-mucusless-es';
+  } else if (bookId === 'morse-detox-miracle-fr' && currentLang === 'es') {
+    bookId = 'morse-detox-miracle-es';
+  }
+
   _readerState.bookId = bookId;
 
   const savedProgress = getSavedProgress(bookId);
@@ -569,7 +581,7 @@ function renderReaderDOM() {
           <select class="br-book-select" onchange="switchReaderBook(this.value)" aria-label="Sélectionner l'ouvrage">
             ${ALL_READABLE_BOOKS.map(b => `
               <option value="${esc(b.id)}" ${b.id === book.id ? 'selected' : ''}>
-                ${b.id.includes('ehret') ? '📘' : '🌿'} ${esc(b.author)} (${esc(b.year)})
+                ${b.id.includes('ehret') ? '📘' : '🌿'} ${esc(b.author)} (${esc(b.year)}) [${b.id.endsWith('-es') ? '🇪🇸 ES' : '🇫🇷 FR'}]
               </option>
             `).join('')}
           </select>
