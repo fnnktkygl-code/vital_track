@@ -481,7 +481,21 @@ function renderArticleBlock(text, pIdx) {
 
   if (!remaining) return html;
 
-  // 2. Si le reste contient un tableau Markdown
+  // 2. Si le bloc contient un organigramme / schéma (blocs ``` ... ```)
+  if (remaining.includes('```')) {
+    const codeMatch = remaining.match(/```(?:\w+)?\n([\s\S]*?)```/);
+    if (codeMatch) {
+      const diagramContent = codeMatch[1].trim();
+      html += `<div class="br-diagram-wrap"><pre class="br-diagram-block">${esc(diagramContent)}</pre></div>`;
+      const afterCode = remaining.replace(/```(?:\w+)?\n[\s\S]*?```/, '').trim();
+      if (afterCode) {
+        html += renderArticleBlock(afterCode, pIdx + 1);
+      }
+      return html;
+    }
+  }
+
+  // 3. Si le reste contient un tableau Markdown
   if (remaining.includes('|') && remaining.includes('---')) {
     const lines = remaining.trim().split('\n').map(l => l.trim()).filter(l => l.startsWith('|'));
     if (lines.length >= 2) {
@@ -506,7 +520,7 @@ function renderArticleBlock(text, pIdx) {
     }
   }
 
-  // 3. Paragraphe régulier
+  // 4. Paragraphe régulier
   return html + `<p class="br-paragraph ${pIdx === 0 ? 'first-paragraph' : ''}">${parseParagraphWithGlossary(remaining)}</p>`;
 }
 

@@ -502,6 +502,32 @@
   color: #ef4444;
 }
 
+/* Diagrams, Schemas and Flowcharts */
+.br-diagram-wrap {
+  margin: 1.8rem 0;
+  overflow-x: auto;
+  border-radius: 10px;
+  background: var(--br-bg-inset, rgba(0, 0, 0, 0.03));
+  border: 1px solid var(--br-line);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.br-diagram-block {
+  margin: 0;
+  padding: 1.2rem 1.4rem;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--br-ink);
+  white-space: pre;
+  overflow-x: auto;
+}
+
+[data-theme="dusk"] .br-diagram-wrap {
+  background: rgba(255, 255, 255, 0.03);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
 /* Glossary Terms */
 .br-glossary-term {
   border-bottom: 1.5px dotted var(--br-moss);

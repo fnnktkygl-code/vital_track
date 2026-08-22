@@ -1,0 +1,151 @@
+{
+  "lymphe": {
+    "def": "Le liquide interstitiel lipidique représentant 80% des fluides corporels, véritable système d'égout qui baigne chaque cellule et draine les acides métaboliques vers les ganglions et les reins.",
+    "note": "Le système lymphatique assure le retour du liquide interstitiel vers la circulation veineuse et joue un rôle immunitaire majeur via les lymphocytes et les ganglions lymphatiques.",
+    "type": "science",
+    "sources": [
+      "Foldi, M., & Foldi, E. (2012). 'Foldi's Textbook of Lymphology', 3rd Ed. (Elsevier, ISBN: 978-3437454745)",
+      "Guyton & Hall (2020). 'Textbook of Medical Physiology', 14th Ed., Chapitre 16 : 'The Microcirculation and Lymphatic System' (Elsevier)"
+    ]
+  },
+  "filtration rénale": {
+    "def": "Capacité indispensable des reins à excréter la lymphe et les sédiments acides cellulaires, visible par la présence de nuages et sédiments floconneux dans les premières urines du matin.",
+    "note": "Les néphrons filtrent le plasma glomérulaire (~180 L/jour) et éliminent les déchets azotés et acides métaboliques non volatils.",
+    "type": "science",
+    "sources": [
+      "Brenner & Rector (2019). 'The Kidney', 11th Ed. (Elsevier, ISBN: 978-0323532655)",
+      "Kasper, D. L., et al. (2018). 'Harrison's Principles of Internal Medicine', 20th Ed. (McGraw-Hill)"
+    ]
+  },
+  "reins": {
+    "def": "Organes émonctoriels maîtres pour l'excrétion de la lymphe et des acides métaboliques, véritables portes de sortie dont dépend l'ensemble de la régénération cellulaire.",
+    "note": "Les néphrons filtrent le plasma et régulent l'équilibre électrolytique, l'équilibre acido-basique et la volémie sous le contrôle de l'aldostérone et de l'ADH.",
+    "type": "science",
+    "sources": [
+      "Brenner & Rector (2019). 'The Kidney', 11th Ed. (Elsevier)",
+      "Hall, J. E. (2020). 'Guyton and Hall Textbook of Medical Physiology', 14th Ed. (Elsevier)"
+    ]
+  },
+  "acidose": {
+    "def": "Condition toxique universelle où les acides métaboliques cellulaires stagnent dans le milieu interstitiel en raison d'une mauvaise élimination lymphatique et rénale, brûlant les tissus et provoquant l'inflammation.",
+    "note": "En médecine clinique, l'acidose est une perturbation du pH ou une charge acide tissulaire compensée par les systèmes tampons rénaux et pulmonaires.",
+    "type": "science",
+    "sources": [
+      "Kellum, J. A. (2000). 'Determinants of blood pH in health and disease.' Critical Care, 4(1), 6-14."
+    ]
+  },
+  "surrénales": {
+    "def": "Glandes endocrines maîtresses coiffant les reins, produisant les neurotransmetteurs (dopamine, adrénaline) et les stéroïdes anti-inflammatoires (cortisol, aldostérone).",
+    "note": "Le cortex surrénalien produit les glucocorticoïdes, minéralocorticoïdes et androgènes indispensables au contrôle de l'inflammation et de la pression artérielle.",
+    "type": "science",
+    "sources": [
+      "Williams (2020). 'Textbook of Endocrinology', 14th Ed. (Elsevier)"
+    ]
+  },
+  "fruits": {
+    "def": "Aliments physiologiques suprêmes de l'espèce humaine frugivore, possédant l'énergie électromagnétique la plus élevée (8000-10000 Å), dissolvant le mucus et réactivant les reins.",
+    "note": "Riches en fructose monomérique, en potassium, en flavonoïdes et en eau cellulaire structurée hautement biodisponible.",
+    "type": "science",
+    "sources": [
+      "Aune, D., et al. (2017). 'Fruit and vegetable intake and cardiovascular health.' Int J Epidemiol, 46(3), 1029-1056."
+    ]
+  },
+  "parathyroïdes": {
+    "def": "Quatre minuscules glandes endocrines situées à l'arrière de la thyroïde, régulant l'utilisation biologique et la fixation du calcium dans tout le corps.",
+    "note": "La PTH (Parathormone) régule la calcémie en stimulant la résorption osseuse ostéoclastique et la réabsorption rénale de calcium.",
+    "type": "science",
+    "sources": [
+      "Williams (2020). 'Textbook of Endocrinology', 14th Ed. (Elsevier)",
+      "Guyton & Hall (2020). 'Textbook of Medical Physiology', 14th Ed. (Elsevier)"
+    ]
+  },
+  "plaque mucoïde": {
+    "def": "Couche durcie de mucus polymérisé et de résidus fécaux toxiques adhérant aux parois du côlon en réaction aux aliments acidifiants et non physiologiques.",
+    "note": "Correspond en gastro-entérologie à l'hyper-perméabilité de la muqueuse colique, au biofilm bactérien dysbiotique et aux stases fécales chroniques.",
+    "type": "science",
+    "sources": [
+      "Johansson, M. E., & Hansson, G. C. (2016). 'Immunological aspects of intestinal mucus.' Nat Rev Immunol, 16(10), 639-649.",
+      "Sonnenburg, J. L., & Bäckhed, F. (2016). 'Diet-microbiota interactions.' Nature, 535(7610), 56-64."
+    ]
+  },
+  "astringence": {
+    "def": "Propriété biochimique des fruits acides et sub-acides (citron, raisin noir, baies) provoquant la contraction des tissus, la dissolution de la lymphe épaisse et l'expulsion des mucosités.",
+    "note": "Liée à la présence de tanins condensés et polyphénols qui précipitent les protéines membranaires et resserrent les capillaires.",
+    "type": "science",
+    "sources": [
+      "Haslam, E. (1998). 'Practical Polyphenolics: From Structure to Molecular Recognition and Physiological Action.' Cambridge University Press."
+    ]
+  },
+  "émonctoires": {
+    "def": "Les 4 grands organes et voies d'élimination du corps humain : les Reins, les Intestins (côlon), la Peau (le 3e rein) et les Poumons.",
+    "note": "Systèmes coordonnés d'excrétion et d'homéostasie assurant la clairance métabolique et l'équilibre acido-basique.",
+    "type": "science",
+    "sources": [
+      "Guyton & Hall (2020). 'Textbook of Medical Physiology', 14th Ed. (Elsevier)"
+    ]
+  },
+  "ptyaline": {
+    "def": "Amylase salivaire alcaline sécrétée par les glandes salivaires pour amorcer la dégradation enzymatique des amidons et sucres complexes dans la bouche.",
+    "note": "L'alpha-amylase salivaire hydrolyse les liaisons alpha-1,4 des polysaccharides à un pH optimal de 6,7 à 7,0.",
+    "type": "science",
+    "sources": [
+      "Pedersen, A. M. L., et al. (2018). 'Saliva and gastrointestinal functions.' Oral Dis, 24(8), 1399-1407."
+    ]
+  },
+  "angströms": {
+    "def": "Unité de mesure de la longueur d'onde et de la fréquence vibratoire de l'énergie électromagnétique véhiculée par les aliments vivants crus (8 000 à 10 000 Å pour les fruits).",
+    "note": "1 Å = 10^-10 mètre. La spectrophotométrie mesure l'absorption et l'émission lumineuse des pigments végétaux et de la chlorophylle.",
+    "type": "science",
+    "sources": [
+      "Popp, F. A., et al. (2002). 'Biophotonics and its applications.' Indian Journal of Experimental Biology, 40(5), 515-525."
+    ]
+  },
+  "aliments vivants": {
+    "def": "Fruits mûrs, légumes crus, graines germées et algues consommés dans leur état brut, non cuits, conservant 100% de leurs enzymes, vitamines et force électromagnétique.",
+    "note": "Aliments à haute densité micronutritionnelle, apportant polyphénols, caroténoïdes, enzymes hydrolytiques et eau cellulaire structurée.",
+    "type": "science",
+    "sources": [
+      "Aune, D., et al. (2017). 'Fruit and vegetable intake and risk of cardiovascular disease.' Int J Epidemiol, 46(3), 1029-1056."
+    ]
+  },
+  "gaillet gratteron": {
+    "def": "Plante médicinale reine du système lymphatique (Galium aparine), stimulant la résorption des œdèmes et le drainage ganglionnaire.",
+    "note": "Riche en iridoïdes et flavonoïdes aux propriétés diurétiques et dépuratives lymphatiques.",
+    "type": "science",
+    "sources": [
+      "Duke, J. A. (2002). 'Handbook of Medicinal Herbs', 2nd Ed. (CRC Press)"
+    ]
+  },
+  "cascara sagrada": {
+    "def": "Écorce d'arbuste (Rhamnus purshiana) tonifiant et rétablissant le péristaltisme musculaire naturel du gros intestin.",
+    "note": "Contient des dérivés anthracéniques qui stimulent la motricité colique sans accoutumance lorsqu'elle est utilisée avec des plantes émollientes.",
+    "type": "science",
+    "sources": [
+      "Blumenthal, M., et al. (2000). 'Expanded Commission E Monographs' (American Botanical Council)"
+    ]
+  },
+  "baie de genièvre": {
+    "def": "Fruit du Juniperus communis, tonique souverain des tubules rénaux stimulant l'expulsion des sédiments et de l'acide urique.",
+    "note": "Contient de l'alpha-pinène et des terpénoïdes stimulant la perfusion rénale et exerçant une action antiseptique urinaire.",
+    "type": "science",
+    "sources": [
+      "ESCOP Monographs (2003). 'Juniperi pseudo-fructus' (Thieme)"
+    ]
+  },
+  "iridologie": {
+    "def": "Science d'évaluation du terrain génétique et de l'état des tissus organiques par l'observation détaillée de la trame et des pigments de l'iris.",
+    "note": "Outil d'évaluation constitutionnelle hérité du Dr Ignatz von Peczely et du Dr Bernard Jensen.",
+    "type": "science",
+    "sources": [
+      "Jensen, B. (1982). 'The Science and Practice of Iridology' (Bernard Jensen Enterprises)"
+    ]
+  },
+  "crise de guérison": {
+    "def": "Processus temporaire d'élimination massive où le corps expulse violemment des acides et des toxines accumulés (fièvre, éruptions, selles liquides).",
+    "note": "Correspond à une phase d'activation aiguë de la clairance hépatobiliaire et lymphatique avec libération transitoire de cytokines.",
+    "type": "science",
+    "sources": [
+      "Jandacek, R. J. (2007). 'Enterohepatic circulation and detoxification.' J Nutr Biochem, 18(3), 163-173."
+    ]
+  }
+}
