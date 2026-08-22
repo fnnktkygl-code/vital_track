@@ -1,0 +1,31 @@
+[
+  {
+    "model": "gemini-2.5-flash",
+    "error": true,
+    "status": 404,
+    "errText": "{\n  \"error\": {\n    \"code\": 404,\n    \"message\": \"This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.6-flash for the latest features a"
+  },
+  {
+    "model": "gemini-3.7-flash",
+    "error": true,
+    "status": 503,
+    "errText": "{\n  \"error\": {\n    \"code\": 503,\n    \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\",\n    \"status\": \"UNAVAILABLE\"\n  }\n}\n"
+  },
+  {
+    "model": "gemini-3.1-flash-lite",
+    "label": "Gemini 3.1 Flash-Lite (Ultra-Économique)",
+    "durationSeconds": 9.65,
+    "promptTokens": 2202,
+    "candidateTokens": 1985,
+    "thoughtsTokens": 0,
+    "totalTokens": 4187,
+    "vitalityScore": 42,
+    "toxemiaLevel": "Modérée à Sévère (Acidose lymphatique et stagnation rénale)",
+    "planDaysCount": 7,
+    "herbsCount": 2,
+    "costFreeTierEUR": 0,
+    "costPaidTierUSD": 0.000380325,
+    "costPaidTierEUR": 0.00036130874999999995,
+    "sampleOutputExcerpt": "{\n  \"overallVitalityScore\": 42,\n  \"toxemiaLevel\": \"Modérée à Sévère (Acidose lymphatique et stagnation rénale)\",\n  \"executiveSummary\": \"Le patient présente un tableau classique d'encrassement humoral dû à une alimentation acidifiante chronique. La stagnation lymphatique est confirmée par l'absence d..."
+  }
+]
