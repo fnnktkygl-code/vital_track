@@ -1,31 +1,47 @@
-# 🌱 VitalTrack — AI-Powered Vitalist Health, Nutrition & Autophagy Companion
+# 🌱 VitalTrack — AI-Powered Vitalist Health, Nutrition & Cellular Regeneration Companion
 
-[![Vercel Deployment](https://img.shields.io/badge/Vercel-Deployed-brightgreen?logo=vercel&style=flat-square)](https://vitaltrackapp.vercel.app)
-[![GDPR / RGPD Compliant](https://img.shields.io/badge/GDPR%2FRGPD-Compliant-blue?logo=shield&style=flat-square)](https://fnnktkygl-code.github.io/vital_track/privacy.html)
-[![AI Engine](https://img.shields.io/badge/AI-Google%20Gemini%20Flash-orange?logo=google&style=flat-square)](https://vitaltrackapp.vercel.app)
-[![Web Speech API](https://img.shields.io/badge/Voice-Zero--Quota%20Streaming-emerald?style=flat-square)](https://vitaltrackapp.vercel.app)
+<div align="center">
+
+[![Language: English](https://img.shields.io/badge/Language-English%20%F0%9F%87%AC%F0%9F%87%A7-blue?style=for-the-badge)](README.md)
+[![Langue: Français](https://img.shields.io/badge/Langue-Fran%C3%A7ais%20%F0%9F%87%AB%F0%9F%87%B7-emerald?style=for-the-badge)](README.fr.md)
+[![Idioma: Español](https://img.shields.io/badge/Idioma-Espa%C3%B1ol%20%F0%9F%87%AA%F0%9F%87%B8-orange?style=for-the-badge)](README.es.md)
+
+<br/>
+
+[![Vercel Deployment](https://img.shields.io/badge/Vercel-Deployed%20Production-brightgreen?logo=vercel&style=flat-square)](https://vitaltrackapp.vercel.app)
+[![GDPR / RGPD Compliant](https://img.shields.io/badge/GDPR%2FRGPD-Zero--Knowledge%20Local-blue?logo=shield&style=flat-square)](https://fnnktkygl-code.github.io/vital_track/privacy.html)
+[![AI Engine](https://img.shields.io/badge/AI%20Models-Google%20Gemini%203.7%20%2F%203.6%20%2F%203.5-orange?logo=google&style=flat-square)](https://vitaltrackapp.vercel.app)
+[![Voice System](https://img.shields.io/badge/Voice-Zero--Quota%20Streaming%20%2B%2014%20HD%20Voices-emerald?style=flat-square)](https://vitaltrackapp.vercel.app)
+[![i18n Parity](https://img.shields.io/badge/i18n%20Parity-100%25%20(4%2C260%20Keys)-purple?style=flat-square)](https://vitaltrackapp.vercel.app)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
 
-> **VitalTrack** est l'application compagnon tout-en-un dédiée à la **santé holistique, la nutrition vitaliste et la régénération cellulaire**. Elle réunit les enseignements des plus grands pionniers de la santé naturelle (*Arnold Ehret, Dr. Sebi, Dr. Robert Morse, David Wolfe, Dr. Leslie Taylor, Wim Hof*) avec une intelligence artificielle multimodale de pointe, une saisie vocale en direct et un cockpit de suivi physiologique.
+<p align="center">
+  <strong>VitalTrack</strong> is the all-in-one health, vitalist nutrition, and cellular regeneration platform.<br/>
+  Unifying clinical principles from pioneering natural healers (<em>Arnold Ehret, Dr. Sebi, Dr. Robert Morse, David Wolfe, Dr. Leslie Taylor, Wim Hof</em>) with multimodal Artificial Intelligence, zero-quota live voice dictation, Amazonian pharmacopeia, and a private biometric cockpit.
+</p>
+
+[**🚀 Launch Web App**](https://vitaltrackapp.vercel.app) • [**📖 User Guide**](GUIDE.md) • [**🔒 Privacy Policy**](https://fnnktkygl-code.github.io/vital_track/privacy.html) • [**🇫🇷 Version Française**](README.fr.md) • [**🇪🇸 Versión en Español**](README.es.md)
+
+</div>
 
 ---
 
-## 📱 Aperçu & Galerie Vitrine (Showcase Store)
+## 📱 Visual Showcase & App Gallery
 
-### 💻 Expérience Desktop (Grand Écran — Thème Sombre & Clair)
+### 💻 Desktop Experience (Dark & Light Themes)
 
 <div align="center">
   <table>
     <tr>
       <td width="50%" align="center">
-        <strong>🌌 Thème Sombre (Immersion & Sérénité)</strong><br/><br/>
-        <img src="docs/screenshots/desktop_dashboard_dark.png" alt="Tableau de bord Desktop Sombre" width="100%" style="border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.4);" /><br/>
-        <sub>Score Vitalité 100/100, Horloge Circadienne 24h & Focus d'assimilation nocturne</sub>
+        <strong>🌌 Dark Mode (Serene & Immersive)</strong><br/><br/>
+        <img src="docs/screenshots/desktop_dashboard_dark.png" alt="Desktop Dashboard Dark" width="100%" style="border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.4);" /><br/>
+        <sub>Vitality Score 100/100, 24h Circadian Clock & Nighttime Cellular Regeneration Focus</sub>
       </td>
       <td width="50%" align="center">
-        <strong>☀️ Thème Clair (Haute Lisibilité)</strong><br/><br/>
-        <img src="docs/screenshots/desktop_dashboard_light.png" alt="Tableau de bord Desktop Clair" width="100%" style="border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.15);" /><br/>
-        <sub>Contraste certifié WCAG AAA, typographie soignée et dynamique visuelle</sub>
+        <strong>☀️ Light Mode (High Contrast & Daylight Clarity)</strong><br/><br/>
+        <img src="docs/screenshots/desktop_dashboard_light.png" alt="Desktop Dashboard Light" width="100%" style="border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.15);" /><br/>
+        <sub>WCAG AAA Certified Contrast, Clean Typography & Instant Visual Dynamics</sub>
       </td>
     </tr>
   </table>
@@ -33,52 +49,52 @@
 
 <br/>
 
-### 📱 Expérience Mobile (iPhone 15 Pro & Android — Galerie Fonctionnelle)
+### 📱 Mobile Experience (iOS & Android Showcase)
 
 <div align="center">
   <table>
     <tr>
       <td align="center" width="25%">
         <img src="docs/screenshots/mobile_dashboard_dark.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="Mobile Dashboard" /><br/>
-        <strong>📊 1. Cockpit Vital</strong><br/>
-        <sub>Score & Horloge Circadienne</sub>
+        <strong>📊 1. Vital Cockpit</strong><br/>
+        <sub>Circadian Clock & Vitality Index</sub>
       </td>
       <td align="center" width="25%">
-        <img src="docs/screenshots/mobile_chat_voice_live.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="Coach Vocal en Direct" /><br/>
-        <strong>🎙️ 2. Voix en Direct</strong><br/>
-        <sub>Streaming sans quota & HUD</sub>
+        <img src="docs/screenshots/mobile_chat_voice_live.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="Live Voice Coach" /><br/>
+        <strong>🎙️ 2. Live Voice Coach</strong><br/>
+        <sub>Zero-Quota Speech & Waveform HUD</sub>
       </td>
       <td align="center" width="25%">
-        <img src="docs/screenshots/mobile_scanner_analysis.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="Diagnostic Visuel IA" /><br/>
-        <strong>📸 3. Scanner IA</strong><br/>
-        <sub>PRAL Rénal & Électrisation</sub>
+        <img src="docs/screenshots/mobile_scanner_analysis.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="AI Meal Scanner" /><br/>
+        <strong>📸 3. AI Plate Scanner</strong><br/>
+        <sub>Renal PRAL, NOVA & Mucus Impact</sub>
       </td>
       <td align="center" width="25%">
-        <img src="docs/screenshots/mobile_calendar_cockpit.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="Calendrier Cockpit" /><br/>
-        <strong>📅 4. Calendrier Cockpit</strong><br/>
-        <sub>Bandeau 14j & Validation tactile</sub>
+        <img src="docs/screenshots/mobile_calendar_cockpit.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="Calendar Cockpit" /><br/>
+        <strong>📅 4. Diet Calendar</strong><br/>
+        <sub>14-Day Strip & One-Touch Log</sub>
       </td>
     </tr>
     <tr>
       <td align="center" width="25%">
-        <img src="docs/screenshots/mobile_fasting_timer.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="Jeûne & Autophagie" /><br/>
-        <strong>⏳ 5. Jeûne & Autophagie</strong><br/>
-        <sub>Paliers métaboliques & Cétose</sub>
+        <img src="docs/screenshots/mobile_fasting_timer.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="Fasting & Autophagy" /><br/>
+        <strong>⏳ 5. Fasting Tracker</strong><br/>
+        <sub>Metabolic Stages & Autophagy</sub>
       </td>
       <td align="center" width="25%">
-        <img src="docs/screenshots/mobile_breathing_wimhof.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="Studio de Respiration" /><br/>
-        <strong>🫁 6. Respiration Prānique</strong><br/>
-        <sub>Wim Hof & Cohérence Cardiaque</sub>
+        <img src="docs/screenshots/mobile_breathing_wimhof.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="Breathing Studio" /><br/>
+        <strong>🫁 6. Breathing Studio</strong><br/>
+        <sub>Wim Hof 3 Rounds & Heart Coherence</sub>
       </td>
       <td align="center" width="25%">
-        <img src="docs/screenshots/mobile_pharmacopeia_plants.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="Pharmacopée Raintree" /><br/>
-        <strong>🌿 7. Pharmacopée</strong><br/>
-        <sub>Monographies botaniques</sub>
+        <img src="docs/screenshots/mobile_pharmacopeia_plants.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="Raintree Pharmacopeia" /><br/>
+        <strong>🌿 7. Pharmacopeia</strong><br/>
+        <sub>127+ Amazonian Monographs</sub>
       </td>
       <td align="center" width="25%">
-        <img src="docs/screenshots/mobile_privacy_vault.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="Coffre RGPD" /><br/>
-        <strong>🔒 8. Espace RGPD</strong><br/>
-        <sub>Droit à l'oubli & Export 1-clic</sub>
+        <img src="docs/screenshots/mobile_privacy_vault.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="GDPR Privacy Vault" /><br/>
+        <strong>🔒 8. GDPR Vault</strong><br/>
+        <sub>Right to be Forgotten & 1-Click Export</sub>
       </td>
     </tr>
   </table>
@@ -86,141 +102,163 @@
 
 ---
 
-## 🚀 Liens & Accès Directs
-
-* 🌐 **Application Web en Production :** [vitaltrackapp.vercel.app](https://vitaltrackapp.vercel.app)
-* 📖 **Guide Complet d'Utilisation :** [Consulter le GUIDE.md](GUIDE.md)
-* 🛡️ **Politique de Confidentialité & RGPD :** [fnnktkygl-code.github.io/vital_track/privacy.html](https://fnnktkygl-code.github.io/vital_track/privacy.html)
-* 📦 **Dépôt GitHub Officiel :** [github.com/fnnktkygl-code/vital_track](https://github.com/fnnktkygl-code/vital_track)
-
----
-
-## 🌟 Les 6 Piliers Fondateurs de VitalTrack
+## 🌟 Foundational Natural Health Pillars
 
 ```mermaid
 graph TD
-    A[🌿 VitalTrack] --> B[🍇 Arnold Ehret<br/>Régime Sans Mucus & Transition]
-    A --> C[⚡ Dr. Sebi<br/>Bio-Électricité & Plantes Alcalines]
-    A --> D[🌊 Dr. Robert Morse<br/>Détox Lymphatique & Filtration Rénale]
-    A --> E[🥑 David Wolfe<br/>Sunfood Diet & Superaliments]
-    A --> F[🌳 Dr. Leslie Taylor<br/>Pharmacopée Amazonienne Raintree]
-    A --> G[🧘 Wim Hof<br/>Respiration Consciente & Autophagie]
+    A[🌿 VitalTrack Core Architecture] --> B[🍇 Arnold Ehret<br/>Mucusless Diet Healing System]
+    A --> C[⚡ Dr. Sebi<br/>Bio-Electric & Alkaline Mineral Balance]
+    A --> D[🌊 Dr. Robert Morse<br/>Lymphatic Detox & Kidney Filtration]
+    A --> E[🥑 David Wolfe<br/>Sunfood Living Diet & Superfoods]
+    A --> F[🌳 Dr. Leslie Taylor<br/>Amazonian Raintree Pharmacopeia]
+    A --> G[🧘 Wim Hof<br/>Pranic Breathwork & Cellular Hypoxia]
 ```
 
-1. **🍇 Arnold Ehret (Système de Guérison du Régime Sans Mucus)** :
-   * Analyse du potentiel mucogène des aliments et protocoles de transition progressive.
-   * Équation fondamentale : $V = P - E$ (Vitalité = Puissance - Élimination/Obstruction).
+1. **🍇 Arnold Ehret (Mucusless Diet Healing System)**:
+   * Quantitative mucus-forming food evaluation and step-by-step transition protocols.
+   * Universal physiological equation: \(V = P - O\) (Vitality = Power − Obstruction).
 
-2. **⚡ Dr. Sebi (Nutrition Bio-Électrique Cellulaire)** :
-   * Recommandations d'aliments natifs vivants, non hybridés à graines fertiles (Sea Moss, Fucus, Fonio, Burdock).
-   * Maintien du pH alcalin intra-cellulaire et élimination des dépôts acides.
+2. **⚡ Dr. Sebi (Cellular Bio-Mineral Balance)**:
+   * Electric, living, non-hybridized native food list (*Sea Moss, Bladderwrack, Fonio, Burdock, Soursop*).
+   * Intracellular alkalinity maintenance and elimination of calcified acid waste.
 
-3. **🌊 Dr. Robert Morse (Miracle de la Détoxication Cellulaire)** :
-   * Drainage du grand système lymphatique (80% des liquides du corps) et filtration rénale.
-   * Mono-diètes de fruits astringents (raisins noirs, agrumes sauvages, pastèques à pépins).
+3. **🌊 Dr. Robert Morse (Cellular Detox Miracle)**:
+   * Systemic lymphatic drainage (80% of interstitial body fluid) and open kidney filtration tracking.
+   * Astringent mono-fruit fasts (*black grapes, wild citrus, seeded melons*) and botanical formulas.
 
-4. **🥑 David Wolfe (Sunfood Diet & Superaliments)** :
-   * Alimentation vivante à haute énergie photonique, huiles végétales crues et minéralisation profonde.
+4. **🥑 David Wolfe (Sunfood Living Diet & Superfoods)**:
+   * Biophoton-rich living nutrition, cold-pressed plant fats, and deep remineralization.
 
-5. **🌳 Dr. Leslie Taylor (Pharmacopée Amazonienne Raintree)** :
-   * Base de données complète de monographies botaniques (Chanca Piedra, Pau d'Arco, Griffe de Chat, Chuchuhuasi).
+5. **🌳 Dr. Leslie Taylor (Raintree Amazonian Pharmacopeia)**:
+   * 127+ verified botanical monographs (*Chanca Piedra, Pau d'Arco, Cat's Claw, Chuchuhuasi, Abuta, Samambaia*).
+   * Clinical indications, active phytochemicals, preparation methods, posology, and contraindications.
 
-6. **🧘 Wim Hof (Maîtrise du Souffle & Régénération)** :
-   * Sessions de respiration guidées immersives avec rétentions d'oxygène et stimulation de l'autophagie.
-
----
-
-## ✨ Fonctionnalités Majeures en Détail
-
-### 🤖 1. Coach IA Conversationnel & Call to Action Automatiques
-* **Dialogue immersif en streaming** propulsé par **Google Gemini 3.7 Flash**.
-* **Dictée vocale en direct (Zero-Quota)** : Reconnaissance vocale temps réel avec l'API Web Speech native du navigateur (0 quota consommé, HUD animé avec ondes sonores et boutons instantanés).
-* **Protocoles structurés de bout en bout** : Explications physiologiques détaillées, planning repas par repas (Matin, Midi, Collation, Soir) et génération automatique de cartes d'actions interactives (`📅 Appliquer au calendrier`, `🍲 Enregistrer le repas`, `🥗 Suggestions`).
-
-<div align="center">
-  <img src="docs/screenshots/desktop_ai_chat_actions.png" alt="Coach IA Vitaliste avec Cartes d'Actions" width="900" style="border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.4);" />
-</div>
-
-<br/>
-
-### 📸 2. Scanner Visuel & Diagnostic d'Assiette IA
-* Prenez une photo ou importez votre assiette : l'IA identifie instantanément les ingrédients, calcule la classification **NOVA**, l'indice **PRAL** rénal (+/- mEq/100g), l'impact lymphatique et suggère des substituts vivants pour électriser le repas.
-
-<div align="center">
-  <img src="docs/screenshots/desktop_scanner_analysis.png" alt="Diagnostic d'Assiette IA et Indice PRAL" width="900" style="border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.4);" />
-</div>
-
-<br/>
-
-### 📅 3. Nouveau Calendrier Cockpit & Suivi Quotidien
-* **Bandeau 14 jours fluide** avec indicateurs de progression par jour (ex: `3/5 ✓`, `5/5 ✓`).
-* **Cockpit du jour unifié** : Jauge de progression dynamique en temps réel, boutons de validation circulaire tactiles, modal de fusion/remplacement haute lisibilité et personnalisation rapide des plats.
-
-<div align="center">
-  <img src="docs/screenshots/desktop_calendar_cockpit.png" alt="Calendrier Cockpit Vitaliste" width="900" style="border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.4);" />
-</div>
-
-<br/>
-
-### 🫁 4. Studio de Respiration Prānique
-* Sessions interactives : **Méthode Wim Hof 3 rounds**, **Respiration Carrée (Box Breathing 4-4-4-4)**, **Cohérence Cardiaque (5.5s)** et **Respiration 4-7-8 Sommeil**.
-* Compte à rebours visuel immersif et guidage vocal.
-
-<div align="center">
-  <img src="docs/screenshots/desktop_breathing_studio.png" alt="Studio de Respiration Wim Hof" width="900" style="border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.4);" />
-</div>
-
-<br/>
-
-### 📚 5. Médiathèque Bilingue HD & Masterclasses Vidéo
-* Ouvrages et vidéos de référence disponibles en **Version Originale Anglaise** et en **Version Française avec Doublage Studio Multi-Voix Continu** (alternance synchronisée des voix du Dr. Sebi et de Rock Newman).
-
-<div align="center">
-  <img src="docs/screenshots/desktop_media_player.png" alt="Médiathèque et Masterclasses Vidéos" width="900" style="border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.4);" />
-</div>
-
-<br/>
-
-### 🔒 6. Confidentialité & RGPD Intégral (Zero-Knowledge)
-* **Architecture Zero-Knowledge** : vos données sont isolées localement sur votre appareil.
-* **Droit à la portabilité (Art. 20)** : export JSON complet en 1 clic.
-* **Droit à l'oubli (Art. 17)** : effacement complet et définitif en 1 clic.
-* **Protection anti-capture d'écran** et synchronisation hermétique par compte Google.
-
-<div align="center">
-  <img src="docs/screenshots/desktop_privacy_gdpr.png" alt="Centre de Confidentialité et RGPD" width="900" style="border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.4);" />
-</div>
+6. **🧘 Wim Hof (Breath Mastery & Neuro-Vascular Control)**:
+   * Interactive guided breathwork with retention tracking, blood alkalization, and autophagy stimulation.
 
 ---
 
-## 🛠️ Stack Technique
+## ✨ Key Feature Modules
 
-* **Frontend :** HTML5 Sémantique, Vanilla CSS Modern (Glassmorphism, CSS Variables, Responsive Grid), JavaScript ES6+ Modules.
-* **Build Tool & Bundler :** [Vite](https://vitejs.dev/)
-* **IA & Vision :** Google Gemini 3.7 / 2.5 API (Streaming SSE & Multimodal Vision) / Web Speech API.
-* **Audio / Vidéo Engine :** Edge Neural TTS / Whisper / FFmpeg / Canvas 2D Dynamic Mascot Renderer.
-* **Hébergement :** [Vercel](https://vercel.com/) (Serverless Architecture) + GitHub Pages.
+### 🔬 1. Clinical Deep Search (100% Free Vitalist Health Assessment)
+* **4-Step Comprehensive Intake Wizard**: Profile, organ symptoms, current treatments, and blood biomarkers.
+* **Holistic 5-Emunctory Diagnostics**: Synthesizes kidney filtration, lymphatic stagnation, colon transit, liver burden, and respiratory elimination into an actionable health road-map with PDF & JSON export.
+
+### 🤖 2. Conversational AI Coach with Interactive Action Cards
+* **Multimodal Streaming** powered by official **Google Gemini 3.7 Flash** / **Gemini 3.6 Flash**.
+* **Zero-Quota Live Voice Dictation**: Real-time browser speech-to-text with continuous animated waveform HUD.
+* **14 Neural Studio HD Voice Options**: High-fidelity narration across French, English, and Spanish.
+* **Direct Action Cards**: Generates interactive cards in chat (`📅 Apply to Calendar`, `🍲 Save Meal`, `🥗 Custom Dishes`).
+
+<div align="center">
+  <img src="docs/screenshots/desktop_ai_chat_actions.png" alt="AI Coach with Interactive Action Cards" width="900" style="border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.4);" />
+</div>
+
+<br/>
+
+### 📸 3. Visual AI Plate Scanner & Biochemical Diagnostic
+* Instant image diagnosis: ingredient identification, **NOVA score**, renal **PRAL index** (+/− mEq/100g), mucus formation rating, and living electric food alternatives.
+
+<div align="center">
+  <img src="docs/screenshots/desktop_scanner_analysis.png" alt="AI Meal Scanner and PRAL Index" width="900" style="border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.4);" />
+</div>
+
+<br/>
+
+### 🍽️ 4. Culinary Pharmacopeia & Dynamic Portion Kitchen
+* Authentic recipes curated from master vitalist practitioners (*Sebi, Ehret, Morse, Christopher, Kallas*).
+* Dynamic serving calculation from 1 to 12 portions, ingredient multi-tag search, and 1-click favorite saving.
+
+### 📖 5. Complete Digital Masterworks & Semantic Reader
+* Full digitized unabridged books (*The Mucusless Diet Healing System* by Arnold Ehret in English, French & Spanish; *The Detox Miracle Sourcebook* by Dr. Robert Morse).
+* Interactive glossary annotations, instant chapter navigation, search term highlighter, and page jumping.
+
+### 🕊️ 6. 3D HD Interactive Vital Mascot (Homing Pigeon)
+* Smooth Canvas 2D cinematic character with 7 organic state animations (*idle, walk, laugh, coo, think, celebrate, sleep*), sound effects, interactive speech bubbles, and mood pills.
+
+### ⚖️ 7. Weight Log, Local Photo Privacy & Dual-Mode Before/After Comparator
+* Log weights, calculate BMI and target distance.
+* **100% On-Device Photo Storage** via IndexedDB with zero cloud transmission.
+* Built-in non-destructive image cropper, rotation engine, and dual-mode Before/After visual comparator (interactive slider vs side-by-side).
+
+### ⏳ 8. Fasting Timer & Metabolic Stages Tracker
+* 8 fasting protocols (*16:8, 20:4 Warrior, 24h, 48h, 72h, Water, Juice, Fruit, Dry, Ramadan*).
+* Real-time biological phase progress (*Digestion ➔ Insulin Drop ➔ Ketosis ➔ Fat Burning ➔ Autophagy ➔ Regeneration*).
+* End-of-fast debrief with Magic Mirror elimination signs logger (*coated tongue, lightness, sweat, thirst, euphoria*).
+
+### 🫁 9. Wim Hof & Pranic Breathing Studio
+* Guided sessions: **Wim Hof 3 Rounds**, **Box Breathing (4-4-4-4)**, **Cardiac Coherence (5.5s)**, and **4-7-8 Sleep**.
+* Recovery breath triggers (15s), retention record history, and Radboud University (2014) medical study cards.
+
+### 🔒 10. Zero-Knowledge Privacy & GDPR Compliance
+* **Zero-Knowledge Architecture**: All personal health records stay on your local device.
+* **Data Portability (GDPR Art. 20)**: Complete JSON export in 1 click.
+* **Right to be Forgotten (GDPR Art. 17)**: Instant, permanent account and IndexedDB photo purge.
+* **Anti-Screenshot Privacy Mask**: Blur sensitive health metrics during screen sharing or recording.
 
 ---
 
-## 💻 Installation & Développement Local
+## 🏗️ Technical Architecture & FinOps Dual-Tier Strategy
+
+```
+┌──────────────────────────────────────────────────────────┐
+│                   VitalTrack Frontend                    │
+│      Vite + Vanilla Modern JS (ES6+) + Responsive CSS     │
+│   1,065 i18n Keys × 4 Locales (EN, FR, ES, FR-CA) = 4,260 │
+└────────────────────────────┬─────────────────────────────┘
+                             │
+                             ▼
+┌──────────────────────────────────────────────────────────┐
+│             Vercel Serverless Edge API Layer             │
+│        /api/chat  •  /api/deep-search  •  /api/scan      │
+└────────────────────────────┬─────────────────────────────┘
+                             │
+              ┌──────────────┴──────────────┐
+              ▼                             ▼
+┌───────────────────────────┐ ┌───────────────────────────┐
+│ Tier 1: Free Tier Project │ │ Tier 2: Paid Resilience   │
+│ projects/437214576475     │ │ projects/890941317890     │
+│ (Absorbs 500 RPD @ $0.00) │ │ (Automatic 429 Failover)  │
+└───────────────────────────┘ └───────────────────────────┘
+```
+
+* **Frontend Engine**: Semantic HTML5, Glassmorphic CSS variables, Vanilla ES6+ modules, Vite bundler.
+* **AI Model Routing**: Official Google Generative Language endpoints (`gemini-3.7-flash`, `gemini-3.6-flash`, `gemini-3.5-flash-lite`).
+* **Speech & Media**: Native Web Speech API STT, Edge Neural TTS, FFmpeg audio transcoding.
+* **Deployment**: Hosted globally on [Vercel](https://vitaltrackapp.vercel.app) with GitHub Pages documentation mirror.
+
+---
+
+## 💻 Local Development & Quick Start
 
 ```bash
-# 1. Cloner le dépôt
+# 1. Clone the repository
 git clone https://github.com/fnnktkygl-code/vital_track.git
 cd vital_track
 
-# 2. Installer les dépendances du frontend
+# 2. Install web application dependencies
 cd web-app
 npm install
 
-# 3. Lancer le serveur de développement local
+# 3. Run local development server
 npm run dev
+
+# 4. Run automated test suite (10/10 test suites)
+cd ..
+node tests/run_all_tests.mjs
 ```
 
 ---
 
-## 📜 Conformité & Licence
+## 🌐 Multilingual Documentation
 
-* **Licence :** Distribué sous licence **MIT**.
-* **Protection des Données :** Conforme au Règlement Européen sur la Protection des Données (RGPD). Consultez la [Politique de Confidentialité](https://fnnktkygl-code.github.io/vital_track/privacy.html).
+* [🇬🇧 **English (README.md)**](README.md)
+* [🇫🇷 **Français (README.fr.md / LISEZMOI.md)**](README.fr.md)
+* [🇪🇸 **Español (README.es.md / LEAME.md)**](README.es.md)
+
+---
+
+## 📜 Compliance & License
+
+* **License:** Distributed under the **MIT License**. See `LICENSE` for details.
+* **Privacy & GDPR:** Fully compliant with European GDPR / RGPD regulations. Consult our [Privacy Policy](https://fnnktkygl-code.github.io/vital_track/privacy.html).
