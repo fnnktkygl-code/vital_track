@@ -2,9 +2,9 @@
 
 <div align="center">
 
-[![Idioma: Español](https://img.shields.io/badge/Idioma-Espa%C3%B1ol%20%F0%9F%87%AA%F0%9F%87%B8-orange?style=for-the-badge)](README.es.md)
+[![Idioma: Español](https://img.shields.io/badge/Idioma-Espa%C3%B1ol%20%F0%9F%87%AA%F0%9F%87%B8-orange?style=for-the-badge)](LEAME.md)
 [![Language: English](https://img.shields.io/badge/Language-English%20%F0%9F%87%AC%F0%9F%87%A7-blue?style=for-the-badge)](README.md)
-[![Langue: Français](https://img.shields.io/badge/Langue-Fran%C3%A7ais%20%F0%9F%87%AB%F0%9F%87%B7-emerald?style=for-the-badge)](README.fr.md)
+[![Langue: Français](https://img.shields.io/badge/Langue-Fran%C3%A7ais%20%F0%9F%87%AB%F0%9F%87%B7-emerald?style=for-the-badge)](LISEZMOI.md)
 
 <br/>
 
@@ -20,7 +20,7 @@
   Combina las enseñanzas clínicas de los mayores pioneros de la salud natural (<em>Arnold Ehret, Dr. Sebi, Dr. Robert Morse, David Wolfe, Dra. Leslie Taylor, Wim Hof</em>) con Inteligencia Artificial multimodal de vanguardia, dictado por voz en streaming sin consumo de cuota, farmacopea amazónica completa y un panel de control fisiológico privado.
 </p>
 
-[**🚀 Iniciar Aplicación Web**](https://vitaltrackapp.vercel.app) • [**📖 Guía de Usuario**](GUIDE.md) • [**🔒 Política de Privacidad**](https://fnnktkygl-code.github.io/vital_track/privacy.html) • [**🇬🇧 English README**](README.md) • [**🇫🇷 Version Française**](README.fr.md)
+[**🚀 Iniciar Aplicación Web**](https://vitaltrackapp.vercel.app) • [**📖 Guía de Usuario**](GUIDE.md) • [**🔒 Política de Privacidad**](https://fnnktkygl-code.github.io/vital_track/privacy.html) • [**🇬🇧 English README**](README.md) • [**🇫🇷 Version Française (LISEZMOI.md)**](LISEZMOI.md)
 
 </div>
 
@@ -253,8 +253,8 @@ node tests/run_all_tests.mjs
 ## 🌐 Documentación Multilingüe
 
 * [🇬🇧 **English (README.md)**](README.md)
-* [🇫🇷 **Français (README.fr.md)**](README.fr.md)
-* [🇪🇸 **Español (README.es.md)**](README.es.md)
+* [🇫🇷 **Français (LISEZMOI.md)**](LISEZMOI.md)
+* [🇪🇸 **Español (LEAME.md)**](LEAME.md)
 
 ---
 

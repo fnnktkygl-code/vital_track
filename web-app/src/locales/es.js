@@ -1,7 +1,3 @@
-// ═══════════════════════════════════════════════════════════════════════════════
-// VITALTRACK DICTIONNAIRE PRINCIPAL — ES
-// ═══════════════════════════════════════════════════════════════════════════════
-
 export default {
   "nav": {
     "dashboard": "Panel de Control",
@@ -492,7 +488,19 @@ export default {
     "stage5Name": "Autofagia",
     "stage6Name": "Regeneración",
     "historySub": "Diario de a bordo, hitos alcanzados y regularidad",
-    "autophagySessions": "Autofagia (16h+)"
+    "autophagySessions": "Autofagia (16h+)",
+    "goalReached": "🎉 ¡OBJETIVO ALCANZADO!",
+    "remainingFormat": "Quedan {hours}h {mins}min",
+    "stopFastBtn": "Detener el ayuno",
+    "startFastBtn": "Iniciar el ayuno",
+    "inProgress": "🔥 EN CURSO",
+    "ready": "LISTO",
+    "phaseWord": "Fase",
+    "tagTongue": "👅 Lengua",
+    "tagLightness": "🕊️ Ligereza",
+    "tagSweat": "💦 Sudoración",
+    "tagThirst": "💧 Sed",
+    "tagEuphoria": "✨ Claridad"
   },
   "materia": {
     "pageTitle": "Farmacopea Raintree y Plantas del Amazonas",
@@ -1133,5 +1141,39 @@ export default {
     "filterFoods": "🥑 Alimentos",
     "filterHerbs": "🌿 Infusiones y Remedios",
     "emptyState": "No hay favoritos registrados. ¡Agregue alimentos o cree sus propios platos!"
+  },
+  "fastingProtocols": {
+    "intermittent": {
+      "name": "Intermitente",
+      "desc": "16h ayuno / 8h comida"
+    },
+    "warrior": {
+      "name": "Guerrero",
+      "desc": "20h ayuno / 4h comida"
+    },
+    "waterFast24": {
+      "name": "Hídrico 24h",
+      "desc": "Agua pura durante 24h"
+    },
+    "juiceFast": {
+      "name": "Jugo 3 días",
+      "desc": "Solo jugos frescos"
+    },
+    "fruitFast": {
+      "name": "Frutas 48h",
+      "desc": "Monofruta o frutas variadas"
+    },
+    "grapeCure": {
+      "name": "Cura de uvas",
+      "desc": "3 días de uvas (Dr. Morse)"
+    },
+    "drySunFast": {
+      "name": "Seco 16h",
+      "desc": "Sin agua ni comida"
+    },
+    "ramadan": {
+      "name": "Ramadán",
+      "desc": "Ayuno desde el alba hasta el ocaso"
+    }
   }
 };

@@ -283,32 +283,82 @@ class PigeonNudgeEngine {
   }
 
   /**
-   * Réagit aux paliers de jeûne intermittent
+   * Réagit aux paliers de jeûne intermittent (Multilingue FR / EN / ES)
    * @param {number} hours 
    */
   onFastingMilestone(hours) {
+    const lang = typeof window !== 'undefined' && window.vitalTrackI18n ? window.vitalTrackI18n.getLanguage() : 'fr';
+    const texts = {
+      fr: {
+        m14Badge: '🔥 Palier 14h de Jeûne',
+        m14Title: 'Épuisement du Glycogène',
+        m14Msg: 'Ton foie bascule en mode cétose douce. La filtration lymphatique s\'accélère !',
+        m16Badge: '🌟 Palier 16h : Autophagie',
+        m16Title: 'Recyclage Cellulaire Actif',
+        m16Msg: 'L\'autophagie tourne à plein régime ! Les protéines endommagées et le mucus sont éliminés.',
+        m20Badge: '👑 Jeûne Profond',
+        m20Title: 'Régénération Tissulaire',
+        m20Msg: 'Autolyse profonde et détoxification cellulaire majeure. Reste à l\'écoute de ton corps !'
+      },
+      'fr-CA': {
+        m14Badge: '🔥 Palier 14h de Jeûne',
+        m14Title: 'Épuisement du Glycogène',
+        m14Msg: 'Ton foie bascule en mode cétose douce. La filtration lymphatique s\'accélère !',
+        m16Badge: '🌟 Palier 16h : Autophagie',
+        m16Title: 'Recyclage Cellulaire Actif',
+        m16Msg: 'L\'autophagie tourne à plein régime ! Les protéines endommagées et le mucus sont éliminés.',
+        m20Badge: '👑 Jeûne Profond',
+        m20Title: 'Régénération Tissulaire',
+        m20Msg: 'Autolyse profonde et détoxification cellulaire majeure. Reste à l\'écoute de ton corps !'
+      },
+      en: {
+        m14Badge: '🔥 14h Fasting Milestone',
+        m14Title: 'Glycogen Depletion',
+        m14Msg: 'Your liver is entering mild ketosis. Lymphatic filtration is accelerating!',
+        m16Badge: '🌟 16h Milestone: Autophagy',
+        m16Title: 'Active Cellular Recycling',
+        m16Msg: 'Autophagy is in full swing! Damaged proteins and mucoid debris are cleared.',
+        m20Badge: '👑 Deep Fasting',
+        m20Title: 'Tissue Regeneration',
+        m20Msg: 'Deep cellular autolysis and regeneration underway. Listen to your body!'
+      },
+      es: {
+        m14Badge: '🔥 Fase 14h de Ayuno',
+        m14Title: 'Agotamiento del Glucógeno',
+        m14Msg: 'Tu hígado entra en cetosis suave. ¡La filtración linfática se acelera!',
+        m16Badge: '🌟 Fase 16h: Autofagia',
+        m16Title: 'Reciclaje Celular Activo',
+        m16Msg: '¡La autofagia funciona al máximo! Se eliminan las proteínas dañadas y el moco.',
+        m20Badge: '👑 Ayuno Profundo',
+        m20Title: 'Regeneración Tisular',
+        m20Msg: 'Autólisis profunda y desintoxicación celular mayor. ¡Permanece atento a tu cuerpo!'
+      }
+    };
+
+    const t = texts[lang] || texts.fr;
+
     if (hours === 14) {
       this.triggerNudge({
         mood: 'proud',
-        badge: '🔥 Palier 14h de Jeûne',
-        title: 'Épuisement du Glycogène',
-        message: 'Ton foie bascule en mode cétose douce. La filtration lymphatique s\'accélère !',
+        badge: t.m14Badge,
+        title: t.m14Title,
+        message: t.m14Msg,
         force: true
       });
     } else if (hours === 16) {
       this.triggerNudge({
         mood: 'excited',
-        badge: '🌟 Palier 16h : Autophagie',
-        title: 'Recyclage Cellulaire Actif',
-        message: 'L\'autophagie tourne à plein régime ! Les protéines endommagées et le mucus sont éliminés.',
+        badge: t.m16Badge,
+        title: t.m16Title,
+        message: t.m16Msg,
         force: true
       });
     } else if (hours >= 20) {
       this.triggerNudge({
         mood: 'excited',
-        badge: '👑 Jeûne Profond',
-        title: 'Régénération Tissulaire',
-        message: 'Autolyse profonde et détoxification cellulaire majeure. Reste à l\'écoute de ton corps !',
+        badge: t.m20Badge,
+        title: t.m20Title,
+        message: t.m20Msg,
         force: true
       });
     }

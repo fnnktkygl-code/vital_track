@@ -3,8 +3,8 @@
 <div align="center">
 
 [![Language: English](https://img.shields.io/badge/Language-English%20%F0%9F%87%AC%F0%9F%87%A7-blue?style=for-the-badge)](README.md)
-[![Langue: Français](https://img.shields.io/badge/Langue-Fran%C3%A7ais%20%F0%9F%87%AB%F0%9F%87%B7-emerald?style=for-the-badge)](README.fr.md)
-[![Idioma: Español](https://img.shields.io/badge/Idioma-Espa%C3%B1ol%20%F0%9F%87%AA%F0%9F%87%B8-orange?style=for-the-badge)](README.es.md)
+[![Langue: Français](https://img.shields.io/badge/Langue-Fran%C3%A7ais%20%F0%9F%87%AB%F0%9F%87%B7-emerald?style=for-the-badge)](LISEZMOI.md)
+[![Idioma: Español](https://img.shields.io/badge/Idioma-Espa%C3%B1ol%20%F0%9F%87%AA%F0%9F%87%B8-orange?style=for-the-badge)](LEAME.md)
 
 <br/>
 
@@ -20,7 +20,7 @@
   Unifying clinical principles from pioneering natural healers (<em>Arnold Ehret, Dr. Sebi, Dr. Robert Morse, David Wolfe, Dr. Leslie Taylor, Wim Hof</em>) with multimodal Artificial Intelligence, zero-quota live voice dictation, Amazonian pharmacopeia, and a private biometric cockpit.
 </p>
 
-[**🚀 Launch Web App**](https://vitaltrackapp.vercel.app) • [**📖 User Guide**](GUIDE.md) • [**🔒 Privacy Policy**](https://fnnktkygl-code.github.io/vital_track/privacy.html) • [**🇫🇷 Version Française**](README.fr.md) • [**🇪🇸 Versión en Español**](README.es.md)
+[**🚀 Launch Web App**](https://vitaltrackapp.vercel.app) • [**📖 User Guide**](GUIDE.md) • [**🔒 Privacy Policy**](https://fnnktkygl-code.github.io/vital_track/privacy.html) • [**🇫🇷 Version Française (LISEZMOI.md)**](LISEZMOI.md) • [**🇪🇸 Versión en Español (LEAME.md)**](LEAME.md)
 
 </div>
 
@@ -253,8 +253,8 @@ node tests/run_all_tests.mjs
 ## 🌐 Multilingual Documentation
 
 * [🇬🇧 **English (README.md)**](README.md)
-* [🇫🇷 **Français (README.fr.md)**](README.fr.md)
-* [🇪🇸 **Español (README.es.md)**](README.es.md)
+* [🇫🇷 **Français (LISEZMOI.md)**](LISEZMOI.md)
+* [🇪🇸 **Español (LEAME.md)**](LEAME.md)
 
 ---
 

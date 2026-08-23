@@ -1,7 +1,3 @@
-// ═══════════════════════════════════════════════════════════════════════════════
-// VITALTRACK DICTIONNAIRE PRINCIPAL — EN
-// ═══════════════════════════════════════════════════════════════════════════════
-
 export default {
   "nav": {
     "dashboard": "Dashboard",
@@ -492,7 +488,19 @@ export default {
     "stage5Name": "Autophagy",
     "stage6Name": "Regeneration",
     "historySub": "Logbook, milestones reached & regularity",
-    "autophagySessions": "Autophagy (16h+)"
+    "autophagySessions": "Autophagy (16h+)",
+    "goalReached": "🎉 GOAL REACHED!",
+    "remainingFormat": "{hours}h {mins}min remaining",
+    "stopFastBtn": "Stop Fasting",
+    "startFastBtn": "Start Fasting",
+    "inProgress": "🔥 IN PROGRESS",
+    "ready": "READY",
+    "phaseWord": "Phase",
+    "tagTongue": "👅 Tongue",
+    "tagLightness": "🕊️ Lightness",
+    "tagSweat": "💦 Sweat",
+    "tagThirst": "💧 Thirst",
+    "tagEuphoria": "✨ Clarity"
   },
   "materia": {
     "pageTitle": "Raintree Pharmacopoeia & Amazonian Herbs",
@@ -1133,5 +1141,39 @@ export default {
     "filterFoods": "🥑 Foods",
     "filterHerbs": "🌿 Herbal Teas & Remedies",
     "emptyState": "No favorites logged yet. Add foods or create your own custom dishes!"
+  },
+  "fastingProtocols": {
+    "intermittent": {
+      "name": "Intermittent",
+      "desc": "16h fast / 8h eating window"
+    },
+    "warrior": {
+      "name": "Warrior",
+      "desc": "20h fast / 4h meal window"
+    },
+    "waterFast24": {
+      "name": "Water Fast 24h",
+      "desc": "Pure water for 24h"
+    },
+    "juiceFast": {
+      "name": "3-Day Juice Fast",
+      "desc": "Fresh cold-pressed juices only"
+    },
+    "fruitFast": {
+      "name": "Fruits 48h",
+      "desc": "Mono-fruit or aqueous fresh fruits"
+    },
+    "grapeCure": {
+      "name": "Grape Cleanse",
+      "desc": "3 days of grapes (Dr. Morse)"
+    },
+    "drySunFast": {
+      "name": "Dry Fast 16h",
+      "desc": "No water or food during rest"
+    },
+    "ramadan": {
+      "name": "Ramadan",
+      "desc": "Fasting from dawn to sunset"
+    }
   }
 };

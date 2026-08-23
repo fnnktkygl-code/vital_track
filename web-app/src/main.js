@@ -1326,6 +1326,7 @@ function showPage(page, options = {}) {
   }
   if (page === 'materia-medica') renderRaintreeExplorer();
   if (page === 'favorites') renderFavorites();
+  if (page === 'fasting') renderFasting();
   if (page === 'resources') renderResources();
   if (page === 'chat') initChatMascot();
   if (page === 'modes') {
@@ -7231,13 +7232,19 @@ const FASTING_PROGRAMS = [
 function initFastingPrograms() {
   const grid = document.getElementById('programGrid');
   if (!grid) return;
-  grid.innerHTML = FASTING_PROGRAMS.map((p, i) =>
-    `<div class="jn-program-tile${i === 0 ? ' selected' : ''}" data-id="${p.id}" onclick="selectProgram('${p.id}')">
+  const tFunc = (window.vitalTrackI18n && typeof window.vitalTrackI18n.t === 'function') 
+    ? window.vitalTrackI18n.t 
+    : ((k, p, def) => def || k);
+
+  grid.innerHTML = FASTING_PROGRAMS.map((p, i) => {
+    const pName = tFunc(`fastingProtocols.${p.id}.name`, null, p.name);
+    const pDesc = tFunc(`fastingProtocols.${p.id}.desc`, null, p.desc);
+    return `<div class="jn-program-tile${i === 0 ? ' selected' : ''}" data-id="${p.id}" onclick="selectProgram('${p.id}')">
       <span class="jn-p-icon">${p.icon}</span>
-      <span class="jn-p-title">${esc(p.name)}</span>
-      <span class="jn-p-desc">${esc(p.desc)}</span>
-    </div>`
-  ).join('');
+      <span class="jn-p-title">${esc(pName)}</span>
+      <span class="jn-p-desc">${esc(pDesc)}</span>
+    </div>`;
+  }).join('');
 }
 
 function selectProgram(id) {
@@ -7245,13 +7252,17 @@ function selectProgram(id) {
   if (!p) return;
   document.getElementById('fastingDuration').value = p.hours;
   const goalEl = document.getElementById('fastGoal');
-  if (goalEl) goalEl.textContent = 'Objectif : ' + p.hours + 'h';
+  const tFunc = (window.vitalTrackI18n && typeof window.vitalTrackI18n.t === 'function') 
+    ? window.vitalTrackI18n.t 
+    : ((k, p, def) => def || k);
+  const goalWord = tFunc('fasting.timerGoal', null, 'Objectif');
+  if (goalEl) goalEl.textContent = `${goalWord} : ${p.hours}h`;
   document.getElementById('fastingSafetyWarning').style.display = p.hours > 24 ? 'block' : 'none';
   document.querySelectorAll('.jn-program-tile').forEach(c => c.classList.toggle('selected', c.dataset.id === id));
   // Sync select dropdown
   const typeMap = { intermittent: 'intermittent', warrior: 'warrior', waterFast24: 'waterFast', juiceFast: 'juiceFast', fruitFast: 'fruitFast', grapeCure: 'grapeCure', drySunFast: 'drySunFast', ramadan: 'ramadan' };
   const sel = document.getElementById('fastingType');
-  sel.value = typeMap[id] || 'intermittent';
+  if (sel) sel.value = typeMap[id] || 'intermittent';
 };
 
 // ═══════ MASTERCLASS ARNOLD EHRET ═══════
@@ -7623,6 +7634,83 @@ function getUnlockedStages(hours) {
 }
 
 function getRefeedingProtocol(hours, type) {
+  const lang = typeof window !== 'undefined' && window.vitalTrackI18n ? window.vitalTrackI18n.getLanguage() : 'fr';
+  
+  if (lang === 'en') {
+    if (hours < 16) {
+      return `
+        <ul class="refeed-list">
+          <li><strong>First Intake:</strong> A tall glass of room-temperature water with fresh lemon squeeze or raw coconut water.</li>
+          <li><strong>Break-fast Meal:</strong> Ripe seasonal aqueous fruits (sweet apple, watermelon, seeded grapes, papaya) or tender mixed greens with peeled cucumber.</li>
+          <li><strong>Arnold Ehret's Principle:</strong> Eat slowly and chew thoroughly until complete liquefaction to gently awaken intestinal motility.</li>
+        </ul>
+      `;
+    } else if (hours < 24) {
+      return `
+        <ul class="refeed-list">
+          <li><strong>1. Waking Hydration:</strong> Warm lemon water (alkalizing) 20 minutes before first solid food.</li>
+          <li><strong>2. Ehret's Broom Meal:</strong> Raw grated apple or finely shredded carrots with lemon juice (no heavy oils) to mechanically sweep cellular debris from the digestive tract.</li>
+          <li><strong>3. Strictly Avoid:</strong> Heavy starches (bread, pasta, dense rice), dairy, or animal proteins which halt ongoing detox.</li>
+        </ul>
+      `;
+    } else if (hours < 48) {
+      return `
+        <ul class="refeed-list">
+          <li><strong>1. Progressive Break:</strong> 250ml freshly extracted green juice (cucumber, celery, green apple, spinach) or pure spring water.</li>
+          <li><strong>2. First Plate (1h later):</strong> Lightly steamed non-starchy vegetables (zucchini, spinach, chard) or warm unsweetened homemade applesauce.</li>
+          <li><strong>3. Morse & Ehret Golden Rule:</strong> The refeeding duration must equal at least half of the total fasting duration to avoid auto-intoxication.</li>
+        </ul>
+      `;
+    } else {
+      return `
+        <ul class="refeed-list">
+          <li><strong>⚠️ Sensitive Phase (Extended Fast of ${hours.toFixed(0)}h):</strong> Your digestive system is in deep metabolic dormancy.</li>
+          <li><strong>1. Day 1:</strong> Exclusively diluted sub-acid fruit juices (grape or apple 50/50 with pure spring water) in small sips every 2 hours.</li>
+          <li><strong>2. Day 2:</strong> Soft ripe water-rich fruits (fresh figs, seeded grapes, melon, ripe papaya).</li>
+          <li><strong>3. Strict Prohibition:</strong> Never consume nuts, seeds, dense starches, salt, or cooked oily foods before 72 hours of gradual recovery.</li>
+        </ul>
+      `;
+    }
+  }
+
+  if (lang === 'es') {
+    if (hours < 16) {
+      return `
+        <ul class="refeed-list">
+          <li><strong>Primer aporte:</strong> Un vaso grande de agua templada con un chorrito de limón o agua de coco fresca.</li>
+          <li><strong>Comida de ruptura:</strong> Frutas acuosas de temporada (manzana dulce, sandía, uvas con semillas o papaya) o ensalada de brotes tiernos con pepino.</li>
+          <li><strong>Consejo de Arnold Ehret:</strong> Come despacio y mastica hasta la licuefacción completa para despertar suavemente el tránsito intestinal.</li>
+        </ul>
+      `;
+    } else if (hours < 24) {
+      return `
+        <ul class="refeed-list">
+          <li><strong>1. Hidratación de despertar:</strong> Agua tibia con limón (alcalinizante) 20 minutos antes del primer alimento.</li>
+          <li><strong>2. Comida escoba de Ehret:</strong> Manzana rallada cruda o zanahoria rallada aliñada con zumo de limón (sin aceite pesado) para barrer las toxinas del tubo digestivo.</li>
+          <li><strong>3. Evitar terminantemente:</strong> Féculas densas (pan, pasta, arroz), lácteos o proteínas animales que frenen bruscamente la eliminación.</li>
+        </ul>
+      `;
+    } else if (hours < 48) {
+      return `
+        <ul class="refeed-list">
+          <li><strong>1. Ruptura progresiva:</strong> 250ml de jugo verde recién extraído (pepino, apio, manzana, espinacas) o agua pura de manantial.</li>
+          <li><strong>2. Primer plato (1h después):</strong> Verduras no feculentas al vapor suave (calabacín, espinacas, acelgas) o compota tibia casera sin azúcar.</li>
+          <li><strong>3. Regla de oro de Morse & Ehret:</strong> El periodo de realimentación debe durar al menos la mitad del tiempo de ayuno.</li>
+        </ul>
+      `;
+    } else {
+      return `
+        <ul class="refeed-list">
+          <li><strong>⚠️ Fase muy delicada (Ayuno prolongado de ${hours.toFixed(0)}h):</strong> Tu sistema digestivo está en reposo profundo.</li>
+          <li><strong>1. Día 1:</strong> Exclusivamente zumos de fruta subácidos diluidos (uva o manzana 50/50 con agua de manantial) en pequeños sorbos cada 2h.</li>
+          <li><strong>2. Día 2:</strong> Frutas acuosas muy maduras (higos frescos, uvas con semillas, melón, papaya).</li>
+          <li><strong>3. Prohibición estricta:</strong> Nunca frutos secos, semillas, harinas densas, sal o alimentos grasos antes de 72h de recuperación.</li>
+        </ul>
+      `;
+    }
+  }
+
+  // French default & fr-CA
   if (hours < 16) {
     return `
       <ul class="refeed-list">
@@ -7662,8 +7750,14 @@ function getRefeedingProtocol(hours, type) {
 function updateLiveFastingStages(elapsedHours, targetHours) {
   const currentStage = FASTING_METABOLIC_STAGES.slice().reverse().find(s => elapsedHours >= s.minH) || FASTING_METABOLIC_STAGES[0];
   const badge = document.getElementById('currentStageBadge');
+  const tFunc = (window.vitalTrackI18n && typeof window.vitalTrackI18n.t === 'function') 
+    ? window.vitalTrackI18n.t 
+    : ((k, p, def) => def || k);
+
   if (badge) {
-    badge.innerHTML = `${currentStage.icon} Phase ${currentStage.id} : ${currentStage.name}`;
+    const stageName = tFunc(`fasting.stage${currentStage.id}Name`, null, currentStage.name);
+    const phaseWord = tFunc('fasting.phaseWord', null, 'Phase');
+    badge.innerHTML = `${currentStage.icon} ${phaseWord} ${currentStage.id} : ${stageName}`;
   }
 
   const fill = document.getElementById('stagesProgressFill');
@@ -7858,12 +7952,18 @@ function updateFastingUI() {
     prog.style.strokeDashoffset = 637.6 * (1 - progress);
   }
   const statusEl = document.getElementById('timerLabel');
+  const tFunc = (window.vitalTrackI18n && typeof window.vitalTrackI18n.t === 'function') 
+    ? window.vitalTrackI18n.t 
+    : ((k, p, def) => def || k);
+
   if (statusEl) {
     if (remaining <= 0) {
-      statusEl.textContent = '🎉 OBJECTIF ATTEINT !';
+      statusEl.textContent = tFunc('fasting.goalReached', null, '🎉 OBJECTIF ATTEINT !');
       statusEl.classList.add('active');
     } else {
-      statusEl.textContent = `Reste ${Math.floor(remaining / 3600000)}h ${Math.floor((remaining % 3600000) / 60000)}min`;
+      const hoursLeft = Math.floor(remaining / 3600000);
+      const minsLeft = Math.floor((remaining % 3600000) / 60000);
+      statusEl.textContent = tFunc('fasting.remainingFormat', { hours: hoursLeft, mins: minsLeft }, `Reste ${hoursLeft}h ${minsLeft}min`);
     }
   }
 
@@ -7885,8 +7985,8 @@ function updateFastingUI() {
   if (df) { df.style.width = `${progress * 100}%`; }
   const dft = document.getElementById('dashFastType');
   if (dft) {
-    const tl = { intermittent: '⏰ Intermittent', warrior: '⚔️ Warrior', waterFast: '💧 Hydrique', juiceFast: '🧃 Jus', fruitFast: '🍎 Fruits', grapeCure: '🍇 Raisin', drySunFast: '☀️ Sec', ramadan: '🌙 Ramadan' };
-    dft.textContent = tl[fastingState.type] || fastingState.type;
+    const pName = tFunc(`fastingProtocols.${fastingState.type}.name`, null, fastingState.type);
+    dft.textContent = pName;
   }
 }
 
@@ -7897,6 +7997,9 @@ function loadFastingState() {
   const label = document.getElementById('fastBtnLabel');
   const statusEl = document.getElementById('timerLabel');
   const lockBadge = document.getElementById('jnTypeLockBadge');
+  const tFunc = (window.vitalTrackI18n && typeof window.vitalTrackI18n.t === 'function') 
+    ? window.vitalTrackI18n.t 
+    : ((k, p, def) => def || k);
 
   if (saved?.startTime) {
     fastingState = { ...saved, active: true, interval: null };
@@ -7905,9 +8008,9 @@ function loadFastingState() {
 
     if (btn) btn.className = 'jn-btn-start running stop';
     if (icon) icon.className = 'ri-stop-circle-fill';
-    if (label) label.textContent = 'Arrêter le jeûne';
+    if (label) label.textContent = tFunc('fasting.stopFastBtn', null, 'Arrêter le jeûne');
     if (statusEl) {
-      statusEl.textContent = '🔥 EN COURS';
+      statusEl.textContent = tFunc('fasting.inProgress', null, '🔥 EN COURS');
       statusEl.classList.add('active');
     }
 
@@ -7917,9 +8020,9 @@ function loadFastingState() {
   } else {
     if (btn) btn.className = 'jn-btn-start idle';
     if (icon) icon.className = 'ri-play-fill';
-    if (label) label.textContent = 'Démarrer le jeûne';
+    if (label) label.textContent = tFunc('fasting.startFastBtn', null, 'Démarrer le jeûne');
     if (statusEl) {
-      statusEl.textContent = 'PRÊT';
+      statusEl.textContent = tFunc('fasting.ready', null, 'PRÊT');
       statusEl.classList.remove('active');
     }
     document.getElementById('jnFieldType')?.classList.remove('locked');
@@ -8044,6 +8147,16 @@ function renderFastingAnalytics() {
   const longest = history.length ? Math.max(...history.map(h => h.elapsed || 0)) / 3600000 : 0;
   if (longestEl) longestEl.textContent = `${longest.toFixed(0)}h`;
 }
+
+function renderFasting() {
+  initFastingPrograms();
+  loadFastingState();
+  initMasterclass();
+  initExpertAccordion();
+  renderFastingHistory();
+  renderFastingAnalytics();
+}
+window.renderFasting = renderFasting;
 
 // ═══════ BREATHING & WIM HOF ENGINE ═══════
 const breathModes = {

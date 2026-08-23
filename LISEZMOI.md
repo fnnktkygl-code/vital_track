@@ -2,9 +2,9 @@
 
 <div align="center">
 
-[![Langue: Français](https://img.shields.io/badge/Langue-Fran%C3%A7ais%20%F0%9F%87%AB%F0%9F%87%B7-emerald?style=for-the-badge)](README.fr.md)
+[![Langue: Français](https://img.shields.io/badge/Langue-Fran%C3%A7ais%20%F0%9F%87%AB%F0%9F%87%B7-emerald?style=for-the-badge)](LISEZMOI.md)
 [![Language: English](https://img.shields.io/badge/Language-English%20%F0%9F%87%AC%F0%9F%87%A7-blue?style=for-the-badge)](README.md)
-[![Idioma: Español](https://img.shields.io/badge/Idioma-Espa%C3%B1ol%20%F0%9F%87%AA%F0%9F%87%B8-orange?style=for-the-badge)](README.es.md)
+[![Idioma: Español](https://img.shields.io/badge/Idioma-Espa%C3%B1ol%20%F0%9F%87%AA%F0%9F%87%B8-orange?style=for-the-badge)](LEAME.md)
 
 <br/>
 
@@ -20,7 +20,7 @@
   Elle réunit les enseignements cliniques des plus grands pionniers de la santé naturelle (<em>Arnold Ehret, Dr. Sebi, Dr. Robert Morse, David Wolfe, Dr. Leslie Taylor, Wim Hof</em>) avec une intelligence artificielle multimodale de pointe, une dictée vocale en streaming sans quota, une pharmacopée amazonienne complète et un cockpit de suivi physiologique hermétique.
 </p>
 
-[**🚀 Lancer l'Application Web**](https://vitaltrackapp.vercel.app) • [**📖 Guide Utilisateur Complet**](GUIDE.md) • [**🔒 Politique de Confidentialité**](https://fnnktkygl-code.github.io/vital_track/privacy.html) • [**🇬🇧 English README**](README.md) • [**🇪🇸 Versión en Español**](README.es.md)
+[**🚀 Lancer l'Application Web**](https://vitaltrackapp.vercel.app) • [**📖 Guide Utilisateur Complet**](GUIDE.md) • [**🔒 Politique de Confidentialité**](https://fnnktkygl-code.github.io/vital_track/privacy.html) • [**🇬🇧 English README**](README.md) • [**🇪🇸 Versión en Español (LEAME.md)**](LEAME.md)
 
 </div>
 
@@ -253,8 +253,8 @@ node tests/run_all_tests.mjs
 ## 🌐 Documentation Multilingue
 
 * [🇬🇧 **English (README.md)**](README.md)
-* [🇫🇷 **Français (README.fr.md)**](README.fr.md)
-* [🇪🇸 **Español (README.es.md)**](README.es.md)
+* [🇫🇷 **Français (LISEZMOI.md)**](LISEZMOI.md)
+* [🇪🇸 **Español (LEAME.md)**](LEAME.md)
 
 ---
 

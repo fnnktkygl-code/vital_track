@@ -1,7 +1,3 @@
-// ═══════════════════════════════════════════════════════════════════════════════
-// VITALTRACK DICTIONNAIRE PRINCIPAL — FR-CA
-// ═══════════════════════════════════════════════════════════════════════════════
-
 export default {
   "nav": {
     "dashboard": "Tableau de Bord",
@@ -492,7 +488,19 @@ export default {
     "stage5Name": "Autophagie",
     "stage6Name": "Régénération",
     "historySub": "Journal de bord, paliers atteints & régularité",
-    "autophagySessions": "Autophagies (16h+)"
+    "autophagySessions": "Autophagies (16h+)",
+    "goalReached": "🎉 OBJECTIF ATTEINT !",
+    "remainingFormat": "Reste {hours}h {mins}min",
+    "stopFastBtn": "Arrêter le jeûne",
+    "startFastBtn": "Démarrer le jeûne",
+    "inProgress": "🔥 EN COURS",
+    "ready": "PRÊT",
+    "phaseWord": "Phase",
+    "tagTongue": "👅 Langue",
+    "tagLightness": "🕊️ Légèreté",
+    "tagSweat": "💦 Transpiration",
+    "tagThirst": "💧 Soif",
+    "tagEuphoria": "✨ Clarté"
   },
   "materia": {
     "pageTitle": "Pharmacopée Raintree & Plantes d'Amazonie",
@@ -1133,5 +1141,39 @@ export default {
     "filterFoods": "🥑 Aliments",
     "filterHerbs": "🌿 Tisanes & Remèdes",
     "emptyState": "Aucun favori enregistré. Ajoutez des aliments ou créez vos propres plats !"
+  },
+  "fastingProtocols": {
+    "intermittent": {
+      "name": "Intermittent",
+      "desc": "16h jeûne / 8h repas"
+    },
+    "warrior": {
+      "name": "Guerrier",
+      "desc": "20h jeûne / 4h repas"
+    },
+    "waterFast24": {
+      "name": "Hydrique 24h",
+      "desc": "Eau pure pendant 24h"
+    },
+    "juiceFast": {
+      "name": "Jus 3 jours",
+      "desc": "Jus frais uniquement"
+    },
+    "fruitFast": {
+      "name": "Fruits 48h",
+      "desc": "Mono-fruit ou petits fruits boréaux"
+    },
+    "grapeCure": {
+      "name": "Cure de raisins",
+      "desc": "3 jours de raisins (Dr. Morse)"
+    },
+    "drySunFast": {
+      "name": "Sec 16h",
+      "desc": "Ni eau ni nourriture"
+    },
+    "ramadan": {
+      "name": "Ramadan",
+      "desc": "Jeûne de l'aube au coucher"
+    }
   }
 };
