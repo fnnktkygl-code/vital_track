@@ -15081,7 +15081,7 @@ if (typeof window !== "undefined") window.sanitizeWeightHistory = sanitizeWeight
 if (typeof window !== "undefined") window.initScreenshotProtection = initScreenshotProtection;
 if (typeof window !== "undefined") window.setScreenshotProtection = setScreenshotProtection;
 
-// ═══════ UNIVERSAL FLOATING GLOBAL TOOLTIP ENGINE (NO OVERFLOW CLIPPING, VIEWPORT CLAMPED) ═══════
+// ═══════ UNIVERSAL FLOATING GLOBAL TOOLTIP ENGINE (NO OVERFLOW CLIPPING, INSTANT DISMISS) ═══════
 function initGlobalFloatingTooltip() {
   if (typeof document === 'undefined') return;
 
@@ -15093,21 +15093,14 @@ function initGlobalFloatingTooltip() {
   }
 
   let activeTarget = null;
+  let pendingTarget = null;
   let showTimer = null;
 
-  function sanitize(root = document) {
-    if (!root || !root.querySelectorAll) return;
-    root.querySelectorAll('[title]').forEach(el => {
-      const txt = el.getAttribute('title');
-      if (txt && !el.hasAttribute('data-tooltip')) {
-        el.setAttribute('data-tooltip', txt);
-      }
-      el.removeAttribute('title');
-    });
-  }
-
   function showTooltip(el, text) {
-    if (!text || !el || !document.body.contains(el)) return;
+    if (!text || !el || !document.body.contains(el)) {
+      hideTooltip();
+      return;
+    }
     activeTarget = el;
     tooltipEl.textContent = text;
     tooltipEl.style.display = 'block';
@@ -15117,7 +15110,7 @@ function initGlobalFloatingTooltip() {
     const targetRect = el.getBoundingClientRect();
     const tipRect = tooltipEl.getBoundingClientRect();
 
-    const padding = 12;
+    const padding = 10;
     const gap = 8;
 
     // Calculate X centered horizontally on target
@@ -15147,45 +15140,84 @@ function initGlobalFloatingTooltip() {
 
   function hideTooltip() {
     activeTarget = null;
-    clearTimeout(showTimer);
+    pendingTarget = null;
+    if (showTimer) {
+      clearTimeout(showTimer);
+      showTimer = null;
+    }
     if (tooltipEl) {
       tooltipEl.classList.remove('visible');
+      tooltipEl.style.display = 'none';
     }
   }
 
-  // Delegation mouse events
-  document.addEventListener('mouseover', (e) => {
-    const target = e.target.closest('[data-tooltip], [title]');
-    if (!target) return;
+  // Pointermove handling: automatically detects entering or leaving tooltip targets
+  document.addEventListener('pointermove', (e) => {
+    const currentTarget = e.target ? e.target.closest('[data-tooltip], [title]') : null;
 
-    let text = target.getAttribute('data-tooltip');
-    if (!text && target.hasAttribute('title')) {
-      text = target.getAttribute('title');
-      target.setAttribute('data-tooltip', text);
-      target.removeAttribute('title');
+    if (!currentTarget) {
+      if (activeTarget || showTimer || pendingTarget) {
+        hideTooltip();
+      }
+      return;
     }
 
-    if (!text || !text.trim()) return;
+    if (activeTarget && activeTarget !== currentTarget && !activeTarget.contains(e.target)) {
+      hideTooltip();
+    }
 
-    clearTimeout(showTimer);
-    showTimer = setTimeout(() => {
-      showTooltip(target, text.trim());
-    }, 60);
+    if (activeTarget !== currentTarget && pendingTarget !== currentTarget) {
+      let text = currentTarget.getAttribute('data-tooltip');
+      if (!text && currentTarget.hasAttribute('title')) {
+        text = currentTarget.getAttribute('title');
+        currentTarget.setAttribute('data-tooltip', text);
+        currentTarget.removeAttribute('title');
+      }
+
+      if (text && text.trim()) {
+        pendingTarget = currentTarget;
+        if (showTimer) clearTimeout(showTimer);
+        showTimer = setTimeout(() => {
+          showTooltip(currentTarget, text.trim());
+        }, 80);
+      }
+    }
   }, { passive: true });
 
-  document.addEventListener('mouseout', (e) => {
-    const target = e.target.closest('[data-tooltip]');
-    if (target && target === activeTarget) {
+  // Pointerout handling
+  document.addEventListener('pointerout', (e) => {
+    const related = e.relatedTarget;
+    if (!related) {
+      hideTooltip();
+      return;
+    }
+    if (activeTarget && !activeTarget.contains(related)) {
+      hideTooltip();
+    }
+    if (pendingTarget && !pendingTarget.contains(related)) {
       hideTooltip();
     }
   }, { passive: true });
 
-  // Hide on scroll, touch, or click
-  window.addEventListener('scroll', hideTooltip, { passive: true });
-  document.addEventListener('click', hideTooltip, { passive: true });
+  // Hide instantly on scroll, resize, click, touch, keydown or blur
+  window.addEventListener('scroll', hideTooltip, { passive: true, capture: true });
+  window.addEventListener('resize', hideTooltip, { passive: true });
+  window.addEventListener('blur', hideTooltip, { passive: true });
+  document.addEventListener('pointerdown', hideTooltip, { passive: true });
+  document.addEventListener('keydown', hideTooltip, { passive: true });
   document.addEventListener('touchstart', hideTooltip, { passive: true });
 
-  // Observe DOM additions to strip native title attributes
+  function sanitize(root = document) {
+    if (!root || !root.querySelectorAll) return;
+    root.querySelectorAll('[title]').forEach(el => {
+      const txt = el.getAttribute('title');
+      if (txt && !el.hasAttribute('data-tooltip')) {
+        el.setAttribute('data-tooltip', txt);
+      }
+      el.removeAttribute('title');
+    });
+  }
+
   if (typeof MutationObserver !== 'undefined') {
     const observer = new MutationObserver((mutations) => {
       for (const m of mutations) {
@@ -15204,7 +15236,7 @@ function initGlobalFloatingTooltip() {
           });
         } else if (m.type === 'attributes' && m.attributeName === 'title') {
           const target = m.target;
-          const txt = target.getAttribute('title');
+          const txt = target?.getAttribute?.('title');
           if (txt) {
             target.setAttribute('data-tooltip', txt);
             target.removeAttribute('title');

@@ -594,18 +594,6 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
     justify-content: center;
     box-sizing: border-box;
   }
-
-  /* Safe Tooltip Positioning on Mobile */
-  .nav-right-actions [data-tooltip]::after {
-    bottom: auto !important;
-    top: calc(100% + 8px) !important;
-    left: auto !important;
-    right: 0 !important;
-    transform: translateY(4px) !important;
-  }
-  .nav-right-actions [data-tooltip]:hover::after {
-    transform: translateY(0) !important;
-  }
 }
 
 @media (max-width: 480px) {
@@ -3354,7 +3342,9 @@ body.dark-theme .chip-btn,
 #vitalGlobalTooltip {
   position: fixed;
   z-index: 999999;
-  pointer-events: none;
+  pointer-events: none !important;
+  user-select: none;
+  display: none;
   padding: 6px 12px;
   border-radius: 8px;
   background: rgba(15, 23, 42, 0.95);
@@ -3370,11 +3360,12 @@ body.dark-theme .chip-btn,
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
   opacity: 0;
   transform: translateY(4px);
-  transition: opacity 0.18s cubic-bezier(0.16, 1, 0.3, 1), transform 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 0.12s ease, transform 0.12s ease;
   will-change: transform, opacity;
 }
 
 #vitalGlobalTooltip.visible {
+  display: block;
   opacity: 1;
   transform: translateY(0);
 }
