@@ -5157,20 +5157,74 @@ function filterAndRenderHerbs() {
     return;
   }
 
+function getHerbQuickDose(herb, tFunc) {
+  if (!herb || !herb.posology) return null;
+  const p = herb.posology;
+
+  if (p.decoction) {
+    return {
+      icon: '🔥',
+      label: tFunc('materiaMedica.formDecoction', {}, 'Décoction'),
+      detail: p.decoction
+    };
+  }
+  if (p.infusion) {
+    return {
+      icon: '🫖',
+      label: tFunc('materiaMedica.formInfusion', {}, 'Infusion'),
+      detail: p.infusion
+    };
+  }
+  if (p.internalDrops) {
+    return {
+      icon: '🩸',
+      label: tFunc('materiaMedica.formDrops', {}, 'Gouttes'),
+      detail: p.internalDrops
+    };
+  }
+  if (p.tincture) {
+    return {
+      icon: '💧',
+      label: tFunc('materiaMedica.formTincture', {}, 'Teinture'),
+      detail: p.tincture
+    };
+  }
+  if (p.capsules) {
+    return {
+      icon: '💊',
+      label: tFunc('materiaMedica.formCapsules', {}, 'Gélules'),
+      detail: p.capsules
+    };
+  }
+  if (p.powder) {
+    return {
+      icon: '🥄',
+      label: tFunc('materiaMedica.formPowder', {}, 'Poudre'),
+      detail: p.powder
+    };
+  }
+  if (p.oil) {
+    return {
+      icon: '🫒',
+      label: tFunc('materiaMedica.formOil', {}, 'Huile'),
+      detail: p.oil
+    };
+  }
+  if (p.standardDosage) {
+    return {
+      icon: '📋',
+      label: tFunc('materiaMedica.formStandard', {}, 'Posologie'),
+      detail: p.standardDosage
+    };
+  }
+  return null;
+}
+
   grid.innerHTML = results.map(rawHerb => {
     const herb = getLocalizedHerb(rawHerb, lang);
     const chipClass = getTropismChipClass(herb.tropismBadge?.color, herb.tropismBadge?.label || herb.category);
     const plantImg = herb.image || `/plants/${herb.id === 'boldo-amazonie' ? 'boldo' : herb.id}.jpg`;
-
-    // Posologie courte pour aperçu
-    let quickDose = '';
-    if (herb.posology) {
-      if (herb.posology.decoction) quickDose = tFunc('materiaMedica.doseDecoction', {}, 'Décoction');
-      else if (herb.posology.infusion) quickDose = tFunc('materiaMedica.doseInfusion', {}, 'Infusion');
-      else if (herb.posology.internalDrops) quickDose = tFunc('materiaMedica.doseDrops', {}, 'Gouttes pures');
-      else if (herb.posology.capsules) quickDose = tFunc('materiaMedica.doseCapsules', {}, 'Gélules');
-      else if (herb.posology.powder) quickDose = tFunc('materiaMedica.dosePowder', {}, 'Poudre');
-    }
+    const quickDose = getHerbQuickDose(herb, tFunc);
 
     return `
       <div class="materia-apple-card" onclick="openHerbModal('${herb.id}')">
@@ -5199,7 +5253,8 @@ function filterAndRenderHerbs() {
 
           ${quickDose ? `
             <div class="materia-apple-card-dose">
-              <span>☕</span> <span>${tFunc('materiaMedica.usualDoseLabel', {}, 'Prise usuelle :')} <strong>${quickDose}</strong></span>
+              <span class="materia-apple-dose-pill">${quickDose.icon} ${esc(quickDose.label)}</span>
+              <span class="materia-dose-snippet" title="${esc(quickDose.detail)}">${esc(quickDose.detail)}</span>
             </div>
           ` : ''}
 
@@ -5280,15 +5335,7 @@ function setHerbFilterByHerbs(herbIds) {
     const herb = getLocalizedHerb(rawHerb, lang);
     const chipClass = getTropismChipClass(herb.tropismBadge?.color, herb.tropismBadge?.label || herb.category);
     const plantImg = herb.image || `/plants/${herb.id === 'boldo-amazonie' ? 'boldo' : herb.id}.jpg`;
-
-    let quickDose = '';
-    if (herb.posology) {
-      if (herb.posology.decoction) quickDose = tFunc('materiaMedica.doseDecoction', {}, 'Décoction');
-      else if (herb.posology.infusion) quickDose = tFunc('materiaMedica.doseInfusion', {}, 'Infusion');
-      else if (herb.posology.internalDrops) quickDose = tFunc('materiaMedica.doseDrops', {}, 'Gouttes pures');
-      else if (herb.posology.capsules) quickDose = tFunc('materiaMedica.doseCapsules', {}, 'Gélules');
-      else if (herb.posology.powder) quickDose = tFunc('materiaMedica.dosePowder', {}, 'Poudre');
-    }
+    const quickDose = getHerbQuickDose(herb, tFunc);
 
     return `
       <div class="materia-apple-card" onclick="openHerbModal('${herb.id}')">
@@ -5317,7 +5364,8 @@ function setHerbFilterByHerbs(herbIds) {
 
           ${quickDose ? `
             <div class="materia-apple-card-dose">
-              <span>☕</span> <span>${tFunc('materiaMedica.usualDoseLabel', {}, 'Prise usuelle :')} <strong>${quickDose}</strong></span>
+              <span class="materia-apple-dose-pill">${quickDose.icon} ${esc(quickDose.label)}</span>
+              <span class="materia-dose-snippet" title="${esc(quickDose.detail)}">${esc(quickDose.detail)}</span>
             </div>
           ` : ''}
 
