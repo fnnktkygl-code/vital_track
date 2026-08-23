@@ -354,7 +354,8 @@ export default {
     "livingIngredients": "Ingredientes vivos",
     "switchToMateriaTitle": "Farmacopea Amazónica y Plantas Medicinales",
     "switchToMateriaSub": "Explora 127 monografías fitoquímicas y remedios tradicionales de la selva tropical (Dra. Leslie Taylor).",
-    "switchToMateriaBtn": "Farmacopea"
+    "switchToMateriaBtn": "Farmacopea",
+    "videoDemoShort": "Video"
   },
   "userProfile": {
     "levelInitiated": "Iniciado Vitalista 🌱",
@@ -469,7 +470,8 @@ export default {
     "chipCellular": "Protección Celular y Energía",
     "chipPain": "Antiinflamatorio y Dolor",
     "chipPurification": "Purificación y Antiparasitario",
-    "askAIBtn": "+ Preguntar al Coach IA sobre esta planta"
+    "askAIBtn": "+ Preguntar al Coach IA sobre esta planta",
+    "filteredCount": "{count} / {total} plantas"
   },
   "fasting": {
     "pageTitle": "Ayuno y Fisiología Celular",

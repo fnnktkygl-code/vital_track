@@ -354,7 +354,8 @@ export default {
     "livingIngredients": "Living ingredients",
     "switchToMateriaTitle": "Amazonian Pharmacopeia & Medicinal Plants",
     "switchToMateriaSub": "Explore 127 phytochemical monographs and traditional rainforest remedies (Dr. Leslie Taylor).",
-    "switchToMateriaBtn": "Pharmacopeia"
+    "switchToMateriaBtn": "Pharmacopeia",
+    "videoDemoShort": "Video"
   },
   "userProfile": {
     "levelInitiated": "Vitalist Initiate 🌱",
@@ -469,7 +470,8 @@ export default {
     "chipCellular": "Cellular Protection & Energy",
     "chipPain": "Anti-inflammatory & Pain",
     "chipPurification": "Purification & Antiparasitic",
-    "askAIBtn": "+ Ask the AI Coach about this plant"
+    "askAIBtn": "+ Ask the AI Coach about this plant",
+    "filteredCount": "{count} / {total} herbs"
   },
   "fasting": {
     "pageTitle": "Fasting & Cellular Physiology",

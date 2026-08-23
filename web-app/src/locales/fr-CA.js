@@ -354,7 +354,8 @@ export default {
     "livingIngredients": "Ingrédients vivants",
     "switchToMateriaTitle": "Pharmacopée Amazonienne & Plantes Médicinales",
     "switchToMateriaSub": "Explorer 127 monographies phytochimiques et remèdes traditionnels de la forêt tropicale (Dr. Leslie Taylor).",
-    "switchToMateriaBtn": "Pharmacopée"
+    "switchToMateriaBtn": "Pharmacopée",
+    "videoDemoShort": "Vidéo"
   },
   "userProfile": {
     "levelInitiated": "Initié Vitaliste 🌱",
@@ -469,7 +470,8 @@ export default {
     "chipCellular": "Protection Cellulaire & Énergie",
     "chipPain": "Anti-inflammatoire & Douleur",
     "chipPurification": "Purification & Antiparasitaire",
-    "askAIBtn": "+ Interroger le Coach IA sur cette plante"
+    "askAIBtn": "+ Interroger le Coach IA sur cette plante",
+    "filteredCount": "{count} / {total} plantes"
   },
   "fasting": {
     "pageTitle": "Jeûne & Physiologie Cellulaire",

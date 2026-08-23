@@ -8,8 +8,14 @@
  * Totalement internationalisé via le moteur i18n (FR, EN, ES, FR-CA).
  */
 
-import { VITALIST_RECIPES, RECIPE_AUTHORS, RECIPE_TAGS, POPULAR_INGREDIENTS } from './data/recipesData.js';
-import { t } from './i18n.js';
+import { VITALIST_RECIPES, RECIPE_AUTHORS, RECIPE_TAGS } from './data/recipesData.js';
+import { 
+  getLocalizedRecipe, 
+  getLocalizedPopularIngredients, 
+  getLocalizedTraditionFilters, 
+  getLocalizedAuthorConfig 
+} from './data/recipesI18n.js';
+import { t, getLanguage } from './i18n.js';
 import './styles/recipesPagination.css';
 import './styles/recipesAppleStyle.css';
 import './styles/materiaAppleStyle.css';
@@ -180,29 +186,14 @@ function getMatchingIngredientsCount(recipe) {
   return count;
 }
 
-// Couleurs et badges spécifiques aux auteurs
-const AUTHOR_CONFIG = {
-  "Dr. Sebi": { dot: "#10b981", badgeBg: "rgba(16,185,129,0.12)", badgeColor: "#059669", label: "Dr. Sebi", shortTag: "Électrique (Dr Sebi)" },
-  "Prof. Arnold Ehret": { dot: "#3b82f6", badgeBg: "rgba(59,130,246,0.12)", badgeColor: "#2563eb", label: "Prof. Arnold Ehret", shortTag: "Sans mucus (Ehret)" },
-  "Dr. Robert Morse": { dot: "#10b981", badgeBg: "rgba(16,185,129,0.12)", badgeColor: "#059669", label: "Dr. Robert Morse", shortTag: "Détox rénale (Morse)" },
-  "David Wolfe": { dot: "#f97316", badgeBg: "rgba(249,115,22,0.12)", badgeColor: "#ea580c", label: "David Wolfe", shortTag: "Cru / vivant (Wolfe)" },
-  "Dr. John Kallas": { dot: "#10b981", badgeBg: "rgba(16,185,129,0.12)", badgeColor: "#059669", label: "Dr. John Kallas", shortTag: "Plantes sauvages (Kallas)" },
-  "Dr. John R. Christopher": { dot: "#f59e0b", badgeBg: "rgba(217,119,6,0.12)", badgeColor: "#d97706", label: "Dr. John Christopher", shortTag: "Phytothérapie (Christopher)" }
-};
-
-const TRADITION_FILTERS = [
-  { id: "all", label: "Toutes les recettes" },
-  { id: "Électrique", label: "Électrique (Dr Sebi)" },
-  { id: "Sans Mucus", label: "Sans mucus (Ehret)" },
-  { id: "Drainage Rénal", label: "Détox rénale (Morse)" },
-  { id: "100% Cru", label: "Cru / vivant (Wolfe)" },
-  { id: "Plantes Sauvages", label: "Plantes sauvages (Kallas)" },
-  { id: "Santé Intestinale", label: "Phytothérapie (Christopher)" }
-];
-
 export function renderRecipesView() {
   const container = document.getElementById('recipesContainer');
   if (!container) return;
+
+  const lang = getLanguage();
+  const authorConfig = getLocalizedAuthorConfig(lang);
+  const popularIngredients = getLocalizedPopularIngredients(lang);
+  const traditionFilters = getLocalizedTraditionFilters(lang);
 
   const filtered = getFilteredRecipes();
   const hasActiveFilters = _recipeSearchQuery || _selectedAuthor !== 'all' || _selectedTag !== 'all' || _selectedIngredients.size > 0;
@@ -287,26 +278,26 @@ export function renderRecipesView() {
         ${_selectedIngredients.size > 1 ? `
           <div style="display:inline-flex; background:var(--surface-2); border:1px solid var(--border); border-radius:12px; padding:2px; font-size:0.72rem;">
             <button type="button" style="padding:2px 8px; border-radius:10px; border:none; cursor:pointer; font-weight:700; background:${_ingredientMatchMode === 'ANY' ? 'var(--accent)' : 'transparent'}; color:${_ingredientMatchMode === 'ANY' ? '#fff' : 'var(--text-dim)'};" onclick="setIngredientMatchMode('ANY')">
-              OR
+              ${lang === 'es' ? 'O' : (lang === 'en' ? 'OR' : 'OU')}
             </button>
             <button type="button" style="padding:2px 8px; border-radius:10px; border:none; cursor:pointer; font-weight:700; background:${_ingredientMatchMode === 'ALL' ? 'var(--accent)' : 'transparent'}; color:${_ingredientMatchMode === 'ALL' ? '#fff' : 'var(--text-dim)'};" onclick="setIngredientMatchMode('ALL')">
-              AND
+              ${lang === 'es' ? 'Y' : (lang === 'en' ? 'AND' : 'ET')}
             </button>
           </div>
         ` : ''}
       </div>
 
       <div class="recipe-apple-ing-grid">
-        ${POPULAR_INGREDIENTS.map(ing => {
-          const isSelected = _selectedIngredients.has(ing);
+        ${popularIngredients.map(ingObj => {
+          const isSelected = _selectedIngredients.has(ingObj.raw);
           return `
             <button 
               type="button" 
               class="recipe-apple-ing-pill ${isSelected ? 'active' : ''}"
-              onclick="toggleRecipeIngredientFilter('${esc(ing)}')"
+              onclick="toggleRecipeIngredientFilter('${esc(ingObj.raw)}')"
             >
               <span>${isSelected ? '✓' : '+'}</span>
-              <span>${esc(ing)}</span>
+              <span>${esc(ingObj.label)}</span>
             </button>
           `;
         }).join('')}
@@ -327,8 +318,8 @@ export function renderRecipesView() {
         >
           ${t('recipes.allAuthors', {}, 'Tous les auteurs')}
         </button>
-        ${Object.keys(AUTHOR_CONFIG).map(authorName => {
-          const cfg = AUTHOR_CONFIG[authorName];
+        ${Object.keys(authorConfig).map(authorName => {
+          const cfg = authorConfig[authorName];
           const isActive = _selectedAuthor === authorName;
           return `
             <button 
@@ -348,7 +339,7 @@ export function renderRecipesView() {
         ${t('recipes.filterByTradition', {}, 'Filtrer par tradition')}
       </div>
       <div class="recipe-apple-pills-row">
-        ${TRADITION_FILTERS.map(tf => {
+        ${traditionFilters.map(tf => {
           const isActive = _selectedTag === tf.id;
           return `
             <button 
@@ -385,7 +376,7 @@ export function renderRecipesView() {
       </div>
     ` : `
       <div class="recipe-apple-grid">
-        ${paginatedRecipes.map(recipe => renderRecipeCard(recipe)).join('')}
+        ${paginatedRecipes.map(rawRecipe => renderRecipeCard(rawRecipe, lang)).join('')}
       </div>
 
       <!-- COMPOSANT DE PAGINATION COMPLET -->
@@ -394,13 +385,21 @@ export function renderRecipesView() {
   `;
 
   container.innerHTML = html;
+
+  // Si la modale de recette est actuellement ouverte, rafraîchir son contenu dans la nouvelle langue
+  const modalOverlay = document.getElementById('recipeDetailModal');
+  if (modalOverlay && modalOverlay.classList.contains('open') && _activeModalRecipe) {
+    renderModalContent();
+  }
 }
 
 /**
  * Génère la carte Apple épurée d'une recette
  */
-function renderRecipeCard(recipe) {
-  const authorCfg = AUTHOR_CONFIG[recipe.author] || {
+function renderRecipeCard(rawRecipe, lang = 'fr') {
+  const recipe = getLocalizedRecipe(rawRecipe, lang);
+  const authorConfig = getLocalizedAuthorConfig(lang);
+  const authorCfg = authorConfig[rawRecipe.author] || authorConfig[recipe.author] || {
     badgeBg: "rgba(148,163,184,0.12)",
     badgeColor: "var(--text-dim)",
     label: recipe.author
@@ -422,7 +421,7 @@ function renderRecipeCard(recipe) {
             </span>
             ${recipe.videoUrl ? `
               <span class="recipe-apple-video-badge">
-                <i class="ri-youtube-fill"></i> Vidéo
+                <i class="ri-youtube-fill"></i> ${t('recipes.videoDemoShort', {}, 'Vidéo')}
               </span>
             ` : ''}
           </div>
@@ -646,11 +645,13 @@ function renderModalContent() {
   const modalOverlay = document.getElementById('recipeDetailModal');
   if (!modalOverlay || !_activeModalRecipe) return;
 
-  const r = _activeModalRecipe;
-  const baseServings = r.servings || 4;
+  const lang = getLanguage();
+  const r = getLocalizedRecipe(_activeModalRecipe, lang);
+  const authorConfig = getLocalizedAuthorConfig(lang);
+  const baseServings = _activeModalRecipe.servings || r.servings || 4;
   const multiplier = _currentModalServings / baseServings;
 
-  const authorCfg = AUTHOR_CONFIG[r.author] || {
+  const authorCfg = authorConfig[_activeModalRecipe.author] || authorConfig[r.author] || {
     badgeBg: "rgba(16,185,129,0.12)",
     badgeColor: "#059669",
     label: r.author
@@ -826,14 +827,17 @@ export function closeRecipeModal() {
 }
 
 export function copyRecipeToClipboard(recipeId) {
-  const recipe = VITALIST_RECIPES.find(r => r.id === recipeId);
-  if (!recipe) return;
+  const rawRecipe = VITALIST_RECIPES.find(r => r.id === recipeId);
+  if (!rawRecipe) return;
+
+  const lang = getLanguage();
+  const recipe = getLocalizedRecipe(rawRecipe, lang);
 
   const text = `🍽️ ${recipe.title} (${recipe.subtitle})\n` +
     `👨‍⚕️ ${t('recipes.filterByAuthor', {}, 'Auteur')} : ${recipe.author} — Source : ${recipe.bookReference}\n` +
     `⏱️ ${t('recipes.prepTime', {}, 'Préparation')} : ${recipe.prepTime} | ${recipe.cookTime} | PRAL : ${recipe.pralScore}\n\n` +
-    `🥗 ${t('recipes.ingredientsTitle', {}, 'Ingrédients')} (${_currentModalServings} pers.) :\n` +
-    recipe.ingredients.map(i => `- ${((i.quantity * (_currentModalServings / (recipe.servings || 4)))).toFixed(1)} ${i.unit} ${i.name} (${i.note || ''})`).join('\n') +
+    `🥗 ${t('recipes.ingredientsTitle', {}, 'Ingrédients')} (${_currentModalServings} ${t('recipes.pers', {}, 'pers.')}) :\n` +
+    recipe.ingredients.map(i => `- ${((i.quantity * (_currentModalServings / (rawRecipe.servings || 4)))).toFixed(1)} ${i.unit} ${i.name} (${i.note || ''})`).join('\n') +
     `\n\n👨‍🍳 ${t('recipes.instructionsTitle', {}, 'Instructions')} :\n` +
     recipe.instructions.map((step, idx) => `${idx + 1}. ${step}`).join('\n') +
     `\n\n🌿 ${t('recipes.vitalistAction', {}, 'Action Vitaliste')} : ${recipe.vitalistAction}`;
@@ -850,8 +854,11 @@ export function copyRecipeToClipboard(recipeId) {
 }
 
 export function addRecipeToFavorites(recipeId) {
-  const recipe = VITALIST_RECIPES.find(r => r.id === recipeId);
-  if (!recipe) return;
+  const rawRecipe = VITALIST_RECIPES.find(r => r.id === recipeId);
+  if (!rawRecipe) return;
+
+  const lang = getLanguage();
+  const recipe = getLocalizedRecipe(rawRecipe, lang);
 
   if (window.showToast) {
     window.showToast(`❤️ ${recipe.title} — ${t('recipes.saveToFavoritesBtn', {}, 'Enregistré dans mes favoris')}`, 'success');

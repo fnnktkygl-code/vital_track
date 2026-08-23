@@ -1168,6 +1168,12 @@ async function initApp() {
       if (window.renderRaintreeExplorer) window.renderRaintreeExplorer();
     } else if (activePageId === 'meals') {
       renderMeals();
+    }
+
+    // Si la modale de plante est ouverte, rafraîchir son contenu dans la nouvelle langue
+    const herbModal = document.getElementById('herbModal');
+    if (herbModal && (herbModal.style.display === 'flex' || herbModal.style.display === 'block') && _currentSelectedHerb) {
+      openHerbModal(_currentSelectedHerb.id);
     } else if (activePageId === 'calendar') {
       if (window.renderStrip) window.renderStrip();
       if (window.renderDay) window.renderDay();
@@ -5131,9 +5137,9 @@ function filterAndRenderHerbs() {
   const countEl = document.getElementById('herbResultCount');
   if (countEl) {
     if (results.length < RAINTREE_HERBS.length && results.length > 0) {
-      countEl.textContent = `${results.length} plantes — extrait filtré sur ${RAINTREE_HERBS.length} répertoriées`;
+      countEl.textContent = tFunc('materiaMedica.filteredCount', { count: results.length, total: RAINTREE_HERBS.length }, `${results.length} / ${RAINTREE_HERBS.length} ${tFunc('materiaMedica.herbsLabel', {}, 'Plantes')}`);
     } else {
-      countEl.textContent = `${results.length} plantes médicinales répertoriées`;
+      countEl.textContent = tFunc('materiaMedica.herbsCountListed', { count: results.length, plural: results.length > 1 ? 's' : '' }, `${results.length} plantes médicinales répertoriées`);
     }
   }
 
