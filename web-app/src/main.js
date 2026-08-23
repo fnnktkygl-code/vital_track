@@ -5775,7 +5775,7 @@ function switchAnalyzedFoodInModal(idx) {
 };
 
 function confirmAddMealFromModal() {
-  closeFoodModal();
+  document.getElementById('foodModal')?.classList.remove('open');
   confirmAddMeal();
 };
 
@@ -5784,6 +5784,7 @@ function openFoodModalFromSelection(id) {
   if (!item) return;
   const dbMatch = vitalDb.find(f => f.id === id || (f.names || []).some(n => n.toLowerCase() === (item.name || '').toLowerCase()));
   const fullItem = dbMatch ? { ...dbMatch, ...item } : item;
+  closeAddMealModal();
   openFoodModal({
     ...fullItem,
     isMealSelection: true,
@@ -6058,7 +6059,11 @@ function addFoodToMealFromModal(idx) {
 
 function closeFoodModal(e) {
   if (!e || e.target === document.getElementById('foodModal')) {
+    const wasMealSelection = currentModalFood?.isMealSelection === true;
     document.getElementById('foodModal').classList.remove('open');
+    if (wasMealSelection && selectedMealFoods.length > 0) {
+      document.getElementById('addMealModal')?.classList.add('open');
+    }
   }
 };
 
@@ -7010,6 +7015,7 @@ async function analyzeDishWithAI() {
     if (input) input.value = '';
 
     if (processedItems.length > 0) {
+      closeAddMealModal();
       openFoodModal({
         ...processedItems[0],
         isMealSelection: true,
@@ -7141,6 +7147,7 @@ async function askAIToAddMealFood(query) {
     if (searchInput) searchInput.value = '';
 
     if (processedItems.length > 0) {
+      closeAddMealModal();
       openFoodModal({
         ...processedItems[0],
         isMealSelection: true,
@@ -7153,8 +7160,6 @@ async function askAIToAddMealFood(query) {
     showToast("Erreur lors de l'analyse IA.", 'error');
   }
 };
-
-
 
 function searchEditMealFoods(query) {
   const q = (query || '').toLowerCase().trim();
@@ -7201,6 +7206,7 @@ function selectMealFood(idx) {
     selectedMealFoods.push(target);
   }
   renderSelectedMealFoods();
+  closeAddMealModal();
   openFoodModal({
     ...item,
     ...target,
@@ -7230,6 +7236,8 @@ function confirmAddMeal() {
   const meals = store.get('meals', []);
   selectedMealFoods.forEach(f => meals.push({ ...f, timestamp: Date.now() }));
   store.set('meals', meals);
+  selectedMealFoods = [];
+  renderSelectedMealFoods();
   closeAddMealModal();
   renderMeals();
   renderDashboard();
