@@ -1240,9 +1240,9 @@
             <div class="sub" data-i18n="calendar.pageSubtitle">Suivi de ton programme guidé</div>
           </div>
         </div>
-        <div class="topbar-actions">
-          <button class="icon-btn" onclick="window.openAddMealModal()" data-tooltip="Ajouter un repas manuellement" title="Ajouter un repas"><i class="ri-add-line"></i></button>
-          <button class="icon-btn" onclick="window.promptAIPlan ? window.promptAIPlan() : promptAIPlan()" data-tooltip="Générer un plan avec l'IA" title="Générer un plan IA" style="background:linear-gradient(135deg,var(--accent),#047857);color:#ffffff;border:none;box-shadow:0 3px 10px rgba(5,150,105,0.3);"><i class="ri-magic-line"></i></button>
+        <div class="topbar-actions" style="display:flex; align-items:center; gap:8px;">
+          <button type="button" class="app-btn-secondary" onclick="window.openAddMealModal()" data-tooltip="Ajouter un repas manuellement" title="Ajouter un repas" style="padding:7px 12px; font-size:0.85rem; border-radius:12px; height:38px; display:inline-flex; align-items:center; justify-content:center;"><i class="ri-add-line" style="font-size:1.1rem;"></i></button>
+          <button type="button" class="app-btn-primary" onclick="window.promptAIPlan ? window.promptAIPlan() : promptAIPlan()" data-tooltip="Générer un plan avec l'IA" title="Générer un plan IA" style="padding:7px 14px; font-size:0.85rem; border-radius:12px; height:38px; display:inline-flex; align-items:center; gap:6px; font-weight:700;"><i class="ri-magic-line"></i> <span>Plan IA</span></button>
         </div>
       </header>
 
@@ -2246,7 +2246,7 @@
         <div class="settings-section-card">
           <div class="settings-section-header">
             <div class="settings-section-title-wrap">
-              <div class="settings-section-icon"><i class="ri-brain-2-line"></i></div>
+              <div class="settings-section-icon"><i class="ri-brain-line"></i></div>
               <div>
                 <h3 class="settings-section-title" data-i18n="settings.aiContextTitle">Climat, Allergies &amp; Directives Coach IA</h3>
                 <p class="settings-section-desc" data-i18n="settings.aiContextDesc">Règles de sécurité absolues et consignes libres mémorisées par l'intelligence artificielle.</p>
@@ -2300,18 +2300,18 @@
           </div>
 
           <!-- Live AI Context Inspector -->
-          <div style="background:var(--surface-2); border:1px solid var(--border); border-radius:14px; padding:16px;">
+          <div style="background:var(--surface-2); border:1px solid var(--border); border-radius:16px; padding:18px;">
             <div style="display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="toggleAiPreviewBox()">
-              <div style="display:flex; align-items:center; gap:8px;">
-                <i class="ri-terminal-box-line" style="color:#34d399; font-size:1.1rem;"></i>
-                <h4 style="font-size:0.88rem; font-weight:700; color:#cbd5e1; margin:0;" data-i18n="settings.transparencyConsoleTitle">
+              <div style="display:flex; align-items:center; gap:10px;">
+                <div style="width:32px; height:32px; border-radius:10px; background:rgba(52,211,153,0.15); color:#059669; display:flex; align-items:center; justify-content:center; font-size:1.1rem;"><i class="ri-terminal-box-fill"></i></div>
+                <h4 style="font-size:0.92rem; font-weight:800; color:var(--text); margin:0;" data-i18n="settings.transparencyConsoleTitle">
                   Console de Transparence : Bio-Contexte IA injecté en direct
                 </h4>
               </div>
-              <span id="aiPreviewChevron" style="font-size:1.1rem; color:var(--text-dim); transition:transform 0.2s;"><i class="ri-arrow-down-s-line"></i></span>
+              <span id="aiPreviewChevron" style="font-size:1.2rem; color:var(--text-dim); transition:transform 0.2s;"><i class="ri-arrow-down-s-line"></i></span>
             </div>
-            <p style="font-size:0.76rem; color:var(--text-dim); margin:6px 0 10px 0;" data-i18n="settings.transparencyConsoleDesc">Voici le prompt contextuel complet injecté en arrière-plan à chaque requête IA pour garantir un coaching sur-mesure.</p>
-            <div id="aiPreviewBox" class="ai-preview-box" style="font-family:monospace; font-size:0.78rem; line-height:1.5; color:#34d399; background:rgba(0,0,0,0.4); padding:12px; border-radius:8px; border:1px solid rgba(52,211,153,0.2);"></div>
+            <p style="font-size:0.78rem; color:var(--text-dim); margin:8px 0 12px 0;" data-i18n="settings.transparencyConsoleDesc">Voici le prompt contextuel complet injecté en arrière-plan à chaque requête IA pour garantir un coaching sur-mesure.</p>
+            <div id="aiPreviewBox" class="ai-preview-box" style="font-family:'SFMono-Regular', Consolas, Menlo, Monaco, monospace; font-size:0.8rem; line-height:1.6; color:#4ade80; background:#0b1120; padding:16px; border-radius:12px; border:1px solid #1e293b; box-shadow:inset 0 2px 8px rgba(0,0,0,0.6); overflow-x:auto;"></div>
           </div>
         </div>
       </div>
