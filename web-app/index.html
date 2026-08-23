@@ -16,7 +16,7 @@
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;600&family=IBM+Plex+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800;900&family=Fraunces:opsz,wght@9..144,500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;600&family=IBM+Plex+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
   <link rel="stylesheet" href="/src/style.css">
   <link rel="stylesheet" href="/src/calendar-legacy.css">
@@ -575,6 +575,38 @@
       </div>
 
       <div style="display:flex; flex-direction:column; gap:24px; margin-top:24px;">
+        
+        <!-- ═══════ BANDEAU CALENDRIER HEBDO & ROUTINE QUOTIDIENNE (Apple x Kawaii) ═══════ -->
+        <div class="dash-card glass-card" id="dashStripCalendarCard" style="padding:20px; border-radius:24px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; border-bottom:1px solid var(--border); padding-bottom:12px; margin-bottom:14px;">
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div style="width:40px; height:40px; border-radius:14px; background:linear-gradient(135deg, #059669, #fbbf24); display:flex; align-items:center; justify-content:center; font-size:1.2rem; box-shadow:0 4px 12px rgba(5,150,105,0.25);">
+                🍙
+              </div>
+              <div>
+                <h3 style="margin:0; font-size:1rem; font-weight:800; color:var(--text);" data-i18n="dashboard.stripTitle">Plan Alimentaire & Calendrier de Transition</h3>
+                <p style="margin:2px 0 0 0; font-size:0.78rem; color:var(--text-dim);" data-i18n="dashboard.stripSubtitle">Suivi hebdomadaire selon les directives vitalistes</p>
+              </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span id="stripActiveDateBadge" style="font-size:0.78rem; font-weight:800; color:var(--accent); background:var(--accent-glow); padding:4px 12px; border-radius:50px; border:1px solid rgba(16,185,129,0.3);">Dimanche 23 août</span>
+              <button type="button" class="app-btn-secondary" onclick="window.refreshDailyStripRoutine && window.refreshDailyStripRoutine()" style="padding:6px 12px; font-size:0.78rem;" title="Synchroniser">
+                <i class="ri-refresh-line"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Strip Days Scrollbar -->
+          <div class="strip-days-scroll-container" id="stripDaysContainer" style="display:flex; align-items:center; gap:8px; overflow-x:auto; padding-bottom:8px; margin-bottom:14px;">
+            <!-- Injected dynamically via JS -->
+          </div>
+
+          <!-- Connected Daily Routine Tasks -->
+          <div id="stripDailyRoutineBox" class="strip-routine-box" style="background:var(--surface-2); border-radius:18px; border:1px solid var(--border); padding:14px; display:flex; flex-direction:column; gap:10px;">
+            <!-- Injected dynamically via JS -->
+          </div>
+        </div>
+
         <!-- Weight Tracker -->
         <div class="dash-card glass" id="dashWeightCard">
           <div class="card-head" style="margin-bottom:12px;">
@@ -2663,8 +2695,55 @@
       
       <div class="weight-modal-form">
         <div>
-          <label style="font-size:0.85rem;color:var(--text-dim);display:block;margin-bottom:6px">Date de la pesée :</label>
-          <input type="date" id="weightDateInput" class="form-input">
+          <label style="font-size:0.85rem;color:var(--text-dim);display:block;margin-bottom:6px" data-i18n="weight.dateLabel">Date de la pesée :</label>
+          <button type="button" onclick="window.toggleWeightDatePickerPop && window.toggleWeightDatePickerPop()" id="weightDatePickerBtn" class="form-input" style="width:100%; display:flex; align-items:center; justify-content:space-between; text-align:left; cursor:pointer; font-weight:700; background:rgba(5,150,105,0.06); border:1.5px solid var(--accent); color:var(--text);">
+            <span style="display:inline-flex; align-items:center; gap:8px;">
+              <span>📅</span>
+              <span id="weightDateDisplayVal">Aujourd'hui</span>
+            </span>
+            <span id="weightDatePopArrow" style="transition:transform 0.2s var(--apple-spring);">▾</span>
+          </button>
+          <input type="hidden" id="weightDateInput" value="">
+
+          <!-- Floating Pop-over Calendar with 1-Click Year Dropdown (2015-2030) -->
+          <div id="weightDatePopBox" class="glass-card" style="display:none; margin-top:8px; padding:14px; border-radius:20px; border:1px solid var(--border); box-shadow:0 12px 32px rgba(0,0,0,0.4); flex-direction:column; gap:10px;">
+            
+            <!-- Quick Chips -->
+            <div style="display:flex; align-items:center; gap:6px; overflow-x:auto; padding-bottom:4px;">
+              <button type="button" onclick="window.setWeightDateQuick && window.setWeightDateQuick(0)" class="chip-btn" style="padding:4px 10px; font-size:0.75rem; font-weight:800; background:var(--accent); color:#fff; border:none; border-radius:12px;">Aujourd'hui</button>
+              <button type="button" onclick="window.setWeightDateQuick && window.setWeightDateQuick(-1)" class="chip-btn" style="padding:4px 10px; font-size:0.75rem; font-weight:600; border-radius:12px;">Hier</button>
+              <button type="button" onclick="window.setWeightDateQuick && window.setWeightDateQuick(-2)" class="chip-btn" style="padding:4px 10px; font-size:0.75rem; font-weight:600; border-radius:12px;">Avant-hier</button>
+              <button type="button" onclick="window.setWeightDateExact && window.setWeightDateExact(2017, 5, 17)" class="chip-btn" style="padding:4px 10px; font-size:0.75rem; font-weight:800; background:rgba(245,158,11,0.15); color:#f59e0b; border:1px solid rgba(245,158,11,0.3); border-radius:12px;">⚡ 17 Juin 2017</button>
+            </div>
+
+            <!-- Month & Year Navigation Bar with 1-Click Year Dropdown Button -->
+            <div style="display:flex; align-items:center; justify-content:space-between; background:var(--surface-2); padding:6px 10px; border-radius:14px; border:1px solid var(--border);">
+              <div style="display:flex; align-items:center; gap:4px;">
+                <button type="button" onclick="window.weightPopPrevYear && window.weightPopPrevYear()" class="icon-btn-sm" style="padding:4px 8px; font-size:0.75rem; cursor:pointer; background:transparent; border:none; color:var(--text);" title="-1 An">⏮</button>
+                <button type="button" onclick="window.weightPopPrevMonth && window.weightPopPrevMonth()" class="icon-btn-sm" style="padding:4px 8px; font-size:0.75rem; cursor:pointer; background:transparent; border:none; color:var(--text);">◄</button>
+              </div>
+
+              <!-- Clickable Year Button Triggering 2015-2030 Grid -->
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span id="weightPopMonthTxt" style="font-size:0.82rem; font-weight:800; color:var(--text);">Août</span>
+                <button type="button" onclick="window.toggleWeightPopYearGrid && window.toggleWeightPopYearGrid()" id="weightPopYearBtn" style="padding:3px 8px; border-radius:10px; background:rgba(16,185,129,0.15); color:var(--accent); font-weight:800; font-size:0.82rem; border:1px solid rgba(16,185,129,0.3); cursor:pointer; display:inline-flex; align-items:center; gap:4px; transition:all 0.2s var(--apple-spring);" title="Cliquer pour choisir l'année directement (1 clic)">
+                  <span id="weightPopYearTxt">2026</span>
+                  <span style="font-size:0.65rem;">▼</span>
+                </button>
+              </div>
+
+              <div style="display:flex; align-items:center; gap:4px;">
+                <button type="button" onclick="window.weightPopNextMonth && window.weightPopNextMonth()" class="icon-btn-sm" style="padding:4px 8px; font-size:0.75rem; cursor:pointer; background:transparent; border:none; color:var(--text);">►</button>
+                <button type="button" onclick="window.weightPopNextYear && window.weightPopNextYear()" class="icon-btn-sm" style="padding:4px 8px; font-size:0.75rem; cursor:pointer; background:transparent; border:none; color:var(--text);" title="+1 An">⏭</button>
+              </div>
+            </div>
+
+            <!-- Dynamic Calendar Grid Container (Month Days OR 1-Click Year Selector Grid) -->
+            <div id="weightPopCalendarContainer" style="min-height:160px;">
+              <!-- Populated via JS -->
+            </div>
+
+          </div>
         </div>
 
         <div>

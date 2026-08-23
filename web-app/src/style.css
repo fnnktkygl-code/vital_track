@@ -18,12 +18,19 @@
   --purple: #8b5cf6;
   --radius: 20px;
   --radius-sm: 12px;
-  --font: 'Outfit', sans-serif;
-  --font-body: 'Inter', sans-serif;
+  --font: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --shadow: 0 4px 20px rgba(0,0,0,0.35);
   --shadow-sm: 0 2px 8px rgba(0,0,0,0.2);
   --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
   --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --app-green: #059669;
+  --app-green-hover: #047857;
+  --app-green-light: #ecfdf5;
+  --app-green-glow: rgba(5, 150, 105, 0.25);
+  --speed-factor: 1.0;
+  --apple-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --kawaii-bounce: cubic-bezier(0.68, -0.6, 0.32, 1.6);
   --surface: #121b27;
   --surface-2: #0e1622;
   --surface-3: #1a2636;
@@ -64,6 +71,272 @@
   --input-text: #0F172A;
   --modal-bg: #FFFFFF;
   --badge-bg: rgba(0, 0, 0, 0.04);
+}
+
+/* ═══════ UNIFIED DESIGN SYSTEM UI TOKENS (Apple x Kawaii) ═══════ */
+.app-close-btn,
+.modal-close,
+.modal-close-btn,
+.modal-close-unified {
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  min-height: 36px !important;
+  border-radius: 9999px !important;
+  background-color: #f1f5f9 !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #334155 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-weight: 800 !important;
+  font-size: 1rem !important;
+  transition: all calc(0.2s * var(--speed-factor, 1)) var(--apple-spring) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+  cursor: pointer !important;
+  z-index: 50 !important;
+  text-decoration: none !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+  position: absolute;
+  top: 14px;
+  right: 14px;
+}
+
+[data-theme="dark"] .app-close-btn,
+:root:not([data-theme="light"]) .app-close-btn,
+[data-theme="dark"] .modal-close,
+:root:not([data-theme="light"]) .modal-close,
+[data-theme="dark"] .modal-close-btn,
+:root:not([data-theme="light"]) .modal-close-btn,
+[data-theme="dark"] .modal-close-unified,
+:root:not([data-theme="light"]) .modal-close-unified {
+  background-color: #1e293b !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: #e2e8f0 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+}
+
+.app-close-btn:hover,
+.modal-close:hover,
+.modal-close-btn:hover,
+.modal-close-unified:hover {
+  background-color: #e2e8f0 !important;
+  color: #0f172a !important;
+  transform: scale(1.08) rotate(90deg) !important;
+}
+
+[data-theme="dark"] .app-close-btn:hover,
+:root:not([data-theme="light"]) .app-close-btn:hover,
+[data-theme="dark"] .modal-close:hover,
+:root:not([data-theme="light"]) .modal-close:hover,
+[data-theme="dark"] .modal-close-btn:hover,
+:root:not([data-theme="light"]) .modal-close-btn:hover,
+[data-theme="dark"] .modal-close-unified:hover,
+:root:not([data-theme="light"]) .modal-close-unified:hover {
+  background-color: #334155 !important;
+  color: #ffffff !important;
+}
+
+.app-close-btn:active,
+.modal-close:active,
+.modal-close-btn:active,
+.modal-close-unified:active {
+  transform: scale(0.92) !important;
+}
+
+.app-btn-primary {
+  background-color: #059669 !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  font-size: 0.85rem !important;
+  padding: 10px 20px !important;
+  border-radius: 16px !important;
+  border: none !important;
+  box-shadow: 0 4px 14px rgba(5, 150, 105, 0.3) !important;
+  transition: all calc(0.2s * var(--speed-factor, 1)) var(--apple-spring) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  cursor: pointer !important;
+  text-decoration: none !important;
+  font-family: var(--font) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.app-btn-primary:hover {
+  background-color: #047857 !important;
+  transform: translateY(-1px) scale(1.02) !important;
+  box-shadow: 0 6px 20px rgba(5, 150, 105, 0.4) !important;
+  color: #ffffff !important;
+}
+
+.app-btn-primary:active {
+  transform: scale(0.96) !important;
+}
+
+.app-btn-secondary {
+  background-color: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #334155 !important;
+  font-weight: 700 !important;
+  font-size: 0.85rem !important;
+  padding: 10px 18px !important;
+  border-radius: 16px !important;
+  transition: all calc(0.2s * var(--speed-factor, 1)) var(--apple-spring) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  cursor: pointer !important;
+  text-decoration: none !important;
+  font-family: var(--font) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+[data-theme="dark"] .app-btn-secondary,
+:root:not([data-theme="light"]) .app-btn-secondary {
+  background-color: #0f172a !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: #cbd5e1 !important;
+}
+
+.app-btn-secondary:hover {
+  background-color: #f8fafc !important;
+  border-color: #94a3b8 !important;
+  color: #0f172a !important;
+  transform: translateY(-1px) !important;
+}
+
+[data-theme="dark"] .app-btn-secondary:hover,
+:root:not([data-theme="light"]) .app-btn-secondary:hover {
+  background-color: #1e293b !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  color: #ffffff !important;
+}
+
+.app-btn-secondary:active {
+  transform: scale(0.96) !important;
+}
+
+/* Glassmorphism Cards */
+.glass-card,
+.modal-content.glass,
+.modal-card.glass {
+  background: rgba(15, 23, 42, 0.88) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.4) !important;
+}
+
+[data-theme="light"] .glass-card,
+[data-theme="light"] .modal-content.glass,
+[data-theme="light"] .modal-card.glass {
+  background: rgba(255, 255, 255, 0.94) !important;
+  border: 1px solid rgba(148, 163, 184, 0.25) !important;
+  box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.08) !important;
+}
+
+.glass-card:hover {
+  border-color: rgba(16, 185, 129, 0.35) !important;
+  box-shadow: 0 15px 40px -5px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Speed Controlled Helper */
+.speed-controlled * {
+  animation-duration: calc(var(--anim-base-duration, 1s) * var(--speed-factor, 1)) !important;
+  transition-duration: calc(var(--trans-base-duration, 0.3s) * var(--speed-factor, 1)) !important;
+}
+
+/* Apple Liquid Ripple */
+.ripple-effect {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+  transform: scale(0);
+  animation: appleRipple calc(0.6s * var(--speed-factor, 1)) linear;
+  pointer-events: none;
+}
+@keyframes appleRipple {
+  0% { transform: scale(0.6); opacity: 1; }
+  100% { transform: scale(2.6); opacity: 0; }
+}
+
+/* Laser Scan Line */
+@keyframes laserScan {
+  0% { top: 0%; opacity: 0.2; }
+  50% { top: 90%; opacity: 1; }
+  100% { top: 0%; opacity: 0.2; }
+}
+.laser-line {
+  animation: laserScan calc(2.2s * var(--speed-factor, 1)) ease-in-out infinite;
+}
+
+/* Breathing Circle Animation */
+@keyframes wimBreathe {
+  0%, 100% { transform: scale(0.85); box-shadow: 0 0 15px rgba(16, 185, 129, 0.2); }
+  50% { transform: scale(1.15); box-shadow: 0 0 35px rgba(16, 185, 129, 0.6); }
+}
+.animate-breathe {
+  animation: wimBreathe calc(4s * var(--speed-factor, 1)) ease-in-out infinite;
+}
+
+/* Apple Switch CSS */
+.apple-switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+.apple-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.apple-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #cbd5e1;
+  transition: calc(.3s * var(--speed-factor, 1)) var(--apple-spring);
+  border-radius: 24px;
+}
+.apple-slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: calc(.3s * var(--speed-factor, 1)) var(--apple-spring);
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+input:checked + .apple-slider {
+  background-color: #059669;
+}
+input:checked + .apple-slider:before {
+  transform: translateX(20px);
+}
+
+/* Sidebar item micro-interactions */
+.sidebar-link, .sidebar-item {
+  position: relative;
+  transition: all calc(0.25s * var(--speed-factor, 1)) var(--apple-spring) !important;
+}
+.sidebar-link:hover i, .sidebar-link:hover .nav-icon,
+.sidebar-item:hover i, .sidebar-item:hover .nav-icon {
+  transform: scale(1.15) rotate(3deg) !important;
+}
+.sidebar-link.active, .sidebar-item.active {
+  background: rgba(16, 185, 129, 0.15) !important;
+  color: #10b981 !important;
+  font-weight: 800 !important;
 }
 
 /* ═══════ LIGHT MODE HIGH-CONTRAST BADGES & CHIPS ═══════ */

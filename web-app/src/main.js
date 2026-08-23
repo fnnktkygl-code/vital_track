@@ -20,6 +20,7 @@ import { initDeepSearchModule } from './deepSearchModule.js';
 import './styles/bookReader.css';
 import './styles/materiaAppleStyle.css';
 import { initBookReaderModule, openBookReader } from './bookReaderModule.js';
+import { initMicroInteractionsModule, initStripCalendar, refreshDailyStripRoutine } from './microInteractionsModule.js';
 
 // Exposer globalement pour l'interface utilisateur
 window.store = store;
@@ -1111,6 +1112,7 @@ async function initApp() {
   initRecipesModule();
   initDeepSearchModule();
   initBookReaderModule();
+  initMicroInteractionsModule();
 
   // Initialize Custom Controls
   initAllVitalDatePickers();
@@ -2026,6 +2028,7 @@ function renderDashboard() {
   if (typeof updateCircadianWidget === 'function') updateCircadianWidget();
   if (typeof initCircadianClockInteractivity === 'function') initCircadianClockInteractivity();
   if (typeof renderWeightChart === 'function') renderWeightChart();
+  if (typeof initStripCalendar === 'function') initStripCalendar();
 }
 
 function calculateVitalityBreakdown(mealsInput) {
@@ -11612,6 +11615,9 @@ function openWeightModal() {
     dateInput.value = `${year}-${month}-${day}`;
     if (dateInput._updateVitalDatePicker) dateInput._updateVitalDatePicker();
   }
+  if (typeof window.initWeightDatePicker === 'function') {
+    window.initWeightDatePicker();
+  }
 
   const history = store.get('weight_history', []);
   if (valInput) {
@@ -11696,6 +11702,9 @@ async function editWeightEntry(entryId) {
     const dd = String(d.getDate()).padStart(2, '0');
     dateInput.value = `${yyyy}-${mm}-${dd}`;
     if (dateInput._updateVitalDatePicker) dateInput._updateVitalDatePicker();
+    if (typeof window.setWeightDateExact === 'function') {
+      window.setWeightDateExact(yyyy, d.getMonth(), d.getDate());
+    }
   }
 
   if (valInput) valInput.value = entry.weight;
