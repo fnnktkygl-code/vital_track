@@ -12,6 +12,7 @@ import { VITALIST_RECIPES, RECIPE_AUTHORS, RECIPE_TAGS, POPULAR_INGREDIENTS } fr
 import { t } from './i18n.js';
 import './styles/recipesPagination.css';
 import './styles/recipesAppleStyle.css';
+import './styles/materiaAppleStyle.css';
 
 let _recipeSearchQuery = '';
 let _selectedAuthor = 'all';
@@ -234,6 +235,25 @@ export function renderRecipesView() {
           ${t('recipes.headerBadge', { count: VITALIST_RECIPES.length }, `${VITALIST_RECIPES.length} recettes fondatrices`)}
         </span>
       </div>
+    </div>
+
+    <!-- BANNIÈRE DE BASCULE VERS LA PHARMACOPÉE RAINTREE -->
+    <div class="vital-apple-switch-banner" onclick="showPage('materia-medica')">
+      <div class="vital-apple-switch-left">
+        <div class="vital-apple-switch-icon">🌿</div>
+        <div>
+          <div class="vital-apple-switch-title">
+            ${t('recipes.switchToMateriaTitle', {}, 'Pharmacopée Amazonienne & Plantes Médicinales')}
+          </div>
+          <div class="vital-apple-switch-sub">
+            ${t('recipes.switchToMateriaSub', {}, 'Explorer 127 monographies phytochimiques et remèdes traditionnels de la forêt tropicale (Dr. Leslie Taylor).')}
+          </div>
+        </div>
+      </div>
+      <button type="button" class="vital-apple-switch-btn">
+        <span>${t('recipes.switchToMateriaBtn', {}, 'Pharmacopée')}</span>
+        <i class="ri-arrow-right-line"></i>
+      </button>
     </div>
 
     <!-- 2. APPLE-STYLE SEARCH & MULTI-INGREDIENT CARD -->

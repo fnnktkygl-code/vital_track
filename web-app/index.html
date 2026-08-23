@@ -74,7 +74,6 @@
       <div class="sidebar-section">
         <div class="sidebar-section-title" data-i18n="nav.sectionTracking">Suivi & Plantes</div>
         <a href="javascript:void(0)" class="sidebar-link" data-page="deep-search" onclick="showPage('deep-search'); event.preventDefault();"><i class="ri-microscope-line"></i> <span data-i18n="nav.deepSearch">Bilan Deep Search</span></a>
-        <a href="javascript:void(0)" class="sidebar-link" data-page="recipes" onclick="showPage('recipes'); event.preventDefault();"><i class="ri-restaurant-2-line"></i> <span data-i18n="nav.recipes">Recettes</span></a>
         <a href="javascript:void(0)" class="sidebar-link" data-page="search" onclick="showPage('search'); event.preventDefault();"><i class="ri-search-line"></i> <span data-i18n="nav.search">Aliments</span></a>
         <a href="javascript:void(0)" class="sidebar-link" data-page="materia-medica" onclick="showPage('materia-medica'); event.preventDefault();"><i class="ri-plant-line"></i> <span data-i18n="nav.materiaMedica">Pharmacopée</span></a>
         <a href="javascript:void(0)" class="sidebar-link" data-page="scan" onclick="showPage('scan'); event.preventDefault();"><i class="ri-camera-lens-line"></i> <span data-i18n="nav.scanner">Scanner</span></a>
@@ -1087,106 +1086,81 @@
 
   <!-- ═══════ PHARMACOPÉE AMAZONIENNE (RAINTREE) ═══════ -->
   <main class="page" id="page-materia-medica">
-    <div class="materia-medica-container">
-      <!-- Header -->
-      <div class="materia-header glass">
-        <div class="materia-header-top">
-          <div class="page-header-wrap">
-            <div class="header-icon-tile">🌿</div>
-            <div>
-              <h2 data-i18n="materiaMedica.pageTitle">Pharmacopée Amazonienne & Plantes Médicinales</h2>
-              <p class="subtitle" style="margin-top:4px" data-i18n="materiaMedica.pageSubtitle">Materia Medica Botanique & Clinique — Reins, Intestin, Foie, Poumons & Lymphe</p>
-            </div>
-          </div>
-          <div class="materia-scientist-badge" data-i18n="materiaMedica.scientistBadge">
-            <i class="ri-microscope-line"></i> Base Dr. Leslie Taylor (Raintree)
+    <div class="materia-apple-container">
+      <!-- 1. Apple-style Header Hero -->
+      <div class="materia-apple-header">
+        <div class="materia-apple-header-left">
+          <div class="materia-apple-header-icon">🌿</div>
+          <div>
+            <h2 class="materia-apple-header-title" data-i18n="materiaMedica.pageTitle">Pharmacopée Amazonienne & Plantes Médicinales</h2>
+            <p class="materia-apple-header-sub" data-i18n="materiaMedica.pageSubtitle">Materia Medica Botanique & Clinique — Reins, Intestin, Foie, Poumons & Lymphe</p>
           </div>
         </div>
-      </div>
-
-      <!-- Switch back to Food search banner -->
-      <div class="materia-switch-banner" onclick="showPage('search')">
-        <span data-i18n="materiaMedica.switchToFoodBanner">🔍 <strong>Recherche d'aliments classiques & vitalistes</strong> — Explorer fruits, légumes, graines et tables PRAL/NOVA</span>
-        <button class="materia-switch-btn" data-i18n="materiaMedica.foodsBtn"><i class="ri-arrow-left-line"></i> Aliments</button>
-      </div>
-
-      <!-- Rain-Tree Database Official Direct Navigation Portals -->
-      <div style="margin-bottom:18px; padding:12px 14px; background:var(--surface-hover); border:1px solid var(--border); border-radius:12px; display:flex; flex-direction:column; gap:8px;">
-        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px;">
-          <span style="font-size:0.8rem; font-weight:700; color:var(--text); display:flex; align-items:center; gap:6px;" data-i18n="materiaMedica.portalsTitle">
-            <i class="ri-external-link-line" style="color:var(--accent);"></i> Portails de Recherche & Références Rain-Tree (Dr. Leslie Taylor) :
+        <div>
+          <span class="materia-apple-header-badge" data-i18n="materiaMedica.scientistBadge">
+            Base Dr. Leslie Taylor (Raintree)
           </span>
-          <span style="font-size:0.75rem; color:var(--text-dim);" data-i18n="materiaMedica.verifiedSourceSub">Source primaire 100% vérifiée</span>
-        </div>
-        <div style="display:flex; flex-wrap:wrap; gap:8px;">
-          <a href="https://www.rain-tree.com/indicate.htm" target="_blank" rel="noopener noreferrer" class="materia-ref-link" style="padding:4px 10px; background:rgba(52,211,153,0.08); border:1px solid rgba(52,211,153,0.25); border-radius:6px; font-size:0.76rem; color:var(--accent); text-decoration:none; display:inline-flex; align-items:center; gap:4px; transition:all 0.2s;" data-i18n="materiaMedica.portalIndications">
-            <i class="ri-stethoscope-line"></i> Indications Cliniques
-          </a>
-          <a href="https://www.rain-tree.com/ethnic.htm" target="_blank" rel="noopener noreferrer" class="materia-ref-link" style="padding:4px 10px; background:rgba(56,189,248,0.08); border:1px solid rgba(56,189,248,0.25); border-radius:6px; font-size:0.76rem; color:#38bdf8; text-decoration:none; display:inline-flex; align-items:center; gap:4px; transition:all 0.2s;" data-i18n="materiaMedica.portalEthno">
-            <i class="ri-group-line"></i> Usages Ethnomédicaux & Tribaux
-          </a>
-          <a href="https://www.rain-tree.com/property-action.htm" target="_blank" rel="noopener noreferrer" class="materia-ref-link" style="padding:4px 10px; background:rgba(250,204,21,0.08); border:1px solid rgba(250,204,21,0.25); border-radius:6px; font-size:0.76rem; color:#facc15; text-decoration:none; display:inline-flex; align-items:center; gap:4px; transition:all 0.2s;" data-i18n="materiaMedica.portalProperties">
-            <i class="ri-flask-line"></i> Propriétés & Actions
-          </a>
-          <a href="https://www.rain-tree.com/prepmethod.htm" target="_blank" rel="noopener noreferrer" class="materia-ref-link" style="padding:4px 10px; background:rgba(168,85,247,0.08); border:1px solid rgba(168,85,247,0.25); border-radius:6px; font-size:0.76rem; color:#c084fc; text-decoration:none; display:inline-flex; align-items:center; gap:4px; transition:all 0.2s;" data-i18n="materiaMedica.portalPrep">
-            <i class="ri-cup-line"></i> Méthodes de Préparation
-          </a>
-          <a href="https://www.rain-tree.com/articles.htm" target="_blank" rel="noopener noreferrer" class="materia-ref-link" style="padding:4px 10px; background:rgba(244,63,94,0.08); border:1px solid rgba(244,63,94,0.25); border-radius:6px; font-size:0.76rem; color:#fb7185; text-decoration:none; display:inline-flex; align-items:center; gap:4px; transition:all 0.2s;" data-i18n="materiaMedica.portalArticles">
-            <i class="ri-article-line"></i> Articles & Recherches Publiées
-          </a>
-          <a href="https://www.rain-tree.com/plist.htm" target="_blank" rel="noopener noreferrer" class="materia-ref-link" style="padding:4px 10px; background:var(--surface-hover); border:1px solid var(--border); border-radius:6px; font-size:0.76rem; color:var(--text-dim); text-decoration:none; display:inline-flex; align-items:center; gap:4px; transition:all 0.2s;" data-i18n="materiaMedica.portalAlpha">
-            <i class="ri-list-check"></i> Index Alphabétique A-Z
-          </a>
-          <a href="https://www.rain-tree.com/plistbot.htm" target="_blank" rel="noopener noreferrer" class="materia-ref-link" style="padding:4px 10px; background:var(--surface-hover); border:1px solid var(--border); border-radius:6px; font-size:0.76rem; color:var(--text-dim); text-decoration:none; display:inline-flex; align-items:center; gap:4px; transition:all 0.2s;" data-i18n="materiaMedica.portalLatin">
-            <i class="ri-plant-line"></i> Index Botanique Latin
-          </a>
         </div>
       </div>
 
-      <!-- Search bar with clear button -->
-      <div class="herb-search-wrap">
-        <i class="ri-search-line herb-search-icon-left"></i>
-        <input type="text" id="herbSearchInput" class="herb-search-input" data-i18n-placeholder="materiaMedica.searchPlaceholder" placeholder="Rechercher par pathologie (ex: Crohn, calculs rénaux, candida, ulcère, foie, asthme), plante ou principe actif..." autocomplete="off" spellcheck="false" oninput="handleHerbSearchInput()">
-        <button class="herb-clear-btn" id="herbClearBtn" onclick="clearHerbSearch()" style="display:none" aria-label="Effacer la recherche">
-          <i class="ri-close-circle-fill"></i>
+      <!-- 2. Disclaimer notice -->
+      <div class="materia-apple-disclaimer" data-i18n="materiaMedica.disclaimerText">
+        Cette pharmacopée présente des informations ethnobotaniques et des usages traditionnels à titre culturel et documentaire. Elle ne constitue pas un avis médical et ne remplace pas la consultation d'un professionnel de santé, en particulier en cas de grossesse, d'allaitement ou de traitement en cours.
+      </div>
+
+      <!-- 3. Bidirectional Switch banner to Culinary Recipes -->
+      <div class="vital-apple-switch-banner" onclick="showPage('recipes')">
+        <div class="vital-apple-switch-left">
+          <div class="vital-apple-switch-icon">🍽️</div>
+          <div>
+            <div class="vital-apple-switch-title" data-i18n="materiaMedica.switchToRecipesTitle">Explorer la Pharmacopée Culinaire</div>
+            <div class="vital-apple-switch-sub" data-i18n="materiaMedica.switchToRecipesSub">Découvrir 76 recettes fondatrices du Dr. Sebi, d'Arnold Ehret et du Dr. Morse.</div>
+          </div>
+        </div>
+        <button type="button" class="vital-apple-switch-btn">
+          <span data-i18n="materiaMedica.recipesBtn">Recettes</span>
+          <i class="ri-arrow-right-line"></i>
         </button>
       </div>
 
-      <!-- Filter chips by organ / clinical condition -->
-      <div class="materia-chips-row" id="materiaChipsRow">
-        <button class="materia-chip active" data-filter="all" onclick="setHerbFilter('all')" data-i18n="materiaMedica.chipAll">Tous</button>
-        <button class="materia-chip" data-filter="reins" onclick="setHerbFilter('reins')" data-i18n="materiaMedica.chipKidneys">🪨 Reins & Lithiases</button>
-        <button class="materia-chip" data-filter="crohn" onclick="setHerbFilter('crohn')" data-i18n="materiaMedica.chipGut">🐾 Intestin & Crohn</button>
-        <button class="materia-chip" data-filter="ulcere" onclick="setHerbFilter('ulcere')" data-i18n="materiaMedica.chipUlcer">🩸 Ulcères & Estomac</button>
-        <button class="materia-chip" data-filter="candida" onclick="setHerbFilter('candida')" data-i18n="materiaMedica.chipCandida">🌳 Candida & Parasites</button>
-        <button class="materia-chip" data-filter="foie" onclick="setHerbFilter('foie')" data-i18n="materiaMedica.chipLiver">🌾 Foie & Vésicule</button>
-        <button class="materia-chip" data-filter="poumons" onclick="setHerbFilter('poumons')" data-i18n="materiaMedica.chipLungs">🪵 Poumons & Mucus</button>
-        <button class="materia-chip" data-filter="vitalite" onclick="setHerbFilter('vitalite')" data-i18n="materiaMedica.chipVitality">🍒 Surrénales & Vitalité</button>
-        <button class="materia-chip" data-filter="immunite" onclick="setHerbFilter('immunite')" data-i18n="materiaMedica.chipImmunity">🛡️ Immunité & Biofilm</button>
-        <button class="materia-chip" data-filter="cerveau" onclick="setHerbFilter('cerveau')" data-i18n="materiaMedica.chipBrain">⭐ Cerveau & Nerfs</button>
-      </div>
-
-      <!-- Synergistic Protocols Section -->
-      <div class="protocols-section">
-        <div class="protocols-header" onclick="toggleProtocolsAccordion()">
-          <div class="protocols-title">
-            <i class="ri-flashlight-fill" style="color:var(--accent)"></i>
-            <span data-i18n="materiaMedica.protocolsTitle">Protocoles Combinés d'Élimination & Régénération (Raintree)</span>
-          </div>
-          <i class="ri-arrow-down-s-line protocols-toggle-icon" id="protocolsToggleIcon"></i>
+      <!-- 4. Search & Clinical Targets Card -->
+      <div class="materia-apple-search-card">
+        <div class="materia-apple-search-title">
+          <span style="display:flex; align-items:center; gap:6px;">
+            <span>🔍</span> <span data-i18n="materiaMedica.searchSectionTitle">Rechercher par pathologie, plante ou principe actif</span>
+          </span>
         </div>
-        <div class="protocols-grid" id="protocolsGrid" style="display:none">
-          <!-- Rendered by JS -->
+
+        <div class="materia-apple-search-input-wrap">
+          <i class="ri-search-line search-icon"></i>
+          <input type="text" id="herbSearchInput" class="materia-apple-search-input" data-i18n-placeholder="materiaMedica.searchPlaceholder" placeholder="Ex. : Crohn, calculs rénaux, candida, ulcère, foie, asthme..." autocomplete="off" spellcheck="false" oninput="handleHerbSearchInput()">
+          <button class="materia-apple-clear-btn" id="herbClearBtn" onclick="clearHerbSearch()" style="display:none" aria-label="Effacer la recherche">
+            <i class="ri-close-circle-fill"></i>
+          </button>
+        </div>
+
+        <div class="materia-apple-target-label" data-i18n="materiaMedica.filterByTarget">Filtrer par cible clinique</div>
+
+        <div class="materia-apple-target-row" id="materiaChipsRow">
+          <button class="materia-apple-target-pill active" data-filter="all" onclick="setHerbFilter('all')" data-i18n="materiaMedica.chipAll">Tous</button>
+          <button class="materia-apple-target-pill" data-filter="reins" onclick="setHerbFilter('reins')" data-i18n="materiaMedica.chipKidneys">Reins & Voies Urinaires</button>
+          <button class="materia-apple-target-pill" data-filter="vitalite" onclick="setHerbFilter('vitalite')" data-i18n="materiaMedica.chipCellular">Protection Cellulaire & Énergie</button>
+          <button class="materia-apple-target-pill" data-filter="immunite" onclick="setHerbFilter('immunite')" data-i18n="materiaMedica.chipImmunity">Immunité & Vitamine C Vivante</button>
+          <button class="materia-apple-target-pill" data-filter="douleur" onclick="setHerbFilter('douleur')" data-i18n="materiaMedica.chipPain">Anti-inflammatoire & Douleur</button>
+          <button class="materia-apple-target-pill" data-filter="candida" onclick="setHerbFilter('candida')" data-i18n="materiaMedica.chipPurification">Purification & Antiparasitaire</button>
+          <button class="materia-apple-target-pill" data-filter="foie" onclick="setHerbFilter('foie')" data-i18n="materiaMedica.chipLiver">Foie & Cholestérol</button>
+          <button class="materia-apple-target-pill" data-filter="poumons" onclick="setHerbFilter('poumons')" data-i18n="materiaMedica.chipLungs">Asthme, Allergies & Poumons</button>
+          <button class="materia-apple-target-pill" data-filter="crohn" onclick="setHerbFilter('crohn')" data-i18n="materiaMedica.chipGut">Intestin & Côlon</button>
         </div>
       </div>
 
-      <!-- Results stats bar -->
-      <div class="search-stats-bar" id="herbStatsBar" style="display:flex; justify-content:space-between; align-items:center;">
-        <span class="search-result-count" id="herbResultCount">20 plantes médicinales répertoriées</span>
+      <!-- 5. Results stats bar -->
+      <div class="materia-apple-stats-row" id="herbStatsBar">
+        <span id="herbResultCount">127 plantes médicinales répertoriées</span>
       </div>
 
-      <!-- Live Herbs Grid -->
-      <div class="herb-grid" id="materiaHerbsGrid">
+      <!-- 6. Live Herbs Grid -->
+      <div class="materia-apple-grid" id="materiaHerbsGrid">
         <!-- Rendered by JS -->
       </div>
     </div>
@@ -2773,29 +2747,29 @@
     </div>
   </div>
 
-  <!-- ═══════ HERB MONOGRAPH MODAL (RAINTREE) ═══════ -->
-  <div class="herb-modal-overlay" id="herbModal" style="display:none" onclick="if(event.target===this) closeHerbModal()">
-    <div class="herb-modal-content">
-      <div class="herb-modal-hero" id="herbModalHero">
-        <img id="herbModalImg" class="herb-modal-hero-img" src="" alt="Plante Médicinale Raintree" />
-        <div class="herb-modal-hero-gradient"></div>
-        <button class="herb-modal-close-btn" onclick="closeHerbModal()" aria-label="Fermer"><i class="ri-close-line"></i></button>
-        <div class="herb-modal-header-info">
-          <span class="herb-card-tropism-chip badge-emerald" id="herbModalTropismBadge">
+  <!-- ═══════ HERB MONOGRAPH MODAL (RAINTREE APPLE STYLE) ═══════ -->
+  <div class="herb-apple-modal-overlay" id="herbModal" style="display:none" onclick="if(event.target===this) closeHerbModal()">
+    <div class="herb-apple-modal-card">
+      <div class="herb-apple-modal-hero" id="herbModalHero">
+        <img id="herbModalImg" class="herb-apple-modal-hero-img" src="" alt="Plante Médicinale Raintree" />
+        <div class="herb-apple-modal-hero-gradient"></div>
+        <button class="herb-apple-modal-close-btn" onclick="closeHerbModal()" aria-label="Fermer"><i class="ri-close-line"></i></button>
+        <div class="herb-apple-modal-header-info">
+          <span class="materia-apple-tropism-chip chip-green" id="herbModalTropismBadge">
             <i class="ri-leaf-fill" id="herbModalTropismIcon"></i> <span id="herbModalTropismLabel">Émonctoire</span>
           </span>
-          <h2 class="herb-modal-title" id="herbModalName">Nom de la plante</h2>
-          <p class="herb-modal-subtitle" id="herbModalLatin">Nom latin botanique</p>
+          <h2 class="herb-apple-modal-title" id="herbModalName">Nom de la plante</h2>
+          <p class="herb-apple-modal-subtitle" id="herbModalLatin">Nom latin botanique</p>
         </div>
       </div>
-      <div class="herb-modal-scrollable" id="herbModalBody">
+      <div class="herb-apple-modal-body" id="herbModalBody">
         <!-- Injected dynamically by openHerbModal() -->
       </div>
-      <div class="herb-modal-footer">
-        <button class="herb-ask-ai-btn" id="herbModalAskAIBtn" onclick="askAIAboutCurrentHerb()" style="flex:1">
-          <i class="ri-sparkling-fill"></i> <span data-i18n="materia.askAIBtn">Poser une question au Coach IA</span>
+      <div class="herb-apple-modal-footer">
+        <button class="herb-apple-ask-ai-btn" id="herbModalAskAIBtn" onclick="askAIAboutCurrentHerb()">
+          <i class="ri-sparkling-fill"></i> <span data-i18n="materiaMedica.askAIBtn">+ Interroger le Coach IA sur cette plante</span>
         </button>
-        <button class="btn-secondary" onclick="closeHerbModal()" data-i18n="common.close">Fermer</button>
+        <button class="recipe-apple-btn-outline" onclick="closeHerbModal()" data-i18n="common.close">Fermer</button>
       </div>
     </div>
   </div>

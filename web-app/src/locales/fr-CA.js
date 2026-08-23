@@ -1,7 +1,7 @@
 export default {
   "nav": {
     "dashboard": "Tableau de Bord",
-    "recipes": "Recettes & Pharmacopée",
+    "recipes": "Recettes",
     "meals": "Repas & Journal",
     "fasting": "Jeûne & Physiologie",
     "chat": "Coach Vital IA",
@@ -45,12 +45,12 @@ export default {
     "closeAria": "Fermer le tiroir",
     "deepSearch": "Bilan Deep Search (0 €)",
     "deepSearchSub": "Diagnostic holistique & 5 émonctoires",
-    "recipes": "Recettes & Pharmacopée",
+    "recipes": "Recettes Culinaires",
     "recipesSub": "Sebi, Ehret, Morse, Kallas & Christopher",
     "resources": "Médias & Vidéos",
     "resourcesSub": "Wim Hof, masterclass & PDF",
     "materia": "Pharmacopée Raintree",
-    "materiaSub": "Monographies & remèdes amazoniens",
+    "materiaSub": "127 monographies & remèdes amazoniens",
     "breathing": "Respiration Wim Hof",
     "breathingSub": "Orbe interactif & minuteur guidé",
     "search": "Recherche Aliments & PRAL",
@@ -351,7 +351,10 @@ export default {
     "videoDemo": "Démonstration vidéo",
     "targetEmunctoriesTitle": "Organes et émonctoires ciblés :",
     "prepProtocol": "Protocole de préparation",
-    "livingIngredients": "Ingrédients vivants"
+    "livingIngredients": "Ingrédients vivants",
+    "switchToMateriaTitle": "Pharmacopée Amazonienne & Plantes Médicinales",
+    "switchToMateriaSub": "Explorer 127 monographies phytochimiques et remèdes traditionnels de la forêt tropicale (Dr. Leslie Taylor).",
+    "switchToMateriaBtn": "Pharmacopée"
   },
   "userProfile": {
     "levelInitiated": "Initié Vitaliste 🌱",
@@ -405,7 +408,7 @@ export default {
     "portalArticles": "Articles & Recherches Publiées",
     "portalAlpha": "Index Alphabétique A-Z",
     "portalLatin": "Index Botanique Latin",
-    "searchPlaceholder": "Rechercher par pathologie (ex: Crohn, calculs rénaux, candida, ulcère, foie, asthme), plante ou principe actif...",
+    "searchPlaceholder": "Ex. : Crohn, calculs rénaux, candida, ulcère, foie, asthme...",
     "clearSearchAria": "Effacer la recherche",
     "chipAll": "Tous",
     "chipKidneys": "🪨 Reins & Lithiases",
@@ -456,7 +459,17 @@ export default {
     "doseCapsules": "💊 Gélules :",
     "doseOil": "🫒 Huile végétale brute :",
     "doseStandard": "📋 Posologie Raintree :",
-    "familyPrefix": "Famille des {family}"
+    "familyPrefix": "Famille des {family}",
+    "disclaimerText": "Cette pharmacopée présente des informations ethnobotaniques et des usages traditionnels à titre culturel et documentaire. Elle ne constitue pas un avis médical et ne remplace pas la consultation d'un professionnel de santé, en particulier en cas de grossesse, d'allaitement ou de traitement en cours.",
+    "switchToRecipesTitle": "Explorer la Pharmacopée Culinaire",
+    "switchToRecipesSub": "Découvrir 76 recettes fondatrices du Dr. Sebi, d'Arnold Ehret et du Dr. Morse.",
+    "recipesBtn": "Recettes",
+    "searchSectionTitle": "Rechercher par pathologie, plante ou principe actif",
+    "filterByTarget": "Filtrer par cible clinique",
+    "chipCellular": "Protection Cellulaire & Énergie",
+    "chipPain": "Anti-inflammatoire & Douleur",
+    "chipPurification": "Purification & Antiparasitaire",
+    "askAIBtn": "+ Interroger le Coach IA sur cette plante"
   },
   "fasting": {
     "pageTitle": "Jeûne & Physiologie Cellulaire",

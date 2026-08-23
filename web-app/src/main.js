@@ -18,6 +18,7 @@ import { VITALIST_WISDOM, getRandomWisdom, getCircadianContextWisdom, getDailyWi
 import { initRecipesModule } from './recipesModule.js';
 import { initDeepSearchModule } from './deepSearchModule.js';
 import './styles/bookReader.css';
+import './styles/materiaAppleStyle.css';
 import { initBookReaderModule, openBookReader } from './bookReaderModule.js';
 
 // Exposer globalement pour l'interface utilisateur
@@ -4986,18 +4987,32 @@ function toggleProtocolsAccordion() {
   }
 };
 
+function getTropismChipClass(color, label = '') {
+  const c = (color || '').toLowerCase();
+  const l = (label || '').toLowerCase();
+  if (c === 'emerald' || c === 'green' || l.includes('rein') || l.includes('intestin') || l.includes('côlon')) return 'chip-green';
+  if (c === 'purple' || l.includes('cellulaire') || l.includes('surrénale') || l.includes('sommeil') || l.includes('antiviral')) return 'chip-purple';
+  if (c === 'orange' || c === 'amber' || l.includes('vitamine') || l.includes('immun')) return 'chip-orange';
+  if (c === 'blue' || l.includes('inflammatoire') || l.includes('nerf') || l.includes('douleur')) return 'chip-blue';
+  if (c === 'teal' || l.includes('parasite') || l.includes('candida') || l.includes('purification') || l.includes('amibe')) return 'chip-teal';
+  if (c === 'red' || c === 'rose' || l.includes('foie') || l.includes('cholestérol') || l.includes('biliaire')) return 'chip-rose';
+  if (c === 'cyan' || l.includes('poumon') || l.includes('asthme') || l.includes('allergie')) return 'chip-cyan';
+  return 'chip-green';
+}
+
 const HERB_PATHOLOGY_THESAURUS = {
   crohn: ['crohn', 'colite', 'intestin', 'côlon', 'colon', 'mici', 'sii', 'muqueuse intestinale', 'muqueuses intestinales', 'muqueuses digestives', 'leaky gut', 'permeabilite', 'perméabilité', 'diverticulite', 'diarrhee', 'diarrhée', 'sangre de grado', 'griffe de chat', 'una de gato'],
   colon: ['colon', 'côlon', 'colite', 'intestin', 'crohn', 'mici', 'sii', 'constipation', 'laxatif', 'diverticulite', 'péristaltisme'],
   intestin: ['intestin', 'intestinal', 'intestinaux', 'crohn', 'colon', 'côlon', 'colite', 'sii', 'microbiote', 'flore', 'dysenterie', 'amibes'],
   ulcere: ['ulcere', 'ulcère', 'ulceres', 'ulcères', 'estomac', 'gastrique', 'gastrite', 'duodenal', 'duodénum', 'rgo', 'reflux', 'brulure', 'brûlure', 'acidite', 'acidité', 'espinheira', 'guacatonga'],
-  reins: ['reins', 'rein', 'renal', 'rénale', 'renaux', 'rénaux', 'lithiase', 'lithiases', 'calcul', 'calculs', 'acide urique', 'filtration', 'nephro', 'néphron', 'urinaire', 'vessie', 'diuretique', 'diurétique', 'goutte', 'chanca piedra', 'quebra pedra'],
+  reins: ['reins', 'rein', 'renal', 'rénale', 'renaux', 'rénaux', 'lithiase', 'lithiases', 'calcul', 'calculs', 'acide urique', 'filtration', 'nephro', 'néphron', 'urinaire', 'vessie', 'diuretique', 'diurétique', 'goutte', 'chanca piedra', 'quebra pedra', 'abuta'],
   calculs: ['calcul', 'calculs', 'lithiase', 'lithiases', 'reins', 'rein', 'vesicule', 'vésicule', 'cristaux', 'urates', 'oxalate', 'chanca', 'quebra pedra', 'pierre'],
-  candida: ['candida', 'albicans', 'mycose', 'mycoses', 'champignon', 'champignons', 'fongique', 'antifongique', 'parasite', 'parasites', 'levure', 'biofilm', 'dysbiose', 'pau d\'arco', 'lapacho'],
-  foie: ['foie', 'hepatique', 'hépatique', 'bile', 'biliaire', 'biliaires', 'vesicule', 'vésicule', 'jaunisse', 'cholagogue', 'choleretique', 'cholérétique', 'cirrhose', 'boldo', 'carqueja'],
-  poumons: ['poumons', 'poumon', 'pulmonaire', 'bronches', 'bronchite', 'mucus', 'glaires', 'asthme', 'toux', 'expectorant', 'respiration', 'guaco', 'jatoba'],
-  vitalite: ['vitalite', 'vitalité', 'energie', 'énergie', 'fatigue', 'surrenales', 'surrénales', 'epuisement', 'épuisement', 'adaptogene', 'adaptogène', 'endurance', 'libido', 'tonique', 'maca', 'guarana', 'suma'],
-  immunite: ['immunite', 'immunité', 'defenses immunitaires', 'défenses immunitaires', 'systeme immunitaire', 'immunomodulateur', 'globules blancs', 'phagocytose', 'griffe de chat', 'una de gato'],
+  candida: ['candida', 'albicans', 'mycose', 'mycoses', 'champignon', 'champignons', 'fongique', 'antifongique', 'parasite', 'parasites', 'levure', 'biofilm', 'dysbiose', 'pau d\'arco', 'lapacho', 'purification', 'antiparasitaire', 'anamu'],
+  foie: ['foie', 'hepatique', 'hépatique', 'bile', 'biliaire', 'biliaires', 'vesicule', 'vésicule', 'jaunisse', 'cholagogue', 'choleretique', 'cholérétique', 'cirrhose', 'cholesterol', 'cholestérol', 'triglycerides', 'triglycérides', 'boldo', 'carqueja', 'artichaut', 'alcachofra'],
+  poumons: ['poumons', 'poumon', 'pulmonaire', 'bronches', 'bronchite', 'mucus', 'glaires', 'asthme', 'toux', 'expectorant', 'respiration', 'allergie', 'allergies', 'guaco', 'jatoba', 'amor seco', 'desmodium'],
+  vitalite: ['vitalite', 'vitalité', 'energie', 'énergie', 'fatigue', 'surrenales', 'surrénales', 'epuisement', 'épuisement', 'adaptogene', 'adaptogène', 'endurance', 'libido', 'tonique', 'maca', 'guarana', 'suma', 'protection cellulaire', 'antioxydant', 'acai', 'açaí'],
+  immunite: ['immunite', 'immunité', 'defenses immunitaires', 'défenses immunitaires', 'systeme immunitaire', 'immunomodulateur', 'globules blancs', 'phagocytose', 'griffe de chat', 'una de gato', 'vitamine c', 'acerola', 'acérola'],
+  douleur: ['anti-inflammatoire', 'douleur', 'articulations', 'arthrite', 'inflammation', 'tissus profonds', 'spasmes', 'analgesique', 'muscles', 'achocha', 'ageratum', 'ajos sacha', 'amargo'],
   cerveau: ['cerveau', 'nerfs', 'nerveux', 'sommeil', 'insomnie', 'anxiete', 'anxiété', 'stress', 'memoire', 'mémoire', 'sedatif', 'sédatif', 'mulungu']
 };
 
@@ -5102,7 +5117,9 @@ function filterAndRenderHerbs() {
         if (['foie'].includes(cleanActive) && ['boldo', 'carqueja', 'artichoke'].includes(h.id)) s += 100;
         if (['ulcere'].includes(cleanActive) && ['espinheira', 'sangre', 'guacatonga', 'copaiba'].includes(h.id)) s += 100;
         if (['poumons'].includes(cleanActive) && ['guaco', 'jatoba', 'amorseco'].includes(h.id)) s += 100;
-        if (['vitalite'].includes(cleanActive) && ['maca', 'guarana', 'suma'].includes(h.id)) s += 100;
+        if (['vitalite'].includes(cleanActive) && ['maca', 'guarana', 'suma', 'acai'].includes(h.id)) s += 100;
+        if (['immunite'].includes(cleanActive) && ['acerola', 'catclaw', 'anamu'].includes(h.id)) s += 100;
+        if (['douleur'].includes(cleanActive) && ['achocha', 'ageratum', 'ajossacha', 'amargo'].includes(h.id)) s += 100;
         if (['cerveau'].includes(cleanActive) && ['mulungu', 'maracuja', 'camomille'].includes(h.id)) s += 100;
         return s;
       };
@@ -5113,14 +5130,18 @@ function filterAndRenderHerbs() {
   const grid = document.getElementById('materiaHerbsGrid');
   const countEl = document.getElementById('herbResultCount');
   if (countEl) {
-    countEl.textContent = tFunc('materiaMedica.herbsCountListed', { count: results.length, plural: results.length > 1 ? 's' : '' }, `${results.length} plante${results.length > 1 ? 's' : ''} médicinale${results.length > 1 ? 's' : ''} répertoriée${results.length > 1 ? 's' : ''}`);
+    if (results.length < RAINTREE_HERBS.length && results.length > 0) {
+      countEl.textContent = `${results.length} plantes — extrait filtré sur ${RAINTREE_HERBS.length} répertoriées`;
+    } else {
+      countEl.textContent = `${results.length} plantes médicinales répertoriées`;
+    }
   }
 
   if (!grid) return;
 
   if (results.length === 0) {
     grid.innerHTML = `
-      <div style="grid-column: 1 / -1; padding: 40px 20px; text-align: center; background: var(--bg-card); border-radius: var(--radius); border: 1px dashed var(--border);">
+      <div style="grid-column: 1 / -1; padding: 40px 20px; text-align: center; background: var(--bg-card); border-radius: 16px; border: 1px dashed var(--border);">
         <div style="font-size: 2.5rem; margin-bottom: 12px;">🌿</div>
         <h4 style="font-size: 1.1rem; color: var(--text); margin-bottom: 6px;">${tFunc('materiaMedica.noHerbsFound', { query: esc(_currentHerbQuery) }, `Aucune plante trouvée pour "${esc(_currentHerbQuery)}"`)}</h4>
         <p style="font-size: 0.85rem; color: var(--text-dim); margin-bottom: 16px;">${tFunc('materiaMedica.tryOtherKeyword', {}, 'Essayez un autre mot-clé (ex: <em>Crohn, calculs, candida, ulcère, foie, asthme, reins, fatigue</em>)')}</p>
@@ -5132,57 +5153,59 @@ function filterAndRenderHerbs() {
 
   grid.innerHTML = results.map(rawHerb => {
     const herb = getLocalizedHerb(rawHerb, lang);
-    const badgeColorClass = `badge-${herb.tropismBadge?.color || 'emerald'}`;
+    const chipClass = getTropismChipClass(herb.tropismBadge?.color, herb.tropismBadge?.label || herb.category);
     const plantImg = herb.image || `/plants/${herb.id === 'boldo-amazonie' ? 'boldo' : herb.id}.jpg`;
-
-    // Extrait immédiat et percutant pour l'utilisateur
-    const primaryIndications = (herb.indications || []).slice(0, 2).map(ind => esc(ind)).join(' • ');
 
     // Posologie courte pour aperçu
     let quickDose = '';
     if (herb.posology) {
-      if (herb.posology.decoction) quickDose = tFunc('materiaMedica.doseDecoction', {}, '🔥 Décoction');
-      else if (herb.posology.infusion) quickDose = tFunc('materiaMedica.doseInfusion', {}, '🫖 Infusion');
-      else if (herb.posology.internalDrops) quickDose = tFunc('materiaMedica.doseDrops', {}, '🩸 Gouttes pures');
-      else if (herb.posology.capsules) quickDose = tFunc('materiaMedica.doseCapsules', {}, '💊 Gélules');
-      else if (herb.posology.powder) quickDose = tFunc('materiaMedica.dosePowder', {}, '🥄 Poudre');
+      if (herb.posology.decoction) quickDose = tFunc('materiaMedica.doseDecoction', {}, 'Décoction');
+      else if (herb.posology.infusion) quickDose = tFunc('materiaMedica.doseInfusion', {}, 'Infusion');
+      else if (herb.posology.internalDrops) quickDose = tFunc('materiaMedica.doseDrops', {}, 'Gouttes pures');
+      else if (herb.posology.capsules) quickDose = tFunc('materiaMedica.doseCapsules', {}, 'Gélules');
+      else if (herb.posology.powder) quickDose = tFunc('materiaMedica.dosePowder', {}, 'Poudre');
     }
 
     return `
-      <div class="herb-card" onclick="openHerbModal('${herb.id}')">
-        <div class="herb-card-media">
-          <img src="${plantImg}" alt="${esc(herb.name)}" class="herb-card-img" loading="lazy" onerror="this.src='/plants/boldo.jpg'" />
-          <div class="herb-card-tropism-chip ${badgeColorClass}">
+      <div class="materia-apple-card" onclick="openHerbModal('${herb.id}')">
+        <div class="materia-apple-card-media">
+          <img src="${plantImg}" alt="${esc(herb.name)}" class="materia-apple-card-img" loading="lazy" onerror="this.src='/plants/boldo.jpg'" />
+          <div class="materia-apple-tropism-chip ${chipClass}">
             <i class="${herb.tropismBadge?.icon || 'ri-leaf-fill'}"></i>
             <span>${esc(herb.tropismBadge?.label || herb.category)}</span>
           </div>
         </div>
 
-        <div class="herb-card-body">
-          <div class="herb-card-title-wrap">
-            <span class="herb-card-name">${esc(herb.name)}</span>
-            <span class="herb-card-latin">${esc(herb.latinName)}</span>
+        <div class="materia-apple-card-body">
+          <div>
+            <h3 class="materia-apple-card-title">${esc(herb.name)}</h3>
+            <div class="materia-apple-card-latin">${esc(herb.latinName)}</div>
           </div>
 
-          <div class="herb-card-benefit-preview">
-            <i class="ri-heart-pulse-fill" style="color:var(--accent);margin-right:4px;"></i>
-            <strong>${tFunc('materiaMedica.targetLabel', {}, 'Cible :')}</strong> ${primaryIndications}
+          <div class="materia-apple-card-indications">
+            ${(herb.indications || []).slice(0, 2).map(ind => `
+              <div class="materia-apple-indication-item">
+                <i class="ri-checkbox-circle-fill"></i>
+                <span>${esc(ind)}</span>
+              </div>
+            `).join('')}
           </div>
 
           ${quickDose ? `
-          <div class="herb-card-posology-chip">
-            <i class="ri-cup-line" style="color:var(--accent)"></i> <span>${tFunc('materiaMedica.usualDoseLabel', {}, 'Prise usuelle :')} <strong>${quickDose}</strong></span>
-          </div>` : ''}
+            <div class="materia-apple-card-dose">
+              <span>☕</span> <span>${tFunc('materiaMedica.usualDoseLabel', {}, 'Prise usuelle :')} <strong>${quickDose}</strong></span>
+            </div>
+          ` : ''}
 
-          <div style="display:flex; align-items:center; justify-content:space-between; margin-top:10px; padding-top:8px; border-top:1px solid var(--border); font-size:0.75rem;">
-            <a href="${herb.sourceUrl || `https://www.rain-tree.com/${herb.id}.htm`}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" style="color:var(--accent); text-decoration:none; display:inline-flex; align-items:center; gap:4px; font-weight:600;">
+          <div class="materia-apple-card-source-row">
+            <a href="${herb.sourceUrl || `https://www.rain-tree.com/${herb.id}.htm`}" target="_blank" rel="noopener noreferrer" class="materia-apple-source-link" onclick="event.stopPropagation()">
               <i class="ri-external-link-line"></i> ${tFunc('materiaMedica.sourceRaintree', {}, 'Source Rain-Tree')}
             </a>
-            <span style="color:var(--text-dim);">${esc(herb.family)}</span>
+            <span class="materia-apple-family-tag">${esc(herb.family)}</span>
           </div>
 
-          <button class="herb-card-btn" onclick="event.stopPropagation(); openHerbModal('${herb.id}')" style="margin-top:8px;">
-            <i class="ri-eye-line"></i> ${tFunc('materiaMedica.consultSheetBtn', {}, 'Consulter la fiche & posologie')}
+          <button type="button" class="materia-apple-card-btn" onclick="event.stopPropagation(); openHerbModal('${herb.id}')">
+            <i class="ri-refresh-line"></i> ${tFunc('materiaMedica.consultSheetBtn', {}, 'Consulter la fiche & posologie')}
           </button>
         </div>
       </div>
@@ -5206,7 +5229,7 @@ function clearHerbSearch() {
   _currentHerbQuery = '';
   if (clearBtn) clearBtn.style.display = 'none';
   _currentHerbFilter = 'all';
-  document.querySelectorAll('.materia-chip').forEach(c => {
+  document.querySelectorAll('.materia-apple-target-pill, .materia-chip').forEach(c => {
     c.classList.toggle('active', c.getAttribute('data-filter') === 'all');
   });
   filterAndRenderHerbs();
@@ -5214,7 +5237,7 @@ function clearHerbSearch() {
 
 function setHerbFilter(filterId) {
   _currentHerbFilter = filterId;
-  document.querySelectorAll('.materia-chip').forEach(c => {
+  document.querySelectorAll('.materia-apple-target-pill, .materia-chip').forEach(c => {
     c.classList.toggle('active', c.getAttribute('data-filter') === filterId);
   });
   filterAndRenderHerbs();
@@ -5227,7 +5250,7 @@ function filterByTag(tag) {
   _currentHerbQuery = tag;
   if (clearBtn) clearBtn.style.display = 'block';
   _currentHerbFilter = 'all';
-  document.querySelectorAll('.materia-chip').forEach(c => {
+  document.querySelectorAll('.materia-apple-target-pill, .materia-chip').forEach(c => {
     c.classList.toggle('active', c.getAttribute('data-filter') === 'all');
   });
   filterAndRenderHerbs();
@@ -5249,40 +5272,58 @@ function setHerbFilterByHerbs(herbIds) {
 
   grid.innerHTML = filtered.map(rawHerb => {
     const herb = getLocalizedHerb(rawHerb, lang);
-    const badgeColorClass = `badge-${herb.tropismBadge?.color || 'emerald'}`;
+    const chipClass = getTropismChipClass(herb.tropismBadge?.color, herb.tropismBadge?.label || herb.category);
     const plantImg = herb.image || `/plants/${herb.id === 'boldo-amazonie' ? 'boldo' : herb.id}.jpg`;
-    const primaryIndications = (herb.indications || []).slice(0, 2).map(ind => esc(ind)).join(' • ');
+
+    let quickDose = '';
+    if (herb.posology) {
+      if (herb.posology.decoction) quickDose = tFunc('materiaMedica.doseDecoction', {}, 'Décoction');
+      else if (herb.posology.infusion) quickDose = tFunc('materiaMedica.doseInfusion', {}, 'Infusion');
+      else if (herb.posology.internalDrops) quickDose = tFunc('materiaMedica.doseDrops', {}, 'Gouttes pures');
+      else if (herb.posology.capsules) quickDose = tFunc('materiaMedica.doseCapsules', {}, 'Gélules');
+      else if (herb.posology.powder) quickDose = tFunc('materiaMedica.dosePowder', {}, 'Poudre');
+    }
 
     return `
-      <div class="herb-card" onclick="openHerbModal('${herb.id}')">
-        <div class="herb-card-media">
-          <img src="${plantImg}" alt="${esc(herb.name)}" class="herb-card-img" loading="lazy" onerror="this.src='/plants/boldo.jpg'" />
-          <div class="herb-card-tropism-chip ${badgeColorClass}">
+      <div class="materia-apple-card" onclick="openHerbModal('${herb.id}')">
+        <div class="materia-apple-card-media">
+          <img src="${plantImg}" alt="${esc(herb.name)}" class="materia-apple-card-img" loading="lazy" onerror="this.src='/plants/boldo.jpg'" />
+          <div class="materia-apple-tropism-chip ${chipClass}">
             <i class="${herb.tropismBadge?.icon || 'ri-leaf-fill'}"></i>
             <span>${esc(herb.tropismBadge?.label || herb.category)}</span>
           </div>
         </div>
 
-        <div class="herb-card-body">
-          <div class="herb-card-title-wrap">
-            <span class="herb-card-name">${esc(herb.name)}</span>
-            <span class="herb-card-latin">${esc(herb.latinName)}</span>
+        <div class="materia-apple-card-body">
+          <div>
+            <h3 class="materia-apple-card-title">${esc(herb.name)}</h3>
+            <div class="materia-apple-card-latin">${esc(herb.latinName)}</div>
           </div>
 
-          <div class="herb-card-benefit-preview">
-            <i class="ri-heart-pulse-fill" style="color:var(--accent);margin-right:4px;"></i>
-            <strong>${tFunc('materiaMedica.targetLabel', {}, 'Cible :')}</strong> ${primaryIndications}
+          <div class="materia-apple-card-indications">
+            ${(herb.indications || []).slice(0, 2).map(ind => `
+              <div class="materia-apple-indication-item">
+                <i class="ri-checkbox-circle-fill"></i>
+                <span>${esc(ind)}</span>
+              </div>
+            `).join('')}
           </div>
 
-          <div style="display:flex; align-items:center; justify-content:space-between; margin-top:10px; padding-top:8px; border-top:1px solid var(--border); font-size:0.75rem;">
-            <a href="${herb.sourceUrl || `https://www.rain-tree.com/${herb.id}.htm`}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" style="color:var(--accent); text-decoration:none; display:inline-flex; align-items:center; gap:4px; font-weight:600;">
+          ${quickDose ? `
+            <div class="materia-apple-card-dose">
+              <span>☕</span> <span>${tFunc('materiaMedica.usualDoseLabel', {}, 'Prise usuelle :')} <strong>${quickDose}</strong></span>
+            </div>
+          ` : ''}
+
+          <div class="materia-apple-card-source-row">
+            <a href="${herb.sourceUrl || `https://www.rain-tree.com/${herb.id}.htm`}" target="_blank" rel="noopener noreferrer" class="materia-apple-source-link" onclick="event.stopPropagation()">
               <i class="ri-external-link-line"></i> ${tFunc('materiaMedica.sourceRaintree', {}, 'Source Rain-Tree')}
             </a>
-            <span style="color:var(--text-dim);">${esc(herb.family)}</span>
+            <span class="materia-apple-family-tag">${esc(herb.family)}</span>
           </div>
 
-          <button class="herb-card-btn" onclick="event.stopPropagation(); openHerbModal('${herb.id}')" style="margin-top:8px;">
-            <i class="ri-eye-line"></i> ${tFunc('materiaMedica.consultSheetBtn', {}, 'Consulter la fiche & posologie')}
+          <button type="button" class="materia-apple-card-btn" onclick="event.stopPropagation(); openHerbModal('${herb.id}')">
+            <i class="ri-refresh-line"></i> ${tFunc('materiaMedica.consultSheetBtn', {}, 'Consulter la fiche & posologie')}
           </button>
         </div>
       </div>
@@ -5299,16 +5340,18 @@ function toggleHerbMonograph() {
   const btn = document.getElementById('herbMonographBtn');
   const icon = document.getElementById('herbMonographIcon');
   const text = document.getElementById('herbMonographBtnText');
-  if (!drawer || !btn) return;
+  if (!drawer) return;
 
   const isOpen = drawer.classList.contains('open');
   if (isOpen) {
     drawer.classList.remove('open');
-    btn.classList.remove('open');
-    if (text) text.textContent = tFunc('materiaMedica.monographToggleOpen', {}, 'Dérouler la monographie scientifique & études Raintree (Dr. Leslie Taylor)');
+    if (btn) btn.classList.remove('open');
+    if (icon) icon.style.transform = 'rotate(0deg)';
+    if (text) text.textContent = tFunc('materiaMedica.monographToggleOpen', {}, 'Déplier la monographie scientifique');
   } else {
     drawer.classList.add('open');
-    btn.classList.add('open');
+    if (btn) btn.classList.add('open');
+    if (icon) icon.style.transform = 'rotate(180deg)';
     if (text) text.textContent = tFunc('materiaMedica.monographToggleClose', {}, 'Replier la monographie scientifique');
   }
 };
@@ -5344,33 +5387,34 @@ function openHerbModal(herbId) {
   if (nameEl) nameEl.textContent = herb.name;
   if (latinEl) latinEl.textContent = `${herb.latinName}${herb.familyLabel ? ` — ${herb.familyLabel}` : ''}`;
 
-  if (tropismBadge && herb.tropismBadge) {
-    tropismBadge.className = `herb-card-tropism-chip badge-${herb.tropismBadge.color || 'emerald'}`;
-    if (tropismLabel) tropismLabel.textContent = herb.tropismBadge.label || herb.category;
-    if (tropismIcon) tropismIcon.className = herb.tropismBadge.icon || 'ri-leaf-fill';
+  if (tropismBadge) {
+    const chipClass = getTropismChipClass(herb.tropismBadge?.color, herb.tropismBadge?.label || herb.category);
+    tropismBadge.className = `materia-apple-tropism-chip ${chipClass}`;
+    if (tropismLabel) tropismLabel.textContent = herb.tropismBadge?.label || herb.category;
+    if (tropismIcon) tropismIcon.className = herb.tropismBadge?.icon || 'ri-leaf-fill';
   }
 
   if (bodyEl) {
     const synonymsStr = (herb.synonyms || []).join(', ');
     const compoundsList = (herb.activeCompounds || []).map(c => `<li>• ${esc(c)}</li>`).join('');
     const indicationsList = (herb.indications || []).map(ind => `
-      <li class="herb-benefit-item">
-        <i class="ri-checkbox-circle-fill"></i>
+      <div style="display:flex; align-items:flex-start; gap:8px;">
+        <i class="ri-checkbox-circle-fill" style="color:var(--accent); font-size:1rem; margin-top:2px; flex-shrink:0;"></i>
         <span>${esc(ind)}</span>
-      </li>
+      </div>
     `).join('');
 
     let posologyHtml = '';
     if (herb.posology) {
-      if (herb.posology.decoction) posologyHtml += `<div class="herb-posology-item"><span class="herb-posology-type">${tFunc('materiaMedica.doseDecoction', {}, '🔥 Décoction :')}</span> ${esc(herb.posology.decoction)}</div>`;
-      if (herb.posology.infusion) posologyHtml += `<div class="herb-posology-item"><span class="herb-posology-type">${tFunc('materiaMedica.doseInfusion', {}, '🫖 Infusion :')}</span> ${esc(herb.posology.infusion)}</div>`;
-      if (herb.posology.tincture) posologyHtml += `<div class="herb-posology-item"><span class="herb-posology-type">${tFunc('materiaMedica.doseTincture', {}, '💧 Teinture / Extrait hydroalcoolique :')}</span> ${esc(herb.posology.tincture)}</div>`;
-      if (herb.posology.internalDrops) posologyHtml += `<div class="herb-posology-item"><span class="herb-posology-type">${tFunc('materiaMedica.doseDrops', {}, '🩸 Sève pure / Gouttes :')}</span> ${esc(herb.posology.internalDrops)}</div>`;
-      if (herb.posology.powder) posologyHtml += `<div class="herb-posology-item"><span class="herb-posology-type">${tFunc('materiaMedica.dosePowder', {}, '🥄 Poudre lyophilisée :')}</span> ${esc(herb.posology.powder)}</div>`;
-      if (herb.posology.capsules) posologyHtml += `<div class="herb-posology-item"><span class="herb-posology-type">${tFunc('materiaMedica.doseCapsules', {}, '💊 Gélules :')}</span> ${esc(herb.posology.capsules)}</div>`;
-      if (herb.posology.oil) posologyHtml += `<div class="herb-posology-item"><span class="herb-posology-type">${tFunc('materiaMedica.doseOil', {}, '🫒 Huile végétale brute :')}</span> ${esc(herb.posology.oil)}</div>`;
+      if (herb.posology.decoction) posologyHtml += `<div style="display:flex; align-items:flex-start; gap:6px;"><span>💧</span> <span><strong>${tFunc('materiaMedica.doseDecoction', {}, 'Décoction :')}</strong> ${esc(herb.posology.decoction)}</span></div>`;
+      if (herb.posology.infusion) posologyHtml += `<div style="display:flex; align-items:flex-start; gap:6px;"><span>💧</span> <span><strong>${tFunc('materiaMedica.doseInfusion', {}, 'Infusion :')}</strong> ${esc(herb.posology.infusion)}</span></div>`;
+      if (herb.posology.tincture) posologyHtml += `<div style="display:flex; align-items:flex-start; gap:6px;"><span>💧</span> <span><strong>${tFunc('materiaMedica.doseTincture', {}, 'Teinture / extrait hydroalcoolique :')}</strong> ${esc(herb.posology.tincture)}</span></div>`;
+      if (herb.posology.internalDrops) posologyHtml += `<div style="display:flex; align-items:flex-start; gap:6px;"><span>💧</span> <span><strong>${tFunc('materiaMedica.doseDrops', {}, 'Sève pure / Gouttes :')}</strong> ${esc(herb.posology.internalDrops)}</span></div>`;
+      if (herb.posology.powder) posologyHtml += `<div style="display:flex; align-items:flex-start; gap:6px;"><span>💧</span> <span><strong>${tFunc('materiaMedica.dosePowder', {}, 'Poudre lyophilisée :')}</strong> ${esc(herb.posology.powder)}</span></div>`;
+      if (herb.posology.capsules) posologyHtml += `<div style="display:flex; align-items:flex-start; gap:6px;"><span>💧</span> <span><strong>${tFunc('materiaMedica.doseCapsules', {}, 'Gélules :')}</strong> ${esc(herb.posology.capsules)}</span></div>`;
+      if (herb.posology.oil) posologyHtml += `<div style="display:flex; align-items:flex-start; gap:6px;"><span>💧</span> <span><strong>${tFunc('materiaMedica.doseOil', {}, 'Huile brute :')}</strong> ${esc(herb.posology.oil)}</span></div>`;
       if (herb.posology.standardDosage && !posologyHtml) {
-        posologyHtml = `<div class="herb-posology-item"><span class="herb-posology-type">${tFunc('materiaMedica.doseStandard', {}, '📋 Posologie Raintree :')}</span> ${esc(herb.posology.standardDosage)}</div>`;
+        posologyHtml = `<div style="display:flex; align-items:flex-start; gap:6px;"><span>💧</span> <span><strong>${tFunc('materiaMedica.doseStandard', {}, 'Posologie Raintree :')}</strong> ${esc(herb.posology.standardDosage)}</span></div>`;
       }
     }
 
@@ -5379,96 +5423,87 @@ function openHerbModal(herbId) {
       .split('\n')
       .map(p => p.trim())
       .filter(Boolean)
-      .map(p => `<p style="margin-bottom:10px">${p}</p>`)
+      .map(p => `<p style="margin-bottom:8px">${p}</p>`)
       .join('');
-
-    const synergiesList = (herb.synergies || []).map(s => `<span class="protocol-herb-pill" style="margin-right:6px;margin-bottom:6px;display:inline-flex;align-items:center;gap:4px"><i class="ri-links-line"></i> ${esc(s)}</span>`).join('');
 
     const sourceUrl = herb.sourceUrl || `https://www.rain-tree.com/${herb.id}.htm`;
 
     bodyEl.innerHTML = `
-      <!-- BANNIÈRE SOURCE PRIMAIRE OFFICIELLE & LIEN EXTERNE -->
-      <div style="margin-bottom:16px; padding:12px 14px; background:rgba(52,211,153,0.08); border:1px solid rgba(52,211,153,0.3); border-radius:10px; display:flex; flex-direction:column; gap:8px;">
+      <!-- BANNIÈRE SOURCE PRIMAIRE VÉRIFIÉE -->
+      <div class="herb-apple-primary-source-box">
         <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
-          <span style="font-size:0.82rem; font-weight:700; color:var(--accent); display:flex; align-items:center; gap:6px;">
-            <i class="ri-shield-check-fill"></i> ${tFunc('materiaMedica.verifiedPrimarySourceBanner', {}, 'Source Primaire Vérifiée — Base Raintree')}
+          <span style="font-size:0.8rem; font-weight:700; color:var(--accent); display:flex; align-items:center; gap:6px;">
+            <i class="ri-shield-check-fill"></i> ${tFunc('materiaMedica.verifiedPrimarySourceBanner', {}, 'Source primaire vérifiée — Base Raintree')}
           </span>
-          <a href="${sourceUrl}" target="_blank" rel="noopener noreferrer" style="font-size:0.78rem; font-weight:600; color:var(--accent); text-decoration:none; display:inline-flex; align-items:center; gap:6px; padding:5px 12px; background:rgba(52,211,153,0.12); border:1px solid rgba(52,211,153,0.3); border-radius:6px; transition:all 0.2s;">
+          <a href="${sourceUrl}" target="_blank" rel="noopener noreferrer" style="font-size:0.75rem; font-weight:700; color:var(--accent); text-decoration:none; display:inline-flex; align-items:center; gap:5px; padding:4px 10px; background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.3); border-radius:8px; transition:all 0.2s;">
             <span>${tFunc('materiaMedica.consultOriginalSheet', {}, 'Consulter la fiche originale sur Rain-Tree.com')}</span> <i class="ri-external-link-line"></i>
           </a>
         </div>
-        <div style="font-size:0.78rem; color:var(--text-dim); line-height:1.4;">
-          ${tFunc('materiaMedica.drLeslieTaylorBio', {}, 'Monographie officielle rédigée par le Dr. Leslie Taylor, N.D. issue des recherches ethnobotaniques et des publications cliniques sur')} <em>${esc(herb.latinName)}</em>${herb.family ? ` (${esc(herb.family)})` : ''}.
+        <div style="font-size:0.76rem; color:var(--text-dim); line-height:1.4;">
+          ${tFunc('materiaMedica.drLeslieTaylorBio', {}, 'Monographie officielle rédigée par le Dr Leslie Taylor, N.D., issue des recherches ethnobotaniques et publications sur')} <em>${esc(herb.latinName)}</em>${herb.family ? ` (${esc(herb.family)})` : ''}.
         </div>
       </div>
 
-      <!-- ZONE 1 : APERÇU IMMÉDIAT -->
-      <div class="herb-preview-card" style="border-left:4px solid var(--accent)">
-        <div class="herb-preview-title"><i class="ri-shield-star-fill"></i> ${tFunc('materiaMedica.majorBenefitsTitle', {}, 'Bénéfices Majeurs & Cibles Cliniques')}</div>
-        <ul class="herb-benefit-list">
+      <!-- BÉNÉFICES MAJEURS & CIBLES CLINIQUES -->
+      <div class="herb-apple-box-green">
+        <div class="herb-apple-box-title green"><i class="ri-checkbox-circle-fill"></i> ${tFunc('materiaMedica.majorBenefitsTitle', {}, 'BÉNÉFICES MAJEURS & CIBLES CLINIQUES')}</div>
+        <div style="display:flex; flex-direction:column; gap:6px; font-size:0.84rem; color:var(--text);">
           ${indicationsList}
-        </ul>
-      </div>
-
-      <div class="herb-preview-card" style="border-left:4px solid #38bdf8">
-        <div class="herb-preview-title" style="color:#38bdf8"><i class="ri-cup-fill"></i> ${tFunc('materiaMedica.posologyTitle', {}, 'Posologie Pratique & Mode d\'Emploi')}</div>
-        <div class="herb-posology-box">
-          ${posologyHtml || `<div class="herb-posology-item">${tFunc('materiaMedica.defaultPosology', {}, 'Infusion ou décoction standard : 1 tasse 2 à 3 fois par jour.')}</div>`}
         </div>
       </div>
 
-      ${herb.contraindications ? `
-      <div class="herb-preview-card" style="border-left:4px solid #f87171;background:rgba(239,68,68,0.05)">
-        <div class="herb-preview-title" style="color:#f87171"><i class="ri-alarm-warning-fill"></i> ${tFunc('materiaMedica.precautionsTitle', {}, 'Précautions & Contre-indications')}</div>
-        <div style="font-size:0.88rem;color:#fca5a5;line-height:1.5">
-          ${esc(herb.contraindications)}
+      <!-- POSOLOGIE PRATIQUE & MODE D'EMPLOI -->
+      <div class="herb-apple-box-blue">
+        <div class="herb-apple-box-title blue"><i class="ri-cup-fill"></i> ${tFunc('materiaMedica.posologyTitle', {}, 'POSOLOGIE PRATIQUE & MODE D\'EMPLOI')}</div>
+        <div style="display:flex; flex-direction:column; gap:6px; font-size:0.82rem; color:var(--text); line-height:1.5;">
+          ${posologyHtml || `<div style="display:flex; align-items:flex-start; gap:6px;"><span>💧</span> <span>${tFunc('materiaMedica.defaultPosology', {}, 'Infusion ou décoction standard : 1 tasse 2 à 3 fois par jour.')}</span></div>`}
         </div>
-      </div>` : ''}
+      </div>
 
-      <!-- ZONE 2 : ACCORDÉON DÉROULANT (Monographie Scientifique Complète) -->
-      <button class="herb-monograph-toggle" id="herbMonographBtn" onclick="toggleHerbMonograph()">
-        <span><i class="ri-microscope-fill" style="color:var(--accent);margin-right:8px"></i> <span id="herbMonographBtnText">${tFunc('materiaMedica.monographToggleOpen', {}, 'Dérouler la monographie scientifique & études Raintree (Dr. Leslie Taylor)')}</span></span>
+      <!-- PRÉCAUTIONS & CONTRE-INDICATIONS -->
+      <div class="herb-apple-box-red">
+        <div class="herb-apple-box-title red"><i class="ri-alarm-warning-fill"></i> ${tFunc('materiaMedica.precautionsTitle', {}, 'PRÉCAUTIONS & CONTRE-INDICATIONS')}</div>
+        <div style="font-size:0.82rem; color:var(--text); line-height:1.5;">
+          ${esc(herb.contraindications || tFunc('materiaMedica.disclaimerText', {}, 'Déconseillé aux femmes enceintes et allaitantes sans avis médical. Respecter les posologies indiquées.'))}
+        </div>
+      </div>
+
+      <!-- ACCORDÉON MONOGRAPHIE SCIENTIFIQUE -->
+      <button type="button" class="herb-apple-monograph-toggle" id="herbMonographBtn" onclick="toggleHerbMonograph()">
+        <span id="herbMonographBtnText">${tFunc('materiaMedica.monographToggleOpen', {}, 'Déplier la monographie scientifique')}</span>
         <i class="ri-arrow-down-s-line" id="herbMonographIcon"></i>
       </button>
 
-      <div class="herb-monograph-drawer" id="herbMonographDrawer">
-        <div class="herb-drawer-section">
-          <div class="herb-drawer-title"><i class="ri-information-fill"></i> ${tFunc('materiaMedica.botanicalIdentityTitle', {}, 'Carte d\'Identité & Origine Botanique')}</div>
-          <div style="font-size:0.86rem;line-height:1.55;color:var(--text-dim)">
+      <div class="herb-apple-monograph-drawer" id="herbMonographDrawer">
+        <div>
+          <div style="font-size:0.8rem; font-weight:800; color:var(--text); margin-bottom:4px;"><i class="ri-information-fill" style="color:var(--accent)"></i> ${tFunc('materiaMedica.botanicalIdentityTitle', {}, 'Carte d\'identité & origine botanique')}</div>
+          <div style="font-size:0.78rem; color:var(--text-dim); line-height:1.5;">
             <div><strong>${tFunc('materiaMedica.commonNames', {}, 'Noms usuels :')}</strong> ${esc(synonymsStr)}</div>
-            <div style="margin-top:4px"><strong>${tFunc('materiaMedica.origin', {}, 'Origine :')}</strong> ${esc(herb.origin)}</div>
-            <div style="margin-top:4px"><strong>${tFunc('materiaMedica.partUsed', {}, 'Partie utilisée :')}</strong> ${esc(herb.partsUsed)}</div>
-            <div style="margin-top:4px"><strong>${tFunc('materiaMedica.directLinkRaintree', {}, 'Lien direct Raintree :')}</strong> <a href="${sourceUrl}" target="_blank" rel="noopener noreferrer" style="color:var(--accent);">${sourceUrl}</a></div>
+            <div><strong>${tFunc('materiaMedica.origin', {}, 'Origine :')}</strong> ${esc(herb.origin)}</div>
+            <div><strong>${tFunc('materiaMedica.partUsed', {}, 'Partie utilisée :')}</strong> ${esc(herb.partsUsed)}</div>
+            <div><strong>${tFunc('materiaMedica.directLinkRaintree', {}, 'Lien direct Raintree :')}</strong> <a href="${sourceUrl}" target="_blank" rel="noopener noreferrer" style="color:var(--accent);">${sourceUrl}</a></div>
           </div>
         </div>
 
-        <div class="herb-drawer-section">
-          <div class="herb-drawer-title"><i class="ri-flask-fill"></i> ${tFunc('materiaMedica.activeCompoundsTitle', {}, 'Principes Phytochimiques Actifs')}</div>
-          <ul style="list-style:none;padding-left:0;display:flex;flex-direction:column;gap:5px;font-size:0.86rem;color:var(--text)">
+        <div>
+          <div style="font-size:0.8rem; font-weight:800; color:var(--text); margin-bottom:4px;"><i class="ri-flask-fill" style="color:var(--accent)"></i> ${tFunc('materiaMedica.activeCompoundsTitle', {}, 'Principes phytochimiques actifs')}</div>
+          <ul style="list-style:none; padding-left:0; margin:0; display:flex; flex-direction:column; gap:3px; font-size:0.78rem; color:var(--text);">
             ${compoundsList}
           </ul>
         </div>
 
-        <div class="herb-drawer-section">
-          <div class="herb-drawer-title"><i class="ri-stethoscope-fill"></i> ${tFunc('materiaMedica.mechanismsTitle', {}, 'Mécanismes Physiologiques & Pharmacodynamie (Dr. Leslie Taylor)')}</div>
-          <div style="line-height:1.6;font-size:0.88rem;color:var(--text)">
+        <div>
+          <div style="font-size:0.8rem; font-weight:800; color:var(--text); margin-bottom:4px;"><i class="ri-stethoscope-fill" style="color:var(--accent)"></i> ${tFunc('materiaMedica.mechanismsTitle', {}, 'Mécanismes & usage traditionnel')}</div>
+          <div style="font-size:0.78rem; color:var(--text); line-height:1.5;">
             ${formattedMechanisms}
           </div>
         </div>
 
         ${herb.vitalistNote ? `
-        <div class="herb-drawer-section" style="border-left:3px solid var(--accent);background:rgba(52,211,153,0.06)">
-          <div class="herb-drawer-title"><i class="ri-leaf-fill"></i> ${tFunc('materiaMedica.vitalistVisionTitle', {}, 'Vision Vitaliste & Détoxification Émonctorielle')}</div>
-          <div style="font-size:0.88rem;color:var(--text);line-height:1.55">
+        <div style="background:rgba(16,185,129,0.05); border-left:3px solid var(--accent); padding:8px 10px; border-radius:8px;">
+          <div style="font-size:0.8rem; font-weight:800; color:var(--accent); margin-bottom:4px;"><i class="ri-leaf-fill"></i> ${tFunc('materiaMedica.vitalistVisionTitle', {}, 'Vision vitaliste & détoxification émonctorielle')}</div>
+          <div style="font-size:0.78rem; color:var(--text); line-height:1.5;">
             ${esc(herb.vitalistNote)}
-          </div>
-        </div>` : ''}
-
-        ${herb.synergies && herb.synergies.length ? `
-        <div class="herb-drawer-section">
-          <div class="herb-drawer-title"><i class="ri-compass-3-fill"></i> ${tFunc('materiaMedica.synergiesTitle', {}, 'Synergies Botaniques Amazoniennes')}</div>
-          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">
-            ${synergiesList}
           </div>
         </div>` : ''}
       </div>

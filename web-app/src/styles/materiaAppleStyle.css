@@ -1,0 +1,740 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   APPLE-INSPIRED CLEAN DESIGN SYSTEM — PHARMACOPÉE AMAZONIENNE & MATERIA MEDICA
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. CONTAINER ── */
+.materia-apple-container {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── 2. HEADER HERO ── */
+.materia-apple-header {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 18px 24px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+@media (max-width: 600px) {
+  .materia-apple-header {
+    padding: 16px 18px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}
+
+.materia-apple-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.materia-apple-header-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(16, 185, 129, 0.12);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  flex-shrink: 0;
+}
+
+.materia-apple-header-title {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.3px;
+}
+
+.materia-apple-header-sub {
+  margin: 3px 0 0 0;
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  line-height: 1.4;
+  max-width: 700px;
+}
+
+.materia-apple-header-badge {
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 5px 14px;
+  border-radius: 20px;
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--accent);
+  border: 1px solid rgba(16, 185, 129, 0.22);
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ── 3. MEDICAL DISCLAIMER NOTICE ── */
+.materia-apple-disclaimer {
+  background: rgba(245, 158, 11, 0.05);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  border-left: 4px solid #f59e0b;
+  border-radius: 14px;
+  padding: 12px 18px;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--text-dim);
+  box-shadow: var(--shadow-sm);
+}
+
+[data-theme="light"] .materia-apple-disclaimer {
+  background: #fffbeb;
+  border-color: #fde68a;
+  border-left-color: #d97706;
+  color: #92400e;
+}
+
+/* ── 4. BIDIRECTIONAL SWITCH BANNER (RECETTES ⇄ PHARMACOPÉE) ── */
+.vital-apple-switch-banner {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  gap: 14px;
+}
+
+.vital-apple-switch-banner:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+  box-shadow: var(--card-shadow);
+}
+
+.vital-apple-switch-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.vital-apple-switch-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(16, 185, 129, 0.12);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  flex-shrink: 0;
+}
+
+.vital-apple-switch-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.vital-apple-switch-sub {
+  font-size: 0.76rem;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+.vital-apple-switch-btn {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.vital-apple-switch-banner:hover .vital-apple-switch-btn {
+  background: var(--accent);
+  color: #ffffff;
+  border-color: var(--accent);
+}
+
+/* ── 5. SEARCH & CLINICAL TARGETS CARD ── */
+.materia-apple-search-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 18px 22px;
+  box-shadow: var(--shadow-sm);
+}
+
+@media (max-width: 600px) {
+  .materia-apple-search-card {
+    padding: 16px 18px;
+  }
+}
+
+.materia-apple-search-title {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.materia-apple-search-input-wrap {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.materia-apple-search-input-wrap i.search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-dim);
+  font-size: 1rem;
+}
+
+.materia-apple-search-input {
+  width: 100%;
+  padding: 11px 40px 11px 40px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 0.88rem;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.materia-apple-search-input:focus {
+  border-color: var(--accent);
+  background: var(--surface);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+}
+
+.materia-apple-clear-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.materia-apple-clear-btn:hover {
+  color: #ef4444;
+}
+
+.materia-apple-target-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+
+.materia-apple-target-row {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+
+.materia-apple-target-row::-webkit-scrollbar {
+  display: none;
+}
+
+.materia-apple-target-pill {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  user-select: none;
+}
+
+.materia-apple-target-pill:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-strong);
+}
+
+.materia-apple-target-pill.active {
+  background: var(--accent) !important;
+  color: #ffffff !important;
+  border-color: var(--accent) !important;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+/* ── 6. COUNT / STATS BAR ── */
+.materia-apple-stats-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 4px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-dim);
+}
+
+/* ── 7. HERBS GRID & CARDS ── */
+.materia-apple-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 1100px) {
+  .materia-apple-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .materia-apple-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+}
+
+.materia-apple-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+.materia-apple-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--card-shadow);
+  border-color: var(--border-strong);
+}
+
+.materia-apple-card-media {
+  width: 100%;
+  height: 140px;
+  position: relative;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.materia-apple-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+
+.materia-apple-card:hover .materia-apple-card-img {
+  transform: scale(1.04);
+}
+
+.materia-apple-tropism-chip {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  z-index: 1;
+}
+
+/* Tropism Pastels */
+.chip-green { background: rgba(16, 185, 129, 0.9); color: #ffffff; }
+.chip-purple { background: rgba(139, 92, 246, 0.9); color: #ffffff; }
+.chip-orange { background: rgba(249, 115, 22, 0.9); color: #ffffff; }
+.chip-blue { background: rgba(59, 130, 246, 0.9); color: #ffffff; }
+.chip-teal { background: rgba(20, 184, 166, 0.9); color: #ffffff; }
+.chip-rose { background: rgba(244, 63, 94, 0.9); color: #ffffff; }
+.chip-cyan { background: rgba(6, 182, 212, 0.9); color: #ffffff; }
+
+.materia-apple-card-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.materia-apple-card-title {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.materia-apple-card-latin {
+  font-size: 0.76rem;
+  font-style: italic;
+  color: var(--accent);
+  margin-top: 1px;
+}
+
+.materia-apple-card-indications {
+  font-size: 0.78rem;
+  color: var(--text);
+  line-height: 1.45;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.materia-apple-indication-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.materia-apple-indication-item i {
+  color: var(--accent);
+  font-size: 0.85rem;
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+
+.materia-apple-card-dose {
+  font-size: 0.74rem;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 500;
+}
+
+.materia-apple-card-source-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  font-size: 0.72rem;
+}
+
+.materia-apple-source-link {
+  color: var(--accent);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+}
+
+.materia-apple-family-tag {
+  color: var(--text-dim);
+}
+
+.materia-apple-card-btn {
+  width: 100%;
+  padding: 9px 12px;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.22);
+  border-radius: 10px;
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+  margin-top: 6px;
+}
+
+.materia-apple-card:hover .materia-apple-card-btn {
+  background: var(--accent);
+  color: #ffffff;
+  border-color: var(--accent);
+}
+
+/* ── 8. APPLE-STYLE HERB MODAL ── */
+.herb-apple-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 10050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: fadeIn 0.2s ease;
+}
+
+.herb-apple-modal-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  width: 100%;
+  max-width: 680px;
+  max-height: 90vh;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  animation: scaleUp 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.herb-apple-modal-hero {
+  position: relative;
+  width: 100%;
+  height: 190px;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.herb-apple-modal-hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.herb-apple-modal-hero-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.1) 0%, rgba(15, 23, 42, 0.75) 55%, var(--bg-card) 100%);
+}
+
+[data-theme="light"] .herb-apple-modal-hero-gradient {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.85) 60%, var(--bg-card) 100%);
+}
+
+.herb-apple-modal-close-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  z-index: 5;
+}
+
+.herb-apple-modal-close-btn:hover {
+  background: rgba(239, 68, 68, 0.6);
+  transform: rotate(90deg);
+}
+
+.herb-apple-modal-header-info {
+  position: absolute;
+  bottom: 12px;
+  left: 20px;
+  right: 20px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.herb-apple-modal-header-info .materia-apple-tropism-chip {
+  position: static !important;
+  display: inline-flex !important;
+  margin-bottom: 2px;
+  align-self: flex-start;
+}
+
+.herb-apple-modal-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.2;
+  margin: 0;
+}
+
+.herb-apple-modal-subtitle {
+  font-size: 0.82rem;
+  color: var(--text-dim);
+  font-style: italic;
+  margin: 0;
+}
+
+.herb-apple-modal-body {
+  padding: 18px 22px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.herb-apple-primary-source-box {
+  background: rgba(16, 185, 129, 0.06);
+  border: 1px solid rgba(16, 185, 129, 0.22);
+  border-radius: 14px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.herb-apple-box-green {
+  background: rgba(16, 185, 129, 0.05);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-left: 4px solid var(--accent);
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+
+.herb-apple-box-blue {
+  background: rgba(59, 130, 246, 0.05);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-left: 4px solid #3b82f6;
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+
+.herb-apple-box-red {
+  background: rgba(239, 68, 68, 0.05);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-left: 4px solid #ef4444;
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+
+.herb-apple-box-title {
+  font-size: 0.74rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.herb-apple-box-title.green { color: var(--accent); }
+.herb-apple-box-title.blue { color: #3b82f6; }
+.herb-apple-box-title.red { color: #ef4444; }
+
+.herb-apple-monograph-toggle {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 0.84rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.herb-apple-monograph-toggle:hover {
+  background: var(--surface-hover);
+  border-color: var(--border-strong);
+}
+
+.herb-apple-monograph-drawer {
+  display: none;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+.herb-apple-monograph-drawer.open {
+  display: flex;
+}
+
+.herb-apple-modal-footer {
+  padding: 14px 22px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.herb-apple-ask-ai-btn {
+  background: #0284c7;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  padding: 9px 18px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.herb-apple-ask-ai-btn:hover {
+  background: #0369a1;
+  transform: translateY(-1px);
+}
