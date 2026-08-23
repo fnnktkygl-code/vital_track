@@ -355,7 +355,14 @@ export default {
     "switchToMateriaTitle": "Farmacopea Amazónica y Plantas Medicinales",
     "switchToMateriaSub": "Explora 127 monografías fitoquímicas y remedios tradicionales de la selva tropical (Dra. Leslie Taylor).",
     "switchToMateriaBtn": "Farmacopea",
-    "videoDemoShort": "Video"
+    "videoDemoShort": "Video",
+    "aiCtaTitle": "Adaptar esta receta con el Coach IA",
+    "aiCtaSub": "Personalice según sus ingredientes disponibles, intolerancias u objetivos de regeneración.",
+    "aiCtaBtn": "Chatear con la IA",
+    "askCoachBtn": "Adaptar con el Coach IA",
+    "recipeContextLabel": "Receta Vitalista",
+    "chatPlaceholder": "Pregunte cómo adaptar esta receta (o presione Enviar)...",
+    "aiShortBtn": "Coach IA"
   },
   "userProfile": {
     "levelInitiated": "Iniciado Vitalista 🌱",

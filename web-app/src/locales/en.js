@@ -355,7 +355,14 @@ export default {
     "switchToMateriaTitle": "Amazonian Pharmacopeia & Medicinal Plants",
     "switchToMateriaSub": "Explore 127 phytochemical monographs and traditional rainforest remedies (Dr. Leslie Taylor).",
     "switchToMateriaBtn": "Pharmacopeia",
-    "videoDemoShort": "Video"
+    "videoDemoShort": "Video",
+    "aiCtaTitle": "Customize this recipe with AI Coach",
+    "aiCtaSub": "Tailor to your available ingredients, dietary sensitivities, or cellular regeneration goals.",
+    "aiCtaBtn": "Discuss with AI",
+    "askCoachBtn": "Customize with AI Coach",
+    "recipeContextLabel": "Vitalist Recipe",
+    "chatPlaceholder": "Ask how to adapt this recipe (or press Send)...",
+    "aiShortBtn": "AI Coach"
   },
   "userProfile": {
     "levelInitiated": "Vitalist Initiate 🌱",

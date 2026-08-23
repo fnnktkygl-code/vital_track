@@ -355,7 +355,14 @@ export default {
     "switchToMateriaTitle": "Pharmacopée Amazonienne & Plantes Médicinales",
     "switchToMateriaSub": "Explorer 127 monographies phytochimiques et remèdes traditionnels de la forêt tropicale (Dr. Leslie Taylor).",
     "switchToMateriaBtn": "Pharmacopée",
-    "videoDemoShort": "Vidéo"
+    "videoDemoShort": "Vidéo",
+    "aiCtaTitle": "Adapter cette recette avec le Coach IA",
+    "aiCtaSub": "Personnalisez selon vos ingrédients disponibles, vos intolérances ou vos objectifs de régénération.",
+    "aiCtaBtn": "Discuter avec l'IA",
+    "askCoachBtn": "Adapter avec le Coach IA",
+    "recipeContextLabel": "Recette Vitaliste",
+    "chatPlaceholder": "Posez une question pour adapter cette recette (ou appuyez sur Envoyer)...",
+    "aiShortBtn": "Coach IA"
   },
   "userProfile": {
     "levelInitiated": "Initié Vitaliste 🌱",

@@ -55,6 +55,7 @@ export function initRecipesModule() {
   window.setRecipeModalServings = setRecipeModalServings;
   window.copyRecipeToClipboard = copyRecipeToClipboard;
   window.addRecipeToFavorites = addRecipeToFavorites;
+  window.askAIAboutRecipe = askAIAboutRecipe;
 }
 
 export function setRecipeSearchQuery(query) {
@@ -466,9 +467,15 @@ function renderRecipeCard(rawRecipe, lang = 'fr') {
         <div class="recipe-apple-meta-item">
           <span>🪄 ${t('recipes.vitalityBadge', {}, 'Vitalité')} ${recipe.vitalityScore}%</span>
         </div>
-        <div class="recipe-apple-explore-link">
-          <span>${t('recipes.explorerBtn', {}, 'Explorer')}</span>
-          <i class="ri-arrow-right-line"></i>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button type="button" class="recipe-apple-card-ai-btn" onclick="event.stopPropagation(); askAIAboutRecipe('${esc(recipe.id)}');" title="${t('recipes.askCoachBtn', {}, 'Adapter avec le Coach IA')}">
+            <i class="ri-sparkling-fill"></i>
+            <span>${t('recipes.aiShortBtn', {}, 'Coach IA')}</span>
+          </button>
+          <div class="recipe-apple-explore-link">
+            <span>${t('recipes.explorerBtn', {}, 'Explorer')}</span>
+            <i class="ri-arrow-right-line"></i>
+          </div>
         </div>
       </div>
     </div>
@@ -802,14 +809,41 @@ function renderModalContent() {
         `}
       </div>
 
+      <!-- BANDEAU CTA INTERACTIF : ADAPTER LA RECETTE AVEC LE COACH IA -->
+      <div class="recipe-apple-ai-cta-box" onclick="askAIAboutRecipe('${esc(r.id)}')">
+        <div class="recipe-apple-ai-cta-left">
+          <div class="recipe-apple-ai-cta-icon">
+            <i class="ri-sparkling-2-fill"></i>
+          </div>
+          <div>
+            <div class="recipe-apple-ai-cta-title">
+              ${t('recipes.aiCtaTitle', {}, 'Adapter cette recette avec le Coach IA')}
+            </div>
+            <div class="recipe-apple-ai-cta-sub">
+              ${t('recipes.aiCtaSub', {}, "Personnalisez selon vos ingrédients disponibles, vos intolérances ou vos objectifs de régénération.")}
+            </div>
+          </div>
+        </div>
+        <button type="button" class="recipe-apple-ai-cta-btn">
+          <i class="ri-chat-smile-2-line"></i>
+          <span>${t('recipes.aiCtaBtn', {}, 'Discuter avec l\'IA')}</span>
+          <i class="ri-arrow-right-line"></i>
+        </button>
+      </div>
+
       <!-- PIED DE FICHE : BOUTONS D'ACTION -->
       <div class="recipe-apple-modal-footer">
         <button type="button" class="recipe-apple-btn-outline" onclick="copyRecipeToClipboard('${esc(r.id)}')">
-          ${t('recipes.copyRecipeBtn', {}, 'Copier la recette')}
+          <i class="ri-file-copy-line"></i>
+          <span>${t('recipes.copyRecipeBtn', {}, 'Copier la recette')}</span>
         </button>
-        <button type="button" class="recipe-apple-btn-solid" onclick="addRecipeToFavorites('${esc(r.id)}')">
+        <button type="button" class="recipe-apple-btn-outline" onclick="addRecipeToFavorites('${esc(r.id)}')">
           <span>💚</span>
-          <span>${t('recipes.saveToFavoritesBtn', {}, 'Enregistrer dans mes favoris')}</span>
+          <span>${t('recipes.saveToFavoritesBtn', {}, 'Favoris')}</span>
+        </button>
+        <button type="button" class="recipe-apple-btn-solid recipe-apple-ai-btn" onclick="askAIAboutRecipe('${esc(r.id)}')">
+          <i class="ri-sparkling-2-fill"></i>
+          <span>${t('recipes.askCoachBtn', {}, 'Adapter avec le Coach IA')}</span>
         </button>
       </div>
 
@@ -824,6 +858,72 @@ export function closeRecipeModal() {
   }
   document.body.style.overflow = '';
   _activeModalRecipe = null;
+}
+
+export function askAIAboutRecipe(recipeId) {
+  const rawRecipe = VITALIST_RECIPES.find(r => r.id === recipeId);
+  if (!rawRecipe) return;
+
+  const lang = getLanguage();
+  const r = getLocalizedRecipe(rawRecipe, lang);
+
+  closeRecipeModal();
+  if (window.showPage) window.showPage('chat');
+
+  const authorName = r.author || rawRecipe.author || 'Vitaliste';
+  const label = t('recipes.recipeContextLabel', {}, 'Recette Vitaliste');
+  const subject = `${r.title} (${authorName})`;
+  const placeholder = t('recipes.chatPlaceholder', {}, 'Posez une question pour adapter cette recette (ou appuyez sur Envoyer)...');
+
+  let defaultQueryPrompt = '';
+  if (lang === 'en') {
+    defaultQueryPrompt = `I would like to prepare the vitalist recipe "${r.title}" (${r.subtitle}) from the ${authorName} tradition (Source: ${r.bookReference || 'Culinary Pharmacopoeia'}).\n\n` +
+      `📋 Base ingredients:\n` +
+      r.ingredients.map(i => `- ${i.quantity} ${i.unit} ${i.name} ${i.note ? `(${i.note})` : ''}`).join('\n') +
+      `\n\n👨‍🍳 Preparation protocol:\n` +
+      r.instructions.map((step, idx) => `${idx + 1}. ${step}`).join('\n') +
+      `\n\n⚡ Vitalist Action & Targeted Organs:\n` +
+      `${r.vitalistAction} (${r.targetEmunctories.join(', ')})\n\n` +
+      `💡 User question / customization request:\n`;
+  } else if (lang === 'es') {
+    defaultQueryPrompt = `Me gustaría preparar la receta vitalista "${r.title}" (${r.subtitle}) de la tradición ${authorName} (Fuente: ${r.bookReference || 'Farmacopea Culinaria'}).\n\n` +
+      `📋 Ingredientes base:\n` +
+      r.ingredients.map(i => `- ${i.quantity} ${i.unit} ${i.name} ${i.note ? `(${i.note})` : ''}`).join('\n') +
+      `\n\n👨‍🍳 Protocolo de preparación:\n` +
+      r.instructions.map((step, idx) => `${idx + 1}. ${step}`).join('\n') +
+      `\n\n⚡ Acción vitalista y Órganos diana:\n` +
+      `${r.vitalistAction} (${r.targetEmunctories.join(', ')})\n\n` +
+      `💡 Pregunta del usuario / Solicitud de adaptación:\n`;
+  } else {
+    // fr / fr-CA
+    defaultQueryPrompt = `J'aimerais préparer la recette vitaliste "${r.title}" (${r.subtitle}) issue de la tradition ${authorName} (Source : ${r.bookReference || 'Pharmacopée Culinaire'}).\n\n` +
+      `📋 Ingrédients de base :\n` +
+      r.ingredients.map(i => `- ${i.quantity} ${i.unit} ${i.name} ${i.note ? `(${i.note})` : ''}`).join('\n') +
+      `\n\n👨‍🍳 Protocole de préparation :\n` +
+      r.instructions.map((step, idx) => `${idx + 1}. ${step}`).join('\n') +
+      `\n\n⚡ Action vitaliste & Organes ciblés :\n` +
+      `${r.vitalistAction} (${r.targetEmunctories.join(', ')})\n\n` +
+      `💡 Question de l'utilisateur / Demande d'adaptation :\n`;
+  }
+
+  if (window.setChatContext) {
+    window.setChatContext({
+      type: 'recipe_adaptation',
+      icon: '🍲',
+      label: label,
+      subject: subject,
+      placeholder: placeholder,
+      buildPrompt: (userText) => {
+        const fallbackQuery = (lang === 'en')
+          ? "How can I adapt or customize this recipe according to my available ingredients, food sensitivities, or regenerative detox goals? Could you suggest ingredient substitutions and your best vitalist advice?"
+          : (lang === 'es')
+          ? "¿Cómo puedo adaptar o personalizar esta receta según mis ingredientes disponibles, intolerancias u objetivos de regeneración y desintoxicación? ¿Podrías sugerirme sustituciones de ingredientes y tus mejores consejos vitalistas?"
+          : "Comment puis-je adapter ou personnaliser cette recette selon mes ingrédients disponibles, mes intolérances ou mes objectifs de régénération et de détoxification ? Peux-tu me donner des alternatives d'ingrédients et tes meilleurs conseils vitalistes ?";
+
+        return `${defaultQueryPrompt}${userText ? userText : fallbackQuery}`;
+      }
+    });
+  }
 }
 
 export function copyRecipeToClipboard(recipeId) {
@@ -866,3 +966,8 @@ export function addRecipeToFavorites(recipeId) {
     alert(`${recipe.title} — ${t('recipes.saveToFavoritesBtn', {}, 'Enregistré dans mes favoris')}`);
   }
 }
+
+if (typeof window !== 'undefined') {
+  window.askAIAboutRecipe = askAIAboutRecipe;
+}
+
