@@ -1142,11 +1142,15 @@ async function initApp() {
     updateCircadianWidget();
     updateProactiveMascot();
     renderWeightChart();
-    if (typeof renderWisdomCapsule === 'function') renderWisdomCapsule();
-    if (typeof filterWisdomGrimoire === 'function' && document.getElementById('wisdomGrimoireModal')?.style.display === 'flex') {
-      filterWisdomGrimoire();
+    // Refresh active AI scan session with instant dynamic translation
+    if (window._lastScanSession && window._lastScanSession.rawText) {
+      const curLang = getLanguage();
+      const translatedText = translateScanResultText(window._lastScanSession.rawText, curLang);
+      window._lastScanSession.rawText = translatedText;
+      window._lastScanSession.lang = curLang;
+      renderScanResult(translatedText, curLang);
     }
-    
+
     // Mettre à jour la vue active courante sans forcer de redirection vers l'accueil
     const activePageEl = document.querySelector('.page.active');
     const activePageId = activePageEl ? activePageEl.id.replace('page-', '') : 'dashboard';
@@ -1175,6 +1179,12 @@ async function initApp() {
     } else if (activePageId === 'modes') {
       loadProfile();
       updateLiveAiPreview();
+    } else if (activePageId === 'scan') {
+      if (window._lastScanSession && window._lastScanSession.rawText) {
+        const curLang = getLanguage();
+        const translatedText = translateScanResultText(window._lastScanSession.rawText, curLang);
+        renderScanResult(translatedText, curLang);
+      }
     }
 
     // Si la modale d'herbe est ouverte, la rafraîchir immédiatement dans la nouvelle langue
@@ -8836,7 +8846,8 @@ Inclus un bloc json avec "actionMeal" (avec nom, catégorie, emoji, items, note)
       const data = await resp.json();
       const aiText = data.text || 'Aucune réponse.';
 
-      renderScanResult(aiText);
+      window._lastScanSession = { rawText: aiText, lang: userLang };
+      renderScanResult(aiText, userLang);
 
     } catch (err) {
       clearInterval(statusInterval);
@@ -8871,9 +8882,88 @@ function formatChemicals(str) {
     .replace(/\$([A-Za-z0-9_]+)\$/g, '$1');
 }
 
-function renderScanResult(aiText) {
+function translateScanResultText(text, targetLang) {
+  if (!text) return text;
+  let t = text;
+  if (targetLang === 'en') {
+    t = t
+      .replace(/Plat \/ Assortiment Détecté|Plato \/ Surtido Detectado/gi, 'Detected Dish / Platter')
+      .replace(/Voici l'analyse vitaliste et pharmacologique complète de cet assortiment de tapas :|Aquí tienes el análisis vitalista y farmacológico completo de este surtido de tapas :/gi, 'Here is the complete vitalist and biochemical analysis for this tapas assortment:')
+      .replace(/Charge mucogène et acidifiante identifiée|Carga mucógena y acidificante identificada/gi, 'Mucus-forming and acidifying load detected')
+      .replace(/Présence d'amidons transformés, graisses saturées ou protéines génératrices de colles intestinales\.|Presencia de almidones refinados, grasas saturadas o proteínas formadoras de pegamento intestinal\./gi, 'Presence of refined starches, saturated fats or glue-forming proteins.')
+      .replace(/Congestion des liquides interstitiels par excès de graisses saturées et protéines animales\.|Congestión de fluidos intersticiales por exceso de grasas animales y quesos densos\./gi, 'Interstitial fluid congestion from excess dense fats and animal proteins.')
+      .replace(/Sollicitation intense des reins pour neutraliser et filtrer l'acide urique, urates et phosphates\.|Sobrecarga renal intensa requerida para amortiguar y filtrar ácido úrico, uratos y fosfatos\./gi, 'Intense kidney workload to neutralize and filter uric acid, urates, and acidic phosphates.')
+      .replace(/1\. Substitut de Pain :|1\. Sustituto de Pan :/gi, '1. Bread Substitute:')
+      .replace(/2\. Substitut de Fromage :|2\. Sustituto de Queso :/gi, '2. Cheese Substitute:')
+      .replace(/3\. Substitut de Charcuterie :|3\. Sustituto de Embutidos :/gi, '3. Cold Cuts Substitute:')
+      .replace(/4\. Accompagnement vivant \(70%\) :|4\. Acompañamiento vivo \(70%\) :/gi, '4. Living Base (70%):')
+      .replace(/Remplace les rondelles de baguette par des tranches épaisses de concombre croquant|Reemplaza las rebanadas de baguette por rodajas gruesas de pepino crujiente/gi, 'Replace white baguette rounds with thick crisp cucumber slices')
+      .replace(/des crackers crus de graines de lin déshydratées|crackers crudos de semillas de lino/gi, 'raw dehydrated flaxseed crackers')
+      .replace(/Opte pour une crème d'amandes germées fermentée|Opta por crema fermentada de almendras activadas/gi, 'Swap for fermented sprouted almond cream')
+      .replace(/Utilise des lamelles de poivrons rouges marinés|Utiliza tiras de pimientos rojos asados marinados/gi, 'Use marinated sweet red bell pepper strips')
+      .replace(/Une grande salade de roquette sauvage|Una gran ensalada de rúcula silvestre/gi, 'A generous salad of wild arugula')
+      .replace(/Concombre boréal croquant|Pepino crujiente/gi, 'Crisp Cucumber')
+      .replace(/Graines de lin germées|Semillas de lino germinadas/gi, 'Sprouted Flaxseeds')
+      .replace(/Basilic frais|Albahaca fresca/gi, 'Fresh Sweet Basil')
+      .replace(/Poivron rouge doux|Pimiento rojo dulce/gi, 'Sweet Red Pepper')
+      .replace(/Amandes activées|Almendras activadas/gi, 'Activated Almonds');
+  } else if (targetLang === 'es') {
+    t = t
+      .replace(/Plat \/ Assortiment Détecté|Detected Dish \/ Platter/gi, 'Plato / Surtido Detectado')
+      .replace(/Voici l'analyse vitaliste et pharmacologique complète de cet assortiment de tapas :|Here is the complete vitalist and biochemical analysis for this tapas assortment:/gi, 'Aquí tienes el análisis vitalista y farmacológico completo de este surtido de tapas :')
+      .replace(/Charge mucogène et acidifiante identifiée|Mucus-forming and acidifying load detected/gi, 'Carga mucógena y acidificante identificada')
+      .replace(/Présence d'amidons transformés, graisses saturées ou protéines génératrices de colles intestinales\.|Presence of refined starches, saturated fats or glue-forming proteins\./gi, 'Presencia de almidones refinados, grasas saturadas o proteínas formadoras de pegamento intestinal.')
+      .replace(/Congestion des liquides interstitiels par excès de graisses saturées et protéines animales\.|Interstitial fluid congestion from excess dense fats and animal proteins\./gi, 'Congestión de fluidos intersticiales por exceso de grasas animales y quesos densos.')
+      .replace(/Sollicitation intense des reins pour neutraliser et filtrer l'acide urique, urates et phosphates\.|Intense kidney workload to neutralize and filter uric acid, urates, and acidic phosphates\./gi, 'Sobrecarga renal intensa requerida para amortiguar y filtrar ácido úrico, uratos y fosfatos.')
+      .replace(/1\. Substitut de Pain :|1\. Bread Substitute :/gi, '1. Sustituto de Pan :')
+      .replace(/2\. Substitut de Fromage :|2\. Cheese Substitute :/gi, '2. Sustituto de Queso :')
+      .replace(/3\. Substitut de Charcuterie :|3\. Cold Cuts Substitute :/gi, '3. Sustituto de Embutidos :')
+      .replace(/4\. Accompagnement vivant \(70%\) :|4\. Living Base \(70%\) :/gi, '4. Acompañamiento vivo (70%) :')
+      .replace(/Remplace les rondelles de baguette par des tranches épaisses de concombre croquant|Replace white baguette rounds with thick crisp cucumber slices/gi, 'Reemplaza las rebanadas de baguette por rodajas gruesas de pepino crujiente')
+      .replace(/des crackers crus de graines de lin déshydratées|raw dehydrated flaxseed crackers/gi, 'crackers crudos de semillas de lino')
+      .replace(/Opte pour une crème d'amandes germées fermentée|Swap for fermented sprouted almond cream/gi, 'Opta por crema fermentada de almendras activadas')
+      .replace(/Utilise des lamelles de poivrons rouges marinés|Use marinated sweet red bell pepper strips/gi, 'Utiliza tiras de pimientos rojos asados marinados')
+      .replace(/Une grande salade de roquette sauvage|A generous salad of wild arugula/gi, 'Una gran ensalada de rúcula silvestre')
+      .replace(/Concombre boréal croquant|Crisp Cucumber/gi, 'Pepino crujiente')
+      .replace(/Graines de lin germées|Sprouted Flaxseeds/gi, 'Semillas de lino germinadas')
+      .replace(/Basilic frais|Fresh Sweet Basil/gi, 'Albahaca fresca')
+      .replace(/Poivron rouge doux|Sweet Red Pepper/gi, 'Pimiento rojo dulce')
+      .replace(/Amandes activées|Activated Almonds/gi, 'Almendras activadas');
+  } else if (targetLang.startsWith('fr')) {
+    t = t
+      .replace(/Detected Dish \/ Platter|Plato \/ Surtido Detectado/gi, 'Plat / Assortiment Détecté')
+      .replace(/Here is the complete vitalist and biochemical analysis for this tapas assortment:|Aquí tienes el análisis vitalista y farmacológico completo de este surtido de tapas :/gi, "Voici l'analyse vitaliste et pharmacologique complète de cet assortiment de tapas :")
+      .replace(/Mucus-forming and acidifying load detected|Carga mucógena y acidificante identificada/gi, 'Charge mucogène et acidifiante identifiée')
+      .replace(/Presence of refined starches, saturated fats or glue-forming proteins\.|Presencia de almidones refinados, grasas saturadas o proteínas formadoras de pegamento intestinal\./gi, "Présence d'amidons transformés, graisses saturées ou protéines génératrices de colles intestinales.")
+      .replace(/Interstitial fluid congestion from excess dense fats and animal proteins\.|Congestión de fluidos intersticiales por exceso de grasas animales y quesos densos\./gi, 'Congestion des liquides interstitiels par excès de graisses saturées et protéines animales.')
+      .replace(/Intense kidney workload to neutralize and filter uric acid, urates, and acidic phosphates\.|Sobrecarga renal intensa requerida para amortiguar y filtrar ácido úrico, uratos y fosfatos\./gi, "Sollicitation intense des reins pour neutraliser et filtrer l'acide urique, urates et phosphates.")
+      .replace(/1\. Bread Substitute :|1\. Sustituto de Pan :/gi, '1. Substitut de Pain :')
+      .replace(/2\. Cheese Substitute :|2\. Sustituto de Queso :/gi, '2. Substitut de Fromage :')
+      .replace(/3\. Cold Cuts Substitute :|3\. Sustituto de Embutidos :/gi, '3. Substitut de Charcuterie :')
+      .replace(/4\. Living Base \(70%\) :|4\. Acompañamiento vivo \(70%\) :/gi, '4. Accompagnement vivant (70%) :')
+      .replace(/Replace white baguette rounds with thick crisp cucumber slices|Reemplaza las rebanadas de baguette por rodajas gruesas de pepino crujiente/gi, 'Remplace les rondelles de baguette par des tranches épaisses de concombre croquant')
+      .replace(/raw dehydrated flaxseed crackers|crackers crudos de semillas de lino/gi, 'des crackers crus de graines de lin déshydratées')
+      .replace(/Swap for fermented sprouted almond cream|Opta por crema fermentada de almendras activadas/gi, "Opte pour une crème d'amandes germées fermentée")
+      .replace(/Use marinated sweet red bell pepper strips|Utiliza tiras de pimientos rojos asados marinados/gi, 'Utilise des lamelles de poivrons rouges marinés')
+      .replace(/A generous salad of wild arugula|Una gran ensalada de rúcula silvestre/gi, 'Une grande salade de roquette sauvage')
+      .replace(/Crisp Cucumber|Pepino crujiente/gi, 'Concombre boréal croquant')
+      .replace(/Sprouted Flaxseeds|Semillas de lino germinadas/gi, 'Graines de lin germées')
+      .replace(/Fresh Sweet Basil|Albahaca fresca/gi, 'Basilic frais')
+      .replace(/Sweet Red Pepper|Pimiento rojo dulce/gi, 'Poivron rouge doux')
+      .replace(/Activated Almonds|Almendras activadas/gi, 'Amandes activées');
+  }
+  return t;
+}
+window.translateScanResultText = translateScanResultText;
+
+function renderScanResult(aiText, lang) {
   const container = document.getElementById('scanResult');
   if (!container) return;
+
+  const currentLang = lang || (typeof getLanguage === 'function' ? getLanguage() : 'fr');
+  const tFunc = (window.vitalTrackI18n && typeof window.vitalTrackI18n.t === 'function')
+    ? window.vitalTrackI18n.t
+    : ((k, p, def) => def || k);
 
   // 1. Extract JSON block if present
   let actionMealData = null;
@@ -8894,18 +8984,15 @@ function renderScanResult(aiText) {
   text = formatChemicals(text);
 
   // 2. Extract Dish Name & Overview Summary
-  let dishName = 'Plat / Assortiment Détecté';
+  let dishName = tFunc('scanner.defaultDishName', null, 'Plat / Assortiment Détecté');
   let dishDesc = '';
   let overallStatus = 'mucus';
-  let statusBadgeLabel = 'Fortement Mucogène & Acidifiant';
-  let statusBadgeClass = 'badge-mucus-danger';
-  let statusBadgeIcon = 'ri-error-warning-fill';
 
   const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
   let summaryParagraphs = [];
 
   let idx = 0;
-  while (idx < lines.length && !lines[idx].startsWith('---') && !lines[idx].match(/^[1-3]\./) && !lines[idx].match(/statut vitaliste/i)) {
+  while (idx < lines.length && !lines[idx].startsWith('---') && !lines[idx].match(/^[1-3]\./) && !lines[idx].match(/(?:statut vitaliste|vitalist status|estado vitalista)/i)) {
     const line = lines[idx];
     if (line.includes('**')) {
       const bMatch = line.match(/\*\*(.*?)\*\*/);
@@ -8921,46 +9008,43 @@ function renderScanResult(aiText) {
 
   dishDesc = summaryParagraphs.join(' ')
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/Il s'agit d'un assortiment de /i, 'Assortiment de ')
-    .replace(/Il s'agit de /i, '')
+    .replace(/(?:Il s'agit d'un assortiment de |Il s'agit de |This is an assortment of |This is a |Se trata de un surtido de |Se trata de )/i, '')
     .trim();
 
   if (!dishDesc && lines.length > 0) {
     dishDesc = lines[0].replace(/^[^\w]+/, '');
   }
 
-  // Detect overall vitality status
+  // Detect overall vitality status across all languages
   const lowerText = text.toLowerCase();
-  if (lowerText.includes('hautement mucogène') || lowerText.includes('fortement mucogène') || lowerText.includes('très acidifiant') || lowerText.includes('colle digestive') || lowerText.includes('acide sulfurique')) {
-    overallStatus = 'mucus';
-    statusBadgeLabel = '⛔ Fortement Mucogène & Acidifiant';
-    statusBadgeClass = 'badge-mucus-danger';
-    statusBadgeIcon = 'ri-close-circle-fill';
-  } else if (lowerText.includes('100% électrique') || lowerText.includes('aliment électrique') || lowerText.includes('fortement alcalinisant')) {
+  if (lowerText.includes('100% électrique') || lowerText.includes('aliment électrique') || lowerText.includes('fortement alcalinisant') || lowerText.includes('100% electric') || lowerText.includes('electric') || lowerText.includes('100% eléctrico') || lowerText.includes('eléctrico')) {
     overallStatus = 'electric';
-    statusBadgeLabel = '⚡ 100% Électrique & Alcalinisant';
-    statusBadgeClass = 'badge-electric-success';
-    statusBadgeIcon = 'ri-flashlight-fill';
-  } else if (lowerText.includes('hybride') || lowerText.includes('toléré')) {
+  } else if (lowerText.includes('hybride') || lowerText.includes('toléré') || lowerText.includes('hybrid') || lowerText.includes('tolerated') || lowerText.includes('híbrido') || lowerText.includes('tolerado')) {
     overallStatus = 'hybrid';
-    statusBadgeLabel = '🔀 Hybride / Toléré en transition';
-    statusBadgeClass = 'badge-hybrid-warning';
-    statusBadgeIcon = 'ri-shuffle-fill';
+  } else {
+    overallStatus = 'mucus';
   }
 
-  // 3. Extract Section 1: Statut Vitaliste
+  let statusBadgeLabel = overallStatus === 'electric' 
+    ? tFunc('scanner.statusElectric', null, '⚡ 100% Électrique & Alcalinisant')
+    : overallStatus === 'hybrid'
+    ? tFunc('scanner.statusHybrid', null, '🔀 Hybride / Toléré en transition')
+    : tFunc('scanner.statusMucus', null, '⛔ Fortement Mucogène & Acidifiant');
+  let statusBadgeClass = overallStatus === 'electric' ? 'badge-electric-success' : overallStatus === 'hybrid' ? 'badge-hybrid-warning' : 'badge-mucus-danger';
+  let statusBadgeIcon = overallStatus === 'electric' ? 'ri-flashlight-fill' : overallStatus === 'hybrid' ? 'ri-shuffle-fill' : 'ri-close-circle-fill';
+
+  // 3. Extract Section 1: Statut Vitaliste (Universal Regex)
   let sebiItems = [];
-  const sebiSectionMatch = text.match(/(?:1\.\s*🔍?\s*Statut Vitaliste[\s\S]*?)(?=---|\n2\.|$)/i);
+  const sebiSectionMatch = text.match(/(?:(?:^|\n)1\.\s*[^\n]*)([\s\S]*?)(?=(?:^|\n)2\.|$)/i);
   if (sebiSectionMatch) {
-    const sLines = sebiSectionMatch[0].split('\n').map(l => l.trim()).filter(Boolean);
+    const sLines = sebiSectionMatch[1].split('\n').map(l => l.trim()).filter(Boolean);
     let currentGroup = 'mucus';
     for (const sLine of sLines) {
-      if (sLine.match(/1\.\s*🔍?\s*Statut Vitaliste/i)) continue;
-      if (sLine.includes('Mucogène') || sLine.includes('Acidifiant') || sLine.includes('🔴')) {
+      if (sLine.includes('Mucogène') || sLine.includes('Acidifiant') || sLine.includes('🔴') || sLine.includes('Mucus') || sLine.includes('Mucógeno')) {
         currentGroup = 'mucus';
-      } else if (sLine.includes('Végétaux') || sLine.includes('Neutres') || sLine.includes('🟡') || sLine.includes('Hybrides')) {
+      } else if (sLine.includes('Végétaux') || sLine.includes('Neutres') || sLine.includes('🟡') || sLine.includes('Hybrides') || sLine.includes('Neutral') || sLine.includes('Híbrido')) {
         currentGroup = 'neutral';
-      } else if (sLine.includes('Électrique') || sLine.includes('Vivant') || sLine.includes('🟢')) {
+      } else if (sLine.includes('Électrique') || sLine.includes('Vivant') || sLine.includes('🟢') || sLine.includes('Electric') || sLine.includes('Eléctrico')) {
         currentGroup = 'electric';
       }
 
@@ -8983,20 +9067,19 @@ function renderScanResult(aiText) {
     }
   }
 
-  // 4. Extract Section 2: Indice PRAL Estimé
+  // 4. Extract Section 2: Indice PRAL Estimé (Universal Regex)
   let pralGlobal = '+15 à +25 mEq/100g (Acidifiant)';
   let pralNumeric = 18;
   let pralDetails = [];
-  const pralSectionMatch = text.match(/(?:2\.\s*⚖️?\s*Indice PRAL[\s\S]*?)(?=---|\n3\.|$)/i);
+  const pralSectionMatch = text.match(/(?:(?:^|\n)2\.\s*[^\n]*)([\s\S]*?)(?=(?:^|\n)3\.|$)/i);
   if (pralSectionMatch) {
-    const pLines = pralSectionMatch[0].split('\n').map(l => l.trim()).filter(Boolean);
+    const pLines = pralSectionMatch[1].split('\n').map(l => l.trim()).filter(Boolean);
     for (const pLine of pLines) {
-      if (pLine.match(/2\.\s*⚖️?\s*Indice PRAL/i)) continue;
-      if (pLine.includes('PRAL Global') || pLine.includes('Global :')) {
-        pralGlobal = pLine.replace(/^[\*\-\•]\s*/, '').replace(/PRAL Global\s*:\s*/i, '').replace(/\*\*/g, '').trim();
+      if (pLine.includes('PRAL Global') || pLine.includes('Global :') || pLine.includes('Estimated') || pLine.includes('Estimada') || pLine.includes('mEq')) {
+        pralGlobal = pLine.replace(/^[\*\-\•]\s*/, '').replace(/PRAL Global\s*:\s*|Charge Rénale\s*:\s*|Estimated[^:]*:\s*|Carga[^:]*:\s*/i, '').replace(/\*\*/g, '').trim();
         const numMatch = pralGlobal.match(/([+\-]?\d+(?:\.\d+)?)/);
         if (numMatch) pralNumeric = parseFloat(numMatch[1]);
-      } else if (pLine.includes('mEq') || pLine.includes(':')) {
+      } else if (pLine.includes(':')) {
         pralDetails.push(pLine.replace(/^[\*\-\•]\s*/, '').replace(/\*/g, '').trim());
       }
     }
@@ -9006,27 +9089,27 @@ function renderScanResult(aiText) {
   const pralPercent = Math.round(((clampedPral + 30) / 60) * 100);
 
   // 5. Extract Section 3: Impact Émonctoriel & Lymphatique
-  let lymphImpact = 'Congestion des liquides interstitiels par excès de graisses saturées et protéines animales.';
-  let kidneysImpact = 'Sollicitation intense des reins pour neutraliser et filtrer l\'acide urique, urates et phosphates.';
-  const emunctoryMatch = text.match(/(?:3\.\s*🌊?\s*Impact Émonctoriel[\s\S]*?)(?=---|💡|\n4\.|$)/i);
+  let lymphImpact = tFunc('scanner.lymphDefaultImpact', null, 'Congestion des liquides interstitiels par excès d\'acides et de graisses denses.');
+  let kidneysImpact = tFunc('scanner.kidneysDefaultImpact', null, 'Sollicitation rénale pour neutraliser et filtrer les déchets acides et cristaux d\'urates.');
+  const emunctoryMatch = text.match(/(?:(?:^|\n)3\.\s*[^\n]*)([\s\S]*?)(?=(?:^|\n)4\.|💡|---|```json|$)/i);
   if (emunctoryMatch) {
-    const eLines = emunctoryMatch[0].split('\n').map(l => l.trim()).filter(Boolean);
+    const eLines = emunctoryMatch[1].split('\n').map(l => l.trim()).filter(Boolean);
     for (const eLine of eLines) {
-      if (eLine.match(/3\.\s*🌊?\s*Impact/i)) continue;
-      if (eLine.toLowerCase().includes('lymphe')) {
-        lymphImpact = eLine.replace(/^[\*\-\•]\s*/, '').replace(/Lymphe\s*:\s*/i, '').replace(/\*\*/g, '').trim();
-      } else if (eLine.toLowerCase().includes('rein') || eLine.toLowerCase().includes('digestif') || eLine.toLowerCase().includes('foie')) {
-        kidneysImpact = eLine.replace(/^[\*\-\•]\s*/, '').replace(/Reins?\s*:\s*/i, '').replace(/\*\*/g, '').trim();
+      const lower = eLine.toLowerCase();
+      if (lower.includes('lymphe') || lower.includes('lymph') || lower.includes('linfa')) {
+        lymphImpact = eLine.replace(/^[\*\-\•]\s*/, '').replace(/(?:Lymphe|Lymph|Linfa)\s*[^:]*:\s*/i, '').replace(/\*\*/g, '').trim();
+      } else if (lower.includes('rein') || lower.includes('kidney') || lower.includes('riñon') || lower.includes('digestif') || lower.includes('foie') || lower.includes('liver') || lower.includes('hígado')) {
+        kidneysImpact = eLine.replace(/^[\*\-\•]\s*/, '').replace(/(?:Reins?|Kidneys?|Riñones?|Foie|Liver|Hígado)\s*[^:]*:\s*/i, '').replace(/\*\*/g, '').trim();
       }
     }
   }
 
   // 6. Extract Section 4: Protocole d'Électrisation & Substitutions
-  let electrifyText = "Remplacez le pain blanc par des <strong>tranches de concombre cru</strong> ou des <strong>crackers de graines de lin déshydratées</strong>, et substituez la charcuterie par du <strong>guacamole frais</strong>, des <strong>bâtonnets de légumes croquants</strong> et des <strong>micro-pousses vivantes</strong>.";
-  const electrifyMatch = text.match(/(?:💡|4\.)[\s\S]*?(?:Pour "Électriser"|Électriser|Substitutions)[\s\S]*?(?=```json|$)/i);
+  let electrifyText = tFunc('scanner.electrifyDefaultAdvice', null, 'Ajoutez une abondance de verdures vivantes crues (roquette, pourpier, cresson), des graines germées et du jus de citron frais pour alcaliniser.');
+  const electrifyMatch = text.match(/(?:(?:^|\n)(?:4\.|💡)\s*[^\n]*)([\s\S]*?)(?=```json|$)/i);
   if (electrifyMatch) {
-    const cleanElec = electrifyMatch[0]
-      .replace(/^[\s\S]*?(?:Pour "Électriser"[^:\n]*:?|Substitutions[^:\n]*:?)/i, '')
+    const cleanElec = electrifyMatch[1]
+      .replace(/^[\s\S]*?(?:Pour "Électriser"[^:\n]*:?|Substitutions[^:\n]*:?|How to "Electrify"[^:\n]*:?|Cómo "Electrizar"[^:\n]*:?)/i, '')
       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
       .replace(/\*(.*?)\*/g, '$1')
       .trim();
@@ -9055,8 +9138,8 @@ function renderScanResult(aiText) {
       <div class="scan-item-row">
         <span class="scan-item-bullet">🔴</span>
         <div>
-          <div class="scan-item-name">Charge mucogène et acidifiante identifiée</div>
-          <div class="scan-item-details">Présence d'amidons transformés, graisses saturées ou protéines génératrices de colles intestinales.</div>
+          <div class="scan-item-name">${tFunc('scanner.sebiMucusFallbackName', null, 'Charge mucogène et acidifiante identifiée')}</div>
+          <div class="scan-item-details">${tFunc('scanner.sebiMucusFallbackDetails', null, 'Présence d\'amidons transformés, graisses saturées ou protéines génératrices de colles intestinales.')}</div>
         </div>
       </div>
     `;
@@ -9068,10 +9151,6 @@ function renderScanResult(aiText) {
       <i class="ri-arrow-right-s-line" style="color:var(--accent)"></i> ${esc(pd)}
     </div>`;
   }).join('');
-
-  const tFunc = (window.vitalTrackI18n && typeof window.vitalTrackI18n.t === 'function')
-    ? window.vitalTrackI18n.t
-    : ((k, p, def) => def || k);
 
   // Build Suggest Foods chips HTML
   let suggestChipsHtml = '';

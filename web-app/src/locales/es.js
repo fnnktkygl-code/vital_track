@@ -570,7 +570,16 @@ export default {
     "suggestedLivingIngredients": "Ingredientes vivos sugeridos para añadir:",
     "saveMealJournal": "Guardar esta comida en mi diario",
     "discussWithAi": "Hablar de este plato con la IA",
-    "newScan": "Nuevo escaneo"
+    "newScan": "Nuevo escaneo",
+    "statusElectric": "⚡ 100% Eléctrico y Alcalinizante",
+    "statusHybrid": "🔀 Híbrido / Tolerado en transición",
+    "statusMucus": "⛔ Altamente Mucógeno y Acidificante",
+    "defaultDishName": "Plato / Surtido Detectado",
+    "sebiMucusFallbackName": "Carga mucógena y acidificante identificada",
+    "sebiMucusFallbackDetails": "Presencia de almidones refinados, grasas saturadas o proteínas formadoras de pegamento intestinal.",
+    "lymphDefaultImpact": "Congestión de fluidos intersticiales por exceso de ácidos y grasas densas.",
+    "kidneysDefaultImpact": "Sobrecarga renal para neutralizar y filtrar desechos ácidos y cristales de urato.",
+    "electrifyDefaultAdvice": "Añade abundantes hojas verdes crudas (rúcula, verdolaga, berros), semillas germinadas y zumo de limón fresco para alcalinizar."
   },
   "search": {
     "pageTitle": "Base de Datos de Alimentos y Búsqueda Bioquímica",

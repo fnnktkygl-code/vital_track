@@ -570,7 +570,16 @@ export default {
     "suggestedLivingIngredients": "Ingrédients vivants suggérés à ajouter :",
     "saveMealJournal": "Enregistrer ce repas dans mon journal",
     "discussWithAi": "Discuter de ce plat avec l'IA",
-    "newScan": "Nouveau scan"
+    "newScan": "Nouveau scan",
+    "statusElectric": "⚡ 100% Électrique & Alcalinisant",
+    "statusHybrid": "🔀 Hybride / Toléré en transition",
+    "statusMucus": "⛔ Fortement Mucogène & Acidifiant",
+    "defaultDishName": "Plat / Assortiment Détecté",
+    "sebiMucusFallbackName": "Charge mucogène et acidifiante identifiée",
+    "sebiMucusFallbackDetails": "Présence d'amidons transformés, graisses saturées ou protéines génératrices de colles intestinales.",
+    "lymphDefaultImpact": "Congestion des liquides interstitiels par excès d'acides et de graisses denses.",
+    "kidneysDefaultImpact": "Sollicitation rénale pour neutraliser et filtrer les déchets acides et cristaux d'urates.",
+    "electrifyDefaultAdvice": "Ajoutez une abondance de verdures vivantes crues (roquette, pourpier, cresson), des graines germées et du jus de citron frais pour alcaliniser."
   },
   "search": {
     "pageTitle": "Recherche d'Aliments & Base de Données",

@@ -570,7 +570,16 @@ export default {
     "suggestedLivingIngredients": "Suggested living ingredients to add:",
     "saveMealJournal": "Log this meal to my food journal",
     "discussWithAi": "Discuss this dish with AI Coach",
-    "newScan": "New scan"
+    "newScan": "New scan",
+    "statusElectric": "⚡ 100% Bio-Electric & Alkalizing",
+    "statusHybrid": "🔀 Hybrid / Tolerated in transition",
+    "statusMucus": "⛔ Highly Mucus-Forming & Acidifying",
+    "defaultDishName": "Detected Dish / Platter",
+    "sebiMucusFallbackName": "Mucus-forming and acidifying load detected",
+    "sebiMucusFallbackDetails": "Presence of refined starches, saturated fats or glue-forming proteins.",
+    "lymphDefaultImpact": "Interstitial fluid congestion from excess acids and dense fats.",
+    "kidneysDefaultImpact": "Kidney strain to neutralize and filter acidic waste and urate crystals.",
+    "electrifyDefaultAdvice": "Add abundant raw living greens (arugula, wild purslane, watercress), sprouted seeds, and fresh lemon juice to alkalize."
   },
   "search": {
     "pageTitle": "Food Database & Biochemical Search",

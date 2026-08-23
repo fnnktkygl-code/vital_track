@@ -6,7 +6,7 @@
  */
 const { callGeminiApi } = require('./_lib/geminiFallback');
 const { authGuard } = require('./_lib/auth');
-const { foodAnalysisPrompt } = require('./_lib/prompts');
+const { getFoodAnalysisPrompt } = require('./_lib/prompts');
 
 module.exports = async function handler(req, res) {
   // CORS
@@ -27,7 +27,8 @@ module.exports = async function handler(req, res) {
       });
     }
 
-    const { imageData, mimeType } = req.body || {};
+    const { imageData, mimeType, language, profile } = req.body || {};
+    const userLang = language || profile?.language || 'fr';
 
     if (!imageData) {
       return res.status(400).json({ error: 'imageData (base64) is required' });
@@ -35,16 +36,20 @@ module.exports = async function handler(req, res) {
 
     const mime = mimeType || 'image/jpeg';
 
+    let promptText = 'Identifie tous les aliments/ingrédients dans cette image avec classification vitaliste.';
+    if (userLang === 'en') promptText = 'Identify all foods/ingredients in this image with vitalist classification.';
+    else if (userLang === 'es') promptText = 'Identifica todos los alimentos/ingredientes en esta imagen con clasificación vitalista.';
+
     const result = await callGeminiApi({
       apiKey,
       contents: [{
         role: 'user',
         parts: [
-          { text: 'Identify all foods/ingredients in this image.' },
+          { text: promptText },
           { inlineData: { mimeType: mime, data: imageData } },
         ],
       }],
-      systemInstruction: foodAnalysisPrompt,
+      systemInstruction: getFoodAnalysisPrompt(userLang),
       generationConfig: { temperature: 0.1, responseMimeType: 'application/json' },
       intent: 'complex',
       requestedModel: 'gemini-3.7-flash',
