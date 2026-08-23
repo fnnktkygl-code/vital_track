@@ -35,17 +35,18 @@ export function addDaysLocal(date, days) {
   return d;
 }
 
-// ═══════ 2. BACKUP DE SECOURS & STOCKAGE PHOTO INDEXEDDB ═══════
+// ═══════ 2. BACKUP DE SECOURS, STOCKAGE PHOTO & CACHE SCAN INDEXEDDB ═══════
 const IDB_NAME = 'vitaltrack_store_db';
 const IDB_STORE_SNAPSHOTS = 'app_snapshots';
 const IDB_STORE_PHOTOS = 'weight_photos';
+const IDB_STORE_SCAN_CACHE = 'food_scans_cache';
 let _idbInstance = null;
 
 export function getIDB() {
   if (_idbInstance) return Promise.resolve(_idbInstance);
   return new Promise((resolve) => {
     try {
-      const req = indexedDB.open(IDB_NAME, 2);
+      const req = indexedDB.open(IDB_NAME, 3);
       req.onupgradeneeded = (e) => {
         const db = e.target.result;
         if (!db.objectStoreNames.contains(IDB_STORE_SNAPSHOTS)) {
@@ -53,6 +54,9 @@ export function getIDB() {
         }
         if (!db.objectStoreNames.contains(IDB_STORE_PHOTOS)) {
           db.createObjectStore(IDB_STORE_PHOTOS);
+        }
+        if (!db.objectStoreNames.contains(IDB_STORE_SCAN_CACHE)) {
+          db.createObjectStore(IDB_STORE_SCAN_CACHE);
         }
       };
       req.onsuccess = (e) => {
@@ -445,6 +449,231 @@ export const store = {
   clearAllPhotos: clearAllWeightPhotos
 };
 
+// ═══════ 5. SYSTÈME DE HASHING DÉTERMINISTE (POUR IMAGES & REQUÊTES) ═══════
+export async function computeDataHash(input) {
+  if (!input) return 'empty';
+  const str = typeof input === 'string' ? input : JSON.stringify(input);
+  if (typeof crypto !== 'undefined' && crypto.subtle && typeof TextEncoder !== 'undefined') {
+    try {
+      const buffer = new TextEncoder().encode(str);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 32);
+    } catch {
+      // Fallback ci-dessous
+    }
+  }
+  // Algorithme FNV-1a / DJB2 64-bit déterministe ultra-rapide
+  let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
+  for (let i = 0; i < str.length; i++) {
+    const ch = str.charCodeAt(i);
+    h1 = Math.imul(h1 ^ ch, 2654435761);
+    h2 = Math.imul(h2 ^ ch, 1597334677);
+  }
+  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+  return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(16);
+}
+
+// ═══════ 6. MOTEURS DE CACHING ALIMENTAIRE (IMAGES, PLATS & ALIMENTS IA) ═══════
+const SCAN_CACHE_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 jours de validité
+const MAX_SCAN_CACHE_ENTRIES = 120;
+
+/**
+ * Cache haute performance pour les scans d'images (Scanner IA)
+ * Double-couche : IndexedDB (complet) + LocalStorage (secours & accès synchrone)
+ */
+export const foodScanCache = {
+  async get(hashOrKey, lang = 'fr') {
+    if (!hashOrKey) return null;
+    const cacheKey = `scan_${hashOrKey}_${lang}`;
+    try {
+      const db = await getIDB();
+      let record = null;
+      if (db && db.objectStoreNames.contains(IDB_STORE_SCAN_CACHE)) {
+        record = await new Promise((resolve) => {
+          try {
+            const tx = db.transaction(IDB_STORE_SCAN_CACHE, 'readonly');
+            const st = tx.objectStore(IDB_STORE_SCAN_CACHE);
+            const req = st.get(cacheKey);
+            req.onsuccess = () => resolve(req.result || null);
+            req.onerror = () => resolve(null);
+          } catch {
+            resolve(null);
+          }
+        });
+      }
+      if (!record) {
+        const raw = localStorage.getItem(`vt_scancache_${cacheKey}`);
+        if (raw) record = JSON.parse(raw);
+      }
+
+      if (!record) return null;
+      // Vérification du TTL
+      if (record.timestamp && (Date.now() - record.timestamp > SCAN_CACHE_TTL_MS)) {
+        this.delete(hashOrKey, lang);
+        return null;
+      }
+      return record;
+    } catch (e) {
+      console.warn('[ScanCache] Erreur lecture cache:', e);
+      return null;
+    }
+  },
+
+  async set(hashOrKey, lang = 'fr', payload = {}) {
+    if (!hashOrKey) return false;
+    const cacheKey = `scan_${hashOrKey}_${lang}`;
+    const record = {
+      key: cacheKey,
+      hash: hashOrKey,
+      lang,
+      timestamp: Date.now(),
+      ...payload
+    };
+
+    try {
+      const db = await getIDB();
+      if (db && db.objectStoreNames.contains(IDB_STORE_SCAN_CACHE)) {
+        await new Promise((resolve) => {
+          try {
+            const tx = db.transaction(IDB_STORE_SCAN_CACHE, 'readwrite');
+            const st = tx.objectStore(IDB_STORE_SCAN_CACHE);
+            const req = st.put(record, cacheKey);
+            req.onsuccess = () => resolve(true);
+            req.onerror = () => resolve(false);
+          } catch {
+            resolve(false);
+          }
+        });
+      }
+
+      // Stockage de secours LocalStorage (version compacte)
+      try {
+        localStorage.setItem(`vt_scancache_${cacheKey}`, JSON.stringify(record));
+        this._trimLocalStorage();
+      } catch (e) {
+        console.warn('[ScanCache] LocalStorage quota atteint:', e);
+      }
+      return true;
+    } catch (e) {
+      console.warn('[ScanCache] Erreur sauvegarde cache:', e);
+      return false;
+    }
+  },
+
+  async delete(hashOrKey, lang = 'fr') {
+    const cacheKey = `scan_${hashOrKey}_${lang}`;
+    localStorage.removeItem(`vt_scancache_${cacheKey}`);
+    try {
+      const db = await getIDB();
+      if (db && db.objectStoreNames.contains(IDB_STORE_SCAN_CACHE)) {
+        const tx = db.transaction(IDB_STORE_SCAN_CACHE, 'readwrite');
+        tx.objectStore(IDB_STORE_SCAN_CACHE).delete(cacheKey);
+      }
+    } catch {}
+  },
+
+  async clear() {
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith('vt_scancache_')) localStorage.removeItem(k);
+    }
+    try {
+      const db = await getIDB();
+      if (db && db.objectStoreNames.contains(IDB_STORE_SCAN_CACHE)) {
+        const tx = db.transaction(IDB_STORE_SCAN_CACHE, 'readwrite');
+        tx.objectStore(IDB_STORE_SCAN_CACHE).clear();
+      }
+    } catch {}
+  },
+
+  _trimLocalStorage() {
+    const keys = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith('vt_scancache_')) keys.push(k);
+    }
+    if (keys.length > MAX_SCAN_CACHE_ENTRIES) {
+      keys.slice(0, keys.length - MAX_SCAN_CACHE_ENTRIES).forEach(k => localStorage.removeItem(k));
+    }
+  }
+};
+
+/**
+ * Cache pour les analyses textuelles de plats (Ajout de repas IA)
+ */
+export const dishAnalysisCache = {
+  get(query, lang = 'fr') {
+    if (!query) return null;
+    const clean = query.trim().toLowerCase();
+    const key = `vt_dishcache_${lang}_${clean}`;
+    try {
+      const raw = localStorage.getItem(key);
+      if (!raw) return null;
+      const data = JSON.parse(raw);
+      if (data.timestamp && (Date.now() - data.timestamp > SCAN_CACHE_TTL_MS)) {
+        localStorage.removeItem(key);
+        return null;
+      }
+      return data.items || null;
+    } catch {
+      return null;
+    }
+  },
+  set(query, lang = 'fr', items = []) {
+    if (!query || !items || items.length === 0) return;
+    const clean = query.trim().toLowerCase();
+    const key = `vt_dishcache_${lang}_${clean}`;
+    try {
+      localStorage.setItem(key, JSON.stringify({
+        items,
+        timestamp: Date.now()
+      }));
+    } catch {}
+  }
+};
+
+/**
+ * Cache unitaire pour les aliments résolus par l'IA
+ */
+export const foodItemAiCache = {
+  get(foodName) {
+    if (!foodName) return null;
+    const clean = foodName.trim().toLowerCase();
+    const key = `vt_foodaicache_${clean}`;
+    try {
+      const raw = localStorage.getItem(key);
+      if (!raw) return null;
+      const data = JSON.parse(raw);
+      if (data.timestamp && (Date.now() - data.timestamp > SCAN_CACHE_TTL_MS)) {
+        localStorage.removeItem(key);
+        return null;
+      }
+      return data.food || null;
+    } catch {
+      return null;
+    }
+  },
+  set(foodName, foodObj) {
+    if (!foodName || !foodObj) return;
+    const clean = foodName.trim().toLowerCase();
+    const key = `vt_foodaicache_${clean}`;
+    try {
+      localStorage.setItem(key, JSON.stringify({
+        food: foodObj,
+        timestamp: Date.now()
+      }));
+    } catch {}
+  }
+};
+
+// Attacher les caches au store principal
+store.foodScanCache = foodScanCache;
+store.dishAnalysisCache = dishAnalysisCache;
+store.foodItemAiCache = foodItemAiCache;
+store.computeDataHash = computeDataHash;
+
 // Initialisation globale
 if (typeof window !== 'undefined') {
   window.store = store;
@@ -456,4 +685,8 @@ if (typeof window !== 'undefined') {
   window.deleteWeightPhoto = deleteWeightPhoto;
   window.getAllWeightPhotos = getAllWeightPhotos;
   window.clearAllWeightPhotos = clearAllWeightPhotos;
+  window.computeDataHash = computeDataHash;
+  window.foodScanCache = foodScanCache;
+  window.dishAnalysisCache = dishAnalysisCache;
+  window.foodItemAiCache = foodItemAiCache;
 }

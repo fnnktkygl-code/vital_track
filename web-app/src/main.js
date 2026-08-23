@@ -10,7 +10,7 @@ import * as i18nModule from './i18n.js';
 import { t, getLanguage, setLanguage, toggleLanguage, onLanguageChange, updateDOMTranslations } from './i18n.js';
 import { pigeonNudges } from './mascot-nudges.js';
 import { auth } from './auth.js';
-import { store, formatLocalDate, parseLocalDate, addDaysLocal, getUserStorageKey } from './storage.js';
+import { store, formatLocalDate, parseLocalDate, addDaysLocal, getUserStorageKey, computeDataHash, foodScanCache, dishAnalysisCache, foodItemAiCache } from './storage.js';
 import { MEDIA_SEARCH_DATABASE, searchMediaKnowledge, getExpandedSearchTokens } from './data/mediaSearchIndex.js';
 import { VIDEO_DUBBING_DATABASE, getDubbingDataForVideo } from './data/videoDubbingData.js';
 import { dubbingEngine } from './utils/dubbingEngine.js';
@@ -6938,25 +6938,34 @@ async function analyzeDishWithAI() {
   }
 
   try {
-    let items = [];
-    try {
-      const res = await fetch('/api/analyze-text', {
-        method: 'POST',
-        headers: getApiHeaders(),
-        body: JSON.stringify({ query: q })
-      });
-      if (res.ok) {
-        const data = await res.json();
-        items = data.data?.foods || data.data?.items || [];
-      }
-    } catch (err) {
-      console.warn('[AI Dish Analysis] API fetch failed, using local extraction fallback:', err);
-    }
+    const userLang = typeof getLanguage === 'function' ? getLanguage() : 'fr';
+    let items = dishAnalysisCache.get(q, userLang);
 
     if (!items || items.length === 0) {
-      const parts = q.split(/[,+&/]|\bet\b|\bavec\b|\baux\b|\bau\b|\bde\b|\bd['’]/i).map(p => p.trim()).filter(p => p.length >= 2);
-      const tokens = parts.length > 0 ? parts : [q];
-      items = tokens.map(token => classifyFoodLocally(token));
+      items = [];
+      try {
+        const res = await fetch('/api/analyze-text', {
+          method: 'POST',
+          headers: getApiHeaders(),
+          body: JSON.stringify({ query: q, language: userLang })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          items = data.data?.foods || data.data?.items || [];
+        }
+      } catch (err) {
+        console.warn('[AI Dish Analysis] API fetch failed, using local extraction fallback:', err);
+      }
+
+      if (!items || items.length === 0) {
+        const parts = q.split(/[,+&/]|et\b|\bavec\b|\baux\b|\bau\b|\bde\b|\bd['’]/i).map(p => p.trim()).filter(p => p.length >= 2);
+        const tokens = parts.length > 0 ? parts : [q];
+        items = tokens.map(token => classifyFoodLocally(token));
+      }
+
+      if (items && items.length > 0) {
+        dishAnalysisCache.set(q, userLang, items);
+      }
     }
 
     const processedItems = [];
@@ -7069,25 +7078,34 @@ async function askAIToAddMealFood(query) {
   }
 
   try {
-    let items = [];
-    try {
-      const res = await fetch('/api/analyze-text', {
-        method: 'POST',
-        headers: getApiHeaders(),
-        body: JSON.stringify({ query: q })
-      });
-      if (res.ok) {
-        const data = await res.json();
-        items = data.data?.foods || data.data?.items || [];
-      }
-    } catch (err) {
-      console.warn('[AI Meal Search] API fetch failed, using local extraction fallback:', err);
-    }
+    const userLang = typeof getLanguage === 'function' ? getLanguage() : 'fr';
+    let items = dishAnalysisCache.get(q, userLang);
 
     if (!items || items.length === 0) {
-      const parts = q.split(/[,+&/]|\bet\b|\bavec\b|\baux\b|\bau\b|\bde\b|\bd['’]/i).map(p => p.trim()).filter(p => p.length >= 2);
-      const tokens = parts.length > 0 ? parts : [q];
-      items = tokens.map(token => classifyFoodLocally(token));
+      items = [];
+      try {
+        const res = await fetch('/api/analyze-text', {
+          method: 'POST',
+          headers: getApiHeaders(),
+          body: JSON.stringify({ query: q, language: userLang })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          items = data.data?.foods || data.data?.items || [];
+        }
+      } catch (err) {
+        console.warn('[AI Meal Search] API fetch failed, using local extraction fallback:', err);
+      }
+
+      if (!items || items.length === 0) {
+        const parts = q.split(/[,+&/]|et\b|\bavec\b|\baux\b|\bau\b|\bde\b|\bd['’]/i).map(p => p.trim()).filter(p => p.length >= 2);
+        const tokens = parts.length > 0 ? parts : [q];
+        items = tokens.map(token => classifyFoodLocally(token));
+      }
+
+      if (items && items.length > 0) {
+        dishAnalysisCache.set(q, userLang, items);
+      }
     }
 
     const processedItems = [];
@@ -8895,6 +8913,21 @@ function handleScanUpload(event) {
 
     try {
       const userLang = getLanguage();
+      const imgHash = await computeDataHash(base64Data);
+
+      // ⚡ VÉRIFICATION DU CACHE LOCAL (Zéro requête si déjà scanné)
+      const cached = await foodScanCache.get(imgHash, userLang);
+      if (cached && cached.aiText) {
+        clearInterval(statusInterval);
+        if (imageWrapper) imageWrapper.classList.remove('scanning');
+        if (scanLoading) scanLoading.style.display = 'none';
+
+        window._lastScanSession = { rawText: cached.aiText, lang: userLang, fromCache: true };
+        renderScanResult(cached.aiText, userLang, true);
+        showToast('⚡ Analyse instantanée récupérée du cache local (0 quota consommé).', 'success', 3500);
+        return;
+      }
+
       let query = `Analyse cette photo de repas/aliment avec une rigueur absolue.
 Identifie clairement les ingrédients visibles, leur statut vitaliste (Dr. Sebi / Arnold Ehret : mucogène, hybride ou électrique), l'indice PRAL estimé (+/- mEq/100g), l'impact sur la lymphe et les reins, et propose des substituts vivants pour électriser le plat.
 Inclus un bloc json avec "actionMeal" (avec nom, catégorie, emoji, items, note) et "suggestFoods" (tableau des 5 ingrédients vivants recommandés).`;
@@ -8943,8 +8976,11 @@ Inclus un bloc json avec "actionMeal" (avec nom, catégorie, emoji, items, note)
       const data = await resp.json();
       const aiText = data.text || 'Aucune réponse.';
 
-      window._lastScanSession = { rawText: aiText, lang: userLang };
-      renderScanResult(aiText, userLang);
+      // Sauvegarde dans le cache local
+      await foodScanCache.set(imgHash, userLang, { aiText, timestamp: Date.now() });
+
+      window._lastScanSession = { rawText: aiText, lang: userLang, fromCache: false };
+      renderScanResult(aiText, userLang, false);
 
     } catch (err) {
       clearInterval(statusInterval);
@@ -9053,7 +9089,7 @@ function translateScanResultText(text, targetLang) {
 }
 window.translateScanResultText = translateScanResultText;
 
-function renderScanResult(aiText, lang) {
+function renderScanResult(aiText, lang, fromCache = false) {
   const container = document.getElementById('scanResult');
   if (!container) return;
 
@@ -9300,9 +9336,12 @@ function renderScanResult(aiText, lang) {
           <span style="font-size:1.6rem">${overallStatus === 'electric' ? '🥗' : overallStatus === 'hybrid' ? '🍲' : '🍕'}</span>
           <span>${esc(dishName)}</span>
         </div>
-        <div class="scan-vital-badge ${statusBadgeClass}">
-          <i class="${statusBadgeIcon}"></i>
-          <span>${esc(statusBadgeLabel)}</span>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          ${fromCache ? '<span class="scan-cached-instant-badge"><i class="ri-flashlight-fill"></i> Cache instantané (0s)</span>' : ''}
+          <div class="scan-vital-badge ${statusBadgeClass}">
+            <i class="${statusBadgeIcon}"></i>
+            <span>${esc(statusBadgeLabel)}</span>
+          </div>
         </div>
       </div>
       <div class="scan-dish-desc">${dishDesc}</div>
