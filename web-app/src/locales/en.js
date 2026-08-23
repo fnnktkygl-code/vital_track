@@ -556,7 +556,21 @@ export default {
     "tipProducts": "Products & Labels",
     "detectiveMascot": "Vital the Nutritional Detective inspects your plate",
     "loadingTitle": "Biochemical & vitalist analysis in progress...",
-    "loadingSub": "Compound identification, renal PRAL calculation, and colloidal mucus assessment..."
+    "loadingSub": "Compound identification, renal PRAL calculation, and colloidal mucus assessment...",
+    "vitalistStatusTitle": "1. Vitalist Status & Mucus (Dr. Sebi / Ehret)",
+    "pralSectionTitle": "2. Renal PRAL Index & Acid-Base Balance",
+    "estimatedRenalLoad": "Estimated Renal Acid Load",
+    "pralAlkaline": "🟢 Alkalizing (-30)",
+    "pralNeutral": "🟡 Neutral (0)",
+    "pralAcid": "🔴 Acidifying (+30)",
+    "emunctorySectionTitle": "3. Emunctory & Lymphatic Impact (Morse)",
+    "lymphFluids": "Lymph & Interstitial Fluids",
+    "kidneysFiltration": "Kidneys & Filtration",
+    "electrifyTitle": "💡 How to \"Electrify\" this meal",
+    "suggestedLivingIngredients": "Suggested living ingredients to add:",
+    "saveMealJournal": "Log this meal to my food journal",
+    "discussWithAi": "Discuss this dish with AI Coach",
+    "newScan": "New scan"
   },
   "search": {
     "pageTitle": "Food Database & Biochemical Search",
@@ -671,7 +685,15 @@ export default {
     "safetyRuleText": "Always practice <strong>sitting or lying down</strong> in a safe environment. <strong>NEVER</strong> in water (bath, pool), shower, or while driving.",
     "tabTimer": "Guided Session (Timer)",
     "tabVideos": "Videos & Wim Hof Masterclass",
-    "tabGuide": "Protocol & Physiology"
+    "tabGuide": "Protocol & Physiology",
+    "modeWimhof": "❄️ Wim Hof (Alkalizing)",
+    "modeRelax": "🧘 Relaxation (1:2)",
+    "modeBox": "📦 Box Breathing (Focus)",
+    "modeSleep": "🌙 4-7-8 Deep Sleep",
+    "ready": "Ready",
+    "tapToStart": "Tap to Start",
+    "recoveryAction": "Inhale (15s Recovery Breath)",
+    "breathsPerRound": "{count} breaths/round"
   },
   "resources": {
     "pageTitle": "Digital Library & Vitalist Media",
@@ -1112,7 +1134,8 @@ export default {
     "authGateBenefit2": "Automatic conversation sync",
     "authGateBenefit3": "100% Secure & privacy-focused",
     "authGateGoogleBtn": "Sign in with Google",
-    "authGateLaterBtn": "Later (browse only)"
+    "authGateLaterBtn": "Later (browse only)",
+    "pwaInstallBtn": "Install"
   },
   "toasts": {
     "copiedToClipboard": "Copied to clipboard!",

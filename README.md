@@ -26,6 +26,18 @@
 
 ---
 
+## 🎬 Interactive Video Walkthrough & Feature Demo
+
+<div align="center">
+  <video src="https://raw.githubusercontent.com/fnnktkygl-code/vital_track/main/docs/videos/vitaltrack_demo.mp4" controls="controls" width="100%" style="max-width:920px; border-radius:14px; box-shadow:0 8px 24px rgba(0,0,0,0.4);">
+    <source src="docs/videos/vitaltrack_demo.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+  <p><sub><i>▶️ Interactive Journey: Vitalist Cockpit ➔ AI Coach Consultation ➔ Action Card Calendar Sync ➔ Biochemical Plate Scanner ➔ Fasting & Autophagy Tracker ➔ Wim Hof Breathwork</i></sub></p>
+</div>
+
+---
+
 ## 📱 Visual Showcase & App Gallery
 
 ### 💻 Desktop Experience (Dark & Light Themes)
@@ -204,7 +216,7 @@ graph TD
 ┌──────────────────────────────────────────────────────────┐
 │                   VitalTrack Frontend                    │
 │      Vite + Vanilla Modern JS (ES6+) + Responsive CSS     │
-│   1,065 i18n Keys × 4 Locales (EN, FR, ES, FR-CA) = 4,260 │
+│   1,093 i18n Keys × 4 Locales (EN, FR, ES, FR-CA) = 4,372 │
 └────────────────────────────┬─────────────────────────────┘
                              │
                              ▼

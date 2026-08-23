@@ -8310,7 +8310,13 @@ function loadBreathingVideo(videoKey, btnEl) {
 function setBreathMode(mode) {
   currentBreathMode = mode;
   document.querySelectorAll('.breath-mode').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
-  const desc = breathModes[mode] ? `${breathModes[mode].name} — ${breathModes[mode].breaths} respirations/tour` : '';
+  const tFunc = (window.vitalTrackI18n && typeof window.vitalTrackI18n.t === 'function')
+    ? window.vitalTrackI18n.t
+    : ((k, p, def) => def || k);
+  const modeKey = `mode${mode.charAt(0).toUpperCase() + mode.slice(1)}`;
+  const modeName = tFunc(`breathing.${modeKey}`, null, breathModes[mode]?.name || mode);
+  const breathsWord = tFunc('breathing.breathsPerRound', { count: breathModes[mode]?.breaths }, `${breathModes[mode]?.breaths} respirations/tour`);
+  const desc = breathModes[mode] ? `${modeName} — ${breathsWord}` : '';
   const info = document.getElementById('breathInfo');
   if (info) info.innerHTML = `<p>${desc}</p>`;
 };
@@ -9063,6 +9069,10 @@ function renderScanResult(aiText) {
     </div>`;
   }).join('');
 
+  const tFunc = (window.vitalTrackI18n && typeof window.vitalTrackI18n.t === 'function')
+    ? window.vitalTrackI18n.t
+    : ((k, p, def) => def || k);
+
   // Build Suggest Foods chips HTML
   let suggestChipsHtml = '';
   if (suggestedFoods && suggestedFoods.length > 0) {
@@ -9074,7 +9084,7 @@ function renderScanResult(aiText) {
     suggestChipsHtml = `
       <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border)">
         <div style="font-size:0.85rem;color:var(--text-dim);margin-bottom:8px;font-weight:600">
-          <i class="ri-leaf-line" style="color:var(--accent)"></i> Ingrédients vivants suggérés à ajouter :
+          <i class="ri-leaf-line" style="color:var(--accent)"></i> ${tFunc('scanner.suggestedLivingIngredients', null, 'Ingrédients vivants suggérés à ajouter :')}
         </div>
         <div style="display:flex;flex-wrap:wrap;gap:4px">${chips}</div>
       </div>
@@ -9087,7 +9097,7 @@ function renderScanResult(aiText) {
     const encodedMeal = btoa(unescape(encodeURIComponent(JSON.stringify(actionMealData))));
     actionMealBtnHtml = `
       <button class="scan-btn-primary" onclick="handleAddActionMeal('${encodedMeal}')">
-        <i class="ri-restaurant-line"></i> Enregistrer ce repas dans mon journal
+        <i class="ri-restaurant-line"></i> ${tFunc('scanner.saveMealJournal', null, 'Enregistrer ce repas dans mon journal')}
       </button>
     `;
   } else {
@@ -9101,7 +9111,7 @@ function renderScanResult(aiText) {
     const encodedMeal = btoa(unescape(encodeURIComponent(JSON.stringify(fallbackMeal))));
     actionMealBtnHtml = `
       <button class="scan-btn-primary" onclick="handleAddActionMeal('${encodedMeal}')">
-        <i class="ri-restaurant-line"></i> Enregistrer ce repas dans mon journal
+        <i class="ri-restaurant-line"></i> ${tFunc('scanner.saveMealJournal', null, 'Enregistrer ce repas dans mon journal')}
       </button>
     `;
   }
@@ -9129,7 +9139,7 @@ function renderScanResult(aiText) {
       <div class="scan-card glass">
         <div class="scan-card-header">
           <div class="scan-card-icon"><i class="ri-microscope-line"></i></div>
-          <div class="scan-card-title">1. Statut Vitaliste & Mucus (Dr. Sebi / Ehret)</div>
+          <div class="scan-card-title">${tFunc('scanner.vitalistStatusTitle', null, '1. Statut Vitaliste & Mucus (Dr. Sebi / Ehret)')}</div>
         </div>
         <div class="scan-items-list">
           ${sebiItemsHtml}
@@ -9140,11 +9150,11 @@ function renderScanResult(aiText) {
       <div class="scan-card glass">
         <div class="scan-card-header">
           <div class="scan-card-icon"><i class="ri-scales-3-line"></i></div>
-          <div class="scan-card-title">2. Indice PRAL & Équilibre Acido-Basique</div>
+          <div class="scan-card-title">${tFunc('scanner.pralSectionTitle', null, '2. Indice PRAL & Équilibre Acido-Basique')}</div>
         </div>
         <div class="scan-pral-meter">
           <div class="scan-pral-header">
-            <span style="font-size:0.85rem;color:var(--text-dim);font-weight:600">Charge Rénale Estimée</span>
+            <span style="font-size:0.85rem;color:var(--text-dim);font-weight:600">${tFunc('scanner.estimatedRenalLoad', null, 'Charge Rénale Estimée')}</span>
             <span class="scan-pral-val ${pralNumeric > 5 ? 'val-acid' : pralNumeric < -2 ? 'val-alkaline' : 'val-neutral'}">
               ${esc(pralGlobal)}
             </span>
@@ -9153,9 +9163,9 @@ function renderScanResult(aiText) {
             <div class="scan-pral-pointer" style="left: ${pralPercent}%"></div>
           </div>
           <div class="scan-pral-labels">
-            <span>🟢 Alcalinisant (-30)</span>
-            <span>🟡 Neutre (0)</span>
-            <span>🔴 Acidifiant (+30)</span>
+            <span>${tFunc('scanner.pralAlkaline', null, '🟢 Alcalinisant (-30)')}</span>
+            <span>${tFunc('scanner.pralNeutral', null, '🟡 Neutre (0)')}</span>
+            <span>${tFunc('scanner.pralAcid', null, '🔴 Acidifiant (+30)')}</span>
           </div>
         </div>
         ${pralDetailsHtml ? `<div style="margin-top:8px">${pralDetailsHtml}</div>` : ''}
@@ -9165,15 +9175,15 @@ function renderScanResult(aiText) {
       <div class="scan-card glass">
         <div class="scan-card-header">
           <div class="scan-card-icon"><i class="ri-drop-line"></i></div>
-          <div class="scan-card-title">3. Impact Émonctoriel & Lymphatique (Morse)</div>
+          <div class="scan-card-title">${tFunc('scanner.emunctorySectionTitle', null, '3. Impact Émonctoriel & Lymphatique (Morse)')}</div>
         </div>
         <div class="scan-emunctory-grid">
           <div class="scan-emunctory-tile">
-            <div class="scan-emunctory-name" style="color:#60a5fa"><i class="ri-water-flash-line"></i> Lymphe & Fluides</div>
+            <div class="scan-emunctory-name" style="color:#60a5fa"><i class="ri-water-flash-line"></i> ${tFunc('scanner.lymphFluids', null, 'Lymphe & Fluides')}</div>
             <div class="scan-emunctory-text">${esc(lymphImpact)}</div>
           </div>
           <div class="scan-emunctory-tile">
-            <div class="scan-emunctory-name" style="color:#f59e0b"><i class="ri-filter-3-line"></i> Reins & Filtration</div>
+            <div class="scan-emunctory-name" style="color:#f59e0b"><i class="ri-filter-3-line"></i> ${tFunc('scanner.kidneysFiltration', null, 'Reins & Filtration')}</div>
             <div class="scan-emunctory-text">${esc(kidneysImpact)}</div>
           </div>
         </div>
@@ -9183,7 +9193,7 @@ function renderScanResult(aiText) {
       <div class="scan-card glass scan-electrify-card">
         <div class="scan-card-header">
           <div class="scan-card-icon" style="background:rgba(245,158,11,0.2);color:#fbbf24"><i class="ri-flashlight-line"></i></div>
-          <div class="scan-card-title" style="color:#fbbf24">💡 Comment "Électriser" ce repas</div>
+          <div class="scan-card-title" style="color:#fbbf24">${tFunc('scanner.electrifyTitle', null, '💡 Comment "Électriser" ce repas')}</div>
         </div>
         <div class="scan-electrify-text">
           ${electrifyText}
@@ -9197,10 +9207,10 @@ function renderScanResult(aiText) {
     <div class="scan-actions-row">
       ${actionMealBtnHtml}
       <button class="scan-btn-secondary" onclick="askAIAboutScannedDish('${esc(dishName.replace(/'/g, "\\'"))}')">
-        <i class="ri-chat-smile-3-fill" style="color:var(--accent)"></i> Discuter de ce plat avec l'IA
+        <i class="ri-chat-smile-3-fill" style="color:var(--accent)"></i> ${tFunc('scanner.discussWithAi', null, 'Discuter de ce plat avec l\'IA')}
       </button>
       <button class="scan-btn-secondary" onclick="document.getElementById('scanUpload').click()" style="flex:0 1 auto;min-width:140px">
-        <i class="ri-camera-lens-line"></i> Nouveau scan
+        <i class="ri-camera-lens-line"></i> ${tFunc('scanner.newScan', null, 'Nouveau scan')}
       </button>
     </div>
   `;

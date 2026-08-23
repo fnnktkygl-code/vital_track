@@ -1654,16 +1654,16 @@
       <!-- ════ TAB 1: TIMER INTERACTIF & GUIDAGE ════ -->
       <div id="breathingTabTimer" class="breathing-tab-pane">
         <div class="breathing-modes">
-          <button class="breath-mode active" onclick="setBreathMode('wimhof')" data-mode="wimhof">❄️ Wim Hof (Alcalinisant)</button>
-          <button class="breath-mode" onclick="setBreathMode('relax')" data-mode="relax">🧘 Relaxation (1:2)</button>
-          <button class="breath-mode" onclick="setBreathMode('box')" data-mode="box">📦 Box Breathing (Focus)</button>
-          <button class="breath-mode" onclick="setBreathMode('sleep')" data-mode="sleep">🌙 4-7-8 Sommeil</button>
+          <button class="breath-mode active" onclick="setBreathMode('wimhof')" data-mode="wimhof" data-i18n="breathing.modeWimhof">❄️ Wim Hof (Alcalinisant)</button>
+          <button class="breath-mode" onclick="setBreathMode('relax')" data-mode="relax" data-i18n="breathing.modeRelax">🧘 Relaxation (1:2)</button>
+          <button class="breath-mode" onclick="setBreathMode('box')" data-mode="box" data-i18n="breathing.modeBox">📦 Box Breathing (Focus)</button>
+          <button class="breath-mode" onclick="setBreathMode('sleep')" data-mode="sleep" data-i18n="breathing.modeSleep">🌙 4-7-8 Sommeil Profond</button>
         </div>
 
         <div class="breathing-visual">
           <div class="breath-circle" id="breathCircle">
-            <span class="breath-text" id="breathText">Prêt</span>
-            <span class="breath-subtext" id="breathSubText" style="font-size:0.8rem; color:var(--text-dim); margin-top:4px;">Appuyez sur Démarrer</span>
+            <span class="breath-text" id="breathText" data-i18n="breathing.ready">Prêt</span>
+            <span class="breath-subtext" id="breathSubText" style="font-size:0.8rem; color:var(--text-dim); margin-top:4px;" data-i18n="breathing.tapToStart">Appuyez sur Démarrer</span>
           </div>
         </div>
 
@@ -1674,7 +1674,7 @@
         <!-- Stop Retention Action Button (Visible during Retention Phase) -->
         <div id="breathRetentionAction" style="display:none; margin-bottom:18px;">
           <button type="button" class="btn-primary" onclick="triggerRecoveryBreath()" style="padding:14px 28px; font-size:1.05rem; font-weight:700; border-radius:50px; background:linear-gradient(135deg, #10b981, #059669); border:none; box-shadow:0 0 20px rgba(16, 185, 129, 0.4); cursor:pointer;">
-            <i class="ri-lungs-line"></i> J'inspire (Passer à la récupération 15s)
+            <i class="ri-lungs-line"></i> <span data-i18n="breathing.recoveryAction">J'inspire (Passer à la récupération 15s)</span>
           </button>
         </div>
 
@@ -3044,7 +3044,7 @@
       </div>
       <div class="pwa-banner-actions">
         <button type="button" class="btn-pwa-install" id="pwaInstallBtn" onclick="triggerPwaInstall()">
-          <i class="ri-download-cloud-line"></i> Installer
+          <i class="ri-download-cloud-line"></i> <span data-i18n="modals.pwaInstallBtn">Installer</span>
         </button>
         <button type="button" class="btn-pwa-dismiss" onclick="dismissPwaBanner()" title="Plus tard" aria-label="Fermer la bannière">
           <i class="ri-close-line"></i>

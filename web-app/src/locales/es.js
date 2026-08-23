@@ -556,7 +556,21 @@ export default {
     "tipProducts": "Productos y Etiquetas",
     "detectiveMascot": "Vital el Detective Nutricional examina su plato",
     "loadingTitle": "Análisis bioquímico y vitalista en curso...",
-    "loadingSub": "Identificación de compuestos, cálculo del PRAL renal y evaluación de carga coloidal..."
+    "loadingSub": "Identificación de compuestos, cálculo del PRAL renal y evaluación de carga coloidal...",
+    "vitalistStatusTitle": "1. Estado Vitalista y Moco (Dr. Sebi / Ehret)",
+    "pralSectionTitle": "2. Índice PRAL Renal y Equilibrio Ácido-Base",
+    "estimatedRenalLoad": "Carga Renal Estimada",
+    "pralAlkaline": "🟢 Alcalinizante (-30)",
+    "pralNeutral": "🟡 Neutro (0)",
+    "pralAcid": "🔴 Acidificante (+30)",
+    "emunctorySectionTitle": "3. Impacto Emuntorial y Linfático (Morse)",
+    "lymphFluids": "Linfa y Fluidos",
+    "kidneysFiltration": "Riñones y Filtración",
+    "electrifyTitle": "💡 Cómo \"Electrizar\" esta comida",
+    "suggestedLivingIngredients": "Ingredientes vivos sugeridos para añadir:",
+    "saveMealJournal": "Guardar esta comida en mi diario",
+    "discussWithAi": "Hablar de este plato con la IA",
+    "newScan": "Nuevo escaneo"
   },
   "search": {
     "pageTitle": "Base de Datos de Alimentos y Búsqueda Bioquímica",
@@ -671,7 +685,15 @@ export default {
     "safetyRuleText": "Practique siempre <strong>sentado o acostado</strong> en un lugar seguro. <strong>NUNCA</strong> en el agua (baño, piscina), bajo la ducha o conduciendo.",
     "tabTimer": "Sesión Guiada (Temporizador)",
     "tabVideos": "Videos y Masterclass Wim Hof",
-    "tabGuide": "Protocolo y Fisiología"
+    "tabGuide": "Protocolo y Fisiología",
+    "modeWimhof": "❄️ Wim Hof (Alcalinizante)",
+    "modeRelax": "🧘 Relajación (1:2)",
+    "modeBox": "📦 Respiración Cuadrada (Enfoque)",
+    "modeSleep": "🌙 4-7-8 Sueño Profundo",
+    "ready": "Listo",
+    "tapToStart": "Toca para Iniciar",
+    "recoveryAction": "Inhalo (Recuperación 15s)",
+    "breathsPerRound": "{count} respiraciones/ronda"
   },
   "resources": {
     "pageTitle": "Biblioteca Digital y Medios Vitalistas",
@@ -1105,14 +1127,15 @@ export default {
     "cancelAndContinueBtn": "Cancelar y Continuar",
     "saveSessionBtn": "Guardar sesión",
     "pwaModalTitle": "Instalar App VitalTrack",
-    "pwaModalDesc": "Instale la aplicación en su pantalla de inicio para acceso instantáneo sin conexión.",
+    "pwaModalDesc": "Instale la aplicación en su pantalla de inicio para un acceso instantáneo sin conexión.",
     "authGateTitle": "Inicio de Sesión Requerido",
     "authGateDesc": "Ha utilizado sus 3 consultas IA de prueba gratuitas. Para continuar chateando sin límites con el Coach Vitalista y acceder a todos los modelos IA, inicie sesión con su cuenta de Google.",
     "authGateBenefit1": "Intercambios ilimitados con modelos IA",
     "authGateBenefit2": "Copia de seguridad automática de conversaciones",
     "authGateBenefit3": "100% Seguro y respetuoso con su privacidad",
     "authGateGoogleBtn": "Iniciar sesión con Google",
-    "authGateLaterBtn": "Más tarde (solo navegación)"
+    "authGateLaterBtn": "Más tarde (solo navegación)",
+    "pwaInstallBtn": "Instalar"
   },
   "toasts": {
     "copiedToClipboard": "¡Copiado al portapapeles!",

@@ -26,6 +26,18 @@
 
 ---
 
+## 🎬 Demostración en Video Interactivo de la Aplicación
+
+<div align="center">
+  <video src="https://raw.githubusercontent.com/fnnktkygl-code/vital_track/main/docs/videos/vitaltrack_demo.mp4" controls="controls" width="100%" style="max-width:920px; border-radius:14px; box-shadow:0 8px 24px rgba(0,0,0,0.4);">
+    <source src="docs/videos/vitaltrack_demo.mp4" type="video/mp4">
+    Su navegador no admite la etiqueta de video.
+  </video>
+  <p><sub><i>▶️ Recorrido Completo: Panel Vitalista ➔ Consulta con Coach IA ➔ Sincronización al Calendario ➔ Escáner Bioquímico de Platos ➔ Rastreador de Ayuno y Autofagia ➔ Estudio de Respiración Wim Hof</i></sub></p>
+</div>
+
+---
+
 ## 📱 Galería Visual y Demostración de la Aplicación
 
 ### 💻 Experiencia de Escritorio (Temas Oscuro y Claro)
@@ -204,7 +216,7 @@ graph TD
 ┌──────────────────────────────────────────────────────────┐
 │                   VitalTrack Frontend                    │
 │      Vite + Vanilla Modern JS (ES6+) + CSS Responsivo    │
-│   1.065 Claves i18n × 4 Idiomas (ES, EN, FR, FR-CA)=4.260│
+│   1.093 Claves i18n × 4 Idiomas (ES, EN, FR, FR-CA)=4.372│
 └────────────────────────────┬─────────────────────────────┘
                              │
                              ▼

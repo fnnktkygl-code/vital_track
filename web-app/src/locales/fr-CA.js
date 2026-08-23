@@ -556,7 +556,21 @@ export default {
     "tipProducts": "Produits & Étiquettes",
     "detectiveMascot": "Vital le Détective Nutritionnel ausculte votre plat",
     "loadingTitle": "Analyse biochimique & vitaliste en cours...",
-    "loadingSub": "Identification des composés, calcul du PRAL rénal et évaluation de la charge colloïdale..."
+    "loadingSub": "Identification des composés, calcul du PRAL rénal et évaluation de la charge colloïdale...",
+    "vitalistStatusTitle": "1. Statut Vitaliste & Mucus (Dr. Sebi / Ehret)",
+    "pralSectionTitle": "2. Indice PRAL & Équilibre Acido-Basique",
+    "estimatedRenalLoad": "Charge Rénale Estimée",
+    "pralAlkaline": "🟢 Alcalinisant (-30)",
+    "pralNeutral": "🟡 Neutre (0)",
+    "pralAcid": "🔴 Acidifiant (+30)",
+    "emunctorySectionTitle": "3. Impact Émonctoriel & Lymphatique (Morse)",
+    "lymphFluids": "Lymphe & Fluides",
+    "kidneysFiltration": "Reins & Filtration",
+    "electrifyTitle": "💡 Comment \"Électriser\" ce repas",
+    "suggestedLivingIngredients": "Ingrédients vivants suggérés à ajouter :",
+    "saveMealJournal": "Enregistrer ce repas dans mon journal",
+    "discussWithAi": "Discuter de ce plat avec l'IA",
+    "newScan": "Nouveau scan"
   },
   "search": {
     "pageTitle": "Recherche d'Aliments & Base de Données",
@@ -671,7 +685,15 @@ export default {
     "safetyRuleText": "Pratiquez toujours <strong>assis ou allongé</strong> dans un lieu sécurisé. <strong>JAMAIS</strong> dans l'eau (bain, piscine), sous la douche ou au volant.",
     "tabTimer": "Session Guidée (Timer)",
     "tabVideos": "Vidéos & Masterclass Wim Hof",
-    "tabGuide": "Protocole & Physiologie"
+    "tabGuide": "Protocole & Physiologie",
+    "modeWimhof": "❄️ Wim Hof (Alcalinisant)",
+    "modeRelax": "🧘 Relaxation (1:2)",
+    "modeBox": "📦 Box Breathing (Focus)",
+    "modeSleep": "🌙 4-7-8 Sommeil Profond",
+    "ready": "Prêt",
+    "tapToStart": "Appuyez sur Démarrer",
+    "recoveryAction": "J'inspire (Passer à la récupération 15s)",
+    "breathsPerRound": "{count} respirations/tour"
   },
   "resources": {
     "pageTitle": "Bibliothèque Numérique & Médias Vitalistes",
@@ -1112,7 +1134,8 @@ export default {
     "authGateBenefit2": "Sauvegarde automatique de vos conversations",
     "authGateBenefit3": "100% Sécurisé & respectueux de votre vie privée",
     "authGateGoogleBtn": "Se connecter avec Google",
-    "authGateLaterBtn": "Plus tard (navigation seule)"
+    "authGateLaterBtn": "Plus tard (navigation seule)",
+    "pwaInstallBtn": "Installer"
   },
   "toasts": {
     "copiedToClipboard": "Copié dans le presse-papiers !",
