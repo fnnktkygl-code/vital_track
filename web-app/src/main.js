@@ -9837,6 +9837,9 @@ function setResourcesCatalogTab(tab) {
 function renderResources() {
   const container = document.getElementById('resourcesContainer');
   if (!container) return;
+  const tFunc = (window.vitalTrackI18n && typeof window.vitalTrackI18n.t === 'function') 
+    ? window.vitalTrackI18n.t 
+    : ((k, p, def) => def || k);
 
   // High-availability verified media and official local documents
   const allBooks = [

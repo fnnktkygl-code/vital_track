@@ -35,12 +35,12 @@
     <tr>
       <td width="50%" align="center">
         <strong>🌌 Dark Mode (Serene & Immersive)</strong><br/><br/>
-        <img src="docs/screenshots/desktop_dashboard_dark.png" alt="Desktop Dashboard Dark" width="100%" style="border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.4);" /><br/>
+        <img src="docs/screenshots/en/desktop_dashboard_dark.png" alt="Desktop Dashboard Dark" width="100%" style="border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.4);" /><br/>
         <sub>Vitality Score 100/100, 24h Circadian Clock & Nighttime Cellular Regeneration Focus</sub>
       </td>
       <td width="50%" align="center">
         <strong>☀️ Light Mode (High Contrast & Daylight Clarity)</strong><br/><br/>
-        <img src="docs/screenshots/desktop_dashboard_light.png" alt="Desktop Dashboard Light" width="100%" style="border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.15);" /><br/>
+        <img src="docs/screenshots/en/desktop_dashboard_light.png" alt="Desktop Dashboard Light" width="100%" style="border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.15);" /><br/>
         <sub>WCAG AAA Certified Contrast, Clean Typography & Instant Visual Dynamics</sub>
       </td>
     </tr>
@@ -55,44 +55,44 @@
   <table>
     <tr>
       <td align="center" width="25%">
-        <img src="docs/screenshots/mobile_dashboard_dark.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="Mobile Dashboard" /><br/>
+        <img src="docs/screenshots/en/mobile_dashboard_dark.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="Mobile Dashboard" /><br/>
         <strong>📊 1. Vital Cockpit</strong><br/>
         <sub>Circadian Clock & Vitality Index</sub>
       </td>
       <td align="center" width="25%">
-        <img src="docs/screenshots/mobile_chat_voice_live.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="Live Voice Coach" /><br/>
+        <img src="docs/screenshots/en/mobile_chat_voice_live.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="Live Voice Coach" /><br/>
         <strong>🎙️ 2. Live Voice Coach</strong><br/>
         <sub>Zero-Quota Speech & Waveform HUD</sub>
       </td>
       <td align="center" width="25%">
-        <img src="docs/screenshots/mobile_scanner_analysis.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="AI Meal Scanner" /><br/>
+        <img src="docs/screenshots/en/mobile_scanner_analysis.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="AI Meal Scanner" /><br/>
         <strong>📸 3. AI Plate Scanner</strong><br/>
         <sub>Renal PRAL, NOVA & Mucus Impact</sub>
       </td>
       <td align="center" width="25%">
-        <img src="docs/screenshots/mobile_calendar_cockpit.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="Calendar Cockpit" /><br/>
+        <img src="docs/screenshots/en/mobile_calendar_cockpit.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="Calendar Cockpit" /><br/>
         <strong>📅 4. Diet Calendar</strong><br/>
         <sub>14-Day Strip & One-Touch Log</sub>
       </td>
     </tr>
     <tr>
       <td align="center" width="25%">
-        <img src="docs/screenshots/mobile_fasting_timer.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="Fasting & Autophagy" /><br/>
+        <img src="docs/screenshots/en/mobile_fasting_timer.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="Fasting & Autophagy" /><br/>
         <strong>⏳ 5. Fasting Tracker</strong><br/>
         <sub>Metabolic Stages & Autophagy</sub>
       </td>
       <td align="center" width="25%">
-        <img src="docs/screenshots/mobile_breathing_wimhof.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="Breathing Studio" /><br/>
+        <img src="docs/screenshots/en/mobile_breathing_wimhof.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="Breathing Studio" /><br/>
         <strong>🫁 6. Breathing Studio</strong><br/>
         <sub>Wim Hof 3 Rounds & Heart Coherence</sub>
       </td>
       <td align="center" width="25%">
-        <img src="docs/screenshots/mobile_pharmacopeia_plants.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="Raintree Pharmacopeia" /><br/>
+        <img src="docs/screenshots/en/mobile_pharmacopeia_plants.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="Raintree Pharmacopeia" /><br/>
         <strong>🌿 7. Pharmacopeia</strong><br/>
         <sub>127+ Amazonian Monographs</sub>
       </td>
       <td align="center" width="25%">
-        <img src="docs/screenshots/mobile_privacy_vault.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="GDPR Privacy Vault" /><br/>
+        <img src="docs/screenshots/en/mobile_privacy_vault.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="GDPR Privacy Vault" /><br/>
         <strong>🔒 8. GDPR Vault</strong><br/>
         <sub>Right to be Forgotten & 1-Click Export</sub>
       </td>
@@ -116,7 +116,7 @@ graph TD
 
 1. **🍇 Arnold Ehret (Mucusless Diet Healing System)**:
    * Quantitative mucus-forming food evaluation and step-by-step transition protocols.
-   * Universal physiological equation: \(V = P - O\) (Vitality = Power − Obstruction).
+   * Universal physiological equation: (V = P - O) (Vitality = Power − Obstruction).
 
 2. **⚡ Dr. Sebi (Cellular Bio-Mineral Balance)**:
    * Electric, living, non-hybridized native food list (*Sea Moss, Bladderwrack, Fonio, Burdock, Soursop*).
@@ -151,7 +151,7 @@ graph TD
 * **Direct Action Cards**: Generates interactive cards in chat (`📅 Apply to Calendar`, `🍲 Save Meal`, `🥗 Custom Dishes`).
 
 <div align="center">
-  <img src="docs/screenshots/desktop_ai_chat_actions.png" alt="AI Coach with Interactive Action Cards" width="900" style="border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.4);" />
+  <img src="docs/screenshots/en/desktop_ai_chat_actions.png" alt="AI Coach with Interactive Action Cards" width="900" style="border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.4);" />
 </div>
 
 <br/>
@@ -160,7 +160,7 @@ graph TD
 * Instant image diagnosis: ingredient identification, **NOVA score**, renal **PRAL index** (+/− mEq/100g), mucus formation rating, and living electric food alternatives.
 
 <div align="center">
-  <img src="docs/screenshots/desktop_scanner_analysis.png" alt="AI Meal Scanner and PRAL Index" width="900" style="border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.4);" />
+  <img src="docs/screenshots/en/desktop_scanner_analysis.png" alt="AI Meal Scanner and PRAL Index" width="900" style="border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.4);" />
 </div>
 
 <br/>
@@ -253,8 +253,8 @@ node tests/run_all_tests.mjs
 ## 🌐 Multilingual Documentation
 
 * [🇬🇧 **English (README.md)**](README.md)
-* [🇫🇷 **Français (README.fr.md / LISEZMOI.md)**](README.fr.md)
-* [🇪🇸 **Español (README.es.md / LEAME.md)**](README.es.md)
+* [🇫🇷 **Français (README.fr.md)**](README.fr.md)
+* [🇪🇸 **Español (README.es.md)**](README.es.md)
 
 ---
 

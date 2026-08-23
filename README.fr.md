@@ -35,12 +35,12 @@
     <tr>
       <td width="50%" align="center">
         <strong>🌌 Thème Sombre (Immersion & Sérénité)</strong><br/><br/>
-        <img src="docs/screenshots/desktop_dashboard_dark.png" alt="Tableau de bord Desktop Sombre" width="100%" style="border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.4);" /><br/>
+        <img src="docs/screenshots/fr/desktop_dashboard_dark.png" alt="Tableau de bord Desktop Sombre" width="100%" style="border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.4);" /><br/>
         <sub>Score Vitalité 100/100, Horloge Circadienne 24h & Focus d'assimilation nocturne</sub>
       </td>
       <td width="50%" align="center">
         <strong>☀️ Thème Clair (Haute Lisibilité)</strong><br/><br/>
-        <img src="docs/screenshots/desktop_dashboard_light.png" alt="Tableau de bord Desktop Clair" width="100%" style="border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.15);" /><br/>
+        <img src="docs/screenshots/fr/desktop_dashboard_light.png" alt="Tableau de bord Desktop Clair" width="100%" style="border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.15);" /><br/>
         <sub>Contraste certifié WCAG AAA, typographie soignée et dynamique visuelle</sub>
       </td>
     </tr>
@@ -55,44 +55,44 @@
   <table>
     <tr>
       <td align="center" width="25%">
-        <img src="docs/screenshots/mobile_dashboard_dark.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="Tableau de bord Mobile" /><br/>
+        <img src="docs/screenshots/fr/mobile_dashboard_dark.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="Tableau de bord Mobile" /><br/>
         <strong>📊 1. Cockpit Vital</strong><br/>
         <sub>Score & Horloge Circadienne</sub>
       </td>
       <td align="center" width="25%">
-        <img src="docs/screenshots/mobile_chat_voice_live.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="Coach Vocal en Direct" /><br/>
+        <img src="docs/screenshots/fr/mobile_chat_voice_live.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="Coach Vocal en Direct" /><br/>
         <strong>🎙️ 2. Voix en Direct</strong><br/>
         <sub>Streaming sans quota & HUD</sub>
       </td>
       <td align="center" width="25%">
-        <img src="docs/screenshots/mobile_scanner_analysis.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="Diagnostic Visuel IA" /><br/>
+        <img src="docs/screenshots/fr/mobile_scanner_analysis.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="Diagnostic Visuel IA" /><br/>
         <strong>📸 3. Scanner IA</strong><br/>
         <sub>PRAL Rénal & Électrisation</sub>
       </td>
       <td align="center" width="25%">
-        <img src="docs/screenshots/mobile_calendar_cockpit.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="Calendrier Cockpit" /><br/>
+        <img src="docs/screenshots/fr/mobile_calendar_cockpit.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="Calendrier Cockpit" /><br/>
         <strong>📅 4. Calendrier Cockpit</strong><br/>
         <sub>Bandeau 14j & Validation tactile</sub>
       </td>
     </tr>
     <tr>
       <td align="center" width="25%">
-        <img src="docs/screenshots/mobile_fasting_timer.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="Jeûne & Autophagie" /><br/>
+        <img src="docs/screenshots/fr/mobile_fasting_timer.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="Jeûne & Autophagie" /><br/>
         <strong>⏳ 5. Jeûne & Autophagie</strong><br/>
         <sub>Paliers métaboliques & Cétose</sub>
       </td>
       <td align="center" width="25%">
-        <img src="docs/screenshots/mobile_breathing_wimhof.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="Studio de Respiration" /><br/>
+        <img src="docs/screenshots/fr/mobile_breathing_wimhof.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="Studio de Respiration" /><br/>
         <strong>🫁 6. Respiration Prānique</strong><br/>
         <sub>Wim Hof & Cohérence Cardiaque</sub>
       </td>
       <td align="center" width="25%">
-        <img src="docs/screenshots/mobile_pharmacopeia_plants.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="Pharmacopée Raintree" /><br/>
+        <img src="docs/screenshots/fr/mobile_pharmacopeia_plants.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="Pharmacopée Raintree" /><br/>
         <strong>🌿 7. Pharmacopée</strong><br/>
         <sub>Monographies botaniques</sub>
       </td>
       <td align="center" width="25%">
-        <img src="docs/screenshots/mobile_privacy_vault.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="Coffre RGPD" /><br/>
+        <img src="docs/screenshots/fr/mobile_privacy_vault.png" width="100%" style="border-radius:16px; box-shadow:0 6px 18px rgba(0,0,0,0.35);" alt="Coffre RGPD" /><br/>
         <strong>🔒 8. Espace RGPD</strong><br/>
         <sub>Droit à l'oubli & Export 1-clic</sub>
       </td>
@@ -116,7 +116,7 @@ graph TD
 
 1. **🍇 Arnold Ehret (Système de Guérison du Régime Sans Mucus)** :
    * Évaluation quantitative de la formation de mucus et protocoles de transition progressive.
-   * Équation universelle : \(V = P - O\) (Vitalité = Puissance Motrice − Obstruction interne).
+   * Équation universelle : (V = P - O) (Vitalité = Puissance Motrice − Obstruction interne).
 
 2. **⚡ Dr. Sebi (Nutrition Bio-Électrique Cellulaire)** :
    * Recommandations d'aliments vivants non hybridés à graines fertiles (*Sea Moss, Fucus, Fonio, Bardane, Corossol*).
@@ -151,7 +151,7 @@ graph TD
 * **Cartes d'actions interactives directes** : Génération de raccourcis dans le chat (`📅 Appliquer au calendrier`, `🍲 Enregistrer le repas`, `🥗 Créer un plat`).
 
 <div align="center">
-  <img src="docs/screenshots/desktop_ai_chat_actions.png" alt="Coach IA Vitaliste avec Cartes d'Actions" width="900" style="border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.4);" />
+  <img src="docs/screenshots/fr/desktop_ai_chat_actions.png" alt="Coach IA Vitaliste avec Cartes d'Actions" width="900" style="border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.4);" />
 </div>
 
 <br/>
@@ -160,7 +160,7 @@ graph TD
 * Analyse instantanée d'une photo de plat : identification des ingrédients, calcul du score **NOVA**, indice **PRAL rénal** (+/− mEq/100g), charge colloïdale de mucus et propositions d'alternatives vivantes électrisantes.
 
 <div align="center">
-  <img src="docs/screenshots/desktop_scanner_analysis.png" alt="Diagnostic Visuel d'Assiette IA" width="900" style="border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.4);" />
+  <img src="docs/screenshots/fr/desktop_scanner_analysis.png" alt="Diagnostic Visuel d'Assiette IA" width="900" style="border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.4);" />
 </div>
 
 <br/>
@@ -253,8 +253,8 @@ node tests/run_all_tests.mjs
 ## 🌐 Documentation Multilingue
 
 * [🇬🇧 **English (README.md)**](README.md)
-* [🇫🇷 **Français (README.fr.md / LISEZMOI.md)**](README.fr.md)
-* [🇪🇸 **Español (README.es.md / LEAME.md)**](README.es.md)
+* [🇫🇷 **Français (README.fr.md)**](README.fr.md)
+* [🇪🇸 **Español (README.es.md)**](README.es.md)
 
 ---
 
