@@ -29,11 +29,14 @@
 ## 🎬 Demostración en Video Interactivo de la Aplicación
 
 <div align="center">
-  <video src="https://raw.githubusercontent.com/fnnktkygl-code/vital_track/main/docs/videos/vitaltrack_demo.mp4" controls="controls" width="100%" style="max-width:920px; border-radius:14px; box-shadow:0 8px 24px rgba(0,0,0,0.4);">
-    <source src="docs/videos/vitaltrack_demo.mp4" type="video/mp4">
-    Su navegador no admite la etiqueta de video.
-  </video>
-  <p><sub><i>▶️ Recorrido Completo: Panel Vitalista ➔ Consulta con Coach IA ➔ Sincronización al Calendario ➔ Escáner Bioquímico de Platos ➔ Rastreador de Ayuno y Autofagia ➔ Estudio de Respiración Wim Hof</i></sub></p>
+
+[![Demostración en Video Interactivo VitalTrack](docs/videos/vitaltrack_demo.gif)](docs/videos/vitaltrack_demo.mp4)
+
+<p align="center">
+  <sub><i>▶️ <strong>Recorrido de Usuario Completo:</strong> Panel Vitalista ➔ Consulta con Coach IA ➔ Sincronización al Calendario ➔ Escáner Bioquímico de Platos ➔ Rastreador de Ayuno y Autofagia ➔ Estudio de Respiración Wim Hof</i></sub><br/>
+  <a href="docs/videos/vitaltrack_demo.mp4"><strong>🎥 Descargar / Ver Video Completo en HD MP4 (docs/videos/vitaltrack_demo.mp4)</strong></a>
+</p>
+
 </div>
 
 ---
@@ -216,7 +219,7 @@ graph TD
 ┌──────────────────────────────────────────────────────────┐
 │                   VitalTrack Frontend                    │
 │      Vite + Vanilla Modern JS (ES6+) + CSS Responsivo    │
-│   1.093 Claves i18n × 4 Idiomas (ES, EN, FR, FR-CA)=4.372│
+│   1.116 Claves i18n × 4 Idiomas (ES, EN, FR, FR-CA)=4.464│
 └────────────────────────────┬─────────────────────────────┘
                              │
                              ▼
@@ -272,5 +275,5 @@ node tests/run_all_tests.mjs
 
 ## 📜 Cumplimiento y Licencia
 
-* **Licencia:** Distribuido bajo la **Licencia MIT**. Consulte el archivo `LICENSE` para más detalles.
+* **Licencia:** Distribuido bajo la **Licencia MIT**. Consulte el archivo `LICENSE` para más details.
 * **Protección de Datos:** Totalmente conforme con el Reglamento General de Protección de Datos (RGPD) de la Unión Europea. Consulte nuestra [Política de Privacidad](https://fnnktkygl-code.github.io/vital_track/privacy.html).

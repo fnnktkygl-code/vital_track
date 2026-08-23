@@ -29,11 +29,14 @@
 ## 🎬 Démonstration Vidéo Interactive de l'Application
 
 <div align="center">
-  <video src="https://raw.githubusercontent.com/fnnktkygl-code/vital_track/main/docs/videos/vitaltrack_demo.mp4" controls="controls" width="100%" style="max-width:920px; border-radius:14px; box-shadow:0 8px 24px rgba(0,0,0,0.4);">
-    <source src="docs/videos/vitaltrack_demo.mp4" type="video/mp4">
-    Votre navigateur ne supporte pas la balise vidéo.
-  </video>
-  <p><sub><i>▶️ Parcours Utilisateur Complet : Cockpit Vitaliste ➔ Consultation Coach IA ➔ Application Calendrier via Carte d'Action ➔ Scanner Biochimique d'Assiette ➔ Suivi du Jeûne & Autophagie ➔ Studio de Respiration Wim Hof</i></sub></p>
+
+[![Démonstration Vidéo Interactive VitalTrack](docs/videos/vitaltrack_demo.gif)](docs/videos/vitaltrack_demo.mp4)
+
+<p align="center">
+  <sub><i>▶️ <strong>Parcours Utilisateur Complet :</strong> Cockpit Vitaliste ➔ Consultation Coach IA ➔ Application Calendrier via Carte d'Action ➔ Scanner Biochimique d'Assiette ➔ Suivi du Jeûne & Autophagie ➔ Studio de Respiration Wim Hof</i></sub><br/>
+  <a href="docs/videos/vitaltrack_demo.mp4"><strong>🎥 Télécharger / Voir la Vidéo Complète en HD MP4 (docs/videos/vitaltrack_demo.mp4)</strong></a>
+</p>
+
 </div>
 
 ---
@@ -216,7 +219,7 @@ graph TD
 ┌──────────────────────────────────────────────────────────┐
 │                   VitalTrack Frontend                    │
 │      Vite + Vanilla Modern JS (ES6+) + CSS Responsive    │
-│   1 093 clés i18n × 4 langues (FR, EN, ES, FR-CA) = 4 372│
+│   1 116 clés i18n × 4 langues (FR, EN, ES, FR-CA) = 4 464│
 └────────────────────────────┬─────────────────────────────┘
                              │
                              ▼
