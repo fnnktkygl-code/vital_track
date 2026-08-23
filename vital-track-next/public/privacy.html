@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Politique de Confidentialité & RGPD | VitalTrack</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090d16;
+      --bg-card: rgba(17, 24, 39, 0.7);
+      --border: rgba(255, 255, 255, 0.08);
+      --accent: #34d399;
+      --accent-glow: rgba(52, 211, 153, 0.15);
+      --text: #f8fafc;
+      --text-dim: #94a3b8;
+      --font: 'Plus Jakarta Sans', -apple-system, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg);
+      background-image: radial-gradient(circle at 50% 0%, rgba(52, 211, 153, 0.08), transparent 50%),
+                        radial-gradient(circle at 100% 100%, rgba(96, 165, 250, 0.05), transparent 40%);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.7;
+      padding: 40px 20px;
+    }
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      background: var(--accent-glow);
+      border: 1px solid rgba(52, 211, 153, 0.3);
+      color: var(--accent);
+      border-radius: 30px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 10px;
+    }
+    .subtitle {
+      color: var(--text-dim);
+      font-size: 0.95rem;
+    }
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 24px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+    h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.3rem;
+      color: #fff;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    h2 i { color: var(--accent); }
+    p { margin-bottom: 14px; color: #cbd5e1; font-size: 0.95rem; }
+    ul { list-style: none; margin-bottom: 14px; }
+    li {
+      position: relative;
+      padding-left: 24px;
+      margin-bottom: 8px;
+      color: #cbd5e1;
+      font-size: 0.93rem;
+    }
+    li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-weight: bold;
+    }
+    .highlight-box {
+      background: rgba(52, 211, 153, 0.06);
+      border-left: 3px solid var(--accent);
+      padding: 16px 20px;
+      border-radius: 0 12px 12px 0;
+      margin: 16px 0;
+    }
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      background: var(--accent);
+      color: #090d16;
+      font-weight: 700;
+      border-radius: 12px;
+      text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+      margin-top: 20px;
+    }
+    .back-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(52, 211, 153, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="badge"><i class="ri-shield-check-fill"></i> Conformité RGPD &amp; Confidentialité</div>
+      <h1>Politique de Confidentialité</h1>
+      <p class="subtitle">Dernière mise à jour : 20 Août 2026 • Application VitalTrack AI</p>
+    </div>
+
+    <div class="card">
+      <h2><i class="ri-lock-2-line"></i> 1. Engagement & Architecture « Zero-Knowledge »</h2>
+      <p>
+        <strong>VitalTrack</strong> a été conçu dès sa première ligne de code selon le principe du <em>Privacy-by-Design</em> (protection de la vie privée dès la conception). 
+        Nous croyons fermement que vos données de santé, vos repas, vos cycles de jeûne et vos échanges avec l'IA vous appartiennent de manière exclusive et inaliénable.
+      </p>
+      <div class="highlight-box">
+        <strong>🔒 Principe fondamental :</strong> VitalTrack ne vend, ne loue, ne monétise et ne transmet JAMAIS vos données personnelles ou de santé à des régies publicitaires, courtiers de données ou assureurs.
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><i class="ri-database-2-line"></i> 2. Données Traitées & Stockage Local Hermétique</h2>
+      <p>L'application traite les catégories de données suivantes exclusivement pour vous fournir ses services :</p>
+      <ul>
+        <li><strong>Profil vitaliste :</strong> Prénom, objectif de régénération, poids, taille (stockés localement sur votre appareil).</li>
+        <li><strong>Journal alimentaire & jeûne :</strong> Repas enregistrés, indices PRAL, heures de début et fin de jeûne, hydratation.</li>
+        <li><strong>Analyses d'images & Scanner :</strong> Les photos soumises au scanner sont analysées de manière éphémère pour extraire les ingrédients et ne sont jamais conservées sur des serveurs tiers.</li>
+        <li><strong>Historique de conversation IA :</strong> Vos échanges avec le Coach Vitaliste sont isolés hermétiquement par compte dans le stockage local de votre navigateur (LocalStorage chiffré).</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2><i class="ri-google-fill"></i> 3. Authentification Google Identity Services</h2>
+      <p>
+        L'authentification Google est utilisée pour identifier de manière sécurisée votre espace utilisateur et synchroniser vos données sur vos différents appareils.
+      </p>
+      <ul>
+        <li>Nous demandons uniquement l'accès à votre profil public (nom, adresse email et photo de profil).</li>
+        <li>Nous n'avons aucun accès à vos contacts, vos emails personnels ou votre historique Google Drive/Photos.</li>
+        <li>Vous pouvez vous déconnecter à tout moment d'un simple clic sur le bouton <em>« Se déconnecter »</em>.</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2><i class="ri-robot-2-line"></i> 4. Intelligence Artificielle & Traitement des Requêtes</h2>
+      <p>
+        Les requêtes adressées au Coach Vitaliste et les analyses de plats sont propulsées par les modèles de fondation Google Gemini via des API sécurisées conformes aux normes d'entreprise (Enterprise Privacy). Vos conversations ne sont pas utilisées pour ré-entraîner les modèles publics sans votre consentement.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2><i class="ri-user-settings-line"></i> 5. Vos Droits RGPD (Articles 15 à 22)</h2>
+      <p>Conformément au Règlement Général sur la Protection des Données (RGPD 2016/679), vous disposez des droits suivants directement accessibles dans l'interface de l'application :</p>
+      <ul>
+        <li><strong>Droit d'accès &amp; de rectification (Art. 15 &amp; 16) :</strong> Consultez et modifiez votre profil à tout moment dans l'onglet Paramètres.</li>
+        <li><strong>Droit à la portabilité (Art. 20) :</strong> Téléchargez l'intégralité de vos données au format standardisé JSON en cliquant sur <em>« Exporter mes données RGPD »</em>.</li>
+        <li><strong>Droit à l'oubli &amp; effacement définitif (Art. 17) :</strong> Supprimez instantanément et sans condition l'ensemble de vos données et de votre compte en cliquant sur <em>« Supprimer mon compte &amp; mes données »</em>.</li>
+      </ul>
+      <div style="margin-top: 18px; border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); text-align: center;">
+        <img src="docs/screenshots/desktop_privacy_gdpr.png" onerror="this.src='screenshots/desktop_privacy_gdpr.png'" alt="Contrôles RGPD et Droit à l'oubli VitalTrack" style="width: 100%; display: block; border-radius: 12px;">
+      </div>
+    </div>
+
+    <div class="card">
+      <h2><i class="ri-mail-send-line"></i> 6. Contact & Délégué à la Protection des Données</h2>
+      <p>
+        Pour toute question concernant cette politique ou pour exercer vos droits, vous pouvez contacter l'équipe de développement et le responsable de traitement à l'adresse :
+        <br><br>
+        📧 <strong>contact.vitaltrack@gmail.com</strong>
+      </p>
+      <div style="text-align: center;">
+        <a href="https://vitaltrackapp.vercel.app" class="back-btn"><i class="ri-arrow-left-line"></i> Retourner à l'Application VitalTrack</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

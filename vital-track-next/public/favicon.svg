@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="bgGlow" cx="50%" cy="45%" r="65%">
+      <stop offset="0%" stop-color="#132238"/>
+      <stop offset="60%" stop-color="#0B1120"/>
+      <stop offset="100%" stop-color="#050811"/>
+    </radialGradient>
+    <linearGradient id="vLeftGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34D399"/>
+      <stop offset="50%" stop-color="#10B981"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    <linearGradient id="vRightGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8"/>
+      <stop offset="50%" stop-color="#06B6D4"/>
+      <stop offset="100%" stop-color="#0284C7"/>
+    </linearGradient>
+    <linearGradient id="sparkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FDE047"/>
+      <stop offset="50%" stop-color="#F59E0B"/>
+      <stop offset="100%" stop-color="#EF4444"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="14" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="sparkGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Full bleed Background for Android Maskable & Apple -->
+  <rect width="512" height="512" fill="url(#bgGlow)"/>
+
+  <!-- Subtle ambient aura -->
+  <circle cx="256" cy="256" r="160" fill="#10B981" opacity="0.14" filter="blur(40px)"/>
+  <circle cx="256" cy="256" r="120" fill="#38BDF8" opacity="0.12" filter="blur(30px)"/>
+
+  <!-- Main Symbol: Bold Sculptural 'V' with Vital Pulse Spark -->
+  <g filter="url(#glow)">
+    <!-- Left Wing of V (Electric Vital Leaf Branch) -->
+    <path d="M 140 130 C 145 230 190 320 256 390 C 240 330 215 250 195 190 C 185 160 165 140 140 130 Z" fill="url(#vLeftGrad)"/>
+    
+    <!-- Right Wing of V (Dynamic Cyan Wave) -->
+    <path d="M 372 130 C 367 230 322 320 256 390 C 272 330 297 250 317 190 C 327 160 347 140 372 130 Z" fill="url(#vRightGrad)"/>
+
+    <!-- Central Bio-Electric Core Lightning / Pulse -->
+    <path d="M 256 120 L 272 220 L 244 240 L 266 330 L 235 345 L 256 390 L 256 350 L 276 335 L 254 255 L 282 235 Z" fill="#FFFFFF" opacity="0.95"/>
+  </g>
+
+  <!-- Glowing Top Spark / Sun seed -->
+  <circle cx="256" cy="110" r="16" fill="url(#sparkGrad)" filter="url(#sparkGlow)"/>
+  <circle cx="256" cy="110" r="8" fill="#FFFFFF"/>
+</svg>

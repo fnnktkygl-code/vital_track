@@ -324,19 +324,150 @@ input:checked + .apple-slider:before {
   transform: translateX(20px);
 }
 
-/* Sidebar item micro-interactions */
+/* ═══════ APPLE × KAWAII JAPONAIS DESIGN SYSTEM ═══════ */
+.sidebar-desktop {
+  width: 260px;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; bottom: 0; left: 0;
+  overflow-y: auto;
+  z-index: 100;
+  padding: 22px 14px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="light"] .sidebar-desktop {
+  background: rgba(255, 255, 255, 0.95);
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+}
+
+.sidebar-section {
+  margin-bottom: 20px;
+}
+
+.sidebar-section-title {
+  font-size: 0.68rem !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.12em !important;
+  color: var(--text-dim, #94a3b8) !important;
+  padding: 0 12px !important;
+  margin-bottom: 8px !important;
+  display: block;
+  opacity: 0.85;
+}
+
+/* Sidebar items with Apple Springs and Kawaii micro-rotations */
 .sidebar-link, .sidebar-item {
   position: relative;
-  transition: all calc(0.25s * var(--speed-factor, 1)) var(--apple-spring) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 10px 14px !important;
+  border-radius: 16px !important;
+  font-size: 0.86rem !important;
+  font-weight: 700 !important;
+  color: var(--text-dim, #94a3b8) !important;
+  text-decoration: none !important;
+  margin-bottom: 3px !important;
+  border: 1px solid transparent !important;
+  transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+  cursor: pointer;
+  select-none: none;
 }
-.sidebar-link:hover i, .sidebar-link:hover .nav-icon,
-.sidebar-item:hover i, .sidebar-item:hover .nav-icon {
-  transform: scale(1.15) rotate(3deg) !important;
+
+.sidebar-link > div, .sidebar-link > span, .sidebar-item > div {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
+
+.sidebar-link i, .sidebar-item i {
+  font-size: 1.2rem;
+  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+.sidebar-link:hover, .sidebar-item:hover {
+  color: var(--text, #ffffff) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  transform: translateX(3px) !important;
+}
+
+[data-theme="light"] .sidebar-link:hover, [data-theme="light"] .sidebar-item:hover {
+  background: rgba(0, 0, 0, 0.04) !important;
+  color: #0f172a !important;
+}
+
+.sidebar-link:hover i, .sidebar-item:hover i {
+  transform: scale(1.18) rotate(4deg) !important;
+}
+
 .sidebar-link.active, .sidebar-item.active {
   background: rgba(16, 185, 129, 0.15) !important;
+  border: 1px solid rgba(16, 185, 129, 0.35) !important;
   color: #10b981 !important;
   font-weight: 800 !important;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.18) !important;
+  transform: scale(1.02) !important;
+}
+
+[data-theme="light"] .sidebar-link.active, [data-theme="light"] .sidebar-item.active {
+  background: rgba(5, 150, 105, 0.12) !important;
+  border: 1px solid rgba(5, 150, 105, 0.3) !important;
+  color: #059669 !important;
+}
+
+/* Glowing Pulsing Active Indicator (Ping Dot) */
+.sidebar-link.active::after, .sidebar-item.active::after {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 10px #10b981;
+  display: inline-block;
+  flex-shrink: 0;
+  animation: sidebarPing 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes sidebarPing {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(1.4);
+  }
+}
+
+/* ═══════ UNIFIED APPLE CLOSE BUTTON (.app-close-btn) ═══════ */
+.app-close-btn, .modal-close-btn {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 50% !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: var(--surface-hover, rgba(255, 255, 255, 0.08)) !important;
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.12)) !important;
+  color: var(--text, #ffffff) !important;
+  cursor: pointer !important;
+  font-size: 1.1rem !important;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+.app-close-btn:hover, .modal-close-btn:hover {
+  transform: rotate(90deg) scale(1.1) !important;
+  background: rgba(239, 68, 68, 0.2) !important;
+  border-color: rgba(239, 68, 68, 0.4) !important;
+  color: #ef4444 !important;
 }
 
 /* ═══════ LIGHT MODE HIGH-CONTRAST BADGES & CHIPS ═══════ */
