@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { cn, formatLocalDate, parseLocalDate, addDaysLocal } from '@/lib/utils';
+import { cn, formatLocalDate, parseLocalDate } from '@/lib/utils';
 import { GlassCard } from './GlassCard';
 import confetti from 'canvas-confetti';
 
@@ -58,11 +58,10 @@ export const StripCalendar: React.FC = () => {
   const [days, setDays] = useState<DayPill[]>([]);
   const [tasks, setTasks] = useState<RoutineTask[]>([]);
 
-  // Compute 7-day strip window centered around today
   useEffect(() => {
     const todayStr = formatLocalDate(new Date());
     const today = parseLocalDate(todayStr);
-    const dayOfWeek = today.getDay(); // 0 = Dim, 1 = Lun
+    const dayOfWeek = today.getDay();
     const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
 
     const stripDays: DayPill[] = [];
@@ -86,7 +85,6 @@ export const StripCalendar: React.FC = () => {
     setDays(stripDays);
   }, []);
 
-  // Load routine tasks for selected date
   useEffect(() => {
     const storageKey = `vital_routine_${selectedDate}`;
     const saved = localStorage.getItem(storageKey);
@@ -96,8 +94,6 @@ export const StripCalendar: React.FC = () => {
         return;
       } catch (e) {}
     }
-
-    // Default tasks
     setTasks(DEFAULT_TASKS.map(t => ({ ...t, completed: false })));
   }, [selectedDate]);
 
@@ -139,26 +135,26 @@ export const StripCalendar: React.FC = () => {
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-emerald-500/15 text-emerald-500 border border-emerald-500/25 flex items-center justify-center text-xl flex-shrink-0">
+          <div className="w-10 h-10 rounded-2xl bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center justify-center text-xl flex-shrink-0">
             🥗
           </div>
           <div>
-            <h3 className="text-base font-bold text-slate-900 dark:text-white leading-tight">
+            <h3 className="text-base font-black text-white leading-tight">
               Plan Alimentaire & Calendrier de Transition
             </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-xs text-slate-400">
               Suivi hebdomadaire selon les directives vitalistes
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold px-3 py-1.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 capitalize">
+          <span className="text-xs font-bold px-3 py-1.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 capitalize">
             {formattedSelectedDate}
           </span>
           <button
             onClick={() => setSelectedDate(formatLocalDate(new Date()))}
-            className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center text-sm transition-all"
+            className="w-8 h-8 rounded-xl bg-slate-800 text-slate-400 hover:text-white border border-slate-700 flex items-center justify-center text-sm transition-all"
             title="Revenir à aujourd'hui"
           >
             <i className="ri-refresh-line" />
@@ -177,14 +173,14 @@ export const StripCalendar: React.FC = () => {
               className={cn(
                 "flex flex-col items-center justify-center py-2.5 sm:py-3 px-1 rounded-2xl border transition-all duration-200 cursor-pointer select-none",
                 isSelected
-                  ? "bg-emerald-600 text-white border-emerald-500 shadow-lg shadow-emerald-600/30 scale-[1.04]"
-                  : "bg-slate-100/80 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700/60 hover:border-emerald-500/50 hover:bg-slate-200 dark:hover:bg-slate-800"
+                  ? "bg-emerald-600 text-white border-emerald-400 shadow-lg shadow-emerald-600/40 scale-[1.04]"
+                  : "bg-slate-800/90 text-slate-200 border-slate-700 hover:border-emerald-500/50 hover:bg-slate-800"
               )}
             >
               <span className={cn("text-[10px] font-bold tracking-wider", isSelected ? "text-white/90" : "text-slate-400")}>
                 {d.dayShort}
               </span>
-              <span className="text-base sm:text-lg font-black my-0.5">
+              <span className="text-base sm:text-lg font-black my-0.5 text-white">
                 {d.dayNum}
               </span>
               {d.isToday && (
@@ -196,22 +192,22 @@ export const StripCalendar: React.FC = () => {
       </div>
 
       {/* Routine & Checklist of the Day */}
-      <div className="pt-4 border-t border-slate-200 dark:border-slate-800">
+      <div className="pt-4 border-t border-slate-800">
         <div className="flex items-center justify-between gap-3 mb-3">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-slate-900 dark:text-white">
+            <span className="text-xs font-bold text-white">
               Routine & Rituels du Jour
             </span>
-            <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
+            <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
               {completedCount}/{tasks.length} validés ({progressPct}%)
             </span>
           </div>
         </div>
 
         {/* Progress Bar */}
-        <div className="w-full h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden mb-4">
+        <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden mb-4 border border-slate-700/50">
           <div
-            className="h-full bg-emerald-500 rounded-full transition-all duration-500 ease-out"
+            className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-500 ease-out"
             style={{ width: `${progressPct}%` }}
           />
         </div>
@@ -223,33 +219,33 @@ export const StripCalendar: React.FC = () => {
               key={t.id}
               onClick={() => toggleTask(t.id)}
               className={cn(
-                "flex items-center justify-between p-3 rounded-2xl border transition-all cursor-pointer select-none",
+                "flex items-center justify-between p-3.5 rounded-2xl border transition-all cursor-pointer select-none",
                 t.completed
-                  ? "bg-emerald-500/10 border-emerald-500/30 text-slate-900 dark:text-white"
-                  : "bg-slate-100/50 dark:bg-slate-800/40 border-slate-200/80 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
+                  ? "bg-emerald-500/15 border-emerald-500/40 text-white"
+                  : "bg-slate-800/80 border-slate-700 hover:border-slate-600 text-slate-200"
               )}
             >
               <div className="flex items-center gap-3 min-w-0">
                 <div
                   className={cn(
-                    "w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 transition-all text-xs font-bold border",
+                    "w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 transition-all text-xs font-black border",
                     t.completed
                       ? "bg-emerald-500 border-emerald-400 text-white"
-                      : "border-slate-300 dark:border-slate-600 text-transparent"
+                      : "border-slate-500 text-transparent"
                   )}
                 >
                   ✓
                 </div>
                 <div className="min-w-0">
-                  <div className={cn("text-xs font-bold truncate", t.completed && "line-through text-slate-400 dark:text-slate-500")}>
+                  <div className={cn("text-xs font-bold truncate text-white", t.completed && "line-through text-slate-400")}>
                     {t.title}
                   </div>
-                  <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
+                  <div className="text-[11px] text-slate-400 truncate mt-0.5">
                     {t.slot} · {t.desc}
                   </div>
                 </div>
               </div>
-              <span className="text-lg flex-shrink-0 ml-2">{t.emoji}</span>
+              <span className="text-xl flex-shrink-0 ml-2">{t.emoji}</span>
             </div>
           ))}
         </div>

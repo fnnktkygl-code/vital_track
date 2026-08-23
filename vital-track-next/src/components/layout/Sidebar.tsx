@@ -10,7 +10,6 @@ interface NavItem {
   href: string;
   label: string;
   icon: string;
-  badge?: string;
 }
 
 interface NavSection {
@@ -18,7 +17,7 @@ interface NavSection {
   items: NavItem[];
 }
 
-const NAV_SECTIONS: NavSection[] = [
+export const NAV_SECTIONS: NavSection[] = [
   {
     title: 'PRINCIPAL',
     items: [
@@ -48,14 +47,25 @@ const NAV_SECTIONS: NavSection[] = [
   },
 ];
 
-export const Sidebar: React.FC = () => {
+interface SidebarProps {
+  onItemClick?: () => void;
+  isMobile?: boolean;
+}
+
+export const Sidebar: React.FC<SidebarProps> = ({ onItemClick, isMobile = false }) => {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden lg:flex flex-col w-64 h-screen sticky top-0 bg-slate-900/95 dark:bg-slate-900/95 p-4 border-r border-slate-800 shadow-2xl select-none flex-shrink-0 z-30">
+    <aside
+      className={cn(
+        "flex flex-col h-full bg-slate-900/95 dark:bg-slate-900/95 p-4 border-r border-slate-800 shadow-2xl select-none flex-shrink-0 z-30",
+        isMobile ? "w-full" : "hidden md:flex w-64 h-screen sticky top-0"
+      )}
+    >
       {/* Brand Logo */}
       <Link
         href="/"
+        onClick={onItemClick}
         className="flex items-center gap-3 px-3 py-3 mb-4 rounded-2xl hover:bg-white/5 transition-all"
       >
         <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-emerald-500 via-teal-400 to-indigo-500 p-0.5 flex items-center justify-center flex-shrink-0 shadow-lg shadow-emerald-500/20">
@@ -87,6 +97,7 @@ export const Sidebar: React.FC = () => {
                   <Link
                     key={item.id}
                     href={item.href}
+                    onClick={onItemClick}
                     className={cn(
                       "group flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-all duration-200",
                       isActive
@@ -98,7 +109,7 @@ export const Sidebar: React.FC = () => {
                       <i
                         className={cn(
                           item.icon,
-                          "text-base transition-transform duration-200 group-hover:scale-115 group-hover:rotate-3",
+                          "text-base transition-transform duration-200 group-hover:scale-110 group-hover:rotate-3",
                           isActive ? "text-emerald-400" : "text-slate-400 group-hover:text-emerald-400"
                         )}
                       />
@@ -123,6 +134,7 @@ export const Sidebar: React.FC = () => {
       <div className="pt-3 border-t border-slate-800 space-y-1">
         <Link
           href="/landing"
+          onClick={onItemClick}
           className="flex items-center gap-3 px-3.5 py-2 rounded-2xl text-xs font-bold text-slate-400 hover:text-white hover:bg-white/5 transition-all"
         >
           <i className="ri-global-line text-base text-slate-400" />
@@ -130,6 +142,7 @@ export const Sidebar: React.FC = () => {
         </Link>
         <Link
           href="/modes"
+          onClick={onItemClick}
           className={cn(
             "flex items-center gap-3 px-3.5 py-2 rounded-2xl text-xs font-bold transition-all",
             pathname === '/modes'

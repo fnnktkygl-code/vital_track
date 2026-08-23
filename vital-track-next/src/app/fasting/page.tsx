@@ -41,10 +41,10 @@ export default function FastingPage() {
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
             Jeûne & Physiologie Cellulaire
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+          <p className="text-xs sm:text-sm text-slate-400 mt-1">
             Suivi des 7 phases d&apos;autophagie, cétogenèse et régénération des émonctoires
           </p>
         </div>
@@ -60,7 +60,7 @@ export default function FastingPage() {
       </div>
 
       {/* Main Fasting Timer Card */}
-      <GlassCard className="p-6 sm:p-8 text-center bg-gradient-to-b from-slate-900 to-slate-950 border-slate-800">
+      <GlassCard className="p-6 sm:p-8 text-center bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 border-slate-800">
         <div className="max-w-md mx-auto space-y-5">
           <div className="w-20 h-20 mx-auto rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center justify-center text-4xl shadow-xl shadow-emerald-500/10">
             {activeSession ? '🔥' : '⏳'}
@@ -70,10 +70,10 @@ export default function FastingPage() {
             <div className="text-xs font-bold uppercase tracking-widest text-emerald-400 mb-1">
               {activeSession ? `Jeûne en cours (${activeSession.type})` : 'Prêt pour le prochain jeûne'}
             </div>
-            <div className="text-4xl sm:text-5xl font-black text-white font-mono my-2">
+            <div className="text-4xl sm:text-5xl font-black text-white font-mono my-2 tracking-wider">
               {activeSession ? `${elapsedHours.toFixed(2)}h` : '00:00:00'}
             </div>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-slate-300">
               {activeSession
                 ? `Phase actuelle : ${currentStage.name}`
                 : 'Activez l\'autophagie pour régénérer vos émonctoires et détoxifier vos cellules.'}
@@ -107,8 +107,8 @@ export default function FastingPage() {
       </GlassCard>
 
       {/* 7 Stages of Autophagy Progression */}
-      <GlassCard className="p-6">
-        <h3 className="text-base font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+      <GlassCard className="p-6 bg-slate-900/90 border-slate-800">
+        <h3 className="text-base font-black text-white mb-4 flex items-center gap-2">
           <span>🧬</span> 7 Phases d&apos;Autophagie & Dynamique Cellulaire
         </h3>
 
@@ -122,23 +122,23 @@ export default function FastingPage() {
                 key={st.id}
                 className={`p-4 rounded-2xl border transition-all ${
                   isCurrent
-                    ? 'bg-emerald-500/15 border-emerald-500 text-white shadow-lg'
+                    ? 'bg-emerald-500/20 border-emerald-500 text-white shadow-lg'
                     : isReached
-                    ? 'bg-emerald-500/5 border-emerald-500/20 text-slate-300'
-                    : 'bg-slate-900/40 border-slate-800 text-slate-500'
+                    ? 'bg-emerald-500/10 border-emerald-500/30 text-slate-200'
+                    : 'bg-slate-950/60 border-slate-800 text-slate-400'
                 }`}
               >
                 <div className="flex items-center justify-between gap-2 mb-2">
                   <div className="flex items-center gap-2">
                     <span className="text-xl">{st.emoji}</span>
-                    <span className="text-xs font-bold">{st.name}</span>
+                    <span className="text-xs font-black text-white">{st.name}</span>
                   </div>
                   <Badge variant={isReached ? 'emerald' : 'neutral'}>
                     {st.minHours}h - {st.maxHours > 100 ? '∞' : `${st.maxHours}h`}
                   </Badge>
                 </div>
-                <p className="text-[11px] text-slate-400 mb-2">{st.description}</p>
-                <ul className="text-[10px] space-y-0.5 text-slate-500">
+                <p className="text-[11px] text-slate-300 mb-2 leading-relaxed">{st.description}</p>
+                <ul className="text-[10px] space-y-0.5 text-slate-400">
                   {st.biologicalProcesses.map((p, idx) => (
                     <li key={idx}>• {p}</li>
                   ))}
@@ -149,10 +149,10 @@ export default function FastingPage() {
         </div>
       </GlassCard>
 
-      {/* Weight History Table with Popover Date Picker */}
-      <GlassCard className="p-6">
+      {/* Weight History Table */}
+      <GlassCard className="p-6 bg-slate-900/90 border-slate-800">
         <div className="flex items-center justify-between gap-3 mb-4">
-          <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+          <h3 className="text-base font-black text-white flex items-center gap-2">
             <span>⚖️</span> Historique des Pesées
           </h3>
           <span className="text-xs text-slate-400 font-semibold">
@@ -173,16 +173,16 @@ export default function FastingPage() {
             <tbody className="divide-y divide-slate-800/60">
               {weightHistory.map((w) => (
                 <tr key={w.id} className="hover:bg-white/5">
-                  <td className="py-3 px-3 font-semibold text-white">{w.date}</td>
-                  <td className="py-3 px-3 font-black text-emerald-400">{w.weight.toFixed(1)} kg</td>
-                  <td className="py-3 px-3 text-slate-400">{w.note || '—'}</td>
+                  <td className="py-3 px-3 font-bold text-white">{w.date}</td>
+                  <td className="py-3 px-3 font-black text-emerald-400 text-sm">{w.weight.toFixed(1)} kg</td>
+                  <td className="py-3 px-3 text-slate-300">{w.note || '—'}</td>
                   <td className="py-3 px-3 text-right">
                     <button
                       onClick={() => deleteWeightEntry(w.id)}
-                      className="text-red-400 hover:text-red-300 p-1"
+                      className="text-slate-400 hover:text-red-400 p-1 cursor-pointer transition-colors"
                       title="Supprimer"
                     >
-                      <i className="ri-delete-bin-line" />
+                      <i className="ri-delete-bin-line text-base" />
                     </button>
                   </td>
                 </tr>
@@ -192,7 +192,7 @@ export default function FastingPage() {
         </div>
       </GlassCard>
 
-      {/* Weight Modal with Popover DatePicker */}
+      {/* Weight Modal */}
       {isWeightModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in duration-200">
           <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl space-y-4">
@@ -204,7 +204,7 @@ export default function FastingPage() {
               <button
                 type="button"
                 onClick={() => setIsWeightModalOpen(false)}
-                className="w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center"
+                className="w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center cursor-pointer"
               >
                 ✕
               </button>

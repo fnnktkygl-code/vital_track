@@ -10,8 +10,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 1000 * 60 * 5, // 5 minutes cache
-            gcTime: 1000 * 60 * 30, // 30 minutes garbage collection
+            staleTime: 1000 * 60 * 5,
+            gcTime: 1000 * 60 * 30,
             refetchOnWindowFocus: false,
             retry: 1,
           },
@@ -20,7 +20,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <ThemeProvider attribute="data-theme" defaultTheme="dark" enableSystem>
+    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
       <QueryClientProvider client={queryClient}>
         {children}
       </QueryClientProvider>

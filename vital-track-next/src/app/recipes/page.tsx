@@ -38,35 +38,35 @@ export default function RecipesPage() {
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+        <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
           Recettes Vivantes & Alchimie Culinaire
         </h1>
-        <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+        <p className="text-xs sm:text-sm text-slate-400 mt-1">
           Créations culinaires conformes aux principes de non-encrassement cellulaire (Ehret, Morse, Sebi)
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {VITAL_RECIPES.map((r) => (
-          <GlassCard key={r.id} className="p-6 space-y-4 hover:border-emerald-500/50 transition-all flex flex-col justify-between">
+          <GlassCard key={r.id} className="p-6 space-y-4 hover:border-emerald-500/50 transition-all flex flex-col justify-between bg-slate-900/90 border-slate-800">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-3xl">{r.emoji}</span>
                 <Badge variant="emerald">PRAL {r.pral}</Badge>
               </div>
 
-              <h3 className="text-base font-bold text-slate-900 dark:text-white leading-tight">
+              <h3 className="text-base font-black text-white leading-tight">
                 {r.title}
               </h3>
 
-              <p className="text-xs text-slate-400 leading-relaxed">
+              <p className="text-xs text-slate-300 leading-relaxed">
                 {r.description}
               </p>
             </div>
 
             <div className="space-y-2 pt-3 border-t border-slate-800 text-xs">
-              <span className="font-bold text-slate-300">Ingrédients :</span>
-              <ul className="text-slate-400 space-y-1 text-[11px]">
+              <span className="font-bold text-emerald-400">Ingrédients :</span>
+              <ul className="text-slate-300 space-y-1 text-[11px]">
                 {r.ingredients.map((ing, i) => (
                   <li key={i}>• {ing}</li>
                 ))}

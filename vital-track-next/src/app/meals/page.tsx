@@ -41,10 +41,10 @@ export default function MealsPage() {
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
             Repas & Journal Nutritionnel
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+          <p className="text-xs sm:text-sm text-slate-400 mt-1">
             Journalisation des repas vivants, balance PRAL et micronutriments alcalinisants
           </p>
         </div>
@@ -58,7 +58,7 @@ export default function MealsPage() {
       {/* Meals List */}
       <div className="space-y-3">
         {meals.map((meal) => (
-          <GlassCard key={meal.id} className="p-5 flex items-center justify-between gap-4">
+          <GlassCard key={meal.id} className="p-5 flex items-center justify-between gap-4 bg-slate-900/90 border-slate-800">
             <div className="flex items-center gap-4 min-w-0">
               <span className="text-3xl flex-shrink-0">{meal.emoji}</span>
               <div className="min-w-0">
@@ -69,7 +69,7 @@ export default function MealsPage() {
                   </Badge>
                   <Badge variant="neutral">NOVA {meal.nova}</Badge>
                 </div>
-                <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate">
+                <h3 className="text-sm sm:text-base font-black text-white truncate">
                   {meal.name}
                 </h3>
               </div>
@@ -77,7 +77,7 @@ export default function MealsPage() {
 
             <button
               onClick={() => deleteMeal(meal.id)}
-              className="text-slate-400 hover:text-red-400 p-2"
+              className="text-slate-400 hover:text-red-400 p-2 cursor-pointer transition-colors"
               title="Supprimer"
             >
               <i className="ri-delete-bin-line text-lg" />
