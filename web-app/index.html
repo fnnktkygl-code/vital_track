@@ -1712,6 +1712,22 @@
           <button class="breath-mode" onclick="setBreathMode('sleep')" data-mode="sleep" data-i18n="breathing.modeSleep">🌙 4-7-8 Sommeil Profond</button>
         </div>
 
+        <!-- Audio & Rhythm Japandi Settings Bar -->
+        <div class="breath-toolbar" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin:16px auto 12px; max-width:480px; padding:0 8px;">
+          <!-- Sound Toggle Pill -->
+          <button type="button" class="breath-sound-toggle-btn sound-active" id="breathSoundToggleBtn" onclick="window.toggleBreathSound ? window.toggleBreathSound() : null" title="Activer/Désactiver le son du souffle et les cloches de guidage" style="display:inline-flex; align-items:center; gap:6px; padding:6px 14px; border-radius:50px; background:rgba(16, 185, 129, 0.12); border:1px solid rgba(16, 185, 129, 0.3); color:var(--text); font-size:0.82rem; font-weight:700; cursor:pointer; transition:all 0.2s ease;">
+            <i class="ri-volume-up-fill" style="color:var(--accent);"></i>
+            <span class="sound-btn-text" data-i18n="breathing.soundOn">Son Actif</span>
+          </button>
+
+          <!-- Pace / Rhythm Selector (Wim Hof) -->
+          <div id="wimHofPaceSelector" class="breath-pace-selector" style="display:inline-flex; background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:50px; padding:3px; gap:3px;">
+            <button type="button" class="pace-pill" data-pace="slow" onclick="setBreathPace('slow')" data-i18n="breathing.paceSlow" style="padding:4px 10px; font-size:0.75rem; font-weight:700; border-radius:50px; border:none; background:transparent; color:var(--text-dim); cursor:pointer;">2.5s Doux</button>
+            <button type="button" class="pace-pill active" data-pace="normal" onclick="setBreathPace('normal')" data-i18n="breathing.paceNormal" style="padding:4px 10px; font-size:0.75rem; font-weight:700; border-radius:50px; border:none; background:var(--accent); color:#fff; cursor:pointer;">2.0s Standard</button>
+            <button type="button" class="pace-pill" data-pace="fast" onclick="setBreathPace('fast')" data-i18n="breathing.paceFast" style="padding:4px 10px; font-size:0.75rem; font-weight:700; border-radius:50px; border:none; background:transparent; color:var(--text-dim); cursor:pointer;">1.5s Dynamique</button>
+          </div>
+        </div>
+
         <div class="breathing-visual">
           <div class="breath-lungs-card breath-circle" id="breathCircle">
             <!-- Organic Glowing Background Aura -->

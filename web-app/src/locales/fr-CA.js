@@ -779,7 +779,14 @@ export default {
     "ready": "Prêt",
     "tapToStart": "Appuyez sur Démarrer",
     "recoveryAction": "J'inspire (Passer à la récupération 15s)",
-    "breathsPerRound": "{count} respirations/tour"
+    "breathsPerRound": "{count} respirations/tour",
+    "soundOn": "Son Actif",
+    "soundMuted": "Silencieux",
+    "soundTooltip": "Activer/Désactiver le son du souffle et les cloches de guidage",
+    "paceSlow": "2.5s Doux",
+    "paceNormal": "2.0s Standard",
+    "paceFast": "1.5s Dynamique",
+    "paceLabel": "Cadence"
   },
   "resources": {
     "pageTitle": "Bibliothèque Numérique & Médias Vitalistes",

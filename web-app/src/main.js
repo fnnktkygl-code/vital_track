@@ -30,6 +30,7 @@ import {
   saveAndApplyCustomizedDietPlan,
   closePreviewDietPlanModal
 } from './dietPlanAiBridge.js';
+import { breathAudio } from './breathAudioEngine.js';
 
 // Exposer globalement pour l'interface utilisateur
 window.store = store;
@@ -1401,6 +1402,10 @@ function showPage(page, options = {}) {
   if (page === 'materia-medica') renderRaintreeExplorer();
   if (page === 'favorites') renderFavorites();
   if (page === 'fasting') renderFasting();
+  if (page === 'breathing') {
+    renderBreathingHistory();
+    if (typeof breathAudio !== 'undefined') breathAudio.updateToggleButtonUI();
+  }
   if (page === 'chat') {
     initChatMascot();
     updateModelHeaderBadge();
@@ -9642,9 +9647,37 @@ function loadBreathingVideo(videoKey, btnEl) {
   }
 };
 
+let currentBreathPace = 'normal';
+function setBreathPace(pace) {
+  currentBreathPace = pace;
+  if (breathModes.wimhof) {
+    if (pace === 'slow') {
+      breathModes.wimhof.inhale = 2.5;
+      breathModes.wimhof.exhale = 2.5;
+    } else if (pace === 'fast') {
+      breathModes.wimhof.inhale = 1.5;
+      breathModes.wimhof.exhale = 1.5;
+    } else {
+      breathModes.wimhof.inhale = 2.0;
+      breathModes.wimhof.exhale = 2.0;
+    }
+  }
+  document.querySelectorAll('.breath-pace-selector .pace-pill').forEach(btn => {
+    const isActive = btn.dataset.pace === pace;
+    btn.classList.toggle('active', isActive);
+    btn.style.background = isActive ? 'var(--accent)' : 'transparent';
+    btn.style.color = isActive ? '#fff' : 'var(--text-dim)';
+  });
+}
+window.setBreathPace = setBreathPace;
+
 function setBreathMode(mode) {
   currentBreathMode = mode;
   document.querySelectorAll('.breath-mode').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+  const paceSelector = document.getElementById('wimHofPaceSelector');
+  if (paceSelector) {
+    paceSelector.style.display = (mode === 'wimhof') ? 'inline-flex' : 'none';
+  }
   const tFunc = (window.vitalTrackI18n && typeof window.vitalTrackI18n.t === 'function')
     ? window.vitalTrackI18n.t
     : ((k, p, def) => def || k);
@@ -9702,6 +9735,7 @@ async function startBreathing() {
   if (breathingActive) {
     breathingActive = false;
     if (_retentionResolve) { _retentionResolve(); _retentionResolve = null; }
+    if (typeof breathAudio !== 'undefined') breathAudio.stopAll();
     resetBreathUI();
     return;
   }
@@ -9726,6 +9760,7 @@ async function startBreathing() {
       // Phase 1: Guided Breaths
       for (let b = 1; b <= mode.breaths && breathingActive; b++) {
         setBreathVisualPhase('inhale', mode.inhale);
+        if (typeof breathAudio !== 'undefined') breathAudio.playInhale(mode.inhale);
         if (text) text.textContent = `${b}`;
         if (subText) subText.textContent = `Inspirez à fond (${b}/${mode.breaths})`;
         await sleep(mode.inhale * 1000);
@@ -9739,6 +9774,7 @@ async function startBreathing() {
         }
 
         setBreathVisualPhase('exhale', mode.exhale);
+        if (typeof breathAudio !== 'undefined') breathAudio.playExhale(mode.exhale);
         if (subText) subText.textContent = 'Relâchez le souffle';
         await sleep(mode.exhale * 1000);
         if (!breathingActive) break;
@@ -9747,6 +9783,7 @@ async function startBreathing() {
       // Phase 2: Retention on empty lungs (Wim Hof)
       if (mode.retentionAfter && breathingActive) {
         setBreathVisualPhase('hold', 2.5);
+        if (typeof breathAudio !== 'undefined') breathAudio.playTibetanBowl(432, 3.5); // Gong apnée 432 Hz
         if (subText) subText.textContent = 'Poumons vides · Retenez';
         if (retAction) retAction.style.display = 'block';
         if (info) info.innerHTML = `<p style="color:#38bdf8;">Tour ${r}/${rounds} — Rétention Poumons Vides</p>`;
@@ -9761,6 +9798,9 @@ async function startBreathing() {
         const timerPromise = (async () => {
           while (isHolding && breathingActive && retentionSec < 360) {
             retentionSec++;
+            if (retentionSec % 15 === 0 && typeof breathAudio !== 'undefined') {
+              breathAudio.playRetentionPulse();
+            }
             const m = Math.floor(retentionSec / 60);
             const s = (retentionSec % 60).toString().padStart(2, '0');
             if (text) text.textContent = `${m}:${s}`;
@@ -9777,12 +9817,20 @@ async function startBreathing() {
         // Phase 3: Recovery Breath (15 seconds)
         if (breathingActive) {
           setBreathVisualPhase('inhale', 2.5);
+          if (typeof breathAudio !== 'undefined') {
+            breathAudio.playTibetanBowl(528, 2.5); // Gong récupération 528 Hz
+            breathAudio.playInhale(2.5);
+          }
           if (subText) subText.textContent = 'Inspirez à fond & Bloquez (15s)';
           if (info) info.innerHTML = `<p style="color:#10b981;">Tour ${r}/${rounds} — Récupération (15s)</p>`;
 
           for (let s = 15; s > 0 && breathingActive; s--) {
             if (text) text.textContent = `${s}s`;
             await sleep(1000);
+          }
+          if (breathingActive && typeof breathAudio !== 'undefined') {
+            setBreathVisualPhase('exhale', 2.0);
+            breathAudio.playExhale(2.0);
           }
         }
       }
@@ -9802,16 +9850,22 @@ async function startBreathing() {
     timestamp: Date.now()
   });
   store.set('breathing-history', bh.slice(0, 30));
+
+  if (sessionRetentions.length > 0 && typeof breathAudio !== 'undefined') {
+    breathAudio.playTibetanBowl(528, 4.0); // Gong final
+  }
+
   resetBreathUI();
   renderBreathingHistory();
   renderDashboard();
-  if (breathingActive === false) {
+  if (breathingActive === false && sessionRetentions.length > 0) {
     showToast('✨ Félicitations pour votre session de respiration !', 'success');
   }
 };
 
 function resetBreathUI() {
   breathingActive = false;
+  if (typeof breathAudio !== 'undefined') breathAudio.stopAll();
   setBreathVisualPhase('', 1.2);
   const text = document.getElementById('breathText');
   const subText = document.getElementById('breathSubText');
@@ -16608,6 +16662,8 @@ if (typeof window !== "undefined") window.showFastingRefeedAdvice = showFastingR
 if (typeof window !== "undefined") window.switchBreathingTab = switchBreathingTab;
 if (typeof window !== "undefined") window.loadBreathingVideo = loadBreathingVideo;
 if (typeof window !== "undefined") window.setBreathMode = setBreathMode;
+if (typeof window !== "undefined") window.setBreathPace = setBreathPace;
+if (typeof window !== "undefined") window.toggleBreathSound = () => breathAudio.toggleSound();
 if (typeof window !== "undefined") window.setBreathRounds = setBreathRounds;
 if (typeof window !== "undefined") window.adjustBreathRounds = adjustBreathRounds;
 if (typeof window !== "undefined") window.triggerRecoveryBreath = triggerRecoveryBreath;

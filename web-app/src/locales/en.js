@@ -780,8 +780,15 @@ export default {
     "modeSleep": "🌙 4-7-8 Deep Sleep",
     "ready": "Ready",
     "tapToStart": "Tap to Start",
-    "recoveryAction": "Inhale (15s Recovery Breath)",
-    "breathsPerRound": "{count} breaths/round"
+    "recoveryAction": "Inhale & Hold (15s recovery)",
+    "breathsPerRound": "{count} breaths/round",
+    "soundOn": "Sound On",
+    "soundMuted": "Muted",
+    "soundTooltip": "Enable/Disable breath audio and guidance bells",
+    "paceSlow": "2.5s Gentle",
+    "paceNormal": "2.0s Standard",
+    "paceFast": "1.5s Dynamic",
+    "paceLabel": "Pace"
   },
   "resources": {
     "pageTitle": "Digital Library & Vitalist Media",

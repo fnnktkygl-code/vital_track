@@ -778,8 +778,15 @@ export default {
     "modeSleep": "🌙 4-7-8 Sueño Profundo",
     "ready": "Listo",
     "tapToStart": "Toca para Iniciar",
-    "recoveryAction": "Inhalo (Recuperación 15s)",
-    "breathsPerRound": "{count} respiraciones/ronda"
+    "recoveryAction": "Inhalar y Retener (15s recuperación)",
+    "breathsPerRound": "{count} respiraciones/ronda",
+    "soundOn": "Sonido Activo",
+    "soundMuted": "Silencioso",
+    "soundTooltip": "Activar/Desactivar sonido y campanas de guía",
+    "paceSlow": "2.5s Suave",
+    "paceNormal": "2.0s Estándar",
+    "paceFast": "1.5s Dinámico",
+    "paceLabel": "Cadencia"
   },
   "resources": {
     "pageTitle": "Biblioteca Digital y Medios Vitalistas",
