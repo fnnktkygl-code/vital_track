@@ -25,7 +25,8 @@ const unitSuites = [
   { name: 'Suite 8: Suivi du Poids, Comparateur Avant/Après & Purge RGPD Photos', file: 'tests/test_weight_photos_logic.mjs' },
   { name: 'Suite 9: Détection d\'Intention Chat & Cascades Multi-Modèles FinOps', file: 'tests/test_chat_intent_and_cascade.mjs' },
   { name: 'Suite 10: Barre Latérale de Chat & Système Vocal Gemini-Style', file: 'tests/test_chat_sidebar_and_voice.mjs' },
-  { name: 'Suite 11: Cartes d\'Actions Interactives Repas, Recettes & Plans IA (Couverture 99%+)', file: 'tests/test_ai_meal_and_plan_bridge.mjs' }
+  { name: 'Suite 11: Cartes d\'Actions Interactives Repas, Recettes & Plans IA (Couverture 99%+)', file: 'tests/test_ai_meal_and_plan_bridge.mjs' },
+  { name: 'Suite 12: Simulation Monte Carlo Massive (2 500+ Combinaisons IA)', file: 'tests/monte_carlo_prompt_matrix_simulator.mjs' }
 ];
 
 const e2eSuites = [
