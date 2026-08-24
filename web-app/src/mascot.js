@@ -68,17 +68,15 @@ function linear(ctx, x0, y0, x1, y1, c1, c2) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// LECTEUR AUDIO AUTHENTIQUE MULTI-VOCAL (Columba livia & Columba palumbus)
-// Vrais enregistrements studio nettoyés : Ramier (Matin cuu cuuu-uu cu), Classique, Nuptial, Territorial, Matin
+// LECTEUR AUDIO AUTHENTIQUE MULTI-VOCAL (Columba livia)
+// Vrais enregistrements studio nettoyés : Classique, Nuptial, Territorial, Matin
 // ─────────────────────────────────────────────────────────────
 class AuthenticPigeonAudio {
   constructor() {
     this.enabled = true;
     this.lastSoundIndex = -1;
     this.audioPool = {};
-    this._synthCtx = null;
     this.soundCatalog = [
-      { id: 'ramier', file: '/audio/pigeon-coo-ramier.mp3', name: 'Chant Matinal du Pigeon Ramier (cuu cuuu-uu cu)', desc: 'Le chant rythmé et mélodieux du matin (cuu cuuu-uu cu, cuu cuuu-uu cu, cuu cuuu-uu cu)' },
       { id: 'classic', file: '/audio/pigeon-coo-classic.mp3', name: 'Roucoulement Classique d\'Origine', desc: 'Le son authentique de base doux et mélodieux' },
       { id: 'morning', file: '/audio/pigeon-coo-morning.mp3', name: 'Chant du Matin / Aube', desc: 'Roucoulement calme et régulier au réveil sur les toits' },
       { id: 'nuptial', file: '/audio/pigeon-coo-nuptial.mp3', name: 'Roucoulement Nuptial / Parade', desc: 'Roulement vif et dansant de séduction' },
@@ -98,78 +96,12 @@ class AuthenticPigeonAudio {
     return this.audioPool[item.id];
   }
 
-  playProceduralWoodpigeonRamier() {
-    try {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (!AudioCtx) return;
-      if (!this._synthCtx) this._synthCtx = new AudioCtx();
-      const ctx = this._synthCtx;
-      if (ctx.state === 'suspended') ctx.resume().catch(() => {});
-
-      const t0 = ctx.currentTime;
-      // 3 rhythmic morning strophes of "cuu cuuu-uu cu"
-      const strophes = [0.05, 1.65, 3.25];
-
-      strophes.forEach(st => {
-        const notes = [
-          { start: st + 0.0, dur: 0.32, fStart: 390, fEnd: 415, amp: 0.7 },
-          { start: st + 0.38, dur: 0.58, fStart: 420, fMid: 475, fEnd: 370, amp: 0.9 },
-          { start: st + 1.02, dur: 0.26, fStart: 350, fEnd: 320, amp: 0.6 }
-        ];
-
-        notes.forEach(n => {
-          const osc = ctx.createOscillator();
-          const oscHarm = ctx.createOscillator();
-          const gain = ctx.createGain();
-          const filter = ctx.createBiquadFilter();
-
-          filter.type = 'lowpass';
-          filter.frequency.setValueAtTime(850, t0 + n.start);
-
-          osc.type = 'sine';
-          oscHarm.type = 'sine';
-
-          const tStart = t0 + n.start;
-          const tDur = n.dur;
-
-          osc.frequency.setValueAtTime(n.fStart, tStart);
-          if (n.fMid) {
-            osc.frequency.exponentialRampToValueAtTime(n.fMid, tStart + tDur * 0.45);
-            osc.frequency.exponentialRampToValueAtTime(n.fEnd, tStart + tDur);
-            oscHarm.frequency.setValueAtTime(n.fStart * 2, tStart);
-            oscHarm.frequency.exponentialRampToValueAtTime(n.fMid * 2, tStart + tDur * 0.45);
-            oscHarm.frequency.exponentialRampToValueAtTime(n.fEnd * 2, tStart + tDur);
-          } else {
-            osc.frequency.linearRampToValueAtTime(n.fEnd, tStart + tDur);
-            oscHarm.frequency.linearRampToValueAtTime(n.fEnd * 2, tStart + tDur);
-          }
-
-          gain.gain.setValueAtTime(0.001, tStart);
-          gain.gain.exponentialRampToValueAtTime(n.amp * 0.25, tStart + tDur * 0.15);
-          gain.gain.exponentialRampToValueAtTime(0.001, tStart + tDur);
-
-          osc.connect(filter);
-          oscHarm.connect(filter);
-          filter.connect(gain);
-          gain.connect(ctx.destination);
-
-          osc.start(tStart);
-          oscHarm.start(tStart);
-          osc.stop(tStart + tDur + 0.05);
-          oscHarm.stop(tStart + tDur + 0.05);
-        });
-      });
-    } catch (e) {
-      console.warn('[Pigeon Synth] procedural error:', e);
-    }
-  }
-
   playRealCoo(specificType = null) {
     if (!this.enabled || typeof window === 'undefined') return;
 
     let soundId = specificType;
     if (!soundId || !this.soundCatalog.some(s => s.id === soundId)) {
-      // Rotate / Shuffle among the 5 authentic sounds without repeating the same one
+      // Rotate / Shuffle among the authentic sounds without repeating the same one
       let nextIdx = Math.floor(Math.random() * this.soundCatalog.length);
       if (nextIdx === this.lastSoundIndex) {
         nextIdx = (nextIdx + 1) % this.soundCatalog.length;
@@ -182,23 +114,10 @@ class AuthenticPigeonAudio {
       const audio = this._getAudio(soundId);
       if (audio) {
         audio.currentTime = 0;
-        const playPromise = audio.play();
-        if (playPromise !== undefined) {
-          playPromise.catch(() => {
-            // Autoplay policy fallback: use procedural synthesis if ramier
-            if (soundId === 'ramier') {
-              this.playProceduralWoodpigeonRamier();
-            }
-          });
-        }
-      } else if (soundId === 'ramier') {
-        this.playProceduralWoodpigeonRamier();
+        audio.play().catch(() => {});
       }
     } catch (e) {
       console.warn('[Pigeon Audio] Playback error:', e);
-      if (soundId === 'ramier') {
-        this.playProceduralWoodpigeonRamier();
-      }
     }
   }
 
