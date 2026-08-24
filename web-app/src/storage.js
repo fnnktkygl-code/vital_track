@@ -246,8 +246,9 @@ export const store = {
         return JSON.parse(val) ?? def;
       }
 
-      // Si l'utilisateur est authentifié et que c'est sa première connexion, repli sur son éventuelle clé legacy
+      // Si l'utilisateur est authentifié et que la clé principale n'a pas encore été écrite :
       if (isAuth) {
+        // 1. Repli sur sa clé legacy standard vt-${k}
         const legacyKey = `vt-${k}`;
         const legacyVal = localStorage.getItem(legacyKey);
         if (legacyVal !== null) {
@@ -258,6 +259,26 @@ export const store = {
               return parsed;
             }
           } catch { }
+        }
+
+        // 2. Repli sur d'éventuelles clés crées sous un ancien UID (ex: vt-u_g_* ou vt-u_google_*)
+        for (let i = 0; i < localStorage.length; i++) {
+          const lk = localStorage.key(i);
+          if (lk && lk.startsWith('vt-u_') && lk.endsWith(`-${k}`) && lk !== primaryKey) {
+            const prevVal = localStorage.getItem(lk);
+            if (prevVal !== null) {
+              try {
+                const parsed = JSON.parse(prevVal);
+                if (parsed !== undefined && parsed !== null) {
+                  const hasContent = Array.isArray(parsed) ? parsed.length > 0 : Object.keys(parsed).length > 0;
+                  if (hasContent) {
+                    localStorage.setItem(primaryKey, JSON.stringify(parsed));
+                    return parsed;
+                  }
+                }
+              } catch { }
+            }
+          }
         }
       }
 

@@ -375,6 +375,12 @@ export function setDeepSearchStep(step) {
  * Soumission du formulaire et appel de l'API Deep Search
  */
 export async function handleDeepSearchSubmit() {
+  if (typeof window.requireAuthForAi === 'function') {
+    if (!window.requireAuthForAi("le Bilan Clinique Approfondi IA")) {
+      return;
+    }
+  }
+
   const loadingBlock = document.getElementById('deepSearchLoadingBlock');
   const actionButtons = document.getElementById('deepSearchActionButtons');
   const statusEl = document.getElementById('deepSearchLoadingStatus');

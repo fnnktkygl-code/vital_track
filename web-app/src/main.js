@@ -1111,21 +1111,7 @@ function renderUserProfileModal() {
   `;
 };
 
-// ═══════ INIT ═══════
-async function initApp() {
-  // Always update DOM translations right away
-  updateDOMTranslations();
-
-  // Init Google Auth & Listeners
-  if (window.vitalTrackAuth) {
-    window.vitalTrackAuth.initGSI();
-    window.vitalTrackAuth.onAuthStateChanged((user) => {
-      updateAuthUI(user);
-    });
-  } else {
-    updateAuthUI(null);
-  }
-
+function rehydrateAllUserState() {
   loadTheme();
   loadProfile();
   loadProtocol();
@@ -1139,6 +1125,27 @@ async function initApp() {
   renderDashboard();
   initWeightPrivacyMode();
   updateWeightBadge();
+  if (typeof renderCategoryBrowse === 'function') renderCategoryBrowse();
+}
+window.rehydrateAllUserState = rehydrateAllUserState;
+
+// ═══════ INIT ═══════
+async function initApp() {
+  // Always update DOM translations right away
+  updateDOMTranslations();
+
+  // Init Google Auth & Listeners
+  if (window.vitalTrackAuth) {
+    window.vitalTrackAuth.initGSI();
+    window.vitalTrackAuth.onAuthStateChanged((user) => {
+      updateAuthUI(user);
+      rehydrateAllUserState();
+    });
+  } else {
+    updateAuthUI(null);
+    rehydrateAllUserState();
+  }
+
   initFastingPrograms();
   initSmartInsight();
   initMasterclass();
@@ -2577,6 +2584,7 @@ function _updateVoiceUI(recording, processing) {
 }
 
 async function startVoiceRecording() {
+  if (!requireAuthForAi("la Transcription Vocale IA")) return;
   if (_isVoiceRecording || _isVoiceProcessing) return;
 
   const input = document.getElementById('chatInput');
@@ -4496,26 +4504,7 @@ function searchFoods(query) {
 
 // Direct AI Search trigger from input button
 function triggerDirectAISearch() {
-  const isAuth = window.vitalTrackAuth ? window.vitalTrackAuth.isAuthenticated() : false;
-  if (!isAuth) {
-    let guestAiCount = parseInt(localStorage.getItem('vt_guest_ai_count') || '0', 10);
-    if (guestAiCount >= 3) {
-      window.openAiAuthGateModal();
-      return;
-    }
-    guestAiCount++;
-    localStorage.setItem('vt_guest_ai_count', guestAiCount.toString());
-    const remaining = 3 - guestAiCount;
-    if (remaining > 0) {
-      if (window.showToast) {
-        window.showToast(`✨ Requête IA d'essai ${guestAiCount}/3 (${remaining} restante${remaining > 1 ? 's' : ''} avant connexion Google)`, 'info', 4000);
-      }
-    } else {
-      if (window.showToast) {
-        window.showToast(`⚠️ Dernière requête IA d'essai (3/3). Connectez-vous avec Google pour continuer en illimité !`, 'info', 5000);
-      }
-    }
-  }
+  if (!requireAuthForAi("la Recherche d'Aliments IA")) return;
 
   const input = document.getElementById('searchInput');
   const q = (input?.value || '').trim();
@@ -4925,6 +4914,12 @@ async function askAIToFindFood(query) {
     if (statsBar) statsBar.style.display = 'none';
     resultsEl.innerHTML = renderFoodCard(cached);
     openFoodModal(vitalDb.indexOf(cached) >= 0 ? vitalDb.indexOf(cached) : cached);
+    return;
+  }
+
+  if (!requireAuthForAi("la Recherche d'Aliments IA")) {
+    if (resultsEl) resultsEl.style.display = 'none';
+    if (emptyState) emptyState.style.display = 'block';
     return;
   }
 

@@ -10,6 +10,16 @@ import { store } from './storage.js';
 const ENV_GOOGLE_CLIENT_ID = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env.VITE_GOOGLE_CLIENT_ID : '';
 const HAS_VALID_GOOGLE_CLIENT_ID = Boolean(ENV_GOOGLE_CLIENT_ID && !ENV_GOOGLE_CLIENT_ID.includes('vitaltrack.apps.googleusercontent.com'));
 
+export function getDeterministicUserUid(email, sub) {
+  if (email && typeof email === 'string' && email.includes('@')) {
+    return 'u_' + btoa(email.trim().toLowerCase()).replace(/[^a-zA-Z0-9]/g, '').slice(0, 24);
+  }
+  if (sub && typeof sub === 'string' && sub.length > 5) {
+    return 'g_' + sub.replace(/[^a-zA-Z0-9]/g, '');
+  }
+  return 'u_vitalist_default';
+}
+
 class VitalTrackAuth {
   constructor() {
     this.currentUser = null;
@@ -20,9 +30,14 @@ class VitalTrackAuth {
 
   _loadSession() {
     try {
+      if (typeof localStorage === 'undefined') return;
       const saved = localStorage.getItem('vt_auth_user');
       if (saved) {
         this.currentUser = JSON.parse(saved);
+        if (this.currentUser && this.currentUser.email && (!this.currentUser.uid || this.currentUser.uid.startsWith('google_'))) {
+          this.currentUser.uid = getDeterministicUserUid(this.currentUser.email, this.currentUser.sub);
+          localStorage.setItem('vt_auth_user', JSON.stringify(this.currentUser));
+        }
         if (this.currentUser && this.currentUser.uid) {
           store.migrateGuestDataToUser(this.currentUser.uid);
         }
@@ -97,13 +112,17 @@ class VitalTrackAuth {
       script.async = true;
       script.defer = true;
       script.onload = () => {
-        if (window.google && window.google.accounts && window.google.accounts.id) {
-          window.google.accounts.id.initialize({
-            client_id: ENV_GOOGLE_CLIENT_ID,
-            callback: window.handleGoogleCredentialResponse,
-            auto_select: false,
-            cancel_on_tap_outside: true
-          });
+        try {
+          if (window.google && window.google.accounts && window.google.accounts.id) {
+            window.google.accounts.id.initialize({
+              client_id: ENV_GOOGLE_CLIENT_ID,
+              callback: window.handleGoogleCredentialResponse,
+              auto_select: false,
+              cancel_on_tap_outside: true
+            });
+          }
+        } catch (err) {
+          console.warn('[Auth:GSI] Initialization error:', err);
         }
       };
       document.head.appendChild(script);
@@ -117,9 +136,11 @@ class VitalTrackAuth {
   handleCredential(token) {
     try {
       const payload = this._decodeJwt(token);
+      const email = payload.email || '';
+      const uid = getDeterministicUserUid(email, payload.sub);
       const user = {
-        uid: payload.sub || `google_${Date.now()}`,
-        email: payload.email || '',
+        uid: uid,
+        email: email,
         name: payload.name || payload.given_name || 'Utilisateur Google',
         picture: payload.picture || `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(payload.name || payload.email || 'Google')}&backgroundColor=4285F4`,
         provider: 'google',
@@ -191,10 +212,10 @@ class VitalTrackAuth {
     if (!email) return null;
     const cleanEmail = email.trim();
     const name = customName || cleanEmail.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-    const pseudoUid = 'g_' + btoa(cleanEmail.toLowerCase()).replace(/[^a-zA-Z0-9]/g, '').slice(0, 16);
+    const uid = getDeterministicUserUid(cleanEmail, null);
 
     const user = {
-      uid: pseudoUid,
+      uid: uid,
       email: cleanEmail,
       name: name,
       picture: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(name)}&backgroundColor=4285F4`,
