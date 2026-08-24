@@ -9305,6 +9305,113 @@ mark.search-highlight {
   color: #fff;
 }
 
+/* ═══════ DISH BIO-ENERGETIC AUDIT STYLES (JAPANDI) ═══════ */
+.dish-audit-box {
+  background: rgba(14, 18, 16, 0.75);
+  border: 1px solid rgba(52, 211, 153, 0.25);
+  border-radius: 18px;
+  padding: 16px;
+  margin-bottom: 18px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  animation: fadeInModal 0.3s ease-out;
+}
+.dish-audit-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.dish-audit-metrics {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.dish-audit-metric-pill {
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.dish-audit-metric-pill.pral-alkaline {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #34d399;
+}
+.dish-audit-metric-pill.pral-acid {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #f87171;
+}
+.dish-audit-metric-pill.nova {
+  background: rgba(99, 102, 241, 0.15);
+  border: 1px solid rgba(99, 102, 241, 0.35);
+  color: #a5b4fc;
+}
+.dish-audit-ing-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+.dish-audit-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.dish-audit-chip {
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.dish-audit-chip.electric {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #34d399;
+}
+.dish-audit-chip.alkaline {
+  background: rgba(52, 211, 153, 0.12);
+  border: 1px solid rgba(52, 211, 153, 0.25);
+  color: #6ee7b7;
+}
+.dish-audit-chip.transition {
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #fbbf24;
+}
+.dish-audit-chip.mucus {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #f87171;
+}
+.dish-audit-coach-advice {
+  background: rgba(255, 255, 255, 0.03);
+  border-left: 3px solid var(--accent);
+  padding: 10px 12px;
+  border-radius: 0 10px 10px 0;
+  font-size: 0.82rem;
+  color: var(--text);
+  line-height: 1.45;
+}
+.dish-audit-coach-advice strong {
+  color: var(--accent);
+}
+
 /* ═══════ LIBRARY BILINGUAL CATALOG TABS ═══════ */
 .btn-tab {
   display: inline-flex;
