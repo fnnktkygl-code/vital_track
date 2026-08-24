@@ -57,10 +57,11 @@ Retourne STRICTEMENT un objet JSON valide (aucun texte avant ou après, pas de m
   "ingredients": ["ingrédient 1", "ingrédient 2", "ingrédient 3", "ingrédient 4", "ingrédient 5"],
   "items": [
     {
-      "name": "Nom ingrédient",
-      "pral": 3.2,
-      "electric": false,
-      "category": "Légumes"
+      "name": "Nom de l'ingrédient ou plante (ex: Dakhaar / Tamarin sauvage)",
+      "pral": -14.2,
+      "electric": true,
+      "category": "Fruits sauvages",
+      "role": "Solvant lymphatique puissant, drainage hépato-biliaire"
     }
   ],
   "electrolytes": {

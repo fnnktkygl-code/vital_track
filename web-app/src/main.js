@@ -7141,91 +7141,187 @@ async function auditCustomDish(showToastFeedback = true) {
 
   const btn = document.getElementById('btnAuditCustomDish');
   const btnText = document.getElementById('auditCustomDishBtnText');
-  if (btnText) btnText.innerHTML = '<i class="ri-loader-4-line spin"></i> Audit biochimique & calcul PRAL en cours...';
+  if (btnText) btnText.innerHTML = '<i class="ri-loader-4-line spin"></i> Audit biochimique approfondi (Google Search Grounding & IA)...';
   if (btn) btn.style.pointerEvents = 'none';
 
   try {
-    const rawTokens = rawIng.split(/[,;\n]+/).map(s => s.trim()).filter(Boolean);
-    const parsedIngredients = [];
-
-    for (const token of rawTokens) {
-      const foodItem = classifyFoodLocally(token);
-      const isElectric = foodItem.specific?.electric === true || foodItem.electric === true || foodItem.approved === true;
-      const isHybrid = foodItem.specific?.hybrid === true || foodItem.hybrid === true;
-      const pralVal = foodItem.scientific_defaults?.pral ?? (foodItem.pral ?? (isElectric ? -5.5 : 0));
-      const novaVal = foodItem.vitality?.nova ?? (foodItem.nova ?? 1);
-      const mucusStr = (foodItem.specific?.mucus || foodItem.mucus || '').toLowerCase();
-      const isDissolvant = mucusStr.includes('dissolvant') || mucusStr.includes('non-muc');
-      const isAlcalin = pralVal < 0 || isDissolvant;
-      const isMucusForming = mucusStr.includes('mucog') || pralVal > 2.0 || /viande|poulet|boeuf|bœuf|porc|fromage|lait|oeuf|œuf|sucre|frite|burger|pizza/i.test(token);
-
-      let statusBadge = 'alkaline';
-      let statusIcon = '🌿';
-      let statusLabel = 'Alcalinisant';
-
-      if (isElectric && !isMucusForming) {
-        statusBadge = 'electric';
-        statusIcon = '⚡';
-        statusLabel = 'Électrique';
-      } else if (isMucusForming) {
-        statusBadge = 'mucus';
-        statusIcon = '⚠️';
-        statusLabel = 'Mucogène / Acidifiant';
-      } else if (isHybrid || pralVal >= 0) {
-        statusBadge = 'transition';
-        statusIcon = '🔄';
-        statusLabel = 'Transition';
-      }
-
-      parsedIngredients.push({
-        raw: token,
-        name: foodItem.name || token.replace(/^./, c => c.toUpperCase()),
-        emoji: foodItem.emoji || (isElectric ? '🌿' : (isMucusForming ? '⚠️' : '🥗')),
-        pral: pralVal,
-        nova: novaVal,
-        electric: isElectric && !isMucusForming,
-        hybrid: isHybrid,
-        isMucusForming,
-        statusBadge,
-        statusIcon,
-        statusLabel
+    let aiFood = null;
+    try {
+      const resp = await fetch('/api/searchFood', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(store.get('gemini_api_key') ? { 'x-gemini-key': store.get('gemini_api_key') } : {})
+        },
+        body: JSON.stringify({
+          query: `Plat personnalisé « ${name} » composé des ingrédients suivants : ${rawIng}`,
+          language: (window.vitalTrackI18n?.getLanguage && window.vitalTrackI18n.getLanguage()) || 'fr'
+        })
       });
+      if (resp.ok) {
+        aiFood = await resp.json();
+      }
+    } catch (e) {
+      console.warn('[auditCustomDish] API SearchFood call failed, using fallback parser:', e);
     }
 
-    const totalPral = parsedIngredients.reduce((acc, ing) => acc + ing.pral, 0);
-    const avgPral = parsedIngredients.length > 0 ? (totalPral / parsedIngredients.length) : 0;
-    const maxNova = parsedIngredients.reduce((max, ing) => Math.max(max, ing.nova), 1);
-
-    const hasMucus = parsedIngredients.some(ing => ing.isMucusForming);
-    const allElectric = parsedIngredients.length > 0 && parsedIngredients.every(ing => ing.electric);
-    const isAlkalineOverall = avgPral < 0 && !hasMucus;
-
+    let parsedIngredients = [];
+    let avgPral = 0;
+    let maxNova = 1;
     let overallProfile = 'transition';
-    let profileTitle = 'Plat de Transition Équilibré';
+    let profileTitle = '🔄 Plat de Transition Équilibré';
     let profileBadgeClass = 'badge-hybrid';
     let coachAdvice = '';
+    let isElectric = false;
+    let hasMucus = false;
+    let suggestedEmoji = '🥗';
+    let groundingSources = [];
 
-    if (allElectric) {
-      overallProfile = 'electric';
-      profileTitle = '⚡ 100% Électrique & Vivant (Dr. Sebi)';
-      profileBadgeClass = 'badge-electric';
-      coachAdvice = '🌟 <strong>Formule bio-minérale optimale !</strong> 100% composé de végétaux vivants et électrolytes naturels régénérants pour les reins et la lymphe.';
-    } else if (isAlkalineOverall) {
-      overallProfile = 'alkaline';
-      profileTitle = '🌿 Alcalinisant & Vivant (Sans Mucus)';
-      profileBadgeClass = 'badge-alkaline';
-      coachAdvice = '🌿 <strong>Excellent plat alcalinisant !</strong> Favorise l’élimination des résidus acides sans encombrer la digestion.';
-    } else if (hasMucus) {
-      overallProfile = 'mucus';
-      profileTitle = '⚠️ Mucogène / Acidifiant (À Équilibrer)';
-      profileBadgeClass = 'badge-mucus';
-      const mucusIngs = parsedIngredients.filter(i => i.isMucusForming).map(i => i.name).join(', ');
-      coachAdvice = `⚠️ <strong>Ingrédients mucogènes/acidifiants détectés :</strong> <em>${mucusIngs}</em>. 💡 Conseil : Pour alcaliniser cette recette, compensez avec une grande salade crue ou substituez par des alternatives végétales vivantes.`;
+    if (aiFood && (aiFood.items || aiFood.pral !== undefined)) {
+      avgPral = typeof aiFood.pral === 'number' ? aiFood.pral : (aiFood.scientific?.pral ?? 0);
+      maxNova = typeof aiFood.nova === 'number' ? aiFood.nova : (aiFood.vitality?.nova ?? 1);
+      isElectric = aiFood.electric === true || aiFood.specific?.electric === true;
+      suggestedEmoji = aiFood.emoji || '🥗';
+      groundingSources = aiFood.grounding_sources || [];
+      coachAdvice = aiFood.note || '';
+
+      const mucusType = (aiFood.mucus || aiFood.specific?.mucus || '').toLowerCase();
+      hasMucus = mucusType.includes('mucog') || avgPral > 2.0;
+
+      if (Array.isArray(aiFood.items) && aiFood.items.length > 0) {
+        parsedIngredients = aiFood.items.map(item => {
+          const itemPral = typeof item.pral === 'number' ? item.pral : 0;
+          const itemElec = item.electric === true;
+          const itemMucus = (item.mucus || '').toLowerCase().includes('mucog') || itemPral > 2.0;
+          let badge = 'transition';
+          let icon = '🔄';
+          let label = 'Transition';
+          if (itemElec) {
+            badge = 'electric'; icon = '⚡'; label = 'Électrique (Dr. Sebi)';
+          } else if (itemPral < 0) {
+            badge = 'alkaline'; icon = '🌿'; label = 'Alcalinisant (Sans mucus)';
+          } else if (itemMucus) {
+            badge = 'mucus'; icon = '⚠️'; label = 'Mucogène / Acidifiant';
+          }
+          return {
+            name: item.name,
+            pral: itemPral,
+            electric: itemElec,
+            role: item.role || item.category || label,
+            statusBadge: badge,
+            statusIcon: icon,
+            statusLabel: label
+          };
+        });
+      } else if (Array.isArray(aiFood.ingredients)) {
+        parsedIngredients = aiFood.ingredients.map(ingStr => ({
+          name: ingStr,
+          pral: avgPral,
+          electric: isElectric,
+          role: 'Ingrédient identifié',
+          statusBadge: isElectric ? 'electric' : (avgPral < 0 ? 'alkaline' : 'transition'),
+          statusIcon: isElectric ? '⚡' : (avgPral < 0 ? '🌿' : '🔄'),
+          statusLabel: isElectric ? 'Électrique' : (avgPral < 0 ? 'Alcalinisant' : 'Transition')
+        }));
+      }
+
+      if (isElectric && !hasMucus) {
+        overallProfile = 'electric';
+        profileTitle = '⚡ 100% Électrique & Vivant (Dr. Sebi)';
+        profileBadgeClass = 'badge-electric';
+      } else if (avgPral < 0 && !hasMucus) {
+        overallProfile = 'alkaline';
+        profileTitle = '🌿 Alcalinisant & Vivant (Sans Mucus)';
+        profileBadgeClass = 'badge-alkaline';
+      } else if (hasMucus) {
+        overallProfile = 'mucus';
+        profileTitle = '⚠️ Mucogène / Acidifiant (À Équilibrer)';
+        profileBadgeClass = 'badge-mucus';
+      } else {
+        overallProfile = 'transition';
+        profileTitle = '🔄 Plat de Transition Équilibré';
+        profileBadgeClass = 'badge-hybrid';
+      }
     } else {
-      overallProfile = 'transition';
-      profileTitle = '🔄 Plat de Transition Équilibré';
-      profileBadgeClass = 'badge-hybrid';
-      coachAdvice = '🔄 <strong>Plat de transition idéal :</strong> Permet un ralentissement doux de l’élimination sans choc acido-basique.';
+      // Local fallback if offline
+      const rawTokens = rawIng.split(/[,;\n]+/).map(s => s.trim()).filter(Boolean);
+      for (const token of rawTokens) {
+        const foodItem = classifyFoodLocally(token);
+        const itemElec = foodItem.specific?.electric === true || foodItem.electric === true || foodItem.approved === true;
+        const itemHybrid = foodItem.specific?.hybrid === true || foodItem.hybrid === true;
+        const pralVal = foodItem.scientific_defaults?.pral ?? (foodItem.pral ?? (itemElec ? -5.5 : 0));
+        const novaVal = foodItem.vitality?.nova ?? (foodItem.nova ?? 1);
+        const mucusStr = (foodItem.specific?.mucus || foodItem.mucus || '').toLowerCase();
+        const isDissolvant = mucusStr.includes('dissolvant') || mucusStr.includes('non-muc');
+        const isMucusForming = mucusStr.includes('mucog') || pralVal > 2.0 || /viande|poulet|boeuf|bœuf|porc|fromage|lait|oeuf|œuf|sucre|frite|burger|pizza/i.test(token);
+
+        let statusBadge = 'alkaline';
+        let statusIcon = '🌿';
+        let statusLabel = 'Alcalinisant';
+
+        if (itemElec && !isMucusForming) {
+          statusBadge = 'electric';
+          statusIcon = '⚡';
+          statusLabel = 'Électrique';
+        } else if (isMucusForming) {
+          statusBadge = 'mucus';
+          statusIcon = '⚠️';
+          statusLabel = 'Mucogène / Acidifiant';
+        } else if (itemHybrid || pralVal >= 0) {
+          statusBadge = 'transition';
+          statusIcon = '🔄';
+          statusLabel = 'Transition';
+        }
+
+        parsedIngredients.push({
+          raw: token,
+          name: foodItem.name || token.replace(/^./, c => c.toUpperCase()),
+          emoji: foodItem.emoji || (itemElec ? '🌿' : (isMucusForming ? '⚠️' : '🥗')),
+          pral: pralVal,
+          nova: novaVal,
+          electric: itemElec && !isMucusForming,
+          hybrid: itemHybrid,
+          isMucusForming,
+          role: statusLabel,
+          statusBadge,
+          statusIcon,
+          statusLabel
+        });
+      }
+
+      const totalPral = parsedIngredients.reduce((acc, ing) => acc + ing.pral, 0);
+      avgPral = parsedIngredients.length > 0 ? (totalPral / parsedIngredients.length) : 0;
+      maxNova = parsedIngredients.reduce((max, ing) => Math.max(max, ing.nova), 1);
+      hasMucus = parsedIngredients.some(ing => ing.isMucusForming);
+      isElectric = parsedIngredients.length > 0 && parsedIngredients.every(ing => ing.electric);
+
+      if (isElectric) {
+        overallProfile = 'electric';
+        profileTitle = '⚡ 100% Électrique & Vivant (Dr. Sebi)';
+        profileBadgeClass = 'badge-electric';
+        coachAdvice = '🌟 Formule bio-minérale optimale ! Composé de végétaux vivants et électrolytes naturels régénérants pour les reins et la lymphe.';
+      } else if (avgPral < 0 && !hasMucus) {
+        overallProfile = 'alkaline';
+        profileTitle = '🌿 Alcalinisant & Vivant (Sans Mucus)';
+        profileBadgeClass = 'badge-alkaline';
+        coachAdvice = '🌿 Excellent plat alcalinisant ! Favorise l’élimination des résidus acides sans encombrer la digestion.';
+      } else if (hasMucus) {
+        overallProfile = 'mucus';
+        profileTitle = '⚠️ Mucogène / Acidifiant (À Équilibrer)';
+        profileBadgeClass = 'badge-mucus';
+        coachAdvice = `⚠️ Ingrédients mucogènes/acidifiants détectés. Conseil : Compensez avec une grande salade crue ou substituez par des alternatives végétales vivantes.`;
+      } else {
+        overallProfile = 'transition';
+        profileTitle = '🔄 Plat de Transition Équilibré';
+        profileBadgeClass = 'badge-hybrid';
+        coachAdvice = '🔄 Plat de transition équilibré : Permet un ralentissement doux de l’élimination sans choc acido-basique.';
+      }
+    }
+
+    // Set emoji preview if suggested
+    const emojiPreview = document.getElementById('dishEmojiPreview');
+    if (emojiPreview && suggestedEmoji) {
+      emojiPreview.textContent = suggestedEmoji;
     }
 
     const auditData = {
@@ -7237,9 +7333,10 @@ async function auditCustomDish(showToastFeedback = true) {
       profile: overallProfile,
       profileTitle,
       profileBadgeClass,
-      electric: allElectric,
+      electric: isElectric,
       hasMucus,
       coachAdvice,
+      groundingSources,
       auditedAt: Date.now()
     };
 
@@ -7253,7 +7350,7 @@ async function auditCustomDish(showToastFeedback = true) {
         <div class="dish-audit-top">
           <span class="food-badge ${profileBadgeClass}" style="font-size:0.85rem; font-weight:700;">${profileTitle}</span>
           <div class="dish-audit-metrics">
-            <span class="dish-audit-metric-pill ${avgPral <= 0 ? 'pral-alkaline' : 'pral-acid'}" title="Indice PRAL moyen calculé">
+            <span class="dish-audit-metric-pill ${avgPral <= 0 ? 'pral-alkaline' : 'pral-acid'}" title="Indice PRAL moyen calculé scientifiquement">
               PRAL ${avgPral > 0 ? '+' : ''}${avgPral.toFixed(1)}
             </span>
             <span class="dish-audit-metric-pill nova" title="Niveau de transformation NOVA">
@@ -7261,27 +7358,40 @@ async function auditCustomDish(showToastFeedback = true) {
             </span>
           </div>
         </div>
-        <div class="dish-audit-ing-title">Analyse biochimique des ingrédients :</div>
-        <div class="dish-audit-chips">
+        <div class="dish-audit-ing-title" style="margin-top:10px; font-weight:700; font-size:0.82rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.5px;">Composition & Rôle Métabolique :</div>
+        <div class="dish-audit-chips" style="display:flex; flex-direction:column; gap:6px; margin:8px 0;">
           ${parsedIngredients.map(ing => `
-            <span class="dish-audit-chip ${ing.statusBadge}" title="PRAL: ${ing.pral > 0 ? '+' : ''}${ing.pral.toFixed(1)} · ${ing.statusLabel}">
-              <span>${ing.statusIcon}</span> ${esc(ing.name)}
-            </span>
+            <div class="dish-audit-chip ${ing.statusBadge}" style="display:flex; align-items:center; justify-content:space-between; padding:6px 10px; border-radius:8px; font-size:0.82rem; background:var(--surface-hover); border:1px solid var(--border);">
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span>${ing.statusIcon}</span> <strong>${esc(ing.name)}</strong>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                ${ing.role ? `<span style="font-size:0.75rem; color:var(--text-dim); font-style:italic;">${esc(ing.role)}</span>` : ''}
+                <span style="font-size:0.75rem; font-weight:700; color:${ing.pral <= 0 ? 'var(--accent,#34d399)' : '#ef4444'};">PRAL ${ing.pral > 0 ? '+' : ''}${ing.pral.toFixed(1)}</span>
+              </div>
+            </div>
           `).join('')}
         </div>
-        <div class="dish-audit-coach-advice">
-          ${coachAdvice}
-        </div>
+        ${coachAdvice ? `
+          <div class="dish-audit-coach-advice" style="margin-top:10px; padding:10px 12px; background:rgba(52,211,153,0.08); border-left:3px solid var(--accent,#34d399); border-radius:6px; font-size:0.84rem; line-height:1.45; color:var(--text);">
+            <strong>💡 Analyse du Coach Vital :</strong><br>${esc(coachAdvice)}
+          </div>
+        ` : ''}
+        ${groundingSources.length > 0 ? `
+          <div style="margin-top:8px; font-size:0.72rem; color:var(--text-dim);">
+            <i class="ri-google-line"></i> Sources vérifiées : ${groundingSources.slice(0, 3).map(s => esc(s)).join(' · ')}
+          </div>
+        ` : ''}
       `;
     }
 
     const notesInput = document.getElementById('dishNotesInput');
-    if (notesInput && !notesInput.value.trim()) {
-      notesInput.value = coachAdvice.replace(/<[^>]*>/g, '');
+    if (notesInput) {
+      notesInput.value = coachAdvice;
     }
 
     if (showToastFeedback) {
-      showToast('✨ Audit biochimique complété avec succès !', 'success', 3000);
+      showToast('✨ Audit biochimique approfondi complété avec succès !', 'success', 3000);
     }
     return auditData;
   } catch (err) {
