@@ -3786,11 +3786,49 @@ function stopVoiceSamplePlayback() {
     _currentSampleAudio.pause();
     _currentSampleAudio = null;
   }
+  if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+    try { window.speechSynthesis.cancel(); } catch (e) {}
+  }
   if (_currentSampleBtn) {
     _currentSampleBtn.innerHTML = `<i class="ri-play-circle-line"></i> ${esc(tFunc('voiceModal.listen') || 'Écouter')}`;
     _currentSampleBtn.classList.remove('playing');
     _currentSampleBtn = null;
   }
+}
+
+function _fallbackBrowserSpeech(voiceObj, btn) {
+  const tFunc = window.vitalTrackI18n?.t || ((k) => k);
+  if (typeof window !== 'undefined' && 'speechSynthesis' in window && voiceObj?.sample) {
+    try {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(voiceObj.sample);
+      const voices = window.speechSynthesis.getVoices() || [];
+      const lang = voiceObj.id.startsWith('en') ? 'en-US' : voiceObj.id.startsWith('es') ? 'es-ES' : voiceObj.id.startsWith('fr-CA') ? 'fr-CA' : 'fr-FR';
+      utterance.lang = lang;
+      
+      const matched = voices.find(v => v.lang === lang || v.lang.startsWith(lang.split('-')[0]));
+      if (matched) utterance.voice = matched;
+      
+      utterance.onstart = () => {
+        if (btn) {
+          btn.innerHTML = `<i class="ri-stop-circle-line" style="color:#ef4444;"></i> ${esc(tFunc('voiceModal.stop') || 'Arrêter')}`;
+          btn.classList.add('playing');
+        }
+      };
+      utterance.onend = () => {
+        stopVoiceSamplePlayback();
+      };
+      utterance.onerror = () => {
+        stopVoiceSamplePlayback();
+      };
+      window.speechSynthesis.speak(utterance);
+      return;
+    } catch (e) {
+      console.error('Browser speech fallback error:', e);
+    }
+  }
+  stopVoiceSamplePlayback();
+  if (window.showToast) showToast("Impossible de charger l'extrait audio", "error");
 }
 
 async function testVoiceSample(voiceId, btn) {
@@ -3821,7 +3859,10 @@ async function testVoiceSample(voiceId, btn) {
       })
     });
     
-    if (!resp.ok) throw new Error(`TTS sample HTTP ${resp.status}`);
+    if (!resp.ok) {
+      const errData = await resp.json().catch(() => ({}));
+      throw new Error(errData.error || `TTS sample HTTP ${resp.status}`);
+    }
     
     const blob = await resp.blob();
     const url = URL.createObjectURL(blob);
@@ -3839,14 +3880,13 @@ async function testVoiceSample(voiceId, btn) {
     
     audio.onerror = () => {
       stopVoiceSamplePlayback();
-      if (window.showToast) showToast("Erreur lors de la lecture de l'extrait", "error");
+      _fallbackBrowserSpeech(voiceObj, btn);
     };
     
     await audio.play();
   } catch (err) {
-    console.error('Audio sample error:', err);
-    stopVoiceSamplePlayback();
-    if (window.showToast) showToast("Impossible de charger l'extrait audio", "error");
+    console.warn('Neural TTS failed, attempting browser speech fallback:', err);
+    _fallbackBrowserSpeech(voiceObj, btn);
   }
 }
 window.testVoiceSample = testVoiceSample;

@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  serverExternalPackages: ['edge-tts-universal', 'ws'],
   async rewrites() {
     return [
       {
