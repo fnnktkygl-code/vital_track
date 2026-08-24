@@ -144,17 +144,16 @@ function showToast(msg, type = 'success', duration = 3500, action = null) {
   });
 };
 
-// ═══════ GLOBAL VITAL CONFIRM MODAL ═══════
+// ═══════ GLOBAL VITAL CONFIRM MODAL (Japandi Wabi-Sabi Design) ═══════
 function showVitalConfirm({
   title = 'Confirmation',
-  message = 'Voulez-vous vraiment continuer ?',
+  message = 'Voulez-vous vraiment continuer\u00A0?',
   icon = 'ri-information-line',
   confirmText = 'Confirmer',
-  cancelText = 'Fermer',
-  isDanger = false,
-  isPrimary = true
+  cancelText = 'Annuler',
+  isDanger = false
 } = {}) {
-  const actualDanger = isDanger === true && !isPrimary;
+  const actualDanger = Boolean(isDanger);
   return new Promise((resolve) => {
     const modal = document.getElementById('vitalConfirmModal');
     if (!modal) {
@@ -168,15 +167,23 @@ function showVitalConfirm({
     const cancelBtn = document.getElementById('vitalConfirmCancelBtn');
     const actionBtn = document.getElementById('vitalConfirmActionBtn');
 
-    if (titleEl) titleEl.textContent = title;
-    if (bodyEl) bodyEl.innerHTML = message;
+    // Typography: French non-breaking spaces before ?, !, :, ; to eliminate orphan punctuation
+    const formatFrenchTypography = (str) => {
+      if (!str || typeof str !== 'string') return str;
+      return str
+        .replace(/\s+([?!:;»])/g, '\u00A0$1')
+        .replace(/([«])\s+/g, '$1\u00A0');
+    };
+
+    if (titleEl) titleEl.textContent = formatFrenchTypography(title);
+    if (bodyEl) bodyEl.innerHTML = formatFrenchTypography(message);
     if (iconEl) iconEl.className = icon;
     if (iconBox) {
-      iconBox.className = actualDanger ? 'vital-confirm-icon-box' : 'vital-confirm-icon-box info';
+      iconBox.className = actualDanger ? 'vital-confirm-icon-box danger' : 'vital-confirm-icon-box info';
     }
-    if (cancelBtn) cancelBtn.textContent = cancelText;
+    if (cancelBtn) cancelBtn.textContent = formatFrenchTypography(cancelText);
     if (actionBtn) {
-      actionBtn.textContent = confirmText;
+      actionBtn.textContent = formatFrenchTypography(confirmText);
       actionBtn.className = actualDanger ? 'vital-confirm-btn-action danger' : 'vital-confirm-btn-action primary';
     }
 
