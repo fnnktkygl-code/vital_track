@@ -67,11 +67,15 @@ assert.ok(mainCode.includes("window.toggleSidebar(false)"), 'newConversation aut
 
 console.log('✅ 3. main.js voice audio synthesis, continuous recording, and auto-focus verified.');
 
-// 4. Verify api/transcribe.js endpoint
+// 4. Verify api/transcribe.js endpoint & Next.js route.ts
 const transcribeCode = readFileSync(join(__dirname, '../api/transcribe.js'), 'utf-8');
 assert.ok(transcribeCode.includes('callGeminiApi'), 'api/transcribe uses callGeminiApi');
 assert.ok(transcribeCode.includes('gemini-3.5-flash-lite'), 'api/transcribe uses gemini-3.5-flash-lite multimodal');
 
-console.log('✅ 4. api/transcribe.js is configured with Google Gemini multimodal audio.');
+const nextTranscribeCode = readFileSync(join(__dirname, '../vital-track-next/src/app/api/transcribe/route.ts'), 'utf-8');
+assert.ok(nextTranscribeCode.includes('executeGeminiWithFailover'), 'vital-track-next transcribe route uses executeGeminiWithFailover');
+assert.ok(nextTranscribeCode.includes('transcribe'), 'vital-track-next transcribe route specifies transcribe feature');
+
+console.log('✅ 4. Both api/transcribe.js and Next.js /api/transcribe/route.ts are configured with Google Gemini multimodal audio.');
 
 console.log('\n🎉 ALL CHAT SIDEBAR & VOICE TESTS PASSED SUCCESSFULLY!');
