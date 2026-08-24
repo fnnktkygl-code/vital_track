@@ -5200,6 +5200,212 @@ body.dark-theme .chip-btn,
 .quick-reply-chip:hover{background:rgba(var(--accent-rgb,74,222,128),0.2) !important;transform:translateY(-1px)}
 .quick-reply-chip{transition:all 0.2s ease}
 
+/* ═══════ AI MEAL BENTO CARD (JAPANDI HIGH-END UI) ═══════ */
+.ai-meal-bento-card {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  margin: 14px 0 8px 0;
+  border-radius: 16px;
+  border: 1.5px solid rgba(52, 211, 153, 0.35);
+  background: var(--surface, #1e293b);
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.22);
+  overflow: hidden;
+  text-align: left;
+}
+.ai-meal-bento-header {
+  background: linear-gradient(135deg, rgba(52, 211, 153, 0.16) 0%, rgba(16, 185, 129, 0.05) 100%);
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(52, 211, 153, 0.18);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.ai-meal-bento-emoji {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  border-radius: 14px;
+  background: rgba(52, 211, 153, 0.22);
+  border: 1px solid rgba(52, 211, 153, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.7rem;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+.ai-meal-bento-meta {
+  flex: 1;
+  min-width: 0;
+}
+.ai-meal-bento-title {
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: var(--text, #fff);
+  line-height: 1.35;
+  margin-bottom: 5px;
+  word-break: break-word;
+}
+.ai-meal-bento-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+.ai-meal-bento-badge-cat {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-dim, #94a3b8);
+  background: rgba(255, 255, 255, 0.08);
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+.ai-meal-bento-badge-pral {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text, #f1f5f9);
+  background: rgba(255, 255, 255, 0.06);
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+.ai-meal-bento-body {
+  padding: 14px 16px;
+}
+.ai-meal-bento-ingredients-label {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--text-dim, #94a3b8);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.ai-meal-bento-ingredients-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.ai-meal-bento-ing-pill {
+  font-size: 0.88rem;
+  color: var(--text, #f1f5f9);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+  padding: 5px 10px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  line-height: 1.3;
+}
+.ai-meal-bento-note {
+  font-size: 0.84rem;
+  color: var(--text-dim, #94a3b8);
+  line-height: 1.45;
+  font-style: italic;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(52, 211, 153, 0.06);
+  border-left: 3px solid #34d399;
+  margin-bottom: 14px;
+}
+.ai-meal-bento-primary-btn {
+  width: 100%;
+  height: 44px;
+  border-radius: 12px;
+  font-size: 0.92rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+  margin-bottom: 8px;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+.ai-meal-bento-primary-btn:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+.ai-meal-bento-actions-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.ai-meal-bento-sec-btn {
+  height: 40px;
+  border-radius: 10px;
+  font-size: 0.86rem;
+  font-weight: 700;
+  background: var(--surface-2, rgba(255, 255, 255, 0.06));
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+  color: var(--text, #f1f5f9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.ai-meal-bento-sec-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+.ai-meal-bento-sec-btn.recipes-btn {
+  background: rgba(52, 211, 153, 0.1);
+  border-color: rgba(52, 211, 153, 0.35);
+  color: #34d399;
+}
+.ai-meal-bento-sec-btn.recipes-btn:hover {
+  background: rgba(52, 211, 153, 0.2);
+}
+.ai-meal-bento-chips-bar {
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ai-meal-bento-chips-label {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--text-dim, #94a3b8);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.ai-meal-bento-chips-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.ai-meal-bento-chip {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 5px 11px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+  color: var(--text, #f1f5f9);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+.ai-meal-bento-chip:hover {
+  background: rgba(52, 211, 153, 0.15);
+  border-color: rgba(52, 211, 153, 0.4);
+  color: #34d399;
+}
+
 /* ═══════ CALENDAR REFACTOR ═══════ */
 .calendar-week-grid {
   display: flex;

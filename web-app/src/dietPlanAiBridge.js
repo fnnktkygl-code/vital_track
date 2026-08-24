@@ -672,7 +672,7 @@ export function extractSingleMealFromMarkdown(text) {
 }
 
 /**
- * Renders an Ultra-Compact Japandi Bento Action Card for a Single Proposed Meal/Recipe
+ * Renders an Ultra-Clean Japandi Bento Action Card for a Single Proposed Meal/Recipe
  */
 export function renderMealActionCardHtml(meal, tFunc = (k, p, f) => f || k) {
   if (!meal) return '';
@@ -689,59 +689,98 @@ export function renderMealActionCardHtml(meal, tFunc = (k, p, f) => f || k) {
 
   const isElectric = meal.isElectric !== false && !meal.isMucusForming;
   const pralText = meal.pralScore !== undefined ? `PRAL ${meal.pralScore > 0 ? '+' : ''}${meal.pralScore}` : 'Alcalin';
+  
   const vitalityBadge = isElectric
-    ? `<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:20px;font-size:0.72rem;font-weight:700;background:rgba(52,211,153,0.15);color:var(--accent,#34d399);border:1px solid rgba(52,211,153,0.3);"><i class="ri-flashlight-fill"></i> 100% Électrique</span>`
-    : `<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:20px;font-size:0.72rem;font-weight:700;background:rgba(245,158,11,0.12);color:#f59e0b;border:1px solid rgba(245,158,11,0.3);"><i class="ri-shuffle-line"></i> Transition</span>`;
+    ? `<span class="ai-meal-bento-badge-pral" style="color:#34d399; background:rgba(52,211,153,0.18); border:1px solid rgba(52,211,153,0.4);"><i class="ri-flashlight-fill"></i> 100% Électrique</span>`
+    : `<span class="ai-meal-bento-badge-pral" style="color:#f59e0b; background:rgba(245,158,11,0.18); border:1px solid rgba(245,158,11,0.4);"><i class="ri-shuffle-line"></i> Transition</span>`;
 
-  const itemsPills = rawItems.slice(0, 6).map(it => `
-    <span style="display:inline-block;padding:2px 7px;background:rgba(255,255,255,0.04);border:1px solid var(--border, rgba(255,255,255,0.08));border-radius:8px;font-size:0.74rem;color:var(--text);margin:2px 2px 2px 0;">
-      ${typeof it === 'string' ? it : it.name}
+  const itemsPills = rawItems.slice(0, 8).map(it => `
+    <span class="ai-meal-bento-ing-pill">
+      <i class="ri-leaf-line" style="color:#34d399; font-size:0.8rem;"></i> ${typeof it === 'string' ? it : it.name}
     </span>
   `).join('');
 
   const safeMealName = (meal.name || 'ce repas').replace(/'/g, "\\'");
 
   return `
-    <div class="ai-meal-bento-card glass" style="margin:12px 0 6px 0;padding:12px 14px;border-radius:14px;border:1px solid rgba(52,211,153,0.25);background:rgba(16,185,129,0.03);box-shadow:0 4px 16px rgba(0,0,0,0.12);text-align:left;">
-      <!-- Top header line -->
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
-        <div style="display:flex;align-items:center;gap:8px;min-width:0;">
-          <span style="font-size:1.3rem;line-height:1;flex-shrink:0;">${meal.emoji || '🥗'}</span>
-          <div style="min-width:0;">
-            <div style="font-weight:800;font-size:0.92rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2;">${meal.name || 'Plat Proposé'}</div>
-            <div style="font-size:0.72rem;color:var(--text-dim);margin-top:1px;">${catLabel} · ${pralText}</div>
+    <div class="ai-meal-bento-card">
+      
+      <!-- Bento Header Banner -->
+      <div class="ai-meal-bento-header">
+        <div class="ai-meal-bento-emoji">
+          ${meal.emoji || '🥗'}
+        </div>
+        <div class="ai-meal-bento-meta">
+          <div class="ai-meal-bento-title">
+            ${meal.name || 'Plat Proposé'}
+          </div>
+          <div class="ai-meal-bento-badges">
+            <span class="ai-meal-bento-badge-cat">
+              ${catLabel}
+            </span>
+            <span class="ai-meal-bento-badge-pral">
+              ${pralText}
+            </span>
+            ${vitalityBadge}
           </div>
         </div>
-        <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
-          ${vitalityBadge}
+      </div>
+
+      <!-- Bento Body -->
+      <div class="ai-meal-bento-body">
+        
+        <!-- Ingredients Section -->
+        <div style="margin-bottom:12px;">
+          <div class="ai-meal-bento-ingredients-label">
+            <i class="ri-restaurant-line" style="color:#34d399;"></i> Ingrédients Clés :
+          </div>
+          <div class="ai-meal-bento-ingredients-wrap">
+            ${itemsPills}
+          </div>
         </div>
-      </div>
 
-      <!-- Compact Ingredients list -->
-      <div style="margin-bottom:10px;display:flex;flex-wrap:wrap;gap:2px;">
-        ${itemsPills}
-      </div>
+        ${meal.note ? `
+          <div class="ai-meal-bento-note">
+            🌿 ${meal.note}
+          </div>
+        ` : ''}
 
-      <!-- Action buttons row: 3 compact buttons side by side -->
-      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(100px, 1fr));gap:6px;margin-bottom:8px;">
-        <button type="button" class="btn-primary" onclick="window.handleAddActionMeal('${encodedMeal}')" style="padding:7px 10px;border-radius:10px;font-size:0.78rem;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:4px;cursor:pointer;border:none;white-space:nowrap;">
-          <i class="ri-add-circle-fill" style="font-size:0.88rem;"></i> Journal
+        <!-- Primary Action Button: Large Matcha CTA -->
+        <button type="button" class="ai-meal-bento-primary-btn" onclick="window.handleAddActionMeal('${encodedMeal}')">
+          <i class="ri-add-circle-fill" style="font-size:1.1rem;"></i> Ajouter aux Repas du Jour
         </button>
-        <button type="button" class="btn-secondary" onclick="window.openScheduleMealModal('${encodedMeal}')" style="padding:7px 10px;border-radius:10px;font-size:0.78rem;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:4px;background:var(--surface-2, rgba(255,255,255,0.06));border:1px solid var(--border, rgba(255,255,255,0.1));color:var(--text);cursor:pointer;white-space:nowrap;">
-          <i class="ri-calendar-event-line" style="color:var(--accent,#34d399);font-size:0.88rem;"></i> Calendrier
-        </button>
-        <button type="button" class="btn-secondary" onclick="window.saveMealToCustomRecipes('${encodedMeal}')" style="padding:7px 10px;border-radius:10px;font-size:0.78rem;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:4px;background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.25);color:var(--accent,#34d399);cursor:pointer;white-space:nowrap;">
-          <i class="ri-bookmark-3-line" style="font-size:0.88rem;"></i> Recettes
-        </button>
-      </div>
 
-      <!-- Subtle variant chips row -->
-      <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;padding-top:6px;border-top:1px solid rgba(255,255,255,0.04);">
-        <span style="font-size:0.7rem;color:var(--text-dim);margin-right:2px;">Adapter :</span>
-        <button type="button" onclick="window.askMealVariant('${safeMealName}', 'fridge')" style="font-size:0.7rem;padding:2px 8px;border-radius:12px;background:transparent;border:1px solid var(--border, rgba(255,255,255,0.1));color:var(--text-dim);cursor:pointer;">🥑 Frigo</button>
-        <button type="button" onclick="window.askMealVariant('${safeMealName}', 'raw')" style="font-size:0.7rem;padding:2px 8px;border-radius:12px;background:transparent;border:1px solid var(--border, rgba(255,255,255,0.1));color:var(--text-dim);cursor:pointer;">🌿 100% Cru</button>
-        <button type="button" onclick="window.askMealVariant('${safeMealName}', 'transition')" style="font-size:0.7rem;padding:2px 8px;border-radius:12px;background:transparent;border:1px solid var(--border, rgba(255,255,255,0.1));color:var(--text-dim);cursor:pointer;">🥣 Transition</button>
-        <button type="button" onclick="window.openMealCustomizer('${safeMealName}')" style="font-size:0.7rem;padding:2px 8px;border-radius:12px;background:transparent;border:1px solid var(--border, rgba(255,255,255,0.1));color:var(--accent,#34d399);cursor:pointer;">✏️ Autre...</button>
+        <!-- Secondary Action Row: Calendar & Custom Recipes (50% / 50%) -->
+        <div class="ai-meal-bento-actions-grid">
+          <button type="button" class="ai-meal-bento-sec-btn" onclick="window.openScheduleMealModal('${encodedMeal}')">
+            <i class="ri-calendar-event-line" style="color:#34d399; font-size:0.95rem;"></i> Calendrier
+          </button>
+          <button type="button" class="ai-meal-bento-sec-btn recipes-btn" onclick="window.saveMealToCustomRecipes('${encodedMeal}')">
+            <i class="ri-bookmark-3-line" style="font-size:0.95rem;"></i> Sauvegarder
+          </button>
+        </div>
+
+        <!-- AI Refinement Chips Bar -->
+        <div class="ai-meal-bento-chips-bar">
+          <div class="ai-meal-bento-chips-label">
+            Ajuster avec l'IA :
+          </div>
+          <div class="ai-meal-bento-chips-wrap">
+            <button type="button" class="ai-meal-bento-chip" onclick="window.askMealVariant('${safeMealName}', 'fridge')">
+              🥑 Mon frigo
+            </button>
+            <button type="button" class="ai-meal-bento-chip" onclick="window.askMealVariant('${safeMealName}', 'raw')">
+              🌿 100% Cru
+            </button>
+            <button type="button" class="ai-meal-bento-chip" onclick="window.askMealVariant('${safeMealName}', 'transition')">
+              🥣 Transition
+            </button>
+            <button type="button" class="ai-meal-bento-chip" onclick="window.openMealCustomizer('${safeMealName}')" style="background:rgba(52,211,153,0.1); border-color:rgba(52,211,153,0.3); color:#34d399;">
+              ✏️ Autre...
+            </button>
+          </div>
+        </div>
+
       </div>
     </div>
   `;
