@@ -2006,17 +2006,25 @@ function renderDashboard() {
         if (Array.isArray(rawItems) && rawItems.length > 0) {
           const formatted = rawItems.map(it => typeof it === 'string' ? it : (it.name || '')).filter(Boolean);
           if (formatted.length > 0) {
-            itemsPreview = `<div style="font-size:0.78rem; color:var(--text-dim); margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:240px;">
+            itemsPreview = `<div style="font-size:0.76rem; color:var(--text-dim); margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:240px;">
               <span style="color:var(--accent);">🥗</span> ${esc(formatted.join(' · '))}
             </div>`;
           }
         }
         return `<div class="meal-item clickable" onclick="openFoodModalFromMeal(${idx})" style="cursor:pointer;" title="Cliquer pour ouvrir la fiche détaillée">
-          <span class="food-emoji">${m.emoji || '🍽️'}</span>
+          <div class="food-emoji-pill">${m.emoji || '🍽️'}</div>
           <div class="meal-item-info" style="flex:1; min-width:0;">
-            <div class="meal-item-name">${esc(m.name)}</div>
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+              <span class="meal-item-name">${esc(m.name)}</span>
+              <span class="japandi-bio-badge ${isElec ? 'badge-elec' : (m.hybrid ? 'badge-hybrid' : 'badge-mucus')}">
+                ${isElec ? '⚡ Électrique' : (m.hybrid ? '🔀 Hybride' : '⛔ Mucogène')}
+              </span>
+            </div>
             ${itemsPreview}
-            <div class="meal-item-meta">${isElec ? '⚡ Électrique' : (m.hybrid ? '🔀 Hybride' : '⛔ Mucogène')} · PRAL ${pral > 0 ? '+' : ''}${pral.toFixed(1)} · NOVA ${m.nova ?? 1}</div>
+            <div class="meal-item-meta">
+              <span class="japandi-mini-chip">PRAL ${pral > 0 ? '+' : ''}${pral.toFixed(1)}</span>
+              <span class="japandi-mini-chip">NOVA ${m.nova ?? 1}</span>
+            </div>
           </div>
           <i class="ri-arrow-right-s-line" style="color:var(--text-dim); margin-left:auto; font-size:1.1rem;"></i>
         </div>`;
@@ -7303,29 +7311,35 @@ function renderMeals() {
     if (Array.isArray(rawItems) && rawItems.length > 0) {
       const formatted = rawItems.map(it => typeof it === 'string' ? it : (it.name || '')).filter(Boolean);
       if (formatted.length > 0) {
-        itemsPreview = `<div class="meal-item-ingredients" style="font-size:0.8rem; color:var(--text-dim); margin:3px 0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:85vw;">
+        itemsPreview = `<div class="meal-item-ingredients" style="font-size:0.78rem; color:var(--text-dim); margin:3px 0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:85vw;">
           <span style="color:var(--accent);">🥗</span> ${esc(formatted.join(' · '))}
         </div>`;
       }
     }
     const cookingObj = COOKING_METHODS[m.cookingMethod];
-    const catBadge = m.category ? `<span class="food-badge" style="font-size:0.7rem; padding:2px 6px; background:var(--surface-hover);">${esc(m.category.toUpperCase())}</span>` : '';
-    const cookingBadge = cookingObj ? `<span class="food-badge" style="font-size:0.7rem; padding:2px 6px; background:rgba(55,211,153,0.1); color:var(--accent);">${cookingObj.emoji} ${esc(cookingObj.label.split(' ')[0])}</span>` : '';
+    const catBadge = m.category ? `<span class="japandi-mini-chip">${esc(m.category.toUpperCase())}</span>` : '';
+    const cookingBadge = cookingObj ? `<span class="japandi-mini-chip">${cookingObj.emoji} ${esc(cookingObj.label.split(' ')[0])}</span>` : '';
 
     return `<div class="meal-item clickable" onclick="openFoodModalFromMeal(${i})" style="cursor:pointer;" title="Cliquer pour ouvrir la fiche détaillée du repas">
-      <span class="food-emoji">${m.emoji || '🍽️'}</span>
+      <div class="food-emoji-pill">${m.emoji || '🍽️'}</div>
       <div class="meal-item-info" style="flex:1; min-width:0;">
         <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-          <span class="meal-item-name" style="font-weight:700;">${esc(m.name)}</span>
+          <span class="meal-item-name">${esc(m.name)}</span>
+          <span class="japandi-bio-badge ${isElec ? 'badge-elec' : (m.hybrid ? 'badge-hybrid' : 'badge-mucus')}">
+            ${isElec ? '⚡ Électrique' : (m.hybrid ? '🔀 Hybride' : '⛔ Mucogène')}
+          </span>
           ${catBadge}
           ${cookingBadge}
         </div>
         ${itemsPreview}
-        <div class="meal-item-meta">${isElec ? '⚡ Électrique' : (m.hybrid ? '🔀 Hybride' : '⛔ Mucogène')} · PRAL ${pral > 0 ? '+' : ''}${pral.toFixed(1)} · NOVA ${m.nova ?? 1}${cookingObj ? ` · ${cookingObj.emoji} ${cookingObj.label.split(' ')[0]}` : ''}</div>
+        <div class="meal-item-meta">
+          <span class="japandi-mini-chip">PRAL ${pral > 0 ? '+' : ''}${pral.toFixed(1)}</span>
+          <span class="japandi-mini-chip">NOVA ${m.nova ?? 1}</span>
+        </div>
       </div>
-      <div style="display:flex; align-items:center; gap:4px;">
-        <button class="meal-item-save-fav" onclick="event.stopPropagation(); saveMealAsFavoriteDish(${i})" title="Enregistrer dans mes Plats Favoris" style="background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.25); color:#ef4444; border-radius:8px; width:32px; height:32px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer;"><i class="ri-heart-add-line"></i></button>
-        <button class="meal-item-remove" onclick="event.stopPropagation(); removeMeal(${i})" title="Supprimer ce repas"><i class="ri-delete-bin-line"></i></button>
+      <div style="display:flex; align-items:center; gap:6px;">
+        <button type="button" class="meal-item-save-fav" onclick="event.stopPropagation(); saveMealAsFavoriteDish(${i})" title="Enregistrer dans mes Plats Favoris"><i class="ri-heart-add-line"></i></button>
+        <button type="button" class="meal-item-remove" onclick="event.stopPropagation(); removeMeal(${i})" title="Supprimer ce repas"><i class="ri-delete-bin-line"></i></button>
       </div>
     </div>`;
   }).join('');

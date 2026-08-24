@@ -18,9 +18,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800;900&family=Fraunces:opsz,wght@9..144,500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;600&family=IBM+Plex+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-  <script type="module" crossorigin src="/assets/main-C3umz4WD.js"></script>
+  <script type="module" crossorigin src="/assets/main-Do5avDWZ.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
-  <link rel="stylesheet" crossorigin href="/assets/main-BKe1Jv5s.css">
+  <link rel="stylesheet" crossorigin href="/assets/main-BhFZU3aM.css">
 </head>
 <body>
   <div class="bg-blob blob-1"></div>
@@ -801,12 +801,19 @@
           </div>
         </div>
 
-      <!-- Active Fasting Card -->
-      <div class="dash-card glass" id="dashFastingCard" style="display:none">
-        <h3><i class="ri-fire-line"></i> <span data-i18n="dashboard.fastingInProgress">Jeûne en cours</span></h3>
-        <div class="dash-fast-info">
-          <span class="dash-fast-timer" id="dashFastTimer">00:00:00</span>
-          <span class="dash-fast-type" id="dashFastType"></span>
+      <!-- Active Fasting Card (Japandi Zen Bio-Timer) -->
+      <div class="dash-card glass dash-fasting-card" id="dashFastingCard" style="display:none; cursor:pointer;" onclick="showPage('fasting')">
+        <div class="dash-fasting-head">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div class="dash-fasting-flame-badge">
+              <i class="ri-fire-fill"></i>
+            </div>
+            <div>
+              <h3 style="margin:0; font-size:0.98rem; font-weight:700; color:var(--text-hi);" data-i18n="dashboard.fastingInProgress">Jeûne en cours</h3>
+              <div class="dash-fast-type-pill" id="dashFastType">Intermittent (16:8)</div>
+            </div>
+          </div>
+          <div class="dash-fast-timer-pill" id="dashFastTimer">00:00:00</div>
         </div>
         <div class="dash-fast-bar"><div class="dash-fast-fill" id="dashFastFill"></div></div>
       </div>
@@ -2697,54 +2704,7 @@
       <div class="weight-modal-form">
         <div>
           <label style="font-size:0.85rem;color:var(--text-dim);display:block;margin-bottom:6px" data-i18n="weight.dateLabel">Date de la pesée :</label>
-          <button type="button" onclick="window.toggleWeightDatePickerPop && window.toggleWeightDatePickerPop()" id="weightDatePickerBtn" class="form-input" style="width:100%; display:flex; align-items:center; justify-content:space-between; text-align:left; cursor:pointer; font-weight:700; background:rgba(5,150,105,0.06); border:1.5px solid var(--accent); color:var(--text);">
-            <span style="display:inline-flex; align-items:center; gap:8px;">
-              <span>📅</span>
-              <span id="weightDateDisplayVal">Aujourd'hui</span>
-            </span>
-            <span id="weightDatePopArrow" style="transition:transform 0.2s var(--apple-spring);">▾</span>
-          </button>
-          <input type="hidden" id="weightDateInput" value="">
-
-          <!-- Floating Pop-over Calendar with 1-Click Year Dropdown (2015-2030) -->
-          <div id="weightDatePopBox" class="glass-card" style="display:none; margin-top:8px; padding:14px; border-radius:20px; border:1px solid var(--border); box-shadow:0 12px 32px rgba(0,0,0,0.4); flex-direction:column; gap:10px;">
-            
-            <!-- Quick Chips -->
-            <div style="display:flex; align-items:center; gap:6px; overflow-x:auto; padding-bottom:4px;">
-              <button type="button" onclick="window.setWeightDateQuick && window.setWeightDateQuick(0)" class="chip-btn" style="padding:4px 10px; font-size:0.75rem; font-weight:800; background:var(--accent); color:#fff; border:none; border-radius:12px;">Aujourd'hui</button>
-              <button type="button" onclick="window.setWeightDateQuick && window.setWeightDateQuick(-1)" class="chip-btn" style="padding:4px 10px; font-size:0.75rem; font-weight:600; border-radius:12px;">Hier</button>
-              <button type="button" onclick="window.setWeightDateQuick && window.setWeightDateQuick(-2)" class="chip-btn" style="padding:4px 10px; font-size:0.75rem; font-weight:600; border-radius:12px;">Avant-hier</button>
-              <button type="button" onclick="window.setWeightDateExact && window.setWeightDateExact(2017, 5, 17)" class="chip-btn" style="padding:4px 10px; font-size:0.75rem; font-weight:800; background:rgba(245,158,11,0.15); color:#f59e0b; border:1px solid rgba(245,158,11,0.3); border-radius:12px;">⚡ 17 Juin 2017</button>
-            </div>
-
-            <!-- Month & Year Navigation Bar with 1-Click Year Dropdown Button -->
-            <div style="display:flex; align-items:center; justify-content:space-between; background:var(--surface-2); padding:6px 10px; border-radius:14px; border:1px solid var(--border);">
-              <div style="display:flex; align-items:center; gap:4px;">
-                <button type="button" onclick="window.weightPopPrevYear && window.weightPopPrevYear()" class="icon-btn-sm" style="padding:4px 8px; font-size:0.75rem; cursor:pointer; background:transparent; border:none; color:var(--text);" title="-1 An">⏮</button>
-                <button type="button" onclick="window.weightPopPrevMonth && window.weightPopPrevMonth()" class="icon-btn-sm" style="padding:4px 8px; font-size:0.75rem; cursor:pointer; background:transparent; border:none; color:var(--text);">◄</button>
-              </div>
-
-              <!-- Clickable Year Button Triggering 2015-2030 Grid -->
-              <div style="display:flex; align-items:center; gap:6px;">
-                <span id="weightPopMonthTxt" style="font-size:0.82rem; font-weight:800; color:var(--text);">Août</span>
-                <button type="button" onclick="window.toggleWeightPopYearGrid && window.toggleWeightPopYearGrid()" id="weightPopYearBtn" style="padding:3px 8px; border-radius:10px; background:rgba(16,185,129,0.15); color:var(--accent); font-weight:800; font-size:0.82rem; border:1px solid rgba(16,185,129,0.3); cursor:pointer; display:inline-flex; align-items:center; gap:4px; transition:all 0.2s var(--apple-spring);" title="Cliquer pour choisir l'année directement (1 clic)">
-                  <span id="weightPopYearTxt">2026</span>
-                  <span style="font-size:0.65rem;">▼</span>
-                </button>
-              </div>
-
-              <div style="display:flex; align-items:center; gap:4px;">
-                <button type="button" onclick="window.weightPopNextMonth && window.weightPopNextMonth()" class="icon-btn-sm" style="padding:4px 8px; font-size:0.75rem; cursor:pointer; background:transparent; border:none; color:var(--text);">►</button>
-                <button type="button" onclick="window.weightPopNextYear && window.weightPopNextYear()" class="icon-btn-sm" style="padding:4px 8px; font-size:0.75rem; cursor:pointer; background:transparent; border:none; color:var(--text);" title="+1 An">⏭</button>
-              </div>
-            </div>
-
-            <!-- Dynamic Calendar Grid Container (Month Days OR 1-Click Year Selector Grid) -->
-            <div id="weightPopCalendarContainer" style="min-height:160px;">
-              <!-- Populated via JS -->
-            </div>
-
-          </div>
+          <input type="text" id="weightDateInput" class="form-input" value="">
         </div>
 
         <div>
