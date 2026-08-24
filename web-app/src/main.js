@@ -16169,10 +16169,10 @@ function triggerMascotInPlaceReaction(action) {
   // Unconditionally play authentic real pigeon recording on click
   if (window.pigeonAudio) {
     const soundMap = {
-      coo: 'classic',
+      coo: 'ramier',
       think: 'morning',
       celebrate: 'nuptial',
-      laugh: 'nuptial',
+      laugh: 'classic',
       walk: 'territorial'
     };
     window.pigeonAudio.playRealCoo(soundMap[act] || null);
