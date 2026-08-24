@@ -309,35 +309,25 @@ function renderStripDailyRoutine() {
     const safeSlotName = esc(task.slotName);
 
     html += `
-      <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; border-radius:16px; background:var(--surface); border:1px solid ${isDone ? 'rgba(16,185,129,0.35)' : 'var(--border)'}; transition:all calc(0.2s * var(--speed-factor, 1)) var(--apple-spring); gap:10px;" class="routine-task-row">
-        <!-- Left Checkbox + Clickable Text -->
-        <div style="display:flex; align-items:center; gap:12px; min-width:0; flex:1; cursor:pointer;" onclick="window.openEditStripMealModal('${task.id}', '${task.iso}', '${task.slot}')">
-          <span onclick="event.stopPropagation(); window.toggleStripRoutineTask('${task.id}', '${task.calMealId || ''}');" style="width:22px; height:22px; border-radius:50%; border:2px solid ${isDone ? 'var(--accent)' : 'var(--border-strong)'}; background:${isDone ? 'var(--accent)' : 'transparent'}; color:#ffffff; font-size:0.75rem; font-weight:900; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; transition:all 0.2s var(--apple-spring);" title="${isDone ? 'Décocher' : 'Valider ce rituel'}">
+      <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-radius:16px; background:var(--surface); border:1px solid ${isDone ? 'rgba(16,185,129,0.35)' : 'var(--border)'}; transition:all calc(0.2s * var(--speed-factor, 1)) var(--apple-spring); gap:12px; cursor:pointer;" class="routine-task-row" onclick="window.toggleStripRoutineTask('${task.id}', '${task.calMealId || ''}');">
+        <!-- Left Checkbox + Text -->
+        <div style="display:flex; align-items:center; gap:12px; min-width:0; flex:1;">
+          <span style="width:24px; height:24px; border-radius:50%; border:2px solid ${isDone ? 'var(--accent)' : 'var(--border-strong)'}; background:${isDone ? 'var(--accent)' : 'transparent'}; color:#ffffff; font-size:0.8rem; font-weight:900; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; transition:all 0.2s var(--apple-spring);" title="${isDone ? 'Décocher' : 'Valider ce rituel'}">
             ${isDone ? '✓' : ''}
           </span>
           <div style="min-width:0;">
             <div style="display:flex; align-items:center; gap:6px;">
-              <strong style="font-size:0.83rem; font-weight:700; color:${isDone ? 'var(--text-dim)' : 'var(--text)'}; text-decoration:${isDone ? 'line-through' : 'none'}; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+              <strong style="font-size:0.88rem; font-weight:700; color:${isDone ? 'var(--text-dim)' : 'var(--text)'}; text-decoration:${isDone ? 'line-through' : 'none'}; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                 ${safeTitle}
               </strong>
-              ${task.isCustom ? '<span style="font-size:0.65rem; background:rgba(56,189,248,0.15); color:#38bdf8; padding:1px 6px; border-radius:6px; font-weight:700;">Personnalisé</span>' : ''}
             </div>
-            <span style="font-size:0.72rem; color:var(--text-dim); display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${task.time} • ${safeDesc}</span>
+            <span style="font-size:0.75rem; color:var(--text-dim); display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${task.time} • ${safeDesc}</span>
           </div>
         </div>
 
-        <!-- Right Quick Action Buttons -->
-        <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
-          <button type="button" class="app-btn-secondary" style="padding:4px 8px; font-size:0.75rem; border-radius:10px; display:inline-flex; align-items:center; gap:4px;" onclick="window.openEditStripMealModal('${task.id}', '${task.iso}', '${task.slot}')" title="Modifier ou personnaliser ce repas" data-tooltip="Modifier">
-            <i class="ri-edit-line"></i>
-          </button>
-          <button type="button" class="app-btn-secondary" style="padding:4px 8px; font-size:0.75rem; border-radius:10px; display:inline-flex; align-items:center; gap:4px;" onclick="window.askCoachToVaryStripMeal('${safeTitle.replace(/'/g, "\\'")}', '${safeSlotName.replace(/'/g, "\\'")}')" title="Demander au Coach Vital d'adapter selon votre frigo" data-tooltip="Varier avec le Coach">
-            <i class="ri-chat-smile-3-line" style="color:var(--accent);"></i>
-          </button>
-          <button type="button" class="app-btn-secondary" style="padding:4px 8px; font-size:0.75rem; border-radius:10px; display:inline-flex; align-items:center; gap:4px;" onclick="window.addStripMealToJournal('${safeTitle.replace(/'/g, "\\'")}', '${task.slot}')" title="Consigner ce repas dans le journal" data-tooltip="+ Journal">
-            <i class="ri-restaurant-line"></i>
-          </button>
-          <span style="font-size:1.15rem; margin-left:2px;">${task.icon}</span>
+        <!-- Right Simple Emoji Badge -->
+        <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+          <span style="font-size:1.35rem; opacity:0.9;">${task.icon}</span>
         </div>
       </div>
     `;

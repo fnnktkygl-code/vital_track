@@ -12,34 +12,37 @@ import { store, formatLocalDate, parseLocalDate, addDaysLocal } from './storage.
 export function parseMarkdownDietPlan(text) {
   if (!text || typeof text !== 'string') return null;
 
-  const hasPlanKeywords = /(?:🌅|📅|🌿|✨)?\s*(?:JOUR|DAY|PHASE|SEMAINE|WEEK)\s*\d+/i.test(text) ||
-    (/(?:Matin|Petit[- ]d[ée]jeuner)\s*[:\-]/i.test(text) && /(?:Midi|D[ée]jeuner)\s*[:\-]/i.test(text) && /(?:Soir|D[iî]ner)\s*[:\-]/i.test(text));
+  // Permissive check for any diet plan / programme vitaliste
+  const hasPlanKeywords = /(?:PROGRAMME|PLAN|SEMAINE|WEEK|JOUR|DAY|PHASE|RITUELS|MENU)/i.test(text) &&
+    (/(?:Matin|Petit[- ]d[ée]jeuner|[ÉEe]veil|Hydratation)/i.test(text) || /(?:Midi|D[ée]jeuner|Repas)/i.test(text) || /(?:Soir|D[iî]ner)/i.test(text));
 
   if (!hasPlanKeywords) return null;
 
   const sections = [];
-  const sectionRegex = /(?:🌅|📅|🌿|✨)?\s*(?:(JOUR|DAY|PHASE|SEMAINE|WEEK)\s*(\d+)(?:\s*(?:\([^\)]+\)|[^\n:]*))?\s*[:\-\—]?\s*([^\n]*))/gi;
+  // Matches "JOUR 1", "SEMAINE 1", "2. PROGRAMME TYPE SEMAINE 1", "PHASE 1", "### Semaine 1", etc.
+  const sectionRegex = /(?:(?:#+\s*|\*\*\s*|\d+[\.\)]\s*)?(?:PROGRAMME\s*(?:TYPE\s*)?)?(JOUR|DAY|PHASE|SEMAINE|WEEK)\s*(\d+)[^\n:]*[:\-\—]?\s*([^\n]*))/gi;
   
   let match;
   const matches = [];
   while ((match = sectionRegex.exec(text)) !== null) {
     matches.push({
       index: match.index,
-      type: (match[1] || 'JOUR').toUpperCase(),
+      type: (match[1] || 'SEMAINE').toUpperCase(),
       num: parseInt(match[2], 10),
       rawTitle: (match[3] || '').trim() || `${match[1]} ${match[2]}`
     });
   }
 
   if (matches.length === 0) {
-    matches.push({ index: 0, type: 'JOUR', num: 1, rawTitle: 'Programme du Jour' });
+    matches.push({ index: 0, type: 'SEMAINE', num: 1, rawTitle: 'Programme Vitaliste Évolutif' });
   }
 
+  // Vitalist Daily Slots (No mandatory snacks/collations to respect intermittent digestive rest)
   const slotMarkers = [
-    { type: 'breakfast', time: '08:00', label: 'Petit-déjeuner / Matin', icon: '🍉', regex: /(?:^|\n)\s*(?:[•\*\-]\s*)?(?:Matin(?:\s*\([^\)]+\))?|Petit[- ]d[ée]jeuner(?:\s*\([^\)]+\))?|Breakfast)\s*[:—\-]\s*/i },
-    { type: 'lunch', time: '12:30', label: 'Déjeuner / Midi', icon: '🥗', regex: /(?:^|\n)\s*(?:[•\*\-]\s*)?(?:Midi(?:\s*\([^\)]+\))?|D[ée]jeuner(?:\s*\([^\)]+\))?|Repas principal|Lunch)\s*[:—\-]\s*/i },
-    { type: 'snack', time: '16:00', label: 'Collation / 16h', icon: '🍵', regex: /(?:^|\n)\s*(?:[•\*\-]\s*)?(?:Apr[eè]s[- ]midi(?:\s*\([^\)]+\))?|Go[uû]ter(?:\s*\([^\)]+\))?|Collation(?:\s*\([^\)]+\))?|16h(?:\s*\([^\)]+\))?|Snack)\s*[:—\-]\s*/i },
-    { type: 'dinner', time: '19:00', label: 'Dîner / Soir', icon: '🍲', regex: /(?:^|\n)\s*(?:[•\*\-]\s*)?(?:Soir(?:\s*\([^\)]+\))?|D[iî]ner(?:\s*\([^\)]+\))?|Repas du soir|Dinner)\s*[:—\-]\s*/i }
+    { type: 'hydration', time: '07:30', label: 'Éveil & Hydratation', icon: '💧', regex: /(?:^|\n)\s*(?:[•\*\-]\s*)?(?:(?:\d{1,2}[h:]\d{2}\s*[-–—]\s*)?(?:[ÉEe]veil(?:\s*\([^\)]+\))?|Hydratation(?:\s*\([^\)]+\))?|R[ée]veil(?:\s*\([^\)]+\))?|Au saut du lit))\s*[:—\-]\s*/i },
+    { type: 'breakfast', time: '09:00', label: 'Matin Vital (Fruits ou Jus)', icon: '🍉', regex: /(?:^|\n)\s*(?:[•\*\-]\s*)?(?:(?:\d{1,2}[h:]\d{2}\s*[-–—]\s*)?(?:Petit[- ]d[ée]jeuner(?:\s*\([^\)]+\))?|Matin(?:\s*\([^\)]+\))?|1er repas(?:\s*\([^\)]+\))?|Breakfast))\s*[:—\-]\s*/i },
+    { type: 'lunch', time: '12:30', label: 'Déjeuner Vivant & Alcalin', icon: '🥗', regex: /(?:^|\n)\s*(?:[•\*\-]\s*)?(?:(?:\d{1,2}[h:]\d{2}\s*[-–—]\s*)?(?:D[ée]jeuner(?:\s*\([^\)]+\))?|Midi(?:\s*\([^\)]+\))?|Repas principal(?:\s*\([^\)]+\))?|Repas vivant(?:\s*\([^\)]+\))?|Lunch))\s*[:—\-]\s*/i },
+    { type: 'dinner', time: '19:00', label: 'Dîner de Transition', icon: '🍲', regex: /(?:^|\n)\s*(?:[•\*\-]\s*)?(?:(?:\d{1,2}[h:]\d{2}\s*[-–—]\s*)?(?:D[iî]ner(?:\s*\([^\)]+\))?|Soir(?:\s*\([^\)]+\))?|Repas du soir(?:\s*\([^\)]+\))?|D[iî]ner l[ée]ger(?:\s*\([^\)]+\))?|Dinner))\s*[:—\-]\s*/i }
   ];
 
   for (let i = 0; i < matches.length; i++) {

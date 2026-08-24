@@ -12,6 +12,16 @@ const STANDARD_CASCADE = [
   'gemini-3.6-flash',
   'gemini-3.7-flash',
   'gemini-3.5-flash',
+  'gemini-3.5-flash-lite',
+  'gemini-3.1-flash-lite',
+];
+
+const DEEP_SEARCH_CASCADE = [
+  'gemini-3.7-flash',
+  'gemini-3.6-flash',
+  'gemini-3.5-flash',
+  'gemini-3.5-flash-lite',
+  'gemini-3.1-flash-lite',
 ];
 
 function getApiKeys(customKey?: string): { key: string; tier: string }[] {
@@ -78,7 +88,8 @@ export async function POST(req: NextRequest) {
     }
 
     const isGreeting = GREETINGS_REGEX.test(userPrompt);
-    const modelCascade = isGreeting ? CHITCHAT_CASCADE : STANDARD_CASCADE;
+    const isDeepSearch = userPrompt.length > 250 || /(?:plan|programme|je[uû]ne|bilan|protocole|[ée]monctoire|reins|lymphe|1 mois|30 jours)/i.test(userPrompt);
+    const modelCascade = isGreeting ? CHITCHAT_CASCADE : (isDeepSearch ? DEEP_SEARCH_CASCADE : STANDARD_CASCADE);
     const selectedModel = model && model !== 'auto' ? [model, ...modelCascade.filter(m => m !== model)] : modelCascade;
 
     // Build system instructions
