@@ -1,76 +1,93 @@
-/* ═══════ DESIGN TOKENS ═══════ */
+/* ═════════════════════════════════════════════════════════════
+   🏮 JAPANDI CORE DESIGN SYSTEM — VITALTRACK MASTER TOKENS
+   Harmonie Wabi-Sabi (Épure, Sobriété, Sérénité) & Hygge (Chaleur, Confort, Clarté)
+   ═════════════════════════════════════════════════════════════ */
+
 :root {
-  --bg: #0b0f17;
-  --bg-card: #121b27;
-  --bg-glass: rgba(18, 27, 39, 0.85);
+  /* 🌿 Japandi Natural Palette (Dark Mode Par Défaut — Sumi & Smoked Hinoki) */
+  --bg: #121518;
+  --bg-card: #181C20;
+  --bg-glass: rgba(24, 28, 32, 0.92);
   --border: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.16);
-  --text: #F9FAFB;
-  --text-dim: #9CA3AF;
-  --text-low: #6B7280;
-  --text-hi: #FFFFFF;
-  --text-mid: #9CA3AF;
-  --accent: #10b981;
-  --accent-glow: rgba(16, 185, 129, 0.15);
-  --accent-2: #3b82f6;
-  --danger: #ef4444;
-  --warn: #facc15;
-  --purple: #8b5cf6;
-  --radius: 20px;
+  --border-strong: rgba(255, 255, 255, 0.15);
+  --text: #EDEAE3;
+  --text-dim: #98A2A8;
+  --text-low: #6E787E;
+  --text-hi: #F7F5F0;
+  --text-mid: #B4BDBE;
+
+  /* Teintes Botaniques & Minérales */
+  --accent: #6EA082;          /* Matcha Doux */
+  --accent-hover: #7EBA95;
+  --accent-glow: rgba(110, 160, 130, 0.16);
+  --accent-2: #7E99A8;        /* Indigo Wabi / Ciel d'automne */
+  --warm-amber: #D4A373;      /* Écorce / Koji */
+  --danger: #E0756A;          /* Rouge Argile douce */
+  --warn: #E2A355;            /* Ocre chaud */
+  --purple: #9A8BC4;          /* Brume de Lavande */
+
+  /* Surfaces & Éléments */
+  --surface: #181C20;
+  --surface-2: #14171A;
+  --surface-3: #22272C;
+  --surface-hover: rgba(255, 255, 255, 0.04);
+  --input-bg: rgba(20, 23, 26, 0.85);
+  --input-border: rgba(255, 255, 255, 0.10);
+  --input-text: #EDEAE3;
+  --modal-bg: #181C20;
+  --badge-bg: rgba(255, 255, 255, 0.06);
+
+  /* Géométrie & Ombres Douces */
+  --radius: 18px;
   --radius-sm: 12px;
+  --radius-pill: 9999px;
+  --shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+  --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.20);
+  --card-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+  
+  /* Typographie & Rythme */
   --font: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --shadow: 0 4px 20px rgba(0,0,0,0.35);
-  --shadow-sm: 0 2px 8px rgba(0,0,0,0.2);
-  --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-  --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  --app-green: #059669;
-  --app-green-hover: #047857;
-  --app-green-light: #ecfdf5;
-  --app-green-glow: rgba(5, 150, 105, 0.25);
-  --speed-factor: 1.0;
+  --transition: 0.22s cubic-bezier(0.25, 1, 0.5, 1);
   --apple-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --kawaii-bounce: cubic-bezier(0.68, -0.6, 0.32, 1.6);
-  --surface: #121b27;
-  --surface-2: #0e1622;
-  --surface-3: #1a2636;
-  --surface-hover: rgba(255, 255, 255, 0.05);
-  --input-bg: rgba(15, 23, 42, 0.7);
-  --input-border: rgba(255, 255, 255, 0.12);
-  --input-text: #FFFFFF;
-  --modal-bg: #121b27;
-  --badge-bg: rgba(255, 255, 255, 0.06);
+  --speed-factor: 1.0;
 }
 
+/* 🎋 Light Mode — Papier Washi, Lin & Bambou */
 [data-theme="light"] {
-  --bg: #F8FAFC;
+  --bg: #F7F5F0;
   --bg-card: #FFFFFF;
-  --bg-glass: rgba(255, 255, 255, 0.92);
-  --border: rgba(148, 163, 184, 0.25);
-  --border-strong: rgba(100, 116, 139, 0.35);
-  --text: #0F172A;
-  --text-dim: #475569;
-  --text-low: #64748B;
-  --text-hi: #0F172A;
-  --text-mid: #334155;
-  --accent: #059669;
-  --accent-glow: rgba(5, 150, 105, 0.12);
-  --accent-2: #2563eb;
-  --danger: #dc2626;
-  --warn: #d97706;
-  --purple: #7c3aed;
-  --shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
-  --card-shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+  --bg-glass: rgba(255, 255, 255, 0.94);
+  --border: rgba(197, 182, 166, 0.30);
+  --border-strong: rgba(168, 153, 137, 0.45);
+  --text: #2C3033;
+  --text-dim: #6B7275;
+  --text-low: #8C949B;
+  --text-hi: #1A1D20;
+  --text-mid: #484F54;
+
+  --accent: #4A6B53;          /* Matcha Pur */
+  --accent-hover: #3D5A44;
+  --accent-glow: rgba(74, 107, 83, 0.12);
+  --accent-2: #4A6B7E;
+  --warm-amber: #B87A44;
+  --danger: #C04E44;
+  --warn: #C27D28;
+  --purple: #6E5A9E;
+
   --surface: #FFFFFF;
-  --surface-2: #F1F5F9;
-  --surface-3: #E2E8F0;
-  --surface-hover: rgba(0, 0, 0, 0.03);
+  --surface-2: #EFECE6;
+  --surface-3: #E3DFD7;
+  --surface-hover: rgba(74, 107, 83, 0.05);
   --input-bg: #FFFFFF;
-  --input-border: #CBD5E1;
-  --input-text: #0F172A;
+  --input-border: #D8D2C6;
+  --input-text: #2C3033;
   --modal-bg: #FFFFFF;
-  --badge-bg: rgba(0, 0, 0, 0.04);
+  --badge-bg: rgba(74, 107, 83, 0.06);
+
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.03);
+  --card-shadow: 0 6px 24px rgba(44, 48, 51, 0.06);
 }
 
 /* ═══════ UNIFIED DESIGN SYSTEM UI TOKENS (Apple x Kawaii) ═══════ */
@@ -1830,9 +1847,10 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
 .greet-mascot{font-size:2.2rem}
 .dash-greeting h2{font-family:var(--font);font-weight:700;font-size:1.2rem}
 
-.dash-card{padding:18px 20px;border-radius:var(--radius)}
-.card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;width:100%}
-.dash-card h3, .card-head h3{font-family:var(--font);font-weight:700;font-size:1.02rem;margin-bottom:0;display:flex;align-items:center;gap:10px}
+.dash-card{padding:22px;border-radius:var(--radius);background:var(--bg-card);border:1px solid var(--border);box-shadow:var(--shadow-sm);transition:border-color var(--transition),box-shadow var(--transition)}
+.dash-card:hover{border-color:var(--border-strong)}
+.card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;width:100%}
+.dash-card h3, .card-head h3{font-family:var(--font);font-weight:700;font-size:1.02rem;color:var(--text-hi);margin-bottom:0;display:flex;align-items:center;gap:10px}
 .dash-card h3 i, .card-head h3 i {
   display: inline-flex;
   align-items: center;
@@ -1873,17 +1891,64 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
 .arc-track{fill:none;stroke:var(--border);stroke-width:8;stroke-linecap:round}
 .arc-progress{fill:none;stroke:var(--accent);stroke-width:8;stroke-linecap:round;stroke-dasharray:251;stroke-dashoffset:251;transition:stroke-dashoffset 1s ease}
 .arc-center{position:absolute;bottom:0;display:flex;align-items:baseline;gap:4px}
-.arc-score{font-family:var(--font);font-weight:800;font-size:2.5rem}
+.arc-score{font-family:var(--font);font-weight:800;font-size:2.5rem;color:var(--text-hi)}
 .arc-label{color:var(--text-dim);font-size:0.9rem}
 .arc-desc{text-align:center;color:var(--text-dim);font-size:0.85rem;margin-top:8px}
 
 /* Stats Row */
-.dash-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.stat-card{padding:14px;text-align:center;cursor:pointer;transition:transform var(--transition)}
-.stat-card:hover{transform:translateY(-2px)}
-.stat-icon{font-size:1.5rem;color:var(--accent);display:block;margin-bottom:6px}
-.stat-value{font-family:var(--font);font-weight:700;font-size:1.5rem;display:block}
-.stat-label{color:var(--text-dim);font-size:0.75rem}
+.dash-stats-row, .dash-grid-bottom {display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.stat-card{
+  padding:16px 18px !important;
+  text-align:left !important;
+  cursor:pointer !important;
+  background:var(--bg-card) !important;
+  border:1px solid var(--border) !important;
+  border-radius:16px !important;
+  box-shadow:var(--shadow-sm) !important;
+  transition:all var(--transition) !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:flex-start !important;
+}
+.stat-card:hover{
+  transform:translateY(-2px) !important;
+  border-color:var(--accent) !important;
+  box-shadow:0 6px 20px var(--accent-glow) !important;
+}
+.stat-icon-wrap { 
+  width: 36px !important; 
+  height: 36px !important; 
+  border-radius: 10px !important; 
+  display: flex !important; 
+  align-items: center !important; 
+  justify-content: center !important; 
+  font-size: 1.15rem !important; 
+  margin-bottom: 10px !important; 
+}
+.stat-value{
+  font-family:var(--font) !important;
+  font-weight:800 !important;
+  font-size:1.65rem !important;
+  color:var(--text-hi) !important;
+  display:block !important;
+  line-height:1 !important;
+}
+.stat-label{
+  color:var(--text) !important;
+  font-size:0.82rem !important;
+  font-weight:700 !important;
+  margin-top:4px !important;
+  display:block !important;
+}
+.stat-sub{
+  display:block !important;
+  font-size:0.62rem !important;
+  font-weight:700 !important;
+  color:var(--text-low) !important;
+  letter-spacing:0.12em !important;
+  text-transform:uppercase !important;
+  margin-top:2px !important;
+}
 
 /* UI Text Boxes & Empty States */
 .info-box { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; background: var(--surface-hover); border: 1px solid var(--border); text-align: left; line-height: 1.4; margin-top: 16px; }
@@ -1891,22 +1956,47 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
 .empty-state-card { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 24px 20px; text-align: center; background: var(--surface-hover); border-radius: 12px; border: 1px dashed var(--border); margin-top: 16px; }
 .empty-state-card i { font-size: 2rem; color: var(--text-low); margin-bottom: 8px; }
 .empty-state-card p { color: var(--text-dim); font-size: 0.9rem; margin: 0; }
+
 /* ═══════ WISDOM CAPSULE & GRIMOIRE SYSTEM ═══════ */
 .wisdom-capsule-card {
-  background: var(--surface);
+  background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 20px;
+  border-radius: var(--radius);
   padding: 22px 24px;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
-  margin-top: 16px;
+  box-shadow: var(--shadow-sm);
+  transition: border-color var(--transition), box-shadow var(--transition);
 }
-
 .wisdom-capsule-card:hover {
   border-color: var(--border-strong);
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+}
+
+.wisdom-quote-box {
+  background: var(--surface-2);
+  border-left: 3px solid var(--accent);
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin: 14px 0;
+}
+
+.wisdom-quote-text {
+  font-style: italic;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: var(--text);
+  margin: 0;
+}
+
+.wisdom-tip-box {
+  background: var(--surface-hover);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 0.78rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .wisdom-header {
@@ -8183,19 +8273,22 @@ mark.search-highlight {
 /* ═══════════════════════════════════════════════════════════════════════════
    📲 PWA INSTALLATION BANNER (Add to Home Screen)
    ═══════════════════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════════════════
+   🏮 JAPANDI PWA INSTALLATION BANNER (Notification de Téléchargement)
+   ═══════════════════════════════════════════════════════════════════════════ */
 .pwa-install-banner {
   position: fixed;
   bottom: 74px;
   left: 12px;
   right: 12px;
   z-index: 999;
-  animation: pwaSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: pwaSlideUp 0.35s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 @keyframes pwaSlideUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(16px);
   }
   to {
     opacity: 1;
@@ -8206,12 +8299,12 @@ mark.search-highlight {
 .pwa-banner-inner {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
-  background: var(--surface);
+  gap: 14px;
+  padding: 14px 16px;
+  background: var(--bg-glass);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--accent);
+  border: 1px solid var(--border-strong);
   border-radius: 18px;
   box-shadow: var(--card-shadow);
 }
@@ -8220,6 +8313,8 @@ mark.search-highlight {
   flex-shrink: 0;
   display: flex;
   align-items: center;
+  border-radius: 12px;
+  overflow: hidden;
 }
 
 .pwa-banner-text {
@@ -8229,16 +8324,18 @@ mark.search-highlight {
 
 .pwa-banner-text strong {
   display: block;
+  font-family: var(--font);
   font-size: 0.88rem;
   font-weight: 700;
-  color: var(--text);
+  color: var(--text-hi);
   margin-bottom: 2px;
+  letter-spacing: -0.01em;
 }
 
 .pwa-banner-text p {
   font-size: 0.74rem;
   color: var(--text-dim);
-  line-height: 1.3;
+  line-height: 1.35;
   margin: 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -8249,24 +8346,35 @@ mark.search-highlight {
 .pwa-banner-actions {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   flex-shrink: 0;
 }
 
 .btn-pwa-install {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   background: var(--accent);
-  color: #000;
+  color: #121518;
   border: none;
-  padding: 8px 14px;
+  padding: 8px 16px;
   border-radius: 12px;
+  font-family: var(--font);
   font-size: 0.82rem;
   font-weight: 700;
   cursor: pointer;
   box-shadow: 0 4px 14px var(--accent-glow);
-  transition: transform 0.15s ease, filter 0.15s ease;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+
+[data-theme="light"] .btn-pwa-install {
+  color: #FFFFFF;
+}
+
+.btn-pwa-install:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
 }
 
 .btn-pwa-install:active {
@@ -8280,17 +8388,20 @@ mark.search-highlight {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   font-size: 1.1rem;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: all var(--transition);
+  flex-shrink: 0;
 }
 
 .btn-pwa-dismiss:hover {
-  background: var(--surface-2);
-  color: var(--text);
+  background: rgba(224, 117, 106, 0.15);
+  border-color: rgba(224, 117, 106, 0.35);
+  color: var(--danger);
+  transform: rotate(90deg);
 }
 
 @media (min-width: 769px) {
@@ -8298,7 +8409,7 @@ mark.search-highlight {
     left: auto;
     right: 24px;
     bottom: 24px;
-    max-width: 380px;
+    max-width: 400px;
   }
 }
 
