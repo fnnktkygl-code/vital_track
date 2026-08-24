@@ -106,6 +106,7 @@ export default {
     "statTotal": "AU TOTAL",
     "stripTitle": "Plan Alimentaire & Calendrier de Transition",
     "stripSubtitle": "Suivi hebdomadaire selon les directives vitalistes",
+    "stripInfoBtn": "Comprendre le plan",
     "weightTitle": "Évolution du Poids",
     "weightSubtitle": "Analyse chronologique & indicateurs de tendance",
     "weighInBtn": "Pesée",
@@ -723,7 +724,25 @@ export default {
     "selectFoodError": "⚠️ Veuillez choisir ou saisir un aliment.",
     "foodReplaced": "\"{orig}\" remplacé par \"{rep}\" !",
     "enterFoodToEvaluate": "Veuillez saisir un aliment à évaluer.",
-    "customDishUpdated": "Repas mis à jour avec le plat sur-mesure !"
+    "customDishUpdated": "Repas mis à jour avec le plat sur-mesure !",
+    "understandPlanBtn": "Comprendre le plan"
+  },
+  "transitionPlanModal": {
+    "title": "Logique & Fonctionnement du Plan de Transition",
+    "subtitle": "Pourquoi ce plan existe, comment il s'adapte à votre évolution et synchronise vos cycles biologiques.",
+    "whyTitle": "🎯 Pourquoi un Plan de Transition ? (Non-Violence Métabolique)",
+    "whyText": "Le passage d'une alimentation moderne acidifiante et mucogène vers une alimentation vivante 100% alcaline doit se faire par étapes graduelles. Un changement brutal provoque un relargage massif de toxines dans la lymphe et le sang, générant de violentes crises curatives (fatigue rénale, maux de tête, nausées). Ce plan garantit une détoxification douce et continue des 5 émonctoires (reins, côlon, foie, poumons, peau).",
+    "howTitle": "🔬 Comment sont générés et calculés les aliments ?",
+    "howText": "Les aliments sont sélectionnés selon les directives cliniques d'Arnold Ehret (formules sans mucus), du Dr. Sebi (plantes bio-minérales non-hybridées) et du Dr. Robert Morse (drainage lymphatique et solvants de fruits). Le moteur croise en direct votre biorégion, la saison actuelle et vos restrictions/allergies avec un algorithme de rotation anti-répétition.",
+    "evolutiveTitle": "📈 Un Plan Évolutif selon votre Progression Personnelle",
+    "evolutiveText": "Ce plan n'est pas figé : il s'adapte dynamiquement sur 4 semaines thématiques (Élimination douce ➔ Hydratation cellulaire ➔ Reminéralisation ➔ Ancrage vital). À mesure que vous validez vos repas et progressez dans vos niveaux de vitalité, les combinaisons alimentaires s'affinent pour correspondre exactement à votre capacité métabolique du moment.",
+    "circadianTitle": "⏰ Synchronisation avec les 3 Cycles Circadiens (8h / 8h / 8h)",
+    "circadianPhase1": "🌅 04h00 - 12h00 : Phase d'Élimination — Détox cellulaire, tisanes rénales, mono-fruits doux. Aucun aliment lourd pour libérer les émonctoires.",
+    "circadianPhase2": "🥗 12h00 - 20h00 : Phase d'Appropriation — Fenêtre digestive optimale : grandes salades vivantes, féculents doux et céréales ancestrales.",
+    "circadianPhase3": "🌙 20h00 - 04h00 : Phase d'Assimilation — Arrêt des solides 3h avant le coucher, autophagie nocturne et régénération des tissus.",
+    "controlTitle": "🎛️ Flexibilité, Journal & Gestion des Conflits",
+    "controlText": "Vous gardez le contrôle absolu sur chaque repas : bouton 🔄 Varier pour remplacer un ingrédient, ✨ Suggérer pour demander au Coach Vital d'adapter avec votre frigo, ✏️ Modifier l'horaire ou 🗑️ Supprimer. Si vous mangez autre chose ou enclenchez un jeûne, le calendrier et le journal s'ajustent harmonieusement sans friction.",
+    "closeBtn": "J'ai compris"
   },
   "breathing": {
     "pageTitle": "Respiration Wim Hof & Oxygénation Cellulaire",

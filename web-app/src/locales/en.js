@@ -106,6 +106,7 @@ export default {
     "statTotal": "ALL TIME",
     "stripTitle": "Meal Plan & Transition Calendar",
     "stripSubtitle": "Weekly tracking according to vitalist principles",
+    "stripInfoBtn": "Understand the plan",
     "weightTitle": "Weight Trend",
     "weightSubtitle": "Chronological tracking & progress indicators",
     "weighInBtn": "Log Weight",
@@ -725,7 +726,25 @@ export default {
     "selectFoodError": "⚠️ Please select or enter a food item.",
     "foodReplaced": "\"{orig}\" replaced with \"{rep}\"!",
     "enterFoodToEvaluate": "Please enter a food item to evaluate.",
-    "customDishUpdated": "Meal updated with your custom dish!"
+    "customDishUpdated": "Meal updated with your custom dish!",
+    "understandPlanBtn": "Understand the plan"
+  },
+  "transitionPlanModal": {
+    "title": "Vitalist Transition Plan Logic & Method",
+    "subtitle": "Why this plan exists, how it evolves with your progress, and how it synchronizes with your biological cycles.",
+    "whyTitle": "🎯 Why a Transition Plan? (Metabolic Non-Violence)",
+    "whyText": "Transitioning from a modern acidifying, mucus-forming diet to a 100% alkaline living diet must be done in gradual stages. Abrupt shifts cause a massive release of stored toxins into lymph and blood, triggering severe healing crises (kidney overload, headaches, nausea). This plan guarantees a gentle, continuous drainage of all 5 emunctories (kidneys, colon, liver, lungs, skin).",
+    "howTitle": "🔬 How Are Foods Selected and Calculated?",
+    "howText": "Foods are selected according to the clinical principles of Arnold Ehret (mucusless diet), Dr. Sebi (non-hybridized bio-mineral plants), and Dr. Robert Morse (lymphatic drainage and fruit solvents). The algorithm factors in your bio-region, current season, and allergies/restrictions with a smart anti-repetition cycle.",
+    "evolutiveTitle": "📈 An Adaptive Plan That Grows with You",
+    "evolutiveText": "This plan is not static: it dynamically evolves through 4 weekly themes (Gentle elimination ➔ Deep cellular hydration ➔ Remineralization ➔ Vital anchoring). As you log meals and advance in vitality tiers, food combinations automatically refine to match your exact metabolic capacity.",
+    "circadianTitle": "⏰ Synchronized with the 3 Circadian Cycles (8h / 8h / 8h)",
+    "circadianPhase1": "🌅 04:00 - 12:00: Elimination Phase — Cellular detox, renal herbal teas, gentle mono-fruits. No heavy solid foods to let organs purge.",
+    "circadianPhase2": "🥗 12:00 - 20:00: Appropriation Phase — Optimal digestion window: large vibrant salads, gentle root starches, and ancestral grains.",
+    "circadianPhase3": "🌙 20:00 - 04:00: Assimilation Phase — Stop all solids 3h before bedtime, night autophagy, and tissue reconstruction.",
+    "controlTitle": "🎛️ Full Flexibility, Food Journal & Conflict Resolution",
+    "controlText": "You retain full control over every meal: 🔄 Substitute to swap an ingredient, ✨ AI Suggest to adapt with your fridge, ✏️ Edit times, or 🗑️ Delete. If you eat off-plan or start a fast, the calendar and daily journal harmonize smoothly without friction.",
+    "closeBtn": "Got it"
   },
   "breathing": {
     "pageTitle": "Wim Hof Breathing & Cellular Oxygenation",

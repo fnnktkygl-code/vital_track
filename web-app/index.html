@@ -591,6 +591,9 @@
             </div>
             <div style="display:flex; align-items:center; gap:8px;">
               <span id="stripActiveDateBadge" style="font-size:0.78rem; font-weight:800; color:var(--accent); background:var(--accent-glow); padding:4px 12px; border-radius:50px; border:1px solid rgba(16,185,129,0.3);">Dimanche 23 août</span>
+              <button type="button" class="app-btn-secondary" onclick="window.openTransitionPlanExplainerModal()" style="padding:6px 12px; font-size:0.78rem; display:inline-flex; align-items:center; gap:5px; font-weight:700; border-radius:12px; border:1px solid rgba(52,211,153,0.3);" title="Comprendre la logique et le fonctionnement du Plan de Transition" data-tooltip="Comprendre le Plan de Transition">
+                <i class="ri-information-line" style="color:var(--accent);"></i> <span data-i18n="dashboard.stripInfoBtn">Comprendre le plan</span>
+              </button>
               <button type="button" class="app-btn-secondary" onclick="window.refreshDailyStripRoutine && window.refreshDailyStripRoutine()" style="padding:6px 12px; font-size:0.78rem;" title="Synchroniser">
                 <i class="ri-refresh-line"></i>
               </button>
@@ -1251,6 +1254,9 @@
           </div>
         </div>
         <div class="topbar-actions" style="display:flex; align-items:center; gap:8px;">
+          <button type="button" class="app-btn-secondary" onclick="window.openTransitionPlanExplainerModal()" data-tooltip="Comprendre la logique et l'évolution du Plan de Transition" title="Comprendre le plan" style="padding:7px 12px; font-size:0.85rem; border-radius:12px; height:38px; display:inline-flex; align-items:center; gap:6px; font-weight:700;">
+            <i class="ri-information-line" style="color:var(--accent);"></i> <span data-i18n="calendar.understandPlanBtn">Comprendre le plan</span>
+          </button>
           <button type="button" class="app-btn-secondary" onclick="window.openAddMealModal()" data-tooltip="Ajouter un repas manuellement" title="Ajouter un repas" style="padding:7px 12px; font-size:0.85rem; border-radius:12px; height:38px; display:inline-flex; align-items:center; justify-content:center;"><i class="ri-add-line" style="font-size:1.1rem;"></i></button>
           <button type="button" class="app-btn-primary" onclick="window.promptAIPlan ? window.promptAIPlan() : promptAIPlan()" data-tooltip="Générer un plan avec l'IA" title="Générer un plan IA" style="padding:7px 14px; font-size:0.85rem; border-radius:12px; height:38px; display:inline-flex; align-items:center; gap:6px; font-weight:700;"><i class="ri-magic-line"></i> <span>Plan IA</span></button>
         </div>
@@ -3220,6 +3226,81 @@
           </button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- ═══════ MODALE EXPLICATIVE : PLAN DE TRANSITION VITALISTE ═══════ -->
+  <div id="transitionPlanExplainerModal" class="modal-overlay" onclick="closeTransitionPlanExplainerModal(event)" style="display:none; z-index:99999;">
+    <div class="modal-card glass" onclick="event.stopPropagation()" style="max-width:680px; width:92%; max-height:90vh; overflow-y:auto; padding:28px 24px; border-radius:24px; border:1px solid rgba(52,211,153,0.35); box-shadow:0 20px 60px rgba(0,0,0,0.85); position:relative;">
+      <button class="modal-close-btn" onclick="closeTransitionPlanExplainerModal(null)" style="position:absolute; top:18px; right:18px; background:var(--surface-hover); border:none; color:var(--text); width:34px; height:34px; border-radius:50%; cursor:pointer; font-size:1.2rem; display:flex; align-items:center; justify-content:center;">
+        <i class="ri-close-line"></i>
+      </button>
+
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
+        <div style="width:46px; height:46px; border-radius:14px; background:linear-gradient(135deg, #059669, #fbbf24); display:flex; align-items:center; justify-content:center; font-size:1.4rem; box-shadow:0 4px 12px rgba(5,150,105,0.3);">
+          🍙
+        </div>
+        <div>
+          <h2 style="margin:0; font-size:1.25rem; font-weight:800; color:var(--text);" data-i18n="transitionPlanModal.title">Logique &amp; Fonctionnement du Plan de Transition</h2>
+          <p style="margin:4px 0 0 0; font-size:0.82rem; color:var(--text-dim);" data-i18n="transitionPlanModal.subtitle">Pourquoi ce plan existe, comment il s'adapte à votre évolution et synchronise vos cycles biologiques.</p>
+        </div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:16px; margin-top:20px;">
+        <!-- 1. Pourquoi -->
+        <div style="padding:16px; background:var(--surface-2, rgba(255,255,255,0.03)); border:1px solid var(--border); border-radius:16px;">
+          <h4 style="margin:0 0 8px 0; font-size:0.95rem; font-weight:800; color:var(--accent);" data-i18n="transitionPlanModal.whyTitle">🎯 Pourquoi un Plan de Transition ? (Non-Violence Métabolique)</h4>
+          <p style="margin:0; font-size:0.85rem; line-height:1.55; color:var(--text);" data-i18n="transitionPlanModal.whyText">
+            Le passage d'une alimentation moderne acidifiante et mucogène vers une alimentation vivante 100% alcaline doit se faire par étapes graduelles. Un changement brutal provoque un relargage massif de toxines dans la lymphe et le sang, générant de violentes crises curatives (fatigue rénale, maux de tête, nausées). Ce plan garantit une détoxification douce et continue des 5 émonctoires (reins, côlon, foie, poumons, peau).
+          </p>
+        </div>
+
+        <!-- 2. Comment c'est calculé -->
+        <div style="padding:16px; background:var(--surface-2, rgba(255,255,255,0.03)); border:1px solid var(--border); border-radius:16px;">
+          <h4 style="margin:0 0 8px 0; font-size:0.95rem; font-weight:800; color:#38bdf8;" data-i18n="transitionPlanModal.howTitle">🔬 Comment sont générés et calculés les aliments ?</h4>
+          <p style="margin:0; font-size:0.85rem; line-height:1.55; color:var(--text);" data-i18n="transitionPlanModal.howText">
+            Les aliments sont sélectionnés selon les directives cliniques d'Arnold Ehret (formules sans mucus), du Dr. Sebi (plantes bio-minérales non-hybridées) et du Dr. Robert Morse (drainage lymphatique et solvants de fruits). Le moteur croise en direct votre biorégion, la saison actuelle et vos restrictions/allergies avec un algorithme de rotation anti-répétition.
+          </p>
+        </div>
+
+        <!-- 3. Évolution Personnelle -->
+        <div style="padding:16px; background:var(--surface-2, rgba(255,255,255,0.03)); border:1px solid var(--border); border-radius:16px;">
+          <h4 style="margin:0 0 8px 0; font-size:0.95rem; font-weight:800; color:#fbbf24;" data-i18n="transitionPlanModal.evolutiveTitle">📈 Un Plan Évolutif selon votre Progression Personnelle</h4>
+          <p style="margin:0; font-size:0.85rem; line-height:1.55; color:var(--text);" data-i18n="transitionPlanModal.evolutiveText">
+            Ce plan n'est pas figé : il s'adapte dynamiquement sur 4 semaines thématiques (Élimination douce ➔ Hydratation cellulaire ➔ Reminéralisation ➔ Ancrage vital). À mesure que vous validez vos repas et progressez dans vos niveaux de vitalité, les combinaisons alimentaires s'affinent pour correspondre exactement à votre capacité métabolique du moment.
+          </p>
+        </div>
+
+        <!-- 4. Cycle Circadien -->
+        <div style="padding:16px; background:var(--surface-2, rgba(255,255,255,0.03)); border:1px solid var(--border); border-radius:16px;">
+          <h4 style="margin:0 0 10px 0; font-size:0.95rem; font-weight:800; color:#a78bfa;" data-i18n="transitionPlanModal.circadianTitle">⏰ Synchronisation avec les 3 Cycles Circadiens (8h / 8h / 8h)</h4>
+          <div style="display:flex; flex-direction:column; gap:8px; font-size:0.84rem; line-height:1.5; color:var(--text);">
+            <div style="padding:8px 12px; background:rgba(245,158,11,0.08); border-left:3px solid #f59e0b; border-radius:8px;" data-i18n="transitionPlanModal.circadianPhase1">
+              🌅 <strong>04h00 - 12h00 : Phase d'Élimination</strong> — Détox cellulaire, tisanes rénales, mono-fruits doux. Aucun aliment lourd pour libérer les émonctoires.
+            </div>
+            <div style="padding:8px 12px; background:rgba(16,185,129,0.08); border-left:3px solid #10b981; border-radius:8px;" data-i18n="transitionPlanModal.circadianPhase2">
+              🥗 <strong>12h00 - 20h00 : Phase d'Appropriation</strong> — Fenêtre digestive optimale : grandes salades vivantes, féculents doux et céréales ancestrales.
+            </div>
+            <div style="padding:8px 12px; background:rgba(139,92,246,0.08); border-left:3px solid #8b5cf6; border-radius:8px;" data-i18n="transitionPlanModal.circadianPhase3">
+              🌙 <strong>20h00 - 04h00 : Phase d'Assimilation</strong> — Arrêt des solides 3h avant le coucher, autophagie nocturne et régénération des tissus.
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. Contrôle & Conflits -->
+        <div style="padding:16px; background:var(--surface-2, rgba(255,255,255,0.03)); border:1px solid var(--border); border-radius:16px;">
+          <h4 style="margin:0 0 8px 0; font-size:0.95rem; font-weight:800; color:var(--text);" data-i18n="transitionPlanModal.controlTitle">🎛️ Flexibilité, Journal &amp; Gestion des Conflits</h4>
+          <p style="margin:0; font-size:0.85rem; line-height:1.55; color:var(--text);" data-i18n="transitionPlanModal.controlText">
+            Vous gardez le contrôle absolu sur chaque repas : bouton 🔄 Varier pour remplacer un ingrédient, ✨ Suggérer pour demander au Coach Vital d'adapter avec votre frigo, ✏️ Modifier l'horaire ou 🗑️ Supprimer. Si vous mangez autre chose ou enclenchez un jeûne, le calendrier et le journal s'ajustent harmonieusement sans friction.
+          </p>
+        </div>
+      </div>
+
+      <div style="margin-top:24px; display:flex; justify-content:flex-end;">
+        <button type="button" class="btn-primary" onclick="closeTransitionPlanExplainerModal(null)" style="padding:10px 24px; font-weight:700; border-radius:12px;" data-i18n="transitionPlanModal.closeBtn">
+          J'ai compris
+        </button>
+      </div>
     </div>
   </div>
 

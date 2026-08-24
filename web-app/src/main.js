@@ -832,6 +832,22 @@ function closeUserProfileModal(e) {
   if (modal) modal.style.display = 'none';
 };
 
+function openTransitionPlanExplainerModal() {
+  const modal = document.getElementById('transitionPlanExplainerModal');
+  if (!modal) return;
+  modal.style.display = 'flex';
+};
+window.openTransitionPlanExplainerModal = openTransitionPlanExplainerModal;
+
+function closeTransitionPlanExplainerModal(e) {
+  if (e && e.target && e.target !== e.currentTarget && !e.target.classList.contains('modal-close-btn') && !e.target.closest('.modal-close-btn')) {
+    return;
+  }
+  const modal = document.getElementById('transitionPlanExplainerModal');
+  if (modal) modal.style.display = 'none';
+};
+window.closeTransitionPlanExplainerModal = closeTransitionPlanExplainerModal;
+
 function renderUserProfileModal() {
   const content = document.getElementById('userProfileModalContent');
   if (!content) return;
@@ -16410,6 +16426,8 @@ if (typeof window !== "undefined") window.handleGoogleAuthForm = handleGoogleAut
 if (typeof window !== "undefined") window.openUserProfileModal = openUserProfileModal;
 if (typeof window !== "undefined") window.closeUserProfileModal = closeUserProfileModal;
 if (typeof window !== "undefined") window.renderUserProfileModal = renderUserProfileModal;
+if (typeof window !== "undefined") window.openTransitionPlanExplainerModal = openTransitionPlanExplainerModal;
+if (typeof window !== "undefined") window.closeTransitionPlanExplainerModal = closeTransitionPlanExplainerModal;
 if (typeof window !== "undefined") window.showPage = showPage;
 if (typeof window !== "undefined") window.toggleMoreDrawer = toggleMoreDrawer;
 if (typeof window !== "undefined") window.toggleMobileNav = toggleMobileNav;
