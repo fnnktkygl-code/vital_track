@@ -324,127 +324,190 @@ input:checked + .apple-slider:before {
   transform: translateX(20px);
 }
 
-/* ═══════ APPLE × KAWAII JAPONAIS DESIGN SYSTEM ═══════ */
+/* ═════════════════════════════════════════════════════════════
+   🏮 JAPANDI DESIGN SYSTEM — BARRE LATÉRALE (SIDEBAR)
+   Harmonie Wabi-Sabi & Hygge : Épure, Matérialité Organique & Clarté
+   ═════════════════════════════════════════════════════════════ */
+
 .sidebar-desktop {
   width: 260px;
-  background: rgba(15, 23, 42, 0.95);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-card);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   position: fixed;
   top: 0; bottom: 0; left: 0;
   overflow-y: auto;
   z-index: 100;
-  padding: 22px 14px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  padding: 24px 14px 20px 14px;
+  box-shadow: var(--shadow-sm);
+  transition: background 0.3s ease, border-color 0.3s ease;
 }
 
-[data-theme="light"] .sidebar-desktop {
-  background: rgba(255, 255, 255, 0.95);
-  border-right: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+/* Subtle Zen Scrollbar */
+.sidebar-desktop::-webkit-scrollbar {
+  width: 4px;
+}
+.sidebar-desktop::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sidebar-desktop::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
 }
 
+/* Logo Header */
+.sidebar-logo {
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--text-hi, var(--text));
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 8px;
+  margin-bottom: 24px;
+  border-radius: 12px;
+  letter-spacing: -0.01em;
+}
+
+.sidebar-logo .logo-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Section Containers & Titles */
 .sidebar-section {
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
 .sidebar-section-title {
-  font-size: 0.68rem !important;
-  font-weight: 800 !important;
+  font-size: 0.65rem !important;
+  font-weight: 700 !important;
   text-transform: uppercase !important;
-  letter-spacing: 0.12em !important;
-  color: var(--text-dim, #94a3b8) !important;
-  padding: 0 12px !important;
-  margin-bottom: 8px !important;
-  display: block;
-  opacity: 0.85;
+  letter-spacing: 0.15em !important;
+  color: var(--text-low, #7c8680) !important;
+  padding: 0 10px !important;
+  margin-bottom: 6px !important;
+  display: block !important;
+  opacity: 0.8;
 }
 
-/* Sidebar items with Apple Springs and Kawaii micro-rotations */
+/* Sidebar Links (Japandi Pill with Perfect Icon/Text Alignment) */
 .sidebar-link, .sidebar-item {
-  position: relative;
+  position: relative !important;
   display: flex !important;
   align-items: center !important;
-  justify-content: space-between !important;
-  padding: 10px 14px !important;
-  border-radius: 16px !important;
+  justify-content: flex-start !important;
+  gap: 12px !important;
+  padding: 9px 12px !important;
+  border-radius: 12px !important;
   font-size: 0.86rem !important;
-  font-weight: 700 !important;
-  color: var(--text-dim, #94a3b8) !important;
+  font-weight: 500 !important;
+  color: var(--text-dim) !important;
   text-decoration: none !important;
-  margin-bottom: 3px !important;
+  margin-bottom: 2px !important;
   border: 1px solid transparent !important;
-  transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
-  cursor: pointer;
-  select-none: none;
-}
-
-.sidebar-link > div, .sidebar-link > span, .sidebar-item > div {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+  background: transparent !important;
+  transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1) !important;
+  cursor: pointer !important;
+  user-select: none !important;
 }
 
 .sidebar-link i, .sidebar-item i {
-  font-size: 1.2rem;
-  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+  font-size: 1.15rem !important;
+  color: var(--text-dim) !important;
+  flex-shrink: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 20px !important;
+  height: 20px !important;
+  transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1) !important;
 }
 
+.sidebar-link span, .sidebar-item span {
+  flex: 1 1 auto !important;
+  text-align: left !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  letter-spacing: -0.005em !important;
+}
+
+/* Hover State (Subtle Organic Lift) */
 .sidebar-link:hover, .sidebar-item:hover {
-  color: var(--text, #ffffff) !important;
-  background: rgba(255, 255, 255, 0.06) !important;
-  transform: translateX(3px) !important;
-}
-
-[data-theme="light"] .sidebar-link:hover, [data-theme="light"] .sidebar-item:hover {
-  background: rgba(0, 0, 0, 0.04) !important;
-  color: #0f172a !important;
+  color: var(--text-hi, var(--text)) !important;
+  background: var(--surface-hover) !important;
+  transform: translateX(2px) !important;
 }
 
 .sidebar-link:hover i, .sidebar-item:hover i {
-  transform: scale(1.18) rotate(4deg) !important;
+  color: var(--accent) !important;
+  transform: scale(1.08) !important;
 }
 
+/* Active State (Matcha Green Tatami Pill) */
 .sidebar-link.active, .sidebar-item.active {
-  background: rgba(16, 185, 129, 0.15) !important;
-  border: 1px solid rgba(16, 185, 129, 0.35) !important;
-  color: #10b981 !important;
-  font-weight: 800 !important;
-  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.18) !important;
-  transform: scale(1.02) !important;
+  background: var(--accent-glow) !important;
+  border: 1px solid rgba(110, 160, 130, 0.26) !important;
+  color: var(--accent) !important;
+  font-weight: 700 !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04) !important;
+  transform: none !important;
 }
 
 [data-theme="light"] .sidebar-link.active, [data-theme="light"] .sidebar-item.active {
-  background: rgba(5, 150, 105, 0.12) !important;
-  border: 1px solid rgba(5, 150, 105, 0.3) !important;
-  color: #059669 !important;
+  background: rgba(74, 107, 83, 0.10) !important;
+  border: 1px solid rgba(74, 107, 83, 0.22) !important;
+  color: #3d5a44 !important;
 }
 
-/* Glowing Pulsing Active Indicator (Ping Dot) */
+.sidebar-link.active i, .sidebar-item.active i {
+  color: var(--accent) !important;
+}
+
+[data-theme="light"] .sidebar-link.active i, [data-theme="light"] .sidebar-item.active i {
+  color: #3d5a44 !important;
+}
+
+/* Zen Matcha Breathing Dot */
 .sidebar-link.active::after, .sidebar-item.active::after {
   content: '';
-  width: 7px;
-  height: 7px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
-  background: #10b981;
-  box-shadow: 0 0 10px #10b981;
-  display: inline-block;
+  background: currentColor;
+  box-shadow: 0 0 6px currentColor;
+  margin-left: auto;
   flex-shrink: 0;
-  animation: sidebarPing 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  display: block;
+  animation: zenPulse 2.8s ease-in-out infinite;
 }
 
-@keyframes sidebarPing {
+@keyframes zenPulse {
   0%, 100% {
-    opacity: 1;
+    opacity: 0.9;
     transform: scale(1);
   }
   50% {
     opacity: 0.35;
-    transform: scale(1.4);
+    transform: scale(1.3);
   }
+}
+
+.sidebar-spacer {
+  flex: 1;
 }
 
 /* ═══════ UNIFIED APPLE CLOSE BUTTON (.app-close-btn) ═══════ */
@@ -770,18 +833,6 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
   max-width: 100vw;
   overflow-x: hidden;
 }
-.sidebar-desktop {
-  width: 260px;
-  background: var(--bg-card);
-  border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  position: fixed;
-  top: 0; bottom: 0; left: 0;
-  overflow-y: auto;
-  z-index: 10;
-  padding: 24px 16px;
-}
 .main-content {
   flex: 1;
   margin-left: 260px;
@@ -803,15 +854,6 @@ body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-hei
     overflow-x: hidden;
   }
 }
-.sidebar-logo { font-family: var(--font); font-weight: 700; font-size: 1.4rem; color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 8px; margin-bottom: 32px; }
-.sidebar-logo .logo-icon { width: 32px; height: 32px; background: var(--accent); color: #000; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; }
-.sidebar-section { margin-bottom: 24px; }
-.sidebar-section-title { font-size: 0.75rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; padding-left: 12px; }
-.sidebar-link { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: var(--radius-sm); color: var(--text-dim); text-decoration: none; font-size: 0.95rem; font-weight: 500; transition: all var(--transition); }
-.sidebar-link i { font-size: 1.2rem; }
-.sidebar-link:hover { color: var(--text); background: rgba(255,255,255,0.05); }
-.sidebar-link.active { color: var(--accent); background: var(--accent-glow); font-weight: 600; }
-.sidebar-spacer { flex: 1; }
 
 /* Ambient Background Glow (Hardware-Accelerated Radial Gradients without blur lag) */
 .bg-blob{position:fixed;border-radius:50%;pointer-events:none;z-index:0;opacity:0.6}
