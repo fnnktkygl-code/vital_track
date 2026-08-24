@@ -11785,3 +11785,240 @@ select.ds-select option {
 .weight-privacy-blur .chart-photo-circle {
   filter: blur(8px) brightness(0.85) !important;
 }
+
+/* ══════════ JAPANDI SMART PLAN CARD & ACCORDIONS (ZERO WALL OF TEXT) ══════════ */
+.ai-diet-plan-smart-card {
+  margin: 18px 0 10px;
+  padding: 22px 24px;
+  border-radius: 24px;
+  border: 1.5px solid rgba(52, 211, 153, 0.35);
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.09) 0%, rgba(6, 78, 59, 0.16) 100%);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25), inset 0 0 20px rgba(52, 211, 153, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.ai-diet-plan-smart-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #10b981, #34d399, #38bdf8);
+}
+
+.plan-smart-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.plan-smart-title-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.plan-smart-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: rgba(16, 185, 129, 0.2);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+}
+
+.plan-smart-title {
+  font-weight: 800;
+  font-size: 1.08rem;
+  color: var(--text);
+  line-height: 1.25;
+}
+
+.plan-smart-subtitle {
+  font-size: 0.80rem;
+  color: var(--text-dim);
+  margin-top: 3px;
+  font-weight: 500;
+}
+
+.plan-chips-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.plan-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 12px;
+  border-radius: 50px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.plan-pill.accent {
+  background: rgba(52, 211, 153, 0.15);
+  border-color: rgba(52, 211, 153, 0.4);
+  color: #34d399;
+}
+
+.plan-pill.sky {
+  background: rgba(56, 189, 248, 0.15);
+  border-color: rgba(56, 189, 248, 0.4);
+  color: #38bdf8;
+}
+
+/* Accordéons Japandi */
+.japandi-plan-accordion {
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  margin-bottom: 8px;
+  overflow: hidden;
+  transition: all 0.25s ease;
+}
+
+[data-theme="light"] .japandi-plan-accordion {
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.japandi-plan-accordion summary {
+  padding: 12px 16px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+  list-style: none;
+}
+
+.japandi-plan-accordion summary::-webkit-details-marker {
+  display: none;
+}
+
+.japandi-plan-accordion summary .acc-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.japandi-plan-accordion summary .acc-chevron {
+  transition: transform 0.25s ease;
+  font-size: 1.1rem;
+  color: var(--accent);
+}
+
+.japandi-plan-accordion[open] summary .acc-chevron {
+  transform: rotate(180deg);
+}
+
+.japandi-plan-accordion[open] {
+  border-color: rgba(52, 211, 153, 0.4);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.japandi-accordion-body {
+  padding: 12px 16px 14px;
+  font-size: 0.84rem;
+  line-height: 1.55;
+  color: var(--text);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Semaines évolutives cards */
+.plan-week-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+}
+
+.plan-week-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.plan-week-name {
+  font-weight: 800;
+  font-size: 0.86rem;
+  color: var(--accent);
+}
+
+.plan-week-desc {
+  font-size: 0.80rem;
+  color: var(--text-dim);
+  line-height: 1.4;
+}
+
+/* Actions Row */
+.plan-smart-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.btn-plan-activate {
+  padding: 11px 22px;
+  border-radius: 14px;
+  font-weight: 800;
+  font-size: 0.90rem;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-plan-activate:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.45);
+}
+
+.btn-plan-customize {
+  padding: 11px 18px;
+  border-radius: 14px;
+  font-weight: 700;
+  font-size: 0.86rem;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.btn-plan-customize:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--accent);
+}
+

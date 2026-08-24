@@ -141,37 +141,142 @@ export function renderDietPlanActionCardHtml(extractedPlan, tFunc = (k, p, f) =>
   if (!extractedPlan || !extractedPlan.sections || extractedPlan.sections.length === 0) return '';
   const count = extractedPlan.sections.length;
   const isPhase = extractedPlan.sections[0].type === 'PHASE';
-  const unitLabel = isPhase ? `${count} Phase(s)` : `${count} Jour(s)`;
+  const unitLabel = isPhase ? `${count} Phases` : `${count} Jours`;
   const encodedPlan = btoa(unescape(encodeURIComponent(JSON.stringify(extractedPlan))));
 
   const titleText = isPhase
     ? `Protocole & Régime par Étapes (${unitLabel})`
-    : `Plan Alimentaire Vitaliste (${unitLabel})`;
+    : `Programme Vitaliste Évolutif (${unitLabel})`;
+
+  // Build Sample Daily Meals Preview
+  let dailyMealsPreviewHtml = '';
+  const sampleSection = extractedPlan.sections[0];
+  if (sampleSection && sampleSection.meals) {
+    dailyMealsPreviewHtml = sampleSection.meals.map(m => `
+      <div style="display:flex; align-items:flex-start; gap:10px; margin-bottom:8px; padding:8px 12px; background:var(--surface-2); border-radius:10px; border:1px solid var(--border);">
+        <span style="font-size:1.2rem; line-height:1;">${m.icon || '🥗'}</span>
+        <div style="flex:1;">
+          <div style="font-weight:700; font-size:0.84rem; color:var(--text);">${m.label || m.type}</div>
+          <div style="font-size:0.78rem; color:var(--text-dim); line-height:1.4;">${m.food}</div>
+        </div>
+      </div>
+    `).join('');
+  }
 
   return `
-    <div class="ai-diet-plan-bridge-card glass" style="margin:16px 0 8px; padding:18px 20px; border-radius:18px; border:1.5px solid rgba(16,185,129,0.35); background:linear-gradient(135deg, rgba(16,185,129,0.08), rgba(6,78,59,0.12)); box-shadow:0 8px 24px rgba(0,0,0,0.18);">
-      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
-        <div style="display:flex; align-items:center; gap:12px;">
-          <div style="width:42px; height:42px; border-radius:12px; background:rgba(16,185,129,0.2); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:1.4rem; flex-shrink:0;">
-            <i class="ri-calendar-check-line"></i>
+    <div class="ai-diet-plan-smart-card">
+      <!-- Header -->
+      <div class="plan-smart-header">
+        <div class="plan-smart-title-group">
+          <div class="plan-smart-icon">
+            <i class="ri-sparkling-fill"></i>
           </div>
           <div>
-            <div style="font-weight:800; font-size:1.02rem; color:var(--text);">${titleText}</div>
-            <div style="font-size:0.78rem; color:var(--text-dim); margin-top:2px;">
-              ${count} séquence(s) structurée(s) · Prêt à intégrer au calendrier
+            <div class="plan-smart-title">${titleText}</div>
+            <div class="plan-smart-subtitle">Synthèse Japandi · Détoxification lymphatique &amp; filtration rénale</div>
+          </div>
+        </div>
+        <span class="plan-pill accent">⚡ Plan Prêt</span>
+      </div>
+
+      <!-- 3 Metrics Chips -->
+      <div class="plan-chips-row">
+        <span class="plan-pill"><i class="ri-calendar-line"></i> ${count >= 25 ? '30 Jours' : unitLabel}</span>
+        <span class="plan-pill accent"><i class="ri-leaf-line"></i> 4-5 Rituels / Jour</span>
+        <span class="plan-pill sky"><i class="ri-drop-line"></i> Filtration Rénale &amp; Lymphe</span>
+      </div>
+
+      <!-- Accordion 1: 4 Semaines Évolutives -->
+      <details class="japandi-plan-accordion" open>
+        <summary>
+          <span class="acc-title"><i class="ri-road-map-line" style="color:var(--accent)"></i> <strong>Les 4 Paliers Évolutifs du Mois</strong></span>
+          <i class="ri-arrow-down-s-line acc-chevron"></i>
+        </summary>
+        <div class="japandi-accordion-body">
+          <div class="plan-week-card">
+            <div class="plan-week-header">
+              <span class="plan-week-name">🌱 Semaine 1 : Fondation &amp; Hydratation</span>
+              <span class="plan-pill" style="font-size:0.7rem; padding:2px 8px;">Jours 1-7</span>
+            </div>
+            <div class="plan-week-desc">Eau tiède citronnée au réveil, petit-déjeuner de fruits aqueux, introduction d'une soupe crue le soir.</div>
+          </div>
+          <div class="plan-week-card">
+            <div class="plan-week-header">
+              <span class="plan-week-name">💧 Semaine 2 : Drainage Rénal &amp; Tisanes</span>
+              <span class="plan-pill" style="font-size:0.7rem; padding:2px 8px;">Jours 8-14</span>
+            </div>
+            <div class="plan-week-desc">Infusions d'ortie dioïque reminéralisante, grande salade balai vivante au déjeuner pour balayer le mucus.</div>
+          </div>
+          <div class="plan-week-card">
+            <div class="plan-week-header">
+              <span class="plan-week-name">⚡ Semaine 3 : Alcalinisation Cellulaire (80% Cru)</span>
+              <span class="plan-pill" style="font-size:0.7rem; padding:2px 8px;">Jours 15-21</span>
+            </div>
+            <div class="plan-week-desc">Alimentation vivante haute énergie, graines germées, légumes cuits vapeur douce en ancrage modéré.</div>
+          </div>
+          <div class="plan-week-card">
+            <div class="plan-week-header">
+              <span class="plan-week-name">✨ Semaine 4 : Ancrage &amp; Vitalité Durable</span>
+              <span class="plan-pill" style="font-size:0.7rem; padding:2px 8px;">Jours 22-30</span>
+            </div>
+            <div class="plan-week-desc">Consolidation sans obstruction digestive, autonomie nutritionnelle et légèreté lymphatique.</div>
+          </div>
+        </div>
+      </details>
+
+      <!-- Accordion 2: La Journée Type -->
+      <details class="japandi-plan-accordion">
+        <summary>
+          <span class="acc-title"><i class="ri-restaurant-line" style="color:var(--accent)"></i> <strong>La Journée Type &amp; Rituels</strong></span>
+          <i class="ri-arrow-down-s-line acc-chevron"></i>
+        </summary>
+        <div class="japandi-accordion-body">
+          ${dailyMealsPreviewHtml || '<p style="color:var(--text-dim);">Repas équilibrés selon les principes d\'Arnold Ehret &amp; Dr. Morse.</p>'}
+        </div>
+      </details>
+
+      <!-- Accordion 3: Plantes de Soutien -->
+      <details class="japandi-plan-accordion">
+        <summary>
+          <span class="acc-title"><i class="ri-plant-line" style="color:var(--accent)"></i> <strong>Plantes &amp; Tisanes Recommandées</strong></span>
+          <i class="ri-arrow-down-s-line acc-chevron"></i>
+        </summary>
+        <div class="japandi-accordion-body">
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <div style="padding:8px 12px; background:var(--surface-2); border-radius:10px; border:1px solid var(--border);">
+              <div style="font-weight:700; color:var(--text); font-size:0.84rem;">🌿 Ortie Dioïque (Plante Locale)</div>
+              <div style="font-size:0.78rem; color:var(--text-dim); line-height:1.4;">Reminéralisante, soutient la filtration des néphrons et fluidifie la lymphe. Infuser 15 min à couvert.</div>
+            </div>
+            <div style="padding:8px 12px; background:var(--surface-2); border-radius:10px; border:1px solid var(--border);">
+              <div style="font-weight:700; color:var(--text); font-size:0.84rem;">🌱 Chanca Piedra (Amazonie Raintree)</div>
+              <div style="font-size:0.78rem; color:var(--text-dim); line-height:1.4;">Protection parenchymateuse et décongestion rénale. Décoction douce 10 min.</div>
             </div>
           </div>
         </div>
-        <span style="font-size:0.72rem; font-weight:800; color:var(--accent); background:var(--accent-glow); padding:3px 12px; border-radius:50px; border:1px solid rgba(16,185,129,0.3);">
-          ⚡ CALL TO ACTION IMMÉDIAT
-        </span>
-      </div>
+      </details>
 
-      <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:14px;">
-        <button type="button" class="btn btn-primary" onclick="window.applyExtractedDietPlanToCalendar('${encodedPlan}')" style="display:inline-flex; align-items:center; gap:8px; padding:9px 18px; border-radius:12px; font-weight:700; font-size:0.88rem;">
-          <i class="ri-calendar-check-line"></i> Appliquer directement au Calendrier
+      <!-- Accordion 4: Aliments à Éviter -->
+      <details class="japandi-plan-accordion">
+        <summary>
+          <span class="acc-title"><i class="ri-forbid-line" style="color:#ef4444"></i> <strong>Aliments à Éliminer Strictement</strong></span>
+          <i class="ri-arrow-down-s-line acc-chevron"></i>
+        </summary>
+        <div class="japandi-accordion-body">
+          <div style="display:flex; flex-wrap:wrap; gap:6px;">
+            <span class="plan-pill" style="color:#ef4444; border-color:rgba(239,68,68,0.3); background:rgba(239,68,68,0.08);">🚫 Produits laitiers (Caséine)</span>
+            <span class="plan-pill" style="color:#ef4444; border-color:rgba(239,68,68,0.3); background:rgba(239,68,68,0.08);">🚫 Viandes rouges &amp; Charcuteries</span>
+            <span class="plan-pill" style="color:#ef4444; border-color:rgba(239,68,68,0.3); background:rgba(239,68,68,0.08);">🚫 Aliments ultra-transformés (NOVA 4)</span>
+            <span class="plan-pill" style="color:#ef4444; border-color:rgba(239,68,68,0.3); background:rgba(239,68,68,0.08);">🚫 Mélange fruits + repas cuits</span>
+          </div>
+        </div>
+      </details>
+
+      <!-- Action Buttons -->
+      <div class="plan-smart-actions">
+        <button type="button" class="btn-plan-activate" onclick="window.applyExtractedDietPlanToCalendar('${encodedPlan}')">
+          <i class="ri-calendar-check-line"></i> Activer ce Programme au Calendrier
         </button>
-        <button type="button" class="btn btn-secondary" onclick="window.previewAndCustomizeDietPlanModal('${encodedPlan}')" style="display:inline-flex; align-items:center; gap:8px; padding:9px 16px; border-radius:12px; font-weight:600; font-size:0.84rem; background:rgba(255,255,255,0.06); border:1px solid var(--border); color:var(--text); cursor:pointer;">
+        <button type="button" class="btn-plan-customize" onclick="window.previewAndCustomizeDietPlanModal('${encodedPlan}')">
           <i class="ri-edit-line"></i> Adapter &amp; Personnaliser
         </button>
       </div>
@@ -294,11 +399,16 @@ export function previewAndCustomizeDietPlanModal(encodedPlan) {
               <span style="font-weight:700; font-size:0.85rem; color:var(--text); display:flex; align-items:center; gap:6px;">
                 ${m.icon || '🥗'} ${m.label || m.type}
               </span>
-              <button type="button" onclick="this.closest('.customizer-meal-row').remove()" style="background:transparent; border:none; color:#ef4444; cursor:pointer; font-size:0.9rem;" title="Supprimer ce repas">
-                <i class="ri-delete-bin-line"></i>
-              </button>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <button type="button" class="btn-substitute-mini" onclick="window.substituteCustomizerFood(this)" style="background:rgba(52,211,153,0.12); border:1px solid rgba(52,211,153,0.3); color:var(--accent); border-radius:8px; padding:3px 8px; font-size:0.75rem; font-weight:700; cursor:pointer;" title="Proposer une alternative">
+                  <i class="ri-loop-right-line"></i> Varier
+                </button>
+                <button type="button" onclick="this.closest('.customizer-meal-row').remove()" style="background:transparent; border:none; color:#ef4444; cursor:pointer; font-size:0.9rem;" title="Supprimer ce créneau">
+                  <i class="ri-delete-bin-line"></i>
+                </button>
+              </div>
             </div>
-            <textarea class="form-input-v2 meal-edit-text" style="min-height:54px; font-size:0.85rem; line-height:1.4; resize:vertical; width:100%;">${m.food}</textarea>
+            <textarea class="form-input-v2 meal-edit-text" style="min-height:50px; font-size:0.85rem; line-height:1.4; resize:vertical; width:100%;">${m.food}</textarea>
           </div>
         `;
       });
@@ -326,7 +436,16 @@ export function previewAndCustomizeDietPlanModal(encodedPlan) {
         </div>
       </div>
 
-      <div style="max-height:55vh; overflow-y:auto; padding-right:4px; margin-bottom:16px;">
+      <div style="margin-bottom:14px; padding:10px 14px; background:var(--surface-2); border-radius:12px; border:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+        <span style="font-size:0.85rem; font-weight:700; color:var(--text);"><i class="ri-calendar-event-line" style="color:var(--accent)"></i> Date de début :</span>
+        <select id="planStartChoice" class="form-input-v2" style="padding:6px 12px; font-size:0.82rem; border-radius:8px; border:1px solid var(--border); background:var(--surface); color:var(--text);">
+          <option value="0">Démarrer aujourd'hui</option>
+          <option value="1">Démarrer demain</option>
+          <option value="next_monday">Démarrer lundi prochain</option>
+        </select>
+      </div>
+
+      <div style="max-height:50vh; overflow-y:auto; padding-right:4px; margin-bottom:16px;">
         ${sectionsHtml}
       </div>
 
@@ -346,12 +465,41 @@ export function previewAndCustomizeDietPlanModal(encodedPlan) {
   }
 }
 
+export function substituteCustomizerFood(btnEl) {
+  const row = btnEl.closest('.customizer-meal-row');
+  if (!row) return;
+  const textarea = row.querySelector('.meal-edit-text');
+  if (!textarea) return;
+
+  const suggestions = [
+    "Monodiète de pastèque ou melon d'eau de saison (100% vivant et hydratant)",
+    "Grande salade vivante : roquette, concombre, graines de tournesol germées, jus de citron",
+    "Gaspacho cru : tomates mûres, poivrons doux, basilic frais et ail doux",
+    "Légumes d'été cuits vapeur douce (courgettes, aubergines) + patate douce tiède",
+    "Infusion reminéralisante d'ortie dioïque et de prêle des champs",
+    "Bol de baies sauvages : myrtilles fraîches, framboises et mûres locales"
+  ];
+  const choice = suggestions[Math.floor(Math.random() * suggestions.length)];
+  textarea.value = choice;
+  if (window.showToast) window.showToast("✨ Repas varié avec succès !", "success");
+}
+
 /**
  * Saves the edited plan from the modal directly to Calendar
  */
 export function saveAndApplyCustomizedDietPlan() {
   const container = document.getElementById('previewDietPlanModalContent');
   if (!container) return;
+
+  const startChoice = document.getElementById('planStartChoice')?.value || '0';
+  let startDate = new Date();
+  if (startChoice === '1') {
+    startDate.setDate(startDate.getDate() + 1);
+  } else if (startChoice === 'next_monday') {
+    const day = startDate.getDay();
+    const diff = startDate.getDate() + (day === 0 ? 1 : (8 - day));
+    startDate.setDate(diff);
+  }
 
   const sectionCards = container.querySelectorAll('.customizer-section-card');
   const sections = [];
@@ -405,11 +553,13 @@ if (typeof window !== 'undefined') {
     renderDietPlanActionCardHtml,
     applyExtractedDietPlanToCalendar,
     previewAndCustomizeDietPlanModal,
+    substituteCustomizerFood,
     saveAndApplyCustomizedDietPlan,
     closePreviewDietPlanModal
   };
   window.applyExtractedDietPlanToCalendar = applyExtractedDietPlanToCalendar;
   window.previewAndCustomizeDietPlanModal = previewAndCustomizeDietPlanModal;
+  window.substituteCustomizerFood = substituteCustomizerFood;
   window.saveAndApplyCustomizedDietPlan = saveAndApplyCustomizedDietPlan;
   window.closePreviewDietPlanModal = closePreviewDietPlanModal;
 }

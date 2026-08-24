@@ -65,6 +65,17 @@ function getMealsByDate() {
   return byDate;
 }
 
+window.currentWeekIndex = 0;
+
+window.selectCalendarWeek = function(weekIdx) {
+  window.currentWeekIndex = Math.max(0, Math.min(3, parseInt(weekIdx, 10) || 0));
+  const newKey = (window.currentWeekIndex * 7).toString();
+  window.currentDateKey = newKey;
+  window.renderStrip();
+  window.renderDay();
+  window.updateProgramRing();
+};
+
 window.renderStrip = function() {
   var dayStrip = document.getElementById("dayStrip");
   if (!dayStrip) return;
@@ -74,8 +85,23 @@ window.renderStrip = function() {
   const localeMap = { fr: 'fr-FR', 'fr-CA': 'fr-CA', en: 'en-US', es: 'es-ES' };
   const localeCode = localeMap[lang] || 'fr-FR';
   
+  // Update week selector active tab
+  var currentOffset = parseInt(window.currentDateKey || "0", 10);
+  if (currentOffset >= 0) {
+    window.currentWeekIndex = Math.min(3, Math.floor(currentOffset / 7));
+  }
+  for (var w = 0; w < 4; w++) {
+    var tab = document.getElementById("weekTab" + w);
+    if (tab) {
+      tab.classList.toggle("active", w === window.currentWeekIndex);
+    }
+  }
+
   dayStrip.innerHTML = "";
-  for(var i=0; i<14; i++){
+  var startDay = window.currentWeekIndex * 7;
+  var endDay = startDay + 7;
+
+  for(var i = startDay; i < endDay; i++){
     var d = addDays(today, i);
     var key = i.toString();
     var isToday = i === 0;
@@ -114,6 +140,7 @@ window.renderStrip = function() {
       window.currentDateKey = this.dataset.key;
       window.renderStrip();
       window.renderDay();
+      window.updateProgramRing();
     });
     dayStrip.appendChild(chip);
   }
@@ -355,10 +382,7 @@ window.updateProgramRing = function() {
   const stored = window.store.get('calendar_meals', []);
   const meta = window.store.get('active_plan_meta', null);
 
-  // Avec un plan actif, le dénominateur est la taille DÉCLARÉE du plan
-  // (numDays × repas/jour), pas "tout ce qui a jamais été stocké" — sinon
-  // le % bouge à chaque repas ajouté manuellement et perd tout son sens.
-  const total = meta ? meta.totalMeals : stored.length;
+  const total = meta ? (meta.totalMeals || (meta.numDays * (meta.mealsPerDay || 4))) : stored.length;
   const done = meta
     ? stored.filter(m => m.done && m.dateStr >= meta.startDateStr).length
     : stored.filter(m => m.done).length;
@@ -373,7 +397,7 @@ window.updateProgramRing = function() {
   ringFg.style.strokeDashoffset = CIRC * (1 - pct);
 
   var pctEl = document.getElementById("progPct");
-  if (pctEl) pctEl.textContent = Math.round(pct*100) + "%";
+  if (pctEl) pctEl.textContent = Math.round(pct * 100) + "%";
 
   var progRepasChip = document.getElementById("progRepasChip");
   if (progRepasChip) progRepasChip.textContent = "🍽 " + done + "/" + total + " repas";
@@ -392,8 +416,14 @@ window.updateProgramRing = function() {
   if (progJourChip) {
     if (meta) {
       var start = new Date(meta.startDateStr);
-      var current = new Date(new Date().setHours(0,0,0,0));
-      var offsetDays = Math.round((current - start) / 86400000);
+      start.setHours(0,0,0,0);
+      var today = new Date();
+      today.setHours(0,0,0,0);
+      var selectedDate = new Date(today);
+      var dayOffset = parseInt(window.currentDateKey || "0", 10);
+      selectedDate.setDate(today.getDate() + dayOffset);
+      
+      var offsetDays = Math.round((selectedDate - start) / 86400000);
       var jourIndex = Math.min(meta.numDays, Math.max(1, offsetDays + 1));
       progJourChip.textContent = "Jour " + jourIndex + "/" + meta.numDays;
     } else {
@@ -412,7 +442,7 @@ window.updateProgramRing = function() {
     btnStop.style.cursor = hasActiveContent ? 'pointer' : 'not-allowed';
     btnStop.setAttribute('data-tooltip', hasActiveContent ? 'Arrêter et réinitialiser le calendrier' : 'Aucun programme à arrêter');
   }
-}
+};
 
 window.clearCalendar = async function() {
   const ok = await (window.showVitalConfirm ? window.showVitalConfirm({
