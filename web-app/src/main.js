@@ -7699,7 +7699,6 @@ function renderFavorites() {
   }).join('');
 }
 window.renderFavorites = renderFavorites;
-
 function showAddMealModal() {
   selectedMealFoods = [];
   renderSelectedMealFoods();
@@ -7707,9 +7706,6 @@ function showAddMealModal() {
   if (searchRes) searchRes.innerHTML = '';
   const mealInput = document.getElementById('mealSearchInput');
   if (mealInput) mealInput.value = '';
-  const aiInput = document.getElementById('aiDishInput');
-  if (aiInput) aiInput.value = '';
-  setAddMealMode('food');
   const modal = document.getElementById('addMealModal');
   if (modal) modal.classList.add('open');
 }
@@ -7765,12 +7761,14 @@ function classifyFoodLocally(token) {
   else if (/melon|pasteque|pastèque/i.test(lower)) { emoji = '🍉'; family = 'Fruits'; category = 'Fruits'; }
   else if (/raisin/i.test(lower)) { emoji = '🍇'; family = 'Fruits'; category = 'Fruits'; }
   else if (/citron/i.test(lower)) { emoji = '🍋'; family = 'Fruits'; category = 'Fruits'; }
+  else if (/orange|clementine|clémentine|mandarine/i.test(lower)) { emoji = '🍊'; family = 'Fruits'; category = 'Fruits'; }
   else if (/fraise|strawberry/i.test(lower)) { emoji = '🍓'; family = 'Fruits'; category = 'Fruits'; }
   else if (/framboise|myrtille|blueberry|raspberry/i.test(lower)) { emoji = '🫐'; family = 'Fruits'; category = 'Fruits'; }
   else if (/salade|laitue|kale|roquette/i.test(lower)) { emoji = '🥗'; family = 'Légumes'; category = 'Légumes'; }
   else if (/riz|quinoa|cereale|amarante|fonio|kamut/i.test(lower)) { emoji = '🌾'; family = 'Céréales'; category = 'Céréales'; }
   else if (/haricot|lentille|pois/i.test(lower)) { emoji = '🫘'; family = 'Légumineuses'; category = 'Légumineuses'; }
   else if (/amande|noix|noisette|chia|lin|sesame|sésame/i.test(lower)) { emoji = '🥜'; family = 'Noix & Graines'; category = 'Noix & Graines'; }
+  else if (/jus/i.test(lower)) { emoji = '🥤'; family = 'Boissons'; category = 'Boissons'; }
   else if (/the|thé|tisane|infusion/i.test(lower)) { emoji = '🍵'; family = 'Herbes & Thés'; category = 'Herbes & Thés'; }
   else if (/pain|baguette|boulange/i.test(lower)) { emoji = '🥖'; family = 'Pain & Boulangerie'; category = 'Pain & Boulangerie'; }
   else if (/fromage/i.test(lower)) { emoji = '🧀'; family = 'Produits Laitiers'; category = 'Produits Laitiers'; }
@@ -7778,7 +7776,14 @@ function classifyFoodLocally(token) {
   else if (/poisson|saumon|thon|crevette/i.test(lower)) { emoji = '🐟'; family = 'Poissons & Fruits de mer'; category = 'Poissons & Fruits de mer'; }
   else if (isNaturalPlantAlkaline) { emoji = '🌿'; family = 'Fruits & Végétaux'; category = 'Fruits'; }
 
-  let pral, density, nova, freshness, mucus, label, note, sebiStatus;
+  let pral = 1.0;
+  let density = 50;
+  let nova = 2;
+  let freshness = 60;
+  let mucus = 'Neutre à Mucogène';
+  let label = 'Standard';
+  let sebiStatus = isElectric ? 'approved' : isHybrid ? 'hybrid' : 'neutral';
+  let note = 'Aliment analysé par règles vitalistes intégrées.';
 
   if (isUltraProcessed) {
     pral = 15.8;
@@ -7786,39 +7791,27 @@ function classifyFoodLocally(token) {
     nova = 4;
     freshness = 20;
     mucus = 'Fortement Mucogène';
-    label = 'Ultra-Transformé / Fast Food';
-    sebiStatus = 'non_approved';
-    if (!category || category === 'Alimentation') {
-      family = 'Plats Cuisinés & Fast Food';
-      category = 'Plats Cuisinés & Fast Food';
-    }
-    note = 'Plat complexe ultra-transformé générant une forte acidose rénale (PRAL +' + pral.toFixed(1) + ') et une charge mucogène élevée.';
+    label = 'Ultra-Transformé (NOVA 4)';
+    sebiStatus = 'mucus';
+    note = 'Aliment ultra-transformé générant une forte acidose rénale (PRAL +' + pral.toFixed(1) + ') et une charge mucogène élevée.';
   } else if (isElectric) {
     pral = -4.5;
-    density = 90;
+    density = 88;
     nova = 1;
     freshness = 95;
     mucus = 'Dissolvant';
-    label = 'Électrique (Dr. Sebi & Sauvage)';
-    sebiStatus = /ditakh|dettarium|madd|saba|bouye|baobab|bissap|moringa|camu|aronia|sureau|argousier/i.test(lower) ? 'wild_original' : 'sebi_official';
-    if (!category || category === 'Alimentation') {
-      family = 'Fruits';
-      category = 'Fruits';
-    }
-    note = 'Aliment bio-minéral alcalinisant à haute charge électrolytique favorisant le nettoyage cellulaire.';
+    label = 'Électrique (Dr. Sebi)';
+    sebiStatus = 'approved';
+    note = 'Aliment vivant bio-minéral alcalinisant à haute charge électrolytique favorisant le nettoyage cellulaire.';
   } else if (isNaturalPlantAlkaline) {
     pral = -3.2;
-    density = 85;
+    density = 82;
     nova = 1;
-    freshness = 90;
+    freshness = 92;
     mucus = 'Dissolvant';
     label = 'Végétal Vivant Alcalinisant';
-    sebiStatus = 'natural_alkaline';
-    if (!category || category === 'Alimentation') {
-      family = 'Fruits & Végétaux';
-      category = 'Fruits';
-    }
-    note = 'Fruit ou végétal naturel vivant, alcalinisant et dissolvant naturel des mucosités et toxines.';
+    sebiStatus = 'approved';
+    note = 'Fruit frais ou verdure crue à haute densité micronutritionnelle, sans charge mucoïde digestive.';
   } else if (isHybrid) {
     pral = 2.5;
     density = 55;
@@ -7827,10 +7820,6 @@ function classifyFoodLocally(token) {
     mucus = 'Faiblement Mucogène';
     label = 'Aliment Hybride';
     sebiStatus = 'hybrid';
-    if (!category || category === 'Alimentation') {
-      family = 'Céréales';
-      category = 'Céréales';
-    }
     note = 'Aliment issu d\'hybridations végétales, contenant des amidons modérément mucogènes.';
   } else if (isAnimalMucus) {
     pral = 10.5;
@@ -7839,55 +7828,42 @@ function classifyFoodLocally(token) {
     freshness = 30;
     mucus = 'Mucogène Élevé';
     label = 'Produit Animal / Mucogène';
-    sebiStatus = 'non_approved';
-    if (!category || category === 'Alimentation') {
-      family = 'Viandes & Charcuterie';
-      category = 'Viandes & Charcuterie';
-    }
-    note = 'Génère une production intense de mucus lymphatique et une charge acide importante.';
-  } else {
-    pral = 0.5;
-    density = 60;
-    nova = 1;
-    freshness = 75;
-    mucus = 'Neutre';
-    label = 'Végétal Brut / Neutre';
-    sebiStatus = 'natural_alkaline';
-    family = 'Alimentation Naturelle';
-    note = 'Aliment brut naturel analysé selon les règles vitalistes.';
+    sebiStatus = 'mucus';
+    note = 'Génère une production importante de mucus lymphatique et une acidité métabolique marquée.';
   }
 
-  const nameCap = clean.charAt(0).toUpperCase() + clean.slice(1);
+  const id = clean.toLowerCase().replace(/[^a-z0-9]/g, '_').replace(/^_+|_+$/g, '') || `food_${Date.now()}`;
+  const name = clean.charAt(0).toUpperCase() + clean.slice(1);
 
   return {
-    id: 'food_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
-    names: [nameCap, clean],
-    name: nameCap,
+    id,
+    name,
+    names: [clean],
     emoji,
     family,
     category,
-    approved: isElectric || isNaturalPlantAlkaline,
+    approved: isElectric,
     electric: isElectric,
-    sebiStatus,
     hybrid: isHybrid || isUltraProcessed,
+    pral,
     scientific_defaults: {
       pral,
       density,
-      label: pral < 0 ? 'Alcalinisant puissant' : pral <= 4 ? 'Faiblement acidifiant' : 'Fortement acidifiant',
-      colorValue: pral < 0 ? '0xFF4ade80' : '0xFFfacc15'
+      label: pral < 0 ? 'Alcalinisant' : 'Acidifiant'
     },
     scientific: {
       pral,
       density,
-      label: pral < 0 ? 'Alcalinisant puissant' : pral <= 4 ? 'Faiblement acidifiant' : 'Fortement acidifiant',
-      colorValue: pral < 0 ? '0xFF4ade80' : '0xFFfacc15'
+      label: pral < 0 ? 'Alcalinisant' : 'Acidifiant'
     },
+    nova,
     vitality: {
       nova,
       freshness,
-      label: nova === 1 ? 'Aliment Brut (Non transformé)' : nova === 2 ? 'Ingrédient culinaire' : nova === 3 ? 'Aliment transformé' : 'Produit Ultra-Transformé',
-      colorValue: nova === 1 ? '0xFF4ade80' : (nova <= 2 ? '0xFFfacc15' : '0xFFef4444')
+      label
     },
+    freshness,
+    mucus,
     specific: {
       mucus,
       hybrid: isHybrid || isUltraProcessed,
@@ -7900,17 +7876,14 @@ function classifyFoodLocally(token) {
   };
 }
 
-async function analyzeDishWithAI() {
-  if (!requireAuthForAi("l'Analyse IA de Plat")) return;
-  const input = document.getElementById('aiDishInput');
-  const btn = document.getElementById('btnAnalyzeDish');
-  const q = (input?.value || '').trim();
+async function handleUnifiedMealInput(query) {
+  const q = (query || '').trim();
   if (!q) {
-    showToast('Veuillez entrer une description de plat.', 'error');
+    showToast('Veuillez entrer un aliment ou un plat.', 'error');
     return;
   }
+  if (!requireAuthForAi("l'Analyse IA de Repas")) return;
 
-  // Show dynamic Japandi mascot loader inside addMealModal
   const modalContent = document.querySelector('#addMealModal .modal-content');
   const oldContent = modalContent ? modalContent.innerHTML : '';
 
@@ -7940,7 +7913,7 @@ async function analyzeDishWithAI() {
         <div class="search-mascot-badge">
           <i class="ri-sparkling-fill"></i> Vital ausculte « ${esc(q)} »
         </div>
-        <h3 class="search-mascot-title">Recherche Grounding &amp; Décomposition...</h3>
+        <h3 class="search-mascot-title">Recherche Grounding &amp; Analyse...</h3>
         
         <div id="addMealTipBox" class="search-mascot-tip-box">
           ${randTip}
@@ -7949,7 +7922,7 @@ async function analyzeDishWithAI() {
         <div class="scan-loading-progress-bar" style="max-width:320px; margin:0 auto 8px auto;">
           <div class="scan-loading-progress-fill"></div>
         </div>
-        <span id="addMealStep" class="search-mascot-step-text">Étape 1/4 : Recherche Google Grounding de la recette...</span>
+        <span id="addMealStep" class="search-mascot-step-text">Étape 1/4 : Identification botanique ou décomposition de la recette...</span>
       </div>
     `;
 
@@ -7965,10 +7938,10 @@ async function analyzeDishWithAI() {
     }
 
     const steps = [
-      'Étape 1/4 : Recherche Google Grounding de la recette authentique...',
-      'Étape 2/4 : Décomposition taxonomique des ingrédients & épices...',
-      'Étape 3/4 : Calcul du PRAL rénal & densité micronutritionnelle...',
-      'Étape 4/4 : Évaluation du mucus (Ehret) & conseils de transition...'
+      'Étape 1/4 : Identification botanique ou décomposition de la recette...',
+      'Étape 2/4 : Calcul de l\'équilibre PRAL, NOVA & densité micronutritionnelle...',
+      'Étape 3/4 : Évaluation de la charge mucoïde (Ehret) & profil électrique...',
+      'Étape 4/4 : Structuration du bilan vitaliste...'
     ];
     let tipIdx = 0;
     let stepIdx = 0;
@@ -8001,7 +7974,7 @@ async function analyzeDishWithAI() {
         data = await res.json();
       }
     } catch (err) {
-      console.warn('[AI Dish Analysis] searchFood fetch failed, trying analyze-text:', err);
+      console.warn('[Unified Meal Analysis] searchFood fetch failed, trying analyze-text:', err);
     }
 
     if (!data || !data.name) {
@@ -8016,7 +7989,7 @@ async function analyzeDishWithAI() {
           data = textData.data || textData;
         }
       } catch (err2) {
-        console.warn('[AI Dish Analysis] analyze-text fetch failed:', err2);
+        console.warn('[Unified Meal Analysis] analyze-text fetch failed:', err2);
       }
     }
 
@@ -8024,114 +7997,158 @@ async function analyzeDishWithAI() {
       data = classifyFoodLocally(q);
     }
 
-    // Extract foods
-    const rawItems = data.items || data.foods || data.data?.foods || data.ingredients || [];
-    const processedItems = [];
-    if (Array.isArray(rawItems) && rawItems.length > 0) {
-      rawItems.forEach(item => {
-        const itName = typeof item === 'string' ? item : (item.name || item.names?.[0] || 'Aliment');
-        const sc = (typeof item === 'object' && item.scientific_defaults) ? item.scientific_defaults : {
-          pral: typeof item === 'object' ? (item.pral ?? 0) : 0,
-          density: typeof item === 'object' ? (item.density ?? 50) : 50,
-          label: (typeof item === 'object' && (item.pral ?? 0) < 0) ? 'Alcalinisant' : 'Acidifiant'
-        };
-        const sp = (typeof item === 'object' && item.specific) ? item.specific : {
-          electric: typeof item === 'object' ? (item.electric === true || item.approved === true) : false,
-          hybrid: typeof item === 'object' ? (item.hybrid === true) : true,
-          mucus: typeof item === 'object' ? (item.mucus || 'Mucogène') : 'Mucogène',
-          label: typeof item === 'object' ? (item.specific?.label || 'Ingrédient') : 'Ingrédient'
-        };
-        const vt = (typeof item === 'object' && item.vitality) ? item.vitality : {
-          nova: typeof item === 'object' ? (item.nova ?? 3) : 3,
-          freshness: typeof item === 'object' ? (item.freshness ?? 50) : 50,
-          label: 'Ingrédient'
-        };
-        const foodObj = {
-          id: (typeof item === 'object' && item.id) ? item.id : ('dish_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6)),
-          name: itName.replace(/^./, c => c.toUpperCase()),
-          names: (typeof item === 'object' && item.names) ? item.names : [itName],
-          emoji: (typeof item === 'object' && item.emoji) ? item.emoji : '🥗',
-          family: (typeof item === 'object' && item.family) ? item.family : 'Alimentation',
-          approved: sp.electric === true,
-          electric: sp.electric === true,
-          hybrid: sp.hybrid === true,
-          pral: sc.pral ?? 0,
-          scientific_defaults: sc,
-          scientific: sc,
-          nova: vt.nova ?? 3,
-          vitality: vt,
-          freshness: vt.freshness ?? 50,
-          mucus: sp.mucus,
-          specific: sp,
-          note: typeof item === 'object' ? item.note : undefined
-        };
-        processedItems.push(foodObj);
-      });
+    const rawItems = data.items || data.foods || data.data?.foods || data.data?.items || data.ingredients || [];
+    const isMultiIngredient = Array.isArray(rawItems) && rawItems.length > 1;
+    const isDishCategory = data.category === 'Plats Cuisinés & Fast Food' || data.isComposedMeal === true || /salade|plat|soupe|recette|bol|bowl|poêlée|gratin|wrap|curry|ragoût|pasta|pizza|burger|tajine|couscous|smoothie/i.test(q);
+
+    let resultFoodOrDish = null;
+
+    if (isMultiIngredient || isDishCategory) {
+      const processedItems = [];
+      if (Array.isArray(rawItems) && rawItems.length > 0) {
+        rawItems.forEach(item => {
+          const itName = typeof item === 'string' ? item : (item.name || item.names?.[0] || 'Aliment');
+          const sc = (typeof item === 'object' && item.scientific_defaults) ? item.scientific_defaults : {
+            pral: typeof item === 'object' ? (item.pral ?? 0) : 0,
+            density: typeof item === 'object' ? (item.density ?? 50) : 50,
+            label: (typeof item === 'object' && (item.pral ?? 0) < 0) ? 'Alcalinisant' : 'Acidifiant'
+          };
+          const sp = (typeof item === 'object' && item.specific) ? item.specific : {
+            electric: typeof item === 'object' ? (item.electric === true || item.approved === true) : false,
+            hybrid: typeof item === 'object' ? (item.hybrid === true) : true,
+            mucus: typeof item === 'object' ? (item.mucus || 'Mucogène') : 'Mucogène',
+            label: typeof item === 'object' ? (item.specific?.label || 'Ingrédient') : 'Ingrédient'
+          };
+          const vt = (typeof item === 'object' && item.vitality) ? item.vitality : {
+            nova: typeof item === 'object' ? (item.nova ?? 3) : 3,
+            freshness: typeof item === 'object' ? (item.freshness ?? 50) : 50,
+            label: 'Ingrédient'
+          };
+          const foodObj = {
+            id: (typeof item === 'object' && item.id) ? item.id : ('dish_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6)),
+            name: itName.replace(/^./, c => c.toUpperCase()),
+            names: (typeof item === 'object' && item.names) ? item.names : [itName],
+            emoji: (typeof item === 'object' && item.emoji) ? item.emoji : '🥗',
+            family: (typeof item === 'object' && item.family) ? item.family : 'Alimentation',
+            approved: sp.electric === true,
+            electric: sp.electric === true,
+            hybrid: sp.hybrid === true,
+            pral: sc.pral ?? 0,
+            scientific_defaults: sc,
+            scientific: sc,
+            nova: vt.nova ?? 3,
+            vitality: vt,
+            freshness: vt.freshness ?? 50,
+            mucus: sp.mucus,
+            specific: sp,
+            note: typeof item === 'object' ? item.note : undefined
+          };
+          processedItems.push(foodObj);
+        });
+      }
+
+      const dishName = (data.name || data.data?.mealName || q).replace(/^./, c => c.toUpperCase());
+      const dishPral = data.pral ?? (data.scientific_defaults?.pral ?? 0);
+      resultFoodOrDish = {
+        ...data,
+        id: data.id || ('dish_' + Date.now()),
+        name: dishName,
+        names: data.names || [dishName],
+        emoji: data.emoji || (isDishCategory ? '🍲' : '🥗'),
+        category: data.category || 'Plats Cuisinés & Fast Food',
+        family: data.family || 'Plat Composé Vitaliste',
+        electric: data.electric || false,
+        approved: data.approved || false,
+        hybrid: data.hybrid ?? true,
+        pral: dishPral,
+        scientific_defaults: data.scientific_defaults || { pral: dishPral, density: 60, label: dishPral < 0 ? 'Alcalinisant' : 'Acidifiant' },
+        scientific: data.scientific || { pral: dishPral, density: 60, label: dishPral < 0 ? 'Alcalinisant' : 'Acidifiant' },
+        nova: data.nova ?? (data.vitality?.nova ?? 3),
+        vitality: data.vitality || { nova: data.nova ?? 3, freshness: 50, label: 'Plat élaboré' },
+        freshness: data.freshness ?? 50,
+        mucus: data.mucus || 'Faiblement Mucogène',
+        specific: data.specific || { electric: false, hybrid: true, mucus: 'Faiblement Mucogène', label: 'Plat Vitaliste' },
+        items: processedItems.length > 0 ? processedItems : [data],
+        allAnalyzedItems: processedItems.length > 0 ? processedItems : [data],
+        isComposedMeal: true,
+        isMealSelection: true,
+      };
+    } else {
+      const singleItem = (Array.isArray(rawItems) && rawItems.length === 1) ? rawItems[0] : data;
+      const foodName = (singleItem.name || singleItem.names?.[0] || q).replace(/^./, c => c.toUpperCase());
+      const id = singleItem.id || `food_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
+      const sc = singleItem.scientific_defaults || singleItem.scientific || {
+        pral: singleItem.pral ?? 0,
+        density: singleItem.density ?? ((singleItem.pral ?? 0) < 0 ? 80 : 35),
+        label: (singleItem.pral ?? 0) < 0 ? 'Alcalinisant' : 'Acidifiant'
+      };
+      const vt = singleItem.vitality || {
+        nova: singleItem.nova ?? (singleItem.electric ? 1 : 2),
+        freshness: singleItem.freshness ?? ((singleItem.nova === 1 || singleItem.electric) ? 95 : 60),
+        label: singleItem.vitalityLabel || (singleItem.nova === 1 ? 'Aliment Brut (Non transformé)' : 'Aliment Végétal')
+      };
+      const sp = singleItem.specific || {
+        electric: singleItem.electric === true || singleItem.approved === true,
+        hybrid: singleItem.hybrid === true,
+        mucus: singleItem.mucus || (singleItem.electric ? 'Dissolvant' : singleItem.hybrid ? 'Faiblement Mucogène' : 'Mucogène'),
+        label: singleItem.electric ? 'Électrique (Dr. Sebi)' : singleItem.hybrid ? 'Hybride' : 'Standard'
+      };
+
+      resultFoodOrDish = {
+        id,
+        name: foodName,
+        names: singleItem.names || [foodName],
+        emoji: singleItem.emoji || '🥑',
+        family: singleItem.family || 'Alimentation',
+        category: singleItem.category || 'Fruits & Légumes',
+        approved: sp.electric === true,
+        electric: sp.electric === true,
+        hybrid: sp.hybrid === true,
+        pral: sc.pral ?? 0,
+        scientific_defaults: sc,
+        scientific: sc,
+        nova: vt.nova ?? 1,
+        vitality: vt,
+        freshness: vt.freshness ?? 80,
+        mucus: sp.mucus,
+        specific: sp,
+        note: singleItem.note || singleItem.benefits || '',
+        isMealSelection: true,
+        allAnalyzedItems: [singleItem]
+      };
     }
 
-    const dishName = (data.name || data.data?.mealName || q).replace(/^./, c => c.toUpperCase());
-    const dishPral = data.pral ?? (data.scientific_defaults?.pral ?? 0);
-    const fullDishObj = {
-      ...data,
-      id: data.id || ('dish_' + Date.now()),
-      name: dishName,
-      names: data.names || [dishName],
-      emoji: data.emoji || '🍲',
-      category: data.category || 'Plats Cuisinés & Fast Food',
-      family: data.family || 'Plat Traditionnel Composite',
-      electric: data.electric || false,
-      approved: data.approved || false,
-      hybrid: data.hybrid ?? true,
-      pral: dishPral,
-      scientific_defaults: data.scientific_defaults || { pral: dishPral, density: 60, label: dishPral < 0 ? 'Alcalinisant' : 'Acidifiant' },
-      scientific: data.scientific || { pral: dishPral, density: 60, label: dishPral < 0 ? 'Alcalinisant' : 'Acidifiant' },
-      nova: data.nova ?? (data.vitality?.nova ?? 3),
-      vitality: data.vitality || { nova: data.nova ?? 3, freshness: 30, label: 'Plat élaboré' },
-      freshness: data.freshness ?? 30,
-      mucus: data.mucus || 'Mucogène',
-      specific: data.specific || { electric: false, hybrid: true, mucus: 'Mucogène', label: 'Plat Traditionnel' },
-      items: processedItems.length > 0 ? processedItems : [data],
-      allAnalyzedItems: processedItems.length > 0 ? processedItems : [data],
-      isComposedMeal: true,
-      isMealSelection: true,
-    };
-
-    selectedMealFoods = [fullDishObj];
+    selectedMealFoods = [resultFoodOrDish];
 
     if (modalContent) modalContent.innerHTML = oldContent;
     closeAddMealModal();
     renderSelectedMealFoods();
-    openFoodModal(fullDishObj);
-    showToast(`✨ « ${dishName} » analysé avec succès !`, 'success');
-  } catch (e) {
-    console.error('Erreur analyse plat:', e);
+    openFoodModal(resultFoodOrDish);
+    showToast(`✨ « ${resultFoodOrDish.name} » analysé avec succès !`, 'success');
+  } catch (err) {
+    console.error('Erreur analyse unifiée repas:', err);
     if (modalContent) modalContent.innerHTML = oldContent;
-    showToast("Erreur lors de l'analyse du plat.", 'error');
+    showToast("Erreur lors de l'analyse du repas.", 'error');
   } finally {
     if (tipInterval) clearInterval(tipInterval);
     if (searchMascotRenderer) searchMascotRenderer.destroy();
   }
 }
 
-function setAddMealMode(mode) {
-  const foodSection = document.getElementById('addMealFoodSection');
-  const dishSection = document.getElementById('addMealDishSection');
-  const tabFoodBtn = document.getElementById('tabAddFoodBtn');
-  const tabDishBtn = document.getElementById('tabAddDishBtn');
-
-  if (mode === 'dish') {
-    if (foodSection) foodSection.style.display = 'none';
-    if (dishSection) dishSection.style.display = 'block';
-    if (tabFoodBtn) tabFoodBtn.classList.remove('active');
-    if (tabDishBtn) tabDishBtn.classList.add('active');
-  } else {
-    if (foodSection) foodSection.style.display = 'block';
-    if (dishSection) dishSection.style.display = 'none';
-    if (tabFoodBtn) tabFoodBtn.classList.add('active');
-    if (tabDishBtn) tabDishBtn.classList.remove('active');
-  }
+async function askAIToAddMealFood(query) {
+  return handleUnifiedMealInput(query);
 }
+
+async function analyzeDishWithAI() {
+  const query = document.getElementById('mealSearchInput')?.value || document.getElementById('aiDishInput')?.value || '';
+  return handleUnifiedMealInput(query);
+}
+
+function setAddMealMode(mode) {}
 window.setAddMealMode = setAddMealMode;
+window.handleUnifiedMealInput = handleUnifiedMealInput;
+window.askAIToAddMealFood = askAIToAddMealFood;
+window.analyzeDishWithAI = analyzeDishWithAI;
 
 function searchMealFoods(query) {
   const q = (query || '').toLowerCase().trim();
@@ -8144,7 +8161,7 @@ function searchMealFoods(query) {
       results.innerHTML = `
         <div style="padding: 14px 0; text-align: center;">
           <p class="empty-state-sm" style="margin-bottom: 10px; color: var(--text-dim);">Aucun aliment direct dans la base locale.</p>
-          <button type="button" class="btn-primary" style="margin: 0 auto; display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 14px; font-size: 0.9rem; font-weight:700;" onclick="askAIToAddMealFood('${esc(q)}')">
+          <button type="button" class="btn-primary" style="margin: 0 auto; display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 14px; font-size: 0.9rem; font-weight:700;" onclick="handleUnifiedMealInput('${esc(q)}')">
             <i class="ri-sparkling-fill"></i> Analyser « ${esc(q)} » par l'IA
           </button>
         </div>
@@ -8157,203 +8174,13 @@ function searchMealFoods(query) {
     results.innerHTML = matches.map(item => {
       const name = (item.names?.[0] || '?').replace(/^./, c => c.toUpperCase());
       return `<div class="food-card" onclick="selectMealFood(${vitalDb.indexOf(item)})"><div class="food-emoji">${item.emoji || '🍽️'}</div><div class="food-info"><div class="food-name">${esc(name)}</div></div></div>`;
-    }).join('');
-  }
-}
-
-async function askAIToAddMealFood(query) {
-  const q = (query || '').trim();
-  if (!q) {
-    showToast('Veuillez entrer le nom d\'un aliment.', 'error');
-    return;
-  }
-
-  // Show dynamic Japandi mascot loader inside addMealModal
-  const modalContent = document.querySelector('#addMealModal .modal-content');
-  const oldContent = modalContent ? modalContent.innerHTML : '';
-
-  let searchMascotRenderer = null;
-  let tipInterval = null;
-
-  const VITAL_EDUCATIONAL_TIPS = [
-    "🌿 Les aliments à PRAL négatif (alcalins) facilitent le travail de filtration rénale et dissolvent les acides uriques.",
-    "🔬 Vital le Détective ausculte les bases botaniques : analyse des alcaloïdes, flavonoïdes et minéraux colloïdaux...",
-    "💧 Les fruits frais mûrs apportent une eau biologique hautement structurée (H3O2), optimale pour la lymphe.",
-    "⚖️ Selon Arnold Ehret (V = P - O), éliminer l'obstruction digestive libère immédiatement la vitalité naturelle.",
-    "🌱 Les graines ancestrales (amarante, fonio, teff, quinoa) conservent leur charge électrique native sans gluten.",
-    "🧹 En transition, les légumes racines cuits à la vapeur douce balayent les mucosités intestinales sans choc éliminatif.",
-    "🍋 Le citron, bien qu'acide au palais, est un puissant alcalinisant et dissout les dépôts de mucus gastrique.",
-    "🌳 La pharmacopée amazonienne Raintree répertorie des plantes majeures pour le drainage hépatique et rénal.",
-    "🍇 Les raisins noirs et baies sauvages sont les nettoyants lymphatiques les plus puissants identifiés par le Dr. Morse."
-  ];
-
-  if (modalContent) {
-    const randTip = VITAL_EDUCATIONAL_TIPS[Math.floor(Math.random() * VITAL_EDUCATIONAL_TIPS.length)];
-    modalContent.innerHTML = `
-      <div class="search-mascot-loader" style="margin:0; border:none; background:transparent; box-shadow:none; padding:10px 4px;">
-        <div class="search-mascot-frame">
-          <div class="scan-spinner-ring" style="width:125px; height:125px; top:-5px; left:-7px; border-color:rgba(74,107,83,0.2); border-top-color:var(--accent);"></div>
-          <canvas id="addFoodMascotCanvas" width="110" height="130" style="width:110px; height:130px; filter:drop-shadow(0 4px 16px var(--accent-glow));"></canvas>
-        </div>
-        <div class="search-mascot-badge">
-          <i class="ri-sparkling-fill"></i> Vital ausculte l'aliment « ${esc(q)} »
-        </div>
-        <h3 class="search-mascot-title">Analyse Botanique &amp; Électrique...</h3>
-        
-        <div id="addFoodTipBox" class="search-mascot-tip-box">
-          ${randTip}
-        </div>
-
-        <div class="scan-loading-progress-bar" style="max-width:320px; margin:0 auto 8px auto;">
-          <div class="scan-loading-progress-fill"></div>
-        </div>
-        <span id="addFoodStep" class="search-mascot-step-text">Étape 1/4 : Recherche Grounding et classification botanique...</span>
+    }).join('') + `
+      <div style="padding: 10px 0; text-align: center; border-top: 1px solid var(--border); margin-top: 8px;">
+        <button type="button" class="btn-secondary" style="margin: 0 auto; display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 12px; font-size: 0.82rem; font-weight:600;" onclick="handleUnifiedMealInput('${esc(q)}')">
+          <i class="ri-sparkling-fill" style="color:var(--accent);"></i> Analyser « ${esc(q)} » par l'IA (Plat / Aliment)
+        </button>
       </div>
     `;
-
-    const canvas = document.getElementById('addFoodMascotCanvas');
-    if (canvas && window.PigeonRenderer) {
-      const dpr = window.devicePixelRatio || 1;
-      canvas.width = 110 * dpr;
-      canvas.height = 130 * dpr;
-      canvas.style.width = '110px';
-      canvas.style.height = '130px';
-      searchMascotRenderer = new window.PigeonRenderer(canvas);
-      searchMascotRenderer.setInspecting(true);
-    }
-
-    const steps = [
-      'Étape 1/4 : Recherche Grounding et classification botanique...',
-      'Étape 2/4 : Calcul de l\'équilibre PRAL & charge minérale...',
-      'Étape 3/4 : Évaluation du mucus et compatibilité vitale...',
-      'Étape 4/4 : Structuration du profil clinique...'
-    ];
-    let tipIdx = 0;
-    let stepIdx = 0;
-    tipInterval = setInterval(() => {
-      tipIdx = (tipIdx + 1) % VITAL_EDUCATIONAL_TIPS.length;
-      stepIdx = (stepIdx + 1) % steps.length;
-      const tipBox = document.getElementById('addFoodTipBox');
-      const stepEl = document.getElementById('addFoodStep');
-      if (tipBox) {
-        tipBox.style.opacity = '0';
-        setTimeout(() => {
-          tipBox.innerHTML = VITAL_EDUCATIONAL_TIPS[tipIdx];
-          tipBox.style.opacity = '1';
-        }, 200);
-      }
-      if (stepEl) stepEl.textContent = steps[stepIdx];
-    }, 2200);
-  }
-
-  try {
-    const userLang = typeof getLanguage === 'function' ? getLanguage() : 'fr';
-    let data = null;
-    try {
-      const res = await fetch('/api/searchFood', {
-        method: 'POST',
-        headers: getApiHeaders(),
-        body: JSON.stringify({ query: q, language: userLang })
-      });
-      if (res.ok) {
-        data = await res.json();
-      }
-    } catch (err) {
-      console.warn('[AI Food Analysis] searchFood fetch failed, trying analyze-text:', err);
-    }
-
-    let items = [];
-    if (data && data.success && data.data && data.data.items && data.data.items.length > 0) {
-      items = data.data.items;
-    } else {
-      try {
-        const res2 = await fetch('/api/analyze-text', {
-          method: 'POST',
-          headers: getApiHeaders(),
-          body: JSON.stringify({ query: q, language: userLang })
-        });
-        if (res2.ok) {
-          const d2 = await res2.json();
-          items = d2.data?.foods || d2.data?.items || [];
-        }
-      } catch (err2) {
-        console.warn('[AI Food Analysis] analyze-text fallback failed:', err2);
-      }
-    }
-
-    if (!items || items.length === 0) {
-      items = [classifyFoodLocally(q)];
-    }
-
-    const processedItems = [];
-    items.forEach(item => {
-      const name = (item.name || item.names?.[0] || q).replace(/^./, c => c.toUpperCase());
-      const id = item.id || `food_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
-      const existing = selectedMealFoods.find(f => f.name.toLowerCase() === name.toLowerCase());
-
-      const sc = item.scientific_defaults || item.scientific || {
-        pral: item.pral ?? 0,
-        density: item.density ?? ((item.pral ?? 0) < 0 ? 80 : 35),
-        label: (item.pral ?? 0) < 0 ? 'Alcalinisant' : 'Acidifiant'
-      };
-
-      const vt = item.vitality || {
-        nova: item.nova ?? (item.electric ? 1 : 2),
-        freshness: item.freshness ?? ((item.nova === 1 || item.electric) ? 95 : item.nova === 4 ? 15 : 60),
-        label: item.vitalityLabel || (item.nova === 1 ? 'Aliment Brut (Non transformé)' : item.nova === 4 ? 'Produit Ultra-Transformé' : 'Aliment transformé')
-      };
-
-      const sp = item.specific || {
-        electric: item.electric === true || item.approved === true,
-        hybrid: item.hybrid === true,
-        mucus: item.mucus || (item.electric ? 'Dissolvant' : item.hybrid ? 'Faiblement Mucogène' : 'Mucogène'),
-        label: item.electric ? 'Électrique (Dr. Sebi)' : item.hybrid ? 'Hybride' : 'Standard / Mucogène'
-      };
-
-      const foodObj = {
-        id: existing ? existing.id : id,
-        name,
-        names: item.names || [name],
-        emoji: item.emoji || '🥑',
-        family: item.family || 'Alimentation',
-        approved: sp.electric === true,
-        electric: sp.electric === true,
-        hybrid: sp.hybrid === true,
-        pral: sc.pral ?? 0,
-        scientific_defaults: sc,
-        nova: vt.nova ?? 1,
-        vitality: vt,
-        freshness: vt.freshness ?? 80,
-        mucus: sp.mucus,
-        specific: sp,
-        note: item.note || item.benefits || ''
-      };
-
-      if (!existing) {
-        selectedMealFoods.push(foodObj);
-      }
-      processedItems.push(foodObj);
-    });
-
-    if (modalContent) modalContent.innerHTML = oldContent;
-    renderSelectedMealFoods();
-    closeAddMealModal();
-
-    if (processedItems.length > 0) {
-      openFoodModal({
-        ...processedItems[0],
-        isMealSelection: true,
-        allAnalyzedItems: processedItems
-      });
-      showToast(`✨ Aliment « ${processedItems[0].name} » analysé avec succès !`, 'success');
-    }
-  } catch (err) {
-    console.error('Erreur analyse aliment:', err);
-    if (modalContent) modalContent.innerHTML = oldContent;
-    showToast("Erreur lors de l'analyse IA de l'aliment.", 'error');
-  } finally {
-    if (tipInterval) clearInterval(tipInterval);
-    if (searchMascotRenderer) searchMascotRenderer.destroy();
   }
 }
 
@@ -16588,6 +16415,7 @@ if (typeof window !== "undefined") window.closeAddMealModal = closeAddMealModal;
 if (typeof window !== "undefined") window.setAddMealMode = setAddMealMode;
 if (typeof window !== "undefined") window.analyzeDishWithAI = analyzeDishWithAI;
 if (typeof window !== "undefined") window.searchMealFoods = searchMealFoods;
+if (typeof window !== "undefined") window.handleUnifiedMealInput = handleUnifiedMealInput;
 if (typeof window !== "undefined") window.askAIToAddMealFood = askAIToAddMealFood;
 if (typeof window !== "undefined") window.searchEditMealFoods = searchEditMealFoods;
 if (typeof window !== "undefined") window.selectMealFood = selectMealFood;

@@ -2702,55 +2702,44 @@
     </div>
   </div>
 
-  <!-- ═══════ ADD MEAL MODAL ═══════ -->
+  <!-- ═══════ ADD MEAL MODAL (JAPANDI UNIFIED SEARCH & AI ANALYSIS) ═══════ -->
   <div class="modal-overlay" id="addMealModal" onclick="closeAddMealModal(event)">
-    <div class="modal-content glass modal-sm" onclick="event.stopPropagation()">
+    <div class="modal-content glass modal-sm" onclick="event.stopPropagation()" style="border-radius:24px; padding:24px 26px; border:1px solid var(--border); box-shadow:0 16px 40px rgba(0,0,0,0.3);">
       <button class="modal-close" onclick="closeAddMealModal()"><i class="ri-close-line"></i></button>
-      <h3 data-i18n="modals.addMealModalTitle">🍽️ Ajouter au repas</h3>
       
-      <!-- Switcher Modes : Aliment Unitaire vs Plat Composé -->
-      <div class="modal-tab-bar">
-        <button type="button" class="modal-tab-btn active" id="tabAddFoodBtn" onclick="setAddMealMode('food')">
-          <i class="ri-leaf-line"></i> <span data-i18n="modals.tabSingleFood">Aliment Unitaire</span>
-        </button>
-        <button type="button" class="modal-tab-btn" id="tabAddDishBtn" onclick="setAddMealMode('dish')">
-          <i class="ri-restaurant-line"></i> <span data-i18n="modals.tabComplexDish">Plat Composé / Recette</span>
-        </button>
-      </div>
-
-      <!-- SECTION 1 : ALIMENT UNITAIRE (Recherche locale + Analyse IA) -->
-      <div id="addMealFoodSection">
-        <div class="ai-dish-box">
-          <div class="ai-dish-box-title">
-            <i class="ri-sparkling-fill"></i> <span>Analyser ou chercher un aliment unitaire</span>
-          </div>
-          <div class="ai-dish-input-row">
-            <input type="text" id="mealSearchInput" placeholder="Ex: Fonio, mangue sauvage, solom, saumon..." class="form-input" oninput="searchMealFoods(this.value)" onkeydown="if(event.key==='Enter') askAIToAddMealFood(this.value)">
-            <button class="btn-primary" id="btnAnalyzeFood" onclick="askAIToAddMealFood(document.getElementById('mealSearchInput').value)">
-              <i class="ri-sparkling-fill"></i> <span>Analyser</span>
-            </button>
-          </div>
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:18px;">
+        <div style="width:42px; height:42px; border-radius:14px; background:rgba(16,185,129,0.15); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:1.35rem; border:1px solid rgba(16,185,129,0.25); flex-shrink:0;">
+          🍽️
         </div>
-        <div id="mealSearchResults" class="meal-search-results"></div>
+        <div>
+          <h3 style="margin:0 0 2px; font-size:1.18rem; font-weight:800; color:var(--text);" data-i18n="modals.addMealModalTitle">Ajouter un repas</h3>
+          <p style="margin:0; font-size:0.8rem; color:var(--text-dim);">Aliment unitaire ou plat composé · Détection automatique</p>
+        </div>
       </div>
-
-      <!-- SECTION 2 : PLAT COMPOSÉ (Décomposition & Recette) -->
-      <div id="addMealDishSection" style="display:none;">
-        <div class="ai-dish-box">
-          <div class="ai-dish-box-title">
-            <i class="ri-magic-line"></i> <span data-i18n="modals.aiDishBoxTitle">Analyser un plat composé par IA</span>
-          </div>
-          <div class="ai-dish-input-row">
-            <input type="text" id="aiDishInput" data-i18n-placeholder="modals.aiDishPlaceholder" placeholder="Ex: Salade concombres, avocat et jus de citron..." class="form-input" onkeydown="if(event.key==='Enter') analyzeDishWithAI()">
-            <button class="btn-primary" id="btnAnalyzeDish" onclick="analyzeDishWithAI()">
-              <i class="ri-sparkling-fill"></i> <span data-i18n="modals.aiDishAnalyzeBtn">Analyser</span>
-            </button>
-          </div>
+      
+      <!-- UNIFIED SEARCH & AI INPUT BOX -->
+      <div class="ai-dish-box" style="margin-bottom:16px; border-radius:18px; padding:16px; background:var(--surface-2, rgba(255,255,255,0.03)); border:1px solid var(--border);">
+        <div class="ai-dish-box-title" style="margin-bottom:10px; font-size:0.84rem; font-weight:700; color:var(--text); display:flex; align-items:center; gap:6px;">
+          <i class="ri-sparkling-fill" style="color:var(--accent);"></i> <span>Rechercher ou analyser un aliment / plat</span>
+        </div>
+        <div class="ai-dish-input-row" style="display:flex; gap:8px;">
+          <input type="text" id="mealSearchInput" placeholder="Ex: Fonio, mangue sauvage, salade avocat-quinoa, soupe..." class="form-input" style="flex:1; border-radius:14px; padding:11px 16px; font-size:0.9rem;" oninput="searchMealFoods(this.value)" onkeydown="if(event.key==='Enter') handleUnifiedMealInput(this.value)">
+          <button class="btn-primary" id="btnAnalyzeFood" onclick="handleUnifiedMealInput(document.getElementById('mealSearchInput').value)" style="border-radius:14px; padding:11px 18px; font-weight:700; white-space:nowrap; gap:6px; flex-shrink:0;">
+            <i class="ri-sparkling-fill"></i> <span>Analyser</span>
+          </button>
         </div>
       </div>
 
-      <div id="mealSelectedItems" class="selected-items"></div>
-      <button class="btn-primary full-w" onclick="confirmAddMeal()"><i class="ri-check-line"></i> <span data-i18n="modals.validateMealBtn">Valider le repas</span></button>
+      <!-- Realtime Local & AI Search Results -->
+      <div id="mealSearchResults" class="meal-search-results" style="max-height:180px; overflow-y:auto; margin-bottom:16px;"></div>
+
+      <!-- Selected items list (if any) -->
+      <div id="mealSelectedItems" class="selected-items" style="margin-bottom:16px;"></div>
+      
+      <!-- Validate Button -->
+      <button class="btn-primary full-w" onclick="confirmAddMeal()" style="border-radius:50px; padding:13px 20px; font-weight:700; font-size:0.95rem; box-shadow:0 4px 16px var(--accent-glow);">
+        <i class="ri-check-line"></i> <span data-i18n="modals.validateMealBtn">Valider le repas</span>
+      </button>
     </div>
   </div>
 
