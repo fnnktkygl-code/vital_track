@@ -323,6 +323,8 @@ window.toggleMeal = function(mealId) {
     window.store.set('calendar_meals', stored);
     window.renderDay();
     window.renderStrip();
+    if (typeof window.renderDashboard === 'function') window.renderDashboard();
+    if (typeof window.refreshDailyStripRoutine === 'function') window.refreshDailyStripRoutine();
     if (window.showToast && meal.done) {
       window.showToast(`✅ ${t('calendar.mealValidated', { title: meal.title || meal.slot }, `Repas "${meal.title || meal.slot}" validé !`)}`, 'success');
     }
@@ -348,6 +350,8 @@ window.validateAllDay = function() {
   window.store.set('calendar_meals', stored);
   window.renderDay();
   window.renderStrip();
+  if (typeof window.renderDashboard === 'function') window.renderDashboard();
+  if (typeof window.refreshDailyStripRoutine === 'function') window.refreshDailyStripRoutine();
   if (window.showToast) {
     window.showToast(`🎉 ${t('calendar.allMealsValidated', null, 'Tous les repas de la journée ont été validés !')}`, 'success');
   }
@@ -370,6 +374,8 @@ window.resetDay = function() {
   window.store.set('calendar_meals', stored);
   window.renderDay();
   window.renderStrip();
+  if (typeof window.renderDashboard === 'function') window.renderDashboard();
+  if (typeof window.refreshDailyStripRoutine === 'function') window.refreshDailyStripRoutine();
   if (window.showToast) {
     window.showToast(`↺ ${t('calendar.validationsReset', null, 'Validations réinitialisées pour ce jour.')}`, 'info');
   }

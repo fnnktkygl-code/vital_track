@@ -5176,7 +5176,7 @@ body.dark-theme .chip-btn,
 }
 @media(max-width:768px){
   .message{max-width:92%}
-  .breath-circle{width:150px;height:150px}
+  .breath-lungs-card{width:100%;max-width:320px;height:290px}
   .timer-ring{width:170px;height:170px}
   .timer-digits{font-size:1.7rem}
   .dash-stats-row{grid-template-columns:repeat(2,1fr)}
