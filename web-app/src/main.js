@@ -15628,11 +15628,13 @@ window.triggerMascotInPlaceReaction = triggerMascotInPlaceReaction;
 
 function triggerWelcomeMascotCoo() {
   const welcomeEl = document.getElementById('welcomeMascotPortrait');
+  const wrapper = document.getElementById('welcomeMascotWrapper') || welcomeEl?.parentElement;
+  
   if (window.pigeonAudio) {
     window.pigeonAudio.playRealCoo();
   }
   
-  if (welcomeEl) {
+  if (welcomeEl && wrapper) {
     welcomeEl.classList.remove('mascot-wobble-active');
     void welcomeEl.offsetWidth;
     welcomeEl.classList.add('mascot-wobble-active');
@@ -15642,27 +15644,31 @@ function triggerWelcomeMascotCoo() {
       bubble = document.createElement('div');
       bubble.id = 'welcomeMascotFloatingBubble';
       bubble.className = 'welcome-floating-bubble';
-      welcomeEl.parentElement.style.position = 'relative';
-      welcomeEl.parentElement.insertBefore(bubble, welcomeEl);
+      wrapper.style.position = 'relative';
+      wrapper.appendChild(bubble);
+    } else if (bubble.parentElement !== wrapper) {
+      wrapper.appendChild(bubble);
     }
+
     const quotes = [
       'Roucouuu ! 🌿',
       'Prends soin de ton temple ! ✨',
       'Énergie vitale au max ! ⚡',
       'Hydrate bien tes cellules ! 💧',
-      'Ruuu ! Je suis là pour toi ! 🕊️'
+      'Ruuu ! Je suis là pour toi ! 🕊️',
+      'Alcalinise ton terrain ! 🥑'
     ];
     bubble.textContent = quotes[Math.floor(Math.random() * quotes.length)];
     bubble.style.display = 'block';
     bubble.style.opacity = '1';
-    bubble.style.transform = 'translateY(0) scale(1)';
+    bubble.style.transform = 'translateX(-50%) translateY(0) scale(1)';
     
     clearTimeout(window._welcomeBubbleTimer);
     window._welcomeBubbleTimer = setTimeout(() => {
       if (bubble) {
         bubble.style.opacity = '0';
-        bubble.style.transform = 'translateY(-10px) scale(0.95)';
-        setTimeout(() => { bubble.style.display = 'none'; }, 300);
+        bubble.style.transform = 'translateX(-50%) translateY(6px) scale(0.95)';
+        setTimeout(() => { bubble.style.display = 'none'; }, 250);
       }
     }, 2800);
   }

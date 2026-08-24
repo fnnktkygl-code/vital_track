@@ -958,8 +958,9 @@
           <button class="icon-btn" onclick="newConversation()" data-tooltip="Nouveau chat"><i class="ri-add-line"></i></button>
         </div>
         <div class="chat-messages" id="chatMessages">
-          <div class="chat-welcome" id="chatWelcome">
-            <div class="welcome-mascot" id="welcomeMascotPortrait" onclick="window.triggerWelcomeMascotCoo && window.triggerWelcomeMascotCoo()" style="cursor:pointer;" title="Faire roucouler Vital !"></div>
+            <div class="welcome-mascot-wrapper" id="welcomeMascotWrapper" style="position: relative; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 8px;">
+              <div class="welcome-mascot" id="welcomeMascotPortrait" onclick="window.triggerWelcomeMascotCoo && window.triggerWelcomeMascotCoo()" style="cursor:pointer;" title="Faire roucouler Vital !"></div>
+            </div>
             <h2 data-i18n="chat.welcomeTitle">Roucouuu ! 🌿</h2>
             <p data-i18n="chat.welcomeSubtitle">Je suis Vital, ton coach vitaliste IA. Pose-moi une question sur la nutrition, le jeûne, la respiration ou la santé naturelle.</p>
             <div class="welcome-chips">
