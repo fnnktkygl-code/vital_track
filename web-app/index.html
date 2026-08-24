@@ -3492,7 +3492,7 @@
           <i class="ri-search-line" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-dim);"></i>
           <input type="text" id="wisdomGrimoireSearch" data-i18n-placeholder="dashboard.grimoireSearchPlaceholder" placeholder="Rechercher par mot-clé (ex: lymphe, rein, jus, ehret)..." oninput="filterWisdomGrimoire()" style="width:100%; padding:10px 12px 10px 36px; border-radius:12px; background:var(--surface-hover); border:1px solid var(--border); color:var(--text); font-size:0.88rem; box-sizing:border-box;">
         </div>
-        <select id="wisdomAuthorFilter" onchange="filterWisdomGrimoire()" style="padding:10px 14px; border-radius:12px; background:var(--surface-hover); border:1px solid var(--border); color:var(--text); font-size:0.88rem; cursor:pointer;">
+        <select id="wisdomAuthorFilter" class="wisdom-grimoire-select" onchange="filterWisdomGrimoire()">
           <option value="all" data-i18n="dashboard.allAuthors">Tous les Auteurs</option>
           <option value="ehret">Arnold Ehret</option>
           <option value="morse">Dr. Robert Morse</option>
@@ -3504,7 +3504,7 @@
           <option value="shelton">Herbert Shelton</option>
           <option value="jensen">Bernard Jensen</option>
         </select>
-        <select id="wisdomCategoryFilter" onchange="filterWisdomGrimoire()" style="padding:10px 14px; border-radius:12px; background:var(--surface-hover); border:1px solid var(--border); color:var(--text); font-size:0.88rem; cursor:pointer;">
+        <select id="wisdomCategoryFilter" class="wisdom-grimoire-select" onchange="filterWisdomGrimoire()">
           <option value="all" data-i18n="dashboard.allCategories">Toutes les Thématiques</option>
           <option value="favorites" data-i18n="dashboard.favoritesCat">⭐ Mes Favoris</option>
           <option value="mucusless" data-i18n="dashboard.mucuslessCat">Régime Sans Mucus</option>

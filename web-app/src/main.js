@@ -9915,35 +9915,138 @@ function shuffleWisdomCapsule() {
 }
 window.shuffleWisdomCapsule = shuffleWisdomCapsule;
 
-function toggleWisdomFavorite() {
-  if (!_currentWisdom) return;
-  const id = _currentWisdom.id;
-  const idx = _wisdomFavorites.indexOf(id);
-  if (idx > -1) {
-    _wisdomFavorites.splice(idx, 1);
+function toggleWisdomFavorite(specificId = null) {
+  const targetId = specificId || (_currentWisdom && _currentWisdom.id);
+  if (!targetId) return;
+
+  const idx = _wisdomFavorites.indexOf(targetId);
+  const isAdding = (idx === -1);
+  if (isAdding) {
+    _wisdomFavorites.push(targetId);
   } else {
-    _wisdomFavorites.push(id);
+    _wisdomFavorites.splice(idx, 1);
   }
   localStorage.setItem('vital_wisdom_favorites', JSON.stringify(_wisdomFavorites));
-  renderWisdomCapsule(_currentWisdom);
+
+  if (_currentWisdom && _currentWisdom.id === targetId) {
+    renderWisdomCapsule(_currentWisdom);
+  }
+
+  const catSelect = document.getElementById('wisdomCategoryFilter');
+  if (catSelect && catSelect.value === 'favorites') {
+    filterWisdomGrimoire();
+  }
+
+  const targetItem = VITALIST_WISDOM.find(w => w.id === targetId);
+  const authorName = targetItem?.author || 'Précepte';
+  if (window.showToast) {
+    window.showToast(isAdding ? `⭐ « ${authorName} » ajouté aux favoris du Grimoire !` : `☆ Retiré des favoris`, 'success');
+  }
 }
 window.toggleWisdomFavorite = toggleWisdomFavorite;
+window.toggleGrimoireFavorite = toggleWisdomFavorite;
+
+function openWisdomSource(wisdomId) {
+  const lang = getActiveWisdomLang();
+  const rawItem = VITALIST_WISDOM.find(w => w.id === wisdomId) || _currentWisdom;
+  if (!rawItem) return;
+
+  const modal = document.getElementById('wisdomGrimoireModal');
+  if (modal) modal.style.display = 'none';
+
+  const author = (rawItem.author || '').toLowerCase();
+  const work = (rawItem.work || '').toLowerCase();
+
+  // 1. Arnold Ehret -> eBook Reader
+  if (author.includes('ehret')) {
+    const bookId = (lang === 'es') ? 'ehret-mucusless-es' : 'ehret-mucusless-fr';
+    if (typeof window.openBookReader === 'function') {
+      window.openBookReader(bookId);
+      if (window.showToast) window.showToast(`📖 Ouverture de « ${rawItem.work} » dans le lecteur...`, 'info');
+      return;
+    }
+  }
+
+  // 2. Dr. Robert Morse -> eBook Reader
+  if (author.includes('morse')) {
+    const bookId = (lang === 'es') ? 'morse-detox-miracle-es' : 'morse-detox-miracle-fr';
+    if (typeof window.openBookReader === 'function') {
+      window.openBookReader(bookId);
+      if (window.showToast) window.showToast(`📖 Ouverture de « ${rawItem.work} » dans le lecteur...`, 'info');
+      return;
+    }
+  }
+
+  // 3. Wim Hof -> Breathing page
+  if (author.includes('hof')) {
+    if (typeof window.showPage === 'function') {
+      window.showPage('breathing');
+      if (window.showToast) window.showToast(`🌬️ Ouverture de l'espace Respiration Wim Hof`, 'info');
+      return;
+    }
+  }
+
+  // 4. Dr. Sebi -> PDF direct
+  if (author.includes('sebi')) {
+    window.open('/pdfs/dr-sebi-guide-de-purification-bio-electrique-cellulaire-fr.pdf', '_blank');
+    if (window.showToast) window.showToast(`📄 Consultation de l'ouvrage du Dr. Sebi`, 'info');
+    return;
+  }
+
+  // 5. David Wolfe -> PDF direct
+  if (author.includes('wolfe')) {
+    window.open('/pdfs/david-wolfe-le-systeme-de-reussite-de-l-alimentation-vivante-fr.pdf', '_blank');
+    if (window.showToast) window.showToast(`📄 Consultation de l'ouvrage de David Wolfe`, 'info');
+    return;
+  }
+
+  // 6. Dr. Leslie Taylor (Raintree) -> PDF direct
+  if (author.includes('taylor') || author.includes('raintree')) {
+    window.open('/pdfs/dr-leslie-taylor-pharmacopee-amazonienne-raintree-fr.pdf', '_blank');
+    if (window.showToast) window.showToast(`🌿 Consultation de la Pharmacopée Raintree`, 'info');
+    return;
+  }
+
+  // 7. General fallback: Search in Resources catalog
+  if (typeof window.showPage === 'function') {
+    window.showPage('resources');
+    setTimeout(() => {
+      const input = document.getElementById('mediaSearchInput');
+      const q = rawItem.searchQuery || rawItem.author;
+      if (input) {
+        input.value = q;
+        if (typeof window.searchMediaResources === 'function') {
+          window.searchMediaResources(q);
+        }
+        input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        input.focus();
+      }
+    }, 150);
+  }
+}
+window.openWisdomSource = openWisdomSource;
+
+function chatAboutPrecept(wisdomId) {
+  const rawItem = VITALIST_WISDOM.find(w => w.id === wisdomId) || _currentWisdom;
+  if (!rawItem) return;
+
+  const modal = document.getElementById('wisdomGrimoireModal');
+  if (modal) modal.style.display = 'none';
+
+  const prompt = `Bonjour Coach Vital ! Peux-tu m'expliquer les fondements cliniques et les applications concrètes de ce précepte d'${rawItem.author} tiré de « ${rawItem.work} » : « ${rawItem.quote} » ?`;
+
+  if (typeof window.showPage === 'function') window.showPage('chat');
+  setTimeout(() => {
+    if (typeof window.quickChat === 'function') {
+      window.quickChat(prompt);
+    }
+  }, 350);
+}
+window.chatAboutPrecept = chatAboutPrecept;
 
 function searchWisdomInDocs() {
-  if (!_currentWisdom || !_currentWisdom.searchQuery) return;
-  const query = _currentWisdom.searchQuery;
-  showPage('resources');
-  setTimeout(() => {
-    const input = document.getElementById('mediaSearchInput');
-    if (input) {
-      input.value = query;
-      if (typeof window.searchMediaResources === 'function') {
-        window.searchMediaResources(query);
-      }
-      input.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      input.focus();
-    }
-  }, 120);
+  if (!_currentWisdom) return;
+  openWisdomSource(_currentWisdom.id);
 }
 window.searchWisdomInDocs = searchWisdomInDocs;
 
@@ -9972,9 +10075,8 @@ function filterWisdomGrimoire() {
     ? window.vitalTrackI18n.t 
     : (k, p, fb) => fb || k;
 
-  const appLabel = tFunc('dashboard.wisdomPracticalGesture', {}, (lang === 'en' ? 'Practical Action' : (lang === 'es' ? 'Gesto Práctico' : 'Application')));
+  const appLabel = tFunc('dashboard.wisdomPracticalGesture', {}, (lang === 'en' ? 'Practical Action' : (lang === 'es' ? 'Gesto Práctico' : 'Geste Pratique')));
   const noResLabel = tFunc('dashboard.grimoireNoResults', {}, (lang === 'en' ? 'No wisdom precept matches your filters.' : (lang === 'es' ? 'Ningún precepto coincide con sus filtros.' : 'Aucun précepte ne correspond à vos filtres.')));
-  const cardTooltip = tFunc('dashboard.wisdomCardTooltip', {}, (lang === 'en' ? 'Display on dashboard' : (lang === 'es' ? 'Mostrar en el panel de control' : 'Afficher sur le tableau de bord')));
 
   const searchInput = document.getElementById('wisdomGrimoireSearch');
   const authorSelect = document.getElementById('wisdomAuthorFilter');
@@ -10011,29 +10113,51 @@ function filterWisdomGrimoire() {
   }
 
   if (items.length === 0) {
-    grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:30px; color:var(--text-dim);">${noResLabel}</div>`;
+    grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:40px 20px; color:var(--text-dim); background:var(--surface); border-radius:18px; border:1px dashed var(--border);">${noResLabel}</div>`;
     return;
   }
 
   grid.innerHTML = items.map(rawItem => {
     const item = getLocalizedWisdomItem(rawItem, lang) || rawItem;
+    const isFav = _wisdomFavorites.includes(item.id);
     return `
-      <div class="wisdom-grimoire-card" onclick="window.selectWisdomFromGrimoire('${item.id}')" style="cursor:pointer;" title="${cardTooltip}">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <div style="display:flex; align-items:center; gap:8px;">
-            <span style="font-size:1.2rem;">${item.authorAvatar}</span>
-            <div>
-              <div style="font-weight:700; font-size:0.86rem; color:var(--text);">${item.author}</div>
-              <div style="font-size:0.72rem; color:var(--text-dim);">${item.work}</div>
+      <div class="wisdom-grimoire-card" onclick="window.openWisdomSource('${item.id}')" style="cursor:pointer;" title="Consulter la source originale (${esc(item.work)})">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">
+          <div style="display:flex; align-items:center; gap:10px; min-width:0;">
+            <span style="font-size:1.4rem; flex-shrink:0;">${item.authorAvatar}</span>
+            <div style="min-width:0;">
+              <div style="font-weight:800; font-size:0.92rem; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.author}</div>
+              <div style="font-size:0.75rem; color:var(--text-dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${esc(item.work)}">${esc(item.work)}</div>
             </div>
           </div>
-          <span class="wisdom-category-pill" style="color:${item.authorColor}; border-color:${item.authorColor}44;">${item.categoryLabel}</span>
+          <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
+            <span class="wisdom-category-pill" style="color:${item.authorColor}; border-color:${item.authorColor}44; font-size:0.72rem;">${item.categoryLabel}</span>
+            <button type="button" class="grimoire-card-fav-btn ${isFav ? 'is-fav' : ''}" onclick="event.stopPropagation(); window.toggleWisdomFavorite('${item.id}');" title="${isFav ? 'Retirer des favoris' : 'Ajouter aux favoris'}" data-tooltip="${isFav ? 'Retirer des favoris' : 'Ajouter aux favoris'}">
+              <i class="${isFav ? 'ri-star-fill' : 'ri-star-line'}" style="${isFav ? 'color:#fbbf24;' : 'color:var(--text-dim);'}"></i>
+            </button>
+          </div>
         </div>
-        <p style="font-size:0.86rem; font-style:italic; line-height:1.45; color:var(--text); margin:0;">
+
+        <p style="font-size:0.88rem; font-style:italic; line-height:1.5; color:var(--text); margin:0;">
           « ${item.quote} »
         </p>
-        <div style="font-size:0.78rem; background:rgba(16,185,129,0.06); border-radius:8px; padding:8px 10px; border-left:3px solid ${item.authorColor};">
+
+        <div style="font-size:0.8rem; background:rgba(16,185,129,0.06); border-radius:10px; padding:10px 12px; border-left:3px solid ${item.authorColor}; color:var(--text); line-height:1.45;">
           <strong>${appLabel} :</strong> ${item.actionableTip}
+        </div>
+
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; border-top:1px solid var(--border); padding-top:10px; margin-top:2px;">
+          <button type="button" class="btn-grimoire-source" onclick="event.stopPropagation(); window.openWisdomSource('${item.id}');" title="Consulter l'ouvrage ou le document source">
+            <i class="ri-book-open-line"></i> <span>Ouvrir la Source</span>
+          </button>
+          <div style="display:flex; gap:6px;">
+            <button type="button" class="btn-grimoire-chat" onclick="event.stopPropagation(); window.chatAboutPrecept('${item.id}');" title="Demander une explication au Coach Vital">
+              <i class="ri-chat-smile-3-line" style="color:#38bdf8;"></i> <span>Coach</span>
+            </button>
+            <button type="button" class="btn-grimoire-chat" onclick="event.stopPropagation(); window.selectWisdomFromGrimoire('${item.id}');" title="Épingler au tableau de bord">
+              <i class="ri-pushpin-line" style="color:var(--accent);"></i> <span>Épingler</span>
+            </button>
+          </div>
         </div>
       </div>
     `;
@@ -10047,6 +10171,7 @@ function selectWisdomFromGrimoire(id) {
     renderWisdomCapsule(rawItem);
     const modal = document.getElementById('wisdomGrimoireModal');
     if (modal) modal.style.display = 'none';
+    if (window.showToast) window.showToast(`📌 Précepte d'${rawItem.author} épinglé sur votre tableau de bord !`, 'success');
   }
 }
 window.selectWisdomFromGrimoire = selectWisdomFromGrimoire;
