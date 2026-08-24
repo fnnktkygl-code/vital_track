@@ -33,7 +33,7 @@
 [![Démonstration Vidéo Interactive VitalTrack](docs/videos/vitaltrack_demo.gif)](docs/videos/vitaltrack_demo.mp4)
 
 <p align="center">
-  <sub><i>▶️ <strong>Parcours Utilisateur Complet :</strong> Cockpit Vitaliste ➔ Consultation Coach IA ➔ Application Calendrier via Carte d'Action ➔ Scanner Biochimique d'Assiette ➔ Suivi du Jeûne & Autophagie ➔ Studio de Respiration Wim Hof</i></sub><br/>
+  <sub><i>▶️ <strong>Parcours Utilisateur Complet :</strong> Cockpit Vitaliste ➔ Consultation Coach Vital ➔ Application Calendrier via Carte d'Action ➔ Scanner Biochimique d'Assiette ➔ Suivi du Jeûne & Autophagie ➔ Studio de Respiration Wim Hof</i></sub><br/>
   <a href="docs/videos/vitaltrack_demo.mp4"><strong>🎥 Télécharger / Voir la Vidéo Complète en HD MP4 (docs/videos/vitaltrack_demo.mp4)</strong></a>
 </p>
 
@@ -159,14 +159,13 @@ graph TD
 * **Assistant d'Anamnèse en 4 Étapes** : Bio-Profil, symptômes émonctoriels, traitements en cours et biomarqueurs sanguins.
 * **Synthèse Holistique des 5 Émonctoires** : Analyse croisée des reins, de la lymphe, du côlon, du foie, des poumons et de la peau avec rapport imprimable et export JSON.
 
-### 🤖 2. Coach IA Conversationnel & Cartes d'Actions Interactives
-* **Dialogue en streaming** propulsé par **Google Gemini 3.7 Flash** / **Gemini 3.6 Flash**.
-* **Dictée vocale en direct (Zero-Quota)** : Reconnaissance vocale temps réel native sans consommer de quota payant avec retour visuel d'ondes sonores en continu.
-* **14 Voix Neuronales Studio HD** : Narration naturelle en Français (France & Québec), Anglais et Espagnol.
-* **Cartes d'actions interactives directes** : Génération de raccourcis dans le chat (`📅 Appliquer au calendrier`, `🍲 Enregistrer le repas`, `🥗 Créer un plat`).
+### 🤖 2. Coach Vital Conversationnel & Cartes d'Actions Interactives
+- Dialogue multimodal ultra-rapide alimenté par Google Gemini (cascade `gemini-3.7-flash` ➔ `gemini-3.6-flash`).
+- Détection d'intentions cliniques (plans de repas, jeûne, respiration, hydratation) et génération d'actions en un clic pour synchroniser l'agenda sans friction.
+- Accompagnement sur-mesure respectant les préceptes du Dr. Sebi, d'Arnold Ehret et du Dr. Robert Morse.
 
 <div align="center">
-  <img src="docs/screenshots/fr/desktop_ai_chat_actions.png" alt="Coach IA Vitaliste avec Cartes d'Actions" width="900" style="border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.4);" />
+  <img src="docs/screenshots/fr/desktop_ai_chat_actions.png" alt="Coach Vital Vitaliste avec Cartes d'Actions" width="900" style="border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.4);" />
 </div>
 
 <br/>

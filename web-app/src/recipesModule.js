@@ -468,9 +468,9 @@ function renderRecipeCard(rawRecipe, lang = 'fr') {
           <span>🪄 ${t('recipes.vitalityBadge', {}, 'Vitalité')} ${recipe.vitalityScore}%</span>
         </div>
         <div style="display:flex; align-items:center; gap:8px;">
-          <button type="button" class="recipe-apple-card-ai-btn" onclick="event.stopPropagation(); askAIAboutRecipe('${esc(recipe.id)}');" title="${t('recipes.askCoachBtn', {}, 'Adapter avec le Coach IA')}">
+          <button type="button" class="recipe-apple-card-ai-btn" onclick="event.stopPropagation(); askAIAboutRecipe('${esc(recipe.id)}');" title="${t('recipes.askCoachBtn', {}, 'Adapter avec le Coach Vital')}">
             <i class="ri-sparkling-fill"></i>
-            <span>${t('recipes.aiShortBtn', {}, 'Coach IA')}</span>
+            <span>${t('recipes.aiShortBtn', {}, 'Coach Vital')}</span>
           </button>
           <div class="recipe-apple-explore-link">
             <span>${t('recipes.explorerBtn', {}, 'Explorer')}</span>
@@ -809,7 +809,7 @@ function renderModalContent() {
         `}
       </div>
 
-      <!-- BANDEAU CTA INTERACTIF : ADAPTER LA RECETTE AVEC LE COACH IA -->
+      <!-- BANDEAU CTA INTERACTIF : ADAPTER LA RECETTE AVEC LE COACH VITAL -->
       <div class="recipe-apple-ai-cta-box" onclick="askAIAboutRecipe('${esc(r.id)}')">
         <div class="recipe-apple-ai-cta-left">
           <div class="recipe-apple-ai-cta-icon">
@@ -817,7 +817,7 @@ function renderModalContent() {
           </div>
           <div>
             <div class="recipe-apple-ai-cta-title">
-              ${t('recipes.aiCtaTitle', {}, 'Adapter cette recette avec le Coach IA')}
+              ${t('recipes.aiCtaTitle', {}, 'Adapter cette recette avec le Coach Vital')}
             </div>
             <div class="recipe-apple-ai-cta-sub">
               ${t('recipes.aiCtaSub', {}, "Personnalisez selon vos ingrédients disponibles, vos intolérances ou vos objectifs de régénération.")}
@@ -843,7 +843,7 @@ function renderModalContent() {
         </button>
         <button type="button" class="recipe-apple-btn-solid recipe-apple-ai-btn" onclick="askAIAboutRecipe('${esc(r.id)}')">
           <i class="ri-sparkling-2-fill"></i>
-          <span>${t('recipes.askCoachBtn', {}, 'Adapter avec le Coach IA')}</span>
+          <span>${t('recipes.askCoachBtn', {}, 'Adapter avec le Coach Vital')}</span>
         </button>
       </div>
 

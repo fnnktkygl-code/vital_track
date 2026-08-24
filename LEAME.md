@@ -33,7 +33,7 @@
 [![Demostración en Video Interactivo VitalTrack](docs/videos/vitaltrack_demo.gif)](docs/videos/vitaltrack_demo.mp4)
 
 <p align="center">
-  <sub><i>▶️ <strong>Recorrido de Usuario Completo:</strong> Panel Vitalista ➔ Consulta con Coach IA ➔ Sincronización al Calendario ➔ Escáner Bioquímico de Platos ➔ Rastreador de Ayuno y Autofagia ➔ Estudio de Respiración Wim Hof</i></sub><br/>
+  <sub><i>▶️ <strong>Recorrido de Usuario Completo:</strong> Panel Vitalista ➔ Consulta con Coach Vital ➔ Sincronización al Calendario ➔ Escáner Bioquímico de Platos ➔ Rastreador de Ayuno y Autofagia ➔ Estudio de Respiración Wim Hof</i></sub><br/>
   <a href="docs/videos/vitaltrack_demo.mp4"><strong>🎥 Descargar / Ver Video Completo en HD MP4 (docs/videos/vitaltrack_demo.mp4)</strong></a>
 </p>
 
@@ -159,14 +159,13 @@ graph TD
 * **Asistente de Anamnesis en 4 Pasos**: Perfil, síntomas emuntoriales, medicamentos actuales y biomarcadores sanguíneos.
 * **Diagnóstico Holístico de los 5 Emuntorios**: Análisis cruzado de riñones, linfa, colon, hígado, pulmones y piel con informe imprimible y exportación JSON.
 
-### 🤖 2. Coach IA Conversacional con Tarjetas de Acción Interactivas
-* **Diálogo en streaming** impulsado por los modelos oficiales **Google Gemini 3.7 Flash** / **Gemini 3.6 Flash**.
-* **Dictado por voz en vivo (Zero-Cuota)**: Reconocimiento de voz en tiempo real nativo del navegador con HUD animado de ondas sonoras.
-* **14 Voces Neuronales Studio HD**: Locución de alta calidad en Español, Francés e Inglés.
-* **Tarjetas de acción interactivas**: Generación de accesos directos en el chat (`📅 Aplicar al calendario`, `🍲 Guardar comida`, `🥗 Crear plato`).
+### 🤖 2. Coach Vital Conversacional con Tarjetas de Acción Interactivas
+- Diálogo multimodal ultrarrápido impulsado por Google Gemini (cascada `gemini-3.7-flash` ➔ `gemini-3.6-flash`).
+- Detección de intenciones clínicas (planes de comidas, ayuno, respiración, hidratación) y generación de acciones con un clic para sincronizar la agenda sin fricción.
+- Acompañamiento a medida respetando los preceptos del Dr. Sebi, Arnold Ehret y el Dr. Robert Morse.
 
 <div align="center">
-  <img src="docs/screenshots/es/desktop_ai_chat_actions.png" alt="Coach IA Vitalista con Tarjetas de Acción" width="900" style="border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.4);" />
+  <img src="docs/screenshots/es/desktop_ai_chat_actions.png" alt="Coach Vital Vitalista con Tarjetas de Acción" width="900" style="border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.4);" />
 </div>
 
 <br/>

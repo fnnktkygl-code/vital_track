@@ -36,7 +36,7 @@ async function testFavoriteDishes() {
   // 3. Remplir le formulaire
   await page.type('#dishNameInput', 'Salade Vivante Détox Papaye & Roquette');
   await page.type('#dishIngredientsInput', 'Papaye mûre, Avocat Hass, Roquette sauvage, Graines de chia, Huile d\'olive');
-  await page.type('#dishNotesInput', 'Adapté par le Coach IA pour une régénération sans mucus. Assaisonner avec jus de citron vert.');
+  await page.type('#dishNotesInput', 'Adapté par le Coach Vital pour une régénération sans mucus. Assaisonner avec jus de citron vert.');
   await page.click('#createDishForm button[type="submit"]');
   await new Promise(r => setTimeout(r, 500));
 

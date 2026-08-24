@@ -175,7 +175,7 @@ const FEATURE_DATA = {
   voice: {
     tag: "Intelligence Artificielle & Voix",
     badgeSub: "Gemini 3.7 Flash + Web Speech",
-    title: "Coach IA Vitaliste & Dictée Vocale Streaming",
+    title: "Coach Vital Vitaliste & Dictée Vocale Streaming",
     desc: "Parlez naturellement à votre coach. Le texte est transcrit en direct dans le champ de saisie sans temps d'attente et sans consommer votre quota d'API. L'IA analyse votre terrain et génère automatiquement des protocoles complets avec des cartes d'action interactives.",
     bullets: [
       "<strong>Zero-Quota Voice :</strong> Dictée vocale native avec indicateur d'ondes sonores en temps réel.",
@@ -364,7 +364,7 @@ function initSimulator() {
       resultDesc.textContent = "Votre corps présente une charge digestive modérée. Le protocole de transition d'Arnold Ehret et l'électrisation progressive de vos repas vous permettront de décupler votre énergie.";
     } else {
       resultTitle.textContent = "🔥 Éteindre le Feu Digestif & Détox Douce";
-      resultDesc.textContent = "Votre organisme est sollicité par des aliments mucogènes et des toxines acides. Le Coach IA VitalTrack vous guidera pas à pas pour amorcer un balai intestinal sans crise brutale.";
+      resultDesc.textContent = "Votre organisme est sollicité par des aliments mucogènes et des toxines acides. Le Coach Vital VitalTrack vous guidera pas à pas pour amorcer un balai intestinal sans crise brutale.";
     }
   }
 

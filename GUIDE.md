@@ -34,12 +34,12 @@ Le tableau de bord est le centre de contrôle de votre journée physiologique :
 
 ---
 
-## 🎙️ 2. Coach IA Vitaliste & Dictée Vocale en Direct
+## 🎙️ 2. Coach Vital Vitaliste & Dictée Vocale en Direct
 
-Le Coach IA VitalTrack s'appuie sur le modèle **Google Gemini 3.7 Flash** et une base de connaissances documentaire authentique (Dr. Sebi, Ehret, Morse, Raintree) :
+Le Coach Vital VitalTrack s'appuie sur le modèle **Google Gemini 3.7 Flash** et une base de connaissances documentaire authentique (Dr. Sebi, Ehret, Morse, Raintree) :
 
 <div align="center">
-  <img src="docs/screenshots/desktop_ai_chat_actions.png" alt="Coach IA avec Cartes d'Actions" width="850" style="border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.4);" />
+  <img src="docs/screenshots/desktop_ai_chat_actions.png" alt="Coach Vital avec Cartes d'Actions" width="850" style="border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.4);" />
 </div>
 
 * **Saisie Vocale Streaming en Direct (Zero-Quota) :**

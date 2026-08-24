@@ -246,7 +246,7 @@ window.renderDay = function() {
       meal.tags.forEach(function(t, tagIdx){
         var safeTagN = (t.n || '').replace(/"/g, '&quot;').replace(/'/g, "\\'");
         var safeEmoji = t.e || '🍽️';
-        html += "<span class='meal-tag meal-tag-interactive' title='Cliquer pour remplacer ou demander l\\'avis du Coach IA' onclick='event.stopPropagation(); window.openSubstituteModal(\"" + meal.id + "\", " + tagIdx + ", \"" + safeTagN + "\", \"" + safeEmoji + "\")'>";
+        html += "<span class='meal-tag meal-tag-interactive' title='Cliquer pour remplacer ou demander l\\'avis du Coach Vital' onclick='event.stopPropagation(); window.openSubstituteModal(\"" + meal.id + "\", " + tagIdx + ", \"" + safeTagN + "\", \"" + safeEmoji + "\")'>";
         html += "  <span class='tag-emoji'>" + safeEmoji + "</span> <span class='tag-text'>" + t.n + "</span> <span class='sub-tag-icon'><i class='ri-loop-right-line'></i></span>";
         html += "</span>";
       });
@@ -1086,7 +1086,7 @@ window.openMealAiSuggestModal = function(mealId) {
       <!-- Actions -->
       <div style="display:flex; flex-direction:column; gap:8px;">
         <button type="button" id="btnGenerateMealAi" onclick="window.generateMealAiProposal('${meal.id}')" style="padding:12px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--accent),#059669);color:#ffffff;font-weight:800;font-size:0.92rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 15px var(--accent-glow);">
-          <i class="ri-sparkling-fill"></i> Générer la proposition du Coach IA
+          <i class="ri-sparkling-fill"></i> Générer la proposition du Coach Vital
         </button>
       </div>
     </div>

@@ -3145,7 +3145,7 @@ async function sendChat(e) {
       ? "Le quota de requêtes est temporairement atteint. Vous pouvez réessayer dans quelques secondes ou utiliser un modèle plus léger."
       : (err.message?.includes('503') 
         ? "Les serveurs IA de Google sont temporairement surchargés. Cliquez sur Réessayer pour relancer la cascade."
-        : `Impossible de contacter le coach IA : ${err.message || 'Erreur réseau'}`);
+        : `Impossible de contacter le Coach Vital : ${err.message || 'Erreur réseau'}`);
 
     if (conv) {
       conv.messages.push({
@@ -6391,7 +6391,7 @@ function setModalTab(tab) {
       <div style="padding:14px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:10px; margin-bottom:12px;">
         <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
           <span style="font-size:1.2rem;">💡</span>
-          <strong style="color:var(--text); font-size:0.95rem;">Note & Recommandations du Coach IA :</strong>
+          <strong style="color:var(--text); font-size:0.95rem;">Note & Recommandations du Coach Vital :</strong>
         </div>
         <p style="font-size:0.88rem; color:var(--text); line-height:1.5; margin:0;">
           ${esc(coachNote)}
@@ -6647,7 +6647,7 @@ function setModalTab(tab) {
         <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
           <span style="font-size:1.4rem;">🌿</span>
           <div>
-            <div style="font-size:0.92rem; font-weight:800; color:var(--accent);">Vitaliser ce plat (Coach IA)</div>
+            <div style="font-size:0.92rem; font-weight:800; color:var(--accent);">Vitaliser ce plat (Coach Vital)</div>
             <div style="font-size:0.78rem; color:var(--text-dim);">Substitutions hygiénistes (Ehret &amp; Sebi) pour alcaliniser la recette</div>
           </div>
         </div>
@@ -8557,7 +8557,7 @@ function openMasterclass(index) {
   const footerBtn = `
     <div class="mc-footer-actions">
       <button class="herb-ask-ai-btn" onclick="askAIAboutMasterclass('${esc(mc.title.replace(/'/g, "\\'"))}')">
-        <i class="ri-sparkling-fill"></i> Approfondir cette leçon avec le Coach IA
+        <i class="ri-sparkling-fill"></i> Approfondir cette leçon avec le Coach Vital
       </button>
     </div>
   `;
@@ -9321,7 +9321,7 @@ function openFastingDetailModal(idx) {
     <!-- Actions -->
     <div style="display:flex; flex-direction:column; gap:8px;">
       <button type="button" class="btn-primary" style="width:100%; display:flex; align-items:center; justify-content:center; gap:8px; font-weight:700; padding:12px;" onclick="askAiAboutFastingSession(${idx})">
-        <i class="ri-sparkling-fill"></i> Bilan Personnalisé du Coach IA
+        <i class="ri-sparkling-fill"></i> Bilan Personnalisé du Coach Vital
       </button>
       <div style="display:flex; gap:8px;">
         <button type="button" class="btn-secondary" style="flex:1;" onclick="closeFastingDetailModal()">Fermer</button>

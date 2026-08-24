@@ -13,7 +13,7 @@ import { createServer } from '/Users/richard/Developer/vital_track/web-app/node_
 
 console.log('═══════════════════════════════════════════════════════════════════════');
 console.log('🎙️ TEST MULTILINGUE RÉEL : SIMULATION AUDIO VOCALE (FR, EN, ES, FR-CA)');
-console.log('    & VALIDATION DE BOUTON D\'ENVOI ET FLUX DE RÉPONSE DU COACH IA');
+console.log('    & VALIDATION DE BOUTON D\'ENVOI ET FLUX DE RÉPONSE DU COACH VITAL');
 console.log('═══════════════════════════════════════════════════════════════════════\n');
 
 async function synthesizeAudioBase64(text, voice) {
