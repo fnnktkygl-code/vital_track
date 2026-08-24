@@ -17,6 +17,10 @@ export const AI_FEATURE_MODELS: Record<string, ModelTierConfig> = {
     primaryModel: 'gemini-3.6-flash',
     fallbackModels: ['gemini-3.7-flash', 'gemini-3.5-flash-lite'],
   },
+  foodSearch: {
+    primaryModel: 'gemini-3.7-flash',
+    fallbackModels: ['gemini-3.6-flash', 'gemini-3.5-flash-lite'],
+  },
   vision: {
     primaryModel: 'gemini-3.7-flash',
     fallbackModels: ['gemini-3.6-flash', 'gemini-3.5-flash-lite'],
@@ -48,7 +52,7 @@ function getApiKeys(customKey?: string): string[] {
 }
 
 export async function executeGeminiWithFailover<T>(
-  feature: 'chat' | 'vision' | 'deepSearch' | 'greeting',
+  feature: 'chat' | 'foodSearch' | 'vision' | 'deepSearch' | 'greeting',
   customKey: string | undefined,
   executor: (ai: GoogleGenerativeAI, modelName: string) => Promise<T>
 ): Promise<{ result: T; modelUsed: string; isFallback: boolean }> {
