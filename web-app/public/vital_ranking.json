@@ -8529,5 +8529,368 @@
       "density": 98
     },
     "note": "Baie sauvage amazonienne : championne du monde de la vitamine C naturelle biodisponible (30x à 50x plus que l'orange)."
+  },
+  {
+    "id": "wild_blueberry_canada",
+    "names": [
+      "bleuet sauvage du canada",
+      "wild blueberry",
+      "bleuet sauvage",
+      "bleuet du québec"
+    ],
+    "emoji": "🫐",
+    "family": "Ericaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 95,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique / Nettoyant Lymphatique",
+      "sebiStatus": "sebi_official"
+    },
+    "scientific_defaults": {
+      "pral": -1.8,
+      "density": 92
+    }
+  },
+  {
+    "id": "wild_cranberry_canada",
+    "names": [
+      "canneberge sauvage fraîche",
+      "wild cranberry",
+      "canneberge fraîche",
+      "atoca"
+    ],
+    "emoji": "🔴",
+    "family": "Ericaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 95,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Astringent / Drainage Rénal",
+      "sebiStatus": "vitalist_pure"
+    },
+    "scientific_defaults": {
+      "pral": -1.5,
+      "density": 90
+    }
+  },
+  {
+    "id": "saskatoon_berry",
+    "names": [
+      "amélanche du canada",
+      "saskatoon berry",
+      "poire boréale",
+      "amélanchier"
+    ],
+    "emoji": "🫐",
+    "family": "Rosaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 90,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique / Alcalinisant",
+      "sebiStatus": "vitalist_pure"
+    },
+    "scientific_defaults": {
+      "pral": -1.6,
+      "density": 88
+    }
+  },
+  {
+    "id": "sea_buckthorn_canada",
+    "names": [
+      "argousier québécois",
+      "sea buckthorn",
+      "baie d'argousier",
+      "argouse"
+    ],
+    "emoji": "🟠",
+    "family": "Elaeagnaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 98,
+      "label": "Super-Aliment Vivant"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique / Puissant Antioxydant",
+      "sebiStatus": "vitalist_pure"
+    },
+    "scientific_defaults": {
+      "pral": -2.4,
+      "density": 95
+    }
+  },
+  {
+    "id": "cloudberry_canada",
+    "names": [
+      "chicoutai du québec",
+      "cloudberry",
+      "plaquebière boréale",
+      "chicouté"
+    ],
+    "emoji": "🟠",
+    "family": "Rosaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 92,
+      "label": "Brut · Vivant"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique / Baie Boréale",
+      "sebiStatus": "vitalist_pure"
+    },
+    "scientific_defaults": {
+      "pral": -1.9,
+      "density": 90
+    }
+  },
+  {
+    "id": "haskap_berry",
+    "names": [
+      "camerise du québec",
+      "haskap berry",
+      "chèvrefeuille bleu",
+      "baie de mai"
+    ],
+    "emoji": "🫐",
+    "family": "Caprifoliaceae",
+    "category": "Fruits",
+    "vitality": {
+      "nova": 1,
+      "freshness": 95,
+      "label": "Super-Fruit Boréal"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique / Drainant Lymphatique",
+      "sebiStatus": "vitalist_pure"
+    },
+    "scientific_defaults": {
+      "pral": -2.1,
+      "density": 92
+    }
+  },
+  {
+    "id": "pure_maple_syrup_quebec",
+    "names": [
+      "sirop d'érable pur grade a doré",
+      "pure maple syrup",
+      "sirop d'érable 100% pur québécois",
+      "sirop d'érable naturel"
+    ],
+    "emoji": "🍁",
+    "family": "Aceraceae",
+    "category": "Sucrants",
+    "vitality": {
+      "nova": 2,
+      "freshness": 70,
+      "label": "Ingrédient Naturel Non Raffiné"
+    },
+    "specific": {
+      "mucus": "Faiblement Mucogène",
+      "hybrid": false,
+      "electric": false,
+      "label": "Sucrant de Transition Minéralisé",
+      "sebiStatus": "transition_sweetener"
+    },
+    "scientific_defaults": {
+      "pral": -0.5,
+      "density": 60
+    }
+  },
+  {
+    "id": "pure_maple_water",
+    "names": [
+      "eau d'érable pure",
+      "maple water",
+      "sève d'érable brute non chauffée"
+    ],
+    "emoji": "💧",
+    "family": "Aceraceae",
+    "category": "Boissons",
+    "vitality": {
+      "nova": 1,
+      "freshness": 100,
+      "label": "Eau Biologique Vivante"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique / Hydratation Cellulaire",
+      "sebiStatus": "vitalist_pure"
+    },
+    "scientific_defaults": {
+      "pral": -2,
+      "density": 94
+    }
+  },
+  {
+    "id": "fiddleheads_canada",
+    "names": [
+      "têtes de violon du canada",
+      "fiddleheads",
+      "crosses de fougère",
+      "fougère à l'autruche"
+    ],
+    "emoji": "🌿",
+    "family": "Onocleaceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 90,
+      "label": "Pousse Sauvage Vivante"
+    },
+    "specific": {
+      "mucus": "Non-mucogène",
+      "hybrid": false,
+      "electric": true,
+      "label": "Alcalinisant / Plante Sauvage",
+      "sebiStatus": "vitalist_pure"
+    },
+    "scientific_defaults": {
+      "pral": -3.8,
+      "density": 88
+    }
+  },
+  {
+    "id": "wild_leek_canada",
+    "names": [
+      "ail des bois du québec",
+      "wild leek",
+      "oignon sauvage boréal",
+      "ramps"
+    ],
+    "emoji": "🧄",
+    "family": "Amaryllidaceae",
+    "category": "Légumes",
+    "vitality": {
+      "nova": 1,
+      "freshness": 92,
+      "label": "Plante Sauvage Boréale"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique / Dissolvant de Mucus",
+      "sebiStatus": "vitalist_pure"
+    },
+    "scientific_defaults": {
+      "pral": -3.5,
+      "density": 85
+    }
+  },
+  {
+    "id": "hemp_seeds_canada",
+    "names": [
+      "graines de chanvre décortiquées du canada",
+      "hemp seeds",
+      "cœurs de chanvre",
+      "hemp hearts"
+    ],
+    "emoji": "🌱",
+    "family": "Cannabaceae",
+    "category": "Noix & Graines",
+    "vitality": {
+      "nova": 1,
+      "freshness": 88,
+      "label": "Graine Vivante"
+    },
+    "specific": {
+      "mucus": "Faiblement Mucogène",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique / Ratio Oméga 3-6 Idéal",
+      "sebiStatus": "sebi_official"
+    },
+    "scientific_defaults": {
+      "pral": 0.4,
+      "density": 82
+    }
+  },
+  {
+    "id": "atlantic_dulse_canada",
+    "names": [
+      "dulse de l'atlantique canadien",
+      "atlantic dulse",
+      "algue dulse",
+      "palmaria palmata"
+    ],
+    "emoji": "🌊",
+    "family": "Palmariaceae",
+    "category": "Algues & Minéraux",
+    "vitality": {
+      "nova": 1,
+      "freshness": 95,
+      "label": "Super-Algue Boréale"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique / Reminéralisant Puissant",
+      "sebiStatus": "sebi_official"
+    },
+    "scientific_defaults": {
+      "pral": -9.8,
+      "density": 98
+    }
+  },
+  {
+    "id": "atlantic_kelp_canada",
+    "names": [
+      "varech kelp de l'atlantique canadien",
+      "atlantic kelp",
+      "kombu royal boréal",
+      "laminaria digitata"
+    ],
+    "emoji": "🌊",
+    "family": "Laminariaceae",
+    "category": "Algues & Minéraux",
+    "vitality": {
+      "nova": 1,
+      "freshness": 96,
+      "label": "Super-Algue Océanique"
+    },
+    "specific": {
+      "mucus": "Dissolvant",
+      "hybrid": false,
+      "electric": true,
+      "label": "Électrique / Iode & Métaux Lourds Détox",
+      "sebiStatus": "sebi_official"
+    },
+    "scientific_defaults": {
+      "pral": -12.4,
+      "density": 99
+    }
   }
 ]

@@ -5045,13 +5045,23 @@ async function askAIToFindFood(query) {
       targetIdx = vitalDb.length - 1;
     }
 
+    // Persist permanently in user's isolated custom food database
+    const customDb = store.get('customFoods', []);
+    const cIdx = customDb.findIndex(f => (aiFood.id && f.id === aiFood.id) || (f.names || []).some(n => n.toLowerCase() === (aiFood.name || '').toLowerCase()));
+    if (cIdx >= 0) {
+      customDb[cIdx] = { ...customDb[cIdx], ...aiFood, isCustom: true, savedAt: Date.now() };
+    } else {
+      customDb.push({ ...aiFood, isCustom: true, savedAt: Date.now() });
+    }
+    store.set('customFoods', customDb);
+
     // Rebuild index and category browse with new item
     buildSearchIndex();
     renderCategoryBrowse();
 
     if (resultsEl) resultsEl.innerHTML = renderFoodCard(aiFood);
     openFoodModal(targetIdx);
-    showToast(`✨ "${aiFood.names?.[0] || aiFood.name || q}" analysé avec succès !`, 'success');
+    showToast(`✨ "${aiFood.names?.[0] || aiFood.name || q}" analysé et enregistré dans votre base d'aliments !`, 'success');
   } catch (e) {
     if (resultsEl) resultsEl.innerHTML = `<p class="empty-state text-danger">${esc(e.message)}</p>`;
     showToast('Recherche IA terminée avec estimation locale.', 'info');
@@ -10936,6 +10946,21 @@ function renderMarkdown(text) {
     .replace(/\*([^\*\n<]+)\*/g, '<em style="color:rgba(255,255,255,0.9);">$1</em>')
     // Clean any remaining orphaned asterisks
     .replace(/\*\*/g, '')
+    // Parse Markdown Tables into sleek, responsive Japandi Tables
+    .replace(/((?:\|[^\n]+\|\r?\n)((?:\|(?:\s*:?-+:?\s*)\|?)+\r?\n)((?:\|[^\n]+\|\r?\n?)+))/g, (match, headerLine, separatorLine, bodyLines) => {
+      try {
+        const parseRow = (line) => line.trim().replace(/^\||\|$/g, '').split('|').map(c => c.trim());
+        const headers = parseRow(headerLine);
+        const rows = bodyLines.trim().split('\n').map(parseRow);
+
+        let theadHtml = '<thead><tr>' + headers.map(h => `<th style="padding:10px 14px; font-size:0.82rem; font-weight:800; color:var(--text); border-bottom:1.5px solid var(--border); background:rgba(255,255,255,0.03); text-align:left;">${h}</th>`).join('') + '</tr></thead>';
+        let tbodyHtml = '<tbody>' + rows.map(r => '<tr style="border-bottom:1px solid rgba(255,255,255,0.05);">' + r.map(c => `<td style="padding:10px 14px; font-size:0.82rem; color:var(--text); line-height:1.45;">${c}</td>`).join('') + '</tr>').join('') + '</tbody>';
+
+        return `<div class="japandi-table-card" style="overflow-x:auto; margin:14px 0; border-radius:14px; border:1px solid var(--border); background:var(--surface, #1e293b); box-shadow:0 4px 14px rgba(0,0,0,0.12);"><table style="width:100%; border-collapse:collapse; text-align:left;">${theadHtml}${tbodyHtml}</table></div>`;
+      } catch {
+        return match;
+      }
+    })
     .replace(/\n\n+/g, '</p><p style="margin-bottom:10px;line-height:1.6;">')
     .replace(/\n/g, '<br>');
 

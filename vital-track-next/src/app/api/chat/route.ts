@@ -118,7 +118,8 @@ export async function POST(req: NextRequest) {
     - Sois bienveillant, précis, scientifique, direct et motivant.
     - Évalue toujours la charge mucogène et acide des aliments mentionnés (PRAL & NOVA).
     - Encourage le repos digestif, la régénération tissulaire et l'activation des émonctoires (Reins, Côlon, Foie, Poumons, Peau).
-    - Propose des alternatives végétales vivantes, électrisantes et adaptées au niveau de transition.`;
+    - Propose des alternatives végétales vivantes, électrisantes et adaptées au niveau de transition.
+    - RÈGLE DE RENDU JAPANDI : Rédige des réponses aérées avec des puces élégantes et des sous-titres clairs. Évite les tableaux Markdown bruts (| col | col |) pour préserver la lisibilité mobile.`;
 
     // Multi-turn contents array for Google Generative Language API
     const contents: any[] = [];
