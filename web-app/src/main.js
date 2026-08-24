@@ -1355,8 +1355,10 @@ function showPage(page, options = {}) {
   if (page === 'materia-medica') renderRaintreeExplorer();
   if (page === 'favorites') renderFavorites();
   if (page === 'fasting') renderFasting();
-  if (page === 'resources') renderResources();
-  if (page === 'chat') initChatMascot();
+  if (page === 'chat') {
+    initChatMascot();
+    updateModelHeaderBadge();
+  }
   if (page === 'modes') {
     loadProfile();
     updateLiveAiPreview();
@@ -3226,7 +3228,10 @@ function renderModelPicker() {
         <span style="font-weight:800; font-size:0.88rem; color:var(--text); display:flex; align-items:center; gap:6px;">
           <i class="ri-sparkling-fill" style="color:var(--accent);"></i> Moteur IA &amp; FinOps
         </span>
-        <span class="japandi-mini-chip" style="color:var(--accent); font-size:0.68rem;">Google AI Studio</span>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <span class="japandi-mini-chip" style="color:var(--accent); font-size:0.68rem;">Google AI Studio</span>
+          <button type="button" class="icon-btn-micro" onclick="toggleModelList(event)" style="background:rgba(255,255,255,0.06); border:none; color:var(--text); width:24px; height:24px; border-radius:50%; cursor:pointer; font-size:0.9rem; display:flex; align-items:center; justify-content:center; transition:all 0.15s ease;" title="Fermer"><i class="ri-close-line"></i></button>
+        </div>
       </div>
       <div style="font-size:0.75rem; color:var(--text-dim); margin-top:2px;">
         Dual-Tier résilient (500 RPD Gratuites ➔ Failover Tier 1 Payant)
@@ -3301,6 +3306,7 @@ function renderModelPicker() {
 
   updateModelHeaderBadge();
 }
+window.renderModelPicker = renderModelPicker;
 
 function selectModel(modelId) {
   store.set('selected_model', modelId);
@@ -3310,6 +3316,7 @@ function selectModel(modelId) {
   const label = modelId === 'auto' ? 'Cascade FinOps Automatique' : modelId;
   if (window.showToast) window.showToast(`Modèle IA sélectionné : ${label}`, 'info');
 }
+window.selectModel = selectModel;
 
 function updateModelHeaderBadge() {
   const currentSelected = store.get('selected_model', 'auto');
@@ -3327,27 +3334,34 @@ function updateModelHeaderBadge() {
     }
   }
 }
+window.updateModelHeaderBadge = updateModelHeaderBadge;
 
 function toggleModelList(e) {
-  if (e) e.stopPropagation();
+  if (e) {
+    if (typeof e.stopPropagation === 'function') e.stopPropagation();
+    if (typeof e.preventDefault === 'function') e.preventDefault();
+  }
   const dropdown = document.getElementById('modelDropdown');
   if (!dropdown) return;
 
   const isVisible = dropdown.style.display === 'block';
   if (!isVisible) {
-    window.renderModelPicker();
+    renderModelPicker();
     dropdown.style.display = 'block';
 
     const rect = dropdown.getBoundingClientRect();
-    if (window.innerWidth - rect.right < 280) {
-      dropdown.classList.add('flip-sub');
+    if (window.innerWidth - rect.right < 20) {
+      dropdown.style.left = 'auto';
+      dropdown.style.right = '0';
     } else {
-      dropdown.classList.remove('flip-sub');
+      dropdown.style.left = '0';
+      dropdown.style.right = 'auto';
     }
   } else {
     dropdown.style.display = 'none';
   }
-};
+}
+window.toggleModelList = toggleModelList;
 
 // Close dropdown if clicked outside
 document.addEventListener('click', (e) => {
