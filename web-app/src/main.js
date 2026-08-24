@@ -9680,6 +9680,19 @@ function triggerRecoveryBreath() {
   }
 };
 
+function setBreathVisualPhase(phase, durationSec = null) {
+  const card = document.getElementById('breathCircle');
+  if (!card) return;
+  
+  const dur = (durationSec && durationSec > 0) ? `${durationSec}s` : '1.8s';
+  const animatedElements = card.querySelectorAll('.lung-lobe, .lungs-bg-aura, .diaphragm-arc, .lobe-body, .bronchial-tree');
+  animatedElements.forEach(el => {
+    el.style.transitionDuration = dur;
+  });
+  
+  card.className = `breath-lungs-card breath-circle ${phase}`.trim();
+}
+
 async function startBreathing() {
   if (breathingActive) {
     breathingActive = false;
@@ -9693,7 +9706,6 @@ async function startBreathing() {
 
   const mode = breathModes[currentBreathMode] || breathModes.wimhof;
   const rounds = parseInt(document.getElementById('breathRounds')?.value) || 3;
-  const circle = document.getElementById('breathCircle');
   const text = document.getElementById('breathText');
   const subText = document.getElementById('breathSubText');
   const info = document.getElementById('breathInfo');
@@ -9708,20 +9720,20 @@ async function startBreathing() {
 
       // Phase 1: Guided Breaths
       for (let b = 1; b <= mode.breaths && breathingActive; b++) {
-        if (circle) circle.className = 'breath-circle inhale';
+        setBreathVisualPhase('inhale', mode.inhale);
         if (text) text.textContent = `${b}`;
         if (subText) subText.textContent = `Inspirez à fond (${b}/${mode.breaths})`;
         await sleep(mode.inhale * 1000);
         if (!breathingActive) break;
 
         if (mode.hold > 0) {
-          if (circle) circle.className = 'breath-circle hold';
+          setBreathVisualPhase('hold', mode.hold);
           if (subText) subText.textContent = 'Bloquez';
           await sleep(mode.hold * 1000);
           if (!breathingActive) break;
         }
 
-        if (circle) circle.className = 'breath-circle exhale';
+        setBreathVisualPhase('exhale', mode.exhale);
         if (subText) subText.textContent = 'Relâchez le souffle';
         await sleep(mode.exhale * 1000);
         if (!breathingActive) break;
@@ -9729,7 +9741,7 @@ async function startBreathing() {
 
       // Phase 2: Retention on empty lungs (Wim Hof)
       if (mode.retentionAfter && breathingActive) {
-        if (circle) circle.className = 'breath-circle hold';
+        setBreathVisualPhase('hold', 2.5);
         if (subText) subText.textContent = 'Poumons vides · Retenez';
         if (retAction) retAction.style.display = 'block';
         if (info) info.innerHTML = `<p style="color:#38bdf8;">Tour ${r}/${rounds} — Rétention Poumons Vides</p>`;
@@ -9759,7 +9771,7 @@ async function startBreathing() {
 
         // Phase 3: Recovery Breath (15 seconds)
         if (breathingActive) {
-          if (circle) circle.className = 'breath-circle inhale';
+          setBreathVisualPhase('inhale', 2.5);
           if (subText) subText.textContent = 'Inspirez à fond & Bloquez (15s)';
           if (info) info.innerHTML = `<p style="color:#10b981;">Tour ${r}/${rounds} — Récupération (15s)</p>`;
 
@@ -9795,14 +9807,13 @@ async function startBreathing() {
 
 function resetBreathUI() {
   breathingActive = false;
-  const circle = document.getElementById('breathCircle');
+  setBreathVisualPhase('', 1.2);
   const text = document.getElementById('breathText');
   const subText = document.getElementById('breathSubText');
   const retAction = document.getElementById('breathRetentionAction');
   const btn = document.getElementById('breathStartBtn');
   const info = document.getElementById('breathInfo');
 
-  if (circle) circle.className = 'breath-circle';
   if (text) text.textContent = 'Prêt';
   if (subText) subText.textContent = 'Appuyez sur Démarrer';
   if (retAction) retAction.style.display = 'none';
