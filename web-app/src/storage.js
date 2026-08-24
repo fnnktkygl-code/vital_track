@@ -228,38 +228,32 @@ export function getUserStorageKey(k) {
   return `vt-guest-${k}`;
 }
 
-// ═══════ 4. STORE PRINCIPAL VITALTRACK ═══════
+// ═══════ 4. STORE PRINCIPAL VITALTRACK (CONFORME RGPD & ISOLEMENT STRICT) ═══════
 export const store = {
   /**
-   * Lecture résiliente avec chaîne de repli multi-niveaux :
-   * 1. Clé utilisateur connecté (vt-u_UID-key)
-   * 2. Clé invité (vt-guest-key)
-   * 3. Clé historique (vt-key)
-   * 4. Clé globale alternative (vital_key)
-   * 5. Toute clé précédente correspondant à ce suffixe
+   * Lecture hermétique avec isolation stricte par utilisateur :
+   * - Utilisateur connecté : lit UNIQUEMENT sa clé privée (vt-u_UID-key)
+   * - Invité / Déconnecté : lit UNIQUEMENT la clé invité (vt-guest-key), ZÉRO fuite des comptes connectés
    */
   get: (k, def) => {
     try {
-      const primaryKey = getUserStorageKey(k);
+      const user = (typeof window !== 'undefined' && window.vitalTrackAuth) ? window.vitalTrackAuth.getCurrentUser() : null;
+      const isAuth = !!(user && user.uid);
+      const primaryKey = isAuth ? `vt-u_${user.uid}-${k}` : `vt-guest-${k}`;
+
       const val = localStorage.getItem(primaryKey);
       if (val !== null) {
         return JSON.parse(val) ?? def;
       }
 
-      // Chaîne de repli automatique
-      const fallbacks = [
-        `vt-guest-${k}`,
-        `vt-${k}`,
-        `vital_${k}`
-      ];
-
-      for (const fKey of fallbacks) {
-        const fVal = localStorage.getItem(fKey);
-        if (fVal !== null) {
+      // Si l'utilisateur est authentifié et que c'est sa première connexion, repli sur son éventuelle clé legacy
+      if (isAuth) {
+        const legacyKey = `vt-${k}`;
+        const legacyVal = localStorage.getItem(legacyKey);
+        if (legacyVal !== null) {
           try {
-            const parsed = JSON.parse(fVal);
+            const parsed = JSON.parse(legacyVal);
             if (parsed !== undefined && parsed !== null) {
-              // Migration automatique transparente vers la clé courante
               localStorage.setItem(primaryKey, JSON.stringify(parsed));
               return parsed;
             }
@@ -267,23 +261,7 @@ export const store = {
         }
       }
 
-      // Recherche dans les autres clés existantes si l'utilisateur a changé d'identifiant
-      for (let i = 0; i < localStorage.length; i++) {
-        const lKey = localStorage.key(i);
-        if (lKey && lKey.endsWith(`-${k}`) && lKey !== primaryKey) {
-          const lVal = localStorage.getItem(lKey);
-          if (lVal !== null) {
-            try {
-              const parsed = JSON.parse(lVal);
-              if (parsed !== undefined && parsed !== null) {
-                localStorage.setItem(primaryKey, JSON.stringify(parsed));
-                return parsed;
-              }
-            } catch { }
-          }
-        }
-      }
-
+      // Pour l'espace invité déconnecté : renvoyer strictement la valeur par défaut sans inspecter les comptes privés
       return def;
     } catch (e) {
       console.warn(`[Store] Error reading key '${k}':`, e);
@@ -292,23 +270,16 @@ export const store = {
   },
 
   /**
-   * Écriture synchrone sûre avec broadcast d'événement et sauvegarde IDB en tâche de fond
+   * Écriture synchrone hermétique sans fuite de données vers le profil invité
    */
   set: (k, v) => {
     try {
       const primaryKey = getUserStorageKey(k);
       const serialized = JSON.stringify(v);
       localStorage.setItem(primaryKey, serialized);
-      
-      // Sauvegarder également une copie dans le canal invité si c'est une donnée active
-      // pour éviter toute perte lors d'une déconnexion accidentelle
-      if (primaryKey.startsWith('vt-u_')) {
-        localStorage.setItem(`vt-guest-${k}`, serialized);
-      }
 
-      // Sauvegarde asynchrone dans IndexedDB (sécurité anti-vidage de cache)
+      // Sauvegarde asynchrone dans IndexedDB (isolée sous la clé propre à l'utilisateur)
       idbSaveSnapshot(primaryKey, v);
-      idbSaveSnapshot(`backup_${k}`, v);
 
       // Notification de mise à jour pour réactivité globale
       if (typeof window !== 'undefined') {
@@ -322,21 +293,35 @@ export const store = {
   },
 
   /**
-   * Suppression propre sur toutes les variantes
+   * Suppression propre sur la clé active
    */
   del: (k) => {
     try {
       const primaryKey = getUserStorageKey(k);
       localStorage.removeItem(primaryKey);
-      localStorage.removeItem(`vt-guest-${k}`);
-      localStorage.removeItem(`vt-${k}`);
-      localStorage.removeItem(`vital_${k}`);
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new CustomEvent('vt:storage-updated', {
           detail: { key: k, value: null, storageKey: primaryKey }
         }));
       }
     } catch { }
+  },
+
+  /**
+   * Purge l'ensemble des données temporaires de la session invitée (Sécurité & RGPD)
+   */
+  clearGuestData: () => {
+    try {
+      for (let i = localStorage.length - 1; i >= 0; i--) {
+        const key = localStorage.key(i);
+        if (key && (key.startsWith('vt-guest-') || (key.startsWith('vt-') && !key.startsWith('vt-u_') && !key.startsWith('vt_auth_') && !key.startsWith('vt_wphoto_')))) {
+          localStorage.removeItem(key);
+        }
+      }
+      console.log('[Storage] Espace invité purgé avec succès (Isolation RGPD)');
+    } catch (e) {
+      console.warn('[Storage] Error clearing guest data:', e);
+    }
   },
 
   /**
@@ -396,7 +381,10 @@ export const store = {
         }
       });
 
-      console.log(`[Storage] Migration réussie des données vers l'utilisateur ${uid}`);
+      // 3. Purge immédiate de l'espace invité pour éviter toute persistance non-authentifiée
+      store.clearGuestData();
+
+      console.log(`[Storage] Migration réussie et espace invité nettoyé pour l'utilisateur ${uid}`);
     } catch (e) {
       console.warn('[Storage] Migration error:', e);
     }

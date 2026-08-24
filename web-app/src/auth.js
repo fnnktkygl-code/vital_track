@@ -211,17 +211,20 @@ class VitalTrackAuth {
   }
 
   /**
-   * Déconnexion sécurisée
+   * Déconnexion sécurisée (Isolation RGPD stricte)
    */
   signOut() {
     this._saveSession(null);
+    if (store && typeof store.clearGuestData === 'function') {
+      store.clearGuestData();
+    }
     if (window.showToast) {
       window.showToast(`🚪 ${t('auth.loggedOut', null, 'Vous êtes maintenant déconnecté.')}`, 'info');
     }
-    // Rechargement immédiat propre pour actualiser la vue et masquer les données privées
+    // Rechargement immédiat propre pour actualiser la vue et masquer toutes les données privées
     setTimeout(() => {
       window.location.reload();
-    }, 300);
+    }, 200);
   }
 
   /**
