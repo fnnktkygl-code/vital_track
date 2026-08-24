@@ -18,9 +18,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800;900&family=Fraunces:opsz,wght@9..144,500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;600&family=IBM+Plex+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-  <script type="module" crossorigin src="/assets/main-CZXuRy0G.js"></script>
+  <script type="module" crossorigin src="/assets/main-BQgxh3py.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
-  <link rel="stylesheet" crossorigin href="/assets/main-BPHU_sw6.css">
+  <link rel="stylesheet" crossorigin href="/assets/main-C3HjAmjr.css">
 </head>
 <body>
   <div class="bg-blob blob-1"></div>
@@ -1647,37 +1647,44 @@
   </main>
 
   <!-- ═══════ BREATHING ═══════ -->
+  <!-- ═══════ BREATHING (JAPANDI REDESIGN) ═══════ -->
   <main class="page" id="page-breathing">
-    <div class="breathing-container" style="max-width:760px; margin:0 auto;">
+    <div class="breathing-container" style="max-width:780px; margin:0 auto;">
       <!-- Header with Tabs -->
-      <div class="breathing-header glass" style="margin-bottom:16px;">
-        <div class="page-header-wrap" style="margin-bottom:10px;">
-          <div class="header-icon-tile">🌬️</div>
+      <div class="breathing-header glass" style="margin-bottom:20px; border-radius:24px; padding:24px 28px; border:1px solid var(--border); background:var(--surface); box-shadow:0 10px 30px rgba(0,0,0,0.12); backdrop-filter:blur(14px);">
+        <div class="page-header-wrap" style="display:flex; align-items:center; gap:16px; margin-bottom:14px; text-align:left;">
+          <div class="header-icon-tile" style="width:48px; height:48px; border-radius:16px; background:rgba(16,185,129,0.15); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:1.6rem; border:1px solid rgba(16,185,129,0.25); box-shadow:0 4px 16px rgba(16,185,129,0.15); flex-shrink:0;">
+            🌬️
+          </div>
           <div>
-            <h2 data-i18n="breathing.pageTitle">Respiration &amp; Méthode Wim Hof</h2>
-            <p class="subtitle" data-i18n="breathing.pageSubtitle">Alcalinisation sanguine · Contrôle du système nerveux · Réduction de l'inflammation</p>
+            <h2 style="font-size:1.4rem; font-weight:800; color:var(--text); margin:0 0 4px;" data-i18n="breathing.pageTitle">Respiration Wim Hof &amp; Oxygénation Cellulaire</h2>
+            <p class="subtitle" style="font-size:0.84rem; color:var(--text-dim); margin:0;" data-i18n="breathing.pageSubtitle">Protocole respiratoire guidé, rétentions d'apnée et alcalinisation sanguine immédiate.</p>
           </div>
         </div>
         
-        <!-- Safety Alert Banner -->
-        <div class="breathing-safety-alert" style="margin-top:14px; background:rgba(239, 68, 68, 0.12); border:1px solid rgba(239, 68, 68, 0.35); border-radius:12px; padding:10px 14px; font-size:0.82rem; color:var(--text); display:flex; align-items:center; gap:10px; text-align:left;">
-          <i class="ri-alert-fill" style="font-size:1.3rem; color:#ef4444; flex-shrink:0;"></i>
-          <div>
+        <!-- Safety Alert Banner (Japandi Warm Amber/Red Pill) -->
+        <div class="breathing-safety-alert" style="margin-top:14px; background:rgba(239, 68, 68, 0.08); border:1px solid rgba(239, 68, 68, 0.25); border-radius:14px; padding:12px 16px; font-size:0.82rem; color:var(--text); display:flex; align-items:center; gap:12px; text-align:left;">
+          <div style="width:32px; height:32px; border-radius:10px; background:rgba(239, 68, 68, 0.15); color:#ef4444; display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0;">
+            <i class="ri-alert-line"></i>
+          </div>
+          <div style="line-height:1.45;">
             <strong style="color:#ef4444;" data-i18n="breathing.safetyRuleTitle">Règle de sécurité impérative :</strong> <span data-i18n="breathing.safetyRuleText">Pratiquez toujours <strong>assis ou allongé</strong> dans un lieu sécurisé. <strong>JAMAIS</strong> dans l'eau (bain, piscine), sous la douche ou au volant.</span>
           </div>
         </div>
 
-        <!-- Section Switcher Tabs -->
-        <div class="breathing-nav-tabs" style="display:flex; gap:8px; justify-content:center; margin-top:18px; flex-wrap:wrap;">
-          <button type="button" class="tab active" id="tabBtnBreathingTimer" onclick="switchBreathingTab('timer')" style="border-radius:25px; padding:8px 18px; font-size:0.9rem; font-weight:600;">
-            <i class="ri-timer-flash-line"></i> <span data-i18n="breathing.tabTimer">Session Guidée (Timer)</span>
-          </button>
-          <button type="button" class="tab" id="tabBtnBreathingVideos" onclick="switchBreathingTab('videos')" style="border-radius:25px; padding:8px 18px; font-size:0.9rem; font-weight:600;">
-            <i class="ri-movie-line"></i> <span data-i18n="breathing.tabVideos">Vidéos & Masterclass Wim Hof</span>
-          </button>
-          <button type="button" class="tab" id="tabBtnBreathingGuide" onclick="switchBreathingTab('guide')" style="border-radius:25px; padding:8px 18px; font-size:0.9rem; font-weight:600;">
-            <i class="ri-book-open-line"></i> <span data-i18n="breathing.tabGuide">Protocole & Physiologie</span>
-          </button>
+        <!-- Segmented Capsule Nav Tabs -->
+        <div class="breathing-nav-tabs-wrapper" style="display:flex; justify-content:center; margin-top:20px;">
+          <div class="breathing-nav-tabs" style="display:inline-flex; background:var(--surface-2, rgba(255,255,255,0.04)); border:1px solid var(--border); border-radius:50px; padding:4px; gap:4px; box-shadow:0 2px 10px rgba(0,0,0,0.15);">
+            <button type="button" class="tab active" id="tabBtnBreathingTimer" onclick="switchBreathingTab('timer')" style="border-radius:50px; padding:8px 18px; font-size:0.86rem; font-weight:700; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:6px; transition:all 0.2s cubic-bezier(0.4, 0, 0.2, 1);">
+              <i class="ri-timer-flash-line"></i> <span data-i18n="breathing.tabTimer">Session Guidée (Timer)</span>
+            </button>
+            <button type="button" class="tab" id="tabBtnBreathingVideos" onclick="switchBreathingTab('videos')" style="border-radius:50px; padding:8px 18px; font-size:0.86rem; font-weight:700; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:6px; transition:all 0.2s cubic-bezier(0.4, 0, 0.2, 1);">
+              <i class="ri-movie-line"></i> <span data-i18n="breathing.tabVideos">Vidéos &amp; Masterclass Wim Hof</span>
+            </button>
+            <button type="button" class="tab" id="tabBtnBreathingGuide" onclick="switchBreathingTab('guide')" style="border-radius:50px; padding:8px 18px; font-size:0.86rem; font-weight:700; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:6px; transition:all 0.2s cubic-bezier(0.4, 0, 0.2, 1);">
+              <i class="ri-book-open-line"></i> <span data-i18n="breathing.tabGuide">Protocole &amp; Physiologie</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -1702,8 +1709,8 @@
         </div>
 
         <!-- Stop Retention Action Button (Visible during Retention Phase) -->
-        <div id="breathRetentionAction" style="display:none; margin-bottom:18px;">
-          <button type="button" class="btn-primary" onclick="triggerRecoveryBreath()" style="padding:14px 28px; font-size:1.05rem; font-weight:700; border-radius:50px; background:linear-gradient(135deg, #10b981, #059669); border:none; box-shadow:0 0 20px rgba(16, 185, 129, 0.4); cursor:pointer;">
+        <div id="breathRetentionAction" style="display:none; margin-bottom:20px;">
+          <button type="button" class="btn-primary" onclick="triggerRecoveryBreath()" style="padding:14px 32px; font-size:1.02rem; font-weight:800; border-radius:50px; background:linear-gradient(135deg, #10b981, #059669); border:none; box-shadow:0 8px 25px rgba(16, 185, 129, 0.4); cursor:pointer;">
             <i class="ri-lungs-line"></i> <span data-i18n="breathing.recoveryAction">J'inspire (Passer à la récupération 15s)</span>
           </button>
         </div>
@@ -1740,10 +1747,12 @@
         </div>
 
         <!-- Dynamic Round Times History for current / past sessions -->
-        <div class="dash-card glass" style="margin-top:24px; text-align:left;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-            <h3 style="margin:0; font-size:1rem;"><i class="ri-history-line" style="color:var(--accent);"></i> Historique & Records de Rétention</h3>
-            <span style="font-size:0.8rem; color:var(--text-dim);">30 dernières sessions</span>
+        <div class="dash-card glass" style="margin-top:24px; text-align:left; border-radius:24px; padding:22px 24px; border:1px solid var(--border);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+            <h3 style="margin:0; font-size:1.02rem; font-weight:800; color:var(--text); display:flex; align-items:center; gap:8px;">
+              <i class="ri-history-line" style="color:var(--accent);"></i> Historique &amp; Records de Rétention
+            </h3>
+            <span style="font-size:0.8rem; color:var(--text-dim); font-weight:600;">30 dernières sessions</span>
           </div>
           <div id="breathHistory"><p class="empty-state-sm">Aucune session enregistrée.</p></div>
         </div>
@@ -1751,21 +1760,21 @@
 
       <!-- ════ TAB 2: VIDÉOS & MASTERCLASS WIM HOF ════ -->
       <div id="breathingTabVideos" class="breathing-tab-pane" style="display:none; text-align:left;">
-        <div class="dash-card glass" style="margin-bottom:20px;">
+        <div class="dash-card glass" style="margin-bottom:20px; border-radius:24px; padding:24px; border:1px solid var(--border);">
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
-            <h3 id="wimHofActiveTitle" style="display:flex; align-items:center; gap:8px; margin:0; font-size:1.1rem;">
+            <h3 id="wimHofActiveTitle" style="display:flex; align-items:center; gap:8px; margin:0; font-size:1.1rem; font-weight:800;">
               <i class="ri-video-fill" style="color:var(--accent);"></i> Vidéo Guidée Wim Hof (3 Rounds) • 🇫🇷 Version Française
             </h3>
-            <span id="wimHofActiveBadge" class="badge badge-success" style="display:inline-flex; align-items:center; gap:5px; font-size:0.75rem; padding:4px 10px;">
+            <span id="wimHofActiveBadge" class="badge badge-success" style="display:inline-flex; align-items:center; gap:5px; font-size:0.75rem; padding:4px 12px; border-radius:50px;">
               <i class="ri-checkbox-circle-fill"></i> 🇫🇷 VF Guidée HD
             </span>
           </div>
-          <p id="wimHofActiveDesc" style="font-size:0.85rem; color:var(--text-dim); margin-bottom:16px;">
+          <p id="wimHofActiveDesc" style="font-size:0.85rem; color:var(--text-dim); margin-bottom:16px; line-height:1.5;">
             Pratiquez directement en rythme avec le guidage vocal français calé en direct sur les cloches, inspirations et temps de rétention.
           </p>
           
           <!-- Native HTML5 Responsive Video Player -->
-          <div style="position:relative; width:100%; border-radius:14px; overflow:hidden; border:1px solid var(--border); background:#000; box-shadow:0 8px 30px rgba(0,0,0,0.5);">
+          <div style="position:relative; width:100%; border-radius:18px; overflow:hidden; border:1px solid var(--border); background:#000; box-shadow:0 12px 36px rgba(0,0,0,0.5);">
             <video id="wimHofVideoPlayer"
                    controls
                    playsinline
@@ -1781,10 +1790,10 @@
           <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-top:18px; padding-top:14px; border-top:1px solid var(--border);">
             <div style="display:flex; align-items:center; gap:8px;">
               <span style="font-size:0.8rem; font-weight:700; color:var(--text-dim);"><i class="ri-translate-2"></i> Piste Audio :</span>
-              <button type="button" class="preset-pill breathing-lang-btn active" data-lang="fr" onclick="setBreathingVideoLang('fr')" style="font-size:0.8rem; padding:5px 12px;">
+              <button type="button" class="preset-pill breathing-lang-btn active" data-lang="fr" onclick="setBreathingVideoLang('fr')" style="font-size:0.8rem; padding:5px 14px;">
                 🇫🇷 Version Française
               </button>
-              <button type="button" class="preset-pill breathing-lang-btn" data-lang="en" onclick="setBreathingVideoLang('en')" style="font-size:0.8rem; padding:5px 12px;">
+              <button type="button" class="preset-pill breathing-lang-btn" data-lang="en" onclick="setBreathingVideoLang('en')" style="font-size:0.8rem; padding:5px 14px;">
                 🇬🇧 English Original
               </button>
             </div>
@@ -1792,20 +1801,20 @@
           </div>
 
           <!-- Video Selector Buttons FR -->
-          <div class="breathing-video-group" data-lang="fr" style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;">
+          <div class="breathing-video-group" data-lang="fr" style="display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;">
             <button type="button" class="preset-pill active" onclick="loadBreathingVideo('3-rounds-fr', this)">
               🎬 3 Rounds Guidés VF <span style="opacity:0.7; font-size:0.75rem;">(11:00)</span>
             </button>
             <button type="button" class="preset-pill" onclick="loadBreathingVideo('tutorial-fr', this)">
-              📖 Tutoriel & Technique VF <span style="opacity:0.7; font-size:0.75rem;">(10:08)</span>
+              📖 Tutoriel &amp; Technique VF <span style="opacity:0.7; font-size:0.75rem;">(10:08)</span>
             </button>
             <button type="button" class="preset-pill" onclick="loadBreathingVideo('science-fr', this)">
-              🔬 Science & Immunité VF <span style="opacity:0.7; font-size:0.75rem;">(44:13)</span>
+              🔬 Science &amp; Immunité VF <span style="opacity:0.7; font-size:0.75rem;">(44:13)</span>
             </button>
           </div>
 
           <!-- Video Selector Buttons EN -->
-          <div class="breathing-video-group" data-lang="en" style="display:none; gap:10px; margin-top:12px; flex-wrap:wrap;">
+          <div class="breathing-video-group" data-lang="en" style="display:none; gap:10px; margin-top:14px; flex-wrap:wrap;">
             <button type="button" class="preset-pill" onclick="loadBreathingVideo('3-rounds-en', this)">
               🎬 Guided 3 Rounds EN <span style="opacity:0.7; font-size:0.75rem;">(11:00)</span>
             </button>
@@ -1813,50 +1822,65 @@
               📖 Method Tutorial EN <span style="opacity:0.7; font-size:0.75rem;">(20:00)</span>
             </button>
             <button type="button" class="preset-pill" onclick="loadBreathingVideo('science-en', this)">
-              🔬 Science & Immunity EN <span style="opacity:0.7; font-size:0.75rem;">(71:00)</span>
+              🔬 Science &amp; Immunity EN <span style="opacity:0.7; font-size:0.75rem;">(71:00)</span>
             </button>
           </div>
         </div>
 
         <!-- Video Key Points Card -->
-        <div class="dash-card glass">
-          <h4 style="color:var(--accent); margin-bottom:10px; font-size:0.95rem;"><i class="ri-lightbulb-flash-line"></i> Conseils pour la séance vidéo</h4>
-          <ul style="font-size:0.85rem; color:var(--text-dim); line-height:1.6; padding-left:20px; margin:0;">
-            <li><strong>Laissez aller le souffle :</strong> Ne forcez pas l'expiration, relâchez simplement comme un ballon qui se dégonfle doucement.</li>
-            <li><strong>Sensations normales :</strong> Des picotements dans les mains/visage, une sensation de tête légère ou de chaleur sont physiologiquement tout à fait normaux (liés à la baisse temporaire du CO2 sanguin).</li>
-            <li><strong>Écoutez votre corps :</strong> Ne luttez jamais pour battre un record. Si vous ressentez le besoin d'inspirer pendant la rétention, inspirez doucement et passez à la récupération de 15s.</li>
+        <div class="dash-card glass" style="border-radius:24px; padding:22px 24px; border:1px solid var(--border);">
+          <h4 style="color:var(--accent); margin-bottom:12px; font-size:0.98rem; font-weight:800; display:flex; align-items:center; gap:8px;">
+            <i class="ri-lightbulb-flash-line"></i> Conseils pour la séance vidéo
+          </h4>
+          <ul style="font-size:0.85rem; color:var(--text-dim); line-height:1.65; padding-left:20px; margin:0;">
+            <li style="margin-bottom:6px;"><strong style="color:var(--text);">Laissez aller le souffle :</strong> Ne forcez pas l'expiration, relâchez simplement comme un ballon qui se dégonfle doucement.</li>
+            <li style="margin-bottom:6px;"><strong style="color:var(--text);">Sensations normales :</strong> Des picotements dans les mains/visage, une sensation de tête légère ou de chaleur sont physiologiquement normaux (baisse temporaire du CO2 sanguin).</li>
+            <li><strong style="color:var(--text);">Écoutez votre corps :</strong> Ne cherchez pas la performance à tout prix. Dès que l'envie d'inspirer arrive, reprenez calmement votre souffle et passez à la récupération de 15s.</li>
           </ul>
         </div>
       </div>
 
-      <!-- ════ TAB 3: PROTOCOLE & SCIENCE PHYSIOLOGIQUE ════ -->
+      <!-- ════ TAB 3: PROTOCOLE & SCIENCE PHYSIOLOGIQUE (JAPANDI) ════ -->
       <div id="breathingTabGuide" class="breathing-tab-pane" style="display:none; text-align:left;">
-        <div class="dash-card glass" style="margin-bottom:18px;">
-          <h3 style="color:var(--accent); margin-bottom:12px; display:flex; align-items:center; gap:8px;">
-            <i class="ri-flask-line"></i> Les 3 Phases de la Méthode Wim Hof
-          </h3>
-          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:14px;">
+        <div class="dash-card glass" style="margin-bottom:20px; border-radius:24px; padding:24px 26px; border:1px solid var(--border);">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:18px;">
+            <div style="width:38px; height:38px; border-radius:12px; background:rgba(16,185,129,0.15); color:var(--accent); display:flex; align-items:center; justify-content:center; font-size:1.3rem;">
+              <i class="ri-flask-line"></i>
+            </div>
+            <div>
+              <h3 style="color:var(--text); margin:0; font-size:1.1rem; font-weight:800;">Les 3 Phases de la Méthode Wim Hof</h3>
+              <span style="font-size:0.8rem; color:var(--text-dim);">Mécanismes physiologiques et cycle d'oxygénation cellulaire</span>
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:16px;">
             
-            <div style="background:var(--surface-hover); border:1px solid var(--border); border-radius:12px; padding:14px;">
-              <div style="font-size:1.5rem; margin-bottom:6px;">1️⃣</div>
-              <h4 style="color:var(--text); font-size:0.92rem; margin-bottom:6px;">30 à 40 Respirations</h4>
-              <p style="font-size:0.8rem; color:var(--text-dim); line-height:1.4; margin:0;">
+            <div style="background:var(--surface-2, rgba(255,255,255,0.03)); border:1px solid var(--border); border-radius:20px; padding:20px; transition:all 0.25s ease;">
+              <div style="width:34px; height:34px; border-radius:10px; background:rgba(16,185,129,0.15); color:var(--accent); font-weight:900; font-size:1rem; display:flex; align-items:center; justify-content:center; margin-bottom:12px; border:1px solid rgba(16,185,129,0.25);">
+                1
+              </div>
+              <h4 style="color:var(--text); font-size:0.96rem; font-weight:800; margin-bottom:8px;">30 à 40 Respirations</h4>
+              <p style="font-size:0.82rem; color:var(--text-dim); line-height:1.55; margin:0;">
                 Inspiration profonde par le ventre puis la poitrine. Expiration relâchée sans vider complètement. Alcalinise le sang et surcharge les mitochondries en oxygène.
               </p>
             </div>
 
-            <div style="background:var(--surface-hover); border:1px solid var(--border); border-radius:12px; padding:14px;">
-              <div style="font-size:1.5rem; margin-bottom:6px;">2️⃣</div>
-              <h4 style="color:var(--text); font-size:0.92rem; margin-bottom:6px;">Rétention Poumons Vides</h4>
-              <p style="font-size:0.8rem; color:var(--text-dim); line-height:1.4; margin:0;">
+            <div style="background:var(--surface-2, rgba(255,255,255,0.03)); border:1px solid var(--border); border-radius:20px; padding:20px; transition:all 0.25s ease;">
+              <div style="width:34px; height:34px; border-radius:10px; background:rgba(56,189,248,0.15); color:#38bdf8; font-weight:900; font-size:1rem; display:flex; align-items:center; justify-content:center; margin-bottom:12px; border:1px solid rgba(56,189,248,0.25);">
+                2
+              </div>
+              <h4 style="color:var(--text); font-size:0.96rem; font-weight:800; margin-bottom:8px;">Rétention Poumons Vides</h4>
+              <p style="font-size:0.82rem; color:var(--text-dim); line-height:1.55; margin:0;">
                 Après la 30ème expiration, bloquez votre souffle sans forcer (1 à 2 min). Déclenche une hypoxie intermittente protectrice, stimule l'EPO et calme le mental.
               </p>
             </div>
 
-            <div style="background:var(--surface-hover); border:1px solid var(--border); border-radius:12px; padding:14px;">
-              <div style="font-size:1.5rem; margin-bottom:6px;">3️⃣</div>
-              <h4 style="color:var(--text); font-size:0.92rem; margin-bottom:6px;">Inspiration de Récupération (15s)</h4>
-              <p style="font-size:0.8rem; color:var(--text-dim); line-height:1.4; margin:0;">
+            <div style="background:var(--surface-2, rgba(255,255,255,0.03)); border:1px solid var(--border); border-radius:20px; padding:20px; transition:all 0.25s ease;">
+              <div style="width:34px; height:34px; border-radius:10px; background:rgba(245,158,11,0.15); color:#f59e0b; font-weight:900; font-size:1rem; display:flex; align-items:center; justify-content:center; margin-bottom:12px; border:1px solid rgba(245,158,11,0.25);">
+                3
+              </div>
+              <h4 style="color:var(--text); font-size:0.96rem; font-weight:800; margin-bottom:8px;">Inspiration de Récupération (15s)</h4>
+              <p style="font-size:0.82rem; color:var(--text-dim); line-height:1.55; margin:0;">
                 Inspirez à fond et retenez 15 secondes. Sensation de chaleur qui monte dans la tête. Réoxygénation fulgurante de tous les tissus.
               </p>
             </div>
@@ -1864,25 +1888,33 @@
           </div>
         </div>
 
-        <div class="dash-card glass">
-          <h3 style="color:#38bdf8; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
-            <i class="ri-shield-check-line"></i> Ce que dit la Science (Étude Radboud 2014)
-          </h3>
-          <p style="font-size:0.85rem; color:var(--text); line-height:1.6; margin-bottom:12px;">
+        <div class="dash-card glass" style="border-radius:24px; padding:24px 26px; border:1px solid rgba(56,189,248,0.25); background:linear-gradient(135deg, rgba(56,189,248,0.04), rgba(16,185,129,0.04));">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px;">
+            <div style="width:38px; height:38px; border-radius:12px; background:rgba(56,189,248,0.15); color:#38bdf8; display:flex; align-items:center; justify-content:center; font-size:1.3rem;">
+              <i class="ri-shield-check-line"></i>
+            </div>
+            <div>
+              <h3 style="color:var(--text); margin:0; font-size:1.1rem; font-weight:800;">Ce que dit la Science (Étude Radboud 2014)</h3>
+              <span style="font-size:0.8rem; color:var(--text-dim);">Validation clinique universitaire en milieu hospitalier</span>
+            </div>
+          </div>
+
+          <p style="font-size:0.86rem; color:var(--text); line-height:1.6; margin-bottom:16px;">
             L'étude pionnière menée par l'Université de Radboud (Pays-Bas) a démontré pour la première fois dans l'histoire médicale que des individus entraînés à cette méthode peuvent volontairement influencer leur système immunitaire inné et leur système nerveux autonome :
           </p>
-          <div style="display:flex; flex-direction:column; gap:8px; font-size:0.82rem; color:var(--text-dim);">
-            <div style="display:flex; align-items:center; gap:8px;">
-              <span style="color:#4ade80;">✔</span>
-              <span><strong>Pic d'épinéphrine (adrénaline) :</strong> Supérieur à celui d'un saut à l'élastique, modulant l'inflammation sans anxiété.</span>
+          
+          <div style="display:flex; flex-direction:column; gap:10px;">
+            <div style="padding:12px 16px; background:var(--surface-2, rgba(255,255,255,0.03)); border-radius:14px; border:1px solid var(--border); display:flex; align-items:flex-start; gap:12px;">
+              <i class="ri-checkbox-circle-fill" style="color:var(--accent); font-size:1.15rem; margin-top:2px; flex-shrink:0;"></i>
+              <span style="font-size:0.84rem; color:var(--text); line-height:1.5;"><strong>Pic d'épinéphrine (adrénaline) :</strong> Supérieur à celui d'un saut à l'élastique, modulant l'inflammation sans anxiété.</span>
             </div>
-            <div style="display:flex; align-items:center; gap:8px;">
-              <span style="color:#4ade80;">✔</span>
-              <span><strong>Chute massive des cytokines pro-inflammatoires (TNF-α, IL-6, IL-8)</strong> et hausse de la cytokine anti-inflammatoire IL-10.</span>
+            <div style="padding:12px 16px; background:var(--surface-2, rgba(255,255,255,0.03)); border-radius:14px; border:1px solid var(--border); display:flex; align-items:flex-start; gap:12px;">
+              <i class="ri-checkbox-circle-fill" style="color:var(--accent); font-size:1.15rem; margin-top:2px; flex-shrink:0;"></i>
+              <span style="font-size:0.84rem; color:var(--text); line-height:1.5;"><strong>Chute massive des cytokines pro-inflammatoires (TNF-α, IL-6, IL-8)</strong> et hausse significative de l'interleukine anti-inflammatoire IL-10.</span>
             </div>
-            <div style="display:flex; align-items:center; gap:8px;">
-              <span style="color:#4ade80;">✔</span>
-              <span><strong>Augmentation temporaire du pH sanguin jusqu'à 7.75</strong>, créant un terrain biochimique alcalin désamorçant l'acidose tissulaire.</span>
+            <div style="padding:12px 16px; background:var(--surface-2, rgba(255,255,255,0.03)); border-radius:14px; border:1px solid var(--border); display:flex; align-items:flex-start; gap:12px;">
+              <i class="ri-checkbox-circle-fill" style="color:var(--accent); font-size:1.15rem; margin-top:2px; flex-shrink:0;"></i>
+              <span style="font-size:0.84rem; color:var(--text); line-height:1.5;"><strong>Augmentation temporaire du pH sanguin jusqu'à 7.75</strong>, créant un terrain biochimique alcalin désamorçant l'acidose tissulaire.</span>
             </div>
           </div>
         </div>
