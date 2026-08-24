@@ -3328,6 +3328,18 @@
     </div>
   </div>
 
+  <!-- ═══════ MODALE DE PRÉVISUALISATION & ADAPTATION DU PLAN ALIMENTAIRE IA ═══════ -->
+  <div id="previewDietPlanModal" class="modal-overlay" onclick="window.closePreviewDietPlanModal && window.closePreviewDietPlanModal(event)" style="display:none; z-index:99999;">
+    <div class="modal-card glass" onclick="event.stopPropagation()" style="max-width:620px; width:92%; max-height:88vh; overflow-y:auto; padding:28px 24px; border-radius:24px; border:1.5px solid rgba(52,211,153,0.3); box-shadow:0 20px 60px rgba(0,0,0,0.85); position:relative;">
+      <button class="modal-close-btn" onclick="window.closePreviewDietPlanModal && window.closePreviewDietPlanModal(null)" style="position:absolute; top:18px; right:18px; background:var(--surface-hover); border:none; color:var(--text); width:34px; height:34px; border-radius:50%; cursor:pointer; font-size:1.2rem; display:flex; align-items:center; justify-content:center;">
+        <i class="ri-close-line"></i>
+      </button>
+      <div id="previewDietPlanModalContent">
+        <!-- Injected dynamically via previewAndCustomizeDietPlanModal() -->
+      </div>
+    </div>
+  </div>
+
   <!-- ═══════ MODALE PROFIL UTILISATEUR & BADGES VITALISTES ═══════ -->
   <div id="userProfileModal" class="modal-overlay" onclick="closeUserProfileModal(event)" style="display:none; z-index:99999;">
     <div class="modal-card glass" onclick="event.stopPropagation()" style="max-width:560px; width:92%; max-height:88vh; overflow-y:auto; padding:28px 24px; border-radius:24px; border:1px solid rgba(52,211,153,0.3); box-shadow:0 20px 60px rgba(0,0,0,0.85); position:relative;">

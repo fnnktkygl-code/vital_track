@@ -22,6 +22,14 @@ import './styles/materiaAppleStyle.css';
 import { initBookReaderModule, openBookReader } from './bookReaderModule.js';
 import { initMicroInteractionsModule, initStripCalendar, refreshDailyStripRoutine } from './microInteractionsModule.js';
 import { syncLocationAndClimate, handleCityInputChange, navigateToLocationSettings, BIOREGIONS } from './geoClimateService.js';
+import {
+  parseMarkdownDietPlan,
+  renderDietPlanActionCardHtml,
+  applyExtractedDietPlanToCalendar,
+  previewAndCustomizeDietPlanModal,
+  saveAndApplyCustomizedDietPlan,
+  closePreviewDietPlanModal
+} from './dietPlanAiBridge.js';
 
 // Exposer globalement pour l'interface utilisateur
 window.store = store;
@@ -10834,6 +10842,7 @@ window.formatModelName = formatModelName;
 
 function renderMarkdown(text) {
   if (!text) return '';
+  const rawInputText = text;
   text = formatChemicals(text);
 
   // Extract and replace JSON blocks with interactive UI cards
@@ -10967,7 +10976,16 @@ function renderMarkdown(text) {
     .replace(/\n\n+/g, '</p><p style="margin-bottom:10px;line-height:1.6;">')
     .replace(/\n/g, '<br>');
 
-  return text;
+  let extraDietCard = '';
+  if (!text.includes('ai-diet-plan-bridge-card') && !text.includes('ai-plan-card')) {
+    const extractedPlan = parseMarkdownDietPlan(rawInputText);
+    if (extractedPlan && extractedPlan.sections && extractedPlan.sections.length > 0) {
+      const tFunc = window.vitalTrackI18n?.t || ((k, p, f) => f || k);
+      extraDietCard = renderDietPlanActionCardHtml(extractedPlan, tFunc);
+    }
+  }
+
+  return text + extraDietCard;
 }
 
 function cleanMarkdownFormatting(txt) {
@@ -16451,9 +16469,14 @@ if (typeof window !== "undefined") window.openUserProfileModal = openUserProfile
 if (typeof window !== "undefined") window.closeUserProfileModal = closeUserProfileModal;
 if (typeof window !== "undefined") window.renderUserProfileModal = renderUserProfileModal;
 if (typeof window !== "undefined") window.openTransitionPlanExplainerModal = openTransitionPlanExplainerModal;
-if (typeof window !== "undefined") window.closeTransitionPlanExplainerModal = closeTransitionPlanExplainerModal;
 if (typeof window !== "undefined") window.syncLocationAndClimate = syncLocationAndClimate;
 if (typeof window !== "undefined") window.navigateToLocationSettings = navigateToLocationSettings;
+if (typeof window !== "undefined") window.parseMarkdownDietPlan = parseMarkdownDietPlan;
+if (typeof window !== "undefined") window.renderDietPlanActionCardHtml = renderDietPlanActionCardHtml;
+if (typeof window !== "undefined") window.applyExtractedDietPlanToCalendar = applyExtractedDietPlanToCalendar;
+if (typeof window !== "undefined") window.previewAndCustomizeDietPlanModal = previewAndCustomizeDietPlanModal;
+if (typeof window !== "undefined") window.saveAndApplyCustomizedDietPlan = saveAndApplyCustomizedDietPlan;
+if (typeof window !== "undefined") window.closePreviewDietPlanModal = closePreviewDietPlanModal;
 if (typeof window !== "undefined") window.syncUserLocation = async () => {
   if (window.showToast) window.showToast('📍 Géolocalisation & météo en direct en cours...', 'info', 2500);
   try {
