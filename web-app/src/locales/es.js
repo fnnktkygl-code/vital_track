@@ -1181,6 +1181,8 @@ export default {
     "addFoodToMeal": "Agregar a la comida",
     "favoriteBtn": "Favorito",
     "addMealModalTitle": "🍽️ Agregar una comida",
+    "tabSingleFood": "Alimento Simple",
+    "tabComplexDish": "Plato Combinado / Receta",
     "aiDishBoxTitle": "Analizar plato con IA",
     "aiDishPlaceholder": "Ej: Ensalada de pepino, aguacate y jugo de limón...",
     "aiDishAnalyzeBtn": "Analizar",

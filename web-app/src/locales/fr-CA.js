@@ -1181,6 +1181,8 @@ export default {
     "addFoodToMeal": "Ajouter au repas",
     "favoriteBtn": "Favori",
     "addMealModalTitle": "🍽️ Ajouter un repas",
+    "tabSingleFood": "Aliment Unitaire",
+    "tabComplexDish": "Plat Composé / Recette",
     "aiDishBoxTitle": "Analyser un plat par IA",
     "aiDishPlaceholder": "Ex: Salade concombres, avocat et jus de citron...",
     "aiDishAnalyzeBtn": "Analyser",

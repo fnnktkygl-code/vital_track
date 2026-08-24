@@ -1183,6 +1183,8 @@ export default {
     "addFoodToMeal": "Add to meal",
     "favoriteBtn": "Favorite",
     "addMealModalTitle": "🍽️ Add a meal",
+    "tabSingleFood": "Single Food",
+    "tabComplexDish": "Complex Dish / Recipe",
     "aiDishBoxTitle": "Analyze dish with AI",
     "aiDishPlaceholder": "e.g. Cucumber salad, avocado, and lime juice...",
     "aiDishAnalyzeBtn": "Analyze",
