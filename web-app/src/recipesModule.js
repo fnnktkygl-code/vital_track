@@ -459,15 +459,17 @@ function renderRecipeCard(rawRecipe, lang = 'fr') {
         </div>
       </div>
 
-      <!-- PIED DE CARTE : INFOS TEMPS & ACTION -->
+      <!-- PIED DE CARTE : INFOS TEMPS & ACTION (2 LIGNES AÉRÉES SANS TRONCATURE) -->
       <div class="recipe-apple-card-footer">
-        <div class="recipe-apple-meta-item">
-          <span>⏱ ${esc(recipe.prepTime)}</span>
+        <div class="recipe-apple-card-meta-row">
+          <div class="recipe-apple-meta-item">
+            <span>⏱ ${esc(recipe.prepTime)}</span>
+          </div>
+          <div class="recipe-apple-meta-item vitality">
+            <span>🪄 ${t('recipes.vitalityBadge', {}, 'Vitalité')} ${recipe.vitalityScore}%</span>
+          </div>
         </div>
-        <div class="recipe-apple-meta-item">
-          <span>🪄 ${t('recipes.vitalityBadge', {}, 'Vitalité')} ${recipe.vitalityScore}%</span>
-        </div>
-        <div style="display:flex; align-items:center; gap:8px;">
+        <div class="recipe-apple-card-actions-row">
           <button type="button" class="recipe-apple-card-ai-btn" onclick="event.stopPropagation(); askAIAboutRecipe('${esc(recipe.id)}');" title="${t('recipes.askCoachBtn', {}, 'Adapter avec le Coach Vital')}">
             <i class="ri-sparkling-fill"></i>
             <span>${t('recipes.aiShortBtn', {}, 'Coach Vital')}</span>

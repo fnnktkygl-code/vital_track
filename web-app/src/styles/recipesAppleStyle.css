@@ -497,28 +497,47 @@
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   padding-top: 10px;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 6px;
+  flex-direction: column;
+  gap: 8px;
   margin-top: auto;
 }
 
-.recipe-apple-meta-item {
+.recipe-apple-card-meta-row {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.recipe-apple-card-actions-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.recipe-apple-meta-item {
+  display: inline-flex;
   align-items: center;
   gap: 4px;
   font-size: 0.72rem;
   color: var(--text-dim);
   font-weight: 500;
   white-space: nowrap;
-  flex-shrink: 0;
+}
+
+.recipe-apple-meta-item.vitality {
+  color: var(--accent);
+  font-weight: 700;
 }
 
 .recipe-apple-explore-link {
   font-size: 0.75rem;
   font-weight: 700;
   color: var(--accent);
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 3px;
   white-space: nowrap;

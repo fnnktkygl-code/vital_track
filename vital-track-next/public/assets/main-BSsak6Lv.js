@@ -65068,15 +65068,17 @@ The Usha Herbal Research Institute and The Fig Tree Enterprises`},{id:"doc_idx_3
         </div>
       </div>
 
-      <!-- PIED DE CARTE : INFOS TEMPS & ACTION -->
+      <!-- PIED DE CARTE : INFOS TEMPS & ACTION (2 LIGNES AÉRÉES SANS TRONCATURE) -->
       <div class="recipe-apple-card-footer">
-        <div class="recipe-apple-meta-item">
-          <span>⏱ ${ae(n.prepTime)}</span>
+        <div class="recipe-apple-card-meta-row">
+          <div class="recipe-apple-meta-item">
+            <span>⏱ ${ae(n.prepTime)}</span>
+          </div>
+          <div class="recipe-apple-meta-item vitality">
+            <span>🪄 ${k("recipes.vitalityBadge",{},"Vitalité")} ${n.vitalityScore}%</span>
+          </div>
         </div>
-        <div class="recipe-apple-meta-item">
-          <span>🪄 ${k("recipes.vitalityBadge",{},"Vitalité")} ${n.vitalityScore}%</span>
-        </div>
-        <div style="display:flex; align-items:center; gap:8px;">
+        <div class="recipe-apple-card-actions-row">
           <button type="button" class="recipe-apple-card-ai-btn" onclick="event.stopPropagation(); askAIAboutRecipe('${ae(n.id)}');" title="${k("recipes.askCoachBtn",{},"Adapter avec le Coach Vital")}">
             <i class="ri-sparkling-fill"></i>
             <span>${k("recipes.aiShortBtn",{},"Coach Vital")}</span>
