@@ -10869,7 +10869,9 @@ function renderMarkdown(text, isStreaming = false) {
   const rawInputText = text;
   text = formatChemicals(text);
 
-  // Extract and replace JSON blocks with interactive UI cards
+  const cardPlaceholders = [];
+
+  // Extract and replace JSON blocks with placeholders
   text = text.replace(/```json[\s\S]*?```/g, match => {
     try {
       const json = match.replace(/```json\n?/g, '').replace(/```/g, '').trim();
@@ -10933,7 +10935,11 @@ function renderMarkdown(text, isStreaming = false) {
         </div>`;
       }
 
-      if (renderedCards) return renderedCards;
+      if (renderedCards) {
+        const ph = `%%%VT_CARD_PLACEHOLDER_${cardPlaceholders.length}%%%`;
+        cardPlaceholders.push(renderedCards);
+        return ph;
+      }
       return `<pre><code>${esc(JSON.stringify(obj, null, 2))}</code></pre>`;
     } catch { return match; }
   });
@@ -10978,8 +10984,13 @@ function renderMarkdown(text, isStreaming = false) {
     .replace(/\n\n+/g, '</p><p style="margin-bottom:10px;line-height:1.6;">')
     .replace(/\n/g, '<br>');
 
+  // Re-inject pristine HTML cards back into placeholders (WITHOUT any corrupted <br> or <p> tags!)
+  cardPlaceholders.forEach((cardHtml, idx) => {
+    text = text.replace(`%%%VT_CARD_PLACEHOLDER_${idx}%%%`, cardHtml);
+  });
+
   let extraDietCard = '';
-  if (!isStreaming && !text.includes('ai-diet-plan-bridge-card') && !text.includes('ai-diet-plan-smart-card') && !text.includes('ai-plan-card') && !text.includes('ai-meal-bento-card') && !text.includes('ai-meal-action-card')) {
+  if (!isStreaming && cardPlaceholders.length === 0 && !text.includes('ai-diet-plan-bridge-card') && !text.includes('ai-diet-plan-smart-card') && !text.includes('ai-plan-card') && !text.includes('ai-meal-bento-card') && !text.includes('ai-meal-action-card')) {
     const extractedPlan = parseMarkdownDietPlan(rawInputText);
     if (extractedPlan && extractedPlan.sections && extractedPlan.sections.length > 0) {
       const tFunc = window.vitalTrackI18n?.t || ((k, p, f) => f || k);
