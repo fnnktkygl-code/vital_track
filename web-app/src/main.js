@@ -21,6 +21,7 @@ import './styles/bookReader.css';
 import './styles/materiaAppleStyle.css';
 import { initBookReaderModule, openBookReader } from './bookReaderModule.js';
 import { initMicroInteractionsModule, initStripCalendar, refreshDailyStripRoutine } from './microInteractionsModule.js';
+import { syncLocationAndClimate, handleCityInputChange, navigateToLocationSettings, BIOREGIONS } from './geoClimateService.js';
 
 // Exposer globalement pour l'interface utilisateur
 window.store = store;
@@ -1139,6 +1140,20 @@ async function initApp() {
   initBookReaderModule();
   initMicroInteractionsModule();
 
+  // Initialize Real-time Location, Climate & Bioregion Auto-Sync
+  syncLocationAndClimate(false);
+  const cityInp = document.getElementById('profileCity');
+  const countryInp = document.getElementById('profileCountry');
+  if (cityInp) {
+    let debounceTimer;
+    cityInp.addEventListener('input', (e) => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        handleCityInputChange(e.target.value, countryInp ? countryInp.value : '');
+      }, 500);
+    });
+  }
+
   // Initialize Custom Controls
   initAllVitalDatePickers();
   initAllVitalSelects();
@@ -1640,6 +1655,15 @@ function updateLiveAiPreview() {
   const bioregionEl = document.getElementById('profileBioregion');
   const bioregion = bioregionEl ? bioregionEl.options?.[bioregionEl.selectedIndex]?.text : tFunc('settings.bioTemperate', {}, 'Tempérée');
 
+  const geoData = store.get('vital_geo_climate_cache', null);
+  let climateSnippet = '';
+  if (geoData && geoData.weather) {
+    const curLang = getLanguage();
+    const wDesc = curLang === 'en' ? geoData.weather.weatherDescEn : (curLang === 'es' ? geoData.weather.weatherDescEs : geoData.weather.weatherDescFr);
+    const sName = curLang === 'en' ? geoData.season.labelEn : (curLang === 'es' ? geoData.season.labelEs : geoData.season.labelFr);
+    climateSnippet = ` | Météo & Saison: ${geoData.weather.weatherIcon} ${geoData.weather.temperature}°C (${wDesc}, ${sName})`;
+  }
+
   const activeChips = Array.from(document.querySelectorAll('#emonctoireChipsContainer .emonctoire-chip.active') || []);
   const organs = activeChips.map(c => c.textContent?.trim() || '').filter(Boolean).join(', ') || 'Reins & Lymphe';
 
@@ -1671,7 +1695,7 @@ function updateLiveAiPreview() {
   const dirLabel = tFunc('settings.aiPromptCoachingDirective', {}, "[DIRECTIVE COACHING] : Adapter systématiquement l'agressivité des détox, le protocole de jeûne et les plantes médicinales Raintree aux émonctoires prioritaires et au niveau de transition.");
 
   const generatedPrompt = `${header}
-${idLabel}: ${name} | ${locLabel}: ${city}, ${country} (${bioLabel}: ${bioregion})
+${idLabel}: ${name} | ${locLabel}: ${city}, ${country} (${bioLabel}: ${bioregion})${climateSnippet}
 ${goalLabel}: ${goal} | ${protoLabel}: ${(currentProtocol || 'vitalist').toUpperCase()}
 ${transLabel}: ${transLevel}
 ${emoncLabel}: ${organs}${morpho.length > 0 ? `\n${morphoLabel}: ${morpho.join(' | ')}` : ''}
@@ -16428,6 +16452,19 @@ if (typeof window !== "undefined") window.closeUserProfileModal = closeUserProfi
 if (typeof window !== "undefined") window.renderUserProfileModal = renderUserProfileModal;
 if (typeof window !== "undefined") window.openTransitionPlanExplainerModal = openTransitionPlanExplainerModal;
 if (typeof window !== "undefined") window.closeTransitionPlanExplainerModal = closeTransitionPlanExplainerModal;
+if (typeof window !== "undefined") window.syncLocationAndClimate = syncLocationAndClimate;
+if (typeof window !== "undefined") window.navigateToLocationSettings = navigateToLocationSettings;
+if (typeof window !== "undefined") window.syncUserLocation = async () => {
+  if (window.showToast) window.showToast('📍 Géolocalisation & météo en direct en cours...', 'info', 2500);
+  try {
+    const res = await syncLocationAndClimate(true);
+    if (res && window.showToast) {
+      window.showToast(`📍 Position synchronisée : ${res.city} (${res.weather.temperature}°C, ${res.season.labelFr})`, 'success', 3500);
+    }
+  } catch (err) {
+    if (window.showToast) window.showToast('⚠️ Impossible de récupérer la position GPS.', 'warning', 3500);
+  }
+};
 if (typeof window !== "undefined") window.showPage = showPage;
 if (typeof window !== "undefined") window.toggleMoreDrawer = toggleMoreDrawer;
 if (typeof window !== "undefined") window.toggleMobileNav = toggleMobileNav;

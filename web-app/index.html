@@ -321,6 +321,13 @@
                 <i class="ri-heart-pulse-line"></i>
                 <span data-i18n="dashboard.circadianSync">Cycle 24h Synchronisé</span>
               </div>
+              <!-- Badge Japandi Interactif : Localisation, Biorégion & Météo Réelle en Direct -->
+              <div class="dash-location-badge" id="dashLocationBadge" onclick="window.navigateToLocationSettings && window.navigateToLocationSettings()" title="Localisation & Biorégion en direct · Cliquer pour ajuster" data-tooltip="Localisation & Biorégion en direct">
+                <i class="ri-map-pin-2-line" style="color:var(--accent);"></i>
+                <span id="dashLocationCity">Montpellier, France</span>
+                <span class="dash-location-sep">•</span>
+                <span id="dashLocationWeather">☀️ 26°C · Été (Méditerranéen)</span>
+              </div>
             </div>
           </div>
         </div>
@@ -2270,7 +2277,7 @@
             </div>
           </div>
 
-          <div class="form-grid-3" style="margin-bottom:18px;">
+          <div class="form-grid-2" style="margin-bottom:14px;">
             <div class="form-group">
               <label class="form-label" for="profileCountry">
                 <span class="form-label-left"><i class="ri-map-pin-2-line"></i> <span data-i18n="settings.countryLabel">Pays</span></span>
@@ -2278,25 +2285,42 @@
               <input type="text" id="profileCountry" data-i18n-placeholder="settings.countryPlaceholder" placeholder="France 🇫🇷, Québec ⚜️..." class="form-input-v2" oninput="updateLiveAiPreview()">
             </div>
             <div class="form-group">
-              <label class="form-label" for="profileCity">
+              <label class="form-label" for="profileCity" style="display:flex; justify-content:space-between; align-items:center;">
                 <span class="form-label-left"><i class="ri-building-line"></i> <span data-i18n="settings.cityLabel">Ville</span></span>
+                <button type="button" class="btn-micro" onclick="window.syncUserLocation && window.syncUserLocation()" title="Détecter automatiquement ma position GPS" style="background:rgba(16,185,129,0.1); color:var(--accent); border:1px solid rgba(16,185,129,0.3); padding:2px 8px; border-radius:6px; font-size:0.75rem; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:4px;">
+                  <i class="ri-crosshair-2-line"></i> <span data-i18n="settings.gpsAutoBtn">GPS Direct</span>
+                </button>
               </label>
-              <input type="text" id="profileCity" data-i18n-placeholder="settings.cityPlaceholder" placeholder="Paris, Montréal..." class="form-input-v2" oninput="updateLiveAiPreview()">
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="profileBioregion">
-                <span class="form-label-left"><i class="ri-sun-cloudy-line"></i> <span data-i18n="settings.bioregionLabel">Biorégion / Climat</span></span>
-              </label>
-              <select id="profileBioregion" class="form-input-v2 custom-vital-select" onchange="updateLiveAiPreview()">
-                <option value="boreal" selected data-i18n="settings.bioBoreal">🌲 Boréale / Nordique (Canada, Scandinavie)</option>
-                <option value="temperate" data-i18n="settings.bioTemperate">🍂 Tempérée Océanique / Continentale (France, Europe)</option>
-                <option value="mediterranean" data-i18n="settings.bioMed">☀️ Méditerranéenne / Subtropicale (Sud Europe, USA)</option>
-                <option value="tropical" data-i18n="settings.bioTropical">🌴 Tropicale / Équatoriale (Antilles, Afrique, Asie)</option>
-                <option value="arid" data-i18n="settings.bioArid">🌵 Aride / Désertique (Maghreb, Moyen-Orient)</option>
-              </select>
+              <input type="text" id="profileCity" data-i18n-placeholder="settings.cityPlaceholder" placeholder="Paris, Montréal, Montpellier..." class="form-input-v2" oninput="updateLiveAiPreview()">
             </div>
           </div>
 
+          <!-- Carte Biorégion & Météo Réelle Auto-Déduite -->
+          <div class="settings-climate-live-card" style="background:var(--surface-2); border:1px solid var(--border); border-radius:16px; padding:14px 18px; margin-bottom:18px;">
+            <div id="settingsAutoBioregionBadge">
+              <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span style="font-size:1.3rem;">☀️</span>
+                  <div>
+                    <strong style="color:var(--text); font-size:0.9rem;" data-i18n="settings.bioMed">Méditerranéenne / Subtropicale</strong>
+                    <div style="font-size:0.75rem; color:var(--text-dim); margin-top:2px;">
+                      ☀️ 26°C · Ciel ensoleillé · Été
+                    </div>
+                  </div>
+                </div>
+                <span style="font-size:0.72rem; font-weight:800; color:var(--accent); background:var(--accent-glow); padding:3px 10px; border-radius:50px; border:1px solid rgba(16,185,129,0.3);">
+                  ⚡ AUTO-DÉDUIT &amp; SYNCHRO
+                </span>
+              </div>
+            </div>
+            <!-- Hidden fallback select for unit tests and store consistency -->
+            <select id="profileBioregion" style="display:none;">
+              <option value="boreal" data-i18n="settings.bioBoreal">🌲 Boréale / Nordique (Canada, Scandinavie)</option>
+              <option value="temperate" data-i18n="settings.bioTemperate">🍂 Tempérée Océanique / Continentale (France, Europe)</option>
+              <option value="mediterranean" selected data-i18n="settings.bioMed">☀️ Méditerranéenne / Subtropicale (Sud Europe, USA)</option>
+              <option value="tropical" data-i18n="settings.bioTropical">🌴 Tropicale / Équatoriale (Antilles, Afrique, Asie)</option>
+              <option value="arid" data-i18n="settings.bioArid">🌵 Aride / Désertique (Maghreb, Moyen-Orient)</option>
+            </select>
           </div>
 
           <div class="form-group" style="margin-bottom:20px;">

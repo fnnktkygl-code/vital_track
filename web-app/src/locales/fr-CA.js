@@ -1000,6 +1000,7 @@ export default {
     "countryPlaceholder": "France 🇫🇷, Québec ⚜️...",
     "cityLabel": "Ville",
     "cityPlaceholder": "Paris, Montréal...",
+    "gpsAutoBtn": "GPS Direct",
     "bioregionLabel": "Biorégion / Climat",
     "bioBoreal": "🌲 Boréale / Nordique (Canada, Scandinavie)",
     "bioTemperate": "🍂 Tempérée Océanique / Continentale (France, Europe)",
