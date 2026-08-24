@@ -15348,6 +15348,121 @@ function getCircadianPhaseData(h, m = 0) {
   };
 }
 
+// ═══════ CIRCADIAN HAPTIC & SOLAR ACOUSTICS ENGINE (Apple Style) ═══════
+class CircadianHapticAudioEngine {
+  constructor() {
+    this.ctx = null;
+    this.lastTickHour = -1;
+    this.lastTickQuarter = -1;
+    this.lastSoundTime = 0;
+    this.lastPhaseKey = '';
+    this.enabled = true;
+  }
+
+  _init() {
+    if (!this.ctx && typeof window !== 'undefined') {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (AudioCtx) {
+        this.ctx = new AudioCtx();
+      }
+    }
+    if (this.ctx && this.ctx.state === 'suspended') {
+      this.ctx.resume().catch(() => {});
+    }
+    return this.ctx;
+  }
+
+  // Play subtle Apple-style haptic dial tick on hour/15min rotation
+  playDialTick(h, m, isMajorPhase = false) {
+    if (!this.enabled || typeof window === 'undefined') return;
+    const now = Date.now();
+    // Throttle to max 28 ticks/sec for silky smooth feel
+    if (now - this.lastSoundTime < 32) return;
+    this.lastSoundTime = now;
+
+    const ctx = this._init();
+    if (!ctx) return;
+
+    try {
+      const t = ctx.currentTime;
+      
+      // Calculate solar pitch frequency (from 540Hz at midnight to 960Hz at solar noon)
+      const solarRatio = Math.sin((h + m / 60) / 24 * Math.PI);
+      const baseFreq = 540 + Math.max(0, solarRatio) * 420;
+
+      if (isMajorPhase) {
+        // Harmonious Zen Chime on major organ / phase transitions
+        const osc = ctx.createOscillator();
+        const osc2 = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = 'sine';
+        osc2.type = 'sine';
+        osc.frequency.setValueAtTime(baseFreq * 1.5, t);
+        osc2.frequency.setValueAtTime(baseFreq * 2.25, t); // perfect fifth overtone
+
+        gain.gain.setValueAtTime(0.001, t);
+        gain.gain.exponentialRampToValueAtTime(0.07, t + 0.015);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.35);
+
+        osc.connect(gain);
+        osc2.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(t);
+        osc2.start(t);
+        osc.stop(t + 0.36);
+        osc2.stop(t + 0.36);
+      } else {
+        // Apple Watch style crisp mechanical haptic tick (12ms transient click)
+        const osc = ctx.createOscillator();
+        const filter = ctx.createBiquadFilter();
+        const gain = ctx.createGain();
+
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(baseFreq * 2, t);
+        osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.7, t + 0.018);
+
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(baseFreq * 1.8, t);
+        filter.Q.setValueAtTime(6.0, t);
+
+        gain.gain.setValueAtTime(0.001, t);
+        gain.gain.exponentialRampToValueAtTime(0.055, t + 0.003);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.022);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(t);
+        osc.stop(t + 0.025);
+      }
+    } catch (e) {
+      // Ignore audio synthesis errors gracefully
+    }
+  }
+
+  onScrub(h, m, phaseKey) {
+    const quarter = Math.floor(m / 15);
+    const isNewHour = (this.lastTickHour !== h);
+    const isNewQuarter = (this.lastTickQuarter !== quarter);
+    const isNewPhase = phaseKey && phaseKey !== this.lastPhaseKey;
+
+    if (isNewHour || isNewQuarter || isNewPhase) {
+      this.playDialTick(h, m, isNewPhase);
+      this.lastTickHour = h;
+      this.lastTickQuarter = quarter;
+      if (phaseKey) this.lastPhaseKey = phaseKey;
+    }
+  }
+}
+
+export const circadianHaptics = new CircadianHapticAudioEngine();
+if (typeof window !== 'undefined') {
+  window.circadianHaptics = circadianHaptics;
+}
+
 function updateCircadianDisplay(h, m, isScrubbing = false) {
   const clockTime = document.getElementById('clockTime');
   const clockPhase = document.getElementById('clockPhase');
@@ -15378,6 +15493,11 @@ function updateCircadianDisplay(h, m, isScrubbing = false) {
   if (!isScrubbing && timePill) timePill.textContent = timeStr;
 
   const data = getCircadianPhaseData(h, m);
+
+  if (isScrubbing && window.circadianHaptics) {
+    const phaseKey = `${data.organName || ''}_${data.hormoneStatus || ''}`;
+    window.circadianHaptics.onScrub(h, m, phaseKey);
+  }
 
   if (clockPhase) {
     clockPhase.textContent = data.shortCycle;
@@ -15487,6 +15607,9 @@ function initCircadianClockInteractivity() {
   function handleStart(clientX, clientY) {
     _isCircadianDragging = true;
     ring.classList.add('dragging');
+    if (window.circadianHaptics) {
+      window.circadianHaptics._init();
+    }
     if (navigator.vibrate) {
       try { navigator.vibrate(8); } catch (_) {}
     }
