@@ -741,7 +741,14 @@ export default {
     "circadianPhase2": "🥗 12:00 - 20:00: Fase de Apropiación — Ventana digestiva óptima: ensaladas vivas, tubérculos suaves y cereales ancestrales.",
     "circadianPhase3": "🌙 20:00 - 04:00: Fase de Asimilación — Cese de sólidos 3h antes de acostarse, autofagia nocturna y regeneración de tejidos.",
     "controlTitle": "🎛️ Flexibilidad Total, Diario y Resolución de Conflictos",
-    "controlText": "Usted mantiene el control absoluto sobre cada comida: botón 🔄 Variar para sustituir un ingrediente, ✨ Sugerir para pedirle al Coach Vital que adapte con su nevera, ✏️ Editar horarios o 🗑️ Eliminar. Si come fuera del plan o inicia un ayuno, el calendario y el diario se armonizan sin fricciones.",
+    "controlText": "Usted mantiene el control absoluto sobre cada comida: cada línea es editable en todo momento, sincronizada con su calendario y adaptable por el Coach Vital según sus necesidades.",
+    "syncTitle": "🔄 Función del Botón Sincronizar [ 🔄 ]",
+    "syncText": "El botón de sincronización (arriba a la derecha) realinea inmediatamente la franja diaria con las comidas planificadas en el Calendario, recarga sus personalizaciones y actualiza las recomendaciones según el clima local / estación de su bio-región y su protocolo vitalista activo.",
+    "actionsTitle": "✏️ ¿Cómo modificar o adaptar sus comidas?",
+    "actionEdit": "• Haga clic en la comida o en [ ✏️ ] para renombrar el plato, añadir o quitar ingredientes, o ajustar sus notas personales.",
+    "actionVary": "• Haga clic en [ 💬 Variar ] para abrir el chat con el Coach Vital y pedirle una variante adaptada a los ingredientes de su nevera.",
+    "actionJournal": "• Haga clic en [ ➕ Diario ] para registrar directamente esta comida en su diario nutricional del día.",
+    "actionCheck": "• Marque la casilla [ ○ ] para validar el cumplimiento de su ritual vitalista del día.",
     "closeBtn": "Entendido"
   },
   "breathing": {

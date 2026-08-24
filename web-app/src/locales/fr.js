@@ -741,7 +741,14 @@ export default {
     "circadianPhase2": "🥗 12h00 - 20h00 : Phase d'Appropriation — Fenêtre digestive optimale : grandes salades vivantes, féculents doux et céréales ancestrales.",
     "circadianPhase3": "🌙 20h00 - 04h00 : Phase d'Assimilation — Arrêt des solides 3h avant le coucher, autophagie nocturne et régénération des tissus.",
     "controlTitle": "🎛️ Flexibilité, Journal & Gestion des Conflits",
-    "controlText": "Vous gardez le contrôle absolu sur chaque repas : bouton 🔄 Varier pour remplacer un ingrédient, ✨ Suggérer pour demander au Coach Vital d'adapter avec votre frigo, ✏️ Modifier l'horaire ou 🗑️ Supprimer. Si vous mangez autre chose ou enclenchez un jeûne, le calendrier et le journal s'ajustent harmonieusement sans friction.",
+    "controlText": "Vous gardez le contrôle absolu sur chaque repas : chaque ligne est modifiable à tout moment, synchronisée avec votre calendrier et ajustable par le Coach Vital selon vos besoins réels.",
+    "syncTitle": "🔄 Rôle du Bouton Synchroniser [ 🔄 ]",
+    "syncText": "Le bouton de synchronisation (en haut à droite) réaligne immédiatement le bandeau quotidien avec vos repas planifiés dans le Calendrier, recharge vos personnalisations, et actualise les recommandations selon la météo locale / saison de votre biorégion et votre protocole vitaliste actif.",
+    "actionsTitle": "✏️ Comment modifier ou adapter vos repas ?",
+    "actionEdit": "• Cliquez sur le repas ou sur [ ✏️ ] pour renommer le plat, ajouter ou retirer des ingrédients, ou ajuster vos notes personnelles.",
+    "actionVary": "• Cliquez sur [ 💬 Varier ] pour ouvrir le chat avec le Coach Vital et lui demander une variante adaptée aux ingrédients de votre frigo.",
+    "actionJournal": "• Cliquez sur [ ➕ Journal ] pour enregistrer directement ce repas dans votre journal nutritionnel du jour.",
+    "actionCheck": "• Cochez la case [ ○ ] pour valider l'accomplissement de votre rituel vitaliste du jour.",
     "closeBtn": "J'ai compris"
   },
   "breathing": {

@@ -743,7 +743,14 @@ export default {
     "circadianPhase2": "🥗 12:00 - 20:00: Appropriation Phase — Optimal digestion window: large vibrant salads, gentle root starches, and ancestral grains.",
     "circadianPhase3": "🌙 20:00 - 04:00: Assimilation Phase — Stop all solids 3h before bedtime, night autophagy, and tissue reconstruction.",
     "controlTitle": "🎛️ Full Flexibility, Food Journal & Conflict Resolution",
-    "controlText": "You retain full control over every meal: 🔄 Substitute to swap an ingredient, ✨ AI Suggest to adapt with your fridge, ✏️ Edit times, or 🗑️ Delete. If you eat off-plan or start a fast, the calendar and daily journal harmonize smoothly without friction.",
+    "controlText": "You retain absolute control over every meal: every line is editable at any time, synced with your calendar, and adaptable by the Vital Coach to your real needs.",
+    "syncTitle": "🔄 Role of the Sync Button [ 🔄 ]",
+    "syncText": "The sync button (top right) instantly realigns the daily routine strip with your custom meals planned in the Calendar, reloads your modifications, and refreshes recommendations based on local weather/season of your bio-region and your active vitalist protocol.",
+    "actionsTitle": "✏️ How to Edit and Adapt Your Meals?",
+    "actionEdit": "• Click on the meal text or [ ✏️ ] to rename the dish, add/remove ingredients, or adjust personal notes.",
+    "actionVary": "• Click [ 💬 Vary ] to open a chat with the Vital Coach and ask for an alternative recipe tailored to what's in your fridge.",
+    "actionJournal": "• Click [ ➕ Journal ] to log this meal directly into your daily nutrition journal.",
+    "actionCheck": "• Check the box [ ○ ] to validate completion of your daily vitalist ritual.",
     "closeBtn": "Got it"
   },
   "breathing": {

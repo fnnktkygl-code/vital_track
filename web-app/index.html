@@ -601,7 +601,7 @@
               <button type="button" class="app-btn-secondary" onclick="window.openTransitionPlanExplainerModal()" style="padding:6px 12px; font-size:0.78rem; display:inline-flex; align-items:center; gap:5px; font-weight:700; border-radius:12px; border:1px solid rgba(52,211,153,0.3);" title="Comprendre la logique et le fonctionnement du Plan de Transition" data-tooltip="Comprendre le Plan de Transition">
                 <i class="ri-information-line" style="color:var(--accent);"></i> <span data-i18n="dashboard.stripInfoBtn">Comprendre le plan</span>
               </button>
-              <button type="button" class="app-btn-secondary" onclick="window.refreshDailyStripRoutine && window.refreshDailyStripRoutine()" style="padding:6px 12px; font-size:0.78rem;" title="Synchroniser">
+              <button type="button" class="app-btn-secondary" onclick="window.refreshDailyStripRoutine && window.refreshDailyStripRoutine()" style="padding:6px 12px; font-size:0.78rem;" title="Synchroniser avec le Calendrier &amp; recalculer selon la saison et le protocole actif" data-tooltip="Synchroniser avec le Calendrier &amp; recalculer">
                 <i class="ri-refresh-line"></i>
               </button>
             </div>
@@ -2744,27 +2744,65 @@
   </div>
 
   <!-- ═══════ EDIT CALENDAR MEAL MODAL ═══════ -->
-  <div class="modal-overlay" id="editMealModal" onclick="closeEditMealModal(event)" style="display:none">
-    <div class="modal-content glass modal-sm" onclick="event.stopPropagation()">
+  <div class="modal-overlay" id="editMealModal" onclick="closeEditMealModal(event)" style="display:none; z-index:99999;">
+    <div class="modal-content glass modal-sm" onclick="event.stopPropagation()" style="max-width:540px; border-radius:24px; padding:24px;">
       <button class="modal-close" onclick="closeEditMealModal()"><i class="ri-close-line"></i></button>
-      <h3 id="editMealTitle" data-i18n="modals.editMealModalTitle">🍽️ Éditer le repas</h3>
-      
-      <div style="margin-top:16px;margin-bottom:12px;font-size:0.85rem;color:var(--text-dim)" data-i18n="modals.plannedFoodsLabel">Aliments prévus :</div>
-      <div id="editMealItems" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px"></div>
-      
-      <div class="add-meal-search" style="margin-bottom:8px">
-        <input type="text" id="editMealSearchInput" placeholder="Chercher pour remplacer ou ajouter..." oninput="searchEditMealFoods(this.value)">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
+        <span id="editMealEmoji" style="font-size:1.6rem;">🍽️</span>
+        <div>
+          <h3 id="editMealTitle" style="margin:0; font-size:1.15rem; font-weight:800;" data-i18n="modals.editMealModalTitle">Personnaliser le repas</h3>
+          <p id="editMealSubtitle" style="margin:2px 0 0 0; font-size:0.78rem; color:var(--text-dim);">Ajustez le nom du plat, l'horaire ou les ingrédients prévus.</p>
+        </div>
       </div>
-      <div id="editMealSearchResults" class="meal-search-results" style="max-height:120px;margin-bottom:16px"></div>
       
-      <div style="margin-bottom:16px">
-        <label style="font-size:0.85rem;color:var(--text-dim);display:block;margin-bottom:6px" data-i18n="modals.personalNoteLabel">Note / Avis personnel :</label>
-        <textarea id="editMealNote" class="form-input" rows="2" placeholder="Ex: Remplacé par une mangue car pas de papaye..."></textarea>
-      </div>
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <div>
+          <label style="font-size:0.82rem; font-weight:700; color:var(--text); display:block; margin-bottom:6px;">Nom du plat / Repas :</label>
+          <input type="text" id="editMealNameInput" class="form-input" style="width:100%; border-radius:12px; padding:10px 14px; background:var(--surface); border:1px solid var(--border); color:var(--text); font-weight:600;" placeholder="Ex: Salade Alcaline Avocat Concombre">
+        </div>
 
-      <div style="display:flex;gap:8px">
-        <button class="btn-outline" onclick="toggleEditMealDone()" id="editMealDoneBtn" style="flex:1"><i class="ri-check-line"></i> <span data-i18n="modals.markDoneBtn">Marquer Terminé</span></button>
-        <button class="btn-primary" onclick="saveEditMeal()" style="flex:1"><i class="ri-save-line"></i> <span data-i18n="modals.saveBtn">Sauvegarder</span></button>
+        <div style="display:flex; gap:10px;">
+          <div style="flex:1;">
+            <label style="font-size:0.82rem; font-weight:700; color:var(--text); display:block; margin-bottom:6px;">Créneau horaire :</label>
+            <input type="text" id="editMealTimeInput" class="form-input" style="width:100%; border-radius:12px; padding:10px 14px; background:var(--surface); border:1px solid var(--border); color:var(--text);" placeholder="Ex: 12h00 - 14h00">
+          </div>
+          <div style="flex:1;">
+            <label style="font-size:0.82rem; font-weight:700; color:var(--text); display:block; margin-bottom:6px;">Créneau circadien :</label>
+            <input type="text" id="editMealSlotNameInput" class="form-input" style="width:100%; border-radius:12px; padding:10px 14px; background:var(--surface); border:1px solid var(--border); color:var(--text-dim);" disabled>
+          </div>
+        </div>
+
+        <div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <label style="font-size:0.82rem; font-weight:700; color:var(--text); margin:0;" data-i18n="modals.plannedFoodsLabel">Ingrédients / Aliments prévus :</label>
+            <button type="button" class="chip-btn" onclick="askCoachToVaryFromModal()" style="font-size:0.75rem; padding:3px 8px; border-radius:8px; display:inline-flex; align-items:center; gap:4px; color:var(--accent);">
+              <i class="ri-sparkling-fill"></i> Suggérer avec l'IA
+            </button>
+          </div>
+          <div id="editMealItems" style="display:flex; flex-wrap:wrap; gap:6px; min-height:36px; padding:8px; background:var(--surface); border:1px solid var(--border); border-radius:12px; margin-bottom:8px;"></div>
+          
+          <div class="add-meal-search" style="position:relative;">
+            <input type="text" id="editMealSearchInput" class="form-input" style="width:100%; border-radius:12px; padding:8px 12px; font-size:0.85rem;" placeholder="Ajouter un ingrédient ou aliment..." oninput="window.searchEditMealFoods && window.searchEditMealFoods(this.value)">
+          </div>
+          <div id="editMealSearchResults" class="meal-search-results" style="max-height:120px; margin-top:4px;"></div>
+        </div>
+        
+        <div>
+          <label style="font-size:0.82rem; font-weight:700; color:var(--text); display:block; margin-bottom:6px;" data-i18n="modals.personalNoteLabel">Note / Avis personnel :</label>
+          <textarea id="editMealNote" class="form-input" rows="2" style="width:100%; border-radius:12px; padding:10px 14px; background:var(--surface); border:1px solid var(--border); color:var(--text); resize:vertical;" placeholder="Ex: Remplacé par une mangue car pas de papaye au marché..."></textarea>
+        </div>
+
+        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">
+          <button type="button" class="btn-secondary" onclick="addEditedMealToJournal()" style="flex:1; padding:10px 14px; font-weight:700; border-radius:12px; font-size:0.82rem; display:inline-flex; align-items:center; justify-content:center; gap:6px;">
+            <i class="ri-add-line"></i> <span>+ Journal</span>
+          </button>
+          <button type="button" class="btn-outline" onclick="toggleEditMealDone()" id="editMealDoneBtn" style="flex:1; padding:10px 14px; font-weight:700; border-radius:12px; font-size:0.82rem; display:inline-flex; align-items:center; justify-content:center; gap:6px;">
+            <i class="ri-check-line"></i> <span data-i18n="modals.markDoneBtn">Validé</span>
+          </button>
+          <button type="button" class="btn-primary" onclick="saveEditMeal()" style="flex:1.2; padding:10px 16px; font-weight:700; border-radius:12px; font-size:0.85rem; display:inline-flex; align-items:center; justify-content:center; gap:6px;">
+            <i class="ri-save-line"></i> <span data-i18n="modals.saveBtn">Enregistrer</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -3332,12 +3370,29 @@
           </div>
         </div>
 
-        <!-- 5. Contrôle & Conflits -->
+        <!-- 5. Contrôle & Actions Réelles -->
         <div style="padding:16px; background:var(--surface-2, rgba(255,255,255,0.03)); border:1px solid var(--border); border-radius:16px;">
           <h4 style="margin:0 0 8px 0; font-size:0.95rem; font-weight:800; color:var(--text);" data-i18n="transitionPlanModal.controlTitle">🎛️ Flexibilité, Journal &amp; Gestion des Conflits</h4>
-          <p style="margin:0; font-size:0.85rem; line-height:1.55; color:var(--text);" data-i18n="transitionPlanModal.controlText">
-            Vous gardez le contrôle absolu sur chaque repas : bouton 🔄 Varier pour remplacer un ingrédient, ✨ Suggérer pour demander au Coach Vital d'adapter avec votre frigo, ✏️ Modifier l'horaire ou 🗑️ Supprimer. Si vous mangez autre chose ou enclenchez un jeûne, le calendrier et le journal s'ajustent harmonieusement sans friction.
+          <p style="margin:0 0 12px 0; font-size:0.85rem; line-height:1.55; color:var(--text);" data-i18n="transitionPlanModal.controlText">
+            Vous gardez le contrôle absolu sur chaque repas : chaque ligne est modifiable à tout moment, synchronisée avec votre calendrier et ajustable par le Coach Vital selon vos besoins réels.
           </p>
+
+          <div style="display:flex; flex-direction:column; gap:10px; font-size:0.84rem; color:var(--text); margin-top:8px;">
+            <div style="padding:10px 14px; background:rgba(52,211,153,0.08); border-left:3px solid var(--accent); border-radius:10px;">
+              <strong style="color:var(--accent); display:block; margin-bottom:4px;" data-i18n="transitionPlanModal.syncTitle">🔄 Rôle du Bouton Synchroniser [ 🔄 ]</strong>
+              <span data-i18n="transitionPlanModal.syncText">Le bouton de synchronisation (en haut à droite) réaligne immédiatement le bandeau quotidien avec vos repas planifiés dans le Calendrier, recharge vos personnalisations, et actualise les recommandations selon la météo locale / saison de votre biorégion et votre protocole vitaliste actif.</span>
+            </div>
+
+            <div style="padding:10px 14px; background:rgba(56,189,248,0.08); border-left:3px solid #38bdf8; border-radius:10px;">
+              <strong style="color:#38bdf8; display:block; margin-bottom:4px;" data-i18n="transitionPlanModal.actionsTitle">✏️ Comment modifier ou adapter vos repas ?</strong>
+              <div style="display:flex; flex-direction:column; gap:4px; margin-top:4px;">
+                <span data-i18n="transitionPlanModal.actionEdit">• Cliquez sur le repas ou sur [ ✏️ ] pour renommer le plat, ajouter ou retirer des ingrédients, ou ajuster vos notes personnelles.</span>
+                <span data-i18n="transitionPlanModal.actionVary">• Cliquez sur [ 💬 Varier ] pour ouvrir le chat avec le Coach Vital et lui demander une variante adaptée aux ingrédients de votre frigo.</span>
+                <span data-i18n="transitionPlanModal.actionJournal">• Cliquez sur [ ➕ Journal ] pour enregistrer directement ce repas dans votre journal nutritionnel du jour.</span>
+                <span data-i18n="transitionPlanModal.actionCheck">• Cochez la case [ ○ ] pour valider l'accomplissement de votre rituel vitaliste du jour.</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
