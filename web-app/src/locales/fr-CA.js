@@ -1,6 +1,7 @@
 export default {
   "nav": {
     "dashboard": "Tableau de Bord",
+    "favorites": "Favoris & Repas",
     "recipes": "Recettes",
     "meals": "Repas & Journal",
     "fasting": "Jeûne & Physiologie",
@@ -103,6 +104,8 @@ export default {
     "statFavs": "Favoris",
     "statThisWeek": "CETTE SEMAINE",
     "statTotal": "AU TOTAL",
+    "stripTitle": "Plan Alimentaire & Calendrier de Transition",
+    "stripSubtitle": "Suivi hebdomadaire selon les directives vitalistes",
     "weightTitle": "Évolution du Poids",
     "weightSubtitle": "Analyse chronologique & indicateurs de tendance",
     "weighInBtn": "Pesée",
@@ -1065,6 +1068,7 @@ export default {
     "inProgress": "Cap sur {target} kg (Écart : {delta} kg)",
     "progressTowardsGoal": "Progression vers l'objectif",
     "modalTitle": "Enregistrer une Nouvelle Pesée",
+    "dateLabel": "Date de la pesée :",
     "weightInputLabel": "Poids corporel (kg)",
     "dateInputLabel": "Date de la pesée",
     "saveWeightBtn": "Enregistrer la Pesée",

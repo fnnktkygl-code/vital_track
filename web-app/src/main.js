@@ -148,11 +148,13 @@ function showToast(msg, type = 'success', duration = 3500, action = null) {
 function showVitalConfirm({
   title = 'Confirmation',
   message = 'Voulez-vous vraiment continuer ?',
-  icon = 'ri-alert-fill',
+  icon = 'ri-information-line',
   confirmText = 'Confirmer',
-  cancelText = 'Annuler',
-  isDanger = true
+  cancelText = 'Fermer',
+  isDanger = false,
+  isPrimary = true
 } = {}) {
+  const actualDanger = isDanger === true && !isPrimary;
   return new Promise((resolve) => {
     const modal = document.getElementById('vitalConfirmModal');
     if (!modal) {
@@ -170,12 +172,12 @@ function showVitalConfirm({
     if (bodyEl) bodyEl.innerHTML = message;
     if (iconEl) iconEl.className = icon;
     if (iconBox) {
-      iconBox.className = isDanger ? 'vital-confirm-icon-box' : 'vital-confirm-icon-box info';
+      iconBox.className = actualDanger ? 'vital-confirm-icon-box' : 'vital-confirm-icon-box info';
     }
     if (cancelBtn) cancelBtn.textContent = cancelText;
     if (actionBtn) {
       actionBtn.textContent = confirmText;
-      actionBtn.className = isDanger ? 'vital-confirm-btn-action' : 'vital-confirm-btn-action primary';
+      actionBtn.className = actualDanger ? 'vital-confirm-btn-action danger' : 'vital-confirm-btn-action primary';
     }
 
     const cleanup = () => {
@@ -3161,48 +3163,46 @@ async function sendChat(e) {
 // ═══════════════════════════════════════════════════════════════════════════
 // MODEL SELECTOR & CASCADING FLYOUT SUB-MENU
 // ═══════════════════════════════════════════════════════════════════════════
-const MODEL_TAXONOMY = [
+const DIRECT_AI_MODELS = [
   {
-    id: 'auto',
-    name: 'Cascade Automatique',
-    icon: 'ri-instance-line',
-    iconColor: '#34d399',
-    tagline: 'Failover FinOps dynamique (0€ Free ➔ Tier 1 Paid)',
-    models: [
-      { id: 'auto', name: 'Cascade Automatique', badge: 'Recommandé', tagline: 'Bascule intelligente selon l\'intention (Chit-chat, Standard, Clinique) et failover sans coupure' }
-    ]
-  },
-  {
-    id: 'flash',
-    name: 'Gemini 3.6 Flash (Coaching Standard)',
-    icon: 'ri-flashlight-fill',
-    iconColor: '#4ade80',
-    tagline: 'Vitesse maximale & fluidité conversationnelle',
-    models: [
-      { id: 'gemini-3.6-flash', name: 'Gemini 3.6 Flash', badge: 'Principal 🌱', tagline: 'Modèle optimal pour le coaching quotidien et l\'analyse nutritionnelle' },
-      { id: 'gemini-3.5-flash', name: 'Gemini 3.5 Flash', badge: 'Secours', tagline: 'Modèle de relais haute disponibilité' }
-    ]
-  },
-  {
-    id: 'lite',
-    name: 'Gemini Flash Lite (Ultra-Rapide)',
-    icon: 'ri-bolt-line',
-    iconColor: '#a78bfa',
-    tagline: 'Latence minimale & zéro gaspillage de tokens',
-    models: [
-      { id: 'gemini-3.5-flash-lite', name: 'Gemini 3.5 Flash Lite', badge: 'Véloce ⚡', tagline: 'Exécution instantanée (< 250ms), idéal pour le small talk et salutations' },
-      { id: 'gemini-3.1-flash-lite', name: 'Gemini 3.1 Flash Lite', badge: 'Éco 🚀', tagline: 'Modèle ultraléger haute tolérance aux quotas' }
-    ]
-  },
-  {
-    id: 'complex',
-    name: 'Gemini 3.7 Flash (Raisonnement Clinique & Vision)',
+    id: 'gemini-3.7-flash',
+    name: 'Gemini 3.7 Flash',
+    badge: '🧠 Clinique & Vision',
     icon: 'ri-brain-line',
-    iconColor: '#fbbf24',
-    tagline: 'Synthèse approfondie & vision HD',
-    models: [
-      { id: 'gemini-3.7-flash', name: 'Gemini 3.7 Flash', badge: 'Clinique 🧠', tagline: 'Analyse approfondie des 5 émonctoires, vision de repas et monographies' }
-    ]
+    iconColor: '#facc15',
+    speed: '⚡⚡⚡',
+    efficiency: '★★★★★',
+    tagline: 'Raisonnement clinique profond, synthèse multi-émonctoires et vision multimodale HD.'
+  },
+  {
+    id: 'gemini-3.6-flash',
+    name: 'Gemini 3.6 Flash',
+    badge: '🌱 Coaching Standard',
+    icon: 'ri-leaf-line',
+    iconColor: '#4ade80',
+    speed: '⚡⚡⚡⚡',
+    efficiency: '★★★★★',
+    tagline: 'Modèle primaire polyvalent, fluidité conversationnelle & intégration du RAG 10 Mo.'
+  },
+  {
+    id: 'gemini-3.5-flash-lite',
+    name: 'Gemini 3.5 Flash Lite',
+    badge: '⚡ Ultra-Véloce',
+    icon: 'ri-flashlight-line',
+    iconColor: '#a78bfa',
+    speed: '⚡⚡⚡⚡⚡',
+    efficiency: '★★★★★',
+    tagline: 'Latence ultra-faible (< 250ms), idéal pour requêtes rapides et audio direct.'
+  },
+  {
+    id: 'gemini-3.1-flash-lite',
+    name: 'Gemini 3.1 Flash Lite',
+    badge: '🚀 Économique',
+    icon: 'ri-rocket-line',
+    iconColor: '#38bdf8',
+    speed: '⚡⚡⚡⚡⚡',
+    efficiency: '★★★★☆',
+    tagline: 'Modèle ultraléger pour grand débit sans saturation des quotas journaliers.'
   }
 ];
 
@@ -3211,85 +3211,113 @@ function renderModelPicker() {
   if (!container) return;
 
   const currentSelected = store.get('selected_model', 'auto');
+  const isAuto = currentSelected === 'auto';
 
-  let html = `
+  container.innerHTML = `
     <div class="model-dropdown-header">
-      <span>Sélection du Modèle AI</span>
-      <span style="font-size:0.6rem;opacity:0.7"><i class="ri-information-line"></i> Survoler pour la cascade</span>
+      <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
+        <span style="font-weight:800; font-size:0.88rem; color:var(--text); display:flex; align-items:center; gap:6px;">
+          <i class="ri-sparkling-fill" style="color:var(--accent);"></i> Moteur IA &amp; FinOps
+        </span>
+        <span class="japandi-mini-chip" style="color:var(--accent); font-size:0.68rem;">Google AI Studio</span>
+      </div>
+      <div style="font-size:0.75rem; color:var(--text-dim); margin-top:2px;">
+        Dual-Tier résilient (500 RPD Gratuites ➔ Failover Tier 1 Payant)
+      </div>
+    </div>
+
+    <!-- Mode 1: Cascade Automatique (Recommandé) -->
+    <div class="model-cascade-box ${isAuto ? 'active' : ''}" onclick="selectModel('auto')">
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <div style="width:28px; height:28px; border-radius:8px; background:rgba(74,107,83,0.25); display:flex; align-items:center; justify-content:center; color:var(--accent); font-size:1.1rem;">
+            <i class="ri-instance-line"></i>
+          </div>
+          <div>
+            <div style="font-weight:700; font-size:0.85rem; color:var(--text);">Cascade FinOps Dynamique</div>
+            <div style="font-size:0.72rem; color:var(--text-dim);">Sélection adaptative selon l'intention</div>
+          </div>
+        </div>
+        <span class="japandi-mini-chip" style="background:${isAuto ? 'var(--accent)' : 'rgba(74,107,83,0.15)'}; color:${isAuto ? '#fff' : 'var(--accent)'}; font-weight:700;">
+          ${isAuto ? '✓ Actif' : 'Recommandé'}
+        </span>
+      </div>
+
+      <!-- Schéma de la Cascade Visuelle -->
+      <div class="model-flow-diagram">
+        <div class="model-flow-step">
+          <span style="color:var(--text-dim);">🟢 Salutations &amp; Small Talk</span>
+          <span style="color:#a78bfa; font-weight:600;">➔ 3.5 Flash-Lite (&lt;250ms)</span>
+        </div>
+        <div class="model-flow-step">
+          <span style="color:var(--text-dim);">🌿 Nutrition, Recettes &amp; Chat</span>
+          <span style="color:#4ade80; font-weight:600;">➔ 3.6 Flash (Optimal)</span>
+        </div>
+        <div class="model-flow-step">
+          <span style="color:var(--text-dim);">🧠 Clinique, 5 Émonctoires &amp; Vision</span>
+          <span style="color:#facc15; font-weight:600;">➔ 3.7 Flash (Approfondi)</span>
+        </div>
+        <div class="model-flow-step" style="border-top:1px dashed rgba(255,255,255,0.1); padding-top:4px; margin-top:2px;">
+          <span style="color:var(--accent);">🛡️ Failover Quota (429 / 503)</span>
+          <span style="color:var(--accent); font-weight:700;">0€ Free ➔ Tier 1 Paid</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mode 2: Forcer un Modèle Spécifique -->
+    <div style="font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-dim); margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+      <i class="ri-focus-2-line"></i> Forcer un Modèle Spécifique (Mode Manuel)
+    </div>
+
+    <div class="model-direct-grid">
+      ${DIRECT_AI_MODELS.map(m => {
+        const isSelected = currentSelected === m.id;
+        return `
+          <div class="model-direct-card ${isSelected ? 'active' : ''}" onclick="selectModel('${m.id}')">
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+              <div style="display:flex; align-items:center; gap:6px;">
+                <i class="${m.icon}" style="color:${m.iconColor}; font-size:1rem;"></i>
+                <span style="font-weight:700; font-size:0.84rem; color:var(--text);">${esc(m.name)}</span>
+              </div>
+              <span class="japandi-mini-chip" style="color:${m.iconColor}; font-size:0.68rem;">${esc(m.badge)}</span>
+            </div>
+            <div style="font-size:0.74rem; color:var(--text-dim); line-height:1.35;">${esc(m.tagline)}</div>
+            <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:var(--text-dim); margin-top:2px; border-top:1px solid rgba(255,255,255,0.04); padding-top:4px;">
+              <span>Vitesse : <strong style="color:var(--text);">${m.speed}</strong></span>
+              <span>Efficience : <strong style="color:var(--text);">${m.efficiency}</strong></span>
+            </div>
+          </div>
+        `;
+      }).join('')}
     </div>
   `;
 
-  MODEL_TAXONOMY.forEach(cat => {
-    const isCatActive = cat.models.some(m => m.id === currentSelected);
-
-    let subHtml = `<div class="model-sub-dropdown">
-      <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;color:var(--text-dim,#64748b);padding:4px 8px 6px;border-bottom:1px solid rgba(255,255,255,0.06);margin-bottom:4px">
-        ${esc(cat.name)}
-      </div>`;
-
-    cat.models.forEach(m => {
-      const isSelected = m.id === currentSelected;
-      subHtml += `
-        <div class="model-option-item ${isSelected ? 'selected' : ''}" onclick="selectModel('${esc(m.id)}', '${esc(m.name)}', '${esc(cat.icon)}', '${esc(cat.iconColor)}')">
-          <div class="model-option-row">
-            <span class="model-option-name">${esc(m.name)}</span>
-            <span class="model-option-badge">${esc(m.badge)}</span>
-          </div>
-          <div class="model-option-tagline">${esc(m.tagline)}</div>
-        </div>
-      `;
-    });
-    subHtml += `</div>`;
-
-    html += `
-      <div class="model-cat-item ${isCatActive ? 'active' : ''}">
-        <div class="model-cat-left">
-          <div class="model-cat-icon" style="color:${cat.iconColor}">
-            <i class="${cat.icon}"></i>
-          </div>
-          <div>
-            <div class="model-cat-title">${esc(cat.name)}</div>
-            <div class="model-cat-sub">${esc(cat.tagline)}</div>
-          </div>
-        </div>
-        <i class="ri-arrow-right-s-line model-cat-arrow"></i>
-        ${subHtml}
-      </div>
-    `;
-  });
-
-  container.innerHTML = html;
   updateModelHeaderBadge();
-};
+}
 
-function selectModel(modelId, modelName, iconClass, iconColor) {
+function selectModel(modelId) {
   store.set('selected_model', modelId);
   const dropdown = document.getElementById('modelDropdown');
   if (dropdown) dropdown.style.display = 'none';
   updateModelHeaderBadge();
-};
+  const label = modelId === 'auto' ? 'Cascade FinOps Automatique' : modelId;
+  if (window.showToast) window.showToast(`Modèle IA sélectionné : ${label}`, 'info');
+}
 
 function updateModelHeaderBadge() {
   const currentSelected = store.get('selected_model', 'auto');
   const badge = document.getElementById('currentModelBadge');
   if (!badge) return;
 
-  let foundModel = null;
-  let foundCat = null;
-
-  for (const cat of MODEL_TAXONOMY) {
-    const m = cat.models.find(x => x.id === currentSelected);
-    if (m) {
-      foundModel = m;
-      foundCat = cat;
-      break;
-    }
-  }
-
-  if (foundModel && foundCat) {
-    badge.innerHTML = `<i class="${foundCat.icon}" style="color:${foundCat.iconColor}"></i> ${esc(foundModel.name)}`;
+  if (currentSelected === 'auto') {
+    badge.innerHTML = `<i class="ri-instance-line" style="color:var(--accent,#34d399)"></i> Rotateur Auto`;
   } else {
-    badge.innerHTML = `<i class="ri-instance-line" style="color:#34d399"></i> Rotateur Auto`;
+    const found = DIRECT_AI_MODELS.find(m => m.id === currentSelected);
+    if (found) {
+      badge.innerHTML = `<i class="${found.icon}" style="color:${found.iconColor}"></i> ${esc(found.name)}`;
+    } else {
+      badge.innerHTML = `<i class="ri-sparkling-fill" style="color:var(--accent)"></i> ${esc(currentSelected)}`;
+    }
   }
 }
 
@@ -3846,8 +3874,8 @@ function renderVoiceModalList() {
   let html = '';
   for (const [regionName, voices] of Object.entries(regions)) {
     html += `
-      <div style="margin-top:6px;">
-        <div style="font-size:0.78rem; font-weight:800; text-transform:uppercase; letter-spacing:0.5px; color:#34d399; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+      <div style="margin-top:8px;">
+        <div style="font-size:0.8rem; font-weight:800; text-transform:uppercase; letter-spacing:0.5px; color:var(--accent); margin-bottom:8px; display:flex; align-items:center; gap:6px;">
           <span>${regionName}</span>
         </div>
         <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:10px;">
@@ -3857,26 +3885,26 @@ function renderVoiceModalList() {
       const isSelected = v.id === activeId;
       const genderLabel = v.gender === 'female' ? (tFunc('voiceModal.female') || 'Femme') : (tFunc('voiceModal.male') || 'Homme');
       html += `
-        <div class="voice-card ${isSelected ? 'selected' : ''}" style="display:flex; flex-direction:column; justify-content:space-between; background:${isSelected ? 'var(--accent-glow)' : 'var(--surface-2)'}; border:1px solid ${isSelected ? 'var(--accent)' : 'var(--border)'}; border-radius:14px; padding:14px; transition:all 0.2s ease;">
+        <div class="voice-card ${isSelected ? 'selected' : ''}" style="display:flex; flex-direction:column; justify-content:space-between; background:${isSelected ? 'rgba(74, 107, 83, 0.22)' : 'var(--surface-2)'}; border:1.5px solid ${isSelected ? 'var(--accent)' : 'var(--border)'}; border-radius:16px; padding:14px; box-shadow:${isSelected ? '0 0 0 2px rgba(74, 107, 83, 0.3)' : 'none'}; transition:all 0.2s ease;">
           <div>
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
               <div style="display:flex; align-items:center; gap:8px;">
-                <span style="font-size:1.3rem;">${v.flag}</span>
+                <span style="font-size:1.35rem;">${v.flag}</span>
                 <span style="font-weight:700; font-size:0.95rem; color:var(--text);">${esc(v.name)}</span>
               </div>
-              <span style="font-size:0.7rem; font-weight:700; background:${isSelected ? 'var(--accent)' : 'var(--badge-bg)'}; color:${isSelected ? '#000' : 'var(--text-dim)'}; padding:2px 8px; border-radius:10px;">
+              <span style="font-size:0.7rem; font-weight:700; background:${isSelected ? 'var(--accent)' : 'var(--badge-bg)'}; color:${isSelected ? '#ffffff' : 'var(--text-dim)'}; padding:2px 10px; border-radius:12px;">
                 ${v.badge || genderLabel}
               </span>
             </div>
-            <p style="font-size:0.8rem; color:var(--text-dim); line-height:1.4; margin:0 0 12px 0;">
+            <p style="font-size:0.82rem; color:var(--text-dim); line-height:1.45; margin:0 0 12px 0;">
               ${esc(v.desc)}
             </p>
           </div>
           <div style="display:flex; gap:8px; align-items:center;">
-            <button type="button" class="btn-voice-sample" onclick="testVoiceSample('${v.id}', this)" style="flex:1; padding:8px 12px; border-radius:10px; background:var(--surface); border:1px solid var(--border); color:var(--text); font-size:0.8rem; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:all 0.2s ease;">
+            <button type="button" class="btn-voice-sample" onclick="testVoiceSample('${v.id}', this)" style="flex:1; padding:8px 12px; border-radius:10px; background:var(--surface-hover); border:1px solid var(--border); color:var(--text); font-size:0.82rem; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:all 0.2s ease;">
               <i class="ri-play-circle-line"></i> ${esc(tFunc('voiceModal.listen') || 'Écouter')}
             </button>
-            <button type="button" class="btn-voice-select" onclick="setCustomVoice('${v.id}'); renderVoiceModalList();" style="flex:1.2; padding:8px 14px; border-radius:10px; background:${isSelected ? 'var(--accent)' : 'var(--accent-glow)'}; border:1px solid var(--accent); color:${isSelected ? '#000' : 'var(--accent)'}; font-size:0.8rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:all 0.2s ease;">
+            <button type="button" class="btn-voice-select" onclick="setCustomVoice('${v.id}'); renderVoiceModalList();" style="flex:1.2; padding:8px 14px; border-radius:10px; background:${isSelected ? 'var(--accent)' : 'rgba(74, 107, 83, 0.15)'}; border:1px solid var(--accent); color:${isSelected ? '#ffffff' : 'var(--accent)'}; font-size:0.82rem; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:all 0.2s ease;">
               <i class="${isSelected ? 'ri-check-line' : 'ri-check-double-line'}"></i> ${isSelected ? (tFunc('voiceModal.active') || 'Active ✓') : (tFunc('voiceModal.select') || 'Choisir')}
             </button>
           </div>
@@ -4810,24 +4838,24 @@ async function askAIToFindFood(query) {
     resultsEl.style.display = 'flex';
     const randTip = VITAL_EDUCATIONAL_TIPS[Math.floor(Math.random() * VITAL_EDUCATIONAL_TIPS.length)];
     resultsEl.innerHTML = `
-      <div class="search-mascot-loader glass" style="width:100%; text-align:center; padding:32px 20px; border-radius:18px; border:1px solid rgba(52,211,153,0.3); background:var(--surface-2); backdrop-filter:blur(20px); margin:12px 0;">
-        <div style="position:relative; width:110px; height:130px; margin:0 auto 16px auto; display:flex; align-items:center; justify-content:center;">
-          <div class="scan-spinner-ring" style="width:125px; height:125px; top:-5px; left:-7px; border-color:rgba(52,211,153,0.15); border-top-color:#34d399;"></div>
-          <canvas id="searchMascotCanvas" width="110" height="130" style="width:110px; height:130px; filter:drop-shadow(0 4px 16px rgba(52,211,153,0.35));"></canvas>
+      <div class="search-mascot-loader">
+        <div class="search-mascot-frame">
+          <div class="scan-spinner-ring" style="width:125px; height:125px; top:-5px; left:-7px; border-color:rgba(74,107,83,0.2); border-top-color:var(--accent);"></div>
+          <canvas id="searchMascotCanvas" width="110" height="130" style="width:110px; height:130px; filter:drop-shadow(0 4px 16px var(--accent-glow));"></canvas>
         </div>
-        <div style="display:inline-flex; align-items:center; gap:6px; background:rgba(52,211,153,0.12); border:1px solid rgba(52,211,153,0.3); color:#34d399; font-size:0.82rem; font-weight:700; padding:5px 14px; border-radius:20px; margin-bottom:12px;">
+        <div class="search-mascot-badge">
           <i class="ri-search-eye-line"></i> Vital le Détective ausculte « ${esc(q)} »
         </div>
-        <h3 style="font-size:1.15rem; font-weight:800; color:var(--text); margin:0 0 8px 0;">Analyse biochimique &amp; statut vitaliste...</h3>
+        <h3 class="search-mascot-title">Recherche Grounding &amp; Statut Vitaliste...</h3>
         
-        <div id="searchMascotTipBox" style="min-height:56px; max-width:520px; margin:0 auto 18px auto; padding:12px 16px; background:var(--surface-hover); border:1px solid var(--border); border-radius:12px; font-size:0.86rem; color:var(--text); line-height:1.45; display:flex; align-items:center; justify-content:center; text-align:center; transition:opacity 0.3s ease;">
+        <div id="searchMascotTipBox" class="search-mascot-tip-box">
           ${randTip}
         </div>
 
-        <div class="scan-loading-progress-bar" style="max-width:360px; margin:0 auto 12px auto;">
+        <div class="scan-loading-progress-bar" style="max-width:360px; margin:0 auto 8px auto;">
           <div class="scan-loading-progress-fill"></div>
         </div>
-        <span id="searchMascotStep" style="font-size:0.76rem; color:var(--text-dim); font-weight:600;">Étape 1/3 : Identification taxonomique et charge colloïdale...</span>
+        <span id="searchMascotStep" class="search-mascot-step-text">Étape 1/4 : Recherche Google Grounding de la recette authentique...</span>
       </div>
     `;
 
@@ -4843,9 +4871,10 @@ async function askAIToFindFood(query) {
     }
 
     const steps = [
-      'Étape 1/3 : Identification taxonomique et charge colloïdale...',
-      'Étape 2/3 : Calcul de l\'indice PRAL rénal et statut Dr. Sebi...',
-      'Étape 3/3 : Synthèse bio-électrique et recommandations vivantes...'
+      'Étape 1/4 : Recherche Google Grounding de la recette authentique...',
+      'Étape 2/4 : Décomposition taxonomique des ingrédients & épices...',
+      'Étape 3/4 : Calcul du PRAL rénal & densité micronutritionnelle...',
+      'Étape 4/4 : Évaluation du mucus (Ehret) & conseils de transition...'
     ];
     let tipIdx = 0;
     let stepIdx = 0;
@@ -4862,7 +4891,7 @@ async function askAIToFindFood(query) {
         }, 200);
       }
       if (stepEl) stepEl.textContent = steps[stepIdx];
-    }, 2500);
+    }, 2200);
   }
   if (emptyState) emptyState.style.display = 'none';
   if (statsBar) statsBar.style.display = 'none';
@@ -5598,7 +5627,7 @@ function askAIAboutCurrentHerb() {
   });
 };
 
-// ═══════ FOOD & MEAL MODAL (DIFFÉRENCIATION ALIMENT / REPAS COMPOSÉ) ═══════
+// ═══════ FOOD & MEAL MODAL (DIFFÉRENCIATION ALIMENT / REPAS COMPOSÉ JAPANDI) ═══════
 function openFoodModal(idxOrFood) {
   let item = null;
   let isMealContext = false;
@@ -5660,37 +5689,48 @@ function openFoodModal(idxOrFood) {
   const hasItems = Array.isArray(rawItems) && rawItems.length > 0;
   const isComposedMeal = item.isComposedMeal === true || (hasItems && rawItems.length > 1) || (isMealContext && hasItems);
 
+  // Multi-Ingredients Bento Navigation
   let multiNavHtml = '';
-  if (item.allAnalyzedItems && item.allAnalyzedItems.length > 1) {
+  const rootDish = item._rootDish || item;
+  const allItems = item.allAnalyzedItems || rootDish.allAnalyzedItems || (hasItems ? rawItems : []);
+  const currentNavIdx = typeof item._currentNavIdx === 'number' ? item._currentNavIdx : (allItems.length > 1 && item === rootDish ? -1 : allItems.findIndex(it => (it.name || '').toLowerCase() === name.toLowerCase()));
+
+  if (allItems && allItems.length > 1) {
     multiNavHtml = `
-      <div class="analyzed-nav" style="margin-top:10px;">
-        <span style="font-size:0.75rem; color:var(--text-dim); width:100%; text-align:center; margin-bottom:4px; display:block;">
-          <i class="ri-sparkling-fill" style="color:var(--accent)"></i> ${item.allAnalyzedItems.length} aliments analysés dans ce plat :
-        </span>
-        ${item.allAnalyzedItems.map((it, i) => {
-      const itName = (it.name || it.names?.[0] || 'Aliment').replace(/^./, c => c.toUpperCase());
-      const isCurrent = itName.toLowerCase() === name.toLowerCase();
-      return `<button type="button" class="tab ${isCurrent ? 'active' : ''}" onclick="switchAnalyzedFoodInModal(${i})" style="padding:4px 10px; font-size:0.8rem; border-radius:20px;">
-            ${it.emoji || '🍽️'} ${esc(itName)}
-          </button>`;
-    }).join('')}
+      <div class="analyzed-nav">
+        <button type="button" class="japandi-ingredient-pill ${currentNavIdx === -1 ? 'active' : ''}" onclick="switchAnalyzedFoodInModal(-1)">
+          <span>🌿 Plat Complet (${allItems.length} ingr.)</span>
+        </button>
+        ${allItems.map((it, i) => {
+          const itName = (typeof it === 'string' ? it : (it.name || it.names?.[0] || 'Ingrédient')).replace(/^./, c => c.toUpperCase());
+          const itPral = typeof it === 'object' ? (it.scientific_defaults?.pral ?? (it.pral ?? 0)) : 0;
+          const itEmoji = typeof it === 'object' ? (it.emoji || '🥗') : '🥗';
+          const isCurrent = currentNavIdx === i;
+          return `
+            <button type="button" class="japandi-ingredient-pill ${isCurrent ? 'active' : ''}" onclick="switchAnalyzedFoodInModal(${i})">
+              <span>${itEmoji}</span>
+              <span>${esc(itName)}</span>
+              <span class="mini-pral" style="color:${itPral < 0 ? 'var(--accent)' : 'var(--warn)'};">${itPral > 0 ? '+' : ''}${itPral.toFixed(1)}</span>
+            </button>
+          `;
+        }).join('')}
       </div>
     `;
   }
 
   // Header Subtitle
-  let headerSubtitle = `${esc(item.family || 'Aliment')} · ${modalSubtitleTag}`;
-  if (isComposedMeal) {
-    const categoryLabels = { breakfast: 'PETIT-DÉJEUNER', lunch: 'DÉJEUNER', dinner: 'DÎNER', snack: 'COLLATION' };
-    const catLabel = categoryLabels[item.category] || (item.category ? item.category.toUpperCase() : 'REPAS VITALISTE');
-    const count = hasItems ? rawItems.length : 1;
-    headerSubtitle = `<span style="color:var(--accent); font-weight:700;">[${esc(catLabel)}]</span> · ${modalSubtitleTag} · 🥗 ${count} ingrédient${count > 1 ? 's' : ''}`;
+  let headerSubtitle = `${esc(item.family || 'Alimentation')} · ${modalSubtitleTag}`;
+  if (isComposedMeal && currentNavIdx === -1) {
+    const count = allItems.length;
+    headerSubtitle = `<span style="color:var(--accent); font-weight:700;">[Plat Traditionnel Composite]</span> · ${modalSubtitleTag} · 🥗 ${count} ingrédient${count > 1 ? 's' : ''} ancré${count > 1 ? 's' : ''}`;
+  } else if (currentNavIdx >= 0) {
+    headerSubtitle = `<span style="color:var(--accent-2); font-weight:700;">[Ingrédient ${currentNavIdx + 1}/${allItems.length}]</span> · ${modalSubtitleTag}`;
   }
 
   document.getElementById('modalFoodHeader').innerHTML = `
-    <div style="font-size:3rem;margin-bottom:8px">${item.emoji || '🍽️'}</div>
-    <h2 style="font-family:var(--font);font-weight:700;font-size:1.35rem;">${esc(name)}</h2>
-    <p style="color:var(--text-dim);font-size:0.88rem;margin-top:4px;">
+    <div class="japandi-hero-avatar">${item.emoji || '🍽️'}</div>
+    <h2 style="font-family:var(--font);font-weight:800;font-size:1.35rem;color:var(--text);letter-spacing:-0.02em;margin:0 0 4px 0;">${esc(name)}</h2>
+    <p style="color:var(--text-dim);font-size:0.85rem;margin:0 0 6px 0;">
       ${headerSubtitle}
     </p>
     ${multiNavHtml}
@@ -5699,20 +5739,13 @@ function openFoodModal(idxOrFood) {
   // Render Tabs Bar dynamically
   const tabsBar = document.getElementById('modalTabsBar') || document.querySelector('#foodModal .modal-tabs');
   if (tabsBar) {
-    if (isComposedMeal) {
-      const count = hasItems ? rawItems.length : 1;
-      tabsBar.innerHTML = `
-        <button class="tab active" data-tab="meal_ingredients" onclick="setModalTab('meal_ingredients')">🥗 Ingrédients (${count})</button>
-        <button class="tab" data-tab="meal_balance" onclick="setModalTab('meal_balance')">🔬 Bilan & PRAL</button>
-        <button class="tab" data-tab="meal_coach" onclick="setModalTab('meal_coach')">💡 Note & Conseil</button>
-      `;
-    } else {
-      tabsBar.innerHTML = `
-        <button class="tab active" data-tab="scientific" onclick="setModalTab('scientific')">🔬 Scientifique</button>
-        <button class="tab" data-tab="vitality" onclick="setModalTab('vitality')">💚 Vitalité</button>
-        <button class="tab" data-tab="specific" onclick="setModalTab('specific')">🌿 Spécifique</button>
-      `;
-    }
+    const hasItemsList = (allItems && allItems.length > 0) || isComposedMeal;
+    tabsBar.innerHTML = `
+      <button class="tab active" data-tab="scientific" onclick="setModalTab('scientific')"><i class="ri-flask-line"></i> Scientifique</button>
+      <button class="tab" data-tab="vitality" onclick="setModalTab('vitality')"><i class="ri-heart-pulse-line"></i> Vitalité</button>
+      <button class="tab" data-tab="specific" onclick="setModalTab('specific')"><i class="ri-leaf-line"></i> Spécifique</button>
+      ${hasItemsList ? `<button class="tab" data-tab="recipe" onclick="setModalTab('recipe')"><i class="ri-restaurant-2-line"></i> Recette (${allItems.length || 1})</button>` : ''}
+    `;
   }
 
   currentModalFood._parsed = {
@@ -5724,15 +5757,14 @@ function openFoodModal(idxOrFood) {
     isComposedMeal,
     mealIndex,
     isMealContext,
+    _rootDish: rootDish,
+    allAnalyzedItems: allItems,
+    _currentNavIdx: currentNavIdx,
     cookingMethod: item.cookingMethod || (isE ? 'steam' : 'bake'),
     oilQuality: item.oilQuality || (isE ? 'raw_olive' : 'none')
   };
 
-  if (isComposedMeal) {
-    setModalTab('meal_ingredients');
-  } else {
-    setModalTab('scientific');
-  }
+  setModalTab('scientific');
 
   const favs = store.get('favorites', []);
   const isFav = item.id ? favs.some(f => f.id === item.id) : (favs.some(f => f.name?.toLowerCase() === name.toLowerCase()));
@@ -5742,23 +5774,23 @@ function openFoodModal(idxOrFood) {
   if (actionsContainer) {
     if (isMealContext) {
       actionsContainer.innerHTML = `
-        <div style="display:flex; gap:8px; width:100%;">
+        <div style="display:flex; gap:10px; width:100%;">
           ${typeof mealIndex === 'number' ? `<button type="button" class="btn-outline" style="color:#ef4444; border-color:rgba(239,68,68,0.3); flex:1;" onclick="removeMealAndCloseModal(${mealIndex})"><i class="ri-delete-bin-line"></i> Supprimer</button>` : ''}
           <button type="button" class="btn-primary" style="flex:1.5;" onclick="closeFoodModal()"><i class="ri-check-line"></i> Fermer</button>
         </div>
       `;
     } else if (isAddingMeal) {
       actionsContainer.innerHTML = `
-        <div style="display:flex; gap:8px; width:100%;">
+        <div style="display:flex; gap:10px; width:100%;">
           <button type="button" class="btn-outline" style="flex:1;" onclick="closeFoodModal()"><i class="ri-arrow-left-line"></i> Continuer le repas</button>
-          <button type="button" class="btn-primary" style="flex:1;" onclick="confirmAddMealFromModal()"><i class="ri-checkbox-circle-line"></i> Enregistrer le repas</button>
+          <button type="button" class="btn-primary" style="flex:1.2;" onclick="confirmAddMealFromModal()"><i class="ri-checkbox-circle-line"></i> Enregistrer le repas</button>
         </div>
       `;
     } else {
       const idx = vitalDb.indexOf(item);
       const isNewAI = item.isNewFromAI === true;
       actionsContainer.innerHTML = `
-        <div style="display:flex; gap:8px; width:100%; flex-wrap:wrap;">
+        <div style="display:flex; gap:10px; width:100%; flex-wrap:wrap;">
           <button class="btn-primary" style="flex:2; min-width:140px;" onclick="addFoodToMealFromModal(${idx})"><i class="ri-add-line"></i> Ajouter au repas</button>
           <button class="btn-outline" id="modalFavBtn" style="flex:1; min-width:90px;" onclick="toggleFavorite()"><i class="ri-heart-line"></i> Favori</button>
           ${isNewAI ? '<button class="btn-outline" style="flex:1.2; min-width:120px;" onclick="saveAIFoodToDB()"><i class="ri-save-line"></i> Sauvegarder</button>' : ''}
@@ -5776,18 +5808,81 @@ function openFoodModal(idxOrFood) {
 };
 
 function switchAnalyzedFoodInModal(idx) {
-  if (!currentModalFood || !currentModalFood.allAnalyzedItems || !currentModalFood.allAnalyzedItems[idx]) return;
-  const target = currentModalFood.allAnalyzedItems[idx];
-  openFoodModal({
-    ...target,
-    isMealSelection: true,
-    allAnalyzedItems: currentModalFood.allAnalyzedItems
-  });
+  if (!currentModalFood) return;
+  const root = currentModalFood._parsed?._rootDish || currentModalFood._rootDish || currentModalFood;
+  const items = currentModalFood._parsed?.allAnalyzedItems || currentModalFood.allAnalyzedItems || root.allAnalyzedItems || [];
+
+  if (idx === -1) {
+    // Switch to Full Composite Dish view
+    openFoodModal({
+      ...root,
+      isMealSelection: true,
+      _rootDish: root,
+      allAnalyzedItems: items,
+      _currentNavIdx: -1
+    });
+  } else if (items[idx]) {
+    // Switch to individual ingredient view
+    const target = items[idx];
+    const targetObj = typeof target === 'string' ? { name: target } : target;
+    openFoodModal({
+      ...targetObj,
+      isMealSelection: true,
+      _rootDish: root,
+      allAnalyzedItems: items,
+      _currentNavIdx: idx
+    });
+  }
 };
 
 function confirmAddMealFromModal() {
-  document.getElementById('foodModal')?.classList.remove('open');
-  confirmAddMeal();
+  if (!currentModalFood) {
+    closeFoodModal();
+    return;
+  }
+  const root = currentModalFood._parsed?._rootDish || currentModalFood._rootDish || currentModalFood;
+  const meals = store.get('meals', []);
+  const name = (root.name || root.names?.[0] || 'Plat').replace(/^./, c => c.toUpperCase());
+  const sc = root.scientific_defaults || root.scientific || { pral: root.pral ?? 0, density: 60 };
+  const vt = root.vitality || { nova: root.nova ?? 3, freshness: 30 };
+  const sp = root.specific || { electric: root.electric || false, hybrid: root.hybrid ?? true, mucus: root.mucus || 'Mucogène' };
+  const items = root.items || root.allAnalyzedItems || root._parsed?.allAnalyzedItems || [];
+
+  meals.push({
+    id: root.id || ('meal_' + Date.now()),
+    name,
+    names: root.names || [name],
+    emoji: root.emoji || '🍲',
+    category: root.category || 'lunch',
+    family: root.family || (items.length > 1 ? 'Plat Traditionnel Composite' : 'Alimentation'),
+    isComposedMeal: items.length > 1,
+    pral: root.pral ?? (sc.pral ?? 0),
+    scientific: sc,
+    scientific_defaults: sc,
+    nova: root.nova ?? (vt.nova ?? 3),
+    vitality: vt,
+    freshness: root.freshness ?? (vt.freshness ?? 50),
+    electric: root.electric || sp.electric || false,
+    hybrid: root.hybrid ?? sp.hybrid ?? true,
+    mucus: root.mucus || sp.mucus || 'Mucogène',
+    specific: sp,
+    items: items.length > 0 ? items : [root],
+    allAnalyzedItems: items.length > 0 ? items : [root],
+    electrolytes: root.electrolytes,
+    macros: root.macros,
+    note: root.note,
+    grounding_sources: root.grounding_sources,
+    timestamp: Date.now()
+  });
+
+  store.set('meals', meals);
+  selectedMealFoods = [];
+  renderSelectedMealFoods();
+  closeFoodModal();
+  closeAddMealModal();
+  renderMeals();
+  renderDashboard();
+  showToast(`✅ « ${name} » enregistré dans votre journal !`, 'success');
 };
 
 function openFoodModalFromSelection(id) {
@@ -6270,31 +6365,96 @@ function setModalTab(tab) {
     return;
   }
 
-  // ═══════ ALIMENT BRUT / SCIENTIFIQUE ═══════
+  // ═══════ ALIMENT BRUT & REPAS COMPOSÉ (JAPANDI TABS) ═══════
   if (tab === 'scientific') {
-    const srcName = currentModalFood.source || item?.source || 'USDA FoodData Central / Table PRAL (Remer & Manz)';
+    const srcList = currentModalFood.grounding_sources || item?.grounding_sources || [];
+    const srcName = srcList.length > 0 ? srcList.map(s => {
+      const cleanUrl = s.replace(/^https?:\/\/(www\.)?/, '').split('/')[0];
+      return `<a href="${esc(s)}" target="_blank" rel="noopener noreferrer" style="color:var(--accent); text-decoration:underline;">${esc(cleanUrl)}</a>`;
+    }).join(' · ') : (currentModalFood.source || item?.source || 'USDA FoodData Central / Table PRAL (Remer & Manz)');
+
+    const electrolytes = currentModalFood.electrolytes || item?.electrolytes;
+    const macros = currentModalFood.macros || item?.macros;
+
+    let mineralsHtml = '';
+    if (electrolytes) {
+      mineralsHtml = `
+        <div style="margin-top:12px;">
+          <span style="font-size:0.75rem; color:var(--text-dim); text-transform:uppercase; font-weight:700; letter-spacing:0.5px; display:block; margin-bottom:6px;">
+            <i class="ri-pulse-line" style="color:var(--accent);"></i> Électrolytes & Biominéraux Vivants (mg/100g)
+          </span>
+          <div class="japandi-minerals-grid">
+            <div class="japandi-mineral-box">
+              <div class="japandi-mineral-label">Potassium</div>
+              <div class="japandi-mineral-val">${electrolytes.potassium ?? '—'} <span style="font-size:0.65rem; font-weight:500;">mg</span></div>
+            </div>
+            <div class="japandi-mineral-box">
+              <div class="japandi-mineral-label">Magnésium</div>
+              <div class="japandi-mineral-val">${electrolytes.magnesium ?? '—'} <span style="font-size:0.65rem; font-weight:500;">mg</span></div>
+            </div>
+            <div class="japandi-mineral-box">
+              <div class="japandi-mineral-label">Calcium</div>
+              <div class="japandi-mineral-val">${electrolytes.calcium ?? '—'} <span style="font-size:0.65rem; font-weight:500;">mg</span></div>
+            </div>
+            <div class="japandi-mineral-box">
+              <div class="japandi-mineral-label">Sodium</div>
+              <div class="japandi-mineral-val" style="color:${(electrolytes.sodium || 0) > 400 ? 'var(--warn)' : 'var(--accent)'};">${electrolytes.sodium ?? '—'} <span style="font-size:0.65rem; font-weight:500;">mg</span></div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    let macrosHtml = '';
+    if (macros) {
+      macrosHtml = `
+        <div style="display:flex; gap:6px; flex-wrap:wrap; margin:10px 0;">
+          <div style="flex:1; min-width:70px; background:var(--surface-2); border:1px solid var(--border); border-radius:10px; padding:6px 8px; text-align:center;">
+            <div style="font-size:0.68rem; color:var(--text-dim); font-weight:700;">CALORIES</div>
+            <div style="font-size:0.85rem; font-weight:800; color:var(--text);">${macros.calories ?? 0} <span style="font-size:0.65rem; font-weight:500;">kcal</span></div>
+          </div>
+          <div style="flex:1; min-width:70px; background:var(--surface-2); border:1px solid var(--border); border-radius:10px; padding:6px 8px; text-align:center;">
+            <div style="font-size:0.68rem; color:var(--text-dim); font-weight:700;">PROTÉINES</div>
+            <div style="font-size:0.85rem; font-weight:800; color:var(--accent);">${macros.proteins ?? 0} <span style="font-size:0.65rem; font-weight:500;">g</span></div>
+          </div>
+          <div style="flex:1; min-width:70px; background:var(--surface-2); border:1px solid var(--border); border-radius:10px; padding:6px 8px; text-align:center;">
+            <div style="font-size:0.68rem; color:var(--text-dim); font-weight:700;">GLUCIDES</div>
+            <div style="font-size:0.85rem; font-weight:800; color:var(--accent-2);">${macros.carbs ?? 0} <span style="font-size:0.65rem; font-weight:500;">g</span></div>
+          </div>
+          <div style="flex:1; min-width:70px; background:var(--surface-2); border:1px solid var(--border); border-radius:10px; padding:6px 8px; text-align:center;">
+            <div style="font-size:0.68rem; color:var(--text-dim); font-weight:700;">LIPIDES</div>
+            <div style="font-size:0.85rem; font-weight:800; color:var(--warn);">${macros.fats ?? 0} <span style="font-size:0.65rem; font-weight:500;">g</span></div>
+          </div>
+        </div>
+      `;
+    }
+
     content.innerHTML = `
       <div class="data-row">
-        <span class="data-label">Charge PRAL (Remer & Manz)</span>
-        <span class="data-value" style="font-weight:700; color:${isAlkaline ? 'var(--accent)' : 'var(--warn)'}">
+        <span class="data-label">Charge PRAL (Remer &amp; Manz)</span>
+        <span class="data-value" style="font-weight:800; color:${isAlkaline ? 'var(--accent)' : 'var(--warn)'}">
           ${pral > 0 ? '+' : ''}${pral.toFixed(1)} mEq/100g
         </span>
       </div>
       <div class="data-row">
         <span class="data-label">Effet Rénal Acido-Basique</span>
-        <span class="data-value" style="font-weight:600;">${isAlkaline ? '🟢 Alcalinisant puissant' : pral <= 4 ? '🟡 Faiblement acidifiant' : '🔴 Fortement acidifiant'}</span>
+        <span class="data-value" style="font-weight:700;">${isAlkaline ? '🟢 Alcalinisant puissant' : pral <= 4 ? '🟡 Faiblement acidifiant' : '🔴 Fortement acidifiant'}</span>
       </div>
       <div class="data-row">
         <span class="data-label">Densité Micronutritionnelle</span>
         <span class="data-value">${sc?.density ?? '?'}/100</span>
       </div>
       <div class="data-bar"><div class="data-bar-fill" style="width:${sc?.density ?? 50}%;background:${isAlkaline ? 'var(--accent)' : 'var(--warn)'}"></div></div>
-      <div style="margin-top:14px; padding:10px 12px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:8px; font-size:0.8rem; color:var(--text-dim); line-height:1.4;">
+
+      ${macrosHtml}
+      ${mineralsHtml}
+
+      <div style="margin-top:14px; padding:10px 14px; background:var(--surface-2); border:1px solid var(--border); border-radius:12px; font-size:0.8rem; color:var(--text-dim); line-height:1.45;">
         <strong style="color:var(--text)">Indice PRAL :</strong> Mesure la charge acide nette éliminée par les reins. Les valeurs négatives préservent les réserves minérales corporelles (Potassium, Magnésium, Calcium).
       </div>
-      <div style="margin-top:8px; padding:6px 10px; background:rgba(16,185,129,0.05); border:1px dashed var(--border); border-radius:6px; font-size:0.75rem; color:var(--text-dim); display:flex; align-items:center; gap:6px;">
-        <i class="ri-book-read-line" style="color:var(--accent);"></i>
-        <span><strong>Source vérifiée :</strong> ${esc(srcName)}</span>
+      <div style="margin-top:8px; padding:8px 12px; background:rgba(74,107,83,0.08); border:1px solid rgba(74,107,83,0.25); border-radius:10px; font-size:0.75rem; color:var(--text-dim); display:flex; align-items:center; gap:8px;">
+        <i class="ri-shield-check-fill" style="color:var(--accent); font-size:0.9rem;"></i>
+        <span><strong>Sources vérifiées :</strong> ${srcName}</span>
       </div>
     `;
   } else if (tab === 'vitality') {
@@ -6304,26 +6464,26 @@ function setModalTab(tab) {
     content.innerHTML = `
       <div class="data-row">
         <span class="data-label">Degré de transformation NOVA</span>
-        <span class="data-value" style="font-weight:700; color:${novaColor}">NOVA ${nova}/4</span>
+        <span class="data-value" style="font-weight:800; color:${novaColor}">NOVA ${nova}/4</span>
       </div>
       <div class="data-row">
         <span class="data-label">Classification Carlos Monteiro</span>
-        <span class="data-value" style="font-size:0.85rem;">${vt?.label || novaDesc}</span>
+        <span class="data-value" style="font-size:0.84rem;">${vt?.label || novaDesc}</span>
       </div>
       <div class="data-row">
-        <span class="data-label">Taux de Fraîcheur & Biogénie</span>
-        <span class="data-value" style="font-weight:600;">${vt?.freshness ?? 0}%</span>
+        <span class="data-label">Taux de Fraîcheur &amp; Biogénie</span>
+        <span class="data-value" style="font-weight:700;">${vt?.freshness ?? 0}%</span>
       </div>
       <div class="data-bar"><div class="data-bar-fill" style="width:${vt?.freshness ?? 0}%;background:${novaColor}"></div></div>
-      <div style="margin-top:14px; padding:10px 12px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:8px; font-size:0.8rem; color:var(--text-dim); line-height:1.4;">
+      <div style="margin-top:14px; padding:10px 14px; background:var(--surface-2); border:1px solid var(--border); border-radius:12px; font-size:0.8rem; color:var(--text-dim); line-height:1.45;">
         <strong style="color:var(--text)">Échelle NOVA :</strong> Norme mondiale de l'Université de São Paulo évaluant l'impact des procédés industriels, additifs et raffinements sur la santé humaine.
       </div>
-      <div style="margin-top:8px; padding:6px 10px; background:rgba(16,185,129,0.05); border:1px dashed var(--border); border-radius:6px; font-size:0.75rem; color:var(--text-dim); display:flex; align-items:center; gap:6px;">
+      <div style="margin-top:8px; padding:8px 12px; background:rgba(74,107,83,0.08); border:1px solid rgba(74,107,83,0.25); border-radius:10px; font-size:0.75rem; color:var(--text-dim); display:flex; align-items:center; gap:8px;">
         <i class="ri-book-read-line" style="color:var(--accent);"></i>
         <span><strong>Source méthodologique :</strong> Classification NOVA (Université de São Paulo, Pr. Carlos Monteiro)</span>
       </div>
     `;
-  } else {
+  } else if (tab === 'specific') {
     // ═══════ SPÉCIFIQUE / VITALISTE & SEBI ═══════
     const cat = (currentModalFood.category || item?.category || '').toLowerCase();
     const fam = (currentModalFood.family || item?.family || '').toLowerCase();
@@ -6401,11 +6561,11 @@ function setModalTab(tab) {
 
     content.innerHTML = `
       <div class="data-row">
-        <span class="data-label">Polarité & Origine (Dr. Sebi)</span>
+        <span class="data-label">Polarité &amp; Origine (Dr. Sebi)</span>
         <span class="data-value" style="font-weight:700; color:${sebiColor}">${sebiLabel}</span>
       </div>
       <div class="data-row">
-        <span class="data-label">Nature Botanique & Hybridation</span>
+        <span class="data-label">Nature Botanique &amp; Hybridation</span>
         <span class="data-value" style="font-weight:600; color:${hybridColor}">${hybridLabel}</span>
       </div>
       <div class="data-row">
@@ -6417,17 +6577,319 @@ function setModalTab(tab) {
         <span class="data-value" style="font-weight:700; color:${verdictColor}">${verdictLabel}</span>
       </div>
       ${noteText ? `
-        <div style="margin-top:14px; padding:10px 12px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:8px; font-size:0.8rem; color:var(--text-dim); line-height:1.4;">
-          <strong style="color:var(--text)"><i class="ri-information-line" style="color:var(--accent);"></i> Précision Thérapeutique :</strong> ${esc(noteText)}
+        <div style="margin-top:14px; padding:12px 14px; background:var(--surface-2); border:1px solid var(--border); border-radius:12px; font-size:0.84rem; color:var(--text); line-height:1.5;">
+          <strong style="color:var(--accent); display:flex; align-items:center; gap:6px; margin-bottom:6px;">
+            <i class="ri-sparkling-fill"></i> Synthèse Clinique &amp; Hygiéniste :
+          </strong>
+          ${esc(noteText)}
         </div>
       ` : ''}
-      <div style="margin-top:8px; padding:6px 10px; background:rgba(16,185,129,0.05); border:1px dashed var(--border); border-radius:6px; font-size:0.75rem; color:var(--text-dim); display:flex; align-items:center; gap:6px;">
+      <div style="margin-top:8px; padding:8px 12px; background:rgba(74,107,83,0.08); border:1px solid rgba(74,107,83,0.25); border-radius:10px; font-size:0.75rem; color:var(--text-dim); display:flex; align-items:center; gap:8px;">
         <i class="ri-shield-check-line" style="color:var(--accent);"></i>
-        <span><strong>Sources méthodologiques :</strong> Guide Nutritionnel Dr. Sebi & Système de Guérison du Régime Sans Mucus (Arnold Ehret)</span>
+        <span><strong>Sources méthodologiques :</strong> Guide Nutritionnel Dr. Sebi &amp; Système de Guérison du Régime Sans Mucus (Arnold Ehret)</span>
+      </div>
+    `;
+  } else if (tab === 'recipe') {
+    const root = currentModalFood._parsed?._rootDish || currentModalFood._rootDish || currentModalFood;
+    const items = root.allAnalyzedItems || root.items || [];
+    const count = items.length;
+
+    content.innerHTML = `
+      <!-- Vitalize CTA Box -->
+      <div class="vitalize-cta-box">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+          <span style="font-size:1.4rem;">🌿</span>
+          <div>
+            <div style="font-size:0.92rem; font-weight:800; color:var(--accent);">Vitaliser ce plat (Coach IA)</div>
+            <div style="font-size:0.78rem; color:var(--text-dim);">Substitutions hygiénistes (Ehret &amp; Sebi) pour alcaliniser la recette</div>
+          </div>
+        </div>
+        <button type="button" class="btn-primary" style="width:100%; font-weight:700; padding:10px; font-size:0.85rem; display:flex; align-items:center; justify-content:center; gap:6px;" onclick="vitalizeDishWithAI()">
+          <i class="ri-sparkling-fill"></i> Comment rendre ce plat plus sain &amp; alcalin ?
+        </button>
+        <div id="vitalizeSuggestionsContainer" style="display:none;"></div>
+      </div>
+
+      <!-- Ingrédients Actuels de la Recette -->
+      <div style="margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:0.82rem; font-weight:700; color:var(--text); text-transform:uppercase; letter-spacing:0.5px;">
+          <i class="ri-restaurant-line" style="color:var(--accent);"></i> Ingrédients du plat (${count})
+        </span>
+        <span style="font-size:0.75rem; color:var(--text-dim);">Personnalisez selon votre recette réelle</span>
+      </div>
+
+      <div class="custom-recipe-editor">
+        ${items.length === 0 ? '<p style="font-size:0.85rem; color:var(--text-dim); text-align:center; padding:12px 0;">Aucun ingrédient dans la recette.</p>' : items.map((it, i) => {
+          const itName = typeof it === 'string' ? it : (it.name || it.names?.[0] || 'Ingrédient');
+          const itPral = typeof it === 'object' ? (it.scientific_defaults?.pral ?? (it.pral ?? 0)) : 0;
+          const itEmoji = typeof it === 'object' ? (it.emoji || '🥗') : '🥗';
+          const isElec = typeof it === 'object' ? (it.electric === true || it.approved === true) : false;
+          return `
+            <div class="custom-recipe-item">
+              <div class="custom-recipe-item-info">
+                <span style="font-size:1.15rem;">${itEmoji}</span>
+                <span style="font-size:0.88rem; font-weight:600; color:var(--text);">${esc(itName)}</span>
+                <span class="japandi-mini-chip" style="color:${itPral < 0 ? 'var(--accent)' : 'var(--warn)'};">PRAL ${itPral > 0 ? '+' : ''}${itPral.toFixed(1)}</span>
+                ${isElec ? '<span class="japandi-mini-chip" style="color:var(--accent);">⚡ Électrique</span>' : ''}
+              </div>
+              <button type="button" class="custom-recipe-del-btn" onclick="removeIngredientFromCurrentDish(${i})" title="Retirer cet ingrédient de la recette">×</button>
+            </div>
+          `;
+        }).join('')}
+      </div>
+
+      <!-- Ajout d'ingrédient -->
+      <div class="custom-recipe-add-row">
+        <input type="text" id="newIngredientInput" class="custom-recipe-add-input" placeholder="Ajouter un ingrédient réel (ex: Épinards, Avocat...)" onkeydown="if(event.key==='Enter') addIngredientToCurrentDish()" />
+        <button type="button" class="btn-primary" style="padding:8px 14px; font-weight:700; font-size:0.85rem;" onclick="addIngredientToCurrentDish()">
+          <i class="ri-add-line"></i> Ajouter
+        </button>
+      </div>
+
+      <!-- Recalculer -->
+      <div style="margin-top:12px;">
+        <button type="button" class="btn-secondary" style="width:100%; padding:10px; font-size:0.85rem; display:flex; align-items:center; justify-content:center; gap:6px;" onclick="recalculateDishProfile()">
+          <i class="ri-refresh-line"></i> Recalculer le profil biochimique (PRAL &amp; NOVA)
+        </button>
       </div>
     `;
   }
 };
+
+function removeIngredientFromCurrentDish(idx) {
+  if (!currentModalFood) return;
+  const root = currentModalFood._parsed?._rootDish || currentModalFood._rootDish || currentModalFood;
+  const items = (root.allAnalyzedItems || root.items || []).slice();
+  if (idx < 0 || idx >= items.length) return;
+
+  const removed = items.splice(idx, 1)[0];
+  const remName = typeof removed === 'string' ? removed : (removed.name || 'Ingrédient');
+  root.allAnalyzedItems = items;
+  root.items = items;
+
+  recalculateDishProfileInternal(root);
+  openFoodModal({
+    ...root,
+    isMealSelection: true,
+    _rootDish: root,
+    allAnalyzedItems: items,
+    _currentNavIdx: -1
+  });
+  setModalTab('recipe');
+  showToast(`Ingrédient « ${remName} » retiré de la recette.`, 'info');
+}
+
+function addIngredientToCurrentDish() {
+  if (!currentModalFood) return;
+  const input = document.getElementById('newIngredientInput');
+  const text = (input?.value || '').trim();
+  if (!text) return;
+
+  const root = currentModalFood._parsed?._rootDish || currentModalFood._rootDish || currentModalFood;
+  const items = (root.allAnalyzedItems || root.items || []).slice();
+
+  const newObj = classifyFoodLocally(text);
+  items.push(newObj);
+  root.allAnalyzedItems = items;
+  root.items = items;
+
+  if (input) input.value = '';
+
+  recalculateDishProfileInternal(root);
+  openFoodModal({
+    ...root,
+    isMealSelection: true,
+    _rootDish: root,
+    allAnalyzedItems: items,
+    _currentNavIdx: -1
+  });
+  setModalTab('recipe');
+  showToast(`🌿 « ${newObj.name} » ajouté à la recette !`, 'success');
+}
+
+function recalculateDishProfile() {
+  if (!currentModalFood) return;
+  const root = currentModalFood._parsed?._rootDish || currentModalFood._rootDish || currentModalFood;
+  recalculateDishProfileInternal(root);
+  openFoodModal({
+    ...root,
+    isMealSelection: true,
+    _rootDish: root,
+    allAnalyzedItems: root.allAnalyzedItems || root.items || [],
+    _currentNavIdx: -1
+  });
+  setModalTab('recipe');
+  showToast('✨ Profil du plat adapté recalculé avec succès !', 'success');
+}
+
+function recalculateDishProfileInternal(root) {
+  const items = root.allAnalyzedItems || root.items || [];
+  if (items.length === 0) return;
+
+  let totalPral = 0;
+  let totalNova = 0;
+  let totalFreshness = 0;
+  let electricCount = 0;
+
+  items.forEach(it => {
+    const p = typeof it === 'object' ? (it.pral ?? (it.scientific_defaults?.pral ?? (it.scientific?.pral ?? 0))) : 0;
+    const n = typeof it === 'object' ? (it.nova ?? (it.vitality?.nova ?? 3)) : 3;
+    const f = typeof it === 'object' ? (it.freshness ?? (it.vitality?.freshness ?? 50)) : 50;
+    const isE = typeof it === 'object' ? (it.electric === true || it.approved === true) : false;
+
+    totalPral += p;
+    totalNova += n;
+    totalFreshness += f;
+    if (isE) electricCount++;
+  });
+
+  const avgPral = Number((totalPral / items.length).toFixed(1));
+  const avgNova = Math.max(1, Math.min(4, Math.round(totalNova / items.length)));
+  const avgFreshness = Math.round(totalFreshness / items.length);
+  const allElectric = electricCount === items.length;
+
+  root.pral = avgPral;
+  root.nova = avgNova;
+  root.freshness = avgFreshness;
+  root.electric = allElectric;
+  root.hybrid = !allElectric;
+  root.scientific = { pral: avgPral, density: avgPral < 0 ? 80 : 50, label: avgPral < 0 ? 'Alcalinisant' : 'Acidifiant' };
+  root.scientific_defaults = { pral: avgPral, density: avgPral < 0 ? 80 : 50, label: avgPral < 0 ? 'Alcalinisant' : 'Acidifiant' };
+  root.vitality = { nova: avgNova, freshness: avgFreshness, label: avgNova === 1 ? 'Aliment Brut (Non transformé)' : 'Plat adapté' };
+  root.specific = {
+    electric: allElectric,
+    hybrid: !allElectric,
+    mucus: avgPral < 0 ? 'Dissolvant' : (allElectric ? 'Dissolvant' : 'Faiblement Mucogène'),
+    label: allElectric ? 'Électrique (Dr. Sebi)' : (avgPral < 0 ? 'Végétal Alcalinisant' : 'Plat Adapté')
+  };
+}
+
+async function vitalizeDishWithAI() {
+  if (!currentModalFood) return;
+  const root = currentModalFood._parsed?._rootDish || currentModalFood._rootDish || currentModalFood;
+  const items = root.allAnalyzedItems || root.items || [];
+  const container = document.getElementById('vitalizeSuggestionsContainer');
+  if (!container) return;
+
+  container.style.display = 'block';
+  container.innerHTML = `
+    <div style="padding:10px; text-align:center; color:var(--accent);">
+      <i class="ri-loader-4-line ri-spin" style="font-size:1.2rem;"></i> Analyse des substitutions vitalistes en cours...
+    </div>
+  `;
+
+  // Vitalist substitutions knowledge table
+  const substitutions = [];
+  items.forEach(it => {
+    const name = (typeof it === 'string' ? it : (it.name || '')).toLowerCase();
+    if (/p[aâ]te|macaroni|spaghetti|vermicelle|nouille/i.test(name)) {
+      substitutions.push({
+        target: it,
+        from: typeof it === 'object' ? it.name : it,
+        to: 'Spaghettis de courgettes fraîches & rubans de concombre',
+        emoji: '🥒',
+        pralGain: '-8.5 mEq',
+        reason: 'Élimine la colle d\'amidon de blé (Ehret) et apporte une eau biologique hautement structurée.'
+      });
+    } else if (/riz blanc|riz poli/i.test(name)) {
+      substitutions.push({
+        target: it,
+        from: typeof it === 'object' ? it.name : it,
+        to: 'Quinoa sauvage ou Fonio ancestral cuit à la vapeur',
+        emoji: '🌾',
+        pralGain: '-4.2 mEq',
+        reason: 'Graine originelle non hybridée, riche en magnésium biodisponible sans gluten mucogène.'
+      });
+    } else if (/friture|oignon[s]? frit|huile de friture/i.test(name)) {
+      substitutions.push({
+        target: it,
+        from: typeof it === 'object' ? it.name : it,
+        to: 'Oignons rouges marinés au jus de citron frais & sumac',
+        emoji: '🍋',
+        pralGain: '-6.0 mEq',
+        reason: 'Supprime les graisses oxydées pro-inflammatoires et alcalinise puissamment le bol gastrique.'
+      });
+    } else if (/viande|boeuf|poulet|porc/i.test(name)) {
+      substitutions.push({
+        target: it,
+        from: typeof it === 'object' ? it.name : it,
+        to: 'Champignons pleurotes ou shiitakés marinés aux herbes',
+        emoji: '🍄',
+        pralGain: '-12.0 mEq',
+        reason: 'Évite l\'acidose urique rénale et soutient l\'énergie cellulaire sans encombrement lymphatique.'
+      });
+    }
+  });
+
+  if (substitutions.length === 0) {
+    substitutions.push({
+      target: null,
+      from: 'Assaisonnement classique',
+      to: 'Feuilles de coriandre fraîche & graines de courge germées',
+      emoji: '🌿',
+      pralGain: '-3.5 mEq',
+      reason: 'Renforce l\'apport en zinc colloïdal et en chlorophylle vivante oxygénante.'
+    });
+  }
+
+  window._currentVitalizeSubs = substitutions;
+
+  container.innerHTML = `
+    <div class="vitalize-suggestion-card">
+      <div style="font-size:0.85rem; font-weight:700; color:var(--accent); display:flex; align-items:center; gap:6px;">
+        <i class="ri-leaf-line"></i> Recommandations d'Amélioration Vitaliste :
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px; margin:6px 0;">
+        ${substitutions.map(s => `
+          <div class="vitalize-sub-item">
+            <span style="font-size:1.1rem;">${s.emoji}</span>
+            <div>
+              <div><strong>Remplacer :</strong> <span style="text-decoration:line-through; color:var(--text-dim);">${esc(s.from)}</span> ➔ <strong style="color:var(--accent);">${esc(s.to)}</strong> <span class="japandi-mini-chip" style="color:var(--accent); font-size:0.7rem;">${s.pralGain}</span></div>
+              <div style="font-size:0.75rem; color:var(--text-dim); margin-top:2px;">${esc(s.reason)}</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+      <button type="button" class="btn-primary" style="margin-top:6px; font-weight:700; padding:8px 12px; font-size:0.82rem;" onclick="applyVitalizedSubstitutions()">
+        <i class="ri-sparkling-fill"></i> ✨ Appliquer ces améliorations au plat
+      </button>
+    </div>
+  `;
+}
+
+function applyVitalizedSubstitutions() {
+  if (!currentModalFood || !window._currentVitalizeSubs) return;
+  const root = currentModalFood._parsed?._rootDish || currentModalFood._rootDish || currentModalFood;
+  const items = (root.allAnalyzedItems || root.items || []).slice();
+  const subs = window._currentVitalizeSubs;
+
+  subs.forEach(s => {
+    if (s.target) {
+      const idx = items.indexOf(s.target);
+      if (idx >= 0) {
+        items[idx] = classifyFoodLocally(s.to);
+      }
+    } else {
+      items.push(classifyFoodLocally(s.to));
+    }
+  });
+
+  root.name = `« ${root.name} » Vitalisé 🌿`;
+  root.names = [root.name];
+  root.allAnalyzedItems = items;
+  root.items = items;
+
+  recalculateDishProfileInternal(root);
+  openFoodModal({
+    ...root,
+    isMealSelection: true,
+    _rootDish: root,
+    allAnalyzedItems: items,
+    _currentNavIdx: -1
+  });
+  setModalTab('recipe');
+  showToast('🌿 Recette vitalisée avec succès ! PRAL alcalinisé.', 'success');
+}
 
 // ═══════ FAVORITES ═══════
 function toggleFavorite() {
@@ -6458,7 +6920,11 @@ function toggleFavorite() {
       vitality: currentModalFood.vitality || {},
       specific: currentModalFood.specific || {}
     });
-    showToast(`❤️ "${name}" ajouté aux favoris !`, 'success');
+    showToast(`❤️ « ${name} » ajouté aux favoris !`, 'success', 4000, {
+      label: 'Voir mes favoris',
+      icon: 'ri-heart-fill',
+      onClick: () => showPage('favorites')
+    });
   }
   store.set('favorites', favs);
   const isFav = favs.some(f => (targetId && f.id === targetId) || f.name?.toLowerCase() === name.toLowerCase());
@@ -6629,7 +7095,11 @@ function saveMealAsFavoriteDish(idx) {
 
   store.set('favorites', favs);
   renderFavorites();
-  showToast(`❤️ Plat « ${targetMeal.name} » ajouté à vos Plats Favoris !`, 'success');
+  showToast(`❤️ Plat « ${targetMeal.name} » ajouté à vos Plats Favoris !`, 'success', 4000, {
+    label: 'Voir mes favoris',
+    icon: 'ri-heart-fill',
+    onClick: () => showPage('favorites')
+  });
 };
 
 function renderFavorites() {
@@ -6749,9 +7219,25 @@ function renderFavorites() {
 }
 window.renderFavorites = renderFavorites;
 
-// ═══════ MEALS ═══════
-function showAddMealModal() { selectedMealFoods = []; renderSelectedMealFoods(); document.getElementById('mealSearchResults').innerHTML = ''; document.getElementById('mealSearchInput').value = ''; const aiInput = document.getElementById('aiDishInput'); if (aiInput) aiInput.value = ''; document.getElementById('addMealModal').classList.add('open'); };
-function closeAddMealModal(e) { if (!e || e.target === document.getElementById('addMealModal')) document.getElementById('addMealModal').classList.remove('open'); };
+function showAddMealModal() {
+  selectedMealFoods = [];
+  renderSelectedMealFoods();
+  const searchRes = document.getElementById('mealSearchResults');
+  if (searchRes) searchRes.innerHTML = '';
+  const mealInput = document.getElementById('mealSearchInput');
+  if (mealInput) mealInput.value = '';
+  const aiInput = document.getElementById('aiDishInput');
+  if (aiInput) aiInput.value = '';
+  setAddMealMode('food');
+  const modal = document.getElementById('addMealModal');
+  if (modal) modal.classList.add('open');
+}
+function closeAddMealModal(e) {
+  if (!e || e.target === document.getElementById('addMealModal')) {
+    const modal = document.getElementById('addMealModal');
+    if (modal) modal.classList.remove('open');
+  }
+}
 
 function classifyFoodLocally(token) {
   const clean = (token || '').trim();
@@ -6943,187 +7429,385 @@ async function analyzeDishWithAI() {
     return;
   }
 
-  if (btn) {
-    btn.disabled = true;
-    btn.innerHTML = '<i class="ri-loader-4-line ri-spin"></i> Analyse...';
+  // Show dynamic Japandi mascot loader inside addMealModal
+  const modalContent = document.querySelector('#addMealModal .modal-content');
+  const oldContent = modalContent ? modalContent.innerHTML : '';
+
+  let searchMascotRenderer = null;
+  let tipInterval = null;
+
+  const VITAL_EDUCATIONAL_TIPS = [
+    "🌿 Les aliments à PRAL négatif (alcalins) facilitent le travail de filtration rénale et dissolvent les acides uriques.",
+    "🔬 Vital le Détective ausculte les bases botaniques : analyse des alcaloïdes, flavonoïdes et minéraux colloïdaux...",
+    "💧 Les fruits frais mûrs apportent une eau biologique hautement structurée (H3O2), optimale pour la lymphe.",
+    "⚖️ Selon Arnold Ehret (V = P - O), éliminer l'obstruction digestive libère immédiatement la vitalité naturelle.",
+    "🌱 Les graines ancestrales (amarante, fonio, teff, quinoa) conservent leur charge électrique native sans gluten.",
+    "🧹 En transition, les légumes racines cuits à la vapeur douce balayent les mucosités intestinales sans choc éliminatif.",
+    "🍋 Le citron, bien qu'acide au palais, est un puissant alcalinisant et dissout les dépôts de mucus gastrique.",
+    "🌳 La pharmacopée amazonienne Raintree répertorie des plantes majeures pour le drainage hépatique et rénal.",
+    "🍇 Les raisins noirs et baies sauvages sont les nettoyants lymphatiques les plus puissants identifiés par le Dr. Morse."
+  ];
+
+  if (modalContent) {
+    const randTip = VITAL_EDUCATIONAL_TIPS[Math.floor(Math.random() * VITAL_EDUCATIONAL_TIPS.length)];
+    modalContent.innerHTML = `
+      <div class="search-mascot-loader" style="margin:0; border:none; background:transparent; box-shadow:none; padding:10px 4px;">
+        <div class="search-mascot-frame">
+          <div class="scan-spinner-ring" style="width:125px; height:125px; top:-5px; left:-7px; border-color:rgba(74,107,83,0.2); border-top-color:var(--accent);"></div>
+          <canvas id="addMealMascotCanvas" width="110" height="130" style="width:110px; height:130px; filter:drop-shadow(0 4px 16px var(--accent-glow));"></canvas>
+        </div>
+        <div class="search-mascot-badge">
+          <i class="ri-sparkling-fill"></i> Vital ausculte « ${esc(q)} »
+        </div>
+        <h3 class="search-mascot-title">Recherche Grounding &amp; Décomposition...</h3>
+        
+        <div id="addMealTipBox" class="search-mascot-tip-box">
+          ${randTip}
+        </div>
+
+        <div class="scan-loading-progress-bar" style="max-width:320px; margin:0 auto 8px auto;">
+          <div class="scan-loading-progress-fill"></div>
+        </div>
+        <span id="addMealStep" class="search-mascot-step-text">Étape 1/4 : Recherche Google Grounding de la recette...</span>
+      </div>
+    `;
+
+    const canvas = document.getElementById('addMealMascotCanvas');
+    if (canvas && window.PigeonRenderer) {
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = 110 * dpr;
+      canvas.height = 130 * dpr;
+      canvas.style.width = '110px';
+      canvas.style.height = '130px';
+      searchMascotRenderer = new window.PigeonRenderer(canvas);
+      searchMascotRenderer.setInspecting(true);
+    }
+
+    const steps = [
+      'Étape 1/4 : Recherche Google Grounding de la recette authentique...',
+      'Étape 2/4 : Décomposition taxonomique des ingrédients & épices...',
+      'Étape 3/4 : Calcul du PRAL rénal & densité micronutritionnelle...',
+      'Étape 4/4 : Évaluation du mucus (Ehret) & conseils de transition...'
+    ];
+    let tipIdx = 0;
+    let stepIdx = 0;
+    tipInterval = setInterval(() => {
+      tipIdx = (tipIdx + 1) % VITAL_EDUCATIONAL_TIPS.length;
+      stepIdx = (stepIdx + 1) % steps.length;
+      const tipBox = document.getElementById('addMealTipBox');
+      const stepEl = document.getElementById('addMealStep');
+      if (tipBox) {
+        tipBox.style.opacity = '0';
+        setTimeout(() => {
+          tipBox.innerHTML = VITAL_EDUCATIONAL_TIPS[tipIdx];
+          tipBox.style.opacity = '1';
+        }, 200);
+      }
+      if (stepEl) stepEl.textContent = steps[stepIdx];
+    }, 2200);
   }
 
   try {
     const userLang = typeof getLanguage === 'function' ? getLanguage() : 'fr';
-    let items = dishAnalysisCache.get(q, userLang);
+    let data = null;
+    try {
+      const res = await fetch('/api/searchFood', {
+        method: 'POST',
+        headers: getApiHeaders(),
+        body: JSON.stringify({ query: q, language: userLang })
+      });
+      if (res.ok) {
+        data = await res.json();
+      }
+    } catch (err) {
+      console.warn('[AI Dish Analysis] searchFood fetch failed, trying analyze-text:', err);
+    }
 
-    if (!items || items.length === 0) {
-      items = [];
+    if (!data || !data.name) {
       try {
-        const res = await fetch('/api/analyze-text', {
+        const res2 = await fetch('/api/analyze-text', {
           method: 'POST',
           headers: getApiHeaders(),
           body: JSON.stringify({ query: q, language: userLang })
         });
-        if (res.ok) {
-          const data = await res.json();
-          items = data.data?.foods || data.data?.items || [];
+        if (res2.ok) {
+          const textData = await res2.json();
+          data = textData.data || textData;
         }
-      } catch (err) {
-        console.warn('[AI Dish Analysis] API fetch failed, using local extraction fallback:', err);
-      }
-
-      if (!items || items.length === 0) {
-        const parts = q.split(/[,+&/]|et\b|\bavec\b|\baux\b|\bau\b|\bde\b|\bd['’]/i).map(p => p.trim()).filter(p => p.length >= 2);
-        const tokens = parts.length > 0 ? parts : [q];
-        items = tokens.map(token => classifyFoodLocally(token));
-      }
-
-      if (items && items.length > 0) {
-        dishAnalysisCache.set(q, userLang, items);
+      } catch (err2) {
+        console.warn('[AI Dish Analysis] analyze-text fetch failed:', err2);
       }
     }
 
+    if (!data || !data.name) {
+      data = classifyFoodLocally(q);
+    }
+
+    // Extract foods
+    const rawItems = data.items || data.foods || data.data?.foods || data.ingredients || [];
     const processedItems = [];
-    let addedCount = 0;
-    items.forEach(item => {
-      const name = (item.name || item.names?.[0] || 'Aliment').replace(/^./, c => c.toUpperCase());
-      const id = item.id || ('dish_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6));
-      const existing = selectedMealFoods.find(f => f.name.toLowerCase() === name.toLowerCase());
-
-      const sc = item.scientific_defaults || item.scientific || {
-        pral: item.pral ?? 0,
-        density: item.density ?? ((item.pral ?? 0) < 0 ? 80 : 35),
-        label: (item.pral ?? 0) < 0 ? 'Alcalinisant' : 'Acidifiant'
-      };
-
-      const vt = item.vitality || {
-        nova: item.nova ?? (item.electric ? 1 : 2),
-        freshness: item.freshness ?? ((item.nova === 1 || item.electric) ? 95 : item.nova === 4 ? 15 : 60),
-        label: item.vitalityLabel || (item.nova === 1 ? 'Aliment Brut (Non transformé)' : item.nova === 4 ? 'Produit Ultra-Transformé' : 'Aliment transformé')
-      };
-
-      const sp = item.specific || {
-        electric: item.electric === true || item.approved === true,
-        hybrid: item.hybrid === true,
-        mucus: item.mucus || (item.electric ? 'Dissolvant' : item.hybrid ? 'Faiblement Mucogène' : 'Mucogène'),
-        label: item.electric ? 'Électrique (Dr. Sebi)' : item.hybrid ? 'Hybride' : 'Standard / Mucogène'
-      };
-
-      const foodObj = {
-        id: existing ? existing.id : id,
-        name,
-        names: item.names || [name],
-        emoji: item.emoji || '🍽️',
-        family: item.family || 'Alimentation',
-        approved: sp.electric === true,
-        electric: sp.electric === true,
-        hybrid: sp.hybrid === true,
-        pral: sc.pral ?? 0,
-        scientific_defaults: sc,
-        nova: vt.nova ?? 1,
-        vitality: vt,
-        freshness: vt.freshness ?? 80,
-        mucus: sp.mucus,
-        specific: sp,
-        note: item.note
-      };
-
-      if (!existing) {
-        selectedMealFoods.push(foodObj);
-        addedCount++;
-      }
-      processedItems.push(foodObj);
-    });
-
-    renderSelectedMealFoods();
-    if (input) input.value = '';
-
-    if (processedItems.length > 0) {
-      closeAddMealModal();
-      openFoodModal({
-        ...processedItems[0],
-        isMealSelection: true,
-        allAnalyzedItems: processedItems
+    if (Array.isArray(rawItems) && rawItems.length > 0) {
+      rawItems.forEach(item => {
+        const itName = typeof item === 'string' ? item : (item.name || item.names?.[0] || 'Aliment');
+        const sc = (typeof item === 'object' && item.scientific_defaults) ? item.scientific_defaults : {
+          pral: typeof item === 'object' ? (item.pral ?? 0) : 0,
+          density: typeof item === 'object' ? (item.density ?? 50) : 50,
+          label: (typeof item === 'object' && (item.pral ?? 0) < 0) ? 'Alcalinisant' : 'Acidifiant'
+        };
+        const sp = (typeof item === 'object' && item.specific) ? item.specific : {
+          electric: typeof item === 'object' ? (item.electric === true || item.approved === true) : false,
+          hybrid: typeof item === 'object' ? (item.hybrid === true) : true,
+          mucus: typeof item === 'object' ? (item.mucus || 'Mucogène') : 'Mucogène',
+          label: typeof item === 'object' ? (item.specific?.label || 'Ingrédient') : 'Ingrédient'
+        };
+        const vt = (typeof item === 'object' && item.vitality) ? item.vitality : {
+          nova: typeof item === 'object' ? (item.nova ?? 3) : 3,
+          freshness: typeof item === 'object' ? (item.freshness ?? 50) : 50,
+          label: 'Ingrédient'
+        };
+        const foodObj = {
+          id: (typeof item === 'object' && item.id) ? item.id : ('dish_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6)),
+          name: itName.replace(/^./, c => c.toUpperCase()),
+          names: (typeof item === 'object' && item.names) ? item.names : [itName],
+          emoji: (typeof item === 'object' && item.emoji) ? item.emoji : '🥗',
+          family: (typeof item === 'object' && item.family) ? item.family : 'Alimentation',
+          approved: sp.electric === true,
+          electric: sp.electric === true,
+          hybrid: sp.hybrid === true,
+          pral: sc.pral ?? 0,
+          scientific_defaults: sc,
+          scientific: sc,
+          nova: vt.nova ?? 3,
+          vitality: vt,
+          freshness: vt.freshness ?? 50,
+          mucus: sp.mucus,
+          specific: sp,
+          note: typeof item === 'object' ? item.note : undefined
+        };
+        processedItems.push(foodObj);
       });
-      showToast(`✨ ${processedItems.length} aliment(s) identifié(s) ! Profil affiché ci-dessous.`, 'success');
     }
+
+    const dishName = (data.name || data.data?.mealName || q).replace(/^./, c => c.toUpperCase());
+    const dishPral = data.pral ?? (data.scientific_defaults?.pral ?? 0);
+    const fullDishObj = {
+      ...data,
+      id: data.id || ('dish_' + Date.now()),
+      name: dishName,
+      names: data.names || [dishName],
+      emoji: data.emoji || '🍲',
+      category: data.category || 'Plats Cuisinés & Fast Food',
+      family: data.family || 'Plat Traditionnel Composite',
+      electric: data.electric || false,
+      approved: data.approved || false,
+      hybrid: data.hybrid ?? true,
+      pral: dishPral,
+      scientific_defaults: data.scientific_defaults || { pral: dishPral, density: 60, label: dishPral < 0 ? 'Alcalinisant' : 'Acidifiant' },
+      scientific: data.scientific || { pral: dishPral, density: 60, label: dishPral < 0 ? 'Alcalinisant' : 'Acidifiant' },
+      nova: data.nova ?? (data.vitality?.nova ?? 3),
+      vitality: data.vitality || { nova: data.nova ?? 3, freshness: 30, label: 'Plat élaboré' },
+      freshness: data.freshness ?? 30,
+      mucus: data.mucus || 'Mucogène',
+      specific: data.specific || { electric: false, hybrid: true, mucus: 'Mucogène', label: 'Plat Traditionnel' },
+      items: processedItems.length > 0 ? processedItems : [data],
+      allAnalyzedItems: processedItems.length > 0 ? processedItems : [data],
+      isComposedMeal: true,
+      isMealSelection: true,
+    };
+
+    selectedMealFoods = [fullDishObj];
+
+    if (modalContent) modalContent.innerHTML = oldContent;
+    closeAddMealModal();
+    renderSelectedMealFoods();
+    openFoodModal(fullDishObj);
+    showToast(`✨ « ${dishName} » analysé avec succès !`, 'success');
   } catch (e) {
     console.error('Erreur analyse plat:', e);
+    if (modalContent) modalContent.innerHTML = oldContent;
     showToast("Erreur lors de l'analyse du plat.", 'error');
   } finally {
-    if (btn) {
-      btn.disabled = false;
-      btn.innerHTML = '<i class="ri-sparkling-fill"></i> Analyser';
-    }
+    if (tipInterval) clearInterval(tipInterval);
+    if (searchMascotRenderer) searchMascotRenderer.destroy();
   }
-};
+}
+
+function setAddMealMode(mode) {
+  const foodSection = document.getElementById('addMealFoodSection');
+  const dishSection = document.getElementById('addMealDishSection');
+  const tabFoodBtn = document.getElementById('tabAddFoodBtn');
+  const tabDishBtn = document.getElementById('tabAddDishBtn');
+
+  if (mode === 'dish') {
+    if (foodSection) foodSection.style.display = 'none';
+    if (dishSection) dishSection.style.display = 'block';
+    if (tabFoodBtn) tabFoodBtn.classList.remove('active');
+    if (tabDishBtn) tabDishBtn.classList.add('active');
+  } else {
+    if (foodSection) foodSection.style.display = 'block';
+    if (dishSection) dishSection.style.display = 'none';
+    if (tabFoodBtn) tabFoodBtn.classList.add('active');
+    if (tabDishBtn) tabDishBtn.classList.remove('active');
+  }
+}
+window.setAddMealMode = setAddMealMode;
 
 function searchMealFoods(query) {
   const q = (query || '').toLowerCase().trim();
   const results = document.getElementById('mealSearchResults');
-  if (!q) { results.innerHTML = ''; return; }
+  if (!q) { if (results) results.innerHTML = ''; return; }
   const matches = vitalDb.filter(item => (item.names || []).some(n => n.toLowerCase().includes(q))).slice(0, 10);
 
   if (matches.length === 0) {
-    results.innerHTML = `
-      <div style="padding: 12px 0; text-align: center;">
-        <p class="empty-state-sm" style="margin-bottom: 10px; color: var(--text-dim);">Aucun aliment direct dans la base locale.</p>
-        <button type="button" class="btn-primary" style="margin: 0 auto; display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 12px; font-size: 0.9rem;" onclick="askAIToAddMealFood('${esc(q)}')">
-          <i class="ri-sparkling-fill"></i> Demander à l'IA d'analyser "${esc(q)}"
-        </button>
-      </div>
-    `;
+    if (results) {
+      results.innerHTML = `
+        <div style="padding: 14px 0; text-align: center;">
+          <p class="empty-state-sm" style="margin-bottom: 10px; color: var(--text-dim);">Aucun aliment direct dans la base locale.</p>
+          <button type="button" class="btn-primary" style="margin: 0 auto; display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 14px; font-size: 0.9rem; font-weight:700;" onclick="askAIToAddMealFood('${esc(q)}')">
+            <i class="ri-sparkling-fill"></i> Analyser « ${esc(q)} » par l'IA
+          </button>
+        </div>
+      `;
+    }
     return;
   }
 
-  results.innerHTML = matches.map(item => {
-    const name = (item.names?.[0] || '?').replace(/^./, c => c.toUpperCase());
-    return `<div class="food-card" onclick="selectMealFood(${vitalDb.indexOf(item)})"><div class="food-emoji">${item.emoji || '🍽️'}</div><div class="food-info"><div class="food-name">${esc(name)}</div></div></div>`;
-  }).join('');
-};
+  if (results) {
+    results.innerHTML = matches.map(item => {
+      const name = (item.names?.[0] || '?').replace(/^./, c => c.toUpperCase());
+      return `<div class="food-card" onclick="selectMealFood(${vitalDb.indexOf(item)})"><div class="food-emoji">${item.emoji || '🍽️'}</div><div class="food-info"><div class="food-name">${esc(name)}</div></div></div>`;
+    }).join('');
+  }
+}
 
 async function askAIToAddMealFood(query) {
   const q = (query || '').trim();
-  if (!q) return;
+  if (!q) {
+    showToast('Veuillez entrer le nom d\'un aliment.', 'error');
+    return;
+  }
 
-  const results = document.getElementById('mealSearchResults');
-  const searchInput = document.getElementById('mealSearchInput');
-  if (results) {
-    results.innerHTML = `<p class="empty-state" style="padding: 14px; text-align: center;"><i class="ri-loader-4-line ri-spin" style="font-size: 1.3rem; vertical-align: middle; margin-right: 8px; color: var(--accent);"></i> Analyse IA de "${esc(q)}" en cours...</p>`;
+  // Show dynamic Japandi mascot loader inside addMealModal
+  const modalContent = document.querySelector('#addMealModal .modal-content');
+  const oldContent = modalContent ? modalContent.innerHTML : '';
+
+  let searchMascotRenderer = null;
+  let tipInterval = null;
+
+  const VITAL_EDUCATIONAL_TIPS = [
+    "🌿 Les aliments à PRAL négatif (alcalins) facilitent le travail de filtration rénale et dissolvent les acides uriques.",
+    "🔬 Vital le Détective ausculte les bases botaniques : analyse des alcaloïdes, flavonoïdes et minéraux colloïdaux...",
+    "💧 Les fruits frais mûrs apportent une eau biologique hautement structurée (H3O2), optimale pour la lymphe.",
+    "⚖️ Selon Arnold Ehret (V = P - O), éliminer l'obstruction digestive libère immédiatement la vitalité naturelle.",
+    "🌱 Les graines ancestrales (amarante, fonio, teff, quinoa) conservent leur charge électrique native sans gluten.",
+    "🧹 En transition, les légumes racines cuits à la vapeur douce balayent les mucosités intestinales sans choc éliminatif.",
+    "🍋 Le citron, bien qu'acide au palais, est un puissant alcalinisant et dissout les dépôts de mucus gastrique.",
+    "🌳 La pharmacopée amazonienne Raintree répertorie des plantes majeures pour le drainage hépatique et rénal.",
+    "🍇 Les raisins noirs et baies sauvages sont les nettoyants lymphatiques les plus puissants identifiés par le Dr. Morse."
+  ];
+
+  if (modalContent) {
+    const randTip = VITAL_EDUCATIONAL_TIPS[Math.floor(Math.random() * VITAL_EDUCATIONAL_TIPS.length)];
+    modalContent.innerHTML = `
+      <div class="search-mascot-loader" style="margin:0; border:none; background:transparent; box-shadow:none; padding:10px 4px;">
+        <div class="search-mascot-frame">
+          <div class="scan-spinner-ring" style="width:125px; height:125px; top:-5px; left:-7px; border-color:rgba(74,107,83,0.2); border-top-color:var(--accent);"></div>
+          <canvas id="addFoodMascotCanvas" width="110" height="130" style="width:110px; height:130px; filter:drop-shadow(0 4px 16px var(--accent-glow));"></canvas>
+        </div>
+        <div class="search-mascot-badge">
+          <i class="ri-sparkling-fill"></i> Vital ausculte l'aliment « ${esc(q)} »
+        </div>
+        <h3 class="search-mascot-title">Analyse Botanique &amp; Électrique...</h3>
+        
+        <div id="addFoodTipBox" class="search-mascot-tip-box">
+          ${randTip}
+        </div>
+
+        <div class="scan-loading-progress-bar" style="max-width:320px; margin:0 auto 8px auto;">
+          <div class="scan-loading-progress-fill"></div>
+        </div>
+        <span id="addFoodStep" class="search-mascot-step-text">Étape 1/4 : Recherche Grounding et classification botanique...</span>
+      </div>
+    `;
+
+    const canvas = document.getElementById('addFoodMascotCanvas');
+    if (canvas && window.PigeonRenderer) {
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = 110 * dpr;
+      canvas.height = 130 * dpr;
+      canvas.style.width = '110px';
+      canvas.style.height = '130px';
+      searchMascotRenderer = new window.PigeonRenderer(canvas);
+      searchMascotRenderer.setInspecting(true);
+    }
+
+    const steps = [
+      'Étape 1/4 : Recherche Grounding et classification botanique...',
+      'Étape 2/4 : Calcul de l\'équilibre PRAL & charge minérale...',
+      'Étape 3/4 : Évaluation du mucus et compatibilité vitale...',
+      'Étape 4/4 : Structuration du profil clinique...'
+    ];
+    let tipIdx = 0;
+    let stepIdx = 0;
+    tipInterval = setInterval(() => {
+      tipIdx = (tipIdx + 1) % VITAL_EDUCATIONAL_TIPS.length;
+      stepIdx = (stepIdx + 1) % steps.length;
+      const tipBox = document.getElementById('addFoodTipBox');
+      const stepEl = document.getElementById('addFoodStep');
+      if (tipBox) {
+        tipBox.style.opacity = '0';
+        setTimeout(() => {
+          tipBox.innerHTML = VITAL_EDUCATIONAL_TIPS[tipIdx];
+          tipBox.style.opacity = '1';
+        }, 200);
+      }
+      if (stepEl) stepEl.textContent = steps[stepIdx];
+    }, 2200);
   }
 
   try {
     const userLang = typeof getLanguage === 'function' ? getLanguage() : 'fr';
-    let items = dishAnalysisCache.get(q, userLang);
+    let data = null;
+    try {
+      const res = await fetch('/api/searchFood', {
+        method: 'POST',
+        headers: getApiHeaders(),
+        body: JSON.stringify({ query: q, language: userLang })
+      });
+      if (res.ok) {
+        data = await res.json();
+      }
+    } catch (err) {
+      console.warn('[AI Food Analysis] searchFood fetch failed, trying analyze-text:', err);
+    }
 
-    if (!items || items.length === 0) {
-      items = [];
+    let items = [];
+    if (data && data.success && data.data && data.data.items && data.data.items.length > 0) {
+      items = data.data.items;
+    } else {
       try {
-        const res = await fetch('/api/analyze-text', {
+        const res2 = await fetch('/api/analyze-text', {
           method: 'POST',
           headers: getApiHeaders(),
           body: JSON.stringify({ query: q, language: userLang })
         });
-        if (res.ok) {
-          const data = await res.json();
-          items = data.data?.foods || data.data?.items || [];
+        if (res2.ok) {
+          const d2 = await res2.json();
+          items = d2.data?.foods || d2.data?.items || [];
         }
-      } catch (err) {
-        console.warn('[AI Meal Search] API fetch failed, using local extraction fallback:', err);
-      }
-
-      if (!items || items.length === 0) {
-        const parts = q.split(/[,+&/]|et\b|\bavec\b|\baux\b|\bau\b|\bde\b|\bd['’]/i).map(p => p.trim()).filter(p => p.length >= 2);
-        const tokens = parts.length > 0 ? parts : [q];
-        items = tokens.map(token => classifyFoodLocally(token));
-      }
-
-      if (items && items.length > 0) {
-        dishAnalysisCache.set(q, userLang, items);
+      } catch (err2) {
+        console.warn('[AI Food Analysis] analyze-text fallback failed:', err2);
       }
     }
 
+    if (!items || items.length === 0) {
+      items = [classifyFoodLocally(q)];
+    }
+
     const processedItems = [];
-    let addedCount = 0;
     items.forEach(item => {
-      const name = (item.name || item.names?.[0] || 'Aliment').replace(/^./, c => c.toUpperCase());
-      const id = item.id || `dish_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
+      const name = (item.name || item.names?.[0] || q).replace(/^./, c => c.toUpperCase());
+      const id = item.id || `food_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
       const existing = selectedMealFoods.find(f => f.name.toLowerCase() === name.toLowerCase());
 
       const sc = item.scientific_defaults || item.scientific || {
@@ -7149,7 +7833,7 @@ async function askAIToAddMealFood(query) {
         id: existing ? existing.id : id,
         name,
         names: item.names || [name],
-        emoji: item.emoji || '🍽️',
+        emoji: item.emoji || '🥑',
         family: item.family || 'Alimentation',
         approved: sp.electric === true,
         electric: sp.electric === true,
@@ -7161,34 +7845,36 @@ async function askAIToAddMealFood(query) {
         freshness: vt.freshness ?? 80,
         mucus: sp.mucus,
         specific: sp,
-        note: item.note
+        note: item.note || item.benefits || ''
       };
 
       if (!existing) {
         selectedMealFoods.push(foodObj);
-        addedCount++;
       }
       processedItems.push(foodObj);
     });
 
+    if (modalContent) modalContent.innerHTML = oldContent;
     renderSelectedMealFoods();
-    if (results) results.innerHTML = '';
-    if (searchInput) searchInput.value = '';
+    closeAddMealModal();
 
     if (processedItems.length > 0) {
-      closeAddMealModal();
       openFoodModal({
         ...processedItems[0],
         isMealSelection: true,
         allAnalyzedItems: processedItems
       });
-      showToast(`✨ Aliment "${processedItems[0].name}" analysé ! Profil affiché ci-dessous.`, 'success');
+      showToast(`✨ Aliment « ${processedItems[0].name} » analysé avec succès !`, 'success');
     }
   } catch (err) {
-    if (results) results.innerHTML = `<p class="empty-state text-danger">${esc(err.message)}</p>`;
-    showToast("Erreur lors de l'analyse IA.", 'error');
+    console.error('Erreur analyse aliment:', err);
+    if (modalContent) modalContent.innerHTML = oldContent;
+    showToast("Erreur lors de l'analyse IA de l'aliment.", 'error');
+  } finally {
+    if (tipInterval) clearInterval(tipInterval);
+    if (searchMascotRenderer) searchMascotRenderer.destroy();
   }
-};
+}
 
 function searchEditMealFoods(query) {
   const q = (query || '').toLowerCase().trim();
@@ -7263,13 +7949,48 @@ function renderSelectedMealFoods() {
 function confirmAddMeal() {
   if (selectedMealFoods.length === 0) return;
   const meals = store.get('meals', []);
-  selectedMealFoods.forEach(f => meals.push({ ...f, timestamp: Date.now() }));
+  
+  if (selectedMealFoods.length === 1) {
+    const f = selectedMealFoods[0];
+    meals.push({ ...f, timestamp: Date.now() });
+  } else {
+    // Multiple foods: group into 1 composed meal line
+    const avgPral = selectedMealFoods.reduce((s, f) => s + (f.pral ?? (f.scientific?.pral ?? (f.scientific_defaults?.pral ?? 0))), 0) / selectedMealFoods.length;
+    const avgNova = Math.round(selectedMealFoods.reduce((s, f) => s + (f.nova ?? (f.vitality?.nova ?? 3)), 0) / selectedMealFoods.length);
+    const allElec = selectedMealFoods.every(f => f.electric || f.approved);
+    const namesList = selectedMealFoods.map(f => f.name).join(', ');
+    
+    meals.push({
+      id: 'meal_' + Date.now(),
+      name: `Repas composé (${selectedMealFoods.length} aliments)`,
+      emoji: '🥗',
+      isComposedMeal: true,
+      category: 'lunch',
+      family: 'Repas Composé',
+      pral: Number(avgPral.toFixed(1)),
+      scientific: { pral: Number(avgPral.toFixed(1)), density: 60 },
+      scientific_defaults: { pral: Number(avgPral.toFixed(1)), density: 60 },
+      nova: avgNova,
+      vitality: { nova: avgNova, freshness: 50 },
+      freshness: 50,
+      electric: allElec,
+      hybrid: !allElec,
+      mucus: allElec ? 'Dissolvant' : 'Faiblement Mucogène',
+      specific: { electric: allElec, hybrid: !allElec, mucus: allElec ? 'Dissolvant' : 'Faiblement Mucogène' },
+      items: [...selectedMealFoods],
+      allAnalyzedItems: [...selectedMealFoods],
+      note: `Composé de : ${namesList}`,
+      timestamp: Date.now()
+    });
+  }
+
   store.set('meals', meals);
   selectedMealFoods = [];
   renderSelectedMealFoods();
   closeAddMealModal();
   renderMeals();
   renderDashboard();
+  showToast('✅ Repas enregistré dans votre journal !', 'success');
 };
 
 function addFoodToMeal() {
@@ -8174,9 +8895,23 @@ function loadFastingState() {
   }
 }
 
-function deleteFastingEntry(index) {
+async function deleteFastingEntry(index) {
   const history = store.get('fasting-history', []);
   if (index >= 0 && index < history.length) {
+    const item = history[index];
+    const hours = (item.elapsed / 3600000).toFixed(1);
+    if (window.showVitalConfirm) {
+      const ok = await window.showVitalConfirm({
+        title: 'Supprimer la session ?',
+        message: `Voulez-vous vraiment retirer cette session de ${hours}h de votre historique ?`,
+        icon: 'ri-delete-bin-line',
+        confirmText: 'Supprimer',
+        cancelText: 'Annuler',
+        isDanger: true,
+        isPrimary: false
+      });
+      if (!ok) return;
+    }
     history.splice(index, 1);
     store.set('fasting-history', history);
     renderFastingHistory();
@@ -8184,6 +8919,150 @@ function deleteFastingEntry(index) {
     if (window.showToast) window.showToast('Session supprimée de l\'historique', 'info');
   }
 };
+
+function openFastingDetailModal(idx) {
+  const history = store.get('fasting-history', []);
+  const h = history[idx];
+  if (!h) return;
+
+  const modal = document.getElementById('fastingDetailModal');
+  const content = document.getElementById('fastingDetailContent');
+  if (!modal || !content) return;
+
+  const d = new Date(h.startTime).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  const hours = (h.elapsed / 3600000);
+  const targetHours = (h.targetMs / 3600000) || 16;
+  const stages = getUnlockedStages(hours);
+  const highestStage = stages[stages.length - 1] || FASTING_METABOLIC_STAGES[0];
+
+  const tl = { intermittent: '⏰ Intermittent', warrior: '⚔️ Warrior', waterFast: '💧 Jeûne Hydrique', juiceFast: '🧃 Cure de Jus', fruitFast: '🍎 Cure de Fruits', grapeCure: '🍇 Cure de Raisins', drySunFast: '☀️ Jeûne Sec', ramadan: '🌙 Ramadan' };
+  const tagLabels = { tongue: '👅 Langue chargée (mucus)', lightness: '🕊️ Sensation de légèreté', sweat: '💦 Transpiration / Chaleur', thirst: '💧 Soif d\'eau structurée', euphoria: '✨ Clarté / Euphorie' };
+
+  const tagsHtml = (h.tags && Array.isArray(h.tags) && h.tags.length > 0)
+    ? h.tags.map(t => `<span class="japandi-mini-chip" style="background:rgba(74,107,83,0.12); color:var(--accent); border-color:rgba(74,107,83,0.25);">${tagLabels[t] || t}</span>`).join('')
+    : '<span style="font-size:0.8rem; color:var(--text-dim);">Aucun signe particulier noté</span>';
+
+  const refeedHtml = getRefeedingProtocol(hours, h.type);
+
+  content.innerHTML = `
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
+      <div style="width:48px; height:48px; border-radius:14px; background:rgba(74,107,83,0.15); border:1px solid rgba(74,107,83,0.3); display:flex; align-items:center; justify-content:center; font-size:1.6rem;">
+        ${highestStage.icon}
+      </div>
+      <div>
+        <div style="font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--accent);">${tl[h.type] || h.type}</div>
+        <h3 style="margin:2px 0 0 0; font-size:1.25rem; font-weight:800; color:var(--text);">Session de Jeûne : ${hours.toFixed(1)}h</h3>
+        <p style="margin:2px 0 0 0; font-size:0.8rem; color:var(--text-dim);">${d}</p>
+      </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="fast-debrief-kpis" style="margin-bottom:16px;">
+      <div class="fast-kpi-pill">
+        <div class="fast-kpi-label">Durée</div>
+        <div class="fast-kpi-val">${hours.toFixed(1)}h</div>
+      </div>
+      <div class="fast-kpi-pill">
+        <div class="fast-kpi-label">Objectif</div>
+        <div class="fast-kpi-val" style="color:var(--text);">${targetHours.toFixed(0)}h</div>
+      </div>
+      <div class="fast-kpi-pill">
+        <div class="fast-kpi-label">Statut</div>
+        <div class="fast-kpi-val" style="font-size:0.95rem; color:${h.completed ? 'var(--accent)' : '#f59e0b'};">
+          ${h.completed ? 'Validé ✅' : 'Arrêté avant ⏱️'}
+        </div>
+      </div>
+    </div>
+
+    <!-- Paliers Physiologiques -->
+    <div style="margin-bottom:14px; background:var(--surface-hover); padding:12px 14px; border-radius:14px; border:1px solid var(--border);">
+      <div style="font-size:0.8rem; font-weight:700; color:var(--text); margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+        <i class="ri-medal-fill" style="color:#facc15"></i> Paliers Physiologiques Atteints
+      </div>
+      <div class="jn-rich-badges">
+        ${stages.map(s => `<span class="jn-stage-badge-sm" style="background:rgba(74,107,83,0.12); color:var(--accent); border-color:rgba(74,107,83,0.25);">${s.icon} ${s.name} (${s.minH}h+)</span>`).join('')}
+      </div>
+    </div>
+
+    <!-- Ressentis & Notes -->
+    <div style="margin-bottom:14px; background:var(--surface-hover); padding:12px 14px; border-radius:14px; border:1px solid var(--border);">
+      <div style="font-size:0.8rem; font-weight:700; color:var(--text); margin-bottom:8px;">
+        🌿 Ressentis &amp; Miroir Magique
+      </div>
+      <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:0.82rem; color:var(--text-dim);">
+        <span>⚡ Énergie vitale : <strong style="color:var(--text);">${h.energy || '?'}/5</strong></span>
+        <span>🧠 Clarté mentale : <strong style="color:var(--text);">${h.clarity || '?'}/5</strong></span>
+      </div>
+      <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px;">
+        ${tagsHtml}
+      </div>
+      ${h.note ? `<div style="font-size:0.82rem; color:var(--text); font-style:italic; background:rgba(0,0,0,0.15); padding:8px 10px; border-radius:8px; margin-top:6px;">« ${esc(h.note)} »</div>` : ''}
+    </div>
+
+    <!-- Protocole de Reprise Adapté -->
+    <div class="refeed-protocol-box" style="margin-bottom:16px;">
+      <div class="refeed-title">
+        <i class="ri-restaurant-2-line"></i> Reprise Alimentaire Adaptée (${hours.toFixed(1)}h)
+      </div>
+      <div style="font-size:0.82rem;">
+        ${refeedHtml}
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <button type="button" class="btn-primary" style="width:100%; display:flex; align-items:center; justify-content:center; gap:8px; font-weight:700; padding:12px;" onclick="askAiAboutFastingSession(${idx})">
+        <i class="ri-sparkling-fill"></i> Bilan Personnalisé du Coach IA
+      </button>
+      <div style="display:flex; gap:8px;">
+        <button type="button" class="btn-secondary" style="flex:1;" onclick="closeFastingDetailModal()">Fermer</button>
+        <button type="button" class="btn-secondary" style="color:#e57373; border-color:rgba(184,80,66,0.3);" onclick="deleteFastingEntry(${idx}); closeFastingDetailModal();">
+          <i class="ri-delete-bin-line"></i> Supprimer
+        </button>
+      </div>
+    </div>
+  `;
+
+  modal.style.display = 'flex';
+}
+
+function closeFastingDetailModal() {
+  const modal = document.getElementById('fastingDetailModal');
+  if (modal) modal.style.display = 'none';
+}
+
+function askAiAboutFastingSession(idx) {
+  const history = store.get('fasting-history', []);
+  const h = history[idx];
+  if (!h) return;
+  closeFastingDetailModal();
+  showPage('chat');
+
+  const hours = (h.elapsed / 3600000).toFixed(1);
+  const targetHours = (h.targetMs / 3600000).toFixed(0);
+  const statusStr = h.completed ? 'Objectif de ' + targetHours + 'h validé avec succès' : 'Jeûne arrêté plus tôt à ' + hours + 'h (objectif initial : ' + targetHours + 'h)';
+  const tagsStr = (h.tags && h.tags.length > 0) ? h.tags.join(', ') : 'aucun symptôme particulier';
+
+  setChatContext({
+    type: 'fasting_debrief',
+    icon: '⏳',
+    label: `Bilan Jeûne (${hours}h)`,
+    subject: `Session de ${hours}h (${h.type})`,
+    placeholder: `Posez une question sur cette session de jeûne...`,
+    buildPrompt: (userText) => `Voici le bilan de ma session de jeûne récente :
+- Type de jeûne : ${h.type}
+- Durée effective : ${hours}h (${statusStr})
+- Niveau d'énergie : ${h.energy || '?'}/5, Clarté mentale : ${h.clarity || '?'}/5
+- Signes d'élimination observés : ${tagsStr}
+- Notes personnelles : "${h.note || 'Aucune note'}"
+
+En te basant sur la physiologie de l'hygiénisme vitaliste et de l'autophagie :
+1. Donne-moi une analyse clinique précise de ce qui s'est passé dans mon corps pendant ces ${hours} heures.
+2. Explique-moi les symptômes ou ressentis observés (${tagsStr}).
+3. Donne-moi les recommandations concrètes pour ma reprise alimentaire et pour optimiser ma prochaine session.
+${userText ? `Précision de ma part : ${userText}` : ''}`
+  });
+}
 
 function showFastingRefeedAdvice(hours, type) {
   const protocolHtml = getRefeedingProtocol(hours, type);
@@ -8194,7 +9073,8 @@ function showFastingRefeedAdvice(hours, type) {
       icon: 'ri-restaurant-2-line',
       confirmText: 'Compris !',
       cancelText: 'Fermer',
-      isPrimary: true
+      isPrimary: true,
+      isDanger: false
     });
   } else {
     alert(`Protocole de rupture conseillé pour ${hours.toFixed(1)}h de jeûne.`);
@@ -8220,7 +9100,7 @@ function renderFastingHistory() {
     const highestStage = stages[stages.length - 1] || FASTING_METABOLIC_STAGES[0];
 
     const tagsHtml = (h.tags && Array.isArray(h.tags) && h.tags.length > 0)
-      ? h.tags.map(t => `<span class="jn-stage-badge-sm" style="background:rgba(96,165,250,0.1); border-color:rgba(96,165,250,0.25); color:#93c5fd;">${tagLabels[t] || t}</span>`).join('')
+      ? h.tags.map(t => `<span class="jn-stage-badge-sm" style="background:rgba(74,107,83,0.12); border-color:rgba(74,107,83,0.25); color:var(--accent);">${tagLabels[t] || t}</span>`).join('')
       : '';
 
     const feelingsText = (h.energy || h.clarity)
@@ -8228,16 +9108,16 @@ function renderFastingHistory() {
       : '';
 
     return `
-    <div class="jn-rich-card">
+    <div class="jn-rich-card clickable" onclick="openFastingDetailModal(${idx})" style="cursor:pointer;" title="Cliquer pour ouvrir la fiche bilan de cette session">
       <div class="jn-rich-top">
         <div style="display:flex; align-items:center; gap:10px;">
-          <div style="font-size:1.5rem; width:42px; height:42px; border-radius:12px; background:rgba(52,211,153,0.1); display:flex; align-items:center; justify-content:center; border:1px solid rgba(52,211,153,0.25);">
+          <div style="font-size:1.5rem; width:42px; height:42px; border-radius:12px; background:rgba(74,107,83,0.12); display:flex; align-items:center; justify-content:center; border:1px solid rgba(74,107,83,0.25);">
             ${highestStage.icon}
           </div>
           <div>
             <div style="display:flex; align-items:baseline; gap:8px;">
               <span style="font-size:1.15rem; font-weight:800; color:var(--text);">${hours.toFixed(1)}h</span>
-              <span style="font-size:0.78rem; font-weight:700; color:${h.completed ? '#34d399' : '#f59e0b'};">
+              <span style="font-size:0.78rem; font-weight:700; color:${h.completed ? 'var(--accent)' : '#f59e0b'};">
                 ${h.completed ? '✅ Objectif validé' : '⊙ Arrêté avant'}
               </span>
             </div>
@@ -8247,10 +9127,10 @@ function renderFastingHistory() {
           </div>
         </div>
         <div style="display:flex; gap:6px;">
-          <button class="weight-history-btn edit" onclick="showFastingRefeedAdvice(${hours}, '${h.type}')" title="Voir les conseils de reprise alimentaire">
-            <i class="ri-restaurant-line"></i>
+          <button class="weight-history-btn edit" onclick="event.stopPropagation(); openFastingDetailModal(${idx})" title="Voir la fiche détaillée & Bilan IA">
+            <i class="ri-article-line"></i>
           </button>
-          <button class="weight-history-btn del" onclick="deleteFastingEntry(${idx})" title="Supprimer cette entrée">
+          <button class="weight-history-btn del" onclick="event.stopPropagation(); deleteFastingEntry(${idx})" title="Supprimer cette entrée">
             <i class="ri-delete-bin-line"></i>
           </button>
         </div>
@@ -14706,7 +15586,7 @@ function triggerInAppPigeonAction() {
 };
 
 function triggerMascotInPlaceReaction(action) {
-  const actions = ['walk', 'laugh', 'celebrate', 'coo', 'think'];
+  const actions = ['coo', 'laugh', 'celebrate', 'walk', 'think'];
   const act = action || actions[Math.floor(Math.random() * actions.length)];
   
   const m = window.appMascot || window.mascot;
@@ -14720,16 +15600,24 @@ function triggerMascotInPlaceReaction(action) {
     }, 4500);
   }
   
-  if (act === 'coo' && window.pigeonAudio) {
-    window.pigeonAudio.playRealCoo();
+  // Unconditionally play authentic parasite-free pigeon vocalization on click
+  if (window.pigeonAudio) {
+    const soundMap = {
+      coo: 'greeting',
+      think: 'curious',
+      celebrate: 'chirp_greeting',
+      laugh: 'flutter_coo',
+      walk: 'double_roll'
+    };
+    window.pigeonAudio.playRealCoo(soundMap[act] || null);
   }
   
   const speechEl = document.getElementById('mascotSpeechBubble');
   if (speechEl) {
     const tFunc = window.vitalTrackI18n?.t || ((k) => k);
-    const quote = tFunc(`mascot.${act}`) || _mascotQuotes[act] || '';
+    const quote = tFunc(`mascot.${act}`) || _mascotQuotes[act] || 'Roucouuu ! 🌿';
     renderMascotSpeechBubble(quote, act);
-    speechEl.style.transform = 'scale(1.02)';
+    speechEl.style.transform = 'scale(1.04)';
     speechEl.style.transition = 'transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)';
     setTimeout(() => {
       speechEl.style.transform = 'scale(1)';
@@ -14737,6 +15625,49 @@ function triggerMascotInPlaceReaction(action) {
   }
 }
 window.triggerMascotInPlaceReaction = triggerMascotInPlaceReaction;
+
+function triggerWelcomeMascotCoo() {
+  const welcomeEl = document.getElementById('welcomeMascotPortrait');
+  if (window.pigeonAudio) {
+    window.pigeonAudio.playRealCoo();
+  }
+  
+  if (welcomeEl) {
+    welcomeEl.classList.remove('mascot-wobble-active');
+    void welcomeEl.offsetWidth;
+    welcomeEl.classList.add('mascot-wobble-active');
+    
+    let bubble = document.getElementById('welcomeMascotFloatingBubble');
+    if (!bubble) {
+      bubble = document.createElement('div');
+      bubble.id = 'welcomeMascotFloatingBubble';
+      bubble.className = 'welcome-floating-bubble';
+      welcomeEl.parentElement.style.position = 'relative';
+      welcomeEl.parentElement.insertBefore(bubble, welcomeEl);
+    }
+    const quotes = [
+      'Roucouuu ! 🌿',
+      'Prends soin de ton temple ! ✨',
+      'Énergie vitale au max ! ⚡',
+      'Hydrate bien tes cellules ! 💧',
+      'Ruuu ! Je suis là pour toi ! 🕊️'
+    ];
+    bubble.textContent = quotes[Math.floor(Math.random() * quotes.length)];
+    bubble.style.display = 'block';
+    bubble.style.opacity = '1';
+    bubble.style.transform = 'translateY(0) scale(1)';
+    
+    clearTimeout(window._welcomeBubbleTimer);
+    window._welcomeBubbleTimer = setTimeout(() => {
+      if (bubble) {
+        bubble.style.opacity = '0';
+        bubble.style.transform = 'translateY(-10px) scale(0.95)';
+        setTimeout(() => { bubble.style.display = 'none'; }, 300);
+      }
+    }, 2800);
+  }
+}
+window.triggerWelcomeMascotCoo = triggerWelcomeMascotCoo;
 
 // Ambient life behavior: Natural stroll and curiosity every 12s on dashboard
 setInterval(() => {
@@ -14964,6 +15895,7 @@ if (typeof window !== "undefined") window.getActiveVoiceId = getActiveVoiceId;
 if (typeof window !== "undefined") window.editChatMessage = editChatMessage;
 if (typeof window !== "undefined") window.retryChatMessage = retryChatMessage;
 if (typeof window !== "undefined") window.switchModelAndRetry = switchModelAndRetry;
+if (typeof window !== "undefined") window.triggerWelcomeMascotCoo = triggerWelcomeMascotCoo;
 if (typeof window !== "undefined") window.renderModelPicker = renderModelPicker;
 if (typeof window !== "undefined") window.selectModel = selectModel;
 if (typeof window !== "undefined") window.toggleModelList = toggleModelList;
@@ -15011,6 +15943,7 @@ if (typeof window !== "undefined") window.chatAboutDish = chatAboutDish;
 if (typeof window !== "undefined") window.saveMealAsFavoriteDish = saveMealAsFavoriteDish;
 if (typeof window !== "undefined") window.showAddMealModal = showAddMealModal;
 if (typeof window !== "undefined") window.closeAddMealModal = closeAddMealModal;
+if (typeof window !== "undefined") window.setAddMealMode = setAddMealMode;
 if (typeof window !== "undefined") window.analyzeDishWithAI = analyzeDishWithAI;
 if (typeof window !== "undefined") window.searchMealFoods = searchMealFoods;
 if (typeof window !== "undefined") window.askAIToAddMealFood = askAIToAddMealFood;
@@ -15018,6 +15951,12 @@ if (typeof window !== "undefined") window.searchEditMealFoods = searchEditMealFo
 if (typeof window !== "undefined") window.selectMealFood = selectMealFood;
 if (typeof window !== "undefined") window.removeSelectedFood = removeSelectedFood;
 if (typeof window !== "undefined") window.confirmAddMeal = confirmAddMeal;
+if (typeof window !== "undefined") window.confirmAddMealFromModal = confirmAddMealFromModal;
+if (typeof window !== "undefined") window.removeIngredientFromCurrentDish = removeIngredientFromCurrentDish;
+if (typeof window !== "undefined") window.addIngredientToCurrentDish = addIngredientToCurrentDish;
+if (typeof window !== "undefined") window.recalculateDishProfile = recalculateDishProfile;
+if (typeof window !== "undefined") window.vitalizeDishWithAI = vitalizeDishWithAI;
+if (typeof window !== "undefined") window.applyVitalizedSubstitutions = applyVitalizedSubstitutions;
 if (typeof window !== "undefined") window.addFoodToMeal = addFoodToMeal;
 if (typeof window !== "undefined") window.removeMeal = removeMeal;
 if (typeof window !== "undefined") window.selectProgram = selectProgram;
@@ -15032,6 +15971,9 @@ if (typeof window !== "undefined") window.initFastingDurationControls = initFast
 if (typeof window !== "undefined") window.toggleFasting = toggleFasting;
 if (typeof window !== "undefined") window.openFastEndModal = openFastEndModal;
 if (typeof window !== "undefined") window.closeFastEndModal = closeFastEndModal;
+if (typeof window !== "undefined") window.openFastingDetailModal = openFastingDetailModal;
+if (typeof window !== "undefined") window.closeFastingDetailModal = closeFastingDetailModal;
+if (typeof window !== "undefined") window.askAiAboutFastingSession = askAiAboutFastingSession;
 if (typeof window !== "undefined") window.setFastRating = setFastRating;
 if (typeof window !== "undefined") window.toggleElimTag = toggleElimTag;
 if (typeof window !== "undefined") window.confirmSaveFastDebrief = confirmSaveFastDebrief;

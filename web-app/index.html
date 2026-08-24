@@ -65,6 +65,7 @@
       <div class="sidebar-section">
         <div class="sidebar-section-title" data-i18n="nav.sectionPrincipal">Principal</div>
         <a href="javascript:void(0)" class="sidebar-link active" data-page="dashboard" onclick="showPage('dashboard'); event.preventDefault();"><i class="ri-dashboard-fill"></i> <span data-i18n="nav.dashboard">Tableau</span></a>
+        <a href="javascript:void(0)" class="sidebar-link" data-page="favorites" onclick="showPage('favorites'); event.preventDefault();"><i class="ri-heart-3-fill"></i> <span data-i18n="nav.favorites">Favoris</span></a>
         <a href="javascript:void(0)" class="sidebar-link" data-page="recipes" onclick="showPage('recipes'); event.preventDefault();"><i class="ri-restaurant-2-line"></i> <span data-i18n="nav.recipes">Recettes</span></a>
         <a href="javascript:void(0)" class="sidebar-link" data-page="meals" onclick="showPage('meals'); event.preventDefault();"><i class="ri-restaurant-fill"></i> <span data-i18n="nav.meals">Repas</span></a>
         <a href="javascript:void(0)" class="sidebar-link" data-page="fasting" onclick="showPage('fasting'); event.preventDefault();"><i class="ri-fire-fill"></i> <span data-i18n="nav.fasting">Jeûne</span></a>
@@ -958,7 +959,7 @@
         </div>
         <div class="chat-messages" id="chatMessages">
           <div class="chat-welcome" id="chatWelcome">
-            <div class="welcome-mascot" id="welcomeMascotPortrait"></div>
+            <div class="welcome-mascot" id="welcomeMascotPortrait" onclick="window.triggerWelcomeMascotCoo && window.triggerWelcomeMascotCoo()" style="cursor:pointer;" title="Faire roucouler Vital !"></div>
             <h2 data-i18n="chat.welcomeTitle">Roucouuu ! 🌿</h2>
             <p data-i18n="chat.welcomeSubtitle">Je suis Vital, ton coach vitaliste IA. Pose-moi une question sur la nutrition, le jeûne, la respiration ou la santé naturelle.</p>
             <div class="welcome-chips">
@@ -2648,21 +2649,49 @@
   <div class="modal-overlay" id="addMealModal" onclick="closeAddMealModal(event)">
     <div class="modal-content glass modal-sm" onclick="event.stopPropagation()">
       <button class="modal-close" onclick="closeAddMealModal()"><i class="ri-close-line"></i></button>
-      <h3 data-i18n="modals.addMealModalTitle">🍽️ Ajouter un repas</h3>
+      <h3 data-i18n="modals.addMealModalTitle">🍽️ Ajouter au repas</h3>
       
-      <!-- AI Dish Analyzer Box -->
-      <div class="ai-dish-box">
-        <div class="ai-dish-box-title"><i class="ri-magic-line"></i> <span data-i18n="modals.aiDishBoxTitle">Analyser un plat par IA</span></div>
-        <div class="ai-dish-input-row">
-          <input type="text" id="aiDishInput" data-i18n-placeholder="modals.aiDishPlaceholder" placeholder="Ex: Salade concombres, avocat et jus de citron..." class="form-input" onkeydown="if(event.key==='Enter') analyzeDishWithAI()">
-          <button class="btn-primary" id="btnAnalyzeDish" onclick="analyzeDishWithAI()"><i class="ri-sparkling-fill"></i> <span data-i18n="modals.aiDishAnalyzeBtn">Analyser</span></button>
+      <!-- Switcher Modes : Aliment Unitaire vs Plat Composé -->
+      <div class="modal-tab-bar" style="margin-bottom:14px;">
+        <button type="button" class="modal-tab-btn active" id="tabAddFoodBtn" onclick="setAddMealMode('food')">
+          <i class="ri-leaf-line"></i> <span>Aliment Unitaire</span>
+        </button>
+        <button type="button" class="modal-tab-btn" id="tabAddDishBtn" onclick="setAddMealMode('dish')">
+          <i class="ri-restaurant-line"></i> <span>Plat Composé / Recette</span>
+        </button>
+      </div>
+
+      <!-- SECTION 1 : ALIMENT UNITAIRE (Recherche locale + Analyse IA) -->
+      <div id="addMealFoodSection">
+        <div class="ai-dish-box">
+          <div class="ai-dish-box-title">
+            <i class="ri-sparkling-fill"></i> <span>Analyser ou chercher un aliment unitaire</span>
+          </div>
+          <div class="ai-dish-input-row">
+            <input type="text" id="mealSearchInput" placeholder="Ex: Fonio, mangue sauvage, solom, saumon..." class="form-input" oninput="searchMealFoods(this.value)" onkeydown="if(event.key==='Enter') askAIToAddMealFood(this.value)">
+            <button class="btn-primary" id="btnAnalyzeFood" onclick="askAIToAddMealFood(document.getElementById('mealSearchInput').value)">
+              <i class="ri-sparkling-fill"></i> <span>Analyser</span>
+            </button>
+          </div>
+        </div>
+        <div id="mealSearchResults" class="meal-search-results"></div>
+      </div>
+
+      <!-- SECTION 2 : PLAT COMPOSÉ (Décomposition & Recette) -->
+      <div id="addMealDishSection" style="display:none;">
+        <div class="ai-dish-box">
+          <div class="ai-dish-box-title">
+            <i class="ri-magic-line"></i> <span data-i18n="modals.aiDishBoxTitle">Analyser un plat composé par IA</span>
+          </div>
+          <div class="ai-dish-input-row">
+            <input type="text" id="aiDishInput" data-i18n-placeholder="modals.aiDishPlaceholder" placeholder="Ex: Salade concombres, avocat et jus de citron..." class="form-input" onkeydown="if(event.key==='Enter') analyzeDishWithAI()">
+            <button class="btn-primary" id="btnAnalyzeDish" onclick="analyzeDishWithAI()">
+              <i class="ri-sparkling-fill"></i> <span data-i18n="modals.aiDishAnalyzeBtn">Analyser</span>
+            </button>
+          </div>
         </div>
       </div>
 
-      <div class="add-meal-search">
-        <input type="text" id="mealSearchInput" placeholder="Ou chercher un aliment unitaire..." oninput="searchMealFoods(this.value)">
-      </div>
-      <div id="mealSearchResults" class="meal-search-results"></div>
       <div id="mealSelectedItems" class="selected-items"></div>
       <button class="btn-primary full-w" onclick="confirmAddMeal()"><i class="ri-check-line"></i> <span data-i18n="modals.validateMealBtn">Valider le repas</span></button>
     </div>
@@ -2941,6 +2970,16 @@
             <i class="ri-check-double-line"></i> <span data-i18n="modals.saveSessionBtn">Enregistrer la session</span>
           </button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ FASTING DETAIL & BILAN MODAL ═══════ -->
+  <div class="modal-overlay" id="fastingDetailModal" style="display:none" onclick="if(event.target===this) closeFastingDetailModal()">
+    <div class="modal-content glass" style="max-width:580px; max-height:86vh; overflow-y:auto; padding:22px 24px; border-radius:20px;" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeFastingDetailModal()"><i class="ri-close-line"></i></button>
+      <div id="fastingDetailContent">
+        <!-- Injected via JS -->
       </div>
     </div>
   </div>

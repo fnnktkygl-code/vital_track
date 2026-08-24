@@ -1,6 +1,7 @@
 export default {
   "nav": {
     "dashboard": "Panel de Control",
+    "favorites": "Favoritos y Platos",
     "recipes": "Recetas",
     "meals": "Comidas y Registro",
     "fasting": "Ayuno y Fisiología",
@@ -103,6 +104,8 @@ export default {
     "statFavs": "Favoritos",
     "statThisWeek": "ESTA SEMANA",
     "statTotal": "EN TOTAL",
+    "stripTitle": "Plan Alimentario y Calendario de Transición",
+    "stripSubtitle": "Seguimiento semanal según directrices vitalistas",
     "weightTitle": "Evolución del Peso",
     "weightSubtitle": "Seguimiento cronológico e indicadores de progreso",
     "weighInBtn": "Registrar Peso",
@@ -1065,6 +1068,7 @@ export default {
     "inProgress": "Rumbo a {target} kg (Restan: {delta} kg)",
     "progressTowardsGoal": "Progreso hacia el objetivo",
     "modalTitle": "Registrar Nuevo Peso",
+    "dateLabel": "Fecha del pesaje:",
     "weightInputLabel": "Peso corporal (kg)",
     "dateInputLabel": "Fecha del pesaje",
     "saveWeightBtn": "Guardar Pesaje",

@@ -1,6 +1,7 @@
 export default {
   "nav": {
     "dashboard": "Dashboard",
+    "favorites": "Favorites & Meals",
     "recipes": "Recipes",
     "meals": "Meals & Journal",
     "fasting": "Fasting & Physiology",
@@ -103,6 +104,8 @@ export default {
     "statFavs": "Favorites",
     "statThisWeek": "THIS WEEK",
     "statTotal": "ALL TIME",
+    "stripTitle": "Meal Plan & Transition Calendar",
+    "stripSubtitle": "Weekly tracking according to vitalist principles",
     "weightTitle": "Weight Trend",
     "weightSubtitle": "Chronological tracking & progress indicators",
     "weighInBtn": "Log Weight",
@@ -1065,6 +1068,7 @@ export default {
     "inProgress": "Heading for {target} kg ({delta} kg left)",
     "progressTowardsGoal": "Progress towards goal",
     "modalTitle": "Log a New Weight Entry",
+    "dateLabel": "Weigh-in date:",
     "weightInputLabel": "Body weight (kg)",
     "dateInputLabel": "Weigh-in date",
     "saveWeightBtn": "Save Weight Entry",
