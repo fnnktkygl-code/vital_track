@@ -15414,14 +15414,14 @@ function getCircadianPhaseData(h, m = 0) {
         chips: [{ icon: '🚶', label: 'Marche Post-Prandiale' }, { icon: '🫖', label: 'Tisane Digestive (Boldo/Camomille)' }]
       },
       '16-18': {
-        short: 'FILTRATION', full: 'DRAINAGE URINAIRE & REINS', icon: 'ri-sunset-fill', window: '16h - 18h',
+        short: 'FILTRATION', full: 'DRAINAGE URINAIRE & REINS', icon: 'ri-sun-foggy-fill', window: '16h - 18h',
         desc: "16h - 18h • Filtration active de l'urée et des toxines par les reins. Idéal pour une tisane minéralisante.",
         organ: "Vessie (15h-17h) • Reins & Filtration (17h-19h)", organIcon: "💧", organBg: "rgba(20,184,166,0.15)", organColor: "#14b8a6",
         hormone: "Chute Graduelle du Cortisol • Thermorégulation", metabolism: "Épuration Rénale", hormoneIcon: "🫖", hormoneBg: "rgba(20,184,166,0.15)", hormoneColor: "#14b8a6",
         chips: [{ icon: '🌿', label: 'Infusion Ortie / Abuta' }, { icon: '💧', label: 'Hydratation Rénale' }]
       },
       '18-20': {
-        short: 'APPROPRIATION', full: 'CLÔTURE DU REPAS & TRANSITION', icon: 'ri-sunset-fill', window: '18h - 20h',
+        short: 'APPROPRIATION', full: 'CLÔTURE DU REPAS & TRANSITION', icon: 'ri-sun-foggy-fill', window: '18h - 20h',
         desc: "18h - 20h • Fin de la fenêtre d'alimentation. Dîner léger avant 20h pour permettre la vidange gastrique.",
         organ: "Reins (17h-19h) • Péricarde & Circulation (19h-21h)", organIcon: "🥣", organBg: "rgba(20,184,166,0.15)", organColor: "#14b8a6",
         hormone: "Baisse de l'Insuline • Début du Repos Digestif", metabolism: "Transition Nocturne", hormoneIcon: "🍵", hormoneBg: "rgba(56,189,248,0.15)", hormoneColor: "#38bdf8",
@@ -15500,14 +15500,14 @@ function getCircadianPhaseData(h, m = 0) {
         chips: [{ icon: '🚶', label: 'Marche Post-Prandiale' }, { icon: '🫖', label: 'Tisane Digestive' }]
       },
       '16-18': {
-        short: 'FILTRATION', full: 'DRAINAGE URINAIRE & REINS', icon: 'ri-sunset-fill', window: '16h - 18h',
+        short: 'FILTRATION', full: 'DRAINAGE URINAIRE & REINS', icon: 'ri-sun-foggy-fill', window: '16h - 18h',
         desc: "16h - 18h • Filtration active de l'urée et des toxines par les reins. Idéal pour une tisane minéralisante.",
         organ: "Vessie (15h-17h) • Reins & Filtration (17h-19h)", organIcon: "💧", organBg: "rgba(20,184,166,0.15)", organColor: "#14b8a6",
         hormone: "Chute Graduelle du Cortisol • Thermorégulation", metabolism: "Épuration Rénale", hormoneIcon: "🫖", hormoneBg: "rgba(20,184,166,0.15)", hormoneColor: "#14b8a6",
         chips: [{ icon: '🌿', label: 'Infusion Ortie / Abuta' }, { icon: '💧', label: 'Hydratation Rénale' }]
       },
       '18-20': {
-        short: 'APPROPRIATION', full: 'CLÔTURE DU REPAS & TRANSITION', icon: 'ri-sunset-fill', window: '18h - 20h',
+        short: 'APPROPRIATION', full: 'CLÔTURE DU REPAS & TRANSITION', icon: 'ri-sun-foggy-fill', window: '18h - 20h',
         desc: "18h - 20h • Fin de la fenêtre d'alimentation. Souper léger avant 20h pour permettre la vidange gastrique.",
         organ: "Reins (17h-19h) • Péricarde & Circulation (19h-21h)", organIcon: "🥣", organBg: "rgba(20,184,166,0.15)", organColor: "#14b8a6",
         hormone: "Baisse de l'Insuline • Début du Repos Digestif", metabolism: "Transition Nocturne", hormoneIcon: "🍵", hormoneBg: "rgba(56,189,248,0.15)", hormoneColor: "#38bdf8",
@@ -15586,14 +15586,14 @@ function getCircadianPhaseData(h, m = 0) {
         chips: [{ icon: '🚶', label: 'Post-Prandial Walk' }, { icon: '🫖', label: 'Digestive Herbal Tea' }]
       },
       '16-18': {
-        short: 'FILTRATION', full: 'URINARY & KIDNEY DRAINAGE', icon: 'ri-sunset-fill', window: '16:00 - 18:00',
+        short: 'FILTRATION', full: 'URINARY & KIDNEY DRAINAGE', icon: 'ri-sun-foggy-fill', window: '16:00 - 18:00',
         desc: '16:00 - 18:00 • Active filtration of urea and acids by kidneys. Ideal for mineralizing herbal tea.',
         organ: 'Bladder (15:00-17:00) • Kidneys & Filtration (17:00-19:00)', organIcon: '💧', organBg: 'rgba(20,184,166,0.15)', organColor: '#14b8a6',
         hormone: 'Gradual Cortisol Drop • Thermoregulation', metabolism: 'Renal Clearance', hormoneIcon: '🫖', hormoneBg: 'rgba(20,184,166,0.15)', hormoneColor: '#14b8a6',
         chips: [{ icon: '🌿', label: 'Nettle / Abuta Tea' }, { icon: '💧', label: 'Kidney Hydration' }]
       },
       '18-20': {
-        short: 'APPROPRIATION', full: 'MEAL CLOSING & TRANSITION', icon: 'ri-sunset-fill', window: '18:00 - 20:00',
+        short: 'APPROPRIATION', full: 'MEAL CLOSING & TRANSITION', icon: 'ri-sun-foggy-fill', window: '18:00 - 20:00',
         desc: '18:00 - 20:00 • End of eating window. Light dinner before 20:00 to allow complete gastric emptying.',
         organ: 'Kidneys (17:00-19:00) • Pericardium & Circulation (19:00-21:00)', organIcon: '🥣', organBg: 'rgba(20,184,166,0.15)', organColor: '#14b8a6',
         hormone: 'Insulin Drop • Beginning of Digestive Rest', metabolism: 'Nocturnal Transition', hormoneIcon: '🍵', hormoneBg: 'rgba(56,189,248,0.15)', hormoneColor: '#38bdf8',
@@ -15672,14 +15672,14 @@ function getCircadianPhaseData(h, m = 0) {
         chips: [{ icon: '🚶', label: 'Paseo Postprandial' }, { icon: '🫖', label: 'Infusión Digestiva' }]
       },
       '16-18': {
-        short: 'FILTRACIÓN', full: 'DRENAJE URINARIO Y RIÑONES', icon: 'ri-sunset-fill', window: '16:00 - 18:00',
+        short: 'FILTRACIÓN', full: 'DRENAJE URINARIO Y RIÑONES', icon: 'ri-sun-foggy-fill', window: '16:00 - 18:00',
         desc: '16:00 - 18:00 • Filtración activa de urea y toxinas por los riñones. Ideal para infusión mineralizante.',
         organ: 'Vejiga (15:00-17:00) • Riñones y Filtración (17:00-19:00)', organIcon: '💧', organBg: 'rgba(20,184,166,0.15)', organColor: '#14b8a6',
         hormone: 'Caída Gradual de Cortisol • Termorregulación', metabolism: 'Depuración Renal', hormoneIcon: '🫖', hormoneBg: 'rgba(20,184,166,0.15)', hormoneColor: '#14b8a6',
         chips: [{ icon: '🌿', label: 'Infusión Ortiga / Abuta' }, { icon: '💧', label: 'Hidratación Renal' }]
       },
       '18-20': {
-        short: 'APROPIACIÓN', full: 'CIERRE DE COMIDA Y TRANSICIÓN', icon: 'ri-sunset-fill', window: '18:00 - 20:00',
+        short: 'APROPIACIÓN', full: 'CIERRE DE COMIDA Y TRANSICIÓN', icon: 'ri-sun-foggy-fill', window: '18:00 - 20:00',
         desc: '18:00 - 20:00 • Fin de la ventana de alimentación. Cena ligera antes de las 20:00 para vaciado gástrico.',
         organ: 'Riñones (17:00-19:00) • Pericardio y Circulación (19:00-21:00)', organIcon: '🥣', organBg: 'rgba(20,184,166,0.15)', organColor: '#14b8a6',
         hormone: 'Descenso de Insulina • Inicio del Reposo Digestivo', metabolism: 'Transición Nocturna', hormoneIcon: '🍵', hormoneBg: 'rgba(56,189,248,0.15)', hormoneColor: '#38bdf8',
