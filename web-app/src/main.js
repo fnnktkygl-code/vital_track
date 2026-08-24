@@ -25,6 +25,8 @@ import { syncLocationAndClimate, handleCityInputChange, navigateToLocationSettin
 import {
   parseMarkdownDietPlan,
   renderDietPlanActionCardHtml,
+  extractSingleMealFromMarkdown,
+  renderMealActionCardHtml,
   applyExtractedDietPlanToCalendar,
   previewAndCustomizeDietPlanModal,
   saveAndApplyCustomizedDietPlan,
@@ -10876,46 +10878,9 @@ function renderMarkdown(text) {
 
       const tFunc = window.vitalTrackI18n?.t || ((k) => k);
 
-      // 1. Action Meal Card (Direct meal logging from chat)
+      // 1. Action Meal Card (Direct meal logging, calendar scheduling & custom recipes from chat)
       if (obj.actionMeal) {
-        const meal = obj.actionMeal;
-        const encodedMeal = btoa(unescape(encodeURIComponent(JSON.stringify(meal))));
-        const rawItems = Array.isArray(meal.items) ? meal.items : (Array.isArray(meal.ingredients) ? meal.ingredients : typeof (meal.items || meal.ingredients) === 'string' ? (meal.items || meal.ingredients).split(/,\s*|\s*·\s*/).filter(Boolean) : [meal.name]);
-        const catLabel = meal.category || 'Repas Vitaliste';
-        const itemsPills = rawItems.map(it => `<span style="display:inline-block; padding:3px 9px; background:rgba(255,255,255,0.06); border:1px solid var(--border); border-radius:12px; font-size:0.8rem; margin:2px 4px 2px 0;">🥗 ${esc(typeof it === 'string' ? it : it.name)}</span>`).join('');
-        const safeMealName = (meal.name || 'ce repas').replace(/'/g, "\\'");
-
-        renderedCards += `<div class="ai-plan-card glass" style="margin:12px 0;padding:16px;border-radius:14px;border-left:4px solid var(--accent);background:rgba(55,211,153,0.06)">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-            <span style="font-weight:700;font-size:1.05rem;color:var(--text)">${meal.emoji || '🍲'} ${esc(meal.name || tFunc('chat.proposedMeal') || 'Repas Proposé')}</span>
-            <span class="food-badge badge-electric" style="font-size:0.75rem">${esc(catLabel)}</span>
-          </div>
-          <div style="font-size:0.88rem;color:var(--text);margin-bottom:8px">
-            <div style="font-weight:600; margin-bottom:4px; color:var(--text-dim); font-size:0.8rem;">${esc(tFunc('chat.ingredientsLabel') || 'Ingrédients :')}</div>
-            <div style="display:flex; flex-wrap:wrap; gap:2px;">${itemsPills}</div>
-          </div>
-          ${meal.note ? `<div style="font-size:0.82rem;color:var(--text-dim);margin-bottom:12px;font-style:italic">🌿 ${esc(meal.note)}</div>` : ''}
-          <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;">
-            <button class="btn btn-primary" onclick="handleAddActionMeal('${encodedMeal}')" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:10px;font-size:0.88rem;">
-              <i class="ri-restaurant-line"></i> ${esc(tFunc('chat.logMealAction') || 'Enregistrer ce repas aux logs du jour')}
-            </button>
-            <button type="button" class="btn-secondary" onclick="openMealCustomizer('${safeMealName}')" style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:10px;font-size:0.84rem;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--text);cursor:pointer;">
-              <i class="ri-shuffle-line"></i> 🔄 ${esc(tFunc('chat.customizeAction') || 'Personnaliser / Remplacer')}
-            </button>
-          </div>
-          <div style="margin-top:10px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.06); display:flex; flex-wrap:wrap; gap:4px; align-items:center;">
-            <span style="font-size:0.72rem; color:var(--text-dim); margin-right:4px;">${esc(tFunc('chat.quickAdjustments') || 'Ajustements rapides :')}</span>
-            <button type="button" class="quick-reply-chip" onclick="askMealVariant('${safeMealName}', 'fridge')" style="font-size:0.74rem; padding:3px 10px; border-radius:12px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); color:var(--text-dim); cursor:pointer;">
-              🥑 ${esc(tFunc('chat.withFridge') || 'Avec mon frigo')}
-            </button>
-            <button type="button" class="quick-reply-chip" onclick="askMealVariant('${safeMealName}', 'raw')" style="font-size:0.74rem; padding:3px 10px; border-radius:12px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); color:var(--text-dim); cursor:pointer;">
-              🌿 ${esc(tFunc('chat.rawVersion') || 'Version 100% crue')}
-            </button>
-            <button type="button" class="quick-reply-chip" onclick="askMealVariant('${safeMealName}', 'transition')" style="font-size:0.74rem; padding:3px 10px; border-radius:12px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); color:var(--text-dim); cursor:pointer;">
-              🥣 ${esc(tFunc('chat.transitionFood') || 'Aliment de transition')}
-            </button>
-          </div>
-        </div>`;
+        renderedCards += renderMealActionCardHtml(obj.actionMeal, tFunc);
       }
 
       // 2. Fasting program card
@@ -11014,11 +10979,17 @@ function renderMarkdown(text) {
     .replace(/\n/g, '<br>');
 
   let extraDietCard = '';
-  if (!text.includes('ai-diet-plan-bridge-card') && !text.includes('ai-plan-card')) {
+  if (!text.includes('ai-diet-plan-bridge-card') && !text.includes('ai-diet-plan-smart-card') && !text.includes('ai-plan-card') && !text.includes('ai-meal-action-card')) {
     const extractedPlan = parseMarkdownDietPlan(rawInputText);
     if (extractedPlan && extractedPlan.sections && extractedPlan.sections.length > 0) {
       const tFunc = window.vitalTrackI18n?.t || ((k, p, f) => f || k);
       extraDietCard = renderDietPlanActionCardHtml(extractedPlan, tFunc);
+    } else {
+      const extractedMeal = extractSingleMealFromMarkdown(rawInputText);
+      if (extractedMeal) {
+        const tFunc = window.vitalTrackI18n?.t || ((k, p, f) => f || k);
+        extraDietCard = renderMealActionCardHtml(extractedMeal, tFunc);
+      }
     }
   }
 
@@ -12811,6 +12782,178 @@ function handleAddActionMeal(encodedMeal) {
     showToast("Impossible d'enregistrer le repas.", 'error');
   }
 };
+
+function saveMealToCustomRecipes(encodedMeal) {
+  try {
+    const meal = JSON.parse(decodeURIComponent(escape(atob(encodedMeal))));
+    const customDishes = store.get('custom_dishes', []);
+    const dishId = 'recipe_' + Date.now();
+    const rawItems = Array.isArray(meal.items) ? meal.items : (Array.isArray(meal.ingredients) ? meal.ingredients : [meal.name || 'Recette']);
+
+    const customDish = {
+      id: dishId,
+      name: meal.name || 'Recette Vitaliste',
+      category: meal.category || 'lunch',
+      emoji: meal.emoji || '🥗',
+      items: rawItems,
+      ingredients: rawItems,
+      note: meal.note || 'Suggéré par le Coach Vitaliste IA',
+      pral: meal.pralScore ?? -8.5,
+      vitality: meal.vitalityScore ?? 90,
+      isElectric: meal.isElectric !== false && !meal.isMucusForming,
+      isCustomRecipe: true,
+      timestamp: Date.now()
+    };
+
+    const existingIdx = customDishes.findIndex(d => d.name && d.name.toLowerCase() === customDish.name.toLowerCase());
+    if (existingIdx >= 0) {
+      customDishes[existingIdx] = customDish;
+    } else {
+      customDishes.unshift(customDish);
+    }
+    store.set('custom_dishes', customDishes);
+
+    // Synchronize to in-memory vitalDb so it is immediately searchable
+    const dbItem = {
+      id: dishId,
+      name: customDish.name,
+      names: [customDish.name],
+      category: customDish.category,
+      emoji: customDish.emoji,
+      scientific_defaults: { pral: customDish.pral },
+      isCustom: true
+    };
+    if (!vitalDb.some(f => f.name === customDish.name)) {
+      vitalDb.push(dbItem);
+    }
+
+    if (window.renderFavorites) renderFavorites();
+    showToast(
+      `<div style="display:flex;flex-direction:column;gap:1px;"><span style="font-weight:700;color:var(--text);">Recette sauvegardée !</span><span style="color:var(--text-dim);font-size:0.8rem;">« ${esc(customDish.name)} » ajoutée à vos recettes</span></div>`,
+      'success',
+      4500,
+      {
+        label: 'Voir mes recettes →',
+        icon: 'ri-bookmark-3-fill',
+        onClick: "showPage('favorites')"
+      }
+    );
+  } catch (err) {
+    console.error('Erreur saveMealToCustomRecipes:', err);
+    showToast("Impossible d'enregistrer la recette.", 'error');
+  }
+}
+window.saveMealToCustomRecipes = saveMealToCustomRecipes;
+
+function openScheduleMealModal(encodedMeal) {
+  try {
+    const meal = JSON.parse(decodeURIComponent(escape(atob(encodedMeal))));
+    const existingModal = document.getElementById('scheduleMealModalOverlay');
+    if (existingModal) existingModal.remove();
+
+    const todayStr = formatLocalDate ? formatLocalDate(new Date()) : new Date().toISOString().split('T')[0];
+
+    const overlay = document.createElement('div');
+    overlay.id = 'scheduleMealModalOverlay';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn 0.2s ease;';
+    overlay.innerHTML = `
+      <div class="schedule-meal-card glass" style="background:var(--surface,#1e293b);border:1.5px solid var(--border,#334155);border-radius:24px;padding:24px;max-width:440px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,0.45);color:var(--text,#ffffff);position:relative;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+          <div style="width:44px;height:44px;border-radius:14px;background:rgba(16,185,129,0.18);color:var(--accent,#10b981);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;">
+            <i class="ri-calendar-event-line"></i>
+          </div>
+          <div>
+            <h3 style="margin:0;font-size:1.15rem;font-weight:800;color:var(--text);line-height:1.2;">Planifier ce Repas</h3>
+            <span style="font-size:0.8rem;color:var(--text-dim);">${esc(meal.name || 'Plat')}</span>
+          </div>
+        </div>
+
+        <div style="margin-bottom:14px;">
+          <label style="display:block;font-size:0.8rem;font-weight:700;color:var(--text-dim);margin-bottom:6px;">DATE :</label>
+          <input type="date" id="scheduleMealDateInput" class="form-input-v2" value="${todayStr}" style="width:100%;padding:10px 12px;border-radius:10px;font-size:0.9rem;border:1px solid var(--border);background:var(--surface-2);color:var(--text);">
+        </div>
+
+        <div style="margin-bottom:18px;">
+          <label style="display:block;font-size:0.8rem;font-weight:700;color:var(--text-dim);margin-bottom:6px;">CRÉNEAU :</label>
+          <select id="scheduleMealSlotInput" class="form-input-v2" style="width:100%;padding:10px 12px;border-radius:10px;font-size:0.9rem;border:1px solid var(--border);background:var(--surface-2);color:var(--text);">
+            <option value="Matin" ${meal.category === 'breakfast' ? 'selected' : ''}>🌅 Petit-déjeuner / Matin</option>
+            <option value="Midi" ${meal.category === 'lunch' || !meal.category ? 'selected' : ''}>🥗 Déjeuner / Midi</option>
+            <option value="Soir" ${meal.category === 'dinner' ? 'selected' : ''}>🍲 Dîner / Soir</option>
+            <option value="Collation" ${meal.category === 'snack' ? 'selected' : ''}>🍵 Collation / Tisane</option>
+          </select>
+        </div>
+
+        <div style="display:flex;justify-content:flex-end;gap:10px;">
+          <button type="button" onclick="document.getElementById('scheduleMealModalOverlay').remove()" style="padding:10px 16px;border-radius:12px;border:none;background:transparent;color:var(--text-dim);cursor:pointer;font-weight:600;font-size:0.88rem;">Annuler</button>
+          <button type="button" onclick="window.confirmScheduleMeal('${encodedMeal}')" style="padding:10px 20px;border-radius:12px;border:none;background:var(--accent);color:#fff;font-weight:700;font-size:0.9rem;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+            <i class="ri-check-line"></i> Ajouter au Calendrier
+          </button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+  } catch (err) {
+    console.error('openScheduleMealModal error:', err);
+  }
+}
+window.openScheduleMealModal = openScheduleMealModal;
+
+function confirmScheduleMeal(encodedMeal) {
+  try {
+    const meal = JSON.parse(decodeURIComponent(escape(atob(encodedMeal))));
+    const dateInput = document.getElementById('scheduleMealDateInput')?.value;
+    const slotInput = document.getElementById('scheduleMealSlotInput')?.value || 'Midi';
+
+    const modalOverlay = document.getElementById('scheduleMealModalOverlay');
+    if (modalOverlay) modalOverlay.remove();
+
+    if (!dateInput) {
+      showToast("Veuillez sélectionner une date.", "error");
+      return;
+    }
+
+    const calendarMeals = store.get('calendar_meals', []);
+    const rawItems = Array.isArray(meal.items) ? meal.items : (Array.isArray(meal.ingredients) ? meal.ingredients : [meal.name || 'Repas']);
+    const foodText = rawItems.join(' · ');
+
+    const newCalMeal = {
+      id: `cal_meal_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
+      dateStr: dateInput,
+      slot: slotInput,
+      time: slotInput === 'Matin' ? '08:30' : slotInput === 'Midi' ? '12:30' : slotInput === 'Collation' ? '16:00' : '19:30',
+      text: foodText,
+      title: `${slotInput} · ${meal.name || 'Repas Proposé'}`,
+      note: meal.note || foodText,
+      icon: meal.emoji || '🥗',
+      tone: 'alkaline',
+      tags: ['IA Plan', meal.category || 'Repas'],
+      done: false
+    };
+
+    calendarMeals.push(newCalMeal);
+    store.set('calendar_meals', calendarMeals);
+
+    if (window.renderCalendar) renderCalendar();
+    if (window.renderStrip) renderStrip();
+    if (window.renderDay) renderDay();
+    if (window.refreshDailyStripRoutine) refreshDailyStripRoutine();
+
+    showToast(
+      `<div style="display:flex;flex-direction:column;gap:1px;"><span style="font-weight:700;color:var(--text);">Plat planifié !</span><span style="color:var(--text-dim);font-size:0.8rem;">« ${esc(meal.name || 'Repas')} » ajouté au ${dateInput} (${slotInput})</span></div>`,
+      'success',
+      4500,
+      {
+        label: 'Voir calendrier →',
+        icon: 'ri-calendar-check-line',
+        onClick: "showPage('calendar')"
+      }
+    );
+  } catch (err) {
+    console.error('confirmScheduleMeal error:', err);
+    showToast("Impossible d'ajouter le repas au calendrier.", 'error');
+  }
+}
+window.confirmScheduleMeal = confirmScheduleMeal;
 
 function openMealCustomizer(mealName) {
   setChatContext({
@@ -16510,6 +16653,11 @@ if (typeof window !== "undefined") window.syncLocationAndClimate = syncLocationA
 if (typeof window !== "undefined") window.navigateToLocationSettings = navigateToLocationSettings;
 if (typeof window !== "undefined") window.parseMarkdownDietPlan = parseMarkdownDietPlan;
 if (typeof window !== "undefined") window.renderDietPlanActionCardHtml = renderDietPlanActionCardHtml;
+if (typeof window !== "undefined") window.extractSingleMealFromMarkdown = extractSingleMealFromMarkdown;
+if (typeof window !== "undefined") window.renderMealActionCardHtml = renderMealActionCardHtml;
+if (typeof window !== "undefined") window.saveMealToCustomRecipes = saveMealToCustomRecipes;
+if (typeof window !== "undefined") window.openScheduleMealModal = openScheduleMealModal;
+if (typeof window !== "undefined") window.confirmScheduleMeal = confirmScheduleMeal;
 if (typeof window !== "undefined") window.applyExtractedDietPlanToCalendar = applyExtractedDietPlanToCalendar;
 if (typeof window !== "undefined") window.previewAndCustomizeDietPlanModal = previewAndCustomizeDietPlanModal;
 if (typeof window !== "undefined") window.saveAndApplyCustomizedDietPlan = saveAndApplyCustomizedDietPlan;

@@ -548,18 +548,232 @@ export function closePreviewDietPlanModal(event = null) {
   if (modal) modal.style.display = 'none';
 }
 
+/**
+ * Intelligent parser that extracts a single meal/dish proposal from markdown AI responses
+ * when no JSON block was provided.
+ */
+export function extractSingleMealFromMarkdown(text) {
+  if (!text || typeof text !== 'string') return null;
+  // If text already has an explicit diet plan with multiple days, let parseMarkdownDietPlan handle it
+  if (/(?:JOUR|DAY|SEMAINE|WEEK)\s*\d+/i.test(text) && /(?:Matin|Midi|Soir|Hydratation)/i.test(text)) {
+    return null;
+  }
+
+  // Look for recipe / dish patterns:
+  const hasRecipeKeywords = /(?:ingr[ée]dients?|recette|pr[ée]paration|assiette|bol|salade|smoothie|velout[ée]|soupe|d[ée]coction|jus|plat|d[ée]jeuner|d[iî]ner|petit[- ]d[ée]jeuner)/i.test(text);
+  if (!hasRecipeKeywords) return null;
+
+  // 1. Detect dish title
+  let dishName = '';
+  let emoji = '🥗';
+
+  // Pattern 1: Heading with emoji/title (e.g. ### 🥗 Salade Détoxifiante or ### Salade ...)
+  const headingMatch = text.match(/(?:^|\n)###?\s*([^\n]+)/);
+  if (headingMatch && !headingMatch[1].toLowerCase().includes('directive') && !headingMatch[1].toLowerCase().includes('conseil') && !headingMatch[1].toLowerCase().includes('principe') && !headingMatch[1].toLowerCase().includes('priorité')) {
+    const rawHeading = headingMatch[1].replace(/[*_#`]/g, '').trim();
+    const emojiMatch = rawHeading.match(/([\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}])/u);
+    if (emojiMatch) emoji = emojiMatch[1];
+    dishName = rawHeading.replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}]/gu, '').replace(/^[:\-\s]+|[:\-\s]+$/g, '').trim();
+  }
+
+  // Pattern 2: Bold title (e.g. **Salade de concombre et avocat**)
+  if (!dishName) {
+    const boldMatch = text.match(/\*\*([^\*\n]{4,50})\*\*/);
+    if (boldMatch && !boldMatch[1].toLowerCase().includes('ingrédient') && !boldMatch[1].toLowerCase().includes('préparation') && !boldMatch[1].toLowerCase().includes('pral')) {
+      dishName = boldMatch[1].trim();
+    }
+  }
+
+  // Pattern 3: Explicit recipe label (e.g. Recette : Salade ...)
+  if (!dishName) {
+    const recipeMatch = text.match(/(?:Recette|Plat|Proposition|Repas)\s*:\s*([^\n\.,]+)/i);
+    if (recipeMatch) dishName = recipeMatch[1].replace(/[*_#`]/g, '').trim();
+  }
+
+  if (!dishName || dishName.length < 3) {
+    dishName = "Plat Vitaliste Personnalisé";
+  }
+
+  // 2. Detect category (breakfast, lunch, dinner, snack)
+  let category = 'lunch';
+  const lower = text.toLowerCase();
+  if (lower.includes('petit-déjeuner') || lower.includes('petit déjeuner') || lower.includes('matin') || lower.includes('smoothie') || lower.includes('breakfast')) {
+    category = 'breakfast';
+    if (emoji === '🥗') emoji = '🍉';
+  } else if (lower.includes('dîner') || lower.includes('diner') || lower.includes('souper') || lower.includes('soir') || lower.includes('dinner')) {
+    category = 'dinner';
+    if (emoji === '🥗') emoji = '🍲';
+  } else if (lower.includes('collation') || lower.includes('snack') || lower.includes('tisane') || lower.includes('décoction') || lower.includes('infusion')) {
+    category = 'snack';
+    if (emoji === '🥗') emoji = '🍵';
+  }
+
+  // 3. Extract ingredients (bullets after Ingrédients: or general list)
+  const items = [];
+  const ingMatch = text.match(/(?:Ingr[ée]dients?|Composants?)[^:\n]*:?\s*([\s\S]*?)(?=(?:Pr[ée]paration|Instructions?|B[ée]n[ée]fices?|Conseils?|Astuce|###|```|$))/i);
+  
+  if (ingMatch && ingMatch[1]) {
+    const lines = ingMatch[1].split('\n').map(l => l.trim()).filter(Boolean);
+    for (const line of lines) {
+      if (line.startsWith('*') || line.startsWith('-') || line.startsWith('•') || /^\d+[\.\)]/.test(line)) {
+        const clean = line.replace(/^[*\-•\d\.\)]+\s*/, '').replace(/[*_`]/g, '').trim();
+        if (clean.length > 2 && clean.length < 80) {
+          items.push(clean);
+        }
+      }
+    }
+  }
+
+  // If no ingredients list found, scan all bullet points in message
+  if (items.length === 0) {
+    const allBullets = text.match(/^[*\-•]\s+([^\n]+)/gm);
+    if (allBullets && allBullets.length > 0) {
+      for (const b of allBullets.slice(0, 6)) {
+        const clean = b.replace(/^[*\-•]\s+/, '').replace(/[*_`]/g, '').trim();
+        if (clean.length > 2 && clean.length < 80 && !clean.includes('###')) {
+          items.push(clean);
+        }
+      }
+    }
+  }
+
+  if (items.length === 0) {
+    items.push(dishName);
+  }
+
+  // 4. Calculate estimated vitality metrics
+  const isTransition = lower.includes('transition') || lower.includes('cuit') || lower.includes('poisson') || lower.includes('vapeur') || lower.includes('féculent');
+  const isAcid = lower.includes('acidifiant') || lower.includes('viande') || lower.includes('fromage');
+  
+  const pralScore = isAcid ? +8.5 : (isTransition ? -3.5 : -11.2);
+  const vitalityScore = isAcid ? 45 : (isTransition ? 75 : 95);
+  const isElectric = !isAcid && !isTransition;
+  const isMucusForming = isAcid;
+
+  // Extract a brief note
+  let note = "Équilibre acido-basique, fluidification lymphatique et régénération cellulaire.";
+  if (category === 'breakfast') note = "Éveil enzymatique et hydratation cellulaire sans surcharge digestive.";
+  if (category === 'dinner') note = "Dîner léger facilitant le repos hépatique et le sommeil réparateur.";
+  if (isTransition) note = "Plat de transition doux respectant la loi d'association d'Arnold Ehret.";
+
+  return {
+    name: dishName,
+    category,
+    emoji,
+    items,
+    pralScore,
+    vitalityScore,
+    isElectric,
+    isMucusForming,
+    note
+  };
+}
+
+/**
+ * Renders an Interactive Japandi Action Card for a Single Proposed Meal/Recipe
+ */
+export function renderMealActionCardHtml(meal, tFunc = (k, p, f) => f || k) {
+  if (!meal) return '';
+  const encodedMeal = btoa(unescape(encodeURIComponent(JSON.stringify(meal))));
+  const rawItems = Array.isArray(meal.items) ? meal.items : (Array.isArray(meal.ingredients) ? meal.ingredients : [meal.name]);
+  
+  const catLabels = {
+    breakfast: '🌅 Petit-déjeuner Vital',
+    lunch: '🥗 Déjeuner Vivant',
+    dinner: '🍲 Dîner de Transition',
+    snack: '🍵 Éveil & Collation'
+  };
+  const catLabel = catLabels[meal.category] || meal.category || 'Repas Vitaliste';
+
+  const isElectric = meal.isElectric !== false && !meal.isMucusForming;
+  const pralText = meal.pralScore !== undefined ? `PRAL ${meal.pralScore > 0 ? '+' : ''}${meal.pralScore}` : 'Alcalinisant';
+  const vitalityBadge = isElectric
+    ? `<span class="plan-pill accent" style="font-size:0.75rem;"><i class="ri-flashlight-fill"></i> ⚡ 100% Électrique</span>`
+    : `<span class="plan-pill" style="font-size:0.75rem; color:#f59e0b; border-color:rgba(245,158,11,0.3); background:rgba(245,158,11,0.08);"><i class="ri-shuffle-line"></i> 🟡 Transition</span>`;
+
+  const itemsPills = rawItems.map(it => `
+    <span style="display:inline-flex; align-items:center; gap:4px; padding:4px 10px; background:var(--surface-2, rgba(255,255,255,0.05)); border:1px solid var(--border); border-radius:12px; font-size:0.8rem; color:var(--text); margin:2px 3px 2px 0;">
+      <i class="ri-leaf-line" style="color:var(--accent); font-size:0.75rem;"></i> ${typeof it === 'string' ? it : it.name}
+    </span>
+  `).join('');
+
+  const safeMealName = (meal.name || 'ce repas').replace(/'/g, "\\'");
+
+  return `
+    <div class="ai-meal-action-card glass" style="margin:14px 0; padding:16px 18px; border-radius:18px; border:1.5px solid var(--accent); background:rgba(16,185,129,0.05); box-shadow:0 8px 24px rgba(0,0,0,0.15);">
+      <!-- Header -->
+      <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="font-size:1.6rem; line-height:1;">${meal.emoji || '🥗'}</span>
+          <div>
+            <div style="font-weight:800; font-size:1.05rem; color:var(--text); line-height:1.2;">${meal.name || 'Plat Proposé'}</div>
+            <div style="font-size:0.78rem; color:var(--text-dim);">${catLabel} · ${pralText}</div>
+          </div>
+        </div>
+        <div style="display:flex; gap:6px; align-items:center;">
+          ${vitalityBadge}
+        </div>
+      </div>
+
+      <!-- Ingrédients Chips -->
+      <div style="margin-bottom:10px;">
+        <div style="font-size:0.78rem; font-weight:700; color:var(--text-dim); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Ingrédients Clés :</div>
+        <div style="display:flex; flex-wrap:wrap; gap:3px;">
+          ${itemsPills}
+        </div>
+      </div>
+
+      ${meal.note ? `<div style="font-size:0.82rem; color:var(--text-dim); margin-bottom:12px; line-height:1.4; font-style:italic;">🌿 ${meal.note}</div>` : ''}
+
+      <!-- 3 Primary Action Buttons -->
+      <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:12px;">
+        <button type="button" class="btn-primary" onclick="window.handleAddActionMeal('${encodedMeal}')" style="display:inline-flex; align-items:center; gap:6px; padding:9px 16px; border-radius:12px; font-size:0.86rem; font-weight:700; cursor:pointer;">
+          <i class="ri-add-circle-fill"></i> Ajouter aux Repas du Jour
+        </button>
+        <button type="button" class="btn-secondary" onclick="window.openScheduleMealModal('${encodedMeal}')" style="display:inline-flex; align-items:center; gap:6px; padding:9px 14px; border-radius:12px; font-size:0.84rem; font-weight:700; background:var(--surface-2); border:1px solid var(--border); color:var(--text); cursor:pointer;">
+          <i class="ri-calendar-event-fill" style="color:var(--accent);"></i> Planifier au Calendrier
+        </button>
+        <button type="button" class="btn-secondary" onclick="window.saveMealToCustomRecipes('${encodedMeal}')" style="display:inline-flex; align-items:center; gap:6px; padding:9px 14px; border-radius:12px; font-size:0.84rem; font-weight:700; background:rgba(52,211,153,0.1); border:1px solid rgba(52,211,153,0.3); color:var(--accent); cursor:pointer;" title="Enregistrer dans ma base de recettes">
+          <i class="ri-bookmark-3-fill"></i> Sauvegarder dans Mes Recettes
+        </button>
+      </div>
+
+      <!-- Quick AI Adjustments Bar -->
+      <div style="margin-top:12px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.06); display:flex; flex-wrap:wrap; gap:5px; align-items:center;">
+        <span style="font-size:0.74rem; font-weight:700; color:var(--text-dim); margin-right:4px;">Ajuster avec l'IA :</span>
+        <button type="button" class="quick-reply-chip" onclick="window.askMealVariant('${safeMealName}', 'fridge')" style="font-size:0.75rem; padding:4px 10px; border-radius:50px; background:var(--surface-2); border:1px solid var(--border); color:var(--text); cursor:pointer;">
+          🥑 Avec mon frigo
+        </button>
+        <button type="button" class="quick-reply-chip" onclick="window.askMealVariant('${safeMealName}', 'raw')" style="font-size:0.75rem; padding:4px 10px; border-radius:50px; background:var(--surface-2); border:1px solid var(--border); color:var(--text); cursor:pointer;">
+          🌿 Version 100% crue
+        </button>
+        <button type="button" class="quick-reply-chip" onclick="window.askMealVariant('${safeMealName}', 'transition')" style="font-size:0.75rem; padding:4px 10px; border-radius:50px; background:var(--surface-2); border:1px solid var(--border); color:var(--text); cursor:pointer;">
+          🥣 Aliment de transition
+        </button>
+        <button type="button" class="quick-reply-chip" onclick="window.openMealCustomizer('${safeMealName}')" style="font-size:0.75rem; padding:4px 10px; border-radius:50px; background:rgba(52,211,153,0.12); border:1px solid rgba(52,211,153,0.3); color:var(--accent); cursor:pointer;">
+          🔄 Autre variante...
+        </button>
+      </div>
+    </div>
+  `;
+}
+
 // Global window bindings
 if (typeof window !== 'undefined') {
   window.dietPlanAiBridge = {
     parseMarkdownDietPlan,
     buildCalendarMealsFromPlan,
     renderDietPlanActionCardHtml,
+    extractSingleMealFromMarkdown,
+    renderMealActionCardHtml,
     applyExtractedDietPlanToCalendar,
     previewAndCustomizeDietPlanModal,
     substituteCustomizerFood,
     saveAndApplyCustomizedDietPlan,
     closePreviewDietPlanModal
   };
+  window.extractSingleMealFromMarkdown = extractSingleMealFromMarkdown;
+  window.renderMealActionCardHtml = renderMealActionCardHtml;
   window.applyExtractedDietPlanToCalendar = applyExtractedDietPlanToCalendar;
   window.previewAndCustomizeDietPlanModal = previewAndCustomizeDietPlanModal;
   window.substituteCustomizerFood = substituteCustomizerFood;
