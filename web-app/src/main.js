@@ -15640,14 +15640,14 @@ function triggerMascotInPlaceReaction(action) {
     }, 4500);
   }
   
-  // Unconditionally play authentic parasite-free pigeon vocalization on click
+  // Unconditionally play authentic real pigeon recording on click
   if (window.pigeonAudio) {
     const soundMap = {
-      coo: 'greeting',
-      think: 'curious',
-      celebrate: 'chirp_greeting',
-      laugh: 'flutter_coo',
-      walk: 'double_roll'
+      coo: 'classic',
+      think: 'morning',
+      celebrate: 'nuptial',
+      laugh: 'nuptial',
+      walk: 'territorial'
     };
     window.pigeonAudio.playRealCoo(soundMap[act] || null);
   }

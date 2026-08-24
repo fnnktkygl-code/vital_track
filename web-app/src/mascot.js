@@ -68,244 +68,73 @@ function linear(ctx, x0, y0, x1, y1, c1, c2) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// MOTEUR ACOUSTIQUE BIO-SYNTHÉTIQUE HAUTE FIDÉLITÉ (Columba livia)
-// ZÉRO Bruit parasite, ZÉRO Souffle de fond, 100% Organique & Cristallin
+// LECTEUR AUDIO AUTHENTIQUE MULTI-VOCAL (Columba livia)
+// Vrais enregistrements studio nettoyés : Classique, Nuptial, Territorial, Matin
 // ─────────────────────────────────────────────────────────────
-class PigeonAcousticsEngine {
+class AuthenticPigeonAudio {
   constructor() {
-    this.ctx = null;
     this.enabled = true;
     this.lastSoundIndex = -1;
+    this.audioPool = {};
     this.soundCatalog = [
-      { id: 'greeting', name: 'Roucoulement d\'Accueil Doux', desc: 'Syllabe montante et glissante soyeuse' },
-      { id: 'double_roll', name: 'Double Roucoulement de Parade', desc: 'Trille tri-syllabique vif et enjoué' },
-      { id: 'curious', name: 'Trémolo Curieux / Prrr', desc: 'Gorge vibrante observant avec curiosité' },
-      { id: 'contentment', name: 'Ronronnement Profond', desc: 'Basse chaude et ronde de jabot gonflé' },
-      { id: 'chirp_greeting', name: 'Pépiement Vif & Amical', desc: 'Inflexion aiguë marquant l\'éveil et l\'attention' },
-      { id: 'flutter_coo', name: 'Bruissement Feutré & Roucoulement', desc: 'Léger souffle soyeux suivi d\'un roucoulement' }
+      { id: 'classic', file: '/audio/pigeon-coo-classic.mp3', name: 'Roucoulement Classique d\'Origine', desc: 'Le son authentique de base doux et mélodieux' },
+      { id: 'nuptial', file: '/audio/pigeon-coo-nuptial.mp3', name: 'Roucoulement Nuptial / Parade', desc: 'Roulement vif et dansant de séduction' },
+      { id: 'territorial', file: '/audio/pigeon-coo-territorial.mp3', name: 'Roucoulement Territorial', desc: 'Vibration profonde de gorge et jabot gonflé' },
+      { id: 'morning', file: '/audio/pigeon-coo-morning.mp3', name: 'Chant du Matin / Aube', desc: 'Roucoulement calme et régulier au réveil sur les toits' }
     ];
   }
 
-  _initContext() {
-    if (!this.ctx && typeof window !== 'undefined') {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (AudioCtx) {
-        this.ctx = new AudioCtx();
-      }
+  _getAudio(soundId) {
+    if (typeof window === 'undefined') return null;
+    const item = this.soundCatalog.find(s => s.id === soundId) || this.soundCatalog[0];
+    if (!this.audioPool[item.id]) {
+      const audio = new Audio(item.file);
+      audio.volume = 0.95;
+      audio.preload = 'auto';
+      this.audioPool[item.id] = audio;
     }
-    if (this.ctx && this.ctx.state === 'suspended') {
-      this.ctx.resume().catch(() => {});
-    }
-    return this.ctx;
+    return this.audioPool[item.id];
   }
 
   playRealCoo(specificType = null) {
     if (!this.enabled || typeof window === 'undefined') return;
-    const ctx = this._initContext();
-    if (!ctx) return;
 
-    // Pick sound variety with shuffle avoiding immediate repetition
-    let soundType = specificType;
-    if (!soundType) {
-      const types = ['greeting', 'double_roll', 'curious', 'contentment', 'chirp_greeting', 'flutter_coo'];
-      let nextIdx = Math.floor(Math.random() * types.length);
+    let soundId = specificType;
+    if (!soundId || !this.soundCatalog.some(s => s.id === soundId)) {
+      // Rotate / Shuffle among the 4 authentic sounds without repeating the same one
+      let nextIdx = Math.floor(Math.random() * this.soundCatalog.length);
       if (nextIdx === this.lastSoundIndex) {
-        nextIdx = (nextIdx + 1 + Math.floor(Math.random() * (types.length - 1))) % types.length;
+        nextIdx = (nextIdx + 1) % this.soundCatalog.length;
       }
       this.lastSoundIndex = nextIdx;
-      soundType = types[nextIdx];
+      soundId = this.soundCatalog[nextIdx].id;
     }
 
     try {
-      const now = ctx.currentTime;
-      // Micro-randomization for organic aliveness (±3% pitch, ±4% speed)
-      const pitchJitter = 1.0 + (Math.random() - 0.5) * 0.06;
-      const speedJitter = 1.0 + (Math.random() - 0.5) * 0.08;
-
-      switch (soundType) {
-        case 'greeting':
-          this._synthGreeting(ctx, now, pitchJitter, speedJitter);
-          break;
-        case 'double_roll':
-          this._synthDoubleRoll(ctx, now, pitchJitter, speedJitter);
-          break;
-        case 'curious':
-          this._synthCuriousPrrr(ctx, now, pitchJitter, speedJitter);
-          break;
-        case 'contentment':
-          this._synthContentment(ctx, now, pitchJitter, speedJitter);
-          break;
-        case 'chirp_greeting':
-          this._synthChirpGreeting(ctx, now, pitchJitter, speedJitter);
-          break;
-        case 'flutter_coo':
-          this._synthFlutterCoo(ctx, now, pitchJitter, speedJitter);
-          break;
-        default:
-          this._synthGreeting(ctx, now, pitchJitter, speedJitter);
+      const audio = this._getAudio(soundId);
+      if (audio) {
+        audio.currentTime = 0;
+        audio.play().catch(() => {
+          // Autoplay policy fallback
+        });
       }
     } catch (e) {
-      console.warn('[Pigeon Audio Engine] Error synthesizing coo:', e);
+      console.warn('[Pigeon Audio] Playback error:', e);
     }
-  }
-
-  // Syllable synthesizer helper for columbidae vocal tract
-  _createColumbidSyllable(ctx, startTime, duration, startFreq, peakFreq, endFreq, tremoloRate = 20, tremoloDepth = 0.35, gainLevel = 0.28) {
-    const osc = ctx.createOscillator();
-    const oscHarmonic = ctx.createOscillator();
-    const subOsc = ctx.createOscillator();
-
-    const formantFilter = ctx.createBiquadFilter();
-    formantFilter.type = 'bandpass';
-    formantFilter.frequency.setValueAtTime(peakFreq * 1.25, startTime);
-    formantFilter.Q.setValueAtTime(4.5, startTime);
-
-    const gainNode = ctx.createGain();
-    const masterGain = ctx.createGain();
-
-    // Syrinx AM Tremolo (Vibration of throat membranes)
-    const tremolo = ctx.createOscillator();
-    const tremoloGain = ctx.createGain();
-    tremolo.type = 'sine';
-    tremolo.frequency.setValueAtTime(tremoloRate, startTime);
-    tremoloGain.gain.setValueAtTime(tremoloDepth, startTime);
-
-    // Fundamental tone (warm sine + slight triangle body)
-    osc.type = 'sine';
-    oscHarmonic.type = 'triangle';
-    subOsc.type = 'sine';
-
-    // Pitch trajectory
-    const tMid = startTime + duration * 0.45;
-    const tEnd = startTime + duration;
-
-    osc.frequency.setValueAtTime(startFreq, startTime);
-    osc.frequency.exponentialRampToValueAtTime(Math.max(40, peakFreq), tMid);
-    osc.frequency.exponentialRampToValueAtTime(Math.max(40, endFreq), tEnd);
-
-    oscHarmonic.frequency.setValueAtTime(startFreq * 2, startTime);
-    oscHarmonic.frequency.exponentialRampToValueAtTime(Math.max(80, peakFreq * 2), tMid);
-    oscHarmonic.frequency.exponentialRampToValueAtTime(Math.max(80, endFreq * 2), tEnd);
-
-    subOsc.frequency.setValueAtTime(startFreq * 0.5, startTime);
-    subOsc.frequency.exponentialRampToValueAtTime(Math.max(20, peakFreq * 0.5), tMid);
-    subOsc.frequency.exponentialRampToValueAtTime(Math.max(20, endFreq * 0.5), tEnd);
-
-    // Smooth Columbid Amplitude Envelope (gentle attack to avoid clicks)
-    const attackTime = Math.min(0.06, duration * 0.2);
-    const releaseTime = Math.min(0.12, duration * 0.35);
-
-    gainNode.gain.setValueAtTime(0.0001, startTime);
-    gainNode.gain.exponentialRampToValueAtTime(1.0, startTime + attackTime);
-    gainNode.gain.setValueAtTime(0.85, tEnd - releaseTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.0001, tEnd);
-
-    masterGain.gain.setValueAtTime(gainLevel, startTime);
-
-    // Connect modulation: tremolo -> gainNode.gain
-    tremolo.connect(tremoloGain);
-    tremoloGain.connect(gainNode.gain);
-
-    // Balance main tone & subtle harmonic
-    const harmGain = ctx.createGain();
-    harmGain.gain.setValueAtTime(0.12, startTime);
-
-    const subGain = ctx.createGain();
-    subGain.gain.setValueAtTime(0.18, startTime);
-
-    osc.connect(formantFilter);
-    oscHarmonic.connect(harmGain);
-    harmGain.connect(formantFilter);
-    subOsc.connect(subGain);
-    subGain.connect(formantFilter);
-
-    formantFilter.connect(gainNode);
-    gainNode.connect(masterGain);
-    masterGain.connect(ctx.destination);
-
-    osc.start(startTime);
-    oscHarmonic.start(startTime);
-    subOsc.start(startTime);
-    tremolo.start(startTime);
-
-    osc.stop(tEnd + 0.05);
-    oscHarmonic.stop(tEnd + 0.05);
-    subOsc.stop(tEnd + 0.05);
-    tremolo.stop(tEnd + 0.05);
-  }
-
-  // 1. Greeting Coo (Roucoulement d'accueil 2 syllabes)
-  _synthGreeting(ctx, now, pJ, sJ) {
-    const dur1 = 0.18 * sJ;
-    const dur2 = 0.42 * sJ;
-    this._createColumbidSyllable(ctx, now, dur1, 290 * pJ, 340 * pJ, 310 * pJ, 18, 0.22, 0.24);
-    this._createColumbidSyllable(ctx, now + dur1 + 0.04, dur2, 320 * pJ, 410 * pJ, 280 * pJ, 21, 0.38, 0.30);
-  }
-
-  // 2. Double Roll (Roucoulement de parade 3 syllabes)
-  _synthDoubleRoll(ctx, now, pJ, sJ) {
-    const d1 = 0.14 * sJ;
-    const d2 = 0.16 * sJ;
-    const d3 = 0.46 * sJ;
-    this._createColumbidSyllable(ctx, now, d1, 280 * pJ, 320 * pJ, 300 * pJ, 19, 0.25, 0.22);
-    this._createColumbidSyllable(ctx, now + d1 + 0.03, d2, 310 * pJ, 360 * pJ, 330 * pJ, 20, 0.28, 0.26);
-    this._createColumbidSyllable(ctx, now + d1 + d2 + 0.07, d3, 340 * pJ, 435 * pJ, 275 * pJ, 23, 0.42, 0.32);
-  }
-
-  // 3. Curious Prrr (Gloussement curieux et vibrant)
-  _synthCuriousPrrr(ctx, now, pJ, sJ) {
-    const dur = 0.38 * sJ;
-    this._createColumbidSyllable(ctx, now, dur, 320 * pJ, 375 * pJ, 340 * pJ, 26, 0.50, 0.28);
-  }
-
-  // 4. Contentment (Ronronnement grave & profond)
-  _synthContentment(ctx, now, pJ, sJ) {
-    const dur = 0.55 * sJ;
-    this._createColumbidSyllable(ctx, now, dur, 230 * pJ, 270 * pJ, 215 * pJ, 16, 0.30, 0.28);
-  }
-
-  // 5. Chirp Greeting (Petit pépiement vif)
-  _synthChirpGreeting(ctx, now, pJ, sJ) {
-    const dur1 = 0.09 * sJ;
-    const dur2 = 0.24 * sJ;
-    this._createColumbidSyllable(ctx, now, dur1, 380 * pJ, 440 * pJ, 410 * pJ, 24, 0.18, 0.20);
-    this._createColumbidSyllable(ctx, now + dur1 + 0.03, dur2, 360 * pJ, 400 * pJ, 320 * pJ, 20, 0.32, 0.26);
-  }
-
-  // 6. Flutter & Coo (Bruissement d'ailes doux suivi d'un roucoulement)
-  _synthFlutterCoo(ctx, now, pJ, sJ) {
-    const bufferSize = Math.floor(ctx.sampleRate * 0.18);
-    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-    const data = buffer.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) {
-      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.4));
-    }
-    const noise = ctx.createBufferSource();
-    noise.buffer = buffer;
-
-    const noiseFilter = ctx.createBiquadFilter();
-    noiseFilter.type = 'lowpass';
-    noiseFilter.frequency.setValueAtTime(650, now);
-
-    const noiseGain = ctx.createGain();
-    noiseGain.gain.setValueAtTime(0.08, now);
-    noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.18);
-
-    noise.connect(noiseFilter);
-    noiseFilter.connect(noiseGain);
-    noiseGain.connect(ctx.destination);
-
-    noise.start(now);
-    this._createColumbidSyllable(ctx, now + 0.12, 0.38 * sJ, 290 * pJ, 350 * pJ, 280 * pJ, 20, 0.35, 0.28);
   }
 
   toggleSound() {
     this.enabled = !this.enabled;
+    if (!this.enabled) {
+      Object.values(this.audioPool).forEach(a => {
+        try { a.pause(); } catch (e) {}
+      });
+    }
     return this.enabled;
   }
 }
 
-export const pigeonAudio = new PigeonAcousticsEngine();
+export const pigeonAudio = new AuthenticPigeonAudio();
 if (typeof window !== 'undefined') {
   window.pigeonAudio = pigeonAudio;
 }
