@@ -273,7 +273,7 @@ for (let i = 0; i < TOTAL_RUNS; i++) {
       categoryStats[meal.category]++;
 
       const html = renderMealActionCardHtml(meal);
-      assert.ok(html.includes('ai-meal-action-card'), `Meal action card HTML invalid on run #${i + 1}`);
+      assert.ok(html.includes('ai-meal-bento-card'), `Meal action card HTML invalid on run #${i + 1}`);
       assert.ok(html.includes('handleAddActionMeal'), `Add to meals button missing on run #${i + 1}`);
       assert.ok(html.includes('openScheduleMealModal'), `Schedule to calendar button missing on run #${i + 1}`);
       assert.ok(html.includes('saveMealToCustomRecipes'), `Save to recipes button missing on run #${i + 1}`);

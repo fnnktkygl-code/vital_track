@@ -3165,7 +3165,7 @@ async function sendChat(e) {
               if (chunkText) {
                 aiText += chunkText;
                 const streamingBubble = document.getElementById('streaming-bubble');
-                if (streamingBubble) streamingBubble.innerHTML = renderMarkdown(aiText);
+                if (streamingBubble) streamingBubble.innerHTML = renderMarkdown(aiText, true);
                 container.scrollTop = container.scrollHeight;
               }
             }
@@ -10864,7 +10864,7 @@ function formatModelName(rawName) {
 }
 window.formatModelName = formatModelName;
 
-function renderMarkdown(text) {
+function renderMarkdown(text, isStreaming = false) {
   if (!text) return '';
   const rawInputText = text;
   text = formatChemicals(text);
@@ -10979,7 +10979,7 @@ function renderMarkdown(text) {
     .replace(/\n/g, '<br>');
 
   let extraDietCard = '';
-  if (!text.includes('ai-diet-plan-bridge-card') && !text.includes('ai-diet-plan-smart-card') && !text.includes('ai-plan-card') && !text.includes('ai-meal-action-card')) {
+  if (!isStreaming && !text.includes('ai-diet-plan-bridge-card') && !text.includes('ai-diet-plan-smart-card') && !text.includes('ai-plan-card') && !text.includes('ai-meal-bento-card') && !text.includes('ai-meal-action-card')) {
     const extractedPlan = parseMarkdownDietPlan(rawInputText);
     if (extractedPlan && extractedPlan.sections && extractedPlan.sections.length > 0) {
       const tFunc = window.vitalTrackI18n?.t || ((k, p, f) => f || k);

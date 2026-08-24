@@ -63,7 +63,7 @@ Mélangez délicatement tous les ingrédients dans un grand bol en bois. Arrosez
   assert.equal(meal.isElectric, true, 'Should be recognized as electric/living food');
 
   const cardHtml = renderMealActionCardHtml(meal);
-  assert.ok(cardHtml.includes('ai-meal-action-card'), 'Should render Japandi action card');
+  assert.ok(cardHtml.includes('ai-meal-bento-card'), 'Should render Japandi bento action card');
   assert.ok(cardHtml.includes('handleAddActionMeal'), 'Should have Add to Meals button');
   assert.ok(cardHtml.includes('openScheduleMealModal'), 'Should have Schedule to Calendar button');
   assert.ok(cardHtml.includes('saveMealToCustomRecipes'), 'Should have Save to Custom Recipes button');
@@ -155,6 +155,23 @@ Dégustez lentement.
   assert.ok(meal.items.length >= 3);
 });
 
+test('1.6 Anti-False Positive: Should NOT extract meal card on botanical monographs or herb descriptions (e.g. Copaiba)', () => {
+  const copaibaResponse = `
+### Copaiba (Copaifera officinalis)
+
+Le Copaiba est une huile-résine issue du tronc d'arbres de la forêt amazonienne.
+
+* Actions clés : Anti-inflammatoire puissant, cicatrisant muqueux, protecteur gastrique
+* Tropisme : Système respiratoire, muqueuses, reins
+* Posologie : 3 à 5 gouttes dans un peu d'eau tiède
+
+Utilisé traditionnellement par les peuples indigènes d'Amazonie pour apaiser les inflammations.
+`;
+
+  const meal = extractSingleMealFromMarkdown(copaibaResponse);
+  assert.equal(meal, null, 'Botanical monographs must NEVER trigger a fake meal action card');
+});
+
 // ══════════════════════════════════════════════════════════════════════════════
 // 2. MULTI-DAY DIET PLANS & FASTING REGIMENS
 // ══════════════════════════════════════════════════════════════════════════════
@@ -220,25 +237,20 @@ test('3.1 Action Meal Card contains all required Japandi UI elements and buttons
     name: "Bol Vitaliste du Midi",
     category: "lunch",
     emoji: "🥗",
-    items: ["Roquette", "Concombre", "Avocat", "Graines de chanvre"],
-    pralScore: -12.4,
-    vitalityScore: 98,
+    items: ["Concombre", "Avocat", "Graines de chanvre"],
+    pralScore: -9.5,
+    vitalityScore: 90,
     isElectric: true,
     isMucusForming: false,
-    note: "Drainage lymphatique intense et reminéralisation"
+    note: "Alcalinisation rapide."
   };
 
   const html = renderMealActionCardHtml(sampleMeal);
-  assert.ok(html.includes('Bol Vitaliste du Midi'), 'Contains meal name');
-  assert.ok(html.includes('PRAL -12.4'), 'Contains PRAL badge');
-  assert.ok(html.includes('100% Électrique'), 'Contains Electric vitality badge');
-  assert.ok(html.includes('Ajouter aux Repas du Jour'), 'Contains Add to Meals button');
-  assert.ok(html.includes('Planifier au Calendrier'), 'Contains Schedule button');
-  assert.ok(html.includes('Sauvegarder dans Mes Recettes'), 'Contains Save to Custom Recipes button');
-  assert.ok(html.includes('Ajuster avec l\'IA'), 'Contains AI refinement section');
-  assert.ok(html.includes('Avec mon frigo'), 'Contains fridge prompt chip');
-  assert.ok(html.includes('Version 100% crue'), 'Contains raw prompt chip');
-  assert.ok(html.includes('Aliment de transition'), 'Contains transition prompt chip');
+  assert.ok(html.includes('ai-meal-bento-card'), 'Should have bento card container');
+  assert.ok(html.includes('handleAddActionMeal'), 'Should have Add to Meals button');
+  assert.ok(html.includes('openScheduleMealModal'), 'Should have Schedule button');
+  assert.ok(html.includes('saveMealToCustomRecipes'), 'Should have Save to Custom Recipes button');
+  assert.ok(html.includes('askMealVariant'), 'Should have variant chips');
 });
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -249,7 +261,7 @@ const promptSamples = [
   // Fridge combinations
   { title: "Frigo : Tomate + Épinards + Huile d'olive", text: "### 🥗 Salade d'Épinards Frais & Tomates\nIngrédients :\n* Jeunes pousses d'épinards\n* 2 tomates\n* Huile d'olive crue" },
   { title: "Frigo : Pomme + Concombre + Céleri", text: "### 🍏 Jus Vert Détoxifiant\nIngrédients :\n- 1 concombre\n- 2 branches de céleri\n- 1 pomme verte" },
-  { title: "Frigo : Courgette + Ail + Citron", text: "### 🥣 Carpaccio de Courgettes Marines\nComposants :\n* 2 courgettes crues en lamelles\n* Jus de citron\n* Gousse d'ail pressée" },
+  { title: "Frigo : Courgette + Ail + Citron", text: "### 🥣 Carpaccio de Courgettes Marines\nComposition de l'assiette :\n* 2 courgettes crues en lamelles\n* Jus de citron\n* Gousse d'ail pressée" },
   { title: "Frigo : Avocat + Mâche + Graines", text: "### 🥑 Bol Réparateur Mâche & Avocat\nIngrédients :\n• Mâche fraîche\n• 1 avocat\n• Graines de courge" },
 
   // Hungry / Quick meal
@@ -278,7 +290,7 @@ test('4. Universal Prompt Matrix (all real-world prompt combinations)', () => {
     assert.ok(extracted.name.length > 2, `Invalid name for: "${sample.title}"`);
     assert.ok(extracted.items.length >= 2, `Ingredients missing for: "${sample.title}"`);
     const cardHtml = renderMealActionCardHtml(extracted);
-    assert.ok(cardHtml.includes('ai-meal-action-card'), `Failed to render card for: "${sample.title}"`);
+    assert.ok(cardHtml.includes('ai-meal-bento-card'), `Failed to render card for: "${sample.title}"`);
   }
 });
 

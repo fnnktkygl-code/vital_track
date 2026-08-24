@@ -550,51 +550,87 @@ export function closePreviewDietPlanModal(event = null) {
 
 /**
  * Intelligent parser that extracts a single meal/dish proposal from markdown AI responses
- * when no JSON block was provided.
+ * ONLY when an actual recipe with genuine culinary ingredients is proposed.
  */
 export function extractSingleMealFromMarkdown(text) {
   if (!text || typeof text !== 'string') return null;
-  // If text already has an explicit diet plan with multiple days, let parseMarkdownDietPlan handle it
+
+  // Never extract from multi-day plans or fasting programs (let parseMarkdownDietPlan handle them)
   if (/(?:JOUR|DAY|SEMAINE|WEEK)\s*\d+/i.test(text) && /(?:Matin|Midi|Soir|Hydratation)/i.test(text)) {
     return null;
   }
 
-  // Look for recipe / dish patterns:
-  const hasRecipeKeywords = /(?:ingr[ée]dients?|recette|pr[ée]paration|assiette|bol|salade|smoothie|velout[ée]|soupe|d[ée]coction|jus|plat|d[ée]jeuner|d[iî]ner|petit[- ]d[ée]jeuner)/i.test(text);
-  if (!hasRecipeKeywords) return null;
+  // Disallow general botanical monographs, symptoms, small talk, definitions
+  const isGeneralBotanyOrNonCulinary = /(?:Actions? cl[ée]s?|Propri[ée]t[ée]s? pharmacologiques?|Tropisme|Posologie|Contre[- ]indications?|Botanique|Nom latin|Origine g[ée]ographique)/i.test(text);
 
-  // 1. Detect dish title
+  // Must have an explicit culinary / recipe header or ingredients section
+  const hasRecipeSection = /(?:(?:^|\n)\s*\*{0,2}(?:Ingr[ée]dients?|Composants?|Composition de l'assiette|Recette)\s*:?\*{0,2}\s*:?)/i.test(text);
+  const hasCulinaryTitle = /(?:###?\s*(?:[^\n]*)(?:Salade|Smoothie|Velout[ée]|Soupe|Gaspacho|Plat|Bol|Assiette|Menu|Carpaccio|Porridge|Pesto|Jus [Vv]ert|D[ée]jeuner|D[iî]ner|Petit[- ]d[ée]jeuner|D[ée]coction|Infusion))/i.test(text);
+
+  if (!hasRecipeSection && !hasCulinaryTitle) {
+    return null;
+  }
+
+  if (isGeneralBotanyOrNonCulinary && !hasRecipeSection) {
+    return null;
+  }
+
+  // 1. Extract ingredients strictly from the ingredients section
+  const items = [];
+  const ingSectionMatch = text.match(/(?:^|\n)\s*\*{0,2}(?:Ingr[ée]dients?|Composants?|Composition de l'assiette)\s*:?\*{0,2}\s*:?\s*([\s\S]*)/i);
+  
+  const INVALID_INGREDIENT_WORDS = /^(?:actions?|propri[ée]t[ée]s?|bienfaits?|mode d'emploi|posologie|contre[- ]indications?|attention|remarque|note|source|conseil)/i;
+
+  if (ingSectionMatch && ingSectionMatch[1]) {
+    const lines = ingSectionMatch[1].split('\n');
+    for (const rawLine of lines) {
+      const line = rawLine.trim();
+      if (!line) continue;
+      // Stop when reaching next section
+      if (/^(?:###|\*{0,2}(?:Pr[ée]paration|Instructions?|B[ée]n[ée]fices?|Conseils?|Astuce|Actions?|Propri[ée]t[ée]s|Mode d'emploi|Posologie)\s*:?\*{0,2}\s*:?)/i.test(line)) {
+        break;
+      }
+      if (line.startsWith('*') || line.startsWith('-') || line.startsWith('•') || /^\d+[\.\)]/.test(line)) {
+        const clean = line.replace(/^[*\-•\d\.\)]+\s*/, '').replace(/[*_`]/g, '').trim();
+        if (clean.length > 2 && clean.length < 80 && !INVALID_INGREDIENT_WORDS.test(clean)) {
+          items.push(clean);
+        }
+      }
+    }
+  }
+
+  // We require at least 2 genuine ingredients to consider it a real meal/recipe
+  if (items.length < 2) {
+    return null;
+  }
+
+  // 2. Detect dish title
   let dishName = '';
   let emoji = '🥗';
 
-  // Pattern 1: Heading with emoji/title (e.g. ### 🥗 Salade Détoxifiante or ### Salade ...)
   const headingMatch = text.match(/(?:^|\n)###?\s*([^\n]+)/);
-  if (headingMatch && !headingMatch[1].toLowerCase().includes('directive') && !headingMatch[1].toLowerCase().includes('conseil') && !headingMatch[1].toLowerCase().includes('principe') && !headingMatch[1].toLowerCase().includes('priorité')) {
+  if (headingMatch && !INVALID_INGREDIENT_WORDS.test(headingMatch[1])) {
     const rawHeading = headingMatch[1].replace(/[*_#`]/g, '').trim();
     const emojiMatch = rawHeading.match(/([\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}])/u);
     if (emojiMatch) emoji = emojiMatch[1];
-    dishName = rawHeading.replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}]/gu, '').replace(/^[:\-\s]+|[:\-\s]+$/g, '').trim();
+    const candidateName = rawHeading.replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}]/gu, '').replace(/^[:\-\s]+|[:\-\s]+$/g, '').trim();
+    if (candidateName.length >= 3 && !INVALID_INGREDIENT_WORDS.test(candidateName)) {
+      dishName = candidateName;
+    }
   }
 
-  // Pattern 2: Bold title (e.g. **Salade de concombre et avocat**)
   if (!dishName) {
-    const boldMatch = text.match(/\*\*([^\*\n]{4,50})\*\*/);
-    if (boldMatch && !boldMatch[1].toLowerCase().includes('ingrédient') && !boldMatch[1].toLowerCase().includes('préparation') && !boldMatch[1].toLowerCase().includes('pral')) {
+    const boldMatch = text.match(/\*\*([^\*\n]{3,100})\*\*/);
+    if (boldMatch && !boldMatch[1].toLowerCase().includes('ingrédient') && !INVALID_INGREDIENT_WORDS.test(boldMatch[1])) {
       dishName = boldMatch[1].trim();
     }
   }
 
-  // Pattern 3: Explicit recipe label (e.g. Recette : Salade ...)
-  if (!dishName) {
-    const recipeMatch = text.match(/(?:Recette|Plat|Proposition|Repas)\s*:\s*([^\n\.,]+)/i);
-    if (recipeMatch) dishName = recipeMatch[1].replace(/[*_#`]/g, '').trim();
-  }
-
   if (!dishName || dishName.length < 3) {
-    dishName = "Plat Vitaliste Personnalisé";
+    dishName = "Repas Vitaliste Proposé";
   }
 
-  // 2. Detect category (breakfast, lunch, dinner, snack)
+  // 3. Detect category (breakfast, lunch, dinner, snack)
   let category = 'lunch';
   const lower = text.toLowerCase();
   if (lower.includes('petit-déjeuner') || lower.includes('petit déjeuner') || lower.includes('matin') || lower.includes('smoothie') || lower.includes('breakfast')) {
@@ -608,39 +644,6 @@ export function extractSingleMealFromMarkdown(text) {
     if (emoji === '🥗') emoji = '🍵';
   }
 
-  // 3. Extract ingredients (bullets after Ingrédients: or general list)
-  const items = [];
-  const ingMatch = text.match(/(?:Ingr[ée]dients?|Composants?)[^:\n]*:?\s*([\s\S]*?)(?=(?:Pr[ée]paration|Instructions?|B[ée]n[ée]fices?|Conseils?|Astuce|###|```|$))/i);
-  
-  if (ingMatch && ingMatch[1]) {
-    const lines = ingMatch[1].split('\n').map(l => l.trim()).filter(Boolean);
-    for (const line of lines) {
-      if (line.startsWith('*') || line.startsWith('-') || line.startsWith('•') || /^\d+[\.\)]/.test(line)) {
-        const clean = line.replace(/^[*\-•\d\.\)]+\s*/, '').replace(/[*_`]/g, '').trim();
-        if (clean.length > 2 && clean.length < 80) {
-          items.push(clean);
-        }
-      }
-    }
-  }
-
-  // If no ingredients list found, scan all bullet points in message
-  if (items.length === 0) {
-    const allBullets = text.match(/^[*\-•]\s+([^\n]+)/gm);
-    if (allBullets && allBullets.length > 0) {
-      for (const b of allBullets.slice(0, 6)) {
-        const clean = b.replace(/^[*\-•]\s+/, '').replace(/[*_`]/g, '').trim();
-        if (clean.length > 2 && clean.length < 80 && !clean.includes('###')) {
-          items.push(clean);
-        }
-      }
-    }
-  }
-
-  if (items.length === 0) {
-    items.push(dishName);
-  }
-
   // 4. Calculate estimated vitality metrics
   const isTransition = lower.includes('transition') || lower.includes('cuit') || lower.includes('poisson') || lower.includes('vapeur') || lower.includes('féculent');
   const isAcid = lower.includes('acidifiant') || lower.includes('viande') || lower.includes('fromage');
@@ -650,9 +653,8 @@ export function extractSingleMealFromMarkdown(text) {
   const isElectric = !isAcid && !isTransition;
   const isMucusForming = isAcid;
 
-  // Extract a brief note
-  let note = "Équilibre acido-basique, fluidification lymphatique et régénération cellulaire.";
-  if (category === 'breakfast') note = "Éveil enzymatique et hydratation cellulaire sans surcharge digestive.";
+  let note = "Équilibre acido-basique et vitalité cellulaire.";
+  if (category === 'breakfast') note = "Éveil enzymatique et hydratation cellulaire sans colles digestives.";
   if (category === 'dinner') note = "Dîner léger facilitant le repos hépatique et le sommeil réparateur.";
   if (isTransition) note = "Plat de transition doux respectant la loi d'association d'Arnold Ehret.";
 
@@ -670,7 +672,7 @@ export function extractSingleMealFromMarkdown(text) {
 }
 
 /**
- * Renders an Interactive Japandi Action Card for a Single Proposed Meal/Recipe
+ * Renders an Ultra-Compact Japandi Bento Action Card for a Single Proposed Meal/Recipe
  */
 export function renderMealActionCardHtml(meal, tFunc = (k, p, f) => f || k) {
   if (!meal) return '';
@@ -678,81 +680,68 @@ export function renderMealActionCardHtml(meal, tFunc = (k, p, f) => f || k) {
   const rawItems = Array.isArray(meal.items) ? meal.items : (Array.isArray(meal.ingredients) ? meal.ingredients : [meal.name]);
   
   const catLabels = {
-    breakfast: '🌅 Petit-déjeuner Vital',
-    lunch: '🥗 Déjeuner Vivant',
-    dinner: '🍲 Dîner de Transition',
-    snack: '🍵 Éveil & Collation'
+    breakfast: '🌅 Matin',
+    lunch: '🥗 Midi',
+    dinner: '🍲 Soir',
+    snack: '🍵 Collation'
   };
-  const catLabel = catLabels[meal.category] || meal.category || 'Repas Vitaliste';
+  const catLabel = catLabels[meal.category] || meal.category || 'Repas';
 
   const isElectric = meal.isElectric !== false && !meal.isMucusForming;
-  const pralText = meal.pralScore !== undefined ? `PRAL ${meal.pralScore > 0 ? '+' : ''}${meal.pralScore}` : 'Alcalinisant';
+  const pralText = meal.pralScore !== undefined ? `PRAL ${meal.pralScore > 0 ? '+' : ''}${meal.pralScore}` : 'Alcalin';
   const vitalityBadge = isElectric
-    ? `<span class="plan-pill accent" style="font-size:0.75rem;"><i class="ri-flashlight-fill"></i> ⚡ 100% Électrique</span>`
-    : `<span class="plan-pill" style="font-size:0.75rem; color:#f59e0b; border-color:rgba(245,158,11,0.3); background:rgba(245,158,11,0.08);"><i class="ri-shuffle-line"></i> 🟡 Transition</span>`;
+    ? `<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:20px;font-size:0.72rem;font-weight:700;background:rgba(52,211,153,0.15);color:var(--accent,#34d399);border:1px solid rgba(52,211,153,0.3);"><i class="ri-flashlight-fill"></i> 100% Électrique</span>`
+    : `<span style="display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:20px;font-size:0.72rem;font-weight:700;background:rgba(245,158,11,0.12);color:#f59e0b;border:1px solid rgba(245,158,11,0.3);"><i class="ri-shuffle-line"></i> Transition</span>`;
 
-  const itemsPills = rawItems.map(it => `
-    <span style="display:inline-flex; align-items:center; gap:4px; padding:4px 10px; background:var(--surface-2, rgba(255,255,255,0.05)); border:1px solid var(--border); border-radius:12px; font-size:0.8rem; color:var(--text); margin:2px 3px 2px 0;">
-      <i class="ri-leaf-line" style="color:var(--accent); font-size:0.75rem;"></i> ${typeof it === 'string' ? it : it.name}
+  const itemsPills = rawItems.slice(0, 6).map(it => `
+    <span style="display:inline-block;padding:2px 7px;background:rgba(255,255,255,0.04);border:1px solid var(--border, rgba(255,255,255,0.08));border-radius:8px;font-size:0.74rem;color:var(--text);margin:2px 2px 2px 0;">
+      ${typeof it === 'string' ? it : it.name}
     </span>
   `).join('');
 
   const safeMealName = (meal.name || 'ce repas').replace(/'/g, "\\'");
 
   return `
-    <div class="ai-meal-action-card glass" style="margin:14px 0; padding:16px 18px; border-radius:18px; border:1.5px solid var(--accent); background:rgba(16,185,129,0.05); box-shadow:0 8px 24px rgba(0,0,0,0.15);">
-      <!-- Header -->
-      <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
-        <div style="display:flex; align-items:center; gap:10px;">
-          <span style="font-size:1.6rem; line-height:1;">${meal.emoji || '🥗'}</span>
-          <div>
-            <div style="font-weight:800; font-size:1.05rem; color:var(--text); line-height:1.2;">${meal.name || 'Plat Proposé'}</div>
-            <div style="font-size:0.78rem; color:var(--text-dim);">${catLabel} · ${pralText}</div>
+    <div class="ai-meal-bento-card glass" style="margin:12px 0 6px 0;padding:12px 14px;border-radius:14px;border:1px solid rgba(52,211,153,0.25);background:rgba(16,185,129,0.03);box-shadow:0 4px 16px rgba(0,0,0,0.12);text-align:left;">
+      <!-- Top header line -->
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:8px;min-width:0;">
+          <span style="font-size:1.3rem;line-height:1;flex-shrink:0;">${meal.emoji || '🥗'}</span>
+          <div style="min-width:0;">
+            <div style="font-weight:800;font-size:0.92rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2;">${meal.name || 'Plat Proposé'}</div>
+            <div style="font-size:0.72rem;color:var(--text-dim);margin-top:1px;">${catLabel} · ${pralText}</div>
           </div>
         </div>
-        <div style="display:flex; gap:6px; align-items:center;">
+        <div style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
           ${vitalityBadge}
         </div>
       </div>
 
-      <!-- Ingrédients Chips -->
-      <div style="margin-bottom:10px;">
-        <div style="font-size:0.78rem; font-weight:700; color:var(--text-dim); margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Ingrédients Clés :</div>
-        <div style="display:flex; flex-wrap:wrap; gap:3px;">
-          ${itemsPills}
-        </div>
+      <!-- Compact Ingredients list -->
+      <div style="margin-bottom:10px;display:flex;flex-wrap:wrap;gap:2px;">
+        ${itemsPills}
       </div>
 
-      ${meal.note ? `<div style="font-size:0.82rem; color:var(--text-dim); margin-bottom:12px; line-height:1.4; font-style:italic;">🌿 ${meal.note}</div>` : ''}
-
-      <!-- 3 Primary Action Buttons -->
-      <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:12px;">
-        <button type="button" class="btn-primary" onclick="window.handleAddActionMeal('${encodedMeal}')" style="display:inline-flex; align-items:center; gap:6px; padding:9px 16px; border-radius:12px; font-size:0.86rem; font-weight:700; cursor:pointer;">
-          <i class="ri-add-circle-fill"></i> Ajouter aux Repas du Jour
+      <!-- Action buttons row: 3 compact buttons side by side -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(100px, 1fr));gap:6px;margin-bottom:8px;">
+        <button type="button" class="btn-primary" onclick="window.handleAddActionMeal('${encodedMeal}')" style="padding:7px 10px;border-radius:10px;font-size:0.78rem;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:4px;cursor:pointer;border:none;white-space:nowrap;">
+          <i class="ri-add-circle-fill" style="font-size:0.88rem;"></i> Journal
         </button>
-        <button type="button" class="btn-secondary" onclick="window.openScheduleMealModal('${encodedMeal}')" style="display:inline-flex; align-items:center; gap:6px; padding:9px 14px; border-radius:12px; font-size:0.84rem; font-weight:700; background:var(--surface-2); border:1px solid var(--border); color:var(--text); cursor:pointer;">
-          <i class="ri-calendar-event-fill" style="color:var(--accent);"></i> Planifier au Calendrier
+        <button type="button" class="btn-secondary" onclick="window.openScheduleMealModal('${encodedMeal}')" style="padding:7px 10px;border-radius:10px;font-size:0.78rem;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:4px;background:var(--surface-2, rgba(255,255,255,0.06));border:1px solid var(--border, rgba(255,255,255,0.1));color:var(--text);cursor:pointer;white-space:nowrap;">
+          <i class="ri-calendar-event-line" style="color:var(--accent,#34d399);font-size:0.88rem;"></i> Calendrier
         </button>
-        <button type="button" class="btn-secondary" onclick="window.saveMealToCustomRecipes('${encodedMeal}')" style="display:inline-flex; align-items:center; gap:6px; padding:9px 14px; border-radius:12px; font-size:0.84rem; font-weight:700; background:rgba(52,211,153,0.1); border:1px solid rgba(52,211,153,0.3); color:var(--accent); cursor:pointer;" title="Enregistrer dans ma base de recettes">
-          <i class="ri-bookmark-3-fill"></i> Sauvegarder dans Mes Recettes
+        <button type="button" class="btn-secondary" onclick="window.saveMealToCustomRecipes('${encodedMeal}')" style="padding:7px 10px;border-radius:10px;font-size:0.78rem;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:4px;background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.25);color:var(--accent,#34d399);cursor:pointer;white-space:nowrap;">
+          <i class="ri-bookmark-3-line" style="font-size:0.88rem;"></i> Recettes
         </button>
       </div>
 
-      <!-- Quick AI Adjustments Bar -->
-      <div style="margin-top:12px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.06); display:flex; flex-wrap:wrap; gap:5px; align-items:center;">
-        <span style="font-size:0.74rem; font-weight:700; color:var(--text-dim); margin-right:4px;">Ajuster avec l'IA :</span>
-        <button type="button" class="quick-reply-chip" onclick="window.askMealVariant('${safeMealName}', 'fridge')" style="font-size:0.75rem; padding:4px 10px; border-radius:50px; background:var(--surface-2); border:1px solid var(--border); color:var(--text); cursor:pointer;">
-          🥑 Avec mon frigo
-        </button>
-        <button type="button" class="quick-reply-chip" onclick="window.askMealVariant('${safeMealName}', 'raw')" style="font-size:0.75rem; padding:4px 10px; border-radius:50px; background:var(--surface-2); border:1px solid var(--border); color:var(--text); cursor:pointer;">
-          🌿 Version 100% crue
-        </button>
-        <button type="button" class="quick-reply-chip" onclick="window.askMealVariant('${safeMealName}', 'transition')" style="font-size:0.75rem; padding:4px 10px; border-radius:50px; background:var(--surface-2); border:1px solid var(--border); color:var(--text); cursor:pointer;">
-          🥣 Aliment de transition
-        </button>
-        <button type="button" class="quick-reply-chip" onclick="window.openMealCustomizer('${safeMealName}')" style="font-size:0.75rem; padding:4px 10px; border-radius:50px; background:rgba(52,211,153,0.12); border:1px solid rgba(52,211,153,0.3); color:var(--accent); cursor:pointer;">
-          🔄 Autre variante...
-        </button>
+      <!-- Subtle variant chips row -->
+      <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;padding-top:6px;border-top:1px solid rgba(255,255,255,0.04);">
+        <span style="font-size:0.7rem;color:var(--text-dim);margin-right:2px;">Adapter :</span>
+        <button type="button" onclick="window.askMealVariant('${safeMealName}', 'fridge')" style="font-size:0.7rem;padding:2px 8px;border-radius:12px;background:transparent;border:1px solid var(--border, rgba(255,255,255,0.1));color:var(--text-dim);cursor:pointer;">🥑 Frigo</button>
+        <button type="button" onclick="window.askMealVariant('${safeMealName}', 'raw')" style="font-size:0.7rem;padding:2px 8px;border-radius:12px;background:transparent;border:1px solid var(--border, rgba(255,255,255,0.1));color:var(--text-dim);cursor:pointer;">🌿 100% Cru</button>
+        <button type="button" onclick="window.askMealVariant('${safeMealName}', 'transition')" style="font-size:0.7rem;padding:2px 8px;border-radius:12px;background:transparent;border:1px solid var(--border, rgba(255,255,255,0.1));color:var(--text-dim);cursor:pointer;">🥣 Transition</button>
+        <button type="button" onclick="window.openMealCustomizer('${safeMealName}')" style="font-size:0.7rem;padding:2px 8px;border-radius:12px;background:transparent;border:1px solid var(--border, rgba(255,255,255,0.1));color:var(--accent,#34d399);cursor:pointer;">✏️ Autre...</button>
       </div>
     </div>
   `;
