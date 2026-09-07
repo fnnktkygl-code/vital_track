@@ -27,7 +27,6 @@ test-results/
 web-app/test-results/
 
 models/
-scratch/
 
 # Build artifacts compilés - ne pas tracker
 vital-track-next/public/assets/*.js
@@ -35,3 +34,6 @@ vital-track-next/public/assets/*.css
 vital-track-next/public/assets/*.map
 web-app/public/assets/*.js
 web-app/public/assets/*.css
+
+# Build artifacts - ne jamais tracker
+web-app/public/assets/*.map
